@@ -57,13 +57,13 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         
         $('input[name=view_settings]', this.$modal).each(function() {
             if ($(this).val() == view_setting) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
         $('input[name=story_layout]', this.$modal).each(function() {
             if ($(this).val() == story_layout) {
-                $(this).attr('checked', true);
+                $(this).prop('checked', true);
                 return false;
             }
         });
@@ -513,21 +513,6 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             self.close(function() {
                 NEWSBLUR.reader.open_feedchooser_modal({premium_only: true});
             });
-        });
-    },
-    
-    animate_saved: function() {
-        var $status = $('.NB-exception-option-view .NB-exception-option-status', this.$modal);
-        $status.text('Saved').animate({
-            'opacity': 1
-        }, {
-            'queue': false,
-            'duration': 600,
-            'complete': function() {
-                _.delay(function() {
-                    $status.animate({'opacity': 0}, {'queue': false, 'duration': 1000});
-                }, 300);
-            }
         });
     },
     

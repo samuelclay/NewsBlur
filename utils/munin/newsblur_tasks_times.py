@@ -1,5 +1,9 @@
-#!/srv/newsblur/venv/newsblur/bin/python
+#!/srv/newsblur/venv/newsblur3/bin/python
 from utils.munin.base import MuninGraph
+import os
+os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur_web.settings"
+import django
+django.setup()
 
 class NBMuninGraph(MuninGraph):
 
@@ -13,14 +17,14 @@ class NBMuninGraph(MuninGraph):
         }
 
         stats = self.stats
-        graph['graph_order'] = ' '.join(sorted(s['_id'] for s in stats))
-        graph.update(dict((("%s.label" % s['_id'], s['_id']) for s in stats)))
-        graph.update(dict((("%s.draw" % s['_id'], 'LINE1') for s in stats)))
+        graph.update(dict((("%s.label" % s['_id'].replace('-', ''), s['_id']) for s in stats)))
+        graph.update(dict((("%s.draw" % s['_id'].replace('-', ''), 'LINE1') for s in stats)))
+        graph['graph_order'] = ' '.join(sorted(s['_id'].replace('-', '') for s in stats))
 
         return graph
 
     def calculate_metrics(self):
-        servers = dict((("%s" % s['_id'], s['total']) for s in self.stats))
+        servers = dict((("%s" % s['_id'].replace('-', ''), s['total']) for s in self.stats))
 
         return servers
     

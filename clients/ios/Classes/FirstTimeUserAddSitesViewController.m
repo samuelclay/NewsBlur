@@ -121,7 +121,7 @@
         }
         [params setObject:categories forKey:@"category"];
 
-        [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
 
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
             [self informError:error];
@@ -155,7 +155,7 @@
                            self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:@"true" forKey:@"auto_active"];
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishImportFromGoogleReader:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self importFromGoogleReaderFailed:error];
@@ -234,7 +234,7 @@
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     [params setObject:siteUrl forKey:@"url"];
     
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self informError:error];

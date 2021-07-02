@@ -13,10 +13,14 @@ from OpenSSL.SSL import Error as OpenSSLError
 from pyasn1.error import PyAsn1Error
 from django.utils.encoding import smart_str
 from django.conf import settings
-from BeautifulSoup import BeautifulSoup
-
+from django.utils.encoding import smart_bytes
+from django.contrib.sites.models import Site
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
+ 
 BROKEN_URLS = [
     "gamespot.com",
+    'thedailyskip.com',
 ]
 
 
@@ -25,6 +29,8 @@ class TextImporter:
     def __init__(self, story=None, feed=None, story_url=None, request=None, debug=False):
         self.story = story
         self.story_url = story_url
+        if self.story and not self.story_url:
+            self.story_url = self.story.story_permalink
         self.feed = feed
         self.request = request
         self.debug = debug
@@ -33,13 +39,11 @@ class TextImporter:
     def headers(self):
         num_subscribers = getattr(self.feed, 'num_subscribers', 0)
         return {
-            'User-Agent': 'NewsBlur Content Fetcher - %s subscriber%s - %s '
-                          '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
-                          'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
-                          'Safari/534.48.3)' % (
+            'User-Agent': 'NewsBlur Content Fetcher - %s subscriber%s - %s %s' % (
                               num_subscribers,
                               's' if num_subscribers != 1 else '',
-                              getattr(self.feed, 'permalink', '')
+                              getattr(self.feed, 'permalink', ''),
+                              getattr(self.feed, 'fake_user_agent', ''),
                           ),
         }
 
@@ -118,13 +122,13 @@ class TextImporter:
 
         if text:
             text = text.replace("\xc2\xa0", " ") # Non-breaking space, is mangled when encoding is not utf-8
-            text = text.replace("\u00a0", " ") # Non-breaking space, is mangled when encoding is not utf-8
+            text = text.replace("\\u00a0", " ") # Non-breaking space, is mangled when encoding is not utf-8
 
         original_text_doc = readability.Document(text, url=resp.url,
                                                  positive_keywords="post, entry, postProp, article, postContent, postField")
         try:
             content = original_text_doc.summary(html_partial=True)
-        except (readability.Unparseable, ParserError), e:
+        except (readability.Unparseable, ParserError) as e:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % e)
             return
 
@@ -135,9 +139,6 @@ class TextImporter:
 
         url = resp.url
         
-        if content:
-            content = self.rewrite_content(content)
-    
         return self.process_content(content, title, url, image=None, skip_save=skip_save, return_document=return_document,
                                     original_text_doc=original_text_doc)
         
@@ -145,12 +146,18 @@ class TextImporter:
         original_story_content = self.story and self.story.story_content_z and zlib.decompress(self.story.story_content_z)
         if not original_story_content:
             original_story_content = ""
+        story_image_urls = self.story and self.story.image_urls
+        if not story_image_urls:
+            story_image_urls = []
+        
+        content = self.add_hero_image(content, story_image_urls)
+
         if content and len(content) > len(original_story_content):
             if self.story and not skip_save:
-                self.story.original_text_z = zlib.compress(smart_str(content))
+                self.story.original_text_z = zlib.compress(smart_bytes(content))
                 try:
                     self.story.save()
-                except NotUniqueError, e:
+                except NotUniqueError as e:
                     logging.user(self.request, ("~SN~FYFetched ~FGoriginal text~FY: %s" % (e)), warn_color=False)
                     pass
             logging.user(self.request, ("~SN~FYFetched ~FGoriginal text~FY: now ~SB%s bytes~SN vs. was ~SB%s bytes" % (
@@ -163,35 +170,67 @@ class TextImporter:
             )), warn_color=False)
             return
         
+        if content:
+            content = self.rewrite_content(content)
+        
         if return_document:
             return dict(content=content, title=title, url=url, doc=original_text_doc, image=image)
 
         return content
 
+    def add_hero_image(self, content, image_urls):
+        # Need to have images in the original story to add to the text that may not have any images
+        if not len(image_urls): 
+            return content
+        
+        content_soup = BeautifulSoup(content, features="lxml")
+
+        content_imgs = content_soup.findAll('img')
+        for img in content_imgs:
+            # Since NewsBlur proxies all http images over https, the url can change, so acknowledge urls
+            # that are https on the original text but http on the feed
+            if not img.get('src'): continue
+            if img.get('src') in image_urls:
+                image_urls.remove(img.get('src'))
+            elif img.get('src').replace('https:', 'http:') in image_urls:
+                image_urls.remove(img.get('src').replace('https:', 'http:'))
+        
+        if len(image_urls):
+            image_content = f'<img src="{image_urls[0]}">'
+            content = f"{image_content}\n {content}"
+
+        return content
+
     def rewrite_content(self, content):
-        soup = BeautifulSoup(content)
+        soup = BeautifulSoup(content, features="lxml")
         
         for noscript in soup.findAll('noscript'):
             if len(noscript.contents) > 0:
                 noscript.replaceWith(noscript.contents[0])
         
-        return unicode(soup)
+        content = str(soup)
+        
+        images = set([img['src'] for img in soup.findAll('img') if 'src' in img])
+        for image_url in images:
+            abs_image_url = urljoin(self.story.story_permalink, image_url)
+            content = content.replace(image_url, abs_image_url)
+        
+        return content
     
     @timelimit(10)
     def fetch_request(self, use_mercury=True):
         headers = self.headers
         url = self.story_url
-        if self.story and not url:
-            url = self.story.story_permalink
         
         if use_mercury:
             mercury_api_key = getattr(settings, 'MERCURY_PARSER_API_KEY', 'abc123')
             headers["content-type"] = "application/json"
             headers["x-api-key"] = mercury_api_key
-            url = "https://mercury.postlight.com/parser?url=%s" % url
+            domain = Site.objects.get_current().domain
+            url = f"https://{domain}/rss_feeds/original_text_fetcher?url={url}"
             
         try:
-            r = requests.get(url, headers=headers, verify=False)
+            r = requests.get(url, headers=headers, timeout=15)
             r.connection.close()
         except (AttributeError, SocketError, requests.ConnectionError,
                 requests.models.MissingSchema, requests.sessions.InvalidSchema,
@@ -199,8 +238,9 @@ class TextImporter:
                 requests.models.InvalidURL,
                 requests.models.ChunkedEncodingError,
                 requests.models.ContentDecodingError,
+                requests.adapters.ReadTimeout,
                 urllib3.exceptions.LocationValueError,
-                LocationParseError, OpenSSLError, PyAsn1Error), e:
+                LocationParseError, OpenSSLError, PyAsn1Error) as e:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % e)
             return
         return r

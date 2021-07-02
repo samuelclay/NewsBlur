@@ -81,6 +81,7 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
                 $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-refund", style: "float: left" }, "Full Refund"));
                 $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-refund-partial", style: "float: left" }, "Refund $12"));
                 $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-never-expire", style: "float: left" }, "Never expire"));
+                $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-1yr-expire", style: "float: left" }, "Expire 1 YR"));
             } else {
                 $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-upgrade" }, "Upgrade to premium"));
             }
@@ -177,6 +178,18 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             
             NEWSBLUR.assets.never_expire_premium({
                 'user_id': self.user.get('user_id')
+            }, function(data) {
+                self.fetch_payment_history();
+            }, function(data) {
+                $(".NB-admin-action-never-expire").replaceWith($.make('div', 'Error: ' + JSON.stringify(data)));
+            });
+        });
+        $.targetIs(e, { tagSelector: '.NB-admin-action-1yr-expire' }, function($t, $p) {
+            e.preventDefault();
+            
+            NEWSBLUR.assets.never_expire_premium({
+                'user_id': self.user.get('user_id'),
+                'years': 1
             }, function(data) {
                 self.fetch_payment_history();
             }, function(data) {

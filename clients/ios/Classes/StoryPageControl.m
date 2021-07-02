@@ -23,6 +23,17 @@
 #import "THCircularProgressView.h"
 #import "FMDatabase.h"
 #import "StoriesCollection.h"
+@import WebKit;
+
+@interface StoryPageControl ()
+
+@property (nonatomic) CGFloat statusBarHeight;
+@property (nonatomic) BOOL wasNavigationBarHidden;
+@property (nonatomic, strong) NSTimer *autoscrollTimer;
+@property (nonatomic, strong) NSTimer *autoscrollViewTimer;
+@property (nonatomic, strong) NSString *restoringStoryId;
+
+@end
 
 @implementation StoryPageControl
 
@@ -108,6 +119,12 @@
 //    NSLog(@"Scroll view parent: %@", NSStringFromCGRect(currentPage.view.frame));
     [self.scrollView sizeToFit];
 //    NSLog(@"Scroll view frame post 2: %@", NSStringFromCGRect(self.scrollView.frame));
+    
+    if (@available(iOS 13.0, *)) {
+        self.statusBarHeight = appDelegate.window.windowScene.statusBarManager.statusBarFrame.size.height;
+    } else {
+        self.statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+    }
     
     // adding HUD for progress bar
     CGFloat radius = 8;
@@ -212,6 +229,8 @@
     [self.view addConstraint:self.notifier.topOffsetConstraint];
     [self.notifier hideNow];
     
+    self.traverseBottomConstraint.constant = 50;
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
                                                    originalStoryButton,
@@ -224,7 +243,7 @@
                          context:nil];
     
     _orientation = [UIApplication sharedApplication].statusBarOrientation;
-
+    
     [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story"];
     [self addKeyCommandWithInput:@"j" modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story"];
     [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:0 action:@selector(changeToPreviousPage:) discoverabilityTitle:@"Previous Story"];
@@ -248,15 +267,29 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    [self updateTheme];
+    
+    [self updateAutoscrollButtons];
     [self updateTraverseBackground];
     [self setNextPreviousButtons];
     [self setTextButton];
-
+    [self updateStatusBarState];
+    
+    self.currentlyTogglingNavigationBar = NO;
+    
+    if (self.standardInteractivePopGestureDelegate == nil) {
+        self.standardInteractivePopGestureDelegate = self.navigationController.interactivePopGestureRecognizer.delegate;
+    }
+    
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];;
+    self.navigationController.hidesBarsOnSwipe = self.allowFullscreen;
+    [self.navigationController.barHideOnSwipeGestureRecognizer addTarget:self action:@selector(barHideSwipe:)];
+    
     self.navigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
-
+    self.navigationController.interactivePopGestureRecognizer.delegate = self;
+    
     if (self.isPhoneOrCompact) {
         if (!appDelegate.storiesCollection.isSocialView) {
             UIImage *titleImage;
@@ -277,6 +310,8 @@
                 titleImage = [UIImage imageNamed:@"tag.png"];
             } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
                 titleImage = [UIImage imageNamed:@"g_icn_folder_read.png"];
+            } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_searches"]) {
+                titleImage = [UIImage imageNamed:@"g_icn_search.png"];
             } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
                 titleImage = [UIImage imageNamed:@"clock.png"];
             } else if (appDelegate.storiesCollection.isRiverView) {
@@ -319,6 +354,7 @@
         }
     }
     
+    self.autoscrollView.alpha = 0;
     previousPage.view.hidden = YES;
     self.traverseView.alpha = 1;
     self.isAnimatedIntoPlace = NO;
@@ -351,6 +387,8 @@
     [self reorientPages];
 //    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
     previousPage.view.hidden = NO;
+//    [self showAutoscrollBriefly:YES];
+    
     [self becomeFirstResponder];
 }
 
@@ -363,13 +401,18 @@
     [super viewDidDisappear:animated];
     
     self.navigationItem.leftBarButtonItem = nil;
+    
+    [self.navigationController.barHideOnSwipeGestureRecognizer removeTarget:self action:@selector(barHideSwipe:)];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
     previousPage.view.hidden = YES;
+    self.navigationController.hidesBarsOnSwipe = NO;
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    self.navigationController.interactivePopGestureRecognizer.delegate = self.standardInteractivePopGestureDelegate;
+    self.autoscrollActive = NO;
 }
 
 - (BOOL)becomeFirstResponder {
@@ -403,6 +446,8 @@
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
 //        NSLog(@"---> Story page control did re-orient: %@ / %@", NSStringFromCGSize(self.scrollView.bounds.size), NSStringFromCGSize(size));
         inRotation = NO;
+        
+        [self updateStatusBarState];
 
         [self.view setNeedsLayout];
         [self.view layoutIfNeeded];
@@ -428,21 +473,61 @@
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
+    
+    if (self.isNavigationBarHidden && !self.shouldHideStatusBar) {
+        self.scrollViewTopConstraint.constant = self.statusBarHeight;
+    } else {
+        self.scrollViewTopConstraint.constant = 0;
+    }
+    
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     [self layoutForInterfaceOrientation:orientation];
     [self adjustDragBar:orientation];
 }
 
-- (BOOL)prefersStatusBarHidden {
+- (BOOL)shouldHideStatusBar {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    
+    return [preferences boolForKey:@"story_hide_status_bar"];
+}
+
+- (BOOL)isNavigationBarHidden {
     return self.navigationController.navigationBarHidden;
 }
 
+- (void)updateStatusBarState {
+    BOOL isNavBarHidden = self.isNavigationBarHidden;
+    
+    self.statusBarBackgroundView.hidden = self.shouldHideStatusBar || !isNavBarHidden || !appDelegate.isPortrait;
+}
+
+- (BOOL)prefersStatusBarHidden {
+    [self updateStatusBarState];
+    
+    return self.shouldHideStatusBar && self.isNavigationBarHidden;
+}
+
+- (BOOL)allowFullscreen {
+    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPhone || self.presentedViewController != nil) {
+        return NO;
+    }
+    
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    
+    return ([preferences boolForKey:@"story_full_screen"] || self.autoscrollAvailable) && !self.forceNavigationBarShown;
+}
+
 - (void)setNavigationBarHidden:(BOOL)hide {
-    if (self.navigationController.navigationBarHidden == hide || self.currentlyTogglingNavigationBar) {
+    [self setNavigationBarHidden:hide alsoTraverse:NO];
+}
+
+- (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse {
+    if (self.navigationController == nil || self.navigationController.navigationBarHidden == hide || self.currentlyTogglingNavigationBar) {
         return;
     }
     
     self.currentlyTogglingNavigationBar = YES;
+    self.wasNavigationBarHidden = hide;
     
     [self.navigationController setNavigationBarHidden:hide animated:YES];
     
@@ -465,9 +550,43 @@
     CGFloat absoluteAdjustment = navHeight + statusAdjustment;
     CGFloat totalAdjustment = sign * absoluteAdjustment;
     CGPoint newOffset = CGPointMake(oldOffset.x, oldOffset.y + totalAdjustment);
+    BOOL singlePage = currentPage.isSinglePage;
+    
+    if (alsoTraverse) {
+        self.traversePinned = YES;
+        self.traverseFloating = NO;
+        
+        if (!hide) {
+            int safeBottomMargin = 0;
+            
+            if (self.isPhoneOrCompact) {
+                if (@available(iOS 11.0, *)) {
+                    safeBottomMargin = -1 * self.view.safeAreaInsets.bottom/2;
+                }
+            }
+            
+            self.traverseBottomConstraint.constant = safeBottomMargin;
+            [self.view layoutIfNeeded];
+        }
+    }
     
     [UIView animateWithDuration:0.2 animations:^{
-        currentPage.webView.scrollView.contentOffset = newOffset;
+        if (!self.isHorizontal) {
+            [self reorientPages];
+        }
+        
+        if (!singlePage) {
+            currentPage.webView.scrollView.contentOffset = newOffset;
+        }
+        
+        if (alsoTraverse) {
+             [self.view layoutIfNeeded];
+            self.traverseView.alpha = hide ? 0 : 1;
+            
+            if (hide) {
+                [self hideAutoscrollImmediately];
+            }
+        }
     }];
     
     if (!hide) {
@@ -478,7 +597,16 @@
         [self setNeedsStatusBarAppearanceUpdate];
     } completion:^(BOOL finished) {
         self.currentlyTogglingNavigationBar = NO;
+        [self updateStatusBarState];
     }];
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return ![otherGestureRecognizer isKindOfClass:[UIScreenEdgePanGestureRecognizer class]];
 }
 
 - (void)adjustDragBar:(UIInterfaceOrientation)orientation {
@@ -527,6 +655,22 @@
 
 - (BOOL)isHorizontal {
     return [[[NSUserDefaults standardUserDefaults] objectForKey:@"scroll_stories_horizontally"] boolValue];
+}
+
+- (void)barHideSwipe:(UIPanGestureRecognizer *)recognizer {
+    BOOL isBarHidden = self.isNavigationBarHidden;
+    
+    if (recognizer.state == UIGestureRecognizerStateEnded && isBarHidden != self.wasNavigationBarHidden) {
+        self.wasNavigationBarHidden = isBarHidden;
+        
+        if (!appDelegate.storyPageControl.shouldHideStatusBar) {
+            [currentPage drawFeedGradient];
+        }
+        
+        if (!self.isHorizontal) {
+            [self reorientPages];
+        }
+    }
 }
 
 - (void)resetPages {
@@ -676,6 +820,21 @@
     return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone || appDelegate.isCompactWidth;
 }
 
+- (void)updateAutoscrollButtons {
+    self.autoscrollBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
+    
+    [self.autoscrollDisableButton setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"autoscroll_off.png"]]  forState:UIControlStateNormal];
+    
+    if (self.autoscrollActive) {
+        [self.autoscrollPauseResumeButton setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"autoscroll_pause.png"]]  forState:UIControlStateNormal];
+    } else {
+        [self.autoscrollPauseResumeButton setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"autoscroll_resume.png"]]  forState:UIControlStateNormal];
+    }
+    
+    [self.autoscrollSlowerButton setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"autoscroll_slower.png"]]  forState:UIControlStateNormal];
+    [self.autoscrollFasterButton setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"autoscroll_faster.png"]]  forState:UIControlStateNormal];
+}
+
 - (void)updateTraverseBackground {
     self.textStorySendBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
     self.prevNextBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
@@ -686,15 +845,57 @@
 - (void)updateTheme {
     [super updateTheme];
     
+    self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    self.navigationController.navigationBar.barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x222222, 0x111111);
+    self.navigationController.navigationBar.backgroundColor = [UINavigationBar appearance].backgroundColor;
+    self.view.backgroundColor = UIColorFromLightDarkRGB(0xe0e0e0, 0x111111);
+    
+    [self updateAutoscrollButtons];
     [self updateTraverseBackground];
     [self setNextPreviousButtons];
     [self setTextButton];
     [self updateStoriesTheme];
+    [self updateStatusBarTheme];
 }
 
 // allow keyboard comands
 - (BOOL)canBecomeFirstResponder {
     return YES;
+}
+
+#pragma mark -
+#pragma mark State Restoration
+
+- (void)encodeRestorableStateWithCoder:(NSCoder *)coder {
+    [super encodeRestorableStateWithCoder:coder];
+    
+    [coder encodeObject:currentPage.activeStoryId forKey:@"current_story_id"];
+    
+    [appDelegate.storiesCollection toggleStoryUnread];
+    self.temporarilyMarkedUnread = YES;
+}
+
+- (void)decodeRestorableStateWithCoder:(NSCoder *)coder {
+    [super decodeRestorableStateWithCoder:coder];
+    
+    self.restoringStoryId = [coder decodeObjectOfClass:[NSString class] forKey:@"current_story_id"];
+}
+
+- (void)restorePage {
+    if (self.restoringStoryId.length > 0) {
+        NSInteger pageIndex = [appDelegate.storiesCollection indexOfStoryId:self.restoringStoryId];
+        
+        if (pageIndex >= 0) {
+            [self changePage:pageIndex animated:NO];
+        } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            // If the story can't be found, don't show anything; uncomment this to instead show the first unread story:
+//            [self doNextUnreadStory:nil];
+        } else {
+            [appDelegate hideStoryDetailView];
+        }
+        
+        self.restoringStoryId = nil;
+    }
 }
 
 #pragma mark -
@@ -722,6 +923,11 @@
         }
         pageFrame.size.height = CGRectGetHeight(self.scrollView.bounds);
         pageFrame.size.width = CGRectGetWidth(self.scrollView.bounds);
+        
+        if (self.currentlyTogglingNavigationBar && !self.isNavigationBarHidden) {
+            pageFrame.size.height -= 20.0;
+        }
+        
         pageController.view.hidden = NO;
 		pageController.view.frame = pageFrame;
 	} else {
@@ -857,9 +1063,14 @@
         [self setStoryFromScroll];
 //    }
     
+    [self showAutoscrollBriefly:YES];
+    
     // Stick to bottom
     traversePinned = YES;
-    if (@available(iOS 11.0, *)) {
+    
+    if (!self.isPhoneOrCompact) {
+        self.traverseBottomConstraint.constant = 0;
+    } else if (@available(iOS 11.0, *)) {
         self.traverseBottomConstraint.constant = -1 * self.view.safeAreaInsets.bottom/2;
     } else {
         self.traverseBottomConstraint.constant = 0;
@@ -1001,23 +1212,24 @@
 }
 
 - (void)changeToNextPage:(id)sender {
-    NSInteger nextPageIndex = nextPage.pageIndex;
-    if (nextPageIndex < 0 && currentPage.pageIndex < 0) {
+    if (nextPage.pageIndex < 0 && currentPage.pageIndex < 0) {
         // just displaying a placeholder - display the first story instead
         [self changePage:0 animated:YES];
         return;
     }
-    [self changePage:nextPageIndex animated:YES];
+    
+    [self changePage:currentPage.pageIndex + 1 animated:YES];
 }
 
 - (void)changeToPreviousPage:(id)sender {
-    NSInteger previousPageIndex = previousPage.pageIndex;
-    if (previousPageIndex < 0) {
-        if (currentPage.pageIndex < 0)
+    if (previousPage.pageIndex < 0) {
+        if (currentPage.pageIndex < 0) {
             [self changeToNextPage:sender];
+        }
         return;
     }
-    [self changePage:previousPageIndex animated:YES];
+    
+    [self changePage:currentPage.pageIndex - 1 animated:YES];
 }
 
 - (void)setStoryFromScroll {
@@ -1058,6 +1270,9 @@
     
 //    NSLog(@"Set Story from scroll: %@ = %@ (%@/%@/%@)", @(fractionalPage), @(nearestNumber), @(previousPage.pageIndex), @(currentPage.pageIndex), @(nextPage.pageIndex));
     
+    self.autoscrollActive = NO;
+//    [self showAutoscrollBriefly:YES];
+    
     nextPage.webView.scrollView.scrollsToTop = NO;
     previousPage.webView.scrollView.scrollsToTop = NO;
     currentPage.webView.scrollView.scrollsToTop = YES;
@@ -1066,17 +1281,6 @@
         appDelegate.feedDetailViewController.storyTitlesTable.scrollsToTop = NO;
     }
     self.scrollView.scrollsToTop = NO;
-    
-    NSInteger topPosition = currentPage.webView.scrollView.contentOffset.y;
-    BOOL canHide = currentPage.canHideNavigationBar && topPosition >= 0;
-    
-    if (!canHide && self.navigationController.navigationBarHidden) {
-        [self.navigationController setNavigationBarHidden:NO animated:YES];
-        
-        [UIView animateWithDuration:0.5 animations:^{
-            [self setNeedsStatusBarAppearanceUpdate];
-        }];
-    }
     
     if (self.isDraggingScrollview || self.scrollingToPage == currentPage.pageIndex) {
         if (currentPage.pageIndex == -2) return;
@@ -1095,11 +1299,18 @@
         }
         [appDelegate.feedDetailViewController redrawUnreadStory];
     }
-
-    [currentPage becomeFirstResponder];
+    
+    if (!appDelegate.storiesCollection.inSearch) {
+        [currentPage becomeFirstResponder];
+    }
 }
 
 - (void)advanceToNextUnread {
+    if (self.restoringStoryId.length > 0) {
+        [self restorePage];
+        return;
+    }
+    
     if (!self.waitingForNextUnreadFromServer) {
         return;
     }
@@ -1291,9 +1502,14 @@
 
 - (IBAction)showOriginalSubview:(id)sender {
     [appDelegate hidePopover];
-
-    NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
-                                       objectForKey:@"story_permalink"]];
+    
+    NSString *permalink = [appDelegate.activeStory objectForKey:@"story_permalink"];
+    NSURL *url = [NSURL URLWithString:permalink];
+    
+    if (url == nil) {
+        url = [NSURL URLWithDataRepresentation:[permalink dataUsingEncoding:NSUTF8StringEncoding] relativeToURL:nil];
+    }
+    
     [appDelegate showOriginalStory:url];
 }
 
@@ -1381,6 +1597,18 @@
     [self.previousPage changeLineSpacing:lineSpacing];
 }
 
+- (void)changedFullscreen {
+    BOOL wantHidden = self.allowFullscreen;
+    
+    self.navigationController.hidesBarsOnSwipe = self.allowFullscreen;
+    
+    [self setNavigationBarHidden:wantHidden alsoTraverse:YES];
+}
+
+- (void)changedAutoscroll {
+    self.autoscrollActive = self.autoscrollAvailable;
+}
+
 - (void)changedScrollOrientation {
     [self.scrollView setAlwaysBounceHorizontal:self.isHorizontal];
     [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
@@ -1391,6 +1619,22 @@
     [self.currentPage updateStoryTheme];
     [self.nextPage updateStoryTheme];
     [self.previousPage updateStoryTheme];
+}
+
+- (void)updateStatusBarTheme {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.statusBarBackgroundView removeFromSuperview];
+        
+        CGRect statusRect = CGRectMake(0, 0, self.view.bounds.size.width, self.statusBarHeight);
+        
+        self.statusBarBackgroundView = [[UIView alloc] initWithFrame:statusRect];
+        self.statusBarBackgroundView.backgroundColor = self.navigationController.navigationBar.barTintColor;
+        
+        [self.navigationController.view addSubview:self.statusBarBackgroundView];
+        self.statusBarBackgroundView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
+        
+        [self updateStatusBarState];
+    }
 }
 
 - (void)backToDashboard:(id)sender {
@@ -1425,6 +1669,161 @@
 
 - (void)hideNotifier {
     [self.notifier hide];
+}
+
+#pragma mark -
+#pragma mark Story Autoscroll
+
+- (BOOL)autoscrollAvailable {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"story_autoscroll"];
+}
+
+- (void)setAutoscrollAvailable:(BOOL)available {
+    [[NSUserDefaults standardUserDefaults] setBool:available forKey:@"story_autoscroll"];
+}
+
+- (NSTimeInterval)autoscrollSpeed {
+    CGFloat speed = [[NSUserDefaults standardUserDefaults] doubleForKey:@"story_autoscroll_speed"];
+    
+    if (speed <= 0) {
+        speed = 0.03;
+    }
+    
+    return speed;
+}
+
+- (void)setAutoscrollSpeed:(NSTimeInterval)speed {
+    [[NSUserDefaults standardUserDefaults] setDouble:speed forKey:@"story_autoscroll_speed"];
+    
+    // This will update the timer with the new speed.
+    self.autoscrollActive = self.autoscrollActive;
+    
+    NSLog(@"set autoscroll speed to: %@", @(speed));  // log
+}
+
+- (BOOL)autoscrollActive {
+    return self.autoscrollTimer != nil;
+}
+
+- (void)setAutoscrollActive:(BOOL)active {
+    [self.autoscrollTimer invalidate];
+    self.autoscrollTimer = nil;
+    
+    if (active && self.autoscrollAvailable) {
+        self.autoscrollTimer = [NSTimer scheduledTimerWithTimeInterval:self.autoscrollSpeed target:self selector:@selector(autoscroll:) userInfo:nil repeats:YES];
+    }
+    
+    [self updateAutoscrollButtons];
+}
+
+- (void)autoscroll:(NSTimer *)timer {
+    WKWebView *webView = self.currentPage.webView;
+    CGFloat position = webView.scrollView.contentOffset.y + 0.5;
+    CGFloat maximum = webView.scrollView.contentSize.height - webView.frame.size.height;
+    
+    if (@available(iOS 11.0, *)) {
+        maximum += self.view.safeAreaInsets.bottom;
+    }
+    
+    if (position < maximum) {
+        [webView.scrollView setContentOffset:CGPointMake(0, position) animated:NO];
+    } else {
+        self.autoscrollActive = NO;
+    }
+}
+
+- (void)tappedStory {
+    if (self.autoscrollAvailable) {
+        [self showAutoscrollBriefly:YES];
+    } else if (self.allowFullscreen) {
+        [self setNavigationBarHidden: !self.isNavigationBarHidden];
+    }
+}
+
+- (void)showAutoscrollBriefly:(BOOL)briefly {
+    if (!self.autoscrollAvailable || self.currentPage.webView.scrollView.contentSize.height - 200 <= self.currentPage.view.frame.size.height) {
+        [self hideAutoscrollWithAnimation];
+        return;
+    }
+    
+    if (self.autoscrollView.alpha == 0) {
+        if (self.isPhoneOrCompact) {
+            self.autoscrollBottomConstraint.constant = 50;
+        } else {
+            self.autoscrollBottomConstraint.constant = 0;
+        }
+        
+        [self.view layoutIfNeeded];
+        
+        [UIView animateWithDuration:0.2 animations:^{
+            [self.view layoutIfNeeded];
+            self.autoscrollView.alpha = 1;
+        }];
+    }
+    
+    if (briefly) {
+        [self hideAutoscrollAfterDelay];
+    }
+}
+
+- (void)hideAutoscrollAfterDelay {
+    [self.autoscrollViewTimer invalidate];
+    self.autoscrollViewTimer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(hideAutoscrollWithAnimation) userInfo:nil repeats:NO];
+}
+
+- (void)hideAutoscrollWithAnimation {
+    [self.autoscrollViewTimer invalidate];
+    self.autoscrollViewTimer = nil;
+    
+    [UIView animateWithDuration:1 animations:^{
+        [self.view layoutIfNeeded];
+        self.autoscrollView.alpha = 0;
+    }];
+}
+
+- (void)hideAutoscrollImmediately {
+    [self.autoscrollViewTimer invalidate];
+    self.autoscrollViewTimer = nil;
+    self.autoscrollView.alpha = 0;
+}
+
+- (void)resetAutoscrollViewTimerIfNeeded {
+    if (self.autoscrollViewTimer != nil) {
+        [self hideAutoscrollAfterDelay];
+    }
+}
+
+- (IBAction)autoscrollDisable:(UIButton *)sender {
+    self.autoscrollAvailable = NO;
+    self.autoscrollActive = NO;
+    
+    [self hideAutoscrollWithAnimation];
+}
+
+- (IBAction)autoscrollPauseResume:(UIButton *)sender {
+    self.autoscrollActive = !self.autoscrollActive;
+    
+    [self resetAutoscrollViewTimerIfNeeded];
+}
+
+- (IBAction)autoscrollSlower:(UIButton *)sender {
+    if (self.autoscrollSpeed < 1) {
+        self.autoscrollSpeed = self.autoscrollSpeed * 2; // + 0.05;
+    } else {
+        NSLog(@"Minimum autoscroll speed reached");  // log
+    }
+    
+    [self resetAutoscrollViewTimerIfNeeded];
+}
+
+- (IBAction)autoscrollFaster:(UIButton *)sender {
+    if (self.autoscrollSpeed > 0.001) {
+        self.autoscrollSpeed = self.autoscrollSpeed / 2; // - 0.05;
+    } else {
+        NSLog(@"Maximum autoscroll speed reached");  // log
+    }
+    
+    [self resetAutoscrollViewTimerIfNeeded];
 }
 
 #pragma mark -

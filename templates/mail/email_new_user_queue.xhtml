@@ -7,7 +7,7 @@
         Your free account is ready, {{ user.username }}.
     </h2>
     <p style="line-height: 20px;">Thanks again for trying out NewsBlur! Your account is ready to go. Just log right in and start reading.</p>
-    <p style="line-height: 20px;">http://{% current_domain dev=True %}{{ user.profile.autologin_url }}</p>
+    <p style="line-height: 20px;">https://{% current_domain dev=True %}{{ user.profile.autologin_url }}</p>
     <p style="line-height: 20px;">I made NewsBlur because I wanted a better way to read the news and talk about it with people. I hope you love it, too.</p>
     <p style="line-height: 20px;">- Sam Clay</p>
 {% endblock %}

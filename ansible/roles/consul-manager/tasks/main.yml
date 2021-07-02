@@ -1,0 +1,32 @@
+---
+# TODO: Close firewall and remove below line. Firewall should exclude all but known IPs.
+- name: Allow consul-manager web ports
+  ufw: rule=allow port={{ item }}
+  become: yes
+  tags: ufw
+  with_items:
+    - "8500"
+
+- name: Create config file
+  become: yes
+  template:
+    src: consul_manager.json.j2
+    dest: /etc/consul.d/newsblur.json
+  notify:
+    - restart consul
+
+- name: Start Consul
+  become: yes
+  service:
+    name: consul
+    state: started
+    enabled: true
+        
+- name: Register consul-manager in consul
+  tags: consul
+  become: yes
+  template:
+    src: /srv/newsblur/ansible/roles/consul-manager/templates/consul_service.json
+    dest: /etc/consul.d/consul-manager.json
+  notify:
+    - reload consul

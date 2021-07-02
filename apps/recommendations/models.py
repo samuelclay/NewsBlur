@@ -7,8 +7,8 @@ from utils import json_functions as json
 from collections import defaultdict
 
 class RecommendedFeed(models.Model):
-    feed          = models.ForeignKey(Feed, related_name='recommendations')
-    user          = models.ForeignKey(User, related_name='recommendations')
+    feed          = models.ForeignKey(Feed, related_name='recommendations', on_delete=models.CASCADE)
+    user          = models.ForeignKey(User, related_name='recommendations', on_delete=models.CASCADE)
     description   = models.TextField(null=True, blank=True)
     is_public     = models.BooleanField(default=False)
     created_date  = models.DateField(auto_now_add=True)
@@ -16,7 +16,7 @@ class RecommendedFeed(models.Model):
     declined_date = models.DateField(null=True)
     twitter       = models.CharField(max_length=50, null=True, blank=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s (%s)" % (self.feed, self.approved_date or self.created_date)
         
     class Meta:
@@ -24,8 +24,8 @@ class RecommendedFeed(models.Model):
 
 
 class RecommendedFeedUserFeedback(models.Model):
-    recommendation = models.ForeignKey(RecommendedFeed, related_name='feedback')
-    user           = models.ForeignKey(User, related_name='feed_feedback')
+    recommendation = models.ForeignKey(RecommendedFeed, related_name='feedback', on_delete=models.CASCADE)
+    user           = models.ForeignKey(User, related_name='feed_feedback', on_delete=models.CASCADE)
     score          = models.IntegerField(default=0)
     created_date   = models.DateField(auto_now_add=True)
 
@@ -40,14 +40,14 @@ class MFeedFolder(mongo.Document):
         'allow_inheritance': False,
     }
     
-    def __unicode__(self):
+    def __str__(self):
         feed = Feed.get_by_id(self.feed_id)
         return "%s - %s (%s)" % (feed, self.folder, self.count)
     
     @classmethod
     def count_feed(cls, feed_id):
         feed = Feed.get_by_id(feed_id)
-        print feed
+        print(feed)
         found_folders = defaultdict(int)
         user_ids = [sub['user_id'] for sub in UserSubscription.objects.filter(feed=feed).values('user_id')]
         usf = UserSubscriptionFolders.objects.filter(user_id__in=user_ids)
@@ -57,7 +57,7 @@ class MFeedFolder(mongo.Document):
             if not folder_title: continue
             found_folders[folder_title.lower()] += 1
             # print "%-20s - %s" % (folder_title if folder_title != '' else '[Top]', sub.user_id)
-        print sorted(found_folders.items(), key=lambda f: f[1], reverse=True)
+        print(sorted(list(found_folders.items()), key=lambda f: f[1], reverse=True))
         
         
     @classmethod
@@ -66,7 +66,7 @@ class MFeedFolder(mongo.Document):
             if isinstance(item, int) and item == feed_id:
                 return folder_title
             elif isinstance(item, dict):
-                for f_k, f_v in item.items():
+                for f_k, f_v in list(item.items()):
                     sub_folder_title = cls.feed_folder_parent(f_v, feed_id, f_k)
                     if sub_folder_title: 
                         return sub_folder_title

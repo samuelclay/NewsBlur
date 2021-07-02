@@ -110,34 +110,6 @@
         }
     },
 
-    {
-        "pk": 2,
-        "model": "sites.site",
-        "fields": {
-            "domain": "testserver",
-            "name": "testserver"
-        }
-    },
-
-
-    {
-        "pk": 1, 
-        "model": "auth.user", 
-        "fields": {
-            "username": "conesus", 
-            "first_name": "", 
-            "last_name": "", 
-            "is_active": 1, 
-            "is_superuser": 1, 
-            "is_staff": 1, 
-            "last_login": "2009-07-06 22:30:03", 
-            "groups": [], 
-            "user_permissions": [], 
-            "password": "sha1$7b94b$ac9e6cf08d0fa16a67e56e319c0935aeb26db2a2", 
-            "email": "samuel@newsblur.com", 
-            "date_joined": "2009-01-04 17:32:58"
-        }
-    },
     
     {
         "pk": 2, 

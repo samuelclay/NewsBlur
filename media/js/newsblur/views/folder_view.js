@@ -82,7 +82,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         if (!this.options.only_title) {
             var $feeds = _.compact(this.collection.map(function(item) {
                 if (item.is_feed()) {
-                    if (!feed_chooser && !item.feed.get('active')) return;
+                    // if (!feed_chooser && !item.feed.get('active')) return;
                     var feed_title_view = _.detect(item.feed.views, function(view) {
                         if (view.options.feed_chooser == feed_chooser &&
                             view.options.folder_title == folder_title) {
@@ -154,6 +154,14 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         <% if (!root) { %>\
             <div class="folder_title <% if (depth <= 1) { %>NB-toplevel<% } %>">\
                 <% if (feedbar) { %>\
+                    <div class="NB-feedbar-mark-feed-read-container">\
+                        <div class="NB-feedbar-mark-feed-read"><div class="NB-icon"></div></div>\
+                        <div class="NB-feedbar-mark-feed-read-time" data-days="1">1d</div>\
+                        <div class="NB-feedbar-mark-feed-read-time" data-days="3">3d</div>\
+                        <div class="NB-feedbar-mark-feed-read-time" data-days="7">7d</div>\
+                        <div class="NB-feedbar-mark-feed-read-time" data-days="14">14d</div>\
+                        <div class="NB-feedbar-mark-feed-read-expand"></div>\
+                    </div>\
                     <div class="NB-search-container"></div>\
                     <div class="NB-feedbar-options-container">\
                         <span class="NB-feedbar-options">\
@@ -163,22 +171,18 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                             <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "order") %>\
                         </span>\
                     </div>\
-                    <div class="NB-feedbar-mark-feed-read-container">\
-                        <div class="NB-feedbar-mark-feed-read"><div class="NB-icon"></div></div>\
-                        <div class="NB-feedbar-mark-feed-read-time" data-days="1">1d</div>\
-                        <div class="NB-feedbar-mark-feed-read-time" data-days="3">3d</div>\
-                        <div class="NB-feedbar-mark-feed-read-time" data-days="7">7d</div>\
-                        <div class="NB-feedbar-mark-feed-read-time" data-days="14">14d</div>\
-                        <div class="NB-feedbar-mark-feed-read-expand"></div>\
-                    </div>\
                     <div class="NB-story-title-indicator">\
                         <div class="NB-story-title-indicator-count"></div>\
                         <span class="NB-story-title-indicator-text">show hidden stories</span>\
                     </div>\
                 <% } %>\
-                <div class="NB-folder-icon"></div>\
+                <div class="NB-folder-icon">\
+                <% if (feedbar) { %>\
+                    <img class="feed_favicon" src="<%= $.favicon("river:"+folder_title) %>">\
+                <% } %>\
+                </div>\
                 <div class="NB-feedlist-collapse-icon" title="<% if (is_collapsed) { %>Expand Folder<% } else {%>Collapse Folder<% } %>"></div>\
-                <div class="NB-feedlist-manage-icon"></div>\
+                <div class="NB-feedlist-manage-icon" role="button"></div>\
                 <span class="folder_title_text">\
                     <span><%= folder_title %></span>\
                 </span>\

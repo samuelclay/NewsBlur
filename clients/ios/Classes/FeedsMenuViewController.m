@@ -45,6 +45,7 @@
                             initWithObjects:[@"Preferences" uppercaseString],
                                             [@"Mute Sites" uppercaseString],
                                             [@"Organize Sites" uppercaseString],
+                                            [@"Widget Sites" uppercaseString],
                                             [@"Notifications" uppercaseString],
                                             [@"Find Friends" uppercaseString],
                                             [appDelegate.isPremium ? @"Premium Account": @"Upgrade to Premium" uppercaseString],
@@ -56,6 +57,7 @@
                             initWithObjects:[@"Preferences" uppercaseString],
                                             [@"Mute Sites" uppercaseString],
                                             [@"Organize Sites" uppercaseString],
+                                            [@"Widget Sites" uppercaseString],
                                             [@"Notifications" uppercaseString],
                                             [@"Find Friends" uppercaseString],
                                             [appDelegate.isPremium ? @"Premium Account": @"Upgrade to Premium" uppercaseString],
@@ -130,7 +132,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section 
 {
-    return [self.menuOptions count] + 3;
+    return [self.menuOptions count] + 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -145,7 +147,7 @@
         return [self makeThemeTableCell];
     }
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier]; 
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
     
     if (cell == nil) {
         cell = [[MenuTableViewCell alloc]
@@ -171,22 +173,26 @@
             break;
         
         case 3:
+            image = [UIImage imageNamed:@"menu_icn_widget.png"];
+            break;
+            
+        case 4:
             image = [UIImage imageNamed:@"menu_icn_notifications.png"];
             break;
         
-        case 4:
+        case 5:
             image = [UIImage imageNamed:@"menu_icn_followers.png"];
             break;
             
-        case 5:
+        case 6:
             image = [UIImage imageNamed:@"g_icn_greensun.png"];
             break;
         
-        case 6:
+        case 7:
             image = [UIImage imageNamed:@"menu_icn_fetch_subscribers.png"];
             break;
             
-        case 7:
+        case 8:
             image = [UIImage imageNamed:@"barbutton_sendto.png"];
             break;
             
@@ -225,22 +231,26 @@
             break;
             
         case 3:
+            [appDelegate showWidgetSites];
+            break;
+            
+        case 4:
             [appDelegate openNotificationsWithFeed:nil];
             break;
         
-        case 4:
+        case 5:
             [appDelegate showFindFriends];
             break;
             
-        case 5:
+        case 6:
             [appDelegate showPremiumDialog];
             break;
             
-        case 6:
+        case 7:
             [appDelegate confirmLogout];
             break;
             
-        case 7:
+        case 8:
             [self showLoginAsDialog];
             break;
             
@@ -264,7 +274,7 @@
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/login_as?user=%@",
                           self.appDelegate.url, username];
 
-        [appDelegate.networkManager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             NSLog(@"Login as %@ successful", username);
             [MBProgressHUD hideHUDForView:appDelegate.feedsViewController.view animated:YES];
             [appDelegate reloadFeedsView:YES];
@@ -303,7 +313,9 @@
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:3];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:4];
     
-    [cell addSubview:self.fontSizeSegment];
+    [[ThemeManager themeManager] updateSegmentedControl:self.fontSizeSegment];
+    
+    [cell.contentView addSubview:self.fontSizeSegment];
     
     return cell;
 }
@@ -354,7 +366,11 @@
     self.themeSegmentedControl.tintColor = [UIColor clearColor];
     self.themeSegmentedControl.backgroundColor = [UIColor clearColor];
     
-    [cell addSubview:self.themeSegmentedControl];
+    if (@available(iOS 13.0, *)) {
+        self.themeSegmentedControl.selectedSegmentTintColor = [UIColor clearColor];
+    }
+    
+    [cell.contentView addSubview:self.themeSegmentedControl];
     
     return cell;
 }

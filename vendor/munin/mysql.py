@@ -1,6 +1,5 @@
-
 import os, sys, re
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 from vendor.munin import MuninPlugin
 
 class MuninMySQLPlugin(MuninPlugin):

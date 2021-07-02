@@ -1,7 +1,7 @@
 package com.newsblur.view;
 
+import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 
 import com.newsblur.activity.Reading;
 import com.newsblur.fragment.ReadingItemFragment;
+import com.newsblur.util.UIUtils;
 
 public class NewsblurWebview extends WebView {
 
@@ -88,21 +89,15 @@ public class NewsblurWebview extends WebView {
 
     class NewsblurWebViewClient extends WebViewClient {
         @Override
-        // this was deprecated in API 24 but the replacement only added in the same release.
-        // the suppression can be removed when we move past 24
-        @SuppressWarnings("deprecation")
-        // as of v43.0.2357.121 of the system WebView, links no longer open in the user's chosen
-        // browser, but open in-app.  Override the default behaviour so it works as expected on
-        // all devices.
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            Uri uri = Uri.parse(url);
-            try {
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(uri);
-                context.startActivity(i);
-            } catch (Exception e) {
-                com.newsblur.util.Log.e(this.getClass().getName(), "device cannot open URLs");
-            }
+            UIUtils.handleUri(context, Uri.parse(url));
+            return true;
+        }
+
+        @TargetApi(Build.VERSION_CODES.N)
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            UIUtils.handleUri(context, request.getUrl());
             return true;
         }
 

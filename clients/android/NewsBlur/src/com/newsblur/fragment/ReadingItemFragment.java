@@ -1,47 +1,46 @@
 package com.newsblur.fragment;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebView.HitTestResult;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.PopupMenu;
-import android.widget.ScrollView;
-import android.widget.TextView;
 
-import butterknife.ButterKnife;
-import butterknife.Bind;
-import butterknife.OnClick;
-
+import com.google.android.material.chip.Chip;
 import com.newsblur.R;
+import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.activity.Reading;
+import com.newsblur.databinding.FragmentReadingitemBinding;
+import com.newsblur.databinding.IncludeReadingItemCommentBinding;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
+import com.newsblur.network.APIManager;
+import com.newsblur.network.domain.StoryChangesResponse;
 import com.newsblur.service.OriginalTextService;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
@@ -49,14 +48,10 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Font;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StoryChangesState;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.UIUtils;
-import com.newsblur.util.ViewUtils;
-import com.newsblur.view.FlowLayout;
-import com.newsblur.view.NewsblurWebview;
-import com.newsblur.view.ReadingScrollView;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -69,27 +64,14 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     public static final String READING_FONT_CHANGED = "readingFontChanged";
 	public Story story;
     private FeedSet fs;
-	private LayoutInflater inflater;
 	private String feedColor, feedTitle, feedFade, feedBorder, feedIconUrl, faviconText;
 	private Classifier classifier;
-	@Bind(R.id.reading_webview) NewsblurWebview web;
-    @Bind(R.id.custom_view_container) ViewGroup webviewCustomViewLayout;
-    @Bind(R.id.reading_scrollview) ScrollView fragmentScrollview;
 	private BroadcastReceiver textSizeReceiver, readingFontReceiver;
-    @Bind(R.id.reading_item_title) TextView itemTitle;
-    @Bind(R.id.reading_item_authors) TextView itemAuthors;
-	@Bind(R.id.reading_feed_title) TextView itemFeed;
 	private boolean displayFeedDetails;
-	@Bind(R.id.reading_item_tags) FlowLayout tagContainer;
-	private View view;
 	private UserDetails user;
     private DefaultFeedView selectedFeedView;
     private boolean textViewUnavailable;
-    @Bind(R.id.reading_textloading) TextView textViewLoadingMsg;
-    @Bind(R.id.reading_textmodefailed) TextView textViewLoadingFailedMsg;
-    @Bind(R.id.save_story_button) Button saveButton;
-    @Bind(R.id.share_story_button) Button shareButton;
-    @Bind(R.id.story_context_menu_button) Button menuButton;
+    private StoryChangesState storyChangesState = StoryChangesState.SHOW_CHANGES;
 
     /** The story HTML, as provided by the 'content' element of the stories API. */
     private String storyContent;
@@ -110,6 +92,9 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     private float savedScrollPosRel = 0f;
 
     private final Object WEBVIEW_CONTENT_MUTEX = new Object();
+
+    private FragmentReadingitemBinding binding;
+    private IncludeReadingItemCommentBinding itemCommentBinding;
 
 	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String feedFaviconBorder, String faviconText, String faviconUrl, Classifier classifier, boolean displayFeedDetails, String sourceUserId) {
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
@@ -164,8 +149,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        int heightm = fragmentScrollview.getChildAt(0).getMeasuredHeight();
-        int pos = fragmentScrollview.getScrollY();
+        int heightm = binding.readingScrollview.getChildAt(0).getMeasuredHeight();
+        int pos = binding.readingScrollview.getScrollY();
         outState.putFloat(BUNDLE_SCROLL_POS_REL, (((float)pos)/heightm));
     }
 
@@ -173,8 +158,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 	public void onDestroy() {
 		getActivity().unregisterReceiver(textSizeReceiver);
         getActivity().unregisterReceiver(readingFontReceiver);
-        web.setOnTouchListener(null);
-        view.setOnTouchListener(null);
+        binding.readingWebview.setOnTouchListener(null);
+        binding.getRoot().setOnTouchListener(null);
         getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(null);
 		super.onDestroy();
 	}
@@ -183,7 +168,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     // state into the webview so it behaves.
     @Override
     public void onPause() {
-        if (this.web != null ) { this.web.onPause(); }
+        if (this.binding.readingWebview != null ) { this.binding.readingWebview.onPause(); }
         super.onPause();
     }
 
@@ -191,60 +176,63 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     public void onResume() {
         super.onResume();
         reloadStoryContent();
-        if (this.web != null ) { this.web.onResume(); }
+        if (this.binding.readingWebview != null ) { this.binding.readingWebview.onResume(); }
     }
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        this.inflater = inflater;
-        view = inflater.inflate(R.layout.fragment_readingitem, null);
-        ButterKnife.bind(this, view);
+        View view = inflater.inflate(R.layout.fragment_readingitem, container, false);
+        binding = FragmentReadingitemBinding.bind(view);
+        itemCommentBinding = IncludeReadingItemCommentBinding.bind(binding.getRoot());
 
         Reading activity = (Reading) getActivity();
         fs = activity.getFeedSet();
 
         selectedFeedView = PrefsUtils.getDefaultViewModeForFeed(activity, story.feedId);
 
-        registerForContextMenu(web);
-        web.setCustomViewLayout(webviewCustomViewLayout);
-        web.setWebviewWrapperLayout(fragmentScrollview);
-        web.fragment = this;
-        web.activity = activity;
+        registerForContextMenu(binding.readingWebview);
+        binding.readingWebview.setCustomViewLayout(binding.customViewContainer);
+        binding.readingWebview.setWebviewWrapperLayout(binding.readingContainer);
+        binding.readingWebview.setBackgroundColor(Color.TRANSPARENT);
+        binding.readingWebview.fragment = this;
+        binding.readingWebview.activity = activity;
 
 		setupItemMetadata();
 		updateShareButton();
 	    updateSaveButton();
         setupItemCommentsAndShares();
 
-        ReadingScrollView scrollView = (ReadingScrollView) view.findViewById(R.id.reading_scrollview);
-        scrollView.registerScrollChangeListener(activity);
-
-        setupImmersiveViewGestureDetector();
+        binding.readingScrollview.registerScrollChangeListener(activity);
 
 		return view;
 	}
 
-    private void setupImmersiveViewGestureDetector() {
-        // Change the system visibility on the decorview from the activity so that the state is maintained as we page through
-        // fragments
-        ImmersiveViewHandler immersiveViewHandler = new ImmersiveViewHandler(getActivity().getWindow().getDecorView());
-        final GestureDetector gestureDetector = new GestureDetector(getActivity(), immersiveViewHandler);
-        View.OnTouchListener touchListener = new View.OnTouchListener() {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        binding.storyContextMenuButton.setOnClickListener(new OnClickListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                return gestureDetector.onTouchEvent(motionEvent);
+            public void onClick(View v) {
+                onClickMenuButton();
             }
-        };
-        web.setOnTouchListener(touchListener);
-        view.setOnTouchListener(touchListener);
-
-        getActivity().getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(immersiveViewHandler);
-    }
+        });
+        itemCommentBinding.saveStoryButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickSave();
+            }
+        });
+        itemCommentBinding.shareStoryButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickShare();
+            }
+        });
+	}
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        HitTestResult result = web.getHitTestResult();
+        HitTestResult result = binding.readingWebview.getHitTestResult();
         if (result.getType() == HitTestResult.IMAGE_TYPE ||
-            result.getType() == HitTestResult.SRC_ANCHOR_TYPE ||
             result.getType() == HitTestResult.SRC_IMAGE_ANCHOR_TYPE ) {
             // if the long-pressed item was an image, see if we can pop up a little dialogue
             // that presents the alt text.  Note that images wrapped in links tend to get detected
@@ -282,13 +270,20 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                 }
             });
             builder.show();
+        } else if (result.getType() == HitTestResult.SRC_ANCHOR_TYPE) {
+            String url = result.getExtra();
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_SUBJECT, UIUtils.fromHtml(story.title).toString());
+            intent.putExtra(Intent.EXTRA_TEXT, url);
+            startActivity(Intent.createChooser(intent, "Share using"));
         } else {
             super.onCreateContextMenu(menu, v, menuInfo);
         }
     }
 
-    @OnClick(R.id.story_context_menu_button) void onClickMenuButton() {
-        PopupMenu pm = new PopupMenu(getActivity(), menuButton);
+    private void onClickMenuButton() {
+        PopupMenu pm = new PopupMenu(getActivity(), binding.storyContextMenuButton);
         Menu menu = pm.getMenu();
         pm.getMenuInflater().inflate(R.menu.story_context, menu);
 
@@ -302,6 +297,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             menu.findItem(R.id.menu_theme_dark).setChecked(true);
         } else if (themeValue == ThemeValue.BLACK) {
             menu.findItem(R.id.menu_theme_black).setChecked(true);
+        } else if (themeValue == ThemeValue.AUTO) {
+            menu.findItem(R.id.menu_theme_auto).setChecked(true);
         }
 
         pm.setOnMenuItemClickListener(this);
@@ -326,7 +323,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             newFragment.show(getActivity().getSupportFragmentManager(), "dialog");
 			return true;
 		} else if (item.getItemId() == R.id.menu_send_story) {
-			FeedUtils.sendStoryBrief(story, getActivity());
+			FeedUtils.sendStoryUrl(story, getActivity());
 			return true;
 		} else if (item.getItemId() == R.id.menu_send_story_full) {
 			FeedUtils.sendStoryFull(story, getActivity());
@@ -341,15 +338,19 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             return true;
         } else if (item.getItemId() == R.id.menu_reading_save) {
             if (story.starred) {
-			    FeedUtils.setStorySaved(story, false, getActivity());
+			    FeedUtils.setStorySaved(story, false, getActivity(), null);
             } else {
-			    FeedUtils.setStorySaved(story, true, getActivity());
+			    FeedUtils.setStorySaved(story.storyHash, true, getActivity());
             }
 			return true;
         } else if (item.getItemId() == R.id.menu_reading_markunread) {
             FeedUtils.markStoryUnread(story, getActivity());
             return true;
-		} else if (item.getItemId() == R.id.menu_theme_light) {
+		} else if (item.getItemId() == R.id.menu_theme_auto) {
+		    PrefsUtils.setSelectedTheme(getActivity(), ThemeValue.AUTO);
+		    UIUtils.restartActivity(getActivity());
+		    return true;
+        } else if (item.getItemId() == R.id.menu_theme_light) {
             PrefsUtils.setSelectedTheme(getActivity(), ThemeValue.LIGHT);
             UIUtils.restartActivity(getActivity());
             return true;
@@ -366,50 +367,49 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
             intelFrag.show(getActivity().getSupportFragmentManager(), StoryIntelTrainerFragment.class.getName());
             return true;
+        } else if(item.getItemId() == R.id.menu_go_to_feed){
+            FeedItemsList.startActivity(getContext(), fs,
+                    FeedUtils.getFeed(story.feedId), null);
+            return true;
         } else {
 			return super.onOptionsItemSelected(item);
 		}
     }
 
-    @OnClick(R.id.save_story_button) void clickSave() {
+    private void clickSave() {
         if (story.starred) {
-            FeedUtils.setStorySaved(story, false, getActivity());
+            FeedUtils.setStorySaved(story.storyHash, false, getActivity());
         } else {
-            FeedUtils.setStorySaved(story,true, getActivity());
+            FeedUtils.setStorySaved(story.storyHash,true, getActivity());
         }
     }
 
     private void updateSaveButton() {
-        if (saveButton == null) return;
-        saveButton.setText(story.starred ? R.string.unsave_this : R.string.save_this);
+        if (itemCommentBinding.saveStoryButton == null) return;
+        itemCommentBinding.saveStoryButton.setText(story.starred ? R.string.unsave_this : R.string.save_this);
     }
 
-    @OnClick(R.id.share_story_button) void clickShare() {
+    private void clickShare() {
         DialogFragment newFragment = ShareDialogFragment.newInstance(story, sourceUserId);
-        newFragment.show(getFragmentManager(), "dialog");
+        newFragment.show(getParentFragmentManager(), "dialog");
     }
 
 	private void updateShareButton() {
-        if (shareButton == null) return;
+        if (itemCommentBinding.shareStoryButton == null) return;
 		for (String userId : story.sharedUserIds) {
 			if (TextUtils.equals(userId, user.id)) {
-				shareButton.setText(R.string.already_shared);
+				itemCommentBinding.shareStoryButton.setText(R.string.already_shared);
 				return;
 			}
 		}
-        shareButton.setText(R.string.share_this);
+        itemCommentBinding.shareStoryButton.setText(R.string.share_this);
 	}
 
     private void setupItemCommentsAndShares() {
-        new SetupCommentSectionTask(this, view, inflater, story).execute();
+        new SetupCommentSectionTask(this, binding.getRoot(), getLayoutInflater(), story).execute();
     }
 
 	private void setupItemMetadata() {
-        View feedHeader = view.findViewById(R.id.row_item_feed_header);
-        View feedHeaderBorder = view.findViewById(R.id.item_feed_border);
-        TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
-        ImageView feedIcon = (ImageView) view.findViewById(R.id.reading_feed_icon);
-
 		if ((feedColor == null) ||
             (feedFade == null) ||
             TextUtils.equals(feedColor, "null") ||
@@ -424,56 +424,66 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             Color.parseColor("#" + feedFade),
         };
         GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, colors);
-        UIUtils.setViewBackground(feedHeader, gradient);
-        feedHeaderBorder.setBackgroundColor(Color.parseColor("#" + feedBorder));
+        UIUtils.setViewBackground(binding.rowItemFeedHeader, gradient);
+        binding.itemFeedBorder.setBackgroundColor(Color.parseColor("#" + feedBorder));
 
         if (TextUtils.equals(faviconText, "black")) {
-            itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.text));
-            itemFeed.setShadowLayer(1, 0, 1, UIUtils.getColor(getActivity(), R.color.half_white));
+            binding.readingFeedTitle.setTextColor(UIUtils.getColor(getActivity(), R.color.text));
+            binding.readingFeedTitle.setShadowLayer(1, 0, 1, UIUtils.getColor(getActivity(), R.color.half_white));
         } else {
-            itemFeed.setTextColor(UIUtils.getColor(getActivity(), R.color.white));
-            itemFeed.setShadowLayer(1, 0, 1, UIUtils.getColor(getActivity(), R.color.half_black));
+            binding.readingFeedTitle.setTextColor(UIUtils.getColor(getActivity(), R.color.white));
+            binding.readingFeedTitle.setShadowLayer(1, 0, 1, UIUtils.getColor(getActivity(), R.color.half_black));
         }
 
 		if (!displayFeedDetails) {
-			itemFeed.setVisibility(View.GONE);
-			feedIcon.setVisibility(View.GONE);
+			binding.readingFeedTitle.setVisibility(View.GONE);
+			binding.readingFeedIcon.setVisibility(View.GONE);
 		} else {
-			FeedUtils.iconLoader.displayImage(feedIconUrl, feedIcon, 0, false);
-			itemFeed.setText(feedTitle);
+			FeedUtils.iconLoader.displayImage(feedIconUrl, binding.readingFeedIcon, 0, false);
+			binding.readingFeedTitle.setText(feedTitle);
 		}
 
-        itemDate.setText(StoryUtils.formatLongDate(getActivity(), new Date(story.timestamp)));
+        binding.readingItemDate.setText(StoryUtils.formatLongDate(getActivity(), story.timestamp));
 
         if (story.tags.length <= 0) {
-            tagContainer.setVisibility(View.GONE);
+            binding.readingItemTags.setVisibility(View.GONE);
         }
 
-		itemAuthors.setOnClickListener(new OnClickListener() {
+        if (selectedFeedView == DefaultFeedView.STORY && story.hasModifications) {
+            binding.readingStoryChanges.setVisibility(View.VISIBLE);
+            binding.readingStoryChanges.setOnClickListener(v -> loadStoryChanges());
+        }
+
+        if (story.starred && story.starredTimestamp != 0) {
+            String savedTimestampText = String.format(getResources().getString(R.string.story_saved_timestamp),
+                    StoryUtils.formatLongDate(getActivity(), story.starredTimestamp));
+            binding.readingItemSavedTimestamp.setVisibility(View.VISIBLE);
+            binding.readingItemSavedTimestamp.setText(savedTimestampText);
+        }
+
+		binding.readingItemAuthors.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
                 if (story.feedId.equals("0")) return; // cannot train on feedless stories
                 StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
-                intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
+                intelFrag.show(getParentFragmentManager(), StoryIntelTrainerFragment.class.getName());
 			}	
 		});
 
-		itemFeed.setOnClickListener(new OnClickListener() {
+		binding.readingFeedTitle.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
                 if (story.feedId.equals("0")) return; // cannot train on feedless stories
                 StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
-                intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
+                intelFrag.show(getParentFragmentManager(), StoryIntelTrainerFragment.class.getName());
 			}
 		});
 
-		itemTitle.setOnClickListener(new OnClickListener() {
+		binding.readingItemTitle.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(Intent.ACTION_VIEW);
                 try {
-                    i.setData(Uri.parse(story.permalink));
-                    startActivity(i);
+                    UIUtils.handleUri(requireContext(), Uri.parse(story.permalink));
                 } catch (Throwable t) {
                     // we don't actually know if the user will successfully be able to open whatever string
                     // was in the permalink or if the Intent could throw errors
@@ -486,69 +496,52 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 	}
 
 	private void setupTagsAndIntel() {
-        int tag_green_text = UIUtils.getColor(getActivity(), R.color.tag_green_text);
-        int tag_red_text = UIUtils.getColor(getActivity(), R.color.tag_red_text);
-        Drawable tag_green_background = UIUtils.getDrawable(getActivity(), R.drawable.tag_background_positive);
-        Drawable tag_red_background = UIUtils.getDrawable(getActivity(), R.drawable.tag_background_negative);
-
-        tagContainer.removeAllViews();
+        binding.readingItemTags.removeAllViews();
 		for (String tag : story.tags) {
-            // TODO: these textviews with compound images are buggy, but stubbed in to let colourblind users
-            //       see what is going on. these should be replaced with proper Chips when the v28 Chip lib
-            //       is in full release.
-            View v = inflater.inflate(R.layout.tag_view, null);
+            View v = getLayoutInflater().inflate(R.layout.chip_view, null);
 
-            TextView tagText = (TextView) v.findViewById(R.id.tag_text);
-            tagText.setText(tag);
+            Chip chip = v.findViewById(R.id.chip);
+            chip.setText(tag);
 
             if (classifier != null && classifier.tags.containsKey(tag)) {
                 switch (classifier.tags.get(tag)) {
                 case Classifier.LIKE:
-                    UIUtils.setViewBackground(tagText, tag_green_background);
-                    tagText.setTextColor(tag_green_text);
-                    Drawable icon_like = UIUtils.getDrawable(getActivity(), R.drawable.ic_like_active);
-                    icon_like.setBounds(0, 0, 30, 30);
-                    tagText.setCompoundDrawables(null, null, icon_like, null);
-                    tagText.setCompoundDrawablePadding(8);
+                    chip.setChipBackgroundColorResource(R.color.tag_green);
+                    chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.tag_green_text));
+                    chip.setChipIcon(ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_up));
                     break;
                 case Classifier.DISLIKE:
-                    UIUtils.setViewBackground(tagText, tag_red_background);
-                    tagText.setTextColor(tag_red_text);
-                    Drawable icon_dislike = UIUtils.getDrawable(getActivity(), R.drawable.ic_dislike_active);
-                    icon_dislike.setBounds(0, 0, 30, 30);
-                    tagText.setCompoundDrawables(null, null, icon_dislike, null);
-                    tagText.setCompoundDrawablePadding(8);
+                    chip.setChipBackgroundColorResource(R.color.tag_red);
+                    chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.tag_red_text));
+                    chip.setChipIcon(ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_down));
                     break;
                 }
             }
 
             // tapping tags in saved stories doesn't bring up training
             if (!(fs.isAllSaved() || (fs.getSingleSavedTag() != null))) {
-                v.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (story.feedId.equals("0")) return; // cannot train on feedless stories
-                        StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
-                        intelFrag.show(getFragmentManager(), StoryIntelTrainerFragment.class.getName());
-                    }
+                v.setOnClickListener(view -> {
+                    if (story.feedId.equals("0")) return; // cannot train on feedless stories
+                    StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
+                    intelFrag.show(getParentFragmentManager(), StoryIntelTrainerFragment.class.getName());
                 });
             }
 
-			tagContainer.addView(v);
+			binding.readingItemTags.addView(v);
 		}
 
         if (!TextUtils.isEmpty(story.authors)) {
-            itemAuthors.setText("•   " + story.authors);
+            binding.readingItemAuthors.setText("•   " + story.authors);
             if (classifier != null && classifier.authors.containsKey(story.authors)) {
                 switch (classifier.authors.get(story.authors)) {
                     case Classifier.LIKE:
-                        itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.positive));
+                        binding.readingItemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.positive));
                         break;
                     case Classifier.DISLIKE:
-                        itemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.negative));
+                        binding.readingItemAuthors.setTextColor(UIUtils.getColor(getActivity(), R.color.negative));
                         break;
                     default:
-                        itemAuthors.setTextColor(UIUtils.getThemedColor(getActivity(), R.attr.readingItemMetadata, android.R.attr.textColor));
+                        binding.readingItemAuthors.setTextColor(UIUtils.getThemedColor(getActivity(), R.attr.readingItemMetadata, android.R.attr.textColor));
                         break;
                 }
             }
@@ -556,7 +549,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
         String title = story.title;
         title = UIUtils.colourTitleFromClassifier(title, classifier);
-        itemTitle.setText(UIUtils.fromHtml(title));
+        binding.readingItemTitle.setText(UIUtils.fromHtml(title));
 	}
 
     public void switchSelectedViewMode() {
@@ -598,20 +591,22 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
     private void reloadStoryContent() {
         // reset indicators
-        textViewLoadingMsg.setVisibility(View.GONE);
-        textViewLoadingFailedMsg.setVisibility(View.GONE);
+        binding.readingTextloading.setVisibility(View.GONE);
+        binding.readingTextmodefailed.setVisibility(View.GONE);
         enableProgress(false);
 
         boolean needStoryContent = false;
+        boolean enableStoryChanges = false;
 
         if (selectedFeedView == DefaultFeedView.STORY) {
             needStoryContent = true;
+            enableStoryChanges = story != null && story.hasModifications;
         } else {
             if (textViewUnavailable) {
-                textViewLoadingFailedMsg.setVisibility(View.VISIBLE);
+                binding.readingTextmodefailed.setVisibility(View.VISIBLE);
                 needStoryContent = true;
             } else if (originalText == null) {
-                textViewLoadingMsg.setVisibility(View.VISIBLE);
+                binding.readingTextloading.setVisibility(View.VISIBLE);
                 enableProgress(true);
                 loadOriginalText();
                 // still show the story mode version, as the text mode one may take some time
@@ -630,6 +625,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                 onContentLoadFinished();
             }
         }
+
+        binding.readingStoryChanges.setVisibility(enableStoryChanges ? View.VISIBLE : View.GONE);
     }
 
     private void enableProgress(boolean loading) {
@@ -721,6 +718,37 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         }.execute();
     }
 
+    private void loadStoryChanges() {
+        boolean showChanges = storyChangesState == null || storyChangesState == StoryChangesState.SHOW_CHANGES;
+        if (story == null) return;
+        new AsyncTask<Void, Void, StoryChangesResponse>() {
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                binding.readingStoryChanges.setText(R.string.story_changes_loading);
+            }
+
+            @Override
+            protected StoryChangesResponse doInBackground(Void... voids) {
+                APIManager apiManager = new APIManager(requireContext());
+                return apiManager.getStoryChanges(story.storyHash, showChanges);
+            }
+
+            @Override
+            protected void onPostExecute(StoryChangesResponse response) {
+                if (!response.isError() && response.getStory() != null) {
+                    ReadingItemFragment.this.storyContent = response.getStory().content;
+                    reloadStoryContent();
+                    binding.readingStoryChanges.setText(showChanges ? R.string.story_hide_changes : R.string.story_show_changes);
+                    storyChangesState = showChanges ? StoryChangesState.HIDE_CHANGES : StoryChangesState.SHOW_CHANGES;
+                } else {
+                    binding.readingStoryChanges.setText(showChanges ? R.string.story_show_changes : R.string.story_hide_changes);
+                }
+            }
+        }.execute();
+    }
+
 	private void setupWebview(final String storyText) {
         if (getActivity() == null) {
             // sometimes we get called before the activity is ready. abort, since we will get a refresh when
@@ -760,16 +788,27 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             builder.append(font.forWebView(currentSize));
             builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" />");
             if (themeValue == ThemeValue.LIGHT) {
+//                builder.append("<meta name=\"color-scheme\" content=\"light\"/>");
+//                builder.append("<meta name=\"supported-color-schemes\" content=\"light\"/>");
                 builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />");
             } else if (themeValue == ThemeValue.DARK) {
                 builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\" />");
             } else if (themeValue == ThemeValue.BLACK) {
                 builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"black_reading.css\" />");
+            } else if (themeValue == ThemeValue.AUTO) {
+                int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+                if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                    builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\" />");
+                } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
+                    builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />");
+                } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_UNDEFINED) {
+                    builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />");
+                }
             }
             builder.append("</head><body><div class=\"NB-story\">");
             builder.append(storyText);
             builder.append("</div></body></html>");
-            web.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null);
+            binding.readingWebview.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null);
         }
 	}
 
@@ -870,10 +909,10 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             // insufficient time to allow the WebView to actually finish internally computing state and size.
             // an additional fixed delay is added in a last ditch attempt to give the black-box platform
             // threads a chance to finish their work.
-            fragmentScrollview.postDelayed(new Runnable() {
+            binding.readingScrollview.postDelayed(new Runnable() {
                 public void run() {
-                    int relPos = Math.round(fragmentScrollview.getChildAt(0).getMeasuredHeight() * savedScrollPosRel);
-                    fragmentScrollview.scrollTo(0, relPos);
+                    int relPos = Math.round(binding.readingScrollview.getChildAt(0).getMeasuredHeight() * savedScrollPosRel);
+                    binding.readingScrollview.scrollTo(0, relPos);
                 }
             }, 75L);
         }
@@ -886,7 +925,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 	private class TextSizeReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			web.setTextSize(intent.getFloatExtra(TEXT_SIZE_VALUE, 1.0f));
+			binding.readingWebview.setTextSize(intent.getFloatExtra(TEXT_SIZE_VALUE, 1.0f));
 		}   
 	}
 
@@ -895,39 +934,6 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         public void onReceive(Context context, Intent intent) {
             contentHash = 0; // Force reload since content hasn't changed
             reloadStoryContent();
-        }
-    }
-
-    private class ImmersiveViewHandler extends GestureDetector.SimpleOnGestureListener implements View.OnSystemUiVisibilityChangeListener {
-        private View view;
-
-        public ImmersiveViewHandler(View view) {
-            this.view = view;
-        }
-
-        @Override
-        public boolean onSingleTapUp(MotionEvent e) {
-            if (web.wasLinkClicked()) {
-                // Clicked a link so ignore immersive view
-                return super.onSingleTapUp(e);
-            }
-
-            if (ViewUtils.isSystemUIHidden(view)) {
-                ViewUtils.showSystemUI(view);
-            } else if (PrefsUtils.enterImmersiveReadingModeOnSingleTap(getActivity())) {
-                ViewUtils.hideSystemUI(view);
-            }
-
-            return super.onSingleTapUp(e);
-        }
-
-        @Override
-        public void onSystemUiVisibilityChange(int i) {
-            // If immersive view has been exited via a system gesture we want to ensure that it gets resized
-            // in the same way as using tap to exit.
-            if (ViewUtils.immersiveViewExitedViaSystemGesture(view)) {
-                ViewUtils.showSystemUI(view);
-            }
         }
     }
 }

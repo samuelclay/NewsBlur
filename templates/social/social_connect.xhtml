@@ -59,24 +59,7 @@
             }, 1000);
         } else if (opener && opener.NEWSBLUR) {
             console.log(["Found opener", opener.NEWSBLUR]);
-            if (opener.NEWSBLUR.reader.flags.importing_from_google_reader) {
-                console.log(['Importing from Reader']);
-                if (opener.NEWSBLUR.intro) {
-                    console.log(['Using Intro dialog']);
-                    opener.NEWSBLUR.intro.start_import_from_google_reader({
-                        {% if error %}
-                            'error': "{{ error }}"
-                        {% endif %}
-                    });
-                } else {
-                    console.log(['Using some other dialog']);
-                    opener.NEWSBLUR.reader.post_google_reader_connect({
-                        {% if error %}
-                            'error': "{{ error }}"
-                        {% endif %}
-                    });
-                }
-            } else if (opener.NEWSBLUR.intro) {
+            if (opener.NEWSBLUR.intro) {
                 console.log(['Connecting through intro']);
                 opener.NEWSBLUR.intro.post_connect({
                     {% if error %}

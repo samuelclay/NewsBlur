@@ -38,6 +38,9 @@ body {
 .NB-story-permalink {
     color: #111111;
 }
+.NB-story-toggle-changes {
+    color: #818776;
+}
 .NB-story-date {
     color: #818776;
 }
@@ -111,6 +114,10 @@ a:active {
     background-color: #F2F2D4;
 }
 
+.NB-story blockquote p {
+    background-color: #F2F2D4;
+}
+
 /* Comments */
 
 .NB-story-comments-group:last-child {
@@ -158,14 +165,9 @@ a:active {
     border-color: rgba(255, 255, 255, .3) rgba(0, 0, 0, .2) rgba(0, 0, 0, .3) rgba(255, 255, 255, .2);
 }
 .NB-button.NB-share-button div {
-    background: -webkit-gradient(
-        linear, left top, left bottom, 
-        from(#ECEDE9),
-        color-stop(0.50, #ECEDE9),
-        color-stop(0.50, #E5E6E2),
-        to(#E5E6E2));
-    color: #B0B2AB;
+    color: rgba(0, 0, 0, 0.25);
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    border: 1px solid rgb(0, 0, 0, 0.25);
 }
 .NB-button:active div,
 .NB-button.NB-button-active div {
@@ -185,6 +187,21 @@ a:active {
 .NB-button.NB-share-button.NB-button-active div {
     color: darkgrey;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .2);
+}
+
+.NB-newsletter p,
+.NB-newsletter div,
+.NB-newsletter span,
+.NB-newsletter td {
+    background-color: #FFFEE5 !important;
+}
+.NB-newsletter h1,
+.NB-newsletter h2,
+.NB-newsletter h3,
+.NB-newsletter h4,
+.NB-newsletter h5,
+.NB-newsletter h6 {
+    background-color: #FFFEE5 !important;
 }
 
 /* Story Comments */

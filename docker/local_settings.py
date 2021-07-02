@@ -11,24 +11,25 @@ ADMINS                = (
 
 SERVER_EMAIL          = 'server@newsblur.com'
 HELLO_EMAIL           = 'hello@newsblur.com'
-NEWSBLUR_URL          = 'http://docker.newsblur.com'
-SESSION_COOKIE_DOMAIN = '.newsblur.com'
+NEWSBLUR_URL          = 'https://localhost'
+SESSION_COOKIE_DOMAIN = 'localhost'
 
 # ===================
 # = Global Settings =
 # ===================
 
-DEBUG = True
-DEBUG_ASSETS = DEBUG
+DEBUG = False
+DEBUG_ASSETS = True
 MEDIA_URL = '/media/'
 SECRET_KEY = 'YOUR SECRET KEY'
 AUTO_PREMIUM_NEW_USERS = True
 AUTO_ENABLE_NEW_USERS = True
+ENFORCE_SIGNUP_CAPTCHA = False
 
 CACHES = {
     'default': {
         'BACKEND': 'redis_cache.RedisCache',
-        'LOCATION': 'redis:6379',
+        'LOCATION': 'db_redis:6379',
         'OPTIONS': {
             'DB': 6,
             'PARSER_CLASS': 'redis.connection.HiredisParser'
@@ -74,22 +75,19 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'USER': 'newsblur',
         'PASSWORD': 'newsblur',
-        'HOST': 'postgres',
-        'OPTIONS': {
-            "autocommit": True,
-        },
+        'HOST': 'db_postgres',
     },
 }
 
 MONGO_DB = {
     'name': 'newsblur',
-    'host': 'mongo',
+    'host': 'db_mongo',
     'port': 27017
 }
 
 MONGO_ANALYTICS_DB = {
     'name': 'analytics',
-    'host': 'mongo',
+    'host': 'db_mongo',
     'port': 27017
 }
 
@@ -98,27 +96,30 @@ MONGODB_SLAVE = {
 }
 
 # Celery RabbitMQ/Redis Broker
-BROKER_URL = "redis://redis:6379/0"
+BROKER_URL = "redis://db_redis:6379/0"
 CELERY_RESULT_BACKEND = BROKER_URL
 
 REDIS = {
-    'host': 'redis',
+    'host': 'db_redis',
 }
 REDIS_PUBSUB = {
-    'host': 'redis',
+    'host': 'db_redis',
 }
 
 REDIS_PUBSUB_POOL = {
-    'host': 'redis',
+    'host': 'db_redis',
 }
 REDIS_STORY = {
-    'host': 'redis',
+    'host': 'db_redis',
 }
 REDIS_SESSIONS = {
-    'host': 'redis',
+    'host': 'db_redis',
 }
-ELASTICSEARCH_FEED_HOSTS = ["elasticsearch:9200"]
-ELASTICSEARCH_STORY_HOSTS = ["elasticsearch:9200"]
+ELASTICSEARCH_FEED_HOSTS = ["db_elasticsearch:9200"]
+ELASTICSEARCH_STORY_HOSTS = ["db_elasticsearch:9200"]
+
+ELASTICSEARCH_FEED_HOST = "http://db_elasticsearch:9200"
+ELASTICSEARCH_STORY_HOST = "http://db_elasticsearch:9200"
 
 BACKED_BY_AWS = {
     'pages_on_node': False,

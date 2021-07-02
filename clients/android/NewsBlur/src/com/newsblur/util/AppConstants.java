@@ -71,9 +71,6 @@ public class AppConstants {
     // how many images to prefetch before updating the countdown UI
     public static final int IMAGE_PREFETCH_BATCH_SIZE = 6;
 
-    // should the feedback link be enabled (read: is this a beta?)
-    public static final boolean ENABLE_FEEDBACK = true;
-
     // link to app feedback page
     public static final String FEEDBACK_URL = "https://forum.newsblur.com/new-topic?title=Android%3A+&body=";
 
@@ -91,5 +88,14 @@ public class AppConstants {
 
     // link to the web-based forgot password flow
     public final static String FORGOT_PASWORD_URL = "http://www.newsblur.com/folder_rss/forgot_password";
+
+    // Shiloh photo
+    public final static String SHILOH_PHOTO_URL = "https://newsblur.com/media//img/reader/shiloh.jpg";
+
+    // Premium subscription SKU
+    public final static String PREMIUM_SKU = "nb.premium.36";
+
+    // Free standard account sites limit
+    public final static int FREE_ACCOUNT_SITE_LIMIT = 64;
 
 }

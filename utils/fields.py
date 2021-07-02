@@ -1,18 +1,41 @@
+import django
+from django.db.transaction import atomic
 from django.db.models import OneToOneField
-from django.db.models.fields.related import SingleRelatedObjectDescriptor
+try:
+    from django.db.models.fields.related_descriptors import (
+        ReverseOneToOneDescriptor,
+    )
+except ImportError:
+    from django.db.models.fields.related import SingleRelatedObjectDescriptor as ReverseOneToOneDescriptor
 
-from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ["^utils\.fields\.AutoOneToOneField"])
 
-class AutoSingleRelatedObjectDescriptor(SingleRelatedObjectDescriptor):
+class AutoSingleRelatedObjectDescriptor(ReverseOneToOneDescriptor):
+    """
+    The descriptor that handles the object creation for an AutoOneToOneField.
+    """
+
+    @atomic
     def __get__(self, instance, instance_type=None):
-        try:
-            return super(AutoSingleRelatedObjectDescriptor, self).__get__(instance, instance_type)
-        except self.related.model.DoesNotExist:
-            obj = self.related.model(**{self.related.field.name: instance})
-            obj.save()
-            return obj
+        model = getattr(self.related, 'related_model', self.related.model)
 
+        try:
+            return (
+                super(AutoSingleRelatedObjectDescriptor, self)
+                .__get__(instance, instance_type)
+            )
+        except model.DoesNotExist:
+            # Using get_or_create instead() of save() or create() as it better handles race conditions
+            obj, _ = model.objects.get_or_create(**{self.related.field.name: instance})
+
+            # Update Django's cache, otherwise first 2 calls to obj.relobj
+            # will return 2 different in-memory objects
+            if django.VERSION >= (2, 0):
+                self.related.set_cached_value(instance, obj)
+                self.related.field.set_cached_value(obj, instance)
+            else:
+                setattr(instance, self.cache_name, obj)
+                setattr(obj, self.related.field.get_cache_name(), instance)
+            return obj
 
 class AutoOneToOneField(OneToOneField):
     '''

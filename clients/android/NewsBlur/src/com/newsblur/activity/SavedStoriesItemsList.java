@@ -15,7 +15,16 @@ public class SavedStoriesItemsList extends ItemsList {
         if (fs.getSingleSavedTag() != null) {
             title = title + " - " + fs.getSingleSavedTag();
         }
-        UIUtils.setCustomActionBar(this, R.drawable.clock, title);
+        UIUtils.setupToolbar(this, R.drawable.ic_clock, title, false);
 	}
 
+    @Override
+    String getSaveSearchFeedId() {
+	    String feedId = "starred";
+	    String savedTag = fs.getSingleSavedTag();
+        if (savedTag != null) {
+            feedId += ":" + savedTag;
+        }
+        return feedId;
+    }
 }

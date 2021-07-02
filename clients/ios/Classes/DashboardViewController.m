@@ -16,15 +16,12 @@
 #import "StoriesCollection.h"
 #import "UISearchBar+Field.h"
 
-#define FEEDBACK_URL @"http://www.newsblur.com/about"
-
 @implementation DashboardViewController
 
 @synthesize appDelegate;
 @synthesize interactionsModule;
 @synthesize activitiesModule;
 @synthesize storiesModule;
-@synthesize feedbackWebView;
 @synthesize topToolbar;
 @synthesize toolbar;
 @synthesize segmentedButton;
@@ -47,25 +44,12 @@
         self.interactionsModule.hidden = NO;
     }
     self.activitiesModule.hidden = YES;
-    self.feedbackWebView.hidden = YES;
-    self.feedbackWebView.delegate = self;
     self.segmentedButton.selectedSegmentIndex = 0;
-    
-    // preload feedback
-    self.feedbackWebView.scalesPageToFit = YES;
     
     [self.segmentedButton
      setTitleTextAttributes:@{NSFontAttributeName:
                                   [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
      forState:UIControlStateNormal];
-    
-    NSString *urlAddress = FEEDBACK_URL;
-    //Create a URL object.
-    NSURL *url = [NSURL URLWithString:urlAddress];
-    //URL Requst Object
-    NSURLRequest *requestObj = [NSURLRequest requestWithURL:url];
-    //Load the request in the UIWebView.
-    [self.feedbackWebView loadRequest:requestObj];
     
     CGRect topToolbarFrame = self.topToolbar.frame;
     topToolbarFrame.size.height += 20;
@@ -82,13 +66,13 @@
         [self addChildViewController:self.storiesModule];
         [self.storiesModule didMoveToParentViewController:self];
         
-        [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.topToolbar attribute:NSLayoutAttributeBottom multiplier:1.0 constant:1.0].active = YES;
+        [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.topToolbar attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0].active = YES;
         [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0.0].active = YES;
         [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0.0].active = YES;
         [NSLayoutConstraint constraintWithItem:self.storiesModule.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.toolbar attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0].active = YES;
     }
     
-    [self updateLogo];
+    [self updateTheme];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -125,9 +109,10 @@
 }
 
 - (void)updateTheme {
-    self.topToolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
-    self.toolbar.barTintColor = UIColorFromRGB(0xE3E6E0);
-    self.segmentedButton.tintColor = UIColorFromRGB(0x8F918B);
+    self.topToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
+    self.topToolbar.backgroundColor = [UINavigationBar appearance].backgroundColor;
+    self.toolbar.barTintColor = [UINavigationBar appearance].barTintColor;
+    self.segmentedButton.tintColor = [UINavigationBar appearance].tintColor;
     
     self.storiesModule.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
     self.storiesModule.searchBar.tintColor = UIColorFromRGB(0xffffff);
@@ -144,6 +129,8 @@
     [self.storiesModule.storyTitlesTable reloadData];
     [self.interactionsModule.interactionsTable reloadData];
     [self.activitiesModule.activitiesTable reloadData];
+    
+    [[ThemeManager themeManager] updateSegmentedControl:self.segmentedButton];
     
     [self updateLogo];
 }
@@ -212,19 +199,4 @@
     [self.activitiesModule fetchActivitiesDetail:1];    
 }
 
-# pragma mark
-# pragma mark Feedback
-
-- (BOOL)webView:(UIWebView *)webView 
-shouldStartLoadWithRequest:(NSURLRequest *)request 
- navigationType:(UIWebViewNavigationType)navigationType {
-    NSURL *url = [request URL];
-    NSString *urlString = [NSString stringWithFormat:@"%@", url];
-
-    if ([urlString isEqualToString: FEEDBACK_URL]){
-        return YES;
-    } else {
-        return NO;
-    }
-}
 @end

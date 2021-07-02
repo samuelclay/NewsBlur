@@ -3,7 +3,7 @@ Shows some usage levels and limits for the last and previous 24 hours.
 """
 import datetime
 from django.core.management.base import BaseCommand
-from seacucumber.util import get_boto_ses_connection
+from vendor.seacucumber.util import get_boto_ses_connection
 
 class Command(BaseCommand):
     """
@@ -28,10 +28,10 @@ class Command(BaseCommand):
         quota = conn.get_send_quota()
         quota = quota['GetSendQuotaResponse']['GetSendQuotaResult']
         
-        print "--- SES Quota ---"
-        print "  24 Hour Quota: %s" % quota['Max24HourSend']
-        print "  Sent (Last 24 hours): %s" % quota['SentLast24Hours']
-        print "  Max sending rate: %s/sec" % quota['MaxSendRate']
+        print("--- SES Quota ---")
+        print("  24 Hour Quota: %s" % quota['Max24HourSend'])
+        print("  Sent (Last 24 hours): %s" % quota['SentLast24Hours'])
+        print("  Max sending rate: %s/sec" % quota['MaxSendRate'])
         
     def _print_daily_stats(self, conn):
         """
@@ -57,11 +57,11 @@ class Command(BaseCommand):
             self._update_day_dict(data_point, day_dict)      
 
         for day in [current_day, prev_day]:
-            print "--- %s ---" % day.get('HeaderName', 0)
-            print "  Delivery attempts: %s" % day.get('DeliveryAttempts', 0)
-            print "  Bounces: %s" % day.get('Bounces', 0)
-            print "  Rejects: %s" % day.get('Rejects', 0)
-            print "  Complaints: %s" % day.get('Complaints', 0)
+            print("--- %s ---" % day.get('HeaderName', 0))
+            print("  Delivery attempts: %s" % day.get('DeliveryAttempts', 0))
+            print("  Bounces: %s" % day.get('Bounces', 0))
+            print("  Rejects: %s" % day.get('Rejects', 0))
+            print("  Complaints: %s" % day.get('Complaints', 0))
         
     def _is_data_from_today(self, data_point):
         """

@@ -1,0 +1,16 @@
+{
+    "service": {
+        "name": "db-mongo",
+        "id": "{{ inventory_hostname }}",
+        "tags": [
+            "db"
+        ],
+        "port": 27017,
+        "checks": [{
+            "id": "mongo-ping",
+            "http": "{% if inventory_hostname.startswith('db-mongo') %}http://{{ ansible_ssh_host }}:5579/db_check/mongo{% else %}http://{{ ansible_ssh_host }}:5000/db_check/mongo{% endif %}",
+            "interval": "15s",
+            "failures_before_critical": 4
+        }]
+    }
+}  

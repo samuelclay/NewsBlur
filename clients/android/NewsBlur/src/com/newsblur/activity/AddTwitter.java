@@ -7,6 +7,7 @@ import android.webkit.WebViewClient;
 
 import com.newsblur.R;
 import com.newsblur.network.APIConstants;
+import com.newsblur.util.UIUtils;
 
 public class AddTwitter extends NbActivity {
 
@@ -17,6 +18,8 @@ public class AddTwitter extends NbActivity {
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 		setContentView(R.layout.activity_webcontainer);
+
+		UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.add_twitter), true);
 		
 		webview = (WebView) findViewById(R.id.webcontainer);
 		webview.getSettings().setJavaScriptEnabled(true);

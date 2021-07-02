@@ -24,6 +24,9 @@ from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.tfidf import tfidf
 from utils.feed_functions import add_object_to_folder, chunks
 
+def unread_cutoff_default():
+    return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+    
 class UserSubscription(models.Model):
     """
     A feed which a user has subscribed to. Carries all of the cached information
@@ -32,14 +35,13 @@ class UserSubscription(models.Model):
     Also has a dirty flag (needs_unread_recalc) which means that the unread counts
     are not accurate and need to be calculated with `self.calculate_feed_scores()`.
     """
-    UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
-    user = models.ForeignKey(User, related_name='subscriptions')
-    feed = models.ForeignKey(Feed, related_name='subscribers')
+    user = models.ForeignKey(User, related_name='subscriptions', on_delete=models.CASCADE)
+    feed = models.ForeignKey(Feed, related_name='subscribers', on_delete=models.CASCADE)
     user_title = models.CharField(max_length=255, null=True, blank=True)
     active = models.BooleanField(default=False)
-    last_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
-    mark_read_date = models.DateTimeField(default=UNREAD_CUTOFF)
+    last_read_date = models.DateTimeField(default=unread_cutoff_default)
+    mark_read_date = models.DateTimeField(default=unread_cutoff_default)
     unread_count_neutral = models.IntegerField(default=0)
     unread_count_positive = models.IntegerField(default=0)
     unread_count_negative = models.IntegerField(default=0)
@@ -51,7 +53,7 @@ class UserSubscription(models.Model):
     
     objects = UserSubscriptionManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return '[%s (%s): %s (%s)] ' % (self.user.username, self.user.pk, 
                                         self.feed.feed_title, self.feed.pk)
         
@@ -87,7 +89,7 @@ class UserSubscription(models.Model):
                     super(UserSubscription, self).save(*args, **kwargs)
                     break
             else:
-                if self: self.delete()
+                if self and self.id: self.delete()
     
     @classmethod
     def subs_for_feeds(cls, user_id, feed_ids=None, read_filter="unread"):
@@ -140,7 +142,7 @@ class UserSubscription(models.Model):
                 unread_stories_key        = 'U:%s:%s' % (user_id, feed_id)
                 unread_ranked_stories_key = 'zU:%s:%s' % (user_id, feed_id)
                 expire_unread_stories_key = False
-            
+                
                 max_score = current_time
                 if read_filter == 'unread':
                     # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
@@ -179,6 +181,7 @@ class UserSubscription(models.Model):
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False,
                     hashes_only=False, cutoff_date=None, default_cutoff_date=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        renc = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL_ENCODED)
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
         ignore_user_stories = False
         
@@ -203,7 +206,7 @@ class UserSubscription(models.Model):
             if not ignore_user_stories:
                 r.delete(unread_stories_key)
             
-            dump = r.dump(unread_ranked_stories_key)
+            dump = renc.dump(unread_ranked_stories_key)
             if dump:
                 pipeline = rt.pipeline()
                 pipeline.delete(unread_ranked_stories_key)
@@ -237,11 +240,11 @@ class UserSubscription(models.Model):
                 
         if settings.DEBUG and False:
             debug_stories = rt.zrevrange(unread_ranked_stories_key, 0, -1, withscores=True)
-            print " ---> Unread all stories (%s - %s) %s stories: %s" % (
+            print((" ---> Unread all stories (%s - %s) %s stories: %s" % (
                 min_score,
                 max_score,
                 len(debug_stories),
-                debug_stories)
+                debug_stories)))
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
                                   max_score, start=offset, num=500,
                                   withscores=withscores)[:limit]
@@ -308,7 +311,7 @@ class UserSubscription(models.Model):
         
         pipeline = rt.pipeline()
         for story_hash_group in chunks(story_hashes, 100):
-            pipeline.zadd(ranked_stories_keys, **dict(story_hash_group))
+            pipeline.zadd(ranked_stories_keys, dict(story_hash_group))
         pipeline.execute()
         story_hashes = range_func(ranked_stories_keys, offset, limit)
 
@@ -323,7 +326,7 @@ class UserSubscription(models.Model):
                                                    cutoff_date=cutoff_date)
             if unread_story_hashes:
                 for unread_story_hash_group in chunks(unread_story_hashes, 100):
-                    rt.zadd(unread_ranked_stories_keys, **dict(unread_story_hash_group))
+                    rt.zadd(unread_ranked_stories_keys, dict(unread_story_hash_group))
             unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, limit)
         
         rt.expire(ranked_stories_keys, 60*60)
@@ -344,14 +347,14 @@ class UserSubscription(models.Model):
         if stories_cached:
             truncated += rt.zcard(ranked_stories_keys)
             rt.delete(ranked_stories_keys)
-        else:
-            logging.debug(" ***> ~FRNo stories cached, can't truncate: %s / %s" % (User.objects.get(pk=user_id), feed_ids))
+        # else:
+        #     logging.debug(" ***> ~FRNo stories cached, can't truncate: %s / %s" % (User.objects.get(pk=user_id), feed_ids))
             
         if unreads_cached:
             truncated += rt.zcard(unread_ranked_stories_keys)
             rt.delete(unread_ranked_stories_keys)
-        else:
-            logging.debug(" ***> ~FRNo unread stories cached, can't truncate: %s / %s" % (User.objects.get(pk=user_id), feed_ids))
+        # else:
+        #     logging.debug(" ***> ~FRNo unread stories cached, can't truncate: %s / %s" % (User.objects.get(pk=user_id), feed_ids))
         
         return truncated
         
@@ -402,7 +405,7 @@ class UserSubscription(models.Model):
                 us.save()
         
             if not skip_fetch and feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
-                feed = feed.update()
+                feed = feed.update(verbose=True)
             
             from apps.social.models import MActivity
             MActivity.new_feed_subscription(user_id=user.pk, feed_id=feed.pk, feed_title=feed.title)
@@ -472,7 +475,7 @@ class UserSubscription(models.Model):
         
         logging.user(user, "~BB~FW~SBQueueing NewFeeds: ~FC(%s) %s" % (len(new_feeds), new_feeds))
         size = 4
-        for t in (new_feeds[pos:pos + size] for pos in xrange(0, len(new_feeds), size)):
+        for t in (new_feeds[pos:pos + size] for pos in range(0, len(new_feeds), size)):
             NewFeeds.apply_async(args=(t,), queue="new_feeds")
     
     @classmethod
@@ -517,13 +520,13 @@ class UserSubscription(models.Model):
         for i, user_id in enumerate(user_ids):
             if i < skip: continue
             if i % 1000 == 0:
-                print "\n\n ------------------------------------------------"
-                print "\n ---> %s/%s (%s%%)" % (i, count, round(float(i)/count))
-                print "\n ------------------------------------------------\n"
+                print("\n\n ------------------------------------------------")
+                print("\n ---> %s/%s (%s%%)" % (i, count, round(float(i)/count)))
+                print("\n ------------------------------------------------\n")
             try:
                 user = User.objects.get(pk=user_id)
             except User.DoesNotExist:
-                print " ***> %s has no account" % user_id
+                print(" ***> %s has no account" % user_id)
                 continue
             us, created = UserSubscription.objects.get_or_create(user_id=user_id, feed_id=new_feed_id, defaults={
                 'needs_unread_recalc': True,
@@ -531,12 +534,12 @@ class UserSubscription(models.Model):
                 'is_trained': True
             })
             if not created:
-                print " ***> %s already subscribed" % user.username
+                print(" ***> %s already subscribed" % user.username)
             try:
                 usf = UserSubscriptionFolders.objects.get(user_id=user_id)
                 usf.add_missing_feeds()
             except UserSubscriptionFolders.DoesNotExist:
-                print " ***> %s has no USF" % user.username
+                print(" ***> %s has no USF" % user.username)
                 
             # Move classifiers
             if old_feed_id:
@@ -551,7 +554,7 @@ class UserSubscription(models.Model):
                         except NotUniqueError:
                             continue
                     if classifier_count:
-                        print " Moved %s classifiers for %s" % (classifier_count, user.username)
+                        print(" Moved %s classifiers for %s" % (classifier_count, user.username))
     
     def trim_read_stories(self, r=None):
         if not r:
@@ -597,7 +600,7 @@ class UserSubscription(models.Model):
                 missing_rs = []
             found = feed_re.search(rs)
             if not found:
-                print " ---> Not found: %s" % rs
+                print(" ---> Not found: %s" % rs)
                 continue
             rs_feed_id = found.groups()[0]
             if int(rs_feed_id) not in feeds:
@@ -624,7 +627,9 @@ class UserSubscription(models.Model):
         if cutoff_date:
             cutoff_date = cutoff_date + datetime.timedelta(seconds=1)
         else:
-            latest_story = MStory.objects(story_feed_id=self.feed.pk)\
+            now = datetime.datetime.now()
+            latest_story = MStory.objects(story_feed_id=self.feed.pk,
+                                          story_date__lte=now)\
                            .order_by('-story_date').only('story_date').limit(1)
             if latest_story and len(latest_story) >= 1:
                 cutoff_date = (latest_story[0]['story_date']
@@ -753,7 +758,7 @@ class UserSubscription(models.Model):
         
         if self.is_trained:
             if not stories:
-                stories = cache.get('S:%s' % self.feed_id)
+                stories = cache.get('S:v3:%s' % self.feed_id)
             
             unread_story_hashes = self.story_hashes(user_id=self.user_id, feed_ids=[self.feed_id],
                                                     usersubs=[self],
@@ -764,8 +769,11 @@ class UserSubscription(models.Model):
                 try:
                     stories_db = MStory.objects(story_hash__in=unread_story_hashes)
                     stories = Feed.format_stories(stories_db, self.feed_id)
-                except pymongo.errors.OperationFailure, e:
+                except pymongo.errors.OperationFailure as e:
                     stories_db = MStory.objects(story_hash__in=unread_story_hashes)[:100]
+                    stories = Feed.format_stories(stories_db, self.feed_id)
+                except pymongo.errors.OperationFailure as e:
+                    stories_db = MStory.objects(story_hash__in=unread_story_hashes)[:25]
                     stories = Feed.format_stories(stories_db, self.feed_id)
                     
             unread_stories = []
@@ -878,7 +886,7 @@ class UserSubscription(models.Model):
         # Rewrite feed in subscription folders
         try:
             user_sub_folders = UserSubscriptionFolders.objects.get(user=self.user)
-        except Exception, e:
+        except Exception as e:
             logging.info(" *** ---> UserSubscriptionFolders error: %s" % e)
             return
     
@@ -940,7 +948,7 @@ class UserSubscription(models.Model):
                     found_ids.add(item)
                 elif isinstance(item, dict):
                     # print ' --> Descending folder dict: %s' % item.values()
-                    found_ids.update(collect_ids(item.values(), found_ids))
+                    found_ids.update(collect_ids(list(item.values()), found_ids))
                 elif isinstance(item, list):
                     # print ' --> Descending folder list: %s' % len(item)
                     found_ids.update(collect_ids(item, found_ids))
@@ -974,7 +982,7 @@ class UserSubscription(models.Model):
         try:
             results_queued = p.execute()
         except:
-            results_queued = map(lambda x: False, range(len(feed_ids)))
+            results_queued = [False for x in range(len(feed_ids))]
 
         safety_net = []
         for f, feed_id in enumerate(feed_ids):
@@ -995,12 +1003,12 @@ class UserSubscription(models.Model):
     def count_subscribers_to_other_subscriptions(cls, feed_id):
         # feeds = defaultdict(int)
         subscribing_users = cls.objects.filter(feed=feed_id).values('user', 'feed_opens').order_by('-feed_opens')[:25]
-        print "Got subscribing users"
+        print("Got subscribing users")
         subscribing_user_ids = [sub['user'] for sub in subscribing_users]
-        print "Got subscribing user ids"
+        print("Got subscribing user ids")
         cofeeds = cls.objects.filter(user__in=subscribing_user_ids).values('feed').annotate(
                                      user_count=Count('user')).order_by('-user_count')[:200]
-        print "Got cofeeds: %s" % len(cofeeds)
+        print("Got cofeeds: %s" % len(cofeeds))
         # feed_subscribers = Feed.objects.filter(pk__in=[f['feed'] for f in cofeeds]).values('pk', 'num_subscribers')
         # max_local_subscribers = float(max([f['user_count'] for f in cofeeds]))
         # max_total_subscribers = float(max([f['num_subscribers'] for f in feed_subscribers]))
@@ -1019,12 +1027,12 @@ class UserSubscription(models.Model):
         users_by_feeds = {}
         for feed in [f['feed'] for f in cofeeds]:
             users_by_feeds[feed] = [u['user'] for u in cls.objects.filter(feed=feed, user__in=subscribing_user_ids).values('user')]
-        print "Got users_by_feeds"
+        print("Got users_by_feeds")
         
         table = tfidf()
-        for feed in users_by_feeds.keys():
+        for feed in list(users_by_feeds.keys()):
             table.addDocument(feed, users_by_feeds[feed])
-        print "Got table"
+        print("Got table")
         
         sorted_table = sorted(table.similarities(subscribing_user_ids), key=itemgetter(1), reverse=True)[:8]
         pprint([(Feed.get_by_id(o[0]), o[1]) for o in sorted_table])
@@ -1188,7 +1196,7 @@ class RUserStory:
         redis_commands(read_story_key)
         
         read_stories_list_key = 'lRS:%s' % user_id
-        r.lrem(read_stories_list_key, story_hash)
+        r.lrem(read_stories_list_key, 1, story_hash)
         
         if ps and username:
             ps.publish(username, 'story:unread:%s' % story_hash)
@@ -1289,16 +1297,26 @@ class UserSubscriptionFolders(models.Model):
     is a recursive descent of feeds and folders in folders. Used to layout
     the feeds and folders in the Reader's feed navigation pane.
     """
-    user = models.ForeignKey(User, unique=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     folders = models.TextField(default="[]")
     
-    def __unicode__(self):
+    def __str__(self):
         return "[%s]: %s" % (self.user, len(self.folders),)
         
     class Meta:
         verbose_name_plural = "folders"
         verbose_name = "folder"
     
+    @classmethod
+    def compact_for_user(cls, user_id):
+        user = User.objects.get(pk=user_id)
+        try:
+            usf = UserSubscriptionFolders.objects.get(user=user)
+        except UserSubscriptionFolders.DoesNotExist:
+            return
+        
+        usf.compact()
+        
     def compact(self):
         folders = json.decode(self.folders)
         
@@ -1308,16 +1326,42 @@ class UserSubscriptionFolders(models.Model):
                 if isinstance(item, int) and item not in new_folder:
                     new_folder.append(item)
                 elif isinstance(item, dict):
-                    for f_k, f_v in item.items():
-                        new_folder.append({f_k: _compact(f_v)})
+                    for f_k, f_v in list(item.items()):
+                        # Check every existing folder at that level to see if it already exists
+                        for ef, existing_folder in enumerate(new_folder):
+                            if type(existing_folder) == dict and list(existing_folder.keys())[0] == f_k:
+                                existing_folder_feed_ids = [f for f in list(existing_folder.values())[0] if type(f) == int]
+                                merged = []
+                                for merge_val in existing_folder_feed_ids:
+                                    merged.append(merge_val)
+                                for merge_val in f_v:
+                                    if type(merge_val) == int:
+                                        if merge_val not in existing_folder_feed_ids:
+                                            merged.append(merge_val)
+                                    else:
+                                        merged.append(merge_val)
+                                if f_v != existing_folder_feed_ids:
+                                    logging.info(f" ---> ~FRFound repeat folder: {f_k} \n\t"
+                                                f"~FBExisting: {f_v}\n\t"
+                                                f"~FCMerging: {list(existing_folder.values())[0]}\n\t"
+                                                f"~FYBecomes: {merged}")
+                                    new_folder[ef] = {f_k: _compact(merged)}
+                                else:
+                                    logging.info(f" ---> ~FRFound repeat folder ~FY{f_k}~FR, no difference in feeds")
+                                break
+                        else:
+                            # If no match, then finally we can add the folder
+                            new_folder.append({f_k: _compact(f_v)})
             return new_folder
         
         new_folders = _compact(folders)
-        logging.info(" ---> Compacting from %s to %s" % (folders, new_folders))
+        compact_msg = " ---> Compacting from %s to %s" % (folders, new_folders)
         new_folders = json.encode(new_folders)
-        logging.info(" ---> Compacting from %s to %s" % (len(self.folders), len(new_folders)))
-        self.folders = new_folders
-        self.save()
+        if json.encode(self.folders) != json.encode(new_folders):
+            logging.info(compact_msg)
+            logging.info(" ---> Compacting from %s bytes to %s bytes" % (len(self.folders), len(new_folders)))
+            self.folders = new_folders
+            self.save()
         
     def add_folder(self, parent_folder, folder):
         if self.folders:
@@ -1338,7 +1382,7 @@ class UserSubscriptionFolders(models.Model):
                 if isinstance(item, int):
                     folder_feeds.append(item)
                 elif isinstance(item, dict):
-                    for f_k, f_v in item.items():
+                    for f_k, f_v in list(item.items()):
                         arranged_folder = _arrange_folder(f_v)
                         folder_folders.append({f_k: arranged_folder})
 
@@ -1400,7 +1444,7 @@ class UserSubscriptionFolders(models.Model):
                     else:
                         new_folders.append(folder)
                 elif isinstance(folder, dict):
-                    for f_k, f_v in folder.items():
+                    for f_k, f_v in list(folder.items()):
                         nf, multiples_found, deleted = _find_feed_in_folders(f_v, f_k, multiples_found, deleted)
                         new_folders.append({f_k: nf})
     
@@ -1412,15 +1456,16 @@ class UserSubscriptionFolders(models.Model):
         self.save()
 
         if not multiples_found and deleted and commit_delete:
+            user_sub = None
             try:
                 user_sub = UserSubscription.objects.get(user=self.user, feed=feed_id)
-            except Feed.DoesNotExist:
+            except (Feed.DoesNotExist, UserSubscription.DoesNotExist):
                 duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
                 if duplicate_feed:
                     try:
                         user_sub = UserSubscription.objects.get(user=self.user, 
                                                                 feed=duplicate_feed[0].feed)
-                    except Feed.DoesNotExist:
+                    except (Feed.DoesNotExist, UserSubscription.DoesNotExist):
                         return
             if user_sub:
                 user_sub.delete()
@@ -1434,7 +1479,7 @@ class UserSubscriptionFolders(models.Model):
                     if folder in feeds_to_delete:
                         feeds_to_delete.remove(folder)
                 elif isinstance(folder, dict):
-                    for f_k, f_v in folder.items():
+                    for f_k, f_v in list(folder.items()):
                         if f_k == folder_to_delete and (in_folder in folder_name or in_folder is None):
                             logging.user(self.user, "~FBDeleting folder '~SB%s~SN' in '%s': %s" % (f_k, folder_name, folder))
                             deleted_folder = folder
@@ -1469,7 +1514,7 @@ class UserSubscriptionFolders(models.Model):
                 if isinstance(folder, int):
                     new_folders.append(folder)
                 elif isinstance(folder, dict):
-                    for f_k, f_v in folder.items():
+                    for f_k, f_v in list(folder.items()):
                         nf = _find_folder_in_folders(f_v, f_k)
                         if f_k == folder_to_rename and in_folder in folder_name:
                             logging.user(self.user, "~FBRenaming folder '~SB%s~SN' in '%s' to: ~SB%s" % (
@@ -1543,7 +1588,7 @@ class UserSubscriptionFolders(models.Model):
                     else:
                         new_folders.append(folder)
                 elif isinstance(folder, dict):
-                    for f_k, f_v in folder.items():
+                    for f_k, f_v in list(folder.items()):
                         new_folders.append({f_k: rewrite_folders(f_v, original_feed, duplicate_feed)})
 
             return new_folders
@@ -1563,7 +1608,7 @@ class UserSubscriptionFolders(models.Model):
                 if isinstance(item, int) and item not in feeds:
                     feeds.append(item)
                 elif isinstance(item, dict):
-                    for f_k, f_v in item.items():
+                    for f_k, f_v in list(item.items()):
                         feeds.extend(_flat(f_v))
             return feeds
 
@@ -1579,7 +1624,7 @@ class UserSubscriptionFolders(models.Model):
                 if isinstance(item, int) and item not in feeds and found:
                     feeds.append(item)
                 elif isinstance(item, dict):
-                    for f_k, f_v in item.items():
+                    for f_k, f_v in list(item.items()):
                         if slugify(f_k) == slug:
                             found = True
                             local_found = True
@@ -1599,7 +1644,7 @@ class UserSubscriptionFolders(models.Model):
         total = usf.count()
         
         for i, f in enumerate(usf):
-            print "%s/%s: %s" % (i, total, f)
+            print("%s/%s: %s" % (i, total, f))
             f.add_missing_feeds()
     
     @classmethod
@@ -1624,12 +1669,25 @@ class UserSubscriptionFolders(models.Model):
             for feed_id in missing_subs:
                 feed = Feed.get_by_id(feed_id)
                 if feed:
+                    if feed_id != feed.pk:
+                        logging.debug(" ---> %s doesn't match %s, rewriting to remove %s..." % (
+                                      feed_id, feed.pk, feed_id))
+                        # Clear out duplicate sub in folders before subscribing to feed
+                        duplicate_feed = Feed.get_by_id(feed_id)
+                        duplicate_feed.pk = feed_id
+                        self.rewrite_feed(feed, duplicate_feed)
                     us, _ = UserSubscription.objects.get_or_create(user=self.user, feed=feed, defaults={
                         'needs_unread_recalc': True
                     })
                     if not us.needs_unread_recalc:
                         us.needs_unread_recalc = True
                         us.save()
+                elif feed_id and not feed:
+                    # No feed found for subscription, remove subscription
+                    logging.debug(" ---> %s: No feed found, removing subscription: %s" % (
+                                  self.user, feed_id))
+                    self.delete_feed(feed_id, None, commit_delete=False)
+                    
 
         missing_folder_feeds = set(subs) - set(all_feeds)
         if missing_folder_feeds:
@@ -1670,7 +1728,7 @@ class Feature(models.Model):
     description = models.TextField(default="")
     date = models.DateTimeField(default=datetime.datetime.now)
     
-    def __unicode__(self):
+    def __str__(self):
         return "[%s] %s" % (self.date, self.description[:50])
     
     class Meta:

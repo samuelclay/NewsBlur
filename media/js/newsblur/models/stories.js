@@ -7,6 +7,8 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         this.bind('change:starred', this.change_starred);
         this.bind('change:user_tags', this.change_user_tags);
         this.bind('change:selected', this.select_story);
+        this.bind('change:highlights', this.update_highlights);
+        this.bind('change:user_notes', this.update_notes);
         this.populate_comments();
         this.story_permalink = this.get('story_permalink');
         this.story_title = this.get('story_title');
@@ -21,6 +23,10 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         this.friend_comments = new NEWSBLUR.Collections.Comments(this.get('friend_comments'));
         this.friend_shares = new NEWSBLUR.Collections.Comments(this.get('friend_shares'));
         this.public_comments = new NEWSBLUR.Collections.Comments(this.get('public_comments'));
+    },
+    
+    feed: function() {
+        return NEWSBLUR.assets.get_feed(this.get('story_feed_id'));
     },
     
     score: function() {
@@ -43,9 +49,11 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         var content = this.get(attribute);
         if (!attribute || !content) content = this.story_content(); 
         // First do a naive strip, which is faster than rendering which makes network calls
-        content = content && content.replace(/<(?:.|\n)*?>/gm, '');
+        content = content && content.replace(/<(?:.|\n)*?>/gm, ' ');
         content = content && Inflector.stripTags(content);
-        
+        content = content && content.replaceAll(' ‌', ' '); // Invisible space, boo
+        content = content && content.replace(/\s+/gm, ' ');
+
         return _.string.prune(_.string.trim(content), length || 150, "...");
     },
     
@@ -74,11 +82,10 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     secure_content: function(content_attr) {
         var content = this.get(content_attr);
         
-        if (window.location.protocol == 'https:' && 
-            NEWSBLUR.Globals.is_staff) {
+        if (window.location.protocol == 'https:') {
             _.each(this.get('secure_image_urls'), function(secure_url, url) {
                 if (_.str.startsWith(url, "http://")) {
-                    console.log(['Securing image url', url, secure_url]);
+                    // console.log(['Securing image url', url, secure_url]);
                     content = content.split(url).join(secure_url);
                 }
             });
@@ -90,6 +97,11 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     story_authors: function() {
         return this.get('story_authors').replace(/</g, '&lt;')
                                         .replace(/>/g, '&gt;');
+    },
+    
+    user_highlights: function() {
+        var highlights = this.get('highlights');
+        return highlights;
     },
     
     formatted_short_date: function() {
@@ -247,7 +259,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     // = Saved Stories =
     // =================
     
-    toggle_starred: function() {
+    toggle_starred: function(force_starred) {
         this.set('user_tags', this.existing_tags(), {silent: true});
         
         if (!this.get('starred')) {
@@ -258,6 +270,21 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             this.set('starred', false);
         }
         NEWSBLUR.reader.update_starred_count();
+    },
+    
+    update_highlights: function() {
+        console.log(['update_highlights', this.get('highlights')]);
+        if (!this.get('starred')) {
+            NEWSBLUR.assets.starred_count += 1;
+            this.set('starred', true);
+        } else {
+            NEWSBLUR.assets.mark_story_as_starred(this.id);
+        }
+        NEWSBLUR.reader.update_starred_count();        
+    },
+    
+    update_notes: function() {
+        NEWSBLUR.assets.mark_story_as_starred(this.id);
     },
     
     change_starred: function() {
@@ -313,7 +340,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         
         return all_tags;
     }
-    
+        
 });
 
 NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
@@ -325,13 +352,17 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     previous_stories_stack: [],
     
     active_story: null,
+
+    page_fill_outs: 0,
+
+    no_more_stories: false,
     
     initialize: function() {
         // this.bind('change:selected', this.detect_selected_story, this); // Handled in the Story model so it fires first
         this.bind('reset', this.clear_previous_stories_stack, this);
         // this.bind('change:selected', this.change_selected);
     },
-    
+            
     // ===========
     // = Actions =
     // ===========
@@ -526,8 +557,10 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     
     last_visible: function(score) {
         score = _.isUndefined(score) ? NEWSBLUR.reader.get_unread_view_score() : score;
-        
-        for (var i=this.size(); i >= 0; i--) {
+        var size = this.size();
+        if (!size || size <= 0) return;
+
+        for (var i=size-1; i >= 0; i--) {
             var story = this.at(i);
             if (story.score() >= score || story.get('visible')) {
                 return story;
@@ -558,6 +591,18 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     
     limit: function(count) {
         this.models = this.models.slice(0, count);
+    },
+
+    limit_visible_on_dashboard: function (count, score) {
+        score = _.isUndefined(score) ? NEWSBLUR.reader.get_unread_view_score() : score;
+
+        while (this.models.length) {
+            if (this.models.length <= count) return;
+            var visible = this.visible();
+            if (visible.length <= count) return;
+
+            this.models.pop();
+        }
     },
     
     // ===========

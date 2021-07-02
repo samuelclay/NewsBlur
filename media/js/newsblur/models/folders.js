@@ -65,9 +65,12 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
                     return this.feed.id;
                 }
             }
-            if (this.feed.get('active')) {
-                return this.feed.id;
-            }
+
+            // if (!this.feed.get('active')) {
+            //     return;
+            // }
+
+            return this.feed.id;
         } else if (this.is_folder()) {
             return this.folders.feed_ids_in_folder(options);
         }

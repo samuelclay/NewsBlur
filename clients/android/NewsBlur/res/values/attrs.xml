@@ -5,7 +5,7 @@
     <attr name="feedRowNeutCountText" format="string" />
     <attr name="actionbarBackground" format="string" />
     <attr name="listBackground" format="string" />
-    <attr name="itemBackground" format="string" />
+    <attr name="layoutBackground" format="string" />
     <attr name="readingBackground" format="string" />
     <attr name="defaultText" format="string" />
     <attr name="linkText" format="string" />
@@ -15,7 +15,7 @@
     <attr name="selectorStoryBackground" format="string" />
     <attr name="rowItemHeaderBackground" format="string" />
     <attr name="readingItemMetadata" format="string" />
-    <attr name="tag" format="string" />
+    <attr name="chip" format="string" />
     <attr name="actionButtons" format="string" />
     <attr name="storyButtons" format="string" />
     <attr name="shareBarBackground" format="string" />
@@ -23,7 +23,6 @@
     <attr name="commentsHeader" format="string" />
     <attr name="rowBorderTop" format="string" />
     <attr name="rowBorderBottom" format="string" />
-    <attr name="divider" format="string" />
     <attr name="profileCount" format="string" />
     <attr name="profileActivityList" format="string" />
     <attr name="itemHeaderDivider" format="string" />

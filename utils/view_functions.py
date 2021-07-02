@@ -1,10 +1,9 @@
 from django.http import Http404, HttpResponse
-from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from utils import json_functions as json
 import functools
 
-def get_argument_or_404(request, param, method='REQUEST', code='404'):
+def get_argument_or_404(request, param, method='POST', code='404'):
     try:
         return getattr(request, method)[param]
     except KeyError:
@@ -15,8 +14,7 @@ def get_argument_or_404(request, param, method='REQUEST', code='404'):
         
 def render_to(template):
     """
-    Decorator for Django views that sends returned dict to render_to_response function
-    with given template and RequestContext as context instance.
+    Decorator for Django views that sends returned dict to render function.
 
     If view doesn't return dict then decorator simply returns output.
     Additionally view can return two-tuple, which must contain dict as first
@@ -31,9 +29,9 @@ def render_to(template):
         def wrapper(request, *args, **kw):
             output = func(request, *args, **kw)
             if isinstance(output, (list, tuple)):
-                return render_to_response(output[1], output[0], RequestContext(request))
+                return render(request, output[1], output[0])
             elif isinstance(output, dict):
-                return render_to_response(template, output, RequestContext(request))
+                return render(request, template, output)
             return output
         return wrapper
     return renderer
@@ -41,7 +39,7 @@ def render_to(template):
 def is_true(value):
     if value == 1:
         return True
-    return bool(value) and isinstance(value, basestring) and value.lower() not in ('false', '0')
+    return bool(value) and isinstance(value, str) and value.lower() not in ('false', '0')
     
 class required_params(object):
     "Instances of this class can be used as decorators"
@@ -49,7 +47,7 @@ class required_params(object):
     def __init__(self, *args, **kwargs):
         self.params = args
         self.named_params = kwargs
-        self.method = kwargs.get('method', 'REQUEST')
+        self.method = kwargs.get('method', 'POST')
         
     def __call__(self, fn):
         def wrapper(request, *args, **kwargs):
@@ -64,20 +62,21 @@ class required_params(object):
         # Check if parameter is included
         for param in self.params:
             if getattr(request, self.method).get(param) is None:
-                print " Unnamed parameter not found: %s" % param
+                print(" Unnamed parameter not found: %s" % param)
                 return self.disallowed(param)
 
         # Check if parameter is correct type
-        for param, param_type in self.named_params.items():
+        for param, param_type in list(self.named_params.items()):
+            if param == "method": continue
             if getattr(request, self.method).get(param) is None:
-                print " Typed parameter not found: %s" % param
+                print(" Typed parameter not found: %s" % param)
                 return self.disallowed(param)
             try:
                 if param_type(getattr(request, self.method).get(param)) is None:
-                    print " Typed parameter wrong: %s" % param
+                    print(" Typed parameter wrong: %s" % param)
                     return self.disallowed(param, param_type)
-            except (TypeError, ValueError), e:
-                print " %s -> %s" % (param, e)
+            except (TypeError, ValueError) as e:
+                print(" %s -> %s" % (param, e))
                 return self.disallowed(param, param_type)
                 
         return fn(request, *args, **kwargs)
@@ -96,4 +95,4 @@ class required_params(object):
         return HttpResponse(json.encode({
             'message': message,
             'code': -1,
-        }), mimetype="application/json", status=status_code)
+        }), content_type="application/json", status=status_code)

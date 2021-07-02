@@ -171,7 +171,6 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
     
     unread_counts: function() {
         var starred_feed = NEWSBLUR.assets.starred_feeds.get_feed(this.id);
-        
         return {
             ps: this.get('ps') || 0,
             nt: this.get('nt') || 0,
@@ -283,7 +282,8 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
     
     fetch: function(options) {
         var data = {
-            'v': 2
+            'v': 2,
+            'update_counts': false
         };
 
         options = _.extend({

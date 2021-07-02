@@ -32,32 +32,12 @@
     self.view.layer.shadowOpacity = 0.5;
     self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
     
-    UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
-    if ([ThemeManager themeManager].isDarkTheme) {
-        separatorImage = [UIImage imageNamed:@"bar_separator_dark"];
-    }
-    UIBarButtonItem *separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
-                                                                     target:nil
-                                                                     action:nil];
-    [separatorBarButton setEnabled:NO];
-    
-    UIBarButtonItem *sendToBarButton = [UIBarButtonItem
-                                        barItemWithImage:[UIImage imageNamed:@"barbutton_sendto"]
-                                        target:self
-                                        action:@selector(doOpenActionSheet:)];
-    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         closeButton = [UIBarButtonItem barItemWithImage:[UIImage imageNamed:@"ios7_back_button"]
                                                  target:self
                                                  action:@selector(closeOriginalView)];
         self.navigationItem.leftBarButtonItem = closeButton;
     }
-    
-    backBarButton = [UIBarButtonItem
-                     barItemWithImage:[UIImage imageNamed:@"barbutton_back"]
-                     target:self
-                     action:@selector(webViewGoBack:)];
-    backBarButton.enabled = NO;
     
     titleView = [[UILabel alloc] init];
     titleView.textColor = UIColorFromRGB(0x303030);
@@ -67,11 +47,6 @@
     titleView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.navigationItem.titleView = titleView;
     
-    self.navigationItem.rightBarButtonItems = @[sendToBarButton,
-                                                separatorBarButton,
-                                                backBarButton
-                                                ];
-
     webView = [[WKWebView alloc] initWithFrame:self.view.frame];
     [webView sizeToFit];
     webView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
@@ -81,11 +56,13 @@
     [self.view addSubview:webView];
     [self.webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:NULL];
     
-    CGFloat progressBarHeight = 2.f;
-    CGRect navigaitonBarBounds = self.navigationController.navigationBar.bounds;
-    CGRect barFrame = CGRectMake(0, navigaitonBarBounds.origin.y + navigaitonBarBounds.size.height - progressBarHeight, navigaitonBarBounds.size.width, progressBarHeight);
-    progressView = [[NJKWebViewProgressView alloc] initWithFrame:barFrame];
+    CGFloat progressBarHeight = 1.f;
+    CGRect navigationBarFrame = self.navigationController.navigationBar.bounds;
+    CGRect barFrame = CGRectMake(0, CGRectGetMaxY(navigationBarFrame) - progressBarHeight - 2, navigationBarFrame.size.width, progressBarHeight);
+    progressView = [[UIProgressView alloc] initWithFrame:barFrame];
+    progressView.progressViewStyle = UIProgressViewStyleBar;
     progressView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+    [self.navigationController.navigationBar addSubview:progressView];
     
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
     
@@ -117,22 +94,11 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     appDelegate.originalStoryViewNavController.navigationBar.hidden = YES;
-//    self.swiper = [[SloppySwiper alloc] initWithNavigationController:self.navigationController];
-//    self.navigationController.delegate = self.swiper;
-
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-
-    [self.navigationController.navigationBar addSubview:progressView];
     [self resetProgressBar];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    self.navigationController.navigationBar.alpha = 1;
-    [progressView removeFromSuperview];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -157,24 +123,18 @@
 }
 
 - (void)resetProgressBar {
-    if (finishedLoading) return;
-    
-    progressView.progressBarView.alpha = 0.0f;
+    progressView.alpha = 0.0f;
     [progressView setProgress:0 animated:NO];
-    [progressView setProgress:NJKInitialProgressValue animated:YES];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if ([keyPath isEqualToString:@"estimatedProgress"] && object == self.webView) {
+        progressView.alpha = 1.0f;
         [progressView setProgress:webView.estimatedProgress animated:YES];
         
-        if (webView.estimatedProgress == NJKInteractiveProgressValue) {
-            // The web view has finished parsing the document,
-            // but is still loading sub-resources
-        }
-        
-        if (webView.estimatedProgress == NJKFinalProgressValue) {
+        if (webView.estimatedProgress >= 100) {
             finishedLoading = YES;
+            [self resetProgressBar];
         }
     }
     else {
@@ -207,6 +167,9 @@
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer{
+    if (self.customPageTitle != nil) {
+        return NO;
+    }
     CGPoint velocity = CGPointMake(0, 0);
     if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
         velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view];
@@ -285,9 +248,43 @@
     }
 }
 
+- (void)updateBarItems {
+    if (self.customPageTitle != nil) {
+        self.navigationItem.rightBarButtonItems = nil;
+    } else {
+        UIBarButtonItem *sendToBarButton = [UIBarButtonItem
+                                            barItemWithImage:[UIImage imageNamed:@"barbutton_sendto"]
+                                            target:self
+                                            action:@selector(doOpenActionSheet:)];
+        
+        UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
+        if ([ThemeManager themeManager].isDarkTheme) {
+            separatorImage = [UIImage imageNamed:@"bar_separator_dark"];
+        }
+        
+        UIBarButtonItem *separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
+                                                                         target:nil
+                                                                         action:nil];
+        [separatorBarButton setEnabled:NO];
+        
+        backBarButton = [UIBarButtonItem
+                         barItemWithImage:[UIImage imageNamed:@"barbutton_back"]
+                         target:self
+                         action:@selector(webViewGoBack:)];
+        backBarButton.enabled = NO;
+        
+        self.navigationItem.rightBarButtonItems = @[sendToBarButton,
+                                                    separatorBarButton,
+                                                    backBarButton
+        ];
+    }
+}
+
 - (void)loadInitialStory {
     finishedLoading = NO;
     activeUrl = nil;
+    
+    [self updateBarItems];
     
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
@@ -335,6 +332,7 @@
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     [self updateTitle:self.webView];
     finishedLoading = YES;
+    [self resetProgressBar];
 }
 
 - (void)webView:(WKWebView *)webView didFailLoadWithError:(NSError *)error
@@ -348,6 +346,7 @@
         [self informError:error];   
     }
     finishedLoading = YES;
+    [self resetProgressBar];
 }
 
 # pragma mark -
@@ -366,8 +365,13 @@
 
 - (void)updateTitle:(WKWebView*)aWebView
 {
-    NSString *pageTitleValue = webView.title;
-    titleView.text = [pageTitleValue stringByDecodingHTMLEntities];
+    if (self.customPageTitle != nil) {
+        titleView.text = self.customPageTitle;
+    } else {
+        NSString *pageTitleValue = webView.title;
+        titleView.text = [pageTitleValue stringByDecodingHTMLEntities];
+    }
+    
     [titleView sizeToFit];
 }
 

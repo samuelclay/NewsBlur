@@ -6,6 +6,6 @@
 
 You now have a free account with all the limitations of a free account. But that doesn't mean you can't renew your premium subscription and enjoy the many benefits of using NewsBlur.
 
-Renew now: http://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser
+Renew now: https://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser
 
 Spend a few days trying out NewsBlur again. We hope you love it.{% endblock body %}

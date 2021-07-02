@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from apps.statistics.models import MStatistics
 from apps.rss_feeds.models import Feed
+from apps.reader.models import UserSubscription
 from optparse import make_option
 from utils import feed_fetcher
 from utils.management_functions import daemonize
@@ -12,21 +13,21 @@ import datetime
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option("-f", "--feed", default=None),
-        make_option("-d", "--daemon", dest="daemonize", action="store_true"),
-        make_option("-F", "--force", dest="force", action="store_true"),
-        make_option("-s", "--single_threaded", dest="single_threaded", action="store_true"),
-        make_option('-t', '--timeout', type='int', default=10,
-            help='Wait timeout in seconds when connecting to feeds.'),
-        make_option('-u', '--username', type='str', dest='username'),
-        make_option('-V', '--verbose', action='store_true',
-            dest='verbose', default=False, help='Verbose output.'),
-        make_option('-S', '--skip', type='int',
-            dest='skip', default=0, help='Skip stories per month < #.'),
-        make_option('-w', '--workerthreads', type='int', default=4,
-            help='Worker threads that will fetch feeds in parallel.'),
-    )
+
+    def add_arguments(self, parser):
+        parser.add_argument("-f", "--feed", default=None)
+        parser.add_argument("-d", "--daemon", dest="daemonize", action="store_true")
+        parser.add_argument("-F", "--force", dest="force", action="store_true")
+        parser.add_argument("-s", "--single_threaded", dest="single_threaded", action="store_true")
+        parser.add_argument('-t', '--timeout', type=int, default=10,
+            help='Wait timeout in seconds when connecting to feeds.')
+        parser.add_argument('-u', '--username', type=str, dest='username')
+        parser.add_argument('-V', '--verbose', action='store_true',
+            dest='verbose', default=False, help='Verbose output.')
+        parser.add_argument('-S', '--skip', type=int,
+            dest='skip', default=0, help='Skip stories per month < #.')
+        parser.add_argument('-w', '--workerthreads', type=int, default=4,
+            help='Worker threads that will fetch feeds in parallel.')
 
     def handle(self, *args, **options):
         if options['daemonize']:
@@ -39,17 +40,18 @@ class Command(BaseCommand):
             feeds = Feed.objects.filter(next_scheduled_update__lte=now,
                                         average_stories_per_month__lt=options['skip'],
                                         active=True)
-            print " ---> Skipping %s feeds" % feeds.count()
+            print(" ---> Skipping %s feeds" % feeds.count())
             for feed in feeds:
                 feed.set_next_scheduled_update()
-                print '.',
+                print('.', end=' ')
             return
             
         socket.setdefaulttimeout(options['timeout'])
         if options['force']:
             feeds = Feed.objects.all()
         elif options['username']:
-            feeds = Feed.objects.filter(subscribers__user=User.objects.get(username=options['username']))
+            usersubs = UserSubscription.objects.filter(user=User.objects.get(username=options['username']), active=True)
+            feeds = Feed.objects.filter(pk__in=usersubs.values('feed_id'))
         elif options['feed']:
             feeds = Feed.objects.filter(pk=options['feed'])
         else:
@@ -82,5 +84,5 @@ class Command(BaseCommand):
         
         django.db.connection.close()
         
-        print " ---> Fetching %s feeds..." % feeds.count()
+        print(" ---> Fetching %s feeds..." % feeds.count())
         disp.run_jobs()

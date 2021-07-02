@@ -16,6 +16,7 @@ import static com.newsblur.database.BlurDatabaseHelper.closeQuietly;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
+import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.Story;
@@ -37,6 +38,7 @@ import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.widget.WidgetUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,7 +46,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
@@ -132,6 +133,7 @@ public class NBSyncService extends JobService {
     private List<JobParameters> outstandingStartParams = new ArrayList<JobParameters>();
     private boolean mainSyncRunning = false;
     CleanupService cleanupService;
+    StarredService starredService;
     OriginalTextService originalTextService;
     UnreadsService unreadsService;
     ImagePrefetchService imagePrefetchService;
@@ -165,6 +167,7 @@ public class NBSyncService extends JobService {
             dbHelper = new BlurDatabaseHelper(this);
             iconCache = FileCache.asIconCache(this);
             cleanupService = new CleanupService(this);
+            starredService = new StarredService(this);
             originalTextService = new OriginalTextService(this);
             unreadsService = new UnreadsService(this);
             imagePrefetchService = new ImagePrefetchService(this);
@@ -284,7 +287,8 @@ public class NBSyncService extends JobService {
             // check to see if we are on an allowable network only after ensuring we have CPU
             if (!( (NbActivity.getActiveActivityCount() > 0) ||
                    PrefsUtils.isEnableNotifications(this) || 
-                   PrefsUtils.isBackgroundNetworkAllowed(this) )) {
+                   PrefsUtils.isBackgroundNetworkAllowed(this) ||
+                    WidgetUtils.hasActiveAppWidgets(this)) ) {
                 Log.d(this.getClass().getName(), "Abandoning sync: app not active and network type not appropriate for background sync.");
                 return;
             }
@@ -528,6 +532,8 @@ public class NBSyncService extends JobService {
             isPremium = feedResponse.isPremium;
             isStaff = feedResponse.isStaff;
 
+            PrefsUtils.setPremium(this, feedResponse.isPremium, feedResponse.premiumExpire);
+
             // note all feeds that belong to some folder so we can find orphans
             for (Folder folder : feedResponse.folders) {
                 debugFeedIdsFromFolders.addAll(folder.feedIds);
@@ -585,6 +591,12 @@ public class NBSyncService extends JobService {
             for (StarredCount sc : feedResponse.starredCounts) {
                 starredCountValues.add(sc.getValues());
             }
+
+            // saved searches table
+            List<ContentValues> savedSearchesValues = new ArrayList<>();
+            for (SavedSearch savedSearch : feedResponse.savedSearches) {
+                savedSearchesValues.add(savedSearch.getValues());
+            }
             // the API vends the starred total as a different element, roll it into
             // the starred counts table using a special tag
             StarredCount totalStarred = new StarredCount();
@@ -592,7 +604,7 @@ public class NBSyncService extends JobService {
             totalStarred.tag = StarredCount.TOTAL_STARRED;
             starredCountValues.add(totalStarred.getValues());
 
-            dbHelper.setFeedsFolders(folderValues, feedValues, socialFeedValues, starredCountValues);
+            dbHelper.setFeedsFolders(folderValues, feedValues, socialFeedValues, starredCountValues, savedSearchesValues);
 
             lastFFWriteMillis = System.currentTimeMillis() - startTime;
             lastFeedCount = feedValues.size();
@@ -602,6 +614,7 @@ public class NBSyncService extends JobService {
             UnreadsService.doMetadata();
             unreadsService.start();
             cleanupService.start();
+            starredService.start();
 
         } finally {
             FFSyncRunning = false;
@@ -942,6 +955,7 @@ public class NBSyncService extends JobService {
         //Log.d(this, "checking completion");
         if (mainSyncRunning) return;
         if ((cleanupService != null) && cleanupService.isRunning()) return;
+        if ((starredService != null) && starredService.isRunning()) return;
         if ((originalTextService != null) && originalTextService.isRunning()) return;
         if ((unreadsService != null) && unreadsService.isRunning()) return;
         if ((imagePrefetchService != null) && imagePrefetchService.isRunning()) return;
@@ -1026,6 +1040,7 @@ public class NBSyncService extends JobService {
         if (HousekeepingRunning) return context.getResources().getString(R.string.sync_status_housekeeping);
         if (FFSyncRunning) return context.getResources().getString(R.string.sync_status_ffsync);
         if (CleanupService.activelyRunning) return context.getResources().getString(R.string.sync_status_cleanup);
+        if (StarredService.activelyRunning) return context.getResources().getString(R.string.sync_status_starred);
         if (brief && !AppConstants.VERBOSE_LOG) return null;
         if (ActionsRunning) return String.format(context.getResources().getString(R.string.sync_status_actions), lastActionCount);
         if (RecountsRunning) return context.getResources().getString(R.string.sync_status_recounts);
@@ -1186,6 +1201,7 @@ public class NBSyncService extends JobService {
             }
             if (cleanupService != null) cleanupService.shutdown();
             if (unreadsService != null) unreadsService.shutdown();
+            if (starredService != null) starredService.shutdown();
             if (originalTextService != null) originalTextService.shutdown();
             if (imagePrefetchService != null) imagePrefetchService.shutdown();
             if (primaryExecutor != null) {

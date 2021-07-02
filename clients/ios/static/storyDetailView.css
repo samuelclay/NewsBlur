@@ -52,6 +52,21 @@
     font-family: "Helvetica";
 }
 
+@font-face {
+    font-family: "ChronicleSSm-Book";
+    src: url("ChronicleSSm-Book.otf");
+}
+
+@font-face {
+    font-family: "GothamNarrow-Book";
+    src: url("GothamNarrow-Book.otf");
+}
+
+@font-face {
+    font-family: "WhitneySSm-Book";
+    src: url("WhitneySSm-Book-Bas.otf");
+}
+
 /* Line spacing */
 .NB-story {
     line-height: 1.5em;
@@ -117,7 +132,7 @@
 }
 
 .NB-ipad-wide .NB-button.NB-share-button a {
-    font-size: 14px;
+    font-size: 11px;
 }
 
 /**
@@ -176,7 +191,7 @@
 
 .NB-iphone-wide .NB-button.NB-share-button a,
 .NB-ipad-narrow .NB-button.NB-share-button a {
-    font-size: 14px;
+    font-size: 11px;
 }
 
 /**
@@ -210,7 +225,6 @@ body {
     -webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape while allowing user zoom */
     font-size: 14px;
     line-height: 120%;
-    overflow: hidden;
     font-family: Helvetica;
 }
 
@@ -279,6 +293,18 @@ body.NB-iphone {
 }
 .NB-story-permalink {
     color: #313350;
+}
+
+.NB-story-toggle-changes {
+    display: inline;
+    float: left;
+    padding-top: 1px;
+    padding-left: 24px;
+    color: #818776;
+    font-size: .8em;
+    white-space: nowrap;
+    background: transparent url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAACHklEQVRYCe3YTS8DQRwG8GeXhAOnrVAEofESIiFuJC7q9SAOvoC4Cgc+BQfiik/g0BD1UomDs3hr0QjBRRGtqx527X+TSTayu53d7jRNmKTZ7aQz85tnZ3aSSpqmoZhKqR1mbX0lL6kESVOhzi7MLW3ZjWFVL1tV+lGnQZN01GbiJk4TM38cu7dNiLWan1tkt66uesLG709PT6AoCmqqg1zthSXERv/OfiMS2Ubq7ZVVOV6Fg2h0N6iCgMyo1fXlGaeICgZiKBnyhhOqoCBC0e4jlF1KOXeZXcNc9Xa7k3YfoezaFzwhOwir/zsgOiOPYvtIJm/Z5LmuwtZQ7PgAt3cJ3CVvDEhbWwcXyPdHRsmoqorGhiZI+mlG359fnrgw9CNfE6LBD2NRA9PR3mkgCBMeGuUG+ZYQw1RWVKKsrBzR/V2EQq0YDo8ZSfGKfAGZMcFgnY7ZgVyiv/5k9927b/FrqlYYSmYkPO4qGdZtXiC/MYTyDBKB8QwShfEEYph0+hPBmlpjAeezZghhLq4eGcNkMml8fLxjdy9ibG2vC9gMYfeuQNfxS2SzWUxNTiOgBEDHgZ8YQnGDKJ3zizPU1dbrh2YUSqDKdwyBuI+Oh8d7fH1lEE9cobenD12d3Z7eMzSoU+EGpVKvmBifREtzSAiEIblBA/2DrI3QK/caEqowdf4PMoVheVt0CeVc1OxfDMvpCKgsuoQkegMXU/kBCWzUL4jai/kAAAAASUVORK5CYII=") no-repeat 0 center;
+    background-size: 16px;
 }
 .NB-story-date {
     display: inline;
@@ -525,7 +551,7 @@ div + p {
     max-width: 100%;
     display: none;
     -webkit-touch-callout: none;
-    -webkit-user-select: none; /* Disable selection/copy in UIWebView */
+    -webkit-user-select: none; /* Disable selection/copy in the web view */
 }
 
 /* Get iOS 11 Smart Invert to leave images and videos alone. */
@@ -657,11 +683,22 @@ div + p {
 }
 
 ins {
+    background-color: #BEE8BC;
     text-decoration: none;
 }
 
 del {
-    display: none;
+    background-color: #f5c3c3
+    /*display: none;*/
+}
+
+.NB-story ins {
+    background-color: #BEE8BC;
+    text-decoration: none
+}
+
+.NB-story del {
+    background-color: #f5c3c3
 }
 
 /* Comments */
@@ -818,14 +855,11 @@ a.NB-show-profile {
 }
 .NB-button.NB-share-button div {
     height: auto;
-    background: -webkit-gradient(
-        linear, left top, left bottom, 
-        from(#ECEDE9),
-        color-stop(0.50, #ECEDE9),
-        color-stop(0.50, #E5E6E2),
-        to(#E5E6E2));
-    color: #B0B2AB;
+    background: transparent;
+    color: rgba(0, 0, 0, 0.25);
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    border: 1px solid rgb(0, 0, 0, 0.25);
+    border-radius: 4px;
     line-height: 18px;
 }
 .NB-button:active div,
@@ -863,7 +897,7 @@ a.NB-show-profile {
 }
 
 .NB-button.NB-share-button .NB-icon {
-    background: url("share@2x.png") no-repeat 0 -1px;
+    background: url("share@2x.png") no-repeat 0 0;
     background-size: 16px;
     width: 25px;
     display: inline-block;
@@ -874,12 +908,12 @@ a.NB-show-profile {
 }
 
 .NB-button.NB-train-button .NB-icon {
-    background: url("train@2x.png") no-repeat 0 -1px;
+    background: url("train@2x.png") no-repeat 0 0;
     background-size: 16px;
 }
 
 .NB-button.NB-save-button .NB-icon {
-    background: url("clock@2x.png") no-repeat 0 -1px;
+    background: url("clock@2x.png") no-repeat 0 0;
     background-size: 16px;
 }
 

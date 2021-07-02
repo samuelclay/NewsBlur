@@ -180,7 +180,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             '%0D%0A%0D%0A--%0D%0A%0D%0A',
             this.story.story_permalink,
             '%0D%0A%0D%0A',
-            $(this.story.story_content).text(),
+            encodeURIComponent($(this.story.story_content()).text()),
             '%0D%0A%0D%0A',
             '--',
             '%0D%0A%0D%0A',

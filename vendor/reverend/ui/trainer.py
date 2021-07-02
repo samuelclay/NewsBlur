@@ -4,15 +4,15 @@
 # License as published by the Free Software Foundation.
 #
 
-from Tkinter import *
-import tkFileDialog
-import tkSimpleDialog
-import tkMessageBox
+from tkinter import *
+import tkinter.filedialog
+import tkinter.simpledialog
+import tkinter.messagebox
 
 import os
 
-from util import Command, StatusBar, Notebook
-from tester import TestView
+from .util import Command, StatusBar, Notebook
+from .tester import TestView
 
 class PoolView(Frame):
     def __init__(self, master=None, guesser=None, app=None):
@@ -79,20 +79,20 @@ class PoolView(Frame):
         self.model[name]=(pool, uTok, tTok, train)
 
     def refresh(self):
-        for pool, ut, tt, train in self.model.values():
+        for pool, ut, tt, train in list(self.model.values()):
             ut.set(len(pool))
             tt.set(pool.tokenCount)
             train.set(pool.trainCount)
 
     def save(self):
-        path = tkFileDialog.asksaveasfilename()
+        path = tkinter.filedialog.asksaveasfilename()
         if not path:
             return
         self.guesser.save(path)
         self.app.dirty = False
 
     def load(self):
-        path = tkFileDialog.askopenfilename()
+        path = tkinter.filedialog.askopenfilename()
         if not path:
             return
         self.guesser.load(path)
@@ -100,11 +100,11 @@ class PoolView(Frame):
         self.app.dirty = False
     
     def newPool(self):
-        p = tkSimpleDialog.askstring('Create Pool', 'Name for new pool?')
+        p = tkinter.simpledialog.askstring('Create Pool', 'Name for new pool?')
         if not p:
             return
         if p in self.guesser.pools:
-            tkMessageBox.showwarning('Bad pool name!', 'Pool %s already exists.' % p)
+            tkinter.messagebox.showwarning('Bad pool name!', 'Pool %s already exists.' % p)
         self.guesser.newPool(p)
         self.reload()
         self.app.poolAdded()
@@ -193,7 +193,7 @@ class Trainer(Frame):
 
 
     def loadCorpus(self):
-        path = tkFileDialog.askdirectory()
+        path = tkinter.filedialog.askdirectory()
         if not path:
             return
         self.loadFileList(path)
@@ -203,10 +203,10 @@ class Trainer(Frame):
     def bulkTest(self):
         dirs = []
         for pool in self.guesser.poolNames():
-            path = tkFileDialog.askdirectory()
+            path = tkinter.filedialog.askdirectory()
             dirs.append((pool, path))
         for pool, path in dirs:
-            print pool, path
+            print(pool, path)
             
 
     def displayList(self):
@@ -253,7 +253,7 @@ class Trainer(Frame):
         
     def quitNow(self):
         if self.dirty:
-            if tkMessageBox.askyesno("You have unsaved changes!", "Quit without saving?"):
+            if tkinter.messagebox.askyesno("You have unsaved changes!", "Quit without saving?"):
                 self.quit()
         self.quit()
 

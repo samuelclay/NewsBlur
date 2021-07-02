@@ -154,6 +154,16 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show override mark read on scroll</string>
+			<key>DefaultValue</key>
+			<string>YES</string>
+			<key>Key</key>
+			<string>override_scroll_read_filter</string>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
 			<string>Story titles layout</string>
@@ -174,13 +184,27 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
+			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
 			<string>Preview descriptions</string>
+			<key>Values</key>
+			<array>
+				<string>title</string>
+				<string>short</string>
+				<string>medium</string>
+				<string>long</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Title only</string>
+				<string>Short title and content</string>
+				<string>Medium title and content</string>
+				<string>Long title and content</string>
+			</array>
 			<key>Key</key>
-			<string>story_list_preview_description</string>
+			<string>story_list_preview_text_size</string>
 			<key>DefaultValue</key>
-			<true/>
+			<string>medium</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -202,13 +226,33 @@
 			<key>Key</key>
 			<string>story_list_preview_images_size</string>
 			<key>DefaultValue</key>
-			<string>large</string>
+			<string>small</string>
 		</dict>
 		<dict>
 			<key>Title</key>
 			<string>Feed list</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Feed list order</string>
+			<key>Titles</key>
+			<array>
+				<string>Alphabetical</string>
+				<string>Most used then alphabetical</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>title</string>
+			<key>Values</key>
+			<array>
+				<string>title</string>
+				<string>usage</string>
+			</array>
+			<key>Key</key>
+			<string>feed_list_sort_order</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -295,6 +339,16 @@
 			<string>Switch between both light themes and both dark themes by swiping up or down repeatedly with two fingers, like a light switch.</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Follow system appearance</string>
+			<key>Key</key>
+			<string>theme_follow_system</string>
+			<key>DefaultValue</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -409,6 +463,16 @@
 			<string>Download stories</string>
 			<key>Key</key>
 			<string>offline_allowed</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Download text</string>
+			<key>Key</key>
+			<string>offline_text_download</string>
 			<key>DefaultValue</key>
 			<true/>
 		</dict>
@@ -639,6 +703,7 @@
 			<array>
 				<string>Train intelligence</string>
 				<string>Notifications</string>
+				<string>Statistics</string>
 			</array>
 			<key>DefaultValue</key>
 			<string>notifications</string>
@@ -646,6 +711,7 @@
 			<array>
 				<string>trainer</string>
 				<string>notifications</string>
+				<string>statistics</string>
 			</array>
 			<key>Key</key>
 			<string>feed_swipe_left</string>
@@ -690,6 +756,8 @@
 				<string>Chrome</string>
 				<string>Opera Mini</string>
 				<string>Firefox</string>
+				<string>Edge</string>
+				<string>Brave</string>
 			</array>
 			<key>DefaultValue</key>
 			<string>inappsafari</string>
@@ -702,9 +770,81 @@
 				<string>chrome</string>
 				<string>opera_mini</string>
 				<string>firefox</string>
+				<string>edge</string>
+				<string>brave</string>
 			</array>
 			<key>Key</key>
 			<string>story_browser</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>This setting only applies after the app is restarted.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Play videos</string>
+			<key>Titles</key>
+			<array>
+				<string>Inline</string>
+				<string>Full-screen</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>inline</string>
+			<key>Values</key>
+			<array>
+				<string>inline</string>
+				<string>fullscreen</string>
+			</array>
+			<key>Key</key>
+			<string>video_playback</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Restore position</string>
+			<key>Titles</key>
+			<array>
+				<string>Always</string>
+				<string>Within 1 hour</string>
+				<string>Within 2 hours</string>
+				<string>Within 4 hours</string>
+				<string>Within 6 hours</string>
+				<string>Within 8 hours</string>
+				<string>Within 12 hours</string>
+				<string>Within 1 day</string>
+				<string>Within 2 days</string>
+				<string>Within 1 week</string>
+				<string>Never</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>24</string>
+			<key>Values</key>
+			<array>
+				<string>always</string>
+				<string>1</string>
+				<string>2</string>
+				<string>4</string>
+				<string>6</string>
+				<string>8</string>
+				<string>12</string>
+				<string>24</string>
+				<string>48</string>
+				<string>168</string>
+				<string>never</string>
+			</array>
+			<key>Key</key>
+			<string>restore_state</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show autoscroll</string>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>story_autoscroll</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -757,6 +897,28 @@
 			<string>URL</string>
 			<key>Key</key>
 			<string>custom_domain</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Import and Export</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>Title</key>
+			<string>Import Preferences...</string>
+			<key>Key</key>
+			<string>import_prefs</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>Title</key>
+			<string>Export Preferences...</string>
+			<key>Key</key>
+			<string>export_prefs</string>
 		</dict>
 		<dict>
 			<key>Title</key>

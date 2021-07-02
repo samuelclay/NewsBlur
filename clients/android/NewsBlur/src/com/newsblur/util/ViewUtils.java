@@ -41,31 +41,6 @@ public class ViewUtils {
 		return image;
 	}
 
-    public static void showSystemUI(View view) {
-        view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-    }
-
-    public static void hideSystemUI(View view) {
-        view.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
-    }
-
-    public static boolean isSystemUIHidden(View view) {
-        return (view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_IMMERSIVE) != 0;
-    }
-
-    public static boolean immersiveViewExitedViaSystemGesture(View view) {
-        return view.getSystemUiVisibility() == (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE);
-    }
-
     /**
      * see if Power Save mode is enabled on the device and the UI should disable animations
      * or other extra features.

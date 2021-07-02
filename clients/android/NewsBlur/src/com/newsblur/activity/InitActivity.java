@@ -9,6 +9,7 @@ import android.app.Activity;
 
 import com.newsblur.R;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.NotificationUtils;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 
@@ -41,6 +42,10 @@ public class InitActivity extends Activity {
     private void start() {
         // this is the first Activity launched; use it to init the global singletons in FeedUtils
         FeedUtils.offerInitContext(this);
+
+        // it is safe to call repeatedly because creating an existing notification performs
+        // no operation
+        NotificationUtils.createNotificationChannel(this);
 
         // now before there is any chance at all of an activity hitting the DB and crashing when it
         // cannot find new tables or columns right after an app upgrade, check to see if the DB

@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="primary">@color/nb_green_gray91</color>
+    <color name="primaryDark">@color/black</color>
+    <color name="secondary">@color/newsblur_blue</color>
+
+    <color name="primary.dark">@color/gray13</color>
+    <color name="primaryDark.dark">@color/black</color>
+    <color name="secondary.dark">@color/newsblur_blue</color>
+
+    <color name="primary.black">@color/black</color>
+    <color name="primaryDark.black">@color/black</color>
+    <color name="secondary.black">@color/newsblur_blue</color>
+
     <color name="black">#000000</color>
     <color name="gray07">#121212</color>
     <color name="gray10">#1A1A1A</color>
@@ -66,6 +78,14 @@
     <color name="dark_story_content_text">#CECECE</color>
     <color name="story_author_text">#959595</color>
 
+    <color name="widget_title">#8C8C8C</color>
+    <color name="widget_divider">#42453E</color>
+    <color name="widget_feed_title">#8C8C8C</color>
+    <color name="widget_story_title">#CECECE</color>
+    <color name="widget_story_content">#8C8C8C</color>
+    <color name="widget_story_author">#404040</color>
+    <color name="widget_story_date_time">#BDBDBD</color>
+
     <color name="story_comment_divider">#F0F0F0</color>
     <color name="dark_story_comment_divider">#42453E</color>
     
@@ -106,16 +126,13 @@
     <color name="negative">#CC2A2E</color>
 
     <color name="tag_red">#D89595</color>
-    <color name="tag_red_shadow">#D29090</color>
     <color name="tag_red_text">#FFFFFF</color>
     <color name="tag_green">#AACFA6</color>
-    <color name="tag_green_shadow">#A4C7A0</color>
     <color name="tag_green_text">#FFFFFF</color>
     <color name="tag_gray">#E0E0DE</color>
-    <color name="tag_gray_shadow">#C9C9C8</color>
     <color name="tag_bg_dark">#757575</color>
 
-    <color name="newsblur_blue">#0b445a</color>
+    <color name="newsblur_blue">#319DC5</color>
 
     <color name="progress_circle_complete">@color/gray46</color>
     <color name="progress_circle_remaining">@color/gray75</color>
@@ -129,5 +146,7 @@
     <color name="refresh_2">#db8d36</color>
     <color name="refresh_3">#e9a941</color>
     <color name="refresh_4">#fae576</color>
+
+    <color name="widget_background">#C8000000</color>
 
 </resources>

@@ -116,7 +116,8 @@ blockquote {
 .NB-spinner {
   width: 16px;
   height: 16px;
-  background: url("/media/embed/reader/recycle_spinner.gif") no-repeat 0 0;
+  background: transparent url('/media/embed/reader/ring_spinner.svg') no-repeat center center;
+  background-size: 16px;
   display: none;
   float: right;
   margin-top: -2px;

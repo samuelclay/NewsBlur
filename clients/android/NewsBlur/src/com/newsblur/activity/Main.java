@@ -5,9 +5,11 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.SwipeRefreshLayout;
+
+import androidx.appcompat.widget.PopupMenu;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -17,19 +19,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.widget.AbsListView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.TextView;
-
-import butterknife.ButterKnife;
-import butterknife.Bind;
-import butterknife.OnClick;
 
 import com.newsblur.R;
+import com.newsblur.databinding.ActivityMainBinding;
 import com.newsblur.fragment.FeedIntelligenceSelectorFragment;
 import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LoginAsDialogFragment;
@@ -44,6 +38,7 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
+import com.newsblur.widget.WidgetUtils;
 
 public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, PopupMenu.OnMenuItemClickListener, OnSeekBarChangeListener {
 
@@ -53,15 +48,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	private FragmentManager fragmentManager;
     private SwipeRefreshLayout swipeLayout;
     private boolean wasSwipeEnabled = false;
-    @Bind(R.id.main_sync_status) TextView overlayStatusText;
-    @Bind(R.id.empty_view_image) ImageView emptyViewImage;
-    @Bind(R.id.empty_view_text) TextView emptyViewText;
-    @Bind(R.id.main_menu_button) Button menuButton;
-    @Bind(R.id.main_user_image) ImageView userImage;
-    @Bind(R.id.main_user_name) TextView userName;
-    @Bind(R.id.main_unread_count_neut_text) TextView unreadCountNeutText;
-    @Bind(R.id.main_unread_count_posi_text) TextView unreadCountPosiText;
-    @Bind(R.id.feedlist_search_query) EditText searchQueryInput;
+    private ActivityMainBinding binding;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -69,16 +56,13 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
 		super.onCreate(savedInstanceState);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
-		setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-
-		getActionBar().hide();
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+		setContentView(binding.getRoot());
 
         // set the status bar to an generic loading message when the activity is first created so
         // that something is displayed while the service warms up
-        overlayStatusText.setText(R.string.loading);
-        overlayStatusText.setVisibility(View.VISIBLE);
+        binding.mainSyncStatus.setText(R.string.loading);
+        binding.mainSyncStatus.setVisibility(View.VISIBLE);
 
         swipeLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_container);
         swipeLayout.setColorSchemeResources(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
@@ -87,7 +71,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
 		fragmentManager = getSupportFragmentManager();
 		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
-		folderFeedList.setRetainInstance(true);
         ((FeedIntelligenceSelectorFragment) fragmentManager.findFragmentByTag("feedIntelligenceSelector")).setState(folderFeedList.currentState);
 
         // make sure the interval sync is scheduled, since we are the root Activity
@@ -96,31 +79,39 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         Bitmap userPicture = PrefsUtils.getUserImage(this);
         if (userPicture != null) {
             userPicture = UIUtils.clipAndRound(userPicture, 5, false);
-            userImage.setImageBitmap(userPicture);
+            binding.mainUserImage.setImageBitmap(userPicture);
         }
-        userName.setText(PrefsUtils.getUserDetails(this).username);
-        searchQueryInput.setOnKeyListener(new OnKeyListener() {
+        binding.mainUserName.setText(PrefsUtils.getUserDetails(this).username);
+        binding.feedlistSearchQuery.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
-                    searchQueryInput.setVisibility(View.GONE);
-                    searchQueryInput.setText("");
+                    binding.feedlistSearchQuery.setVisibility(View.GONE);
+                    binding.feedlistSearchQuery.setText("");
                     checkSearchQuery();
                     return true;
                 }
                 if ((keyCode == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
                     checkSearchQuery();
                     return true;
-                }   
+                }
                 return false;
             }
         });
-        searchQueryInput.addTextChangedListener(new TextWatcher() {
+        binding.feedlistSearchQuery.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 checkSearchQuery();
             }
             public void afterTextChanged(Editable s) {}
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
         });
+
+        FeedUtils.currentFolderName = null;
+
+        binding.mainMenuButton.setOnClickListener(v -> onClickMenuButton());
+        binding.mainAddButton.setOnClickListener(v -> onClickAddButton());
+        binding.mainProfileButton.setOnClickListener(v -> onClickProfileButton());
+        binding.mainUserImage.setOnClickListener(v -> onClickUserButton());
+        binding.mainSearchFeedsButton.setOnClickListener(v -> onClickSearchFeedsButton());
 	}
 
     @Override
@@ -146,8 +137,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
 
         if (folderFeedList.getSearchQuery() != null) {
-            searchQueryInput.setText(folderFeedList.getSearchQuery());
-            searchQueryInput.setVisibility(View.VISIBLE);
+            binding.feedlistSearchQuery.setText(folderFeedList.getSearchQuery());
+            binding.feedlistSearchQuery.setVisibility(View.VISIBLE);
         }
 
         // triggerSync() might not actually do enough to push a UI update if background sync has been
@@ -169,8 +160,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         if ( !( (state == StateFilter.ALL) ||
                 (state == StateFilter.SOME) ||
                 (state == StateFilter.BEST) ) ) {
-            searchQueryInput.setText("");
-            searchQueryInput.setVisibility(View.GONE);
+            binding.feedlistSearchQuery.setText("");
+            binding.feedlistSearchQuery.setVisibility(View.GONE);
             checkSearchQuery();
         }
 
@@ -198,8 +189,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	}
 
     public void updateUnreadCounts(int neutCount, int posiCount) {
-        unreadCountNeutText.setText(Integer.toString(neutCount));
-        unreadCountPosiText.setText(Integer.toString(posiCount));
+        binding.mainUnreadCountNeutText.setText(Integer.toString(neutCount));
+        binding.mainUnreadCountPosiText.setText(Integer.toString(posiCount));
     }
 
     /**
@@ -210,22 +201,22 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     public void updateFeedCount(int feedCount) {
         if (feedCount < 1 ) {
             if (NBSyncService.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
-                emptyViewImage.setVisibility(View.INVISIBLE);
-                emptyViewText.setVisibility(View.INVISIBLE);
+                binding.emptyViewImage.setVisibility(View.INVISIBLE);
+                binding.emptyViewText.setVisibility(View.INVISIBLE);
             } else {
-                emptyViewImage.setVisibility(View.VISIBLE);
+                binding.emptyViewImage.setVisibility(View.VISIBLE);
                 if (folderFeedList.currentState == StateFilter.BEST) {
-                    emptyViewText.setText(R.string.empty_list_view_no_focus_stories);
+                    binding.emptyViewText.setText(R.string.empty_list_view_no_focus_stories);
                 } else if (folderFeedList.currentState == StateFilter.SAVED) {
-                    emptyViewText.setText(R.string.empty_list_view_no_saved_stories);
+                    binding.emptyViewText.setText(R.string.empty_list_view_no_saved_stories);
                 } else {
-                    emptyViewText.setText(R.string.empty_list_view_no_unread_stories);
+                    binding.emptyViewText.setText(R.string.empty_list_view_no_unread_stories);
                 }
-                emptyViewText.setVisibility(View.VISIBLE);
+                binding.emptyViewText.setVisibility(View.VISIBLE);
             }
         } else {
-            emptyViewImage.setVisibility(View.INVISIBLE);
-            emptyViewText.setVisibility(View.INVISIBLE);
+            binding.emptyViewImage.setVisibility(View.INVISIBLE);
+            binding.emptyViewText.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -236,16 +227,16 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             swipeLayout.setRefreshing(false);
         }
 
-        if (overlayStatusText != null) {
+        if (binding.mainSyncStatus != null) {
             String syncStatus = NBSyncService.getSyncStatusMessage(this, false);
             if (syncStatus != null)  {
                 if (AppConstants.VERBOSE_LOG) {
                     syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
                 }
-                overlayStatusText.setText(syncStatus);
-                overlayStatusText.setVisibility(View.VISIBLE);
+                binding.mainSyncStatus.setText(syncStatus);
+                binding.mainSyncStatus.setVisibility(View.VISIBLE);
             } else {
-                overlayStatusText.setVisibility(View.GONE);
+                binding.mainSyncStatus.setVisibility(View.GONE);
             }
         }
     }
@@ -257,8 +248,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         folderFeedList.clearRecents();
     }
 
-    @OnClick(R.id.main_menu_button) void onClickMenuButton() {
-        PopupMenu pm = new PopupMenu(this, menuButton);
+    private void onClickMenuButton() {
+        PopupMenu pm = new PopupMenu(this, binding.mainMenuButton);
         Menu menu = pm.getMenu();
         pm.getMenuInflater().inflate(R.menu.main, menu);
 
@@ -269,21 +260,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             loginAsItem.setVisible(false);
         }
 
-        MenuItem feedbackItem = menu.findItem(R.id.menu_feedback);
-        if (AppConstants.ENABLE_FEEDBACK) {
-            feedbackItem.setTitle(feedbackItem.getTitle() + " (v" + PrefsUtils.getVersion(this) + ")");
-        } else {
-            feedbackItem.setVisible(false);
-        }
-
-        if ( (folderFeedList.currentState == StateFilter.ALL) ||
-             (folderFeedList.currentState == StateFilter.SOME) ||
-             (folderFeedList.currentState == StateFilter.BEST) ) {
-            menu.findItem(R.id.menu_search_feeds).setVisible(true);
-        } else {
-            menu.findItem(R.id.menu_search_feeds).setVisible(false);
-        }
-
         ThemeValue themeValue = PrefsUtils.getSelectedTheme(this);
         if (themeValue == ThemeValue.LIGHT) {
             menu.findItem(R.id.menu_theme_light).setChecked(true);
@@ -291,7 +267,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             menu.findItem(R.id.menu_theme_dark).setChecked(true);
         } else if (themeValue == ThemeValue.BLACK) {
             menu.findItem(R.id.menu_theme_black).setChecked(true);
+        } else if (themeValue == ThemeValue.AUTO) {
+            menu.findItem(R.id.menu_theme_auto).setChecked(true);
         }
+        
+        menu.findItem(R.id.menu_widget).setVisible(WidgetUtils.hasActiveAppWidgets(this));
 
         pm.setOnMenuItemClickListener(this);
         pm.show();
@@ -299,30 +279,18 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-		if (item.getItemId() == R.id.menu_refresh) {
-            onRefresh();
-			return true;
-        } else if (item.getItemId() == R.id.menu_search_feeds) {
-            if (searchQueryInput.getVisibility() != View.VISIBLE) {
-                searchQueryInput.setVisibility(View.VISIBLE);
-                searchQueryInput.requestFocus();
-            } else {
-                searchQueryInput.setText("");
-                searchQueryInput.setVisibility(View.GONE);
-                checkSearchQuery();
-            }
-		} else if (item.getItemId() == R.id.menu_add_feed) {
-			Intent i = new Intent(this, SearchForFeeds.class);
-            startActivity(i);
-			return true;
-		} else if (item.getItemId() == R.id.menu_logout) {
+		if (item.getItemId() == R.id.menu_logout) {
 			DialogFragment newFragment = new LogoutDialogFragment();
 			newFragment.show(getSupportFragmentManager(), "dialog");
 		} else if (item.getItemId() == R.id.menu_settings) {
             Intent settingsIntent = new Intent(this, Settings.class);
             startActivity(settingsIntent);
             return true;
-        } else if (item.getItemId() == R.id.menu_feedback_email) {
+        } else if (item.getItemId() == R.id.menu_widget) {
+            Intent widgetIntent = new Intent(this, WidgetConfig.class);
+            startActivity(widgetIntent);
+            return true;
+		} else if (item.getItemId() == R.id.menu_feedback_email) {
             PrefsUtils.sendLogEmail(this);
             return true;
         } else if (item.getItemId() == R.id.menu_feedback_post) {
@@ -342,6 +310,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             DialogFragment newFragment = new LoginAsDialogFragment();
             newFragment.show(getSupportFragmentManager(), "dialog");
             return true;
+        } else if (item.getItemId() == R.id.menu_theme_auto) {
+            PrefsUtils.setSelectedTheme(this, ThemeValue.AUTO);
+		    UIUtils.restartActivity(this);
         } else if (item.getItemId() == R.id.menu_theme_light) {
             PrefsUtils.setSelectedTheme(this, ThemeValue.LIGHT);
             UIUtils.restartActivity(this);
@@ -351,23 +322,42 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         } else if (item.getItemId() == R.id.menu_theme_black) {
             PrefsUtils.setSelectedTheme(this, ThemeValue.BLACK);
             UIUtils.restartActivity(this);
+        } else if (item.getItemId() == R.id.menu_premium_account) {
+            Intent intent = new Intent(this, Premium.class);
+            startActivity(intent);
+            return true;
+        } else if (item.getItemId() == R.id.menu_mute_sites) {
+		    Intent intent = new Intent(this, MuteConfig.class);
+		    startActivity(intent);
+		    return true;
         }
 		return false;
     }
 
-    @OnClick(R.id.main_add_button) void onClickAddButton() {
+    private void onClickAddButton() {
         Intent i = new Intent(this, SearchForFeeds.class);
         startActivity(i);
     }
 
-    @OnClick(R.id.main_profile_button) void onClickProfileButton() {
+    private void onClickProfileButton() {
         Intent i = new Intent(this, Profile.class);
         startActivity(i);
     }
 
-    @OnClick(R.id.main_user_image) void onClickUserButton() {
+    private void onClickUserButton() {
         Intent i = new Intent(this, Profile.class);
         startActivity(i);
+    }
+
+    private void onClickSearchFeedsButton() {
+        if (binding.feedlistSearchQuery.getVisibility() != View.VISIBLE) {
+            binding.feedlistSearchQuery.setVisibility(View.VISIBLE);
+            binding.feedlistSearchQuery.requestFocus();
+        } else {
+            binding.feedlistSearchQuery.setText("");
+            binding.feedlistSearchQuery.setVisibility(View.GONE);
+            checkSearchQuery();
+        }
     }
 
     @Override
@@ -395,7 +385,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 	}
 
     private void checkSearchQuery() {
-        String q = searchQueryInput.getText().toString().trim();
+        String q = binding.feedlistSearchQuery.getText().toString().trim();
         if (q.length() < 1) {
             q = null;
         }

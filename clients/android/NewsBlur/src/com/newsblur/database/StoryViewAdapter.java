@@ -4,8 +4,8 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Parcelable;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.util.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.DiffUtil;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
@@ -18,18 +18,16 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.newsblur.R;
+import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.NbActivity;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
@@ -42,6 +40,7 @@ import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StoryListStyle;
 import com.newsblur.util.StoryUtils;
+import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
 
 /**
@@ -127,7 +126,11 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public int getStoryCount() {
-        return stories.size();
+        if (fs != null && UIUtils.needsPremiumAccess(context, fs)) {
+            return Math.min(3, stories.size());
+        } else {
+            return stories.size();
+        }
     }
 
     /**
@@ -308,16 +311,16 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                                             MenuItem.OnMenuItemClickListener,
                                             View.OnTouchListener {
 
-        @Bind(R.id.story_item_favicon_borderbar_1) View leftBarOne;
-        @Bind(R.id.story_item_favicon_borderbar_2) View leftBarTwo;
-        @Bind(R.id.story_item_inteldot) ImageView intelDot;
-        @Bind(R.id.story_item_thumbnail) ImageView thumbView;
-        @Bind(R.id.story_item_feedicon) ImageView feedIconView;
-        @Bind(R.id.story_item_feedtitle) TextView feedTitleView;
-        @Bind(R.id.story_item_title) TextView storyTitleView;
-        @Bind(R.id.story_item_date) TextView storyDate;
-        @Bind(R.id.story_item_saved_icon) View savedView;
-        @Bind(R.id.story_item_shared_icon) View sharedView;
+        View leftBarOne;
+        View leftBarTwo;
+        ImageView intelDot;
+        ImageView thumbView;
+        ImageView feedIconView;
+        TextView feedTitleView;
+        TextView storyTitleView;
+        TextView storyDate;
+        View savedView;
+        View sharedView;
 
         Story story;
         ImageLoader.PhotoToLoad thumbLoader;
@@ -327,9 +330,20 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         boolean gestureL2R = false;
         boolean gestureDebounce = false;
 
+
         public StoryViewHolder(View view) {
             super(view);
-            ButterKnife.bind(StoryViewHolder.this, view);
+            leftBarOne = view.findViewById(R.id.story_item_favicon_borderbar_1);
+            leftBarTwo = view.findViewById(R.id.story_item_favicon_borderbar_2);
+            intelDot = view.findViewById(R.id.story_item_inteldot);
+            thumbView = view.findViewById(R.id.story_item_thumbnail);
+            feedIconView = view.findViewById(R.id.story_item_feedicon);
+            feedTitleView = view.findViewById(R.id.story_item_feedtitle);
+            storyTitleView = view.findViewById(R.id.story_item_title);
+            storyDate = view.findViewById(R.id.story_item_date);
+            savedView = view.findViewById(R.id.story_item_saved_icon);
+            sharedView = view.findViewById(R.id.story_item_shared_icon);
+
             view.setOnClickListener(StoryViewHolder.this);
             view.setOnCreateContextMenuListener(StoryViewHolder.this);
             view.setOnTouchListener(StoryViewHolder.this);
@@ -383,7 +397,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 return true;
 
             case R.id.menu_send_story:
-                FeedUtils.sendStoryBrief(story, context);
+                FeedUtils.sendStoryUrl(story, context);
                 return true;
 
             case R.id.menu_send_story_full:
@@ -391,11 +405,12 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 return true;
 
             case R.id.menu_save_story:
-                FeedUtils.setStorySaved(story, true, context);
+                //TODO get folder name
+                FeedUtils.setStorySaved(story, true, context, null);
                 return true;
 
             case R.id.menu_unsave_story:
-                FeedUtils.setStorySaved(story, false, context);
+                FeedUtils.setStorySaved(story, false, context, null);
                 return true;
 
             case R.id.menu_intel:
@@ -404,6 +419,11 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 intelFrag.show(context.getSupportFragmentManager(), StoryIntelTrainerFragment.class.getName());
                 return true;
 
+            case R.id.menu_go_to_feed:
+                FeedSet fs = FeedSet.singleFeed(story.feedId);
+                FeedItemsList.startActivity(context, fs,
+                        FeedUtils.getFeed(story.feedId), null);
+                return true;
             default:
                 return false;
             }
@@ -443,10 +463,13 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     FeedUtils.markStoryUnread(story, context);
                     break;
                 case GEST_ACTION_SAVE:
-                    FeedUtils.setStorySaved(story, true, context);
+                    FeedUtils.setStorySaved(story, true, context, null);
                     break;
                 case GEST_ACTION_UNSAVE:
-                    FeedUtils.setStorySaved(story, false, context);
+                    FeedUtils.setStorySaved(story, false, context, null);
+                    break;
+                case GEST_ACTION_STATISTICS:
+                    FeedUtils.openStatistics(context, story.feedId);
                     break;
                 case GEST_ACTION_NONE:
                 default:
@@ -461,10 +484,12 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public class StoryRowViewHolder extends StoryViewHolder {
-        @Bind(R.id.story_item_author) TextView storyAuthor;
-        @Bind(R.id.story_item_content) TextView storySnippet;
+        TextView storyAuthor;
+        TextView storySnippet;
         public StoryRowViewHolder(View view) {
             super(view);
+            storyAuthor = view.findViewById(R.id.story_item_author);
+            storySnippet = view.findViewById(R.id.story_item_content);
         }
     }
 
@@ -510,11 +535,12 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
      */
     private void bindCommon(StoryViewHolder vh, int position, Story story) {
         if ((vh instanceof StoryTileViewHolder) ||
-            ((PrefsUtils.isShowThumbnails(context)) && (story.thumbnailUrl != null))) {
+            ((PrefsUtils.getThumbnailStyle(context)  != ThumbnailStyle.OFF) && (story.thumbnailUrl != null))) {
             // when first created, tiles' views tend to not yet have their dimensions calculated, but
             // upon being recycled they will often have a known size, which lets us give a max size to
             // the image loader, which in turn can massively optimise loading.  the image loader will
             // reject nonsene values
+
             int thumbSizeGuess = vh.thumbView.getMeasuredHeight();
             // there is a not-unlikely chance that the recycler will re-use a tile for a story with the
             // same thumbnail.  only load it if it is different.
@@ -548,7 +574,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         vh.storyTitleView.setText(UIUtils.fromHtml(story.title));
-        vh.storyDate.setText(StoryUtils.formatShortDate(context, new Date(story.timestamp)));
+        vh.storyDate.setText(StoryUtils.formatShortDate(context, story.timestamp));
 
         // lists with mixed feeds get added info, but single feeds do not
         if (!singleFeed) {
@@ -627,6 +653,16 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         vh.storyAuthor.setTextSize(textSize * defaultTextSize_story_item_author);
         vh.storySnippet.setTextSize(textSize * defaultTextSize_story_item_snip);
 
+        ThumbnailStyle thumbnailStyle = PrefsUtils.getThumbnailStyle(context);
+        int sizeRes = thumbnailStyle == ThumbnailStyle.SMALL ? R.dimen.thumbnails_small_size : R.dimen.thumbnails_size;
+        int sizeDp = context.getResources().getDimensionPixelSize(sizeRes);
+
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) vh.thumbView.getLayoutParams();
+        if (params.height != sizeDp) {
+            params.height = sizeDp;
+            params.width = sizeDp;
+        }
+
         if (this.ignoreReadStatus || (! story.read)) {
             vh.storyAuthor.setAlpha(1.0f);
             vh.storySnippet.setAlpha(1.0f);
@@ -638,12 +674,13 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    public class FooterViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.footer_view_inner) FrameLayout innerView;
+    public static class FooterViewHolder extends RecyclerView.ViewHolder {
+
+        FrameLayout innerView;
 
         public FooterViewHolder(View view) {
             super(view);
-            ButterKnife.bind(FooterViewHolder.this, view);
+            innerView = view.findViewById(R.id.footer_view_inner);
         }
     }
 
@@ -667,18 +704,19 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            if ((e1.getX() > 10f) &&                  // the gesture should not start too close to the left edge and
-                ((e2.getX()-e1.getX()) > 50f) &&      // move horizontally to the right and
-                (Math.abs(e1.getY()-e2.getY()) < 25f) // have minimal vertical travel, so we don't capture scrolling gestures
-                ) {
+            float displayWidthPx = UIUtils.getDisplayWidthPx(context);
+            float edgeWithNavGesturesPaddingPx = UIUtils.dp2px(context, 40);
+            float rightEdgeNavGesturePaddingPx = displayWidthPx - edgeWithNavGesturesPaddingPx;
+            if (e1.getX() > edgeWithNavGesturesPaddingPx && // the gesture should not start too close to the left edge and
+                e2.getX() - e1.getX() > 50f && // move horizontally to the right and
+                Math.abs(distanceY) < 25f) { // have minimal vertical travel, so we don't capture scrolling gestures
                 vh.gestureL2R = true;
                 vh.gestureDebounce = true;
                 return true;
             }
-            if ((e1.getX() > 10f) &&                  // the gesture should not start too close to the left edge and
-                ((e1.getX()-e2.getX()) > 50f) &&      // move horizontally to the left and
-                (Math.abs(e1.getY()-e2.getY()) < 25f) // have minimal vertical travel, so we don't capture scrolling gestures
-                ) {
+            if (e1.getX() < rightEdgeNavGesturePaddingPx && // the gesture should not start too close to the right edge and
+                e1.getX() - e2.getX() > 50f && // move horizontally to the left and
+                Math.abs(distanceY) < 25f) { // have minimal vertical travel, so we don't capture scrolling gestures
                 vh.gestureR2L = true;
                 vh.gestureDebounce = true;
                 return true;

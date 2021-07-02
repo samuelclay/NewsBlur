@@ -25,6 +25,9 @@ public class PrefConstants {
 	public final static String USER_FOLLOWING_COUNT = "following_count";
 	public final static String USER_SUBSCRIBER_COUNT = "subscribers_count";
 	public final static String USER_SHARED_STORIES_COUNT = "shared_stories_count";
+
+	public static final String IS_PREMIUM = "is_premium";
+	public static final String PREMIUM_EXPIRE = "premium_expire";
 	
 	public static final String PREFERENCE_TEXT_SIZE = "default_reading_text_size";
 	public static final String PREFERENCE_LIST_TEXT_SIZE = "list_text_size";
@@ -51,17 +54,20 @@ public class PrefConstants {
 
     public static final String FEED_DEFAULT_FEED_VIEW_PREFIX = "feed_default_feed_view_";
 
+    public static final String DEFAULT_BROWSER = "default_browser";
+
     public static final String READ_STORIES_FOLDER_NAME = "read_stories";
     public static final String SAVED_STORIES_FOLDER_NAME = "saved_stories";
-    public static final String READING_ENTER_IMMERSIVE_SINGLE_TAP = "immersive_enter_single_tap";
 
     public static final String STORIES_AUTO_OPEN_FIRST = "pref_auto_open_first_unread";
     public static final String STORIES_MARK_READ_ON_SCROLL = "pref_mark_read_on_scroll";
     public static final String STORIES_SHOW_PREVIEWS = "pref_show_content_preview";
     public static final String STORIES_SHOW_THUMBNAILS = "pref_show_thumbnails";
+    public static final String STORIES_THUMBNAILS_STYLE = "pref_thumbnails_style";
 
     public static final String ENABLE_OFFLINE = "enable_offline";
     public static final String ENABLE_IMAGE_PREFETCH = "enable_image_prefetch";
+    public static final String ENABLE_TEXT_PREFETCH = "enable_text_prefetch";
     public static final String NETWORK_SELECT = "offline_network_select";
     public static final String KEEP_OLD_STORIES = "keep_old_stories";
     public static final String CACHE_AGE_SELECT = "cache_age_select";
@@ -84,6 +90,7 @@ public class PrefConstants {
 
     public static final String THEME = "theme";
     public enum ThemeValue {
+        AUTO,
         LIGHT,
         DARK,
         BLACK;
@@ -105,4 +112,10 @@ public class PrefConstants {
     public static final String ENABLE_NOTIFICATIONS = "enable_notifications";
 
     public static final String READING_FONT = "reading_font";
+    public static final String WIDGET_FEED_SET = "widget_feed_set";
+    public static final String FEED_CHOOSER_LIST_ORDER = "feed_chooser_list_order";
+    public static final String FEED_CHOOSER_FEED_ORDER = "feed_chooser_feed_order";
+    public static final String FEED_CHOOSER_FOLDER_VIEW = "feed_chooser_folder_view";
+    public static final String WIDGET_BACKGROUND = "widget_background";
+    public static final String IN_APP_REVIEW = "in_app_review";
 }

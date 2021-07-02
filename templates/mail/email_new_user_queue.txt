@@ -6,7 +6,7 @@
 
 Thanks again for trying out NewsBlur! Your account is ready to go. Just log right in and start reading.
 
-http://{% current_domain %}{{ user.profile.autologin_url }}
+https://{% current_domain %}{{ user.profile.autologin_url }}
 
 I made NewsBlur because I wanted a better way to read the news and talk about it with people. I hope you love it, too.
 

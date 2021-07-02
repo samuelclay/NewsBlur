@@ -15,7 +15,7 @@ def subscribe(request):
     user = request.user
     categories = MCategory.serialize()
     category_titles = [c['title'] for c in categories['categories']]
-    subscribe_category_titles = request.REQUEST.getlist('category') or request.REQUEST.getlist('category[]')
+    subscribe_category_titles = request.POST.getlist('category') or request.POST.getlist('category[]')
     
     invalid_category_title = False
     for category_title in subscribe_category_titles:

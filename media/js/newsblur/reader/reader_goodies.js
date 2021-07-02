@@ -43,7 +43,7 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
                 $.make('a', {
                     className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
                     href: 'https://userstyles.org/styles/124890/newsblur-dark-theme-by-splike'
-                }, 'Download the Dark Theme'),
+                }, 'Download an alternate Dark Theme'),
                 $.make('div', { className: 'NB-goodies-title' }, 'Dark theme for the web'),
                 $.make('div', { className: 'NB-goodies-subtitle' }, [
                     'Use the Stylus browser extension to install a user-contributed dark theme. Note that you should use the Stylus extension and not the Stylish extension due to privacy concerns. ',
@@ -97,10 +97,18 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
-                  href: 'https://market.android.com/details?id=bitwrit.Blar'
-              }, 'View in Android Market'),
+                  href: 'https://play.google.com/store/apps/details?id=com.grazeten'
+              }, 'View in Play Store'),
               $.make('div', { className: 'NB-goodies-android' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Blar')
+              $.make('div', { className: 'NB-goodies-title' }, 'GrazeTEN')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://www.microsoft.com/store/productId/9N85PV1RJD6V'
+              }, 'View in Microsoft Store'),
+              $.make('div', { className: 'NB-goodies-windows' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'RSS Tracker for Windows 10')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
@@ -332,7 +340,7 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('input', {
                   className: 'NB-goodies-custom-input',
-                  value: 'http://www.newsblur.com/?url=BLOG_URL_GOES_HERE'
+                  value: 'https://www.newsblur.com/?url=BLOG_URL_GOES_HERE'
               }),
               $.make('div', { className: 'NB-goodies-custom' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Custom Add Site URL')

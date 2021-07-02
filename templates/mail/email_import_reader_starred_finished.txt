@@ -4,4 +4,4 @@
 
 {% block body %}Good news! NewsBlur has finished importing your starred stories from Google Reader. You are now subscribed to <b>{{ feed_count }}</b> site{{ feed_count|pluralize }} and have <b>{{ starred_count }}</b> saved stor{{ starred_count|pluralize:"y,ies" }}.
 
-Head over to NewsBlur and get reading: http://{% current_domain %}{% endblock body %}
+Head over to NewsBlur and get reading: https://{% current_domain %}{% endblock body %}

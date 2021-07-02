@@ -1,12 +1,12 @@
 import datetime
-from urlparse import urlparse
+import base64
+from urllib.parse import urlparse
 from utils import log as logging
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import condition
 from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse, Http404
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.template import RequestContext
 # from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, merge_feeds
 from apps.rss_feeds.models import MFetchHistory
@@ -16,7 +16,7 @@ from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import MStory
 from utils.user_functions import ajax_login_required
-from utils import json_functions as json, feedfinder2 as feedfinder
+from utils import json_functions as json, feedfinder_forman as feedfinder
 from utils.feed_functions import relative_timeuntil, relative_timesince
 from utils.user_functions import get_user
 from utils.view_functions import get_argument_or_404
@@ -36,15 +36,15 @@ IGNORE_AUTOCOMPLETE = [
 @ajax_login_required
 @json.json_view
 def search_feed(request):
-    address = request.REQUEST.get('address')
-    offset = int(request.REQUEST.get('offset', 0))
+    address = request.GET.get('address')
+    offset = int(request.GET.get('offset', 0))
     if not address:
         return dict(code=-1, message="Please provide a URL/address.")
     
     logging.user(request.user, "~FBFinding feed (search_feed): %s" % address)
     ip = request.META.get('HTTP_X_FORWARDED_FOR', None) or request.META['REMOTE_ADDR']
     logging.user(request.user, "~FBIP: %s" % ip)
-    aggressive = request.user.is_authenticated()
+    aggressive = request.user.is_authenticated
     feed = Feed.get_feed_from_url(address, create=False, aggressive=aggressive, offset=offset)
     if feed:
         return feed.canonical()
@@ -76,13 +76,14 @@ def load_feed_favicon(request, feed_id):
     try:
         feed_icon = MFeedIcon.objects.get(feed_id=feed_id)
     except MFeedIcon.DoesNotExist:
+        logging.user(request, "~FBNo feed icon found: %s" % feed_id)
         not_found = True
         
     if not_found or not feed_icon.data:
         return HttpResponseRedirect(settings.MEDIA_URL + 'img/icons/circular/world.png')
         
-    icon_data = feed_icon.data.decode('base64')
-    return HttpResponse(icon_data, mimetype='image/png')
+    icon_data = base64.b64decode(feed_icon.data)
+    return HttpResponse(icon_data, content_type='image/png')
 
 @json.json_view
 def feed_autocomplete(request):
@@ -159,7 +160,32 @@ def feed_autocomplete(request):
 @json.json_view
 def load_feed_statistics(request, feed_id):
     user = get_user(request)
-    timezone = user.profile.timezone
+    feed = get_object_or_404(Feed, pk=feed_id)
+    stats = assemble_statistics(user, feed_id)
+    
+    logging.user(request, "~FBStatistics: ~SB%s" % (feed))
+
+    return stats
+
+def load_feed_statistics_embedded(request, feed_id):
+    user = get_user(request)
+    feed = get_object_or_404(Feed, pk=feed_id)
+    stats = assemble_statistics(user, feed_id)
+    
+    logging.user(request, "~FBStatistics (~FCembedded~FB): ~SB%s" % (feed))
+    
+    return render(
+        request,
+        'rss_feeds/statistics.xhtml',
+        {
+            'stats': json.json_encode(stats),
+            'feed_js': json.json_encode(feed.canonical()),
+            'feed': feed,
+        }
+    )
+
+def assemble_statistics(user, feed_id):
+    user_timezone = user.profile.timezone
     stats = dict()
     feed = get_object_or_404(Feed, pk=feed_id)
     feed.update_all_statistics()
@@ -175,7 +201,7 @@ def load_feed_statistics(request, feed_id):
     if feed.is_push:
         try:
             stats['push_expires'] = localtime_for_timezone(feed.push.lease_expires, 
-                                                           timezone).strftime("%Y-%m-%d %H:%M:%S")
+                                                           user_timezone).strftime("%Y-%m-%d %H:%M:%S")
         except PushSubscription.DoesNotExist:
             stats['push_expires'] = 'Missing push'
             feed.is_push = False
@@ -207,10 +233,10 @@ def load_feed_statistics(request, feed_id):
         stats['story_count_history'] = story_count_history
     
     # Rotate hours to match user's timezone offset
-    localoffset = timezone.utcoffset(datetime.datetime.utcnow())
+    localoffset = user_timezone.utcoffset(datetime.datetime.utcnow())
     hours_offset = int(localoffset.total_seconds() / 3600)
     rotated_hours = {}
-    for hour, value in stats['story_hours_history'].items():
+    for hour, value in list(stats['story_hours_history'].items()):
         rotated_hours[str(int(hour)+hours_offset)] = value
     stats['story_hours_history'] = rotated_hours
     
@@ -227,13 +253,11 @@ def load_feed_statistics(request, feed_id):
     stats['classifier_counts'] = json.decode(feed.data.feed_classifier_counts)
     
     # Fetch histories
-    fetch_history = MFetchHistory.feed(feed_id, timezone=timezone)
+    fetch_history = MFetchHistory.feed(feed_id, timezone=user_timezone)
     stats['feed_fetch_history'] = fetch_history['feed_fetch_history']
     stats['page_fetch_history'] = fetch_history['page_fetch_history']
     stats['feed_push_history'] = fetch_history['push_history']
     
-    logging.user(request, "~FBStatistics: ~SB%s" % (feed))
-
     return stats
 
 @json.json_view
@@ -251,7 +275,7 @@ def load_feed_settings(request, feed_id):
     
     return stats
 
-@ratelimit(minutes=5, requests=30)
+@ratelimit(minutes=1, requests=30)
 @json.json_view
 def exception_retry(request):
     user = get_user(request)
@@ -485,18 +509,23 @@ def status(request):
     now      = datetime.datetime.now()
     hour_ago = now - datetime.timedelta(minutes=minutes)
     feeds    = Feed.objects.filter(last_update__gte=hour_ago).order_by('-last_update')
-    return render_to_response('rss_feeds/status.xhtml', {
+    return render(request, 'rss_feeds/status.xhtml', {
         'feeds': feeds
-    }, context_instance=RequestContext(request))
+    })
 
 @json.json_view
 def original_text(request):
-    story_id = request.REQUEST.get('story_id')
-    feed_id = request.REQUEST.get('feed_id')
-    story_hash = request.REQUEST.get('story_hash', None)
-    force = request.REQUEST.get('force', False)
-    debug = request.REQUEST.get('debug', False)
+    # iOS sends a POST, web sends a GET
+    GET_POST = getattr(request, request.method)
+    story_id = GET_POST.get('story_id')
+    feed_id = GET_POST.get('feed_id')
+    story_hash = GET_POST.get('story_hash', None)
+    force = GET_POST.get('force', False)
+    debug = GET_POST.get('debug', False)
 
+    if not story_hash and not story_id:
+        return {'code': -1, 'message': 'Missing story_hash.', 'original_text': None, 'failed': True}
+    
     if story_hash:
         story, _ = MStory.find_story(story_hash=story_hash)
     else:
@@ -518,11 +547,11 @@ def original_text(request):
         'failed': not original_text or len(original_text) < 100,
     }
 
-@required_params('story_hash')
+@required_params('story_hash', method="GET")
 def original_story(request):
-    story_hash = request.REQUEST.get('story_hash')
-    force = request.REQUEST.get('force', False)
-    debug = request.REQUEST.get('debug', False)
+    story_hash = request.GET.get('story_hash')
+    force = request.GET.get('force', False)
+    debug = request.GET.get('debug', False)
 
     story, _ = MStory.find_story(story_hash=story_hash)
 
@@ -535,11 +564,11 @@ def original_story(request):
 
     return HttpResponse(original_page or "")
 
-@required_params('story_hash')
+@required_params('story_hash', method="GET")
 @json.json_view
 def story_changes(request):
-    story_hash = request.REQUEST.get('story_hash', None)
-    show_changes = is_true(request.REQUEST.get('show_changes', True))
+    story_hash = request.GET.get('story_hash', None)
+    show_changes = is_true(request.GET.get('show_changes', True))
     story, _ = MStory.find_story(story_hash=story_hash)
     if not story:
         logging.user(request, "~FYFetching ~FGoriginal~FY story page: ~FRstory not found")

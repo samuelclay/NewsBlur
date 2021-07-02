@@ -35,6 +35,9 @@ public class DatabaseConstants {
 	public static final String FEED_LINK = "link";
 	public static final String FEED_ADDRESS = "address";
 	public static final String FEED_SUBSCRIBERS = "subscribers";
+	public static final String FEED_OPENS = "opens";
+	public static final String FEED_LAST_STORY_DATE = "last_story_date";
+	public static final String FEED_AVERAGE_STORIES_PER_MONTH = "average_stories_per_month";
 	public static final String FEED_UPDATED_SECONDS = "updated_seconds";
 	public static final String FEED_FAVICON_FADE = "favicon_fade";
 	public static final String FEED_FAVICON_COLOR = "favicon_color";
@@ -104,6 +107,7 @@ public class DatabaseConstants {
     public static final String STORY_SEARCH_HIT = "search_hit";
     public static final String STORY_THUMBNAIL_URL = "thumbnail_url";
     public static final String STORY_INFREQUENT = "infrequent";
+    public static final String STORY_HAS_MODIFICATIONS = "has_modifications";
 
     public static final String READING_SESSION_TABLE = "reading_session";
     public static final String READING_SESSION_STORY_HASH = "session_story_hash";
@@ -145,6 +149,13 @@ public class DatabaseConstants {
     public static final String STARREDCOUNTS_TAG = "tag";
     public static final String STARREDCOUNTS_FEEDID = "feed_id";
 
+    public static final String SAVED_SEARCH_TABLE = "saved_search";
+    public static final String SAVED_SEARCH_FEED_TITLE = "saved_search_title";
+    public static final String SAVED_SEARCH_FAVICON = "saved_search_favicon";
+    public static final String SAVED_SEARCH_ADDRESS = "saved_search_address";
+    public static final String SAVED_SEARCH_QUERY = "saved_search_query";
+    public static final String SAVED_SEARCH_FEED_ID = "saved_search_feed_id";
+
     public static final String NOTIFY_DISMISS_TABLE = "notify_dimiss";
     public static final String NOTIFY_DISMISS_STORY_HASH = "story_hash";
     public static final String NOTIFY_DISMISS_TIME = "time";
@@ -182,7 +193,10 @@ public class DatabaseConstants {
 		FEED_FAVICON_BORDER + TEXT + ", " +
 		FEED_LINK + TEXT + ", " + 
 		FEED_SUBSCRIBERS + TEXT + ", " +
-		FEED_TITLE + TEXT + ", " + 
+		FEED_TITLE + TEXT + ", " +
+		FEED_OPENS + INTEGER + ", " +
+		FEED_AVERAGE_STORIES_PER_MONTH + INTEGER + ", " +
+		FEED_LAST_STORY_DATE + TEXT + ", " +
 		FEED_UPDATED_SECONDS + INTEGER + ", " +
         FEED_NOTIFICATION_TYPES + TEXT + ", " +
         FEED_NOTIFICATION_FILTER + TEXT + ", " +
@@ -259,7 +273,8 @@ public class DatabaseConstants {
         STORY_IMAGE_URLS + TEXT + ", " +
         STORY_LAST_READ_DATE + INTEGER + ", " +
         STORY_SEARCH_HIT + TEXT + ", " +
-        STORY_THUMBNAIL_URL + TEXT +
+        STORY_THUMBNAIL_URL + TEXT + ", " +
+        STORY_HAS_MODIFICATIONS + INTEGER +
         ")";
 
     static final String READING_SESSION_SQL = "CREATE TABLE " + READING_SESSION_TABLE + " (" +
@@ -297,6 +312,14 @@ public class DatabaseConstants {
 	    STARREDCOUNTS_FEEDID + TEXT +
         ")";
 
+	static final String SAVED_SEARCH_SQL = "CREATE TABLE " + SAVED_SEARCH_TABLE + " (" +
+			SAVED_SEARCH_FEED_TITLE + TEXT + ", " +
+			SAVED_SEARCH_FAVICON + TEXT + ", " +
+			SAVED_SEARCH_ADDRESS + TEXT + ", " +
+			SAVED_SEARCH_QUERY + TEXT + ", " +
+			SAVED_SEARCH_FEED_ID +
+			")";
+
     static final String NOTIFY_DISMISS_SQL = "CREATE TABLE " + NOTIFY_DISMISS_TABLE + " (" +
         NOTIFY_DISMISS_STORY_HASH + TEXT + ", " +
         NOTIFY_DISMISS_TIME + INTEGER + " NOT NULL " +
@@ -323,14 +346,21 @@ public class DatabaseConstants {
         STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS, STORY_INTELLIGENCE_TOTAL,
         STORY_INTELLIGENCE_TITLE, STORY_PERMALINK, STORY_READ, STORY_STARRED, STORY_STARRED_DATE, STORY_TAGS, STORY_USER_TAGS, STORY_TITLE,
         STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_HASH,
-        STORY_LAST_READ_DATE, STORY_THUMBNAIL_URL,
+        STORY_LAST_READ_DATE, STORY_THUMBNAIL_URL, STORY_HAS_MODIFICATIONS,
 	};
 
     private static final String STORY_COLUMNS = 
         TextUtils.join(",", BASE_STORY_COLUMNS) + ", " + 
         FEED_TITLE + ", " + FEED_FAVICON_URL + ", " + FEED_FAVICON_COLOR + ", " + FEED_FAVICON_BORDER + ", " + FEED_FAVICON_FADE + ", " + FEED_FAVICON_TEXT;
 
-    public static final String STORY_QUERY_BASE_1 = 
+	public static final String STORY_QUERY_BASE_0 =
+			"SELECT " +
+					STORY_COLUMNS +
+					" FROM " + STORY_TABLE +
+					" INNER JOIN " + FEED_TABLE +
+					" ON " + STORY_TABLE + "." + STORY_FEED_ID + " = " + FEED_TABLE + "." + FEED_ID +
+					" WHERE ";
+	public static final String STORY_QUERY_BASE_1 =
         "SELECT " +
         STORY_COLUMNS +
         " FROM " + STORY_TABLE +

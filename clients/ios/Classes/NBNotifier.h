@@ -35,6 +35,7 @@ typedef enum {
 @property (nonatomic, strong) UIView *accessoryView;
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, assign) BOOL showing;
+@property (nonatomic, assign) BOOL pendingHide;
 @property (nonatomic, retain) UIView *progressBar;
 @property (nonatomic) NSLayoutConstraint *topOffsetConstraint;
 

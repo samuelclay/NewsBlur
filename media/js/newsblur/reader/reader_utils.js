@@ -6,8 +6,6 @@ NEWSBLUR.utils = {
             return 'Twitter';
             case 'facebook':
             return 'Facebook';
-            case 'appdotnet':
-            return 'App.net';
         }
     },
     
@@ -154,14 +152,121 @@ NEWSBLUR.utils = {
 
         return this.dayNames[dayOfWeek] + ", " + this.monthNames[month] + " " + day + ", " + year;
     },
-    
-    make_folders: function(selected_folder_title, options) {
+
+    make_feed_chooser: function (options) {
         options = options || {};
-        var folders = NEWSBLUR.assets.get_folders();
-        var $options = $.make('select', { className: 'NB-folders', name: options.name });
+        var $chooser = $.make('select', { name: 'feed', className: 'NB-modal-feed-chooser' });
+        var $folders_optgroup = $.make('optgroup', { label: "Folders" });
+        var $feeds_optgroup = $.make('optgroup', { label: "Sites" });
+        var $social_feeds_optgroup = $.make('optgroup', { label: "Blurblogs" });
+        var $saved_searches_optgroup = $.make('optgroup', { label: "Saved Searches" });
+        var $starred_feeds_optgroup = $.make('optgroup', { label: "Saved Tags" });
+        var current_feed_id = options.feed_id;
+        var selected_feed_prefix = '';
+
+        var make_feed_option = function(feed) {
+            if (!feed.get('feed_title')) return;
+            if (!feed.get('active')) return;
+            var prefix = 'feed:';
+            if (feed.is_starred()) prefix = '';
+            else if (feed.is_social()) prefix = '';
+
+            var $option = $.make('option', { value: prefix + feed.id }, feed.get('feed_title'));
+            $option.appendTo(feed.is_starred() ? $starred_feeds_optgroup : 
+                             feed.is_social() ? $social_feeds_optgroup : 
+                             feed.is_search() ? $saved_searches_optgroup : 
+                             $feeds_optgroup);
+            
+            if (feed.id == current_feed_id) {
+                // console.log('Selecting feed id in feed chooser', feed, current_feed_id);
+                $option.attr('selected', true);
+                $chooser.val(prefix + feed.id);
+                selected_feed_prefix = prefix;
+            }
+        };
         
-        var $option = $.make('option', { value: '' }, options.toplevel || "Top Level");
+        this.feeds = NEWSBLUR.assets.get_feeds();
+        this.feeds.each(make_feed_option);
+        
+        if (!options.skip_social) {
+            this.social_feeds = NEWSBLUR.assets.get_social_feeds();
+            this.social_feeds.each(make_feed_option);
+        }
+
+        if (!options.skip_searches) {
+            this.search_feeds = NEWSBLUR.assets.get_search_feeds();
+            this.search_feeds.each(make_feed_option);
+        }
+        
+        if (!options.skip_starred) {
+            this.starred_feeds = NEWSBLUR.assets.get_starred_feeds();
+            this.starred_feeds.each(make_feed_option);
+        }
+        
+        if (options.include_folders) {
+            var $folders = NEWSBLUR.utils.make_folders(options.feed_id, options.toplevel, options.name, options.include_special_folders);
+            $('option', $folders).each(function () {
+                $(this).appendTo($folders_optgroup);
+            });
+        }
+
+        $('option', $feeds_optgroup).tsort();
+        $('option', $social_feeds_optgroup).tsort();
+        $('option', $starred_feeds_optgroup).tsort();
+        $('option', $saved_searches_optgroup).tsort();
+        // $('option[value^=river]', $folders_optgroup).tsort();
+        
+        if (options.include_folders) {
+            $chooser.append($folders_optgroup);
+        }
+        $chooser.append($feeds_optgroup);
+        if (!options.skip_social) {
+            $chooser.append($social_feeds_optgroup);
+        }
+        if (!options.skip_searches) {
+            $chooser.append($saved_searches_optgroup);
+        }
+        if (!options.skip_starred) {
+            $chooser.append($starred_feeds_optgroup);
+        }
+
+        if (options.feed_id) {
+            $chooser.val(selected_feed_prefix + options.feed_id);
+        }
+
+        return $chooser;
+    },
+    
+    make_folders: function (selected_folder_title, toplevel, select_name, include_special_folders) {
+        // console.log('make_folders', selected_folder_title);
+        var folders = NEWSBLUR.assets.get_folders();
+        var $options = $.make('select', { className: 'NB-folders', name: select_name });
+        
+        if (include_special_folders) {
+            var $option = $.make('option', { value: 'river:global' }, "Global Shared Stories");
+            $options.append($option);
+            if (selected_folder_title == "river:global") {
+                $option.attr('selected', true);
+            }
+            
+            var $option = $.make('option', { value: 'river:blurblogs' }, "All Shared Stories");
+            $options.append($option);    
+            if (selected_folder_title == "river:blurblogs") {
+                $option.attr('selected', true);
+            }
+
+            var $option = $.make('option', { value: 'river:infrequent' }, "Infrequent Site Stories");
+            $options.append($option);    
+            if (selected_folder_title == "river:infrequent") {
+                $option.attr('selected', true);
+            }
+        }
+
+        var $option = $.make('option', { value: 'river:' }, toplevel || "Top Level");
         $options.append($option);
+        if (selected_folder_title == "river:") {
+            $option.attr('selected', true);
+        }
 
         $options = this.make_folder_options($options, folders, '&nbsp;&nbsp;&nbsp;', selected_folder_title);
         
@@ -173,7 +278,7 @@ NEWSBLUR.utils = {
         items.each(function(item) {
             if (item.is_folder()) {
                 var $option = $.make('option', { 
-                    value: item.get('folder_title')
+                    value: 'river:'+item.get('folder_title')
                 }, depth + ' ' + item.get('folder_title'));
                 $options.append($option);
                 if (item.get('folder_title') == selected_folder_title) {
@@ -197,7 +302,8 @@ NEWSBLUR.utils = {
             'stackexchange.com',
             'twitter.com',
             'rankexploits',
-            'gamespot.com'
+            'gamespot.com',
+            'royalroad.com'
         ];
         return _.any(BROKEN_URLS, function(broken_url) {
             return _.string.contains(url, broken_url);

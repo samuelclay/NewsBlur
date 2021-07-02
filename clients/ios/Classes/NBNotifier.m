@@ -219,7 +219,12 @@
 }
 
 - (void)showIn:(float)time {
-    showing = YES;
+    if (!self.window) {
+        return;
+    }
+    
+    self.showing = YES;
+    self.pendingHide = NO;
 //    CGRect frame = self.frame;
 //    frame.size.width = self.view.frame.size.width;
 //    self.frame = frame;
@@ -247,6 +252,10 @@
 }
 
 - (void)hideIn:(float)seconds {
+    if (!self.window) {
+        self.pendingHide = YES;
+        return;
+    }
     
 //    if (!showing) return;
     topOffsetConstraint.constant = 0;
@@ -260,7 +269,8 @@
 //        self.hidden = YES;
     }];
     
-    showing = NO;
+    self.showing = NO;
+    self.pendingHide = NO;
 }
 
 - (void)drawRect:(CGRect)rect{

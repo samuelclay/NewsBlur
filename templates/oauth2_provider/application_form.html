@@ -1,7 +1,6 @@
 {% extends "oauth2_provider/base.html" %}
 
 {% load i18n %}
-{% load url from future %}
 {% block content %}
     <div class="block-center">
         <form class="form-horizontal" method="post" action="{% block app-form-action-url %}{% url 'oauth2_provider:update' application.id %}{% endblock app-form-action-url %}">

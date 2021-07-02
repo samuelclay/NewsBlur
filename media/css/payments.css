@@ -53,6 +53,9 @@
 .NB-static-form {
     margin: 0 auto;
     width: 360px;
+}
+
+.NB-stripe-form {
     overflow: hidden;
 }
 
@@ -70,6 +73,10 @@
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+}
+.NB-static-oauth .NB-static-form .controls input,
+.NB-stripe-form.NB-static-form .controls input {
+    width: 180px;
 }
 .NB-static-form .NB-label-right {
     margin: 0 0 24px 206px;
@@ -146,6 +153,12 @@
     overflow: hidden;
 }
 
+.NB-static-form #id_plan {
+    margin: 0;
+}
+.NB-static-form #id_plan label {
+    margin-top: 0;
+}
 .NB-static-form .NB-stripe-plan-choice {
     float: left;
     width: 200px;
@@ -194,4 +207,8 @@
 }
 .NB-static-form input[name=plan] {
     display: none;
+}
+
+.NB-static-form .g-recaptcha {
+    padding-left: 120px;
 }

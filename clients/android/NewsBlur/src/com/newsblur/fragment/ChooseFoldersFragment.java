@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.Set;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,12 +20,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListAdapter;
-import android.widget.ListView;
-
-import butterknife.ButterKnife;
-import butterknife.Bind;
 
 import com.newsblur.R;
+import com.newsblur.databinding.DialogChoosefoldersBinding;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.util.FeedUtils;
@@ -32,8 +30,6 @@ import com.newsblur.util.FeedUtils;
 public class ChooseFoldersFragment extends DialogFragment {
 
 	private Feed feed;
-
-    @Bind(R.id.choose_folders_list) ListView listView;
 
     public static ChooseFoldersFragment newInstance(Feed feed) {
 		ChooseFoldersFragment fragment = new ChooseFoldersFragment();
@@ -62,7 +58,7 @@ public class ChooseFoldersFragment extends DialogFragment {
         final Activity activity = getActivity();
         LayoutInflater inflater = LayoutInflater.from(activity);
         View v = inflater.inflate(R.layout.dialog_choosefolders, null);
-        ButterKnife.bind(this, v);
+        DialogChoosefoldersBinding binding = DialogChoosefoldersBinding.bind(v);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(String.format(getResources().getString(R.string.title_choose_folders), feed.title));
@@ -107,7 +103,7 @@ public class ChooseFoldersFragment extends DialogFragment {
                 return v;
             }
         };
-        listView.setAdapter(adapter);
+        binding.chooseFoldersList.setAdapter(adapter);
 
         Dialog dialog = builder.create();
         dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;

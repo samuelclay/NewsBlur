@@ -1,0 +1,51 @@
+export ZSH=$HOME/.oh-my-zsh
+export CLICOLOR='1'
+export ZSH_THEME="risto"
+export DISABLE_AUTO_UPDATE=true
+
+export WORKON_HOME=/srv/newsblur/venv
+export PROJECT_HOME=/srv/newsblur
+# source /usr/local/bin/virtualenvwrapper.sh
+
+plugins=(git github pip)
+source $ZSH/oh-my-zsh.sh
+
+export PYTHONSTARTUP=$HOME/.pystartup
+export LSCOLORS='gxgxcxdxBxegedabagacad'
+export GOROOT=/srv/code/go
+export GOPATH=/srv/code/go
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*' list-colors "=(#b) #([0-9]#)*=36=31"
+setopt  COMPLETE_IN_WORD
+# Don't complete stuff already on the line                                                                                
+zstyle ':completion::*:(rm|vi):*' ignore-line true
+# Don't complete directory we are already in (../here)                                                                    
+zstyle ':completion:*' ignore-parents parent pwd
+zstyle ':completion::approximate*:*' prefix-needed false
+
+expand-or-complete-with-dots() {
+  echo -n "\e[31m......\e[0m"
+  zle expand-or-complete
+  zle redisplay
+}
+zle -N expand-or-complete-with-dots
+bindkey "^I" expand-or-complete-with-dots
+unsetopt LIST_BEEP
+
+PROMPT='%{$fg_bold[green]%}%n%{$reset_color%}%{$fg_bold[yellow]%}@%M:%{$fg_bold[blue]%}%~%b $(git_prompt_info)%{$reset_color%}%(!.#.$) '
+
+ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg[red]%}‹%B"
+ZSH_THEME_GIT_PROMPT_SUFFIX="%b%{$fg[red]%}›%{$reset_color%}"
+
+# Customize to your needs...
+alias ls='ls -pFa --color'
+alias cd..='cd ..'
+
+alias smtp='python -m smtpd -n -c DebuggingServer 127.0.0.1:1025'
+alias tlnb='echo "----------------\n"; tail -f /srv/newsblur/logs/newsblur.log'
+alias sp='sudo docker exec -it {% if 'task' in inventory_hostname %}{{  inventory_hostname|regex_replace('\d+', '') }}{% else %}newsblur_web{% endif %} python manage.py shell_plus'
+alias dps='sudo docker ps -a'
+alias cdnb='cd /srv/newsblur'
+alias sshdo=/srv/newsblur/utils/ssh.sh
+
+cd /srv/newsblur

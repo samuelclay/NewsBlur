@@ -4,8 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -138,7 +138,7 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 				followButton.setVisibility(View.GONE);
 				unfollowButton.setVisibility(View.VISIBLE);
 			} else {
-				FragmentManager fm = ProfileDetailsFragment.this.getFragmentManager();
+				FragmentManager fm = ProfileDetailsFragment.this.getParentFragmentManager();
 		        AlertDialogFragment alertDialog = AlertDialogFragment.newAlertDialogFragment(getResources().getString(R.string.follow_error));
 		        alertDialog.show(fm, "fragment_edit_name");
 			}	
@@ -164,7 +164,7 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 				unfollowButton.setVisibility(View.GONE);
 				followButton.setVisibility(View.VISIBLE);
 			} else {
-				FragmentManager fm = ProfileDetailsFragment.this.getFragmentManager();
+				FragmentManager fm = ProfileDetailsFragment.this.getParentFragmentManager();
                 AlertDialogFragment alertDialog = AlertDialogFragment.newAlertDialogFragment(getResources().getString(R.string.unfollow_error));
                 alertDialog.show(fm, "fragment_edit_name");
 			}	

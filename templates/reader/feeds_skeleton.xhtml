@@ -17,11 +17,14 @@
                     {% endif %}
                 </div>
                 <div class="NB-feeds-header-user-name">{{ social_profile.username }}</div>
-                <div class="NB-feeds-header-user-interactions">
+                <div class="NB-feeds-header-collapse-sidebar" role="button">
+                    <img src="{{ MEDIA_URL }}/img/reader/chevron_sq_left.png">
+                </div>
+                <div class="NB-feeds-header-user-interactions" role="button">
                     <div class="NB-feeds-header-user-interactions-badge NB-hidden"></div>
                     <img src="{{ MEDIA_URL }}/img/icons/circular/nav_icn_activity_active.png">
                 </div>
-                <div class="NB-feeds-header-user-dashboard">
+                <div class="NB-feeds-header-user-dashboard" role="button">
                     <img src="{{ MEDIA_URL }}/img/icons/circular/nav_icn_dashboard_active.png">
                 </div>
                 <div class="NB-feeds-header-dashboard"></div>
@@ -34,7 +37,11 @@
         <div class="left-center">
 
             <div class="left-center-content NB-sidebar NB-feedlists">
-                <div id="NB-feeds-list-loader">Everything is on its way...</div>
+                <div class="NB-feeds-list-loader">Everything is on its way...</div>
+                <div class="NB-feeds-list-error">
+                    Something went wrong...
+                    <div class="NB-button NB-feeds-list-retry">Retry</div>
+                </div>
                 <div class="NB-feeds-header-wrapper">
                     <div class="NB-feeds-header-container NB-feeds-header-tryfeed-container">
                         <div class="NB-feeds-header NB-feeds-header-tryfeed">
@@ -45,9 +52,9 @@
                 </div>
 
                 <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-global-container">
-                    <div class="NB-feeds-header NB-feeds-header-river-global NB-empty">
+                    <div class="NB-feeds-header NB-feeds-header-river-global NB-empty" role="link">
                         <div class="NB-feeds-header-count unread_count"></div>
-                        <div class="NB-feeds-header-icon"></div>
+                        <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
                             Global Shared Stories
                         </div>
@@ -55,9 +62,9 @@
                 </div>
                 
                 <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-blurblogs-container">
-                    <div class="NB-feeds-header NB-feeds-header-river-blurblogs NB-empty">
+                    <div class="NB-feeds-header NB-feeds-header-river-blurblogs NB-empty" role="link">
                         <div class="NB-feeds-header-count unread_count"></div>
-                        <div class="NB-feeds-header-icon"></div>
+                        <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feedlist-collapse-icon"></div>
                         <div class="NB-feeds-header-title">
                             All Shared Stories
@@ -70,9 +77,9 @@
                 </div>
 
                 <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-infrequent-container">
-                    <div class="NB-feeds-header NB-feeds-header-river-infrequent NB-empty">
+                    <div class="NB-feeds-header NB-feeds-header-river-infrequent NB-empty" role="link">
                         <div class="NB-feeds-header-count unread_count"></div>
-                        <div class="NB-feeds-header-icon"></div>
+                        <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
                             Infrequent Site Stories
                         </div>
@@ -80,9 +87,9 @@
                 </div>
                 
                 <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-sites-container">
-                    <div class="NB-feeds-header NB-feeds-header-river-sites NB-empty">
+                    <div class="NB-feeds-header NB-feeds-header-river-sites NB-empty" role="link">
                         <div class="NB-feeds-header-count unread_count"></div>
-                        <div class="NB-feeds-header-icon"></div>
+                        <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
                             All Site Stories
                         </div>
@@ -92,8 +99,8 @@
                 <ul class="folder NB-feedlist" id="feed_list"></ul>
                 
                 <div class="NB-feeds-header-container NB-feeds-header-read-container NB-hidden">
-                    <div class="NB-feeds-header NB-feeds-header-read">
-                        <div class="NB-feeds-header-icon"></div>
+                    <div class="NB-feeds-header NB-feeds-header-read" role="link">
+                        <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
                             Read Stories
                         </div>
@@ -103,7 +110,7 @@
                 
                 <div class="NB-feeds-header-container NB-feeds-header-searches-container NB-hidden">
                     <div class="NB-feeds-header NB-feeds-header-searches">
-                        <div class="NB-feeds-header-icon"></div>
+                        <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feeds-header-title">
                             Saved Searches
                         </div>
@@ -115,9 +122,9 @@
                 </div>
                 
                 <div class="NB-feeds-header-container NB-feeds-header-starred-container">
-                    <div class="NB-feeds-header NB-feeds-header-starred NB-empty">
+                    <div class="NB-feeds-header NB-feeds-header-starred NB-empty" role="link">
                         <div class="NB-feeds-header-count feed_counts_floater unread_count"></div>
-                        <div class="NB-feeds-header-icon"></div>
+                        <img class="NB-feeds-header-icon" src="" />
                         <div class="NB-feedlist-collapse-icon"></div>
                         <div class="NB-feeds-header-title">
                             Saved Stories
@@ -159,27 +166,27 @@
                             <div class="NB-callout-arrow"></div>
                         </div>
                     </div>
-                    <div class="NB-task-button NB-task-add">
+                    <div class="NB-task-button NB-task-add" role="button">
                         <div class="NB-task-image"></div>
                     </div>
-                    <div class="NB-task-button NB-task-manage NB-disabled">
+                    <div class="NB-task-button NB-task-manage NB-disabled" role="button">
                         <div class="NB-task-image"></div>
                     </div>
                     <div class="NB-taskbar-intelligence">
                         <div class="NB-intelligence-slider">
                             <ul class="segmented-control">
-                                <li class="NB-intelligence-slider-control NB-intelligence-slider-red">
+                                <li class="NB-intelligence-slider-control NB-intelligence-slider-red" role="button">
                                     All
                                 </li>
-                                <li class="NB-intelligence-slider-control NB-intelligence-slider-yellow">
+                                <li class="NB-intelligence-slider-control NB-intelligence-slider-yellow" role="button">
                                     <img src="{{ MEDIA_URL }}embed/icons/circular/g_icn_unread.png">
                                     <span class="NB-intelligence-label">Unread</span>
                                 </li>
-                                <li class="NB-intelligence-slider-control NB-intelligence-slider-green">
+                                <li class="NB-intelligence-slider-control NB-intelligence-slider-green" role="button">
                                     <img src="{{ MEDIA_URL }}embed/icons/circular/g_icn_focus.png">
                                     <span class="NB-intelligence-label">Focus</span>
                                 </li>
-                                <li class="NB-intelligence-slider-control NB-intelligence-slider-blue">
+                                <li class="NB-intelligence-slider-control NB-intelligence-slider-blue" role="button">
                                     <img src="{{ MEDIA_URL }}embed/icons/circular/clock.png">
                                     <span class="NB-intelligence-label">Saved</span>
                                 </li>
@@ -201,17 +208,19 @@
         <div class="NB-feedbar content-north">
             
             <ul class="segmented-control NB-taskbar NB-taskbar-nav">
-                <li class="NB-taskbar-button NB-task-story-previous">
+                <li class="NB-taskbar-button NB-task-story-previous" role="button">
                     <div class="NB-task-image"></div>
                 </li>
-                <li class="NB-taskbar-button NB-task-story-next-unread NB-task-story-next-positive">
+                <li class="NB-taskbar-button NB-task-story-next-unread NB-task-story-next-positive" role="button">
                     <div class="NB-task-image"></div>
-                    <span class="NB-task-title">Next Unread</span>
+                    <span class="NB-task-title">Next unread</span>
                 </li>
-                <li class="NB-taskbar-button NB-task-story-next">
+                <li class="NB-taskbar-button NB-task-story-next" role="button">
                     <div class="NB-task-image"></div>
                 </li>
             </ul>
+            
+            <div class="NB-story-titles-expand-sidebar"></div>
             
             <div class="NB-story-titles-header"></div>
             
@@ -264,7 +273,7 @@
             </ul>
             
             <div class="NB-taskbar-options-container">
-                <span class="NB-taskbar-options">
+                <span class="NB-taskbar-options" role="button">
                     <div class="NB-icon"></div>
                     Style
                 </span>
@@ -303,7 +312,6 @@
                 <div class="NB-story-pane-container">
                     <iframe id="feed_iframe" class="NB-feed-iframe"></iframe>
                     <div class="NB-feed-story-view NB-view-hidden">
-                        <div class="NB-feed-story-view-floater"></div>
                         <div class="NB-feed-stories-container">
                             <div class="NB-feed-story-view-header NB-feedbar"></div>
                             <ul class="NB-feed-stories"></ul>

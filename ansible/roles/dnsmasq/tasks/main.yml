@@ -1,0 +1,63 @@
+---
+- name: Install Dnsmasq package
+  become: yes
+  apt:
+    name: dnsmasq
+    state: present
+
+- name: Install resolvconf package
+  become: yes
+  apt:
+    name: resolvconf
+    state: present
+
+- name: Enable dnsmasq service
+  become: yes
+  service:
+    name: dnsmasq
+    enabled: true
+
+- name: Bind dnsmasq to localhost
+  become: yes
+  lineinfile: dest=/etc/dnsmasq.conf state=present line='listen-address=127.0.0.1'
+
+- name: Check if resolv.conf exists
+  become: yes
+  stat: 
+    path: /etc/resolv.conf
+  register: resolvconf
+
+# - debug: msg="{{resolvconf}}"
+
+- name: Add localhost to resolv.conf
+  become: yes
+  lineinfile: dest=/etc/resolv.conf state=present line='nameserver 127.0.0.1' insertbefore=BOF
+  when: resolvconf.stat.readable
+
+- name: user=root dnsmasq
+  become: yes
+  lineinfile: dest=/etc/dnsmasq.conf state=present line='user=root'
+
+- name: Stop systemd-resolved
+  become: yes
+  systemd:
+    name: systemd-resolved
+    state: stopped
+    enabled: no
+    masked: yes
+
+- name: Create Dnsmasq configuration
+  become: yes
+  template:
+    src: dnsmasq-10-consul.j2
+    dest: /etc/dnsmasq.d/10-consul
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart dnsmasq
+
+- name: Launch dnsmasq
+  become: yes
+  service:
+    name: dnsmasq
+    state: started

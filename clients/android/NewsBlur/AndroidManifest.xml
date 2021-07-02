@@ -1,16 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.newsblur"
-    android:versionCode="160"
-    android:versionName="9.0b1" >
-
-    <uses-sdk
-        android:minSdkVersion="21"
-        android:targetSdkVersion="26" />
+    package="com.newsblur">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
@@ -74,12 +67,18 @@
         <activity
             android:name=".activity.Settings"
             android:label="@string/settings"/>
+
+        <activity
+            android:name=".activity.WidgetConfig"
+            android:launchMode="singleTask"
+            android:label="@string/widget" />
         
         <activity
             android:name=".activity.FeedItemsList" />
         
         <activity
-            android:name=".activity.AllStoriesItemsList" />
+            android:name=".activity.AllStoriesItemsList"
+            android:launchMode="singleTask"/>
 
         <activity
             android:name=".activity.InfrequentItemsList" />
@@ -125,21 +124,27 @@
         
         <activity
             android:name=".activity.FolderReading"/>
-        
-        <activity 
-            android:name=".activity.SearchForFeeds" android:launchMode="singleTop" >
-        	<intent-filter>
-            	<action android:name="android.intent.action.SEARCH" />
-        	</intent-filter>
-        	<meta-data android:name="android.app.searchable" android:resource="@xml/searchable"/>    
-    	</activity>
-        
+
+        <activity
+            android:name=".activity.Premium" />
+
+        <activity
+            android:name=".activity.MuteConfig"
+            android:launchMode="singleTask"
+            android:label="@string/mute_sites"/>
+
+        <activity
+            android:name=".activity.SearchForFeeds"
+            android:launchMode="singleTop" />
+
         <activity
             android:name=".activity.SocialFeedReading"/>
 
-        <service 
+        <service
             android:name=".service.NBSyncService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service android:name=".widget.WidgetRemoteViewsService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <receiver android:name=".service.BootReceiver">
             <intent-filter>
@@ -150,9 +155,26 @@
         <receiver android:name=".util.NotifyDismissReceiver" android:exported="false" />
         <receiver android:name=".util.NotifySaveReceiver" android:exported="false" />
         <receiver android:name=".util.NotifyMarkreadReceiver" android:exported="false" />
-
+        <receiver android:name=".widget.WidgetProvider"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/newsblur_appwidget_info" />
+        </receiver>
+        <receiver android:name=".service.TimeChangeReceiver">
+            <intent-filter >
+                <action android:name="android.intent.action.TIME_SET"/>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".widget.WidgetUpdateReceiver"
+            android:enabled="true"
+            android:exported="false">
+        </receiver>
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="com.newsblur.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">

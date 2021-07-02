@@ -1,0 +1,7 @@
+---
+- name: restart nginx
+  service: name=nginx state=restarted
+ 
+- name: reload dnsmasq
+  become: yes
+  service: name=dnsmasq state=reloaded

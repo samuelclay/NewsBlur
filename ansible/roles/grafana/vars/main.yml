@@ -1,0 +1,5 @@
+grafana_password: "{{ lookup('ini', 'grafana_password section=grafana file=/srv/secrets-newsblur/configs/grafana.ini') }}"
+smtp_host: "{{ lookup('ini', 'smtp_host section=grafana file=/srv/secrets-newsblur/configs/grafana.ini') }}"
+smtp_user: "{{ lookup('ini', 'smtp_user section=grafana file=/srv/secrets-newsblur/configs/grafana.ini') }}"
+smtp_password: "{{ lookup('ini', 'smtp_password section=grafana file=/srv/secrets-newsblur/configs/grafana.ini') }}"
+from_address: "{{ lookup('ini', 'from_address section=grafana file=/srv/secrets-newsblur/configs/grafana.ini') }}"

@@ -86,7 +86,7 @@
     self.activeClassifiers = fromCollection.activeClassifiers;
     self.inSearch = fromCollection.inSearch;
     self.searchQuery = fromCollection.searchQuery;
-    
+    self.savedSearchQuery = fromCollection.savedSearchQuery;
 }
 
 #pragma mark - Story Traversal
@@ -114,7 +114,9 @@
         NSDictionary *story = [self.activeFeedStories objectAtIndex:i];
         NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
         BOOL want = NO;
-        if (self.appDelegate.isSavedStoriesIntelligenceMode) {
+        if (self.showHiddenStories) {
+            want = YES;
+        } else if (self.appDelegate.isSavedStoriesIntelligenceMode) {
             want = [story[@"starred"] boolValue];
         } else {
             want = score >= appDelegate.selectedIntelligence || [[story objectForKey:@"sticky"] boolValue];
@@ -176,7 +178,7 @@
 - (NSInteger)indexOfActiveStory {
     for (NSInteger i=0; i < self.storyCount; i++) {
         NSDictionary *story = [activeFeedStories objectAtIndex:i];
-        if ([appDelegate.activeStory objectForKey:@"story_hash"] == [story objectForKey:@"story_hash"]) {
+        if ([[appDelegate.activeStory objectForKey:@"story_hash"] isEqualToString:[story objectForKey:@"story_hash"]]) {
             return i;
         }
     }
@@ -186,7 +188,7 @@
 - (NSInteger)indexOfStoryId:(id)storyId {
     for (int i=0; i < self.storyCount; i++) {
         NSDictionary *story = [activeFeedStories objectAtIndex:i];
-        if ([story objectForKey:@"story_hash"] == storyId) {
+        if ([[story objectForKey:@"story_hash"] isEqualToString:storyId]) {
             return i;
         }
     }
@@ -195,7 +197,7 @@
 
 - (NSInteger)locationOfStoryId:(id)storyId {
     for (int i=0; i < [activeFeedStoryLocations count]; i++) {
-        if ([activeFeedStoryLocationIds objectAtIndex:i] == storyId) {
+        if ([[activeFeedStoryLocationIds objectAtIndex:i] isEqualToString:storyId]) {
             return i;
         }
     }
@@ -286,6 +288,19 @@
     }
 }
 
+- (NSString *)scrollReadFilterKey {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL shouldOverride = [userPreferences boolForKey:@"override_scroll_read_filter"];
+    
+    if (!shouldOverride) {
+        return @"default_scroll_read_filter";
+    } else if (self.isRiverView) {
+        return [NSString stringWithFormat:@"folder:%@:scroll_read_filter", self.activeFolder];
+    } else {
+        return [NSString stringWithFormat:@"%@:scroll_read_filter", [self.activeFeed objectForKey:@"id"]];
+    }
+}
+
 - (NSString *)storyViewKey {
     if (self.isRiverView) {
         return [NSString stringWithFormat:@"folder:%@:story_view", self.activeFolder];
@@ -294,6 +309,31 @@
     }
 }
 
+- (NSString *)activeTitle {
+    if (isRiverView) {
+        if ([activeFolder isEqualToString:@"river_blurblogs"]) {
+            return @"All Shared Stories";
+        } else if ([activeFolder isEqualToString:@"river_global"]) {
+            return @"Global Shared Stories";
+        } else if ([activeFolder isEqualToString:@"everything"]) {
+            return @"All Stories";
+        } else if ([activeFolder isEqualToString:@"infrequent"]) {
+            return @"Infrequent Site Stories";
+        } else if (isSavedView && activeSavedStoryTag) {
+            return activeSavedStoryTag;
+        } else if ([activeFolder isEqualToString:@"read_stories"]) {
+            return @"Read Stories";
+        } else if ([activeFolder isEqualToString:@"saved_searches"]) {
+            return @"Saved Searches";
+        } else if ([activeFolder isEqualToString:@"saved_stories"]) {
+            return @"Saved Stories";
+        } else {
+            return activeFolder;
+        }
+    } else {
+        return [activeFeed objectForKey:@"feed_title"];
+    }
+}
 
 #pragma mark - Story Management
 
@@ -353,7 +393,7 @@
     [params setObject:[story objectForKey:@"story_feed_id"]
                forKey:@"story_feed_id"];
     
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAsRead:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedMarkAsRead:params];
@@ -381,7 +421,7 @@
     [params setObject:[story objectForKey:@"story_feed_id"]
                    forKey:@"feed_id"];
     
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAsUnread:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedMarkAsUnread:params];
@@ -726,7 +766,7 @@
     [params setObject:storyFeedId forKey:@"feed_id"];
     [params setObject:tags forKey:@"user_tags"];
     
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAsSaved:responseObject withParams:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [appDelegate queueSavedStory:story];
@@ -756,7 +796,7 @@
     [params setObject:storyHash forKey:@"story_id"];
     [params setObject:storyFeedId forKey:@"feed_id"];
     
-    [appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAsUnsaved:responseObject withParams:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [appDelegate queueSavedStory:story];

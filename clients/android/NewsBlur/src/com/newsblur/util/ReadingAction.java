@@ -59,6 +59,7 @@ public class ReadingAction implements Serializable {
     private String replyId;
     private String notifyFilter;
     private List<String> notifyTypes;
+    private List<String> userTags;
     private Classifier classifier;
     private String newFeedName;
 
@@ -96,10 +97,15 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
-    public static ReadingAction saveStory(String hash) {
+    public static ReadingAction saveStory(String hash, List<String> userTags) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.SAVE;
         ra.storyHash = hash;
+        if (userTags == null) {
+            ra.userTags = new ArrayList<String>();
+        } else {
+            ra.userTags = userTags;
+        }
         return ra;
     }
 
@@ -289,7 +295,7 @@ public class ReadingAction implements Serializable {
                 break;
 
             case SAVE:
-                result = apiManager.markStoryAsStarred(storyHash);
+                result = apiManager.markStoryAsStarred(storyHash, userTags);
                 break;
 
             case UNSAVE:

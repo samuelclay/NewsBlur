@@ -16,7 +16,11 @@ public class SocialFeedItemsList extends ItemsList {
 	    socialFeed = (SocialFeed) getIntent().getSerializableExtra(EXTRA_SOCIAL_FEED);
 		super.onCreate(bundle);
 				
-        UIUtils.setCustomActionBar(this, socialFeed.photoUrl, socialFeed.feedTitle);
+        UIUtils.setupToolbar(this, socialFeed.photoUrl, socialFeed.feedTitle, false);
 	}
 
+	@Override
+	String getSaveSearchFeedId() {
+		return "social:" + socialFeed.userId;
+	}
 }

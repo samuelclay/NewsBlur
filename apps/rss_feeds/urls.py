@@ -1,10 +1,11 @@
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 from apps.rss_feeds import views
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^feed_autocomplete', views.feed_autocomplete, name='feed-autocomplete'),
     url(r'^search_feed', views.search_feed, name='search-feed'),
     url(r'^statistics/(?P<feed_id>\d+)', views.load_feed_statistics, name='feed-statistics'),
+    url(r'^statistics_embedded/(?P<feed_id>\d+)', views.load_feed_statistics_embedded, name='feed-statistics-embedded'),
     url(r'^feed_settings/(?P<feed_id>\d+)', views.load_feed_settings, name='feed-settings'),
     url(r'^feed/(?P<feed_id>\d+)/?', views.load_single_feed, name='feed-info'),
     url(r'^icon/(?P<feed_id>\d+)/?', views.load_feed_favicon, name='feed-favicon'),
@@ -16,4 +17,4 @@ urlpatterns = patterns('',
     url(r'^original_text', views.original_text, name='original-text'),
     url(r'^original_story', views.original_story, name='original-story'),
     url(r'^story_changes', views.story_changes, name='story-changes'),
-)
+]

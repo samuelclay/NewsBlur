@@ -1,0 +1,2 @@
+exclude = '{$exclude,*.tgz,*.gz,static/*.js,static/*.css}'
+excludeDirectories = "{$excludeDirectories,logs,data,clients/android,media/fonts,node_modules,venv,fonts,clients,docker}"

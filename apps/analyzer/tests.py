@@ -89,7 +89,7 @@ class CollocationTest(TestCase):
         finder.apply_freq_filter(2)
         
         # return the 10 n-grams with the highest PMI
-        print finder.nbest(trigram_measures.pmi, 10)
+        print(finder.nbest(trigram_measures.pmi, 10))
 
         titles = [
             'Co-op of the day',
@@ -103,7 +103,7 @@ class CollocationTest(TestCase):
         tokens = nltk.tokenize.word(' '.join(titles))
         ngrams = nltk.ngrams(tokens, 4)
         d = [key for key, group in groupby(sorted(ngrams)) if len(list(group)) >= 2]
-        print d
+        print(d)
 
 class ClassifierTest(TestCase):
     
@@ -139,10 +139,10 @@ class ClassifierTest(TestCase):
         # user = User.objects.all()
         # feed = Feed.objects.all()
         
-        management.call_command('loaddata', 'brownstoner.json', verbosity=0)
-        management.call_command('refresh_feed', force=1, feed=1, single_threaded=True, daemonize=False)
-        management.call_command('loaddata', 'brownstoner2.json', verbosity=0)
-        management.call_command('refresh_feed', force=1, feed=1, single_threaded=True, daemonize=False)
+        management.call_command('loaddata', 'brownstoner.json', verbosity=0, commit=False, skip_checks=False)
+        management.call_command('refresh_feed', force=1, feed=1, single_threaded=True, daemonize=False, skip_checks=False)
+        management.call_command('loaddata', 'brownstoner2.json', verbosity=0, commit=False, skip_checks=False)
+        management.call_command('refresh_feed', force=1, feed=1, single_threaded=True, daemonize=False, skip_checks=False)
         
         stories = MStory.objects(story_feed_id=1)[:53]
         
@@ -153,7 +153,7 @@ class ClassifierTest(TestCase):
 
         phrasefilter.pare_phrases()
         phrases = phrasefilter.get_phrases()
-        print phrases
+        print(phrases)
         
         tokenizer = Tokenizer(phrases)
         classifier = Bayes(tokenizer) # FisherClassifier(user[0], feed[0], phrases)

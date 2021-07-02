@@ -5,10 +5,9 @@ import time
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.conf import settings
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_str, smart_str
 
-from user_functions import extract_user_agent
-from apps.statistics.rstats import RStats
+from .user_functions import extract_user_agent
 
 
 class NullHandler(logging.Handler):  # exists in python 3.1
@@ -22,7 +21,7 @@ def getlogger():
 
 
 def user(u, msg, request=None, warn_color=True):
-    msg = smart_unicode(msg)
+    msg = smart_str(msg)
     if not u:
         return debug(msg)
 
@@ -46,25 +45,15 @@ def user(u, msg, request=None, warn_color=True):
                 color,
                 seconds,
             )
-    is_premium = u.is_authenticated() and u.profile.is_premium
+    is_premium = u.is_authenticated and u.profile.is_premium
     premium = '*' if is_premium else ''
-    username = cipher(unicode(u)) if settings.CIPHER_USERNAMES else unicode(u)
+    username = cipher(str(u)) if settings.CIPHER_USERNAMES else str(u)
     info(' ---> [~FB~SN%-6s~SB] %s[%s%s] %s' % (platform, time_elapsed, username, premium, msg))
-    page_load_paths = [
-        "/reader/feed/",
-        "/social/stories/",
-        "/reader/river_stories/",
-        "/social/river_stories/"
-    ]
-    if request:
-        path = RStats.clean_path(request.path)
-        if path in page_load_paths:
-            RStats.add('page_load', duration=seconds)
 
 
 def cipher(msg):
     shift = len(msg)
-    in_alphabet = unicode(string.ascii_lowercase)
+    in_alphabet = str(string.ascii_lowercase)
     out_alphabet = in_alphabet[shift:] + in_alphabet[:shift]
     translation_table = dict((ord(ic), oc) for ic, oc in zip(in_alphabet, out_alphabet))
 
@@ -72,19 +61,19 @@ def cipher(msg):
 
 
 def debug(msg):
-    msg = smart_unicode(msg)
+    msg = smart_str(msg)
     logger = getlogger()
     logger.debug(colorize(msg))
 
 
 def info(msg):
-    msg = smart_unicode(msg)
+    msg = smart_str(msg)
     logger = getlogger()
     logger.info(colorize(msg))
 
 
 def error(msg):
-    msg = smart_unicode(msg)
+    msg = smart_str(msg)
     logger = getlogger()
     logger.error(msg)
 
@@ -123,11 +112,11 @@ def colorize(msg):
         '~BW': Back.WHITE,
         '~BT': Back.RESET,
     }
-    for k, v in params.items():
+    for k, v in list(params.items()):
         msg = re.sub(k, v, msg)
     msg = msg + '~ST~FW~BT'
     # msg = re.sub(r'(~[A-Z]{2})', r'%(\1)s', msg)
-    for k, v in colors.items():
+    for k, v in list(colors.items()):
         msg = msg.replace(k, v)
     return msg
     

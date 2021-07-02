@@ -37,7 +37,7 @@ static UIFont *indicatorFont = nil;
 @synthesize isRead;
 @synthesize isShared;
 @synthesize isSaved;
-@synthesize isShort;
+@synthesize textSize;
 @synthesize isRiverOrSocial;
 @synthesize feedColorBar;
 @synthesize feedColorBarTopBorder;
@@ -188,7 +188,7 @@ static UIFont *indicatorFont = nil;
     
     UIColor *backgroundColor;
     backgroundColor = cell.highlighted || cell.selected ?
-                      UIColorFromLightSepiaMediumDarkRGB(0xFFFDEF, 0xFFFDEF, 0x808A90, 0x0F0F22) : UIColorFromRGB(0xf4f4f4);
+                      UIColorFromLightSepiaMediumDarkRGB(0xFFFDEF, 0xEEECCD, 0x303A40, 0x303030) : UIColorFromLightSepiaMediumDarkRGB(0xF4F4F4, 0xFFFDEF, 0x4F4F4F, 0x101010);
     [backgroundColor set];
     
     CGContextFillRect(context, r);
@@ -198,9 +198,12 @@ static UIFont *indicatorFont = nil;
         BOOL isSmall = [preview isEqualToString:@"small"];
         CGFloat previewOffset = isSmall ? 60 : 0;
         CGFloat previewMargin = isSmall ? 10 : 0;
+        CGFloat maxSize = isSmall ? 64 : 128;
+        CGFloat imageSize = MIN(r.size.height - previewOffset, maxSize);
+        CGFloat topMargin = isSmall ? 14 + riverPadding : 0;
         
-        CGRect imageFrame = CGRectMake(r.size.width - r.size.height + previewOffset - previewMargin, (previewOffset / 2.0) + 1.0,
-                                       r.size.height - previewOffset, r.size.height - previewOffset);
+        CGRect imageFrame = CGRectMake(r.size.width - imageSize - previewMargin, topMargin,
+                                       imageSize, imageSize);
         UIImageView *storyImageView = [[UIImageView alloc] initWithFrame:imageFrame];
         
         UIImage *cachedImage = (UIImage *)[appDelegate.cachedStoryImages objectForKey:cell.storyImageUrl];
@@ -218,7 +221,9 @@ static UIFont *indicatorFont = nil;
             [storyImageView.image drawInRect:imageFrame blendMode:0 alpha:alpha];
             rect.size.width -= imageFrame.size.width;
             
-            if (!isSmall) {
+            BOOL isRoomForDateBelowImage = CGRectGetMaxY(imageFrame) < r.size.height - 10;
+            
+            if (!isSmall && !isRoomForDateBelowImage) {
                 dateRect = rect;
             }
         }
@@ -276,14 +281,19 @@ static UIFont *indicatorFont = nil;
     if (cell.highlighted || cell.selected) {
         textColor = UIColorFromLightDarkRGB(0x686868, 0xA0A0A0);
     }
+    CGFloat boundingRows = cell.isShort ? 1.5 : 3;
+    if (!cell.isShort && (self.cell.textSize == FeedDetailTextSizeMedium || self.cell.textSize == FeedDetailTextSizeLong)) {
+        boundingRows = ((r.size.height - 24) / font.pointSize) - 2;
+    }
     CGSize theSize = [cell.storyTitle
-                      boundingRectWithSize:CGSizeMake(rect.size.width, cell.isShort ? font.pointSize*1.5 : font.pointSize*3)
+                      boundingRectWithSize:CGSizeMake(rect.size.width, font.pointSize * boundingRows)
                       options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
                       attributes:@{NSFontAttributeName: font,
                                    NSParagraphStyleAttributeName: paragraphStyle}
                       context:nil].size;
-    
-    int storyTitleY = 14 + riverPadding + ((font.pointSize*2 - theSize.height)/2);
+    BOOL needsCentering = theSize.height < font.pointSize * 2;
+    int centeringOffset = needsCentering ? ((font.pointSize * 2 - theSize.height) / 2) : 0;
+    int storyTitleY = 14 + riverPadding + centeringOffset;
     if (cell.isShort) {
         storyTitleY = 14 + riverPadding - (theSize.height/font.pointSize*2);
     }
@@ -312,15 +322,20 @@ static UIFont *indicatorFont = nil;
         if (cell.inDashboard) {
             storyContentWidth -= leftMargin*2;
         }
+        CGFloat boundingRows = cell.isShort ? 1.5 : 3;
+        
+        if (!cell.isShort && (self.cell.textSize == FeedDetailTextSizeMedium || self.cell.textSize == FeedDetailTextSizeLong)) {
+            boundingRows = (r.size.height - 30 - CGRectGetMaxY(storyTitleFrame)) / font.pointSize;
+        }
+        
         CGSize contentSize = [cell.storyContent
-                              boundingRectWithSize:CGSizeMake(storyContentWidth,
-                                                              cell.isShort ? font.pointSize*1.5 : font.pointSize*3)
+                              boundingRectWithSize:CGSizeMake(storyContentWidth, font.pointSize * boundingRows)
                               options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
                               attributes:@{NSFontAttributeName: font,
                                            NSParagraphStyleAttributeName: paragraphStyle}
                               context:nil].size;
-
-        int storyContentY = r.size.height - 16 - 4 - ((font.pointSize*2 + font.lineHeight) + contentSize.height)/2;
+        CGFloat textRows = contentSize.height / font.pointSize;
+        int storyContentY = r.size.height - 16 - 4 - ((font.pointSize * textRows + font.lineHeight) + contentSize.height) / 2;
         if (cell.isShort) {
             storyContentY = r.size.height - 10 - 4 - ((font.pointSize + font.lineHeight) + contentSize.height)/2;
         }
@@ -398,7 +413,7 @@ static UIFont *indicatorFont = nil;
     
     paragraphStyle.alignment = NSTextAlignmentLeft;
     [cell.storyAuthor
-     drawInRect:CGRectMake(leftMargin, storyAuthorDateY, rect.size.width - dateSize.width - 12, 15.0)
+     drawInRect:CGRectMake(leftMargin, storyAuthorDateY, dateRect.size.width - dateSize.width - 12, 15.0)
      withAttributes:@{NSFontAttributeName: font,
                       NSForegroundColorAttributeName: textColor,
                       NSParagraphStyleAttributeName: paragraphStyle}];

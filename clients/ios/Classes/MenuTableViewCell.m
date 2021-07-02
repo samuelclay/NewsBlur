@@ -43,24 +43,19 @@
                                       self.frame.size.height);
     
     if (self.destructive) {
-        self.textLabel.backgroundColor = [UIColor clearColor];
-        self.textLabel.textColor = UIColorFromRGB(0xffffff);
-        self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
-        self.textLabel.shadowColor = UIColorFromRGB(0xa0a0a0);
-        self.textLabel.shadowOffset = CGSizeMake(0, 1);
-        self.backgroundColor = UIColorFromRGB(0xff0000);
-        self.backgroundView.backgroundColor = UIColorFromRGB(0xff0000);
-        self.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xffdada);
+        self.textLabel.textColor = UIColorFromFixedRGB(0xff0000);
+        self.textLabel.highlightedTextColor = UIColorFromFixedRGB(0xff0000);
     } else {
-        self.textLabel.backgroundColor = [UIColor clearColor];
         self.textLabel.textColor = UIColorFromRGB(0x303030);
         self.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
-        self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
-        self.textLabel.shadowOffset = CGSizeMake(0, 1);
-        self.backgroundColor = UIColorFromRGB(0xFFFFFF);
-        self.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
-        self.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
     }
+    
+    self.textLabel.backgroundColor = [UIColor clearColor];
+    self.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
+    self.textLabel.shadowOffset = CGSizeMake(0, 1);
+    self.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    self.backgroundView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    self.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

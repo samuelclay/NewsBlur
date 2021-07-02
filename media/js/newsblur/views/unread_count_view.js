@@ -13,6 +13,7 @@ NEWSBLUR.Views.UnreadCount = Backbone.View.extend({
                 this.model.bind('change:ps', this.render, this);
                 this.model.bind('change:nt', this.render, this);
                 this.model.bind('change:ng', this.render, this);
+                this.model.bind('change:active', this.render, this);
             } else if (this.collection) {
                 this.collection.bind('change:counts', this.render, this);
             }
@@ -26,8 +27,10 @@ NEWSBLUR.Views.UnreadCount = Backbone.View.extend({
     render: function() {
         var unread_class = "";
         var counts;
+        var muted = false;
         if (this.model) {
             counts = this.model.unread_counts();
+            if (!this.model.get('active')) muted = true;
         } else if (this.collection) {
             counts = this.collection.unread_counts();
         }
@@ -44,11 +47,15 @@ NEWSBLUR.Views.UnreadCount = Backbone.View.extend({
         if ((counts['st'] && this.options.include_starred) || (this.model && this.model.is_starred())) {
             unread_class += ' unread_starred';
         }
+        if (muted) {
+            unread_class += ' NB-muted-count';
+        }
         
         this.$el.html(this.template({
           ps           : this.options.feed_chooser ? "On" : counts['ps'],
           nt           : counts['nt'],
           ng           : this.options.feed_chooser ? "Off" : counts['ng'],
+          muted        : muted,
           st           : this.options.include_starred && counts['st'],
           unread_class : unread_class
         }));
@@ -76,6 +83,9 @@ NEWSBLUR.Views.UnreadCount = Backbone.View.extend({
           <span class="unread_count unread_count_negative <% if (ng) { %>unread_count_full<% } else { %>unread_count_empty<% } %>">\
             <%= ng %>\
           </span>\
+          <% if (muted) { %>\
+              <span class="NB-muted-icon"></span>\
+          <% } %>\
           <% if (st) { %>\
               <span class="unread_count unread_count_starred <% if (st) { %>unread_count_full<% } else { %>unread_count_empty<% } %>">\
                 <%= st %>\

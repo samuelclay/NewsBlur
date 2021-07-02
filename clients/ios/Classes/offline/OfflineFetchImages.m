@@ -93,9 +93,9 @@
     NSLog(@"Queue finished: %ld total (%ld remaining)", (long)appDelegate.totalUncachedImagesCount, (long)appDelegate.remainingUncachedImagesCount);
     [self updateProgress];
     dispatch_sync(dispatch_get_main_queue(), ^{
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     });
-
+    
     //    dispatch_async(dispatch_get_main_queue(), ^{
     //        [appDelegate.feedsViewController hideNotifier];
     //    });
@@ -153,7 +153,7 @@
                           (float)appDelegate.totalUncachedImagesCount);
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        [appDelegate.feedsViewController showCachingNotifier:progress hoursBack:hours];
+        [appDelegate.feedsViewController showCachingNotifier:@"Images" progress:progress hoursBack:hours];
     });
 }
 

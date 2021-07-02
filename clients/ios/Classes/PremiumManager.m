@@ -66,7 +66,9 @@
     if (count > 0){
         self.products = response.products;
         
-        [self.appDelegate.premiumViewController loadedProducts];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.appDelegate.premiumViewController loadedProducts];
+        });
     } else if (!validProduct) {
         NSLog(@"No products available");
         //this is called if your product id is not valid, this shouldn't be called unless that happens.
@@ -97,15 +99,17 @@
 }
 
 - (void)paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error {
-    if (error.code == SKErrorPaymentCancelled) {
-        NSLog(@"Restore cancelled");
-        
-        [self.appDelegate.premiumViewController finishedTransaction];
-    } else {
-        NSLog(@"Restore failed");
-        
-        [self.appDelegate.premiumViewController informError:@"Restore failed!"];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (error.code == SKErrorPaymentCancelled) {
+            NSLog(@"Restore cancelled");
+            
+            [self.appDelegate.premiumViewController finishedTransaction];
+        } else {
+            NSLog(@"Restore failed");
+            
+            [self.appDelegate.premiumViewController informError:@"Restore failed!"];
+        }
+    });
 }
 
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
@@ -140,7 +144,9 @@
                     //the user cancelled the payment ;(
                 }
                 
-                [self.appDelegate.premiumViewController informError:@"Transaction failed!"];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.appDelegate.premiumViewController informError:@"Transaction failed!"];
+                });
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
                 break;
         }
@@ -154,7 +160,9 @@
     NSData *receipt = [NSData dataWithContentsOfURL:receiptURL];
     if (!receipt) {
         NSLog(@" No receipt found!");
-        [self.appDelegate.premiumViewController informError:@"No receipt found"];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.appDelegate.premiumViewController informError:@"No receipt found"];
+        });
         //        return;
     }
     
@@ -166,7 +174,7 @@
                              @"product_identifier": transaction.payment.productIdentifier,
                              };
     
-    [self.appDelegate.networkManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self.appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"Sent iOS receipt: %@", params);
         [self.appDelegate.premiumViewController finishedTransaction];
         NSDictionary *results = (NSDictionary *)responseObject;

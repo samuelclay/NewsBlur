@@ -2,10 +2,13 @@ import re
 import datetime
 import struct
 import dateutil
+import hashlib
+import base64
+import html
+import sys
 from random import randint
-from HTMLParser import HTMLParser
 from lxml.html.diff import tokenize, fixup_ins_del_tags, htmldiff_tokens
-from lxml.etree import ParserError, XMLSyntaxError
+from lxml.etree import ParserError, XMLSyntaxError, SerialisationError
 import lxml.html, lxml.etree
 from lxml.html.clean import Cleaner
 from itertools import chain
@@ -13,8 +16,7 @@ from django.utils.dateformat import DateFormat
 from django.utils.html import strip_tags as strip_tags_django
 from utils.tornado_escape import linkify as linkify_tornado
 from utils.tornado_escape import xhtml_unescape as xhtml_unescape_tornado
-from vendor import reseekfile
-from utils import feedparser
+import feedparser
 
 import hmac
 from binascii import hexlify
@@ -76,11 +78,11 @@ def relative_date(d):
     elif s < 120:
         return '1 minute ago'
     elif s < 3600:
-        return '{} minutes ago'.format(s/60)
+        return '{} minutes ago'.format(s//60)
     elif s < 7200:
         return '1 hour ago'
     else:
-        return '{} hours ago'.format(s/3600)
+        return '{} hours ago'.format(s//3600)
 
 def _extract_date_tuples(date):
     parsed_date = DateFormat(date)
@@ -92,7 +94,8 @@ def _extract_date_tuples(date):
     return parsed_date, date_tuple, today_tuple, yesterday_tuple
     
 def pre_process_story(entry, encoding):
-    publish_date = entry.get('g_parsed') or entry.get('updated_parsed')
+    # Do not switch to published_parsed or every story will be dated the fetch time
+    publish_date = entry.get('g_parsed') or entry.get('updated_parsed') 
     if publish_date:
         publish_date = datetime.datetime(*publish_date[:6])
     if not publish_date and entry.get('published'):
@@ -122,7 +125,7 @@ def pre_process_story(entry, encoding):
     # else:
     #     entry['link'] = urlquote(entry_link)
     if isinstance(entry.get('guid'), dict):
-        entry['guid'] = unicode(entry['guid'])
+        entry['guid'] = str(entry['guid'])
 
     # Normalize story content/summary
     summary = entry.get('summary') or ""
@@ -140,8 +143,8 @@ def pre_process_story(entry, encoding):
     
     if 'summary_detail' in entry and entry['summary_detail'].get('type', None) == 'text/plain':
         try:
-            entry['story_content'] = feedparser._sanitizeHTML(entry['story_content'], encoding, 'text/plain')
-            if encoding and not isinstance(entry['story_content'], unicode):
+            entry['story_content'] = feedparser.sanitizer._sanitize_html(entry['story_content'], encoding, 'text/plain')
+            if encoding and not isinstance(entry['story_content'], str):
                 entry['story_content'] = entry['story_content'].decode(encoding, 'ignore')
         except UnicodeEncodeError:
             pass
@@ -188,6 +191,9 @@ def pre_process_story(entry, encoding):
         
     entry['title'] = strip_tags(entry.get('title'))
     entry['author'] = strip_tags(entry.get('author'))
+    if not entry['author']:
+        entry['author'] = strip_tags(entry.get('credit'))
+
     
     entry['story_content'] = attach_media_scripts(entry['story_content'])
     
@@ -201,25 +207,11 @@ def attach_media_scripts(content):
     if 'imgur-embed-pub' in content and '<script' not in content:
         content += '<script async src="https://s.imgur.com/min/embed.js" charset="utf-8"></script>'
     return content
-        
-    
-class MLStripper(HTMLParser):
-    def __init__(self):
-        self.reset()
-        self.fed = []
-    def handle_data(self, d):
-        self.fed.append(d)
-    def get_data(self):
-        return ' '.join(self.fed)
 
 def strip_tags(html):
     if not html:
         return ''
     return strip_tags_django(html)
-    
-    s = MLStripper()
-    s.feed(html)
-    return s.get_data()
 
 def strip_comments(html_string):
     return COMMENTS_RE.sub('', html_string)
@@ -261,8 +253,8 @@ def strip_comments__lxml(html_string=""):
         html = lxml.html.fromstring(html_string)
         clean_html = cleaner.clean_html(html)
 
-        return lxml.etree.tostring(clean_html)
-    except (XMLSyntaxError, ParserError):
+        return lxml.etree.tostring(clean_html).decode()
+    except (XMLSyntaxError, ParserError, SerialisationError):
         return html_string
 
 def prep_for_search(html):
@@ -281,77 +273,15 @@ def truncate_chars(value, max_length):
     except UnicodeDecodeError:
         pass
     if len(value) <= max_length:
-        return value
+        return value.decode('utf-8', 'ignore')
  
     truncd_val = value[:max_length]
-    if value[max_length] != " ":
-        rightmost_space = truncd_val.rfind(" ")
+    if value[max_length] != b" ":
+        rightmost_space = truncd_val.rfind(b" ")
         if rightmost_space != -1:
             truncd_val = truncd_val[:rightmost_space]
  
     return truncd_val.decode('utf-8', 'ignore') + "..."
-
-def image_size(datastream):
-    datastream = reseekfile.ReseekFile(datastream)
-    data = str(datastream.read(30))
-    size = len(data)
-    height = -1
-    width = -1
-    content_type = ''
-
-    # handle GIFs
-    if (size >= 10) and data[:6] in ('GIF87a', 'GIF89a'):
-        # Check to see if content_type is correct
-        content_type = 'image/gif'
-        w, h = struct.unpack("<HH", data[6:10])
-        width = int(w)
-        height = int(h)
-
-    # See PNG 2. Edition spec (http://www.w3.org/TR/PNG/)
-    # Bytes 0-7 are below, 4-byte chunk length, then 'IHDR'
-    # and finally the 4-byte width, height
-    elif ((size >= 24) and data.startswith('\211PNG\r\n\032\n')
-          and (data[12:16] == 'IHDR')):
-        content_type = 'image/png'
-        w, h = struct.unpack(">LL", data[16:24])
-        width = int(w)
-        height = int(h)
-
-    # Maybe this is for an older PNG version.
-    elif (size >= 16) and data.startswith('\211PNG\r\n\032\n'):
-        # Check to see if we have the right content type
-        content_type = 'image/png'
-        w, h = struct.unpack(">LL", data[8:16])
-        width = int(w)
-        height = int(h)
-
-    # handle JPEGs
-    elif (size >= 2) and data.startswith('\377\330'):
-        content_type = 'image/jpeg'
-        datastream.seek(0)
-        datastream.read(2)
-        b = datastream.read(1)
-        try:
-            w = 0
-            h = 0
-            while (b and ord(b) != 0xDA):
-                while (ord(b) != 0xFF): b = datastream.read(1)
-                while (ord(b) == 0xFF): b = datastream.read(1)
-                if (ord(b) >= 0xC0 and ord(b) <= 0xC3):
-                    datastream.read(3)
-                    h, w = struct.unpack(">HH", datastream.read(4))
-                    break
-                else:
-                    datastream.read(int(struct.unpack(">H", datastream.read(2))[0])-2)
-                b = datastream.read(1)
-            width = int(w)
-            height = int(h)
-        except struct.error:
-            pass
-        except ValueError:
-            pass
-
-    return content_type, width, height
 
 def htmldiff(old_html, new_html):
     try:
@@ -366,7 +296,7 @@ def htmldiff(old_html, new_html):
     return fixup_ins_del_tags(result)
 
 
-def create_signed_url(base_url, hmac_key, url):
+def create_camo_signed_url(base_url, hmac_key, url):
     """Create a camo signed URL for the specified image URL
     Args:
         base_url: Base URL of the camo installation
@@ -382,3 +312,26 @@ def create_signed_url(base_url, hmac_key, url):
 
     return ('{base}/{signature}/{hex_url}'
             .format(base=base_url, signature=signature, hex_url=hex_url))
+            
+def create_imageproxy_signed_url(base_url, hmac_key, url, options=None):
+    """Create a imageproxy signed URL for the specified image URL
+    Args:
+        base_url: Base URL of the imageproxy installation
+        hmac_key: HMAC shared key to be used for signing
+        url: URL of the destination image
+    Returns:
+        str: A full url that can be used to serve the proxied image
+    """
+    if not options: options = []
+    if isinstance(options, int): options = [str(options)]
+    if not isinstance(options, list): options = [options]
+    if sys.getdefaultencoding() == 'ascii':
+        url = url.encode('utf-8')
+    base_url = base_url.rstrip('/')
+    signature = base64.urlsafe_b64encode(hmac.new(hmac_key.encode(), msg=url.encode(), digestmod=hashlib.sha256).digest())
+    options.append('sc')
+    options.append('s'+signature.decode())
+
+    return ('{base}/{options}/{url}'
+            .format(base=base_url, options=','.join(options), url=url))
+            

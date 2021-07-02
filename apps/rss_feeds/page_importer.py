@@ -1,22 +1,24 @@
 import requests
 import re
-import urlparse
 import traceback
 import feedparser
 import time
-import urllib2
-import httplib
+import urllib.request, urllib.error, urllib.parse
+import http.client
 import zlib
+from django.contrib.sites.models import Site
+from django.utils.encoding import smart_bytes
 from mongoengine.queryset import NotUniqueError
 from socket import error as SocketError
 from boto.s3.key import Key
 from django.conf import settings
-from django.utils.text import compress_string
+from django.utils.text import compress_string as compress_string_with_gzip
 from utils import log as logging
 from apps.rss_feeds.models import MFeedPage
 from utils.feed_functions import timelimit, TimeoutError
 from OpenSSL.SSL import Error as OpenSSLError
 from pyasn1.error import PyAsn1Error
+from sentry_sdk import capture_exception, flush
 # from utils.feed_functions import mail_feed_error_to_admin
 
 BROKEN_PAGES = [
@@ -38,6 +40,7 @@ BROKEN_PAGE_URLS = [
     'rankexploits',
     'gamespot.com',
     'espn.com',
+    'royalroad.com',
 ]
 
 class PageImporter(object):
@@ -50,13 +53,11 @@ class PageImporter(object):
     @property
     def headers(self):
         return {
-            'User-Agent': 'NewsBlur Page Fetcher - %s subscriber%s - %s '
-                          '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
-                          'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
-                          'Safari/534.48.3)' % (
+            'User-Agent': 'NewsBlur Page Fetcher - %s subscriber%s - %s %s' % (
                 self.feed.num_subscribers,
                 's' if self.feed.num_subscribers != 1 else '',
                 self.feed.permalink,
+                self.feed.fake_user_agent,
             ),
         }
     
@@ -71,44 +72,43 @@ class PageImporter(object):
         html = None
         feed_link = self.feed.feed_link
         if not feed_link:
-            self.save_no_page()
+            self.save_no_page(reason="No feed link")
             return
 
         if feed_link.startswith('www'):
             self.feed.feed_link = 'http://' + feed_link
         try:
             if any(feed_link.startswith(s) for s in BROKEN_PAGES):
-                self.save_no_page()
+                self.save_no_page(reason="Broken page")
                 return
             elif any(s in feed_link.lower() for s in BROKEN_PAGE_URLS):
-                self.save_no_page()
+                self.save_no_page(reason="Broke page url")
                 return
             elif feed_link.startswith('http'):
                 if urllib_fallback:
-                    request = urllib2.Request(feed_link, headers=self.headers)
-                    response = urllib2.urlopen(request)
+                    request = urllib.request.Request(feed_link, headers=self.headers)
+                    response = urllib.request.urlopen(request)
                     time.sleep(0.01) # Grrr, GIL.
-                    data = response.read()
+                    data = response.read().decode(response.headers.get_content_charset() or 'utf-8')
                 else:
                     try:
-                        response = requests.get(feed_link, headers=self.headers)
+                        response = requests.get(feed_link, headers=self.headers, timeout=10)
                         response.connection.close()
                     except requests.exceptions.TooManyRedirects:
-                        response = requests.get(feed_link)
-                    except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, TypeError), e:
+                        response = requests.get(feed_link, timeout=10)
+                    except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, TypeError,
+                            requests.adapters.ReadTimeout) as e:
                         logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed.log_title[:30], e))
-                        self.save_no_page()
+                        self.save_no_page(reason="Page fetch failed")
                         return
-                    # try:
-                    data = response.content
-                    # except (LookupError, TypeError):
-                    #     data = response.content
-
-                    # if response.encoding and response.encoding != 'utf-8':
-                    #     try:
-                    #         data = data.encode(response.encoding)
-                    #     except LookupError:
-                    #         pass
+                    data = response.text
+                    if response.encoding and response.encoding.lower() != 'utf-8':
+                        logging.debug(f" -> ~FBEncoding is {response.encoding}, re-encoding...")
+                        try:
+                            data = data.encode('utf-8').decode('utf-8')
+                        except (LookupError, UnicodeEncodeError):
+                            logging.debug(f" -> ~FRRe-encoding failed!")
+                            pass
             else:
                 try:
                     data = open(feed_link, 'r').read()
@@ -118,36 +118,44 @@ class PageImporter(object):
                     return
             if data:
                 html = self.rewrite_page(data)
-                self.save_page(html)
+                if html:
+                    self.save_page(html)
+                else:
+                    self.save_no_page(reason="No HTML found")
+                    return
             else:
-                self.save_no_page()
+                self.save_no_page(reason="No data found")
                 return
-        except (ValueError, urllib2.URLError, httplib.BadStatusLine, httplib.InvalidURL,
-                requests.exceptions.ConnectionError), e:
+        except (ValueError, urllib.error.URLError, http.client.BadStatusLine, http.client.InvalidURL,
+                requests.exceptions.ConnectionError) as e:
             self.feed.save_page_history(401, "Bad URL", e)
-            fp = feedparser.parse(self.feed.feed_address)
+            try:
+                fp = feedparser.parse(self.feed.feed_address)
+            except (urllib.error.HTTPError, urllib.error.URLError) as e:
+                return html
             feed_link = fp.feed.get('link', "")
             self.feed.save()
             logging.debug('   ***> [%-30s] Page fetch failed: %s' % (self.feed.log_title[:30], e))
-        except (urllib2.HTTPError), e:
+        except (urllib.error.HTTPError) as e:
             self.feed.save_page_history(e.code, e.msg, e.fp.read())
-        except (httplib.IncompleteRead), e:
+        except (http.client.IncompleteRead) as e:
             self.feed.save_page_history(500, "IncompleteRead", e)
         except (requests.exceptions.RequestException, 
-                requests.packages.urllib3.exceptions.HTTPError), e:
+                requests.packages.urllib3.exceptions.HTTPError) as e:
             logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed.log_title[:30], e))
             # mail_feed_error_to_admin(self.feed, e, local_vars=locals())
             return self.fetch_page(urllib_fallback=True, requests_exception=e)
-        except Exception, e:
+        except Exception as e:
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
             tb = traceback.format_exc()
             logging.debug(tb)
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
             self.feed.save_page_history(500, "Error", tb)
             # mail_feed_error_to_admin(self.feed, e, local_vars=locals())
-            if (not settings.DEBUG and hasattr(settings, 'RAVEN_CLIENT') and
-                settings.RAVEN_CLIENT):
-                settings.RAVEN_CLIENT.captureException()
+            if (not settings.DEBUG and hasattr(settings, 'SENTRY_DSN') and
+                settings.SENTRY_DSN):
+                capture_exception(e)
+                flush()
             if not urllib_fallback:
                 self.fetch_page(urllib_fallback=True)
         else:
@@ -181,55 +189,63 @@ class PageImporter(object):
             return
 
         try:
-            response = requests.get(story_permalink, headers=self.headers)
+            response = requests.get(story_permalink, headers=self.headers, timeout=10)
             response.connection.close()
-        except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, requests.exceptions.ConnectionError, requests.exceptions.TooManyRedirects), e:
+        except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, 
+                requests.exceptions.ConnectionError, 
+                requests.exceptions.TooManyRedirects,
+                requests.adapters.ReadTimeout) as e:
             try:
-                response = requests.get(story_permalink)
-            except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, requests.exceptions.ConnectionError, requests.exceptions.TooManyRedirects), e:
+                response = requests.get(story_permalink, timeout=10)
+            except (AttributeError, SocketError, OpenSSLError, PyAsn1Error, 
+                    requests.exceptions.ConnectionError, 
+                    requests.exceptions.TooManyRedirects,
+                    requests.adapters.ReadTimeout) as e:
                 logging.debug('   ***> [%-30s] Original story fetch failed using requests: %s' % (self.feed.log_title[:30], e))
                 return
-        try:
-            data = response.text
-        except (LookupError, TypeError):
-            data = response.content
+        # try:
+        data = response.text
+        # except (LookupError, TypeError):
+        #     data = response.content
+        # import pdb; pdb.set_trace() 
 
-        if response.encoding and response.encoding != 'utf-8':
+        if response.encoding and response.encoding.lower() != 'utf-8':
+            logging.debug(f" -> ~FBEncoding is {response.encoding}, re-encoding...")
             try:
-                data = data.encode(response.encoding)
+                data = data.encode('utf-8').decode('utf-8')
             except (LookupError, UnicodeEncodeError):
+                logging.debug(f" -> ~FRRe-encoding failed!")
                 pass
 
         if data:
             data = data.replace("\xc2\xa0", " ") # Non-breaking space, is mangled when encoding is not utf-8
-            data = data.replace("\u00a0", " ") # Non-breaking space, is mangled when encoding is not utf-8
+            data = data.replace("\\u00a0", " ") # Non-breaking space, is mangled when encoding is not utf-8
             html = self.rewrite_page(data)
+            if not html:
+                return
             self.save_story(html)
         
         return html
     
     def save_story(self, html):
-        self.story.original_page_z = zlib.compress(html)
+        self.story.original_page_z = zlib.compress(smart_bytes(html))
         try:
             self.story.save()
         except NotUniqueError:
             pass
 
         
-    def save_no_page(self):
-        logging.debug('   ---> [%-30s] ~FYNo original page: %s' % (self.feed.log_title[:30], self.feed.feed_link))
+    def save_no_page(self, reason=None):
+        logging.debug('   ---> [%-30s] ~FYNo original page: %s / %s' % (self.feed.log_title[:30], reason, self.feed.feed_link))
         self.feed.has_page = False
         self.feed.save()
         self.feed.save_page_history(404, "Feed has no original page.")
 
     def rewrite_page(self, response):
-        BASE_RE = re.compile(r'<head(.*?\>)', re.I)
-        base_code = u'<base href="%s" />' % (self.feed.feed_link,)
-        try:
-            html = BASE_RE.sub(r'<head\1 '+base_code, response)
-        except:
-            response = response.decode('latin1').encode('utf-8')
-            html = BASE_RE.sub(r'<head\1 '+base_code, response)
+        BASE_RE = re.compile(r'<head(.*?)>', re.I)
+        base_code = '<base href="%s" />' % (self.feed.feed_link,)
+
+        html = BASE_RE.sub('<head\1> '+base_code, response)
         
         if '<base href' not in html:
             html = "%s %s" % (base_code, html)
@@ -250,9 +266,9 @@ class PageImporter(object):
             url = match.group(2)
             if url[0] in "\"'":
                 url = url.strip(url[0])
-            parsed = urlparse.urlparse(url)
+            parsed = urllib.parse.urlparse(url)
             if parsed.scheme == parsed.netloc == '': #relative to domain
-                url = urlparse.urljoin(self.feed.feed_link, url)
+                url = urllib.parse.urljoin(self.feed.feed_link, url)
                 ret.append(document[last_end:match.start(2)])
                 ret.append('"%s"' % (url,))
                 last_end = match.end(2)
@@ -281,23 +297,30 @@ class PageImporter(object):
                 if feed_page.page() == html:
                     logging.debug('   ---> [%-30s] ~FYNo change in page data: %s' % (self.feed.log_title[:30], self.feed.feed_link))
                 else:
-                    feed_page.page_data = html
+                    # logging.debug('   ---> [%-30s] ~FYChange in page data: %s (%s/%s %s/%s)' % (self.feed.log_title[:30], self.feed.feed_link, type(html), type(feed_page.page()), len(html), len(feed_page.page())))
+                    feed_page.page_data = zlib.compress(smart_bytes(html))
                     feed_page.save()
             except MFeedPage.DoesNotExist:
-                feed_page = MFeedPage.objects.create(feed_id=self.feed.pk, page_data=html)
+                feed_page = MFeedPage.objects.create(feed_id=self.feed.pk, 
+                                                     page_data=zlib.compress(smart_bytes(html)))
             return feed_page
     
     def save_page_node(self, html):
-        url = "http://%s/original_page/%s" % (
-            settings.ORIGINAL_PAGE_SERVER,
+        domain = Site.objects.get_current().domain
+        url = "https://%s/original_page/%s" % (
+            domain,
             self.feed.pk,
         )
+        compressed_html = zlib.compress(smart_bytes(html))
         response = requests.post(url, files={
-            'original_page': compress_string(html),
+            'original_page': compressed_html,
             # 'original_page': html,
         })
         if response.status_code == 200:
             return True
+        else:
+            logging.debug('   ---> [%-30s] ~FRFailed to save page to node: %s (%s bytes)' % (self.feed.log_title[:30], response.status_code, len(compressed_html)))
+
     
     def save_page_s3(self, html):
         k = Key(settings.S3_CONN.get_bucket(settings.S3_PAGES_BUCKET_NAME))
@@ -305,7 +328,7 @@ class PageImporter(object):
         k.set_metadata('Content-Encoding', 'gzip')
         k.set_metadata('Content-Type', 'text/html')
         k.set_metadata('Access-Control-Allow-Origin', '*')
-        k.set_contents_from_string(compress_string(html))
+        k.set_contents_from_string(compress_string_with_gzip(html.encode('utf-8')))
         k.set_acl('public-read')
         
         try:

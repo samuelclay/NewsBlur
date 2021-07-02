@@ -6,7 +6,8 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
     
     events: {
         'click .NB-feeds-header-user-dashboard'    : 'show_splash_page',
-        'click .NB-feeds-header-user-interactions' : 'show_interactions_popover'
+        'click .NB-feeds-header-user-interactions' : 'show_interactions_popover',
+        'click .NB-feeds-header-collapse-sidebar'  : 'collapse_sidebar'
     },
     
     initialize: function() {
@@ -119,6 +120,12 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
     
     show_interactions_popover: function() {
         NEWSBLUR.InteractionsPopover.create({});
+    },
+    
+    collapse_sidebar: function() {
+        if (!NEWSBLUR.reader.flags['splash_page_frontmost']) {
+            NEWSBLUR.reader.close_sidebar();
+        }
     }
 
 });

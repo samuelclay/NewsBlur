@@ -1,0 +1,14 @@
+---
+# File: main.yml - Handlers for Consul
+
+- name: reload consul configuration
+  become: yes
+  service:
+    name: consul
+    state: reloaded
+  listen: reload consul
+
+- name: reload gunicorn
+  become: yes
+  command: docker kill --signal HUP newsblur_web
+  listen: reload gunicorn

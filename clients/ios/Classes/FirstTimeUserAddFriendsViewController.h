@@ -10,7 +10,7 @@
 
 #import "NewsBlurAppDelegate.h"
 
-@interface FirstTimeUserAddFriendsViewController  : BaseViewController <UIWebViewDelegate> {
+@interface FirstTimeUserAddFriendsViewController  : BaseViewController {
     NewsBlurAppDelegate *appDelegate;
 }
 

@@ -8,13 +8,14 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
+
+import androidx.core.widget.NestedScrollView;
 
 /**
  * Custom scrollview to handle the many quirks of the scroller in which we place
  * the WebView that shows stories.
  */
-public class ReadingScrollView extends ScrollView {
+public class ReadingScrollView extends NestedScrollView {
 
     // the fragments/activity that show stories need to know their scroll state. give
     // them a way to subscribe to scroll changes

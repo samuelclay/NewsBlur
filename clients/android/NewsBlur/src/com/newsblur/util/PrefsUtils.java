@@ -15,13 +15,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
-import android.support.v4.content.FileProvider;
+import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import android.util.Log;
 
 import com.newsblur.R;
@@ -30,6 +32,7 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIConstants;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.service.NBSyncService;
+import com.newsblur.widget.WidgetUtils;
 
 public class PrefsUtils {
 
@@ -160,6 +163,9 @@ public class PrefsUtils {
 
         // wipe the local DB
         FeedUtils.dropAndRecreateTables();
+
+        // disable widget
+        WidgetUtils.disableWidgetUpdate(context);
 
         // reset custom server
         APIConstants.unsetCustomServer();
@@ -675,19 +681,21 @@ public class PrefsUtils {
         return DefaultFeedView.STORY;
     }
 
-    public static boolean enterImmersiveReadingModeOnSingleTap(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return prefs.getBoolean(PrefConstants.READING_ENTER_IMMERSIVE_SINGLE_TAP, false);
-    }
-
     public static boolean isShowContentPreviews(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.STORIES_SHOW_PREVIEWS, true);
     }
 
-    public static boolean isShowThumbnails(Context context) {
+    private static boolean isShowThumbnails(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.STORIES_SHOW_THUMBNAILS,  true);
+    }
+
+    public static ThumbnailStyle getThumbnailStyle(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        boolean isShowThumbnails = isShowThumbnails(context);
+        ThumbnailStyle defValue = isShowThumbnails ? ThumbnailStyle.LARGE : ThumbnailStyle.OFF;
+        return ThumbnailStyle.valueOf(prefs.getString(PrefConstants.STORIES_THUMBNAILS_STYLE, defValue.toString()));
     }
 
     public static boolean isAutoOpenFirstUnread(Context context) {
@@ -708,6 +716,11 @@ public class PrefsUtils {
     public static boolean isImagePrefetchEnabled(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.ENABLE_IMAGE_PREFETCH, false);
+    }
+
+    public static boolean isTextPrefetchEnabled(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.ENABLE_TEXT_PREFETCH, true);
     }
 
     /**
@@ -765,12 +778,21 @@ public class PrefsUtils {
             activity.setTheme(R.style.NewsBlurDarkTheme);
         } else if (value == ThemeValue.BLACK) {
             activity.setTheme(R.style.NewsBlurBlackTheme);
+        } else if (value == ThemeValue.AUTO) {
+            int nightModeFlags = activity.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                activity.setTheme(R.style.NewsBlurDarkTheme);
+            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
+                activity.setTheme(R.style.NewsBlurTheme);
+            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_UNDEFINED) {
+                activity.setTheme(R.style.NewsBlurTheme);
+            }
         }
     }
 
     public static ThemeValue getSelectedTheme(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        String value = prefs.getString(PrefConstants.THEME, ThemeValue.LIGHT.name());
+        String value = prefs.getString(PrefConstants.THEME, ThemeValue.AUTO.name());
         // check for legacy hard-coded values. this can go away once installs of v152 or earlier are minimized
         if (value.equals("light")) {    
             setSelectedTheme(context, ThemeValue.LIGHT);
@@ -833,7 +855,7 @@ public class PrefsUtils {
     }
 
     public static boolean isBackgroundNeeded(Context context) {
-        return (isEnableNotifications(context) || isOfflineEnabled(context));
+        return (isEnableNotifications(context) || isOfflineEnabled(context) || WidgetUtils.hasActiveAppWidgets(context));
     }
 
     public static Font getFont(Context context) {
@@ -849,6 +871,120 @@ public class PrefsUtils {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         Editor editor = prefs.edit();
         editor.putString(PrefConstants.READING_FONT, newValue);
+        editor.commit();
+    }
+
+    public static void setWidgetFeedIds(Context context, Set<String> feedIds) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putStringSet(PrefConstants.WIDGET_FEED_SET, feedIds);
+        editor.commit();
+    }
+
+    @Nullable
+    public static Set<String> getWidgetFeedIds(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getStringSet(PrefConstants.WIDGET_FEED_SET, null);
+    }
+
+    public static void removeWidgetData(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        if (prefs.contains(PrefConstants.WIDGET_FEED_SET)) {
+            editor.remove(PrefConstants.WIDGET_FEED_SET);
+        }
+        if (prefs.contains(PrefConstants.WIDGET_BACKGROUND)) {
+            editor.remove(PrefConstants.WIDGET_BACKGROUND);
+        }
+        editor.apply();
+    }
+
+    public static FeedOrderFilter getFeedChooserFeedOrder(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return FeedOrderFilter.valueOf(preferences.getString(PrefConstants.FEED_CHOOSER_FEED_ORDER, FeedOrderFilter.NAME.toString()));
+    }
+
+    public static void setFeedChooserFeedOrder(Context context, FeedOrderFilter feedOrderFilter) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.FEED_CHOOSER_FEED_ORDER, feedOrderFilter.toString());
+        editor.commit();
+    }
+
+    public static ListOrderFilter getFeedChooserListOrder(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return ListOrderFilter.valueOf(preferences.getString(PrefConstants.FEED_CHOOSER_LIST_ORDER, ListOrderFilter.ASCENDING.name()));
+    }
+
+    public static void setFeedChooserListOrder(Context context, ListOrderFilter listOrderFilter) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.FEED_CHOOSER_LIST_ORDER, listOrderFilter.toString());
+        editor.commit();
+    }
+
+    public static FolderViewFilter getFeedChooserFolderView(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return FolderViewFilter.valueOf(preferences.getString(PrefConstants.FEED_CHOOSER_FOLDER_VIEW, FolderViewFilter.NESTED.name()));
+    }
+
+    public static void setFeedChooserFolderView(Context context, FolderViewFilter folderViewFilter) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.FEED_CHOOSER_FOLDER_VIEW, folderViewFilter.toString());
+        editor.commit();
+    }
+
+    public static WidgetBackground getWidgetBackground(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return WidgetBackground.valueOf(preferences.getString(PrefConstants.WIDGET_BACKGROUND, WidgetBackground.DEFAULT.name()));
+    }
+
+    public static void setWidgetBackground(Context context, WidgetBackground widgetBackground) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.WIDGET_BACKGROUND, widgetBackground.toString());
+        editor.commit();
+    }
+
+    public static DefaultBrowser getDefaultBrowser(Context context) {
+        return DefaultBrowser.getDefaultBrowser(getDefaultBrowserString(context));
+    }
+
+    public static String getDefaultBrowserString(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getString(PrefConstants.DEFAULT_BROWSER, DefaultBrowser.SYSTEM_DEFAULT.toString());
+    }
+
+    public static void setPremium(Context context, boolean isPremium, Long premiumExpire) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putBoolean(PrefConstants.IS_PREMIUM, isPremium);
+        if (premiumExpire != null) {
+            editor.putLong(PrefConstants.PREMIUM_EXPIRE, premiumExpire);
+        }
+        editor.commit();
+    }
+
+    public static boolean getIsPremium(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getBoolean(PrefConstants.IS_PREMIUM, false);
+    }
+
+    public static long getPremiumExpire(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getLong(PrefConstants.PREMIUM_EXPIRE, -1);
+    }
+
+    public static boolean hasInAppReviewed(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getBoolean(PrefConstants.IN_APP_REVIEW, false);
+    }
+
+    public static void setInAppReviewed(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = preferences.edit();
+        editor.putBoolean(PrefConstants.IN_APP_REVIEW, true);
         editor.commit();
     }
 }

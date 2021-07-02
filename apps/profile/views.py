@@ -1,8 +1,9 @@
 import stripe
+import requests
 import datetime
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.contrib.auth import logout as logout_user
 from django.contrib.auth import login as login_user
 from django.db.models.aggregates import Sum
@@ -10,9 +11,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
-from django.core.urlresolvers import reverse
-from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.urls import reverse
+from django.shortcuts import render
 from django.core.mail import mail_admins
 from django.conf import settings
 from apps.profile.models import Profile, PaymentHistory, RNewUserQueue, MRedeemedCode, MGiftCode
@@ -30,7 +30,7 @@ from utils.view_functions import render_to, is_true
 from utils.user_functions import get_user
 from utils import log as logging
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
-from vendor.paypal.standard.forms import PayPalPaymentsForm
+from paypal.standard.forms import PayPalPaymentsForm
 
 SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','hide_mobile','send_emails',
                       'hide_getting_started', 'has_setup_feeds', 'has_found_friends',
@@ -46,7 +46,7 @@ def set_preference(request):
     new_preferences = request.POST
     
     preferences = json.decode(request.user.profile.preferences)
-    for preference_name, preference_value in new_preferences.items():
+    for preference_name, preference_value in list(new_preferences.items()):
         if preference_value in ['true','false']: preference_value = True if preference_value == 'true' else False
         if preference_name in SINGLE_FIELD_PREFS:
             setattr(request.user.profile, preference_name, preference_value)
@@ -92,32 +92,47 @@ def login(request):
     if request.method == "POST":
         form = LoginForm(data=request.POST)
         if form.is_valid():
-            login_user(request, form.get_user())
+            login_user(request, form.get_user(), backend='django.contrib.auth.backends.ModelBackend')
             logging.user(form.get_user(), "~FG~BBOAuth Login~FW")
             return HttpResponseRedirect(request.POST['next'] or reverse('index'))
 
-    return render_to_response('accounts/login.html', {
+    return render(request, 'accounts/login.html', {
         'form': form,
-        'next': request.REQUEST.get('next', "")
-    }, context_instance=RequestContext(request))
+        'next': request.POST.get('next', "") or request.GET.get('next', "")
+    })
     
-@csrf_protect
+@csrf_exempt
 def signup(request):
-    form = SignupForm()
+    form = SignupForm(prefix="signup")
+    recaptcha = request.POST.get('g-recaptcha-response', None)
+    recaptcha_error = None
+    
+    if settings.ENFORCE_SIGNUP_CAPTCHA:
+        if not recaptcha:
+            recaptcha_error = "Please hit the \"I'm not a robot\" button."
+        else:
+            response = requests.post('https://www.google.com/recaptcha/api/siteverify', {
+                'secret': settings.RECAPTCHA_SECRET_KEY,
+                'response': recaptcha,
+            })
+            result = response.json()
+            if not result['success']:
+                recaptcha_error = "Really, please hit the \"I'm not a robot\" button."
 
     if request.method == "POST":
-        form = SignupForm(data=request.POST)
-        if form.is_valid():
+        form = SignupForm(data=request.POST, prefix="signup")
+        if form.is_valid() and not recaptcha_error:
             new_user = form.save()
-            login_user(request, new_user)
+            login_user(request, new_user, backend='django.contrib.auth.backends.ModelBackend')
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
             new_user.profile.activate_free()
             return HttpResponseRedirect(request.POST['next'] or reverse('index'))
 
-    return render_to_response('accounts/signup.html', {
+    return render(request, 'accounts/signup.html', {
         'form': form,
-        'next': request.REQUEST.get('next', "")
-    }, context_instance=RequestContext(request))
+        'recaptcha_error': recaptcha_error,
+        'next': request.POST.get('next', "")
+    })
 
 @login_required
 @csrf_protect
@@ -130,14 +145,13 @@ def redeem_code(request):
         if form.is_valid():
             gift_code = request.POST['gift_code']
             MRedeemedCode.redeem(user=request.user, gift_code=gift_code)
-            return render_to_response('reader/paypal_return.xhtml', 
-                                      {}, context_instance=RequestContext(request))
+            return render(request, 'reader/paypal_return.xhtml')
 
-    return render_to_response('accounts/redeem_code.html', {
+    return render(request, 'accounts/redeem_code.html', {
         'form': form,
-        'code': request.REQUEST.get('code', ""),
-        'next': request.REQUEST.get('next', "")
-    }, context_instance=RequestContext(request))
+        'code': request.POST.get('code', ""),
+        'next': request.POST.get('next', "")
+    })
     
 
 @ajax_login_required
@@ -152,7 +166,7 @@ def set_account_settings(request):
         form.save()
         code = 1
     else:
-        message = form.errors[form.errors.keys()[0]][0]
+        message = form.errors[list(form.errors.keys())[0]][0]
     
     payload = {
         "username": request.user.username,
@@ -174,7 +188,7 @@ def set_view_setting(request):
     view_settings = json.decode(request.user.profile.view_settings)
     
     setting = view_settings.get(feed_id, {})
-    if isinstance(setting, basestring): setting = {'v': setting}
+    if isinstance(setting, str): setting = {'v': setting}
     if feed_view_setting: setting['v'] = feed_view_setting
     if feed_order_setting: setting['o'] = feed_order_setting
     if feed_read_filter_setting: setting['r'] = feed_read_filter_setting
@@ -198,7 +212,7 @@ def clear_view_setting(request):
     view_settings = json.decode(request.user.profile.view_settings)
     new_view_settings = {}
     removed = 0
-    for feed_id, view_setting in view_settings.items():
+    for feed_id, view_setting in list(view_settings.items()):
         if view_setting_type == 'layout' and 'l' in view_setting:
             del view_setting['l']
             removed += 1
@@ -271,12 +285,12 @@ def paypal_form(request):
     logging.user(request, "~FBLoading paypal/feedchooser")
 
     # Output the button.
-    return HttpResponse(form.render(), mimetype='text/html')
+    return HttpResponse(form.render(), content_type='text/html')
 
 def paypal_return(request):
 
-    return render_to_response('reader/paypal_return.xhtml', {
-    }, context_instance=RequestContext(request))
+    return render(request, 'reader/paypal_return.xhtml', {
+    })
     
 @login_required
 def activate_premium(request):
@@ -313,17 +327,41 @@ def profile_is_premium(request):
 @ajax_login_required
 @json.json_view
 def save_ios_receipt(request):
-    receipt = request.REQUEST.get('receipt')
+    receipt = request.POST.get('receipt')
     product_identifier = request.POST.get('product_identifier')
     transaction_identifier = request.POST.get('transaction_identifier')
     
     logging.user(request, "~BM~FBSaving iOS Receipt: %s %s" % (product_identifier, transaction_identifier))
     
-    paid = request.user.profile.activate_ios_premium(product_identifier, transaction_identifier)
+    paid = request.user.profile.activate_ios_premium(transaction_identifier)
     if paid:
+        logging.user(request, "~BM~FBSending iOS Receipt email: %s %s" % (product_identifier, transaction_identifier))
         subject = "iOS Premium: %s (%s)" % (request.user.profile, product_identifier)
         message = """User: %s (%s) -- Email: %s, product: %s, txn: %s, receipt: %s""" % (request.user.username, request.user.pk, request.user.email, product_identifier, transaction_identifier, receipt)
         mail_admins(subject, message, fail_silently=True)
+    else:
+        logging.user(request, "~BM~FBNot sending iOS Receipt email, already paid: %s %s" % (product_identifier, transaction_identifier))
+        
+    
+    return request.user.profile
+    
+@ajax_login_required
+@json.json_view
+def save_android_receipt(request):
+    order_id = request.POST.get('order_id')
+    product_id = request.POST.get('product_id')
+    
+    logging.user(request, "~BM~FBSaving Android Receipt: %s %s" % (product_id, order_id))
+    
+    paid = request.user.profile.activate_android_premium(order_id)
+    if paid:
+        logging.user(request, "~BM~FBSending Android Receipt email: %s %s" % (product_id, order_id))
+        subject = "Android Premium: %s (%s)" % (request.user.profile, product_id)
+        message = """User: %s (%s) -- Email: %s, product: %s, order: %s""" % (request.user.username, request.user.pk, request.user.email, product_id, order_id)
+        mail_admins(subject, message, fail_silently=True)
+    else:
+        logging.user(request, "~BM~FBNot sending Android Receipt email, already paid: %s %s" % (product_id, order_id))
+        
     
     return request.user.profile
     
@@ -332,8 +370,7 @@ def stripe_form(request):
     user = request.user
     success_updating = False
     stripe.api_key = settings.STRIPE_SECRET
-    plan = int(request.GET.get('plan', 2))
-    plan = PLANS[plan-1][0]
+    plan = PLANS[0][0]
     renew = is_true(request.GET.get('renew', False))
     error = None
     
@@ -352,7 +389,7 @@ def stripe_form(request):
                 customer = stripe.Customer.retrieve(user.profile.stripe_id)
                 try:
                     card = customer.sources.create(source=zebra_form.cleaned_data['stripe_token'])
-                except stripe.CardError:
+                except stripe.error.CardError:
                     error = "This card was declined."
                 else:
                     customer.default_card = card.id
@@ -369,7 +406,7 @@ def stripe_form(request):
                         'email': user.email,
                         'description': user.username,
                     })
-                except stripe.CardError:
+                except stripe.error.CardError:
                     error = "This card was declined."
                 else:
                     user.profile.strip_4_digits = zebra_form.cleaned_data['last_4_digits']
@@ -405,8 +442,7 @@ def stripe_form(request):
         zebra_form = StripePlusPaymentForm(email=user.email, plan=plan)
     
     if success_updating:
-        return render_to_response('reader/paypal_return.xhtml', 
-                                  {}, context_instance=RequestContext(request))
+        return render(request, 'reader/paypal_return.xhtml')
     
     new_user_queue_count = RNewUserQueue.user_count()
     new_user_queue_position = RNewUserQueue.user_position(request.user.pk)
@@ -421,7 +457,7 @@ def stripe_form(request):
     
     logging.user(request, "~BM~FBLoading Stripe form")
 
-    return render_to_response('profile/stripe_form.xhtml',
+    return render(request, 'profile/stripe_form.xhtml',
         {
           'zebra_form': zebra_form,
           'publishable': settings.STRIPE_PUBLISHABLE,
@@ -432,14 +468,13 @@ def stripe_form(request):
           'renew': renew,
           'immediate_charge': immediate_charge,
           'error': error,
-        },
-        context_instance=RequestContext(request)
+        }
     )
 
 @render_to('reader/activities_module.xhtml')
 def load_activities(request):
     user = get_user(request)
-    page = max(1, int(request.REQUEST.get('page', 1)))
+    page = max(1, int(request.GET.get('page', 1)))
     activities, has_next_page = MActivity.user(user.pk, page=page)
 
     return {
@@ -454,7 +489,7 @@ def load_activities(request):
 def payment_history(request):
     user = request.user
     if request.user.is_staff:
-        user_id = request.REQUEST.get('user_id', request.user.pk)
+        user_id = request.GET.get('user_id', request.user.pk)
         user = User.objects.get(pk=user_id)
 
     history = PaymentHistory.objects.filter(user=user)
@@ -462,7 +497,7 @@ def payment_history(request):
         "created_date": user.date_joined,
         "last_seen_date": user.profile.last_seen_on,
         "last_seen_ip": user.profile.last_seen_ip,
-        "timezone": unicode(user.profile.timezone),
+        "timezone": str(user.profile.timezone),
         "stripe_id": user.profile.stripe_id,
         "paypal_email": user.profile.latest_paypal_email,
         "profile": user.profile,
@@ -502,14 +537,14 @@ def cancel_premium(request):
 @ajax_login_required
 @json.json_view
 def refund_premium(request):
-    user_id = request.REQUEST.get('user_id')
-    partial = request.REQUEST.get('partial', False)
+    user_id = request.POST.get('user_id')
+    partial = request.POST.get('partial', False)
     user = User.objects.get(pk=user_id)
     try:
         refunded = user.profile.refund_premium(partial=partial)
-    except stripe.InvalidRequestError, e:
+    except stripe.error.InvalidRequestError as e:
         refunded = e
-    except PayPalAPIResponseError, e:
+    except PayPalAPIResponseError as e:
         refunded = e
 
     return {'code': 1 if refunded else -1, 'refunded': refunded}
@@ -518,7 +553,7 @@ def refund_premium(request):
 @ajax_login_required
 @json.json_view
 def upgrade_premium(request):
-    user_id = request.REQUEST.get('user_id')
+    user_id = request.POST.get('user_id')
     user = User.objects.get(pk=user_id)
     
     gift = MGiftCode.add(gifting_user_id=User.objects.get(username='samuel').pk, 
@@ -531,10 +566,14 @@ def upgrade_premium(request):
 @ajax_login_required
 @json.json_view
 def never_expire_premium(request):
-    user_id = request.REQUEST.get('user_id')
+    user_id = request.POST.get('user_id')
+    years = int(request.POST.get('years', 0))
     user = User.objects.get(pk=user_id)
     if user.profile.is_premium:
-        user.profile.premium_expire = None
+        if years:
+            user.profile.premium_expire = datetime.datetime.now() + datetime.timedelta(days=365*years)
+        else:
+            user.profile.premium_expire = None
         user.profile.save()
         return {'code': 1}
     
@@ -544,9 +583,9 @@ def never_expire_premium(request):
 @ajax_login_required
 @json.json_view
 def update_payment_history(request):
-    user_id = request.REQUEST.get('user_id')
+    user_id = request.POST.get('user_id')
     user = User.objects.get(pk=user_id)
-    user.profile.setup_premium_history(check_premium=False)
+    user.profile.setup_premium_history(set_premium_expire=False)
     
     return {'code': 1}
     
@@ -667,4 +706,20 @@ def email_optout(request):
     return {
         "user": user,
     }
+
+@json.json_view
+def ios_subscription_status(request):
+    logging.debug(" ---> iOS Subscription Status: %s" % request.body)
+    data = json.decode(request.body)
+    subject = "iOS Subscription Status: %s" % data.get('notification_type', "[missing]")
+    message = """%s""" % (request.body)
+    mail_admins(subject, message)
     
+    return {
+        "code": 1
+    }
+
+def trigger_error(request):
+    logging.user(request.user, "~BR~FW~SBTriggering divison by zero")
+    division_by_zero = 1 / 0
+    return HttpResponseRedirect(reverse('index'))

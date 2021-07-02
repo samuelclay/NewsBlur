@@ -19,7 +19,7 @@
         android:text="@string/intel_title_header"
     />
 
-    <Button
+    <ImageButton
         android:id="@+id/intel_title_clear"
         android:layout_below="@id/intel_title_header"
         android:layout_alignParentRight="true"
@@ -29,7 +29,7 @@
         android:background="@drawable/ic_clear_gray55"
     />
 
-    <Button
+    <ImageButton
         android:id="@+id/intel_title_dislike"
         android:layout_below="@id/intel_title_header"
         android:layout_toLeftOf="@id/intel_title_clear"
@@ -42,7 +42,7 @@
         android:background="@drawable/ic_dislike_gray55"
     />
 
-    <Button
+    <ImageButton
         android:id="@+id/intel_title_like"
         android:layout_below="@id/intel_title_header"
         android:layout_toLeftOf="@id/intel_title_dislike"

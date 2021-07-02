@@ -2,9 +2,9 @@ package com.newsblur.activity;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
@@ -13,6 +13,7 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.fragment.ProfileDetailsFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.UIUtils;
 
 public class Profile extends NbActivity {
 
@@ -28,7 +29,7 @@ public class Profile extends NbActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.profile), true);
 		apiManager = new APIManager(this);
         if (savedInstanceState == null) {
             userId = getIntent().getStringExtra(USER_ID);

@@ -13,7 +13,6 @@
     -moz-box-shadow: 8px 8px 15px #505050;
     -webkit-box-shadow: 8px 8px 15px #505050;
     box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 2px, rgba(255, 255, 255, 0.4) 0px 0px 300px 0px;
-    border: 1px solid rgba(5, 5, 5,.6);
     min-height: 150px;
     overflow: auto;
 }
@@ -96,11 +95,13 @@ fieldset legend {
 }
 
 .NB-modal .NB-modal-loading.NB-active {
-    background: transparent url('/media/img/reader/recycle_spinner.gif') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/ring_spinner.svg') no-repeat center center;
+    background-size: 16px;
 }
 
 .NB-loading.NB-active {
-    background: transparent url('/media/img/reader/spinner_ball.gif') no-repeat 0 0;
+    background: transparent url('/media/img/reader/worm_spinner.svg') no-repeat 0 0;
+    background-size: 16px;
 }
 
 .NB-modal h2,
@@ -129,25 +130,21 @@ fieldset legend {
 .NB-module h5,
 .NB-module-header {
     margin: 0;
-    padding: 6px 12px 6px;
+    padding: 14px 12px;
 
-    background-color: #F5F6F2;
-    background-image: -moz-linear-gradient(top, #F5F6F2, #E5E6E0); /* FF3.6 */
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#F5F6F2), to(#E5E6E0)); /* Saf4+, Chrome */
-    background-image: linear-gradient(top, #F5F6F2, #E5E6E0);
-    border: 1px solid rgba(0, 0, 0, .1);
-    border-bottom: 1px solid rgba(0, 0, 0, .15);
-    border-radius: 2px;
-/*    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05),
-                inset 0 -1px 1px rgba(0, 0, 0, .05);
-*/    
+    background-color: #EAECE5;
+    border-radius: 3px;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-    color: #353634;
-    font-size: 12px;
+    color: #5c6157;
+    font-size: 17px;
     font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif, inherit;
     font-weight: bold;
-    text-transform: uppercase;
+    text-align: center;
     position: relative;
+}
+.NB-module h5,
+.NB-splash-modules .NB-module-header {
+    margin: 0 0 24px;
 }
 .NB-modal h5 {
     border: none;
@@ -427,7 +424,7 @@ fieldset legend {
 
 .NB-modal .NB-fieldset {
     border-bottom: 1px solid rgba(0, 0, 0, .1);
-    margin: 16px 0 0;
+    margin: 24px 0 0;
     overflow: hidden;
 }
 .NB-modal .NB-fieldset:first-child {
@@ -436,12 +433,9 @@ fieldset legend {
 
 .NB-modal .NB-fieldset-fields {
     background-color: #F7F7F5;
-    padding: 12px 16px 6px;
+    padding: 20px 16px 14px;
     font-size: 14px;
     overflow: hidden;
-    border-left: 1px solid rgba(0, 0, 0, .1);
-    border-right: 1px solid rgba(0, 0, 0, .1);
-
 }
 
 .NB-modal .NB-modal-feed-chooser-container {

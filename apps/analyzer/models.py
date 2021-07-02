@@ -11,22 +11,22 @@ from apps.analyzer.tasks import EmailPopularityQuery
 from utils import log as logging
 
 class FeatureCategory(models.Model):
-    user = models.ForeignKey(User)
-    feed = models.ForeignKey(Feed)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
     feature = models.CharField(max_length=255)
     category = models.CharField(max_length=255)
     count = models.IntegerField(default=0)
     
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s (%s)' % (self.feature, self.category, self.count)
 
 class Category(models.Model):
-    user = models.ForeignKey(User)
-    feed = models.ForeignKey(Feed)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    feed = models.ForeignKey(Feed, on_delete=models.CASCADE)
     category = models.CharField(max_length=255)
     count = models.IntegerField(default=0)
     
-    def __unicode__(self):
+    def __str__(self):
         return '%s (%s)' % (self.category, self.count)
 
 
@@ -41,11 +41,11 @@ class MPopularityQuery(mongo.Document):
         'allow_inheritance': False,
     }
     
-    def __unicode__(self):
+    def __str__(self):
         return "%s - \"%s\"" % (self.email, self.query)
 
     def queue_email(self):
-        EmailPopularityQuery.delay(pk=self.pk)
+        EmailPopularityQuery.delay(pk=str(self.pk))
     
     @classmethod
     def ensure_all_sent(cls, queue=True):
@@ -99,7 +99,7 @@ class MClassifierTitle(mongo.Document):
         'allow_inheritance': False,
     }
     
-    def __unicode__(self):
+    def __str__(self):
         user = User.objects.get(pk=self.user_id)
         return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, self.title[:30])
         
@@ -118,7 +118,7 @@ class MClassifierAuthor(mongo.Document):
         'allow_inheritance': False,
     }
     
-    def __unicode__(self):
+    def __str__(self):
         user = User.objects.get(pk=self.user_id)
         return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, self.author[:30])
 
@@ -136,7 +136,7 @@ class MClassifierTag(mongo.Document):
         'allow_inheritance': False,
     }
     
-    def __unicode__(self):
+    def __str__(self):
         user = User.objects.get(pk=self.user_id)
         return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, self.tag[:30])
     
@@ -154,7 +154,7 @@ class MClassifierFeed(mongo.Document):
         'allow_inheritance': False,
     }
     
-    def __unicode__(self):
+    def __str__(self):
         user = User.objects.get(pk=self.user_id)
         if self.feed_id:
             feed = Feed.get_by_id(self.feed_id)
@@ -246,7 +246,7 @@ def get_classifiers_for_user(user, feed_id=None, social_user_id=None, classifier
     elif feed_id:
         params['feed_id'] = feed_id
     if social_user_id:
-        if isinstance(social_user_id, basestring):
+        if isinstance(social_user_id, str):
             social_user_id = int(social_user_id.replace('social:', ''))
         params['social_user_id'] = social_user_id
 

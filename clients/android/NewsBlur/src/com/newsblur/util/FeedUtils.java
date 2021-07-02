@@ -1,12 +1,16 @@
 package com.newsblur.util;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.newsblur.R;
@@ -16,8 +20,10 @@ import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ReadingActionConfirmationFragment;
+import com.newsblur.network.APIConstants;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.service.NBSyncService;
@@ -33,6 +39,12 @@ public class FeedUtils {
     public static ImageLoader iconLoader;
     public static ImageLoader thumbnailLoader;
     public static FileCache storyImageCache;
+
+    // this is gross, but the feedset can't hold a folder title
+    // without being mistaken for a folder feed.
+    // The alternative is to pass it through alongside all instances
+    // of the feedset
+    public static String currentFolderName;
 
     public static void offerInitContext(Context context) {
         if (dbHelper == null) {
@@ -76,20 +88,61 @@ public class FeedUtils {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-	public static void setStorySaved(final Story story, final boolean saved, final Context context) {
-        setStorySaved(story.storyHash, saved, context);
+    public static void setStorySaved(final String storyHash, final boolean saved, final Context context) {
+        List<String> userTags = new ArrayList<>();
+        if(FeedUtils.currentFolderName != null){
+            userTags.add(FeedUtils.currentFolderName);
+        }
+        setStorySaved(storyHash, saved, context, userTags);
+    }
+	public static void setStorySaved(final Story story, final boolean saved, final Context context, final List<String> userTags) {
+        setStorySaved(story.storyHash, saved, context, userTags);
     }
 
-	public static void setStorySaved(final String storyHash, final boolean saved, final Context context) {
+	public static void setStorySaved(final String storyHash, final boolean saved, final Context context, final List<String> userTags) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... arg) {
-                ReadingAction ra = (saved ? ReadingAction.saveStory(storyHash) : ReadingAction.unsaveStory(storyHash));
+                ReadingAction ra = (saved ? ReadingAction.saveStory(storyHash, userTags) : ReadingAction.unsaveStory(storyHash));
                 ra.doLocal(dbHelper);
                 NbActivity.updateAllActivities(NbActivity.UPDATE_STORY);
                 dbHelper.enqueueAction(ra);
                 triggerSync(context);
                 return null;
+            }
+        }.execute();
+    }
+
+    public static void deleteSavedSearch(final String feedId, final String query, final Context context, final APIManager apiManager) {
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... voids) {
+                return apiManager.deleteSearch(feedId, query);
+            }
+
+            @Override
+            protected void onPostExecute(NewsBlurResponse newsBlurResponse) {
+                if (!newsBlurResponse.isError()) {
+                    dbHelper.deleteSavedSearch(feedId, query);
+                    NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
+                }
+            }
+        }.execute();
+    }
+
+    public static void saveSearch(final String feedId, final String query, final Context context, final APIManager apiManager) {
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... voids) {
+                return apiManager.saveSearch(feedId, query);
+            }
+
+            @Override
+            protected void onPostExecute(NewsBlurResponse newsBlurResponse) {
+                if (!newsBlurResponse.isError()) {
+                    NBSyncService.forceFeedsFolders();
+                    triggerSync(context);
+                }
             }
         }.execute();
     }
@@ -121,6 +174,48 @@ public class FeedUtils {
                 // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
                 dbHelper.deleteSocialFeed(userId);
                 NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
+            }
+        }.execute();
+    }
+
+    public static void deleteFolder(final String folderName, final String inFolder, final Context context, final APIManager apiManager) {
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... voids) {
+                return apiManager.deleteFolder(folderName, inFolder);
+            }
+
+            @Override
+            protected void onPostExecute(NewsBlurResponse result) {
+                super.onPostExecute(result);
+                if (!result.isError()) {
+                    NBSyncService.forceFeedsFolders();
+                    triggerSync(context);
+                }
+            }
+        }.execute();
+    }
+
+    public static void syncOfflineStories(Context context) {
+        dbHelper.deleteStories();
+        NBSyncService.forceFeedsFolders();
+        triggerSync(context);
+    }
+
+    public static void renameFolder(final String folderName, final String newFolderName, final String inFolder, final Context context, final APIManager apiManager) {
+        new AsyncTask<Void, Void, NewsBlurResponse>() {
+            @Override
+            protected NewsBlurResponse doInBackground(Void... voids) {
+                return apiManager.renameFolder(folderName, newFolderName, inFolder);
+            }
+
+            @Override
+            protected void onPostExecute(NewsBlurResponse result) {
+                super.onPostExecute(result);
+                if (!result.isError()) {
+                    NBSyncService.forceFeedsFolders();
+                    triggerSync(context);
+                }
             }
         }.execute();
     }
@@ -163,8 +258,8 @@ public class FeedUtils {
         Set<FeedSet> impactedFeeds = dbHelper.setStoryReadState(story, read);
         NbActivity.updateAllActivities(NbActivity.UPDATE_STORY);
 
-        triggerSync(context);
         NBSyncService.addRecountCandidates(impactedFeeds);
+        triggerSync(context);
     }
 
     /**
@@ -302,23 +397,25 @@ public class FeedUtils {
         doAction(ra, context);
     }
 
-    public static void sendStoryBrief(Story story, Context context) {
-        if (story == null ) { return; } 
-        Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+    public static void sendStoryUrl(Story story, Context context) {
+        if (story == null) return;
+        Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_brief), new Object[]{UIUtils.fromHtml(story.title), story.permalink}));
+        intent.putExtra(Intent.EXTRA_SUBJECT, story.title);
+        intent.putExtra(Intent.EXTRA_TEXT, story.permalink);
         context.startActivity(Intent.createChooser(intent, "Send using"));
     }
 
     public static void sendStoryFull(Story story, Context context) {
-        if (story == null ) { return; } 
-        String body = getStoryContent(story.storyHash);
-        Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+        if (story == null) return;
+        String body = getStoryText(story.storyHash);
+        if (TextUtils.isEmpty(body)) body = getStoryContent(story.storyHash);
+        Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(Intent.EXTRA_SUBJECT, UIUtils.fromHtml(story.title));
-        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_full), new Object[]{story.permalink, UIUtils.fromHtml(story.title), UIUtils.fromHtml(body)}));
+        intent.putExtra(Intent.EXTRA_SUBJECT, story.title);
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(context.getResources().getString(R.string.send_full), story.title, story.permalink, UIUtils.fromHtml(body)));
         context.startActivity(Intent.createChooser(intent, "Send using"));
     }
 
@@ -502,4 +599,13 @@ public class FeedUtils {
         return dbHelper.getSocialFeed(feedId);
     }
 
+    @Nullable
+    public static StarredCount getStarredFeedByTag(String feedId) {
+        return dbHelper.getStarredFeedByTag(feedId);
+    }
+
+    public static void openStatistics(Context context, String feedId) {
+        String url = APIConstants.buildUrl(APIConstants.PATH_FEED_STATISTICS + feedId);
+        UIUtils.handleUri(context, Uri.parse(url));
+    }
 }

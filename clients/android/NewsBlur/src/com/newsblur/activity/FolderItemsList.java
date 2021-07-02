@@ -16,7 +16,11 @@ public class FolderItemsList extends ItemsList {
 
 		super.onCreate(bundle);
 
-        UIUtils.setCustomActionBar(this, R.drawable.g_icn_folder_rss, folderName);
+        UIUtils.setupToolbar(this, R.drawable.g_icn_folder_rss, folderName, false);
 	}
 
+	@Override
+	String getSaveSearchFeedId() {
+		return "river:" + folderName;
+	}
 }

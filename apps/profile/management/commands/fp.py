@@ -1,12 +1,11 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from optparse import make_option
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option("-u", "--username", dest="username", nargs=1, help="Specify user id or username"),
-        make_option("-e", "--email", dest="email", nargs=1, help="Specify email if it doesn't exist"),
-    )
+
+    def add_arguments(self, parser):
+        parser.add_argument("-u", "--username", dest="username", nargs=1, help="Specify user id or username")
+        parser.add_argument("-e", "--email", dest="email", nargs=1, help="Specify email if it doesn't exist")
 
     def handle(self, *args, **options):
         username = options.get('username')
@@ -20,7 +19,7 @@ class Command(BaseCommand):
             except User.DoesNotExist:
                 user = User.objects.get(email__iexact=username)
             except User.DoesNotExist:
-                print " ---> No user found at: %s" % username
+                print(" ---> No user found at: %s" % username)
         elif email:
             try:
                 user = User.objects.get(email__icontains=email)
@@ -30,12 +29,12 @@ class Command(BaseCommand):
                 users = User.objects.filter(email__iexact=email)
                 user = users[0]
             except User.DoesNotExist:
-                print " ---> No email found at: %s" % email
+                print(" ---> No email found at: %s" % email)
             
         if user:
             email = options.get("email") or user.email
             user.profile.send_forgot_password_email(email)
         else:
-            print " ---> No user/email found at: %s/%s" % (username, email)
+            print(" ---> No user/email found at: %s/%s" % (username, email))
             
         

@@ -1,7 +1,8 @@
 package com.newsblur.activity;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.newsblur.util.FeedUtils;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
  * The base class for all Activities in the NewsBlur app.  Handles enforcement of
  * login state and tracking of sync/update broadcasts.
  */
-public class NbActivity extends FragmentActivity {
+public class NbActivity extends AppCompatActivity {
 
     public static final int UPDATE_DB_READY = (1<<0);
     public static final int UPDATE_METADATA = (1<<1);

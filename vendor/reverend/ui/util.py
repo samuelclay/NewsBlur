@@ -4,7 +4,7 @@
 # License as published by the Free Software Foundation.
 #
 
-from Tkinter import *
+from tkinter import *
 
 class StatusBar(Frame):
     """Courtesy of Fredrik Lundh.
@@ -40,7 +40,7 @@ class Command:
         self.kwargs = kwargs
 
     def __call__(self):
-        return apply(self.callback, self.args, self.kwargs)
+        return self.callback(*self.args, **self.kwargs)
     
 class Notebook:
     """Courtesy of Iuri Wickert

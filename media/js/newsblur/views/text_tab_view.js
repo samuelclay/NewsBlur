@@ -74,6 +74,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
             this.error();
         } else {
             $content.html(this.story.original_text());
+            this.story_detail.attach_handlers();
             NEWSBLUR.reader.make_story_titles_pane_counter();
             this.resize_starred_tags();
         }

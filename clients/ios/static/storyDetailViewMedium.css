@@ -8,7 +8,7 @@
 
 body {
     color: #eeeeee;
-    background-color: gray;
+    background-color: #444444;
 }
 
 /* ========== */
@@ -17,7 +17,7 @@ body {
 
 .NB-header {
     color: #bbbbbb;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#777777), to(#606060));
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#606060), to(#404040));
     border-bottom: 1px solid #535353;
     text-shadow: 0 1px 0 rgba(28, 28, 28, .1);
 
@@ -39,6 +39,10 @@ body {
 
 .NB-story-permalink {
     color: lightgray;
+}
+.NB-story-toggle-changes {
+    color: #c6c6c6;
+    text-shadow: 0 1px 0 rgba(28, 28, 28, .1);
 }
 .NB-story-date {
     color: #c6c6c6;
@@ -117,6 +121,46 @@ a:active {
     background-color: #6c696a;
 }
 
+.NB-story blockquote p {
+    background-color: #6c696a;
+}
+
+ins {
+    background-color: #475D49;
+    text-decoration: none;
+}
+
+del {
+    background-color: #685253
+    /*display: none;*/
+}
+
+.NB-story ins {
+    background-color: #475D49;
+    text-decoration: none
+}
+
+.NB-story del {
+    background-color: #685253
+}
+
+.NB-newsletter p,
+.NB-newsletter div,
+.NB-newsletter span,
+.NB-newsletter td {
+    color: #c0c0c0 !important;
+    background-color: #444444 !important;
+}
+.NB-newsletter h1,
+.NB-newsletter h2,
+.NB-newsletter h3,
+.NB-newsletter h4,
+.NB-newsletter h5,
+.NB-newsletter h6 {
+    color: #c0c0c0 !important;
+    background-color: #444444 !important;
+}
+
 /* Comments */
 
 .NB-story-comments-group:last-child {
@@ -164,14 +208,9 @@ a:active {
     border-color: rgba(255, 255, 255, .3) rgba(0, 0, 0, .2) rgba(0, 0, 0, .3) rgba(255, 255, 255, .2);
 }
 .NB-button.NB-share-button div {
-    background: -webkit-gradient(
-        linear, left top, left bottom, 
-        from(#ECEDE9),
-        color-stop(0.50, #ECEDE9),
-        color-stop(0.50, #E5E6E2),
-        to(#E5E6E2));
-    color: #B0B2AB;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    color: rgba(187, 187, 187, 0.6);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
+    border: 1px solid rgb(255, 255, 255, 0.25);
 }
 .NB-button:active div,
 .NB-button.NB-button-active div {

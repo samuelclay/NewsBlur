@@ -29,8 +29,6 @@ from oauth2client.client import Storage as BaseStorage
 
 class CredentialsField(models.Field):
 
-  __metaclass__ = models.SubfieldBase
-
   def __init__(self, *args, **kwargs):
     if 'null' not in kwargs:
       kwargs['null'] = True
@@ -38,6 +36,11 @@ class CredentialsField(models.Field):
 
   def get_internal_type(self):
     return "TextField"
+
+  def from_db_value(self, value, expression, connection):
+      if value is None:
+          return value
+      return pickle.loads(base64.b64decode(value))
 
   def to_python(self, value):
     if value is None:
@@ -51,10 +54,12 @@ class CredentialsField(models.Field):
       return None
     return base64.b64encode(pickle.dumps(value))
 
+  def deconstruct(self):
+    name, path, args, kwargs = super().deconstruct()
+    del kwargs['null']
+    return name, path, args, kwargs
 
 class FlowField(models.Field):
-
-  __metaclass__ = models.SubfieldBase
 
   def __init__(self, *args, **kwargs):
     if 'null' not in kwargs:
@@ -71,11 +76,20 @@ class FlowField(models.Field):
       return value
     return pickle.loads(base64.b64decode(value))
 
+  def from_db_value(self, value, expression, connection):
+      if value is None:
+          return None
+      return base64.b64encode(pickle.dumps(value))
+
   def get_db_prep_value(self, value, connection, prepared=False):
     if value is None:
       return None
     return base64.b64encode(pickle.dumps(value))
 
+  def deconstruct(self):
+    name, path, args, kwargs = super().deconstruct()
+    del kwargs['null']
+    return name, path, args, kwargs
 
 class Storage(BaseStorage):
   """Store and retrieve a single credential to and from

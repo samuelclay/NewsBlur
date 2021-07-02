@@ -1,0 +1,14 @@
+{
+  "datacenter": "nyc1",
+  "data_dir": "/opt/consul",
+  "enable_debug": true,
+  "log_level": "INFO",
+  "enable_syslog": false,
+  "retry_join": [{{ consul_manager_ip.stdout|trim }}],
+  {# "advertise_addr": "{{ consul_manager_ip.stdout|trim }}", #}
+  "bind_addr": "{% raw %}{{ GetAllInterfaces | include \"name\" \"^eth\" | include \"flags\" \"forwardable|up\" | attr \"address\" }}{% endraw %}",
+  "client_addr": "0.0.0.0",
+  "server": true,
+  {# "bootstrap": true, #}
+  "ui_config": {"enabled": true}
+}
