@@ -3059,12 +3059,20 @@ body {
     
     /* See http://www.newsblur.com/site/1031643/le-21me for width: auto, height: auto */
 }
+.NB-feed-story .NB-feed-story-content img.NB-medium-image {
+    max-width: max-content !important;    
+    margin: 0;
+    width: auto !important;
+}
 .NB-feed-story .NB-feed-story-content img.NB-small-image {
     max-width: max-content !important;    
-    margin-left: 0;
+    margin: 0;
     width: auto !important;
 }
 .NB-feed-story .NB-feed-story-content img.NB-large-image {
+}
+.NB-feed-story .NB-feed-story-content figure {
+    margin: 0;
 }
 
 .NB-feed-story .NB-feed-story-content video {

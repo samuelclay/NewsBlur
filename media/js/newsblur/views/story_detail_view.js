@@ -129,7 +129,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.apply_starred_story_selections();
     },
     
-    watch_images_load: function() {
+    watch_images_load: function () {
+        var pane_width = NEWSBLUR.reader.$s.$story_pane.width() - 32; // 28px to compensate for margin-left: -28px
+
         this.$el.imagesLoaded(_.bind(function() {
             var largest = 0;
             var $largest;
@@ -140,8 +142,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     largest = this.width;
                     $largest = $(this);
                 }
-                if (this.naturalWidth >= 320 && this.naturalHeight >= 50) {
+                if (this.naturalWidth >= pane_width && this.naturalHeight >= 50) {
                     $(this).addClass('NB-large-image');
+                } else if (this.naturalWidth >= 100 && this.naturalHeight >= 50) {
+                    $(this).addClass('NB-medium-image');
                 } else {
                     $(this).addClass('NB-small-image');
                 }
