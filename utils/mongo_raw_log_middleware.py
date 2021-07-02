@@ -4,6 +4,7 @@ from django.db import connection
 from pymongo.mongo_client import MongoClient
 from pymongo.mongo_replica_set_client import MongoReplicaSetClient
 from time import time
+from utils import log as logging
 import struct
 import bson
 import pymongo
@@ -65,7 +66,7 @@ class MongoDumpMiddleware(object):
                 connection.queriesx = []
             connection.queriesx.append({
                 'mongo': message,
-                'time': '%.3f' % duration,
+                'time': '%.6f' % duration,
             })
             return result
         return instrumented_method
