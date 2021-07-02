@@ -42,6 +42,7 @@
       --dns-{{ dns_plugin }}-credentials {{ dnsimple_credentials_path }}
       --server https://acme-v02.api.letsencrypt.org/directory
   when: use_dns_plugin|bool
+  notify: reload haproxy
   tags:
     - certbot-dns
 

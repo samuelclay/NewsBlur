@@ -77,6 +77,7 @@ ALLOWED_SUBDOMAINS = [
     'debug', 
     'debug3', 
     'nb',
+    'old',
 ]
 
 def get_subdomain(request):
@@ -554,7 +555,7 @@ def refresh_feeds(request):
             (end-start).total_seconds(),
             ))
     
-    # MAnalyticsLoader.add(page_load=time.time()-start_time)
+    MAnalyticsLoader.add(page_load=time.time()-start_time)
     
     return {
         'feeds': feeds, 
@@ -604,7 +605,7 @@ def feed_unread_count(request):
     else:
         feed_title = "%s feeds" % (len(feeds) + len(social_feeds))
     logging.user(request, "~FBUpdating unread count on: %s" % feed_title)
-    # MAnalyticsLoader.add(page_load=time.time()-start)
+    MAnalyticsLoader.add(page_load=time.time()-start)
     
     return {'feeds': feeds, 'social_feeds': social_feeds}
     
@@ -618,7 +619,7 @@ def refresh_feed(request, feed_id):
     usersub.calculate_feed_scores(silent=False)
     
     logging.user(request, "~FBRefreshing feed: %s" % feed)
-    # MAnalyticsLoader.add(page_load=time.time()-start)
+    MAnalyticsLoader.add(page_load=time.time()-start)
     
     return load_single_feed(request, feed_id)
     
@@ -1233,6 +1234,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
             story['story_feed_id'],
             feed.feed_title if feed else ""
         )
+        story_content = re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F]', '', story_content)
         story_data = {
             'title': "%s%s" % (("%s: " % feed.feed_title) if feed else "", story['story_title']),
             'link': story['story_permalink'],

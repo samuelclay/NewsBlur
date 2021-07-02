@@ -293,8 +293,8 @@ class SearchStory:
             logging.debug(f" ***> ~FRNo search server available for story indexing: {e}")
         except elasticsearch.exceptions.ConflictError as e:
             logging.debug(f" ***> ~FBAlready indexed story: {e}")
-        if settings.DEBUG:
-            logging.debug(f" ***> ~FBIndexed {story_hash}")
+        # if settings.DEBUG:
+        #     logging.debug(f" ***> ~FBIndexed {story_hash}")
 
     
     @classmethod
