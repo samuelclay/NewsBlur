@@ -10,21 +10,21 @@
 <meta name="generator" content="Jekyll v4.2.0" />
 <meta property="og:title" content="How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="tl;dr: A vandal deleted NewsBlur’s MongoDB during a migration. No data was stolen or lost." />
-<meta property="og:description" content="tl;dr: A vandal deleted NewsBlur’s MongoDB during a migration. No data was stolen or lost." />
-<link rel="canonical" href="https://blog2.newsblur.com/2021/06/25/story-of-a-hacking/" />
-<meta property="og:url" content="https://blog2.newsblur.com/2021/06/25/story-of-a-hacking/" />
+<meta name="description" content="tl;dr: A vandal deleted NewsBlur’s MongoDB database during a migration. No data was stolen or lost." />
+<meta property="og:description" content="tl;dr: A vandal deleted NewsBlur’s MongoDB database during a migration. No data was stolen or lost." />
+<link rel="canonical" href="https://blog.newsblur.com/2021/06/28/story-of-a-hacking/" />
+<meta property="og:url" content="https://blog.newsblur.com/2021/06/28/story-of-a-hacking/" />
 <meta property="og:site_name" content="The NewsBlur Blog" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2021-06-25T00:00:00-04:00" />
+<meta property="article:published_time" content="2021-06-28T00:00:00-04:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database" />
 <script type="application/ld+json">
-{"@type":"BlogPosting","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog2.newsblur.com/assets/newsblur_logo_512.png"}},"headline":"How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database","dateModified":"2021-06-25T00:00:00-04:00","datePublished":"2021-06-25T00:00:00-04:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog2.newsblur.com/2021/06/25/story-of-a-hacking/"},"description":"tl;dr: A vandal deleted NewsBlur’s MongoDB during a migration. No data was stolen or lost.","url":"https://blog2.newsblur.com/2021/06/25/story-of-a-hacking/","@context":"https://schema.org"}</script>
+{"@type":"BlogPosting","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"headline":"How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database","dateModified":"2021-06-28T00:00:00-04:00","datePublished":"2021-06-28T00:00:00-04:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.newsblur.com/2021/06/28/story-of-a-hacking/"},"description":"tl;dr: A vandal deleted NewsBlur’s MongoDB database during a migration. No data was stolen or lost.","url":"https://blog.newsblur.com/2021/06/28/story-of-a-hacking/","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css">
   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
-   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /><link type="application/atom+xml" rel="alternate" href="https://blog2.newsblur.com/feed.xml" title="The NewsBlur Blog" /></head>
+   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" /><link type="application/atom+xml" rel="alternate" href="https://blog.newsblur.com/feed.xml" title="The NewsBlur Blog" /></head>
 <body><header class="site-header" role="banner">
 
   <div class="wrapper"><a class="site-title" rel="author" href="/">
@@ -65,19 +65,19 @@
   <header class="post-header">
     <h1 class="post-title p-name" itemprop="name headline">How a Docker footgun led to a vandal deleting NewsBlur&#39;s MongoDB database</h1>
     <p class="post-meta">
-      <time class="dt-published" datetime="2021-06-25T00:00:00-04:00" itemprop="datePublished">Jun 25, 2021
+      <time class="dt-published" datetime="2021-06-28T00:00:00-04:00" itemprop="datePublished">Jun 28, 2021
       </time></p>
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    <p><em>tl;dr: A vandal deleted NewsBlur’s MongoDB during a migration. No data was stolen or lost.</em></p>
+    <p><em>tl;dr: A vandal deleted NewsBlur’s MongoDB database during a migration. No data was stolen or lost.</em></p>
 
 <p>I’m in the process of moving everything on NewsBlur over to Docker containers in prep for a <a href="https://beta.newsblur.com">big redesign launching next week</a>. It’s been a great year of maintenance and I’ve enjoyed the fruits of Ansible + Docker for NewsBlur’s 5 database servers (PostgreSQL, MongoDB, Redis, Elasticsearch, and soon ML models). The day was wrapping up and I settled into <a href="https://en.wikipedia.org/wiki/Human_Compatible">a new book on how to tame the machines once they’re smarter than us</a> when I received a strange NewsBlur error on my phone.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"query killed during yield: renamed collection 'newsblur.feed_icons' to 'newsblur.system.drop.1624498448i220t-1.feed_icons'"
 </code></pre></div></div>
 
-<p>There are honestly no sets of words in that error message that I ever want to see again. What is the word <code class="language-plaintext highlighter-rouge">drop</code> doing in that error message? Better go find out.</p>
+<p>There is honestly no set of words in that error message that I ever want to see again. What is <code class="language-plaintext highlighter-rouge">drop</code> doing in that error message? Better go find out.</p>
 
 <p>Logging into the MongoDB machine to check out what state the DB is in and I come across the following…</p>
 
@@ -135,13 +135,15 @@
 
 <p>This tells us that the hacker was an automated digital vandal rather than a concerted hacking attempt. And if we were to pay the ransom, it wouldn’t do anything because the vandals don’t have the data and have nothing to release.</p>
 
+<p>We can also reason that the vandal was not able to access any files that were on the server outside of MongoDB due to using a recent version of MongoDB in a Docker container. Unless the attacker had access to a 0-day to both MongoDB and Docker, it is highly unlikely they were able to break out of the MongoDB server connection.</p>
+
 <p>While the server was being snapshot, I used that time to figure out how the hacker got in.</p>
 
 <h3 id="2-how-did-newsblurs-mongodb-server-get-hacked">2. How did NewsBlur’s MongoDB server get hacked?</h3>
 
-<p>Turns out the ufw firewall I enabled and diligently kept on a strict allowlist with only my internal servers didn’t work on a new server because of Docker. When I containerized MongoDB, Docker helpfully inserted an allow rule into iptables, opening up MongoDB to the world. So while my firewall was “active”, doing a <code class="language-plaintext highlighter-rouge">sudo iptables -L | grep 27017</code> showed that MongoDB was open the world.</p>
+<p>Turns out the ufw firewall I enabled and diligently kept on a strict allowlist with only my internal servers didn’t work on a new server because of Docker. When I containerized MongoDB, Docker helpfully inserted an allow rule into iptables, opening up MongoDB to the world. So while my firewall was “active”, doing a <code class="language-plaintext highlighter-rouge">sudo iptables -L | grep 27017</code> showed that MongoDB was open the world. This has been <a href="https://github.com/moby/moby/issues/4737">a Docker footgun since 2014</a>.</p>
 
-<p>To be honest, I’m a bit surprised it took over 3 hours from when I flipped the switch to when a hacker/vandal dropped NewsBlur’s MongoDB collections and pretended to ransom about 250GB of data. This is the work of an automated hack and one that I was prepared for. NewsBlur was back online a few hours later once the backups were restored. And the Docker-made hole was immediately patched.</p>
+<p>To be honest, I’m a bit surprised it took over 3 hours from when I flipped the switch to when a hacker/vandal dropped NewsBlur’s MongoDB collections and pretended to ransom about 250GB of data. This is the work of an automated hack and one that I was prepared for. NewsBlur was back online a few hours later once the backups were restored and the Docker-made hole was patched.</p>
 
 <p>It would make for a much more dramatic read if I was hit through a vulnerability in Docker instead of a footgun. By having Docker silently override the firewall, Docker has made it easier for developers who want to open up ports on their containers at the expense of security. Better would be for Docker to issue a warning when it detects that the most popular firewall on Linux is active and filtering traffic to a port that Docker is about to open.</p>
 
@@ -199,9 +201,9 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
 
 <p>But each of these is only one piece of a defense strategy. <a href="https://news.ycombinator.com/item?id=27613217">As this well-attended Hacker News thread from the day of the hack made clear</a>, a proper defense strategy can never rely on only one well-setup layer. And for NewsBlur that layer was a allowlist-only firewall that worked perfectly up until it didn’t.</p>
 
-<p>As usually, the real heros are backups. Regular, well-tested backups are a necessary component to any web service. And with that, I’ll prepare to <a href="https://beta.newsblur.com">launch the big NewsBlur redesign later this week</a>.</p>
+<p>As usual the real heros are backups. Regular, well-tested backups are a necessary component to any web service. And with that, I’ll prepare to <a href="https://beta.newsblur.com">launch the big NewsBlur redesign later this week</a>.</p>
 
-  </div><a class="u-url" href="/2021/06/25/story-of-a-hacking/" hidden></a>
+  </div><a class="u-url" href="/2021/06/28/story-of-a-hacking/" hidden></a>
 </article>
 
       </div>

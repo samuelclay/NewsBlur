@@ -24,8 +24,6 @@ class AppTimes(View):
     
     @property
     def stats(self):
-
-        
         stats = settings.MONGOANALYTICSDB.nbanalytics.page_loads.aggregate([{
             "$match": {
                 "date": {

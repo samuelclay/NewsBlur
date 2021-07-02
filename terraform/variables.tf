@@ -15,7 +15,7 @@ variable "droplet_size_20" {
 
 variable "droplet_size_120" {
   type = string
-  default = "g-4vcpu-16gb"
+  default = "g-8vcpu-32gb"
 }
 
 variable "droplet_os" {

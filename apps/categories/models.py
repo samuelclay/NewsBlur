@@ -102,7 +102,10 @@ class MCategory(mongo.Document):
         usf.add_folder('', category.title)
         folders = json.decode(usf.folders)
         for feed_id in category.feed_ids:
-            folders = add_object_to_folder(feed_id, category.title, folders)
+            feed = Feed.get_by_id(feed_id)
+            if not feed:
+                continue
+            folders = add_object_to_folder(feed.pk, category.title, folders)
         usf.folders = json.encode(folders)
         usf.save()
         

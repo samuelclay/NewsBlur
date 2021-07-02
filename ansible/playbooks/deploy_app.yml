@@ -49,7 +49,7 @@
       git:
         repo: https://github.com/samuelclay/NewsBlur.git
         dest: /srv/newsblur/
-        version: dashboard3
+        version: master
       register: pulled
       tags:
         - static
