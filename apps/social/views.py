@@ -225,7 +225,7 @@ def load_river_blurblog(request):
                                                     relative_user_id=relative_user_id,
                                                     socialsubs=socialsubs,
                                                     cutoff_date=user.profile.unread_cutoff,
-                                                    dashboard_global=dashboard and global_feed)
+                                                    dashboard_global=on_dashboard and global_feed)
     mstories = MStory.find_by_story_hashes(story_hashes)
     story_hashes_to_dates = dict(list(zip(story_hashes, story_dates)))
     sorted_mstories = reversed(sorted(mstories, key=lambda x: int(story_hashes_to_dates[str(x.story_hash)])))
