@@ -631,6 +631,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     self.pageFinished = NO;
     self.isOnline = YES;
     self.isShowingFetching = NO;
+    self.scrollingMarkReadRow = NSNotFound;
     appDelegate.activeStory = nil;
     [storiesCollection setStories:nil];
     [storiesCollection setFeedUserProfiles:nil];
@@ -1724,6 +1725,12 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
             appDelegate.activeStory &&
             [[story objectForKey:@"story_hash"]
              isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
+            if ([storiesCollection isStoryUnread:story]) {
+                [storiesCollection markStoryRead:story];
+                [storiesCollection syncStoryAsRead:story];
+                [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
+                                             withRowAnimation:UITableViewRowAnimationFade];
+            }
             return;
         }
         [self loadStory:cell atRow:indexPath.row];
