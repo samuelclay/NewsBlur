@@ -1374,10 +1374,16 @@
             hasScrolled = YES;
         }
         
-//        if (hasScrolled && !appDelegate.suppressMarkAsRead && [appDelegate.storiesCollection isStoryUnread:activeStory]) {
-//            [appDelegate.storiesCollection markStoryRead:activeStory];
-//            [appDelegate.storiesCollection syncStoryAsRead:activeStory];
-//        }
+        if (hasScrolled && !atTop && !appDelegate.suppressMarkAsRead && [appDelegate.storiesCollection isStoryUnread:activeStory]) {
+            [appDelegate.storiesCollection markStoryRead:activeStory];
+            [appDelegate.storiesCollection syncStoryAsRead:activeStory];
+            
+            NSIndexPath *reloadIndexPath = appDelegate.feedDetailViewController.storyTitlesTable.indexPathForSelectedRow;
+            if (reloadIndexPath != nil) {
+                [appDelegate.feedDetailViewController.storyTitlesTable reloadRowsAtIndexPaths:@[reloadIndexPath]
+                                                                             withRowAnimation:UITableViewRowAnimationNone];
+            }
+        }
         
         if (!isNavBarHidden && self.canHideNavigationBar && !nearTop) {
             [appDelegate.storyPagesViewController setNavigationBarHidden:YES];
