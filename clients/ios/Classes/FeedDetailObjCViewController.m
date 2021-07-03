@@ -1298,7 +1298,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 - (void)testForTryFeed {
     if (!appDelegate.inFindingStoryMode ||
         !appDelegate.tryFeedStoryId) {
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && appDelegate.splitViewController.splitBehavior != UISplitViewControllerSplitBehaviorOverlay) {
+        if (appDelegate.activeStory == nil && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && appDelegate.splitViewController.splitBehavior != UISplitViewControllerSplitBehaviorOverlay) {
             NSInteger storyIndex = [storiesCollection indexFromLocation:0];
             appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
             appDelegate.suppressMarkAsRead = YES;
