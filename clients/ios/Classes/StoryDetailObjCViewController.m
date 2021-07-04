@@ -1414,13 +1414,13 @@
             if (bottomPosition >= 0 || !isHorizontal) {
                 appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin;
             } else {
-                if (webpageHeight > 0) {
+                if (webpageHeight > 0 && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
                     appDelegate.storyPagesViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + safeBottomMargin;
                 } else {
                     appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin;
                 }
             }
-        } else if (!singlePage && (atTop && !atBottom)) {
+        } else if ((!singlePage && (atTop && !atBottom)) || [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
             // Pin to bottom of viewport, regardless of scrollview
             appDelegate.storyPagesViewController.traversePinned = YES;
             appDelegate.storyPagesViewController.traverseFloating = NO;
