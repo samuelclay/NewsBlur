@@ -1743,6 +1743,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
                 [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
                                              withRowAnimation:UITableViewRowAnimationFade];
             }
+            [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"tap selected row"];
             return;
         }
         [self loadStory:cell atRow:indexPath.row];
