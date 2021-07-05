@@ -1924,7 +1924,7 @@ hr {
 }
 
 .NB-story-title.read a.story_title {
-    color: #a2a2a2;
+    color: #969696;
 }
 .NB-storytitles-title {
     overflow-wrap: break-word;
@@ -1943,7 +1943,7 @@ hr {
     font-size: 9px;
 }
 .NB-theme-feed-size-s .NB-story-title .NB-storytitles-author {
-    font-size: 10px;
+    font-size: 11px;
 }
 .NB-theme-feed-size-l .NB-story-title .NB-storytitles-author {
     font-size: 12px;
