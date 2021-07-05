@@ -536,7 +536,7 @@ hr {
     background-color: #F7F8F5;
     overflow-y: auto;
     overflow-x: hidden;
-    font-size: 11px;
+    font-size: 12px;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -544,7 +544,7 @@ hr {
     height: auto;
 }
 .NB-theme-feed-size-xs .NB-feedlist {
-    font-size: 10px;
+    font-size: 11px;
 }
 .NB-theme-feed-size-m .NB-feedlist {
     font-size: 12px;
@@ -726,10 +726,10 @@ hr {
     top: 1px;
 }
 .NB-theme-feed-size-s .NB-feedlist img.feed_favicon {
-    top: 3px;
+    top: 4px;
 }
 .NB-density-compact.NB-theme-feed-size-s .NB-feedlist img.feed_favicon {
-    top: 1px;
+    top: 2px;
 }
 .NB-theme-feed-size-m .NB-feedlist img.feed_favicon {
     top: 4px;
@@ -846,8 +846,7 @@ hr {
 .NB-feeds-header .NB-feedlist-collapse-icon {
     top: 4px;
 }
-.NB-theme-feed-size-xs .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon,
-.NB-theme-feed-size-s .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon {
+.NB-theme-feed-size-xs .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon {
     top: -1px;
 }
 .NB-theme-feed-size-xl .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon {
@@ -1017,9 +1016,7 @@ hr {
     padding-bottom: 2px;
 }
 .NB-theme-feed-size-s .NB-feedlist .unread_count {
-    margin-top: 2px;
-    padding-top: 3px;
-    padding-bottom: 1px;
+
 }
 .NB-theme-feed-size-l .NB-feedlist .unread_count {
     margin-top: 3px;
@@ -1069,7 +1066,7 @@ hr {
     padding-bottom: 1px;
 }
 .NB-theme-feed-size-s .folder_title .unread_count {
-    margin-top: -3px;
+    margin-top: -2px;
     padding-top: 2px;
     padding-bottom: 1px;
 }
@@ -2108,7 +2105,7 @@ hr {
 .NB-story-title .NB-story-feed .feed_title {
     display: block;
 
-    font-size: 10px;
+    font-size: 11px;
     position: absolute;
     left: 20px;
     top: 0;
@@ -2121,7 +2118,7 @@ hr {
     white-space: nowrap;
 }
 .NB-theme-feed-size-xs .NB-story-title .NB-story-feed .feed_title {
-    font-size: 9px;
+    font-size: 10px;
     height: 12px;
 }
 .NB-theme-feed-size-m .NB-story-title .NB-story-feed .feed_title {

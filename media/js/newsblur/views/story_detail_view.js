@@ -130,7 +130,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     watch_images_load: function () {
-        var pane_width = NEWSBLUR.reader.$s.$story_pane.width() - 28*2; // 28px to compensate for both margins
+        var pane_width = NEWSBLUR.reader.$s.$story_pane.width() - (28+2); // 28px to compensate for both margins
 
         this.$el.imagesLoaded(_.bind(function() {
             var largest = 0;
