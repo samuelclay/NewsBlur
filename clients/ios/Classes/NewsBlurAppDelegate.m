@@ -1584,13 +1584,7 @@
         [self adjustStoryDetailWebView];
         [self.feedDetailViewController.storyTitlesTable reloadData];
         
-        if (detailViewController.storyTitlesOnLeft && [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
-            [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadFeedDetailView"];
-        }
-        
-        if (feedDetailViewController.view.window == nil) {
-            [feedsNavigationController showViewController:feedDetailViewController sender:self];
-        }
+        [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadFeedDetailView"];
     }
     
     [self flushQueuedReadStories:NO withCallback:^{
@@ -1947,7 +1941,6 @@
             [navController popToRootViewControllerAnimated:NO];
         }
         
-        [navController showViewController:feedDetailViewController sender:self];
         [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadRiverFeedDetailView"];
     }
     
