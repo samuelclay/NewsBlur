@@ -97,7 +97,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.render_comments();
         this.attach_handlers();
         // if (!this.model.get('image_urls') || (this.model.get('image_urls') && this.model.get('image_urls').length == 0)) {
-            this.watch_images_load();
         // }
         
         return this;
@@ -127,6 +126,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.attach_fitvid_handler();
         this.render_starred_tags();
         this.apply_starred_story_selections();
+        this.watch_images_load();
     },
     
     watch_images_load: function () {
