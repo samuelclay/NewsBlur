@@ -73,7 +73,7 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
                     lead, trail = escape(lead), escape(trail)
                     url, trimmed = escape(url), escape(trimmed)
                 middle = '<a href="%s"%s>%s</a>' % (url, nofollow_attr, trimmed)
-                words[i] = '%s%s%s' % (lead, middle.decode('utf-8'), trail)
+                words[i] = '%s%s%s' % (lead, middle, trail)
             elif autoescape:
                 words[i] = escape(word)
         elif autoescape:
