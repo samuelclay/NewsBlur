@@ -2340,9 +2340,6 @@ hr {
     grid-gap: 2rem;
     padding: 2rem;
 }
-.NB-layout-grid .NB-story-content-container {
-    background-color: white;
-}
 .NB-layout-grid .NB-end-line {
     margin: 0 -2rem -2rem;
     
@@ -3530,6 +3527,7 @@ body {
     overflow: hidden;
     position: relative;
     min-height: 192px;
+    background-color: white;
 }
 .NB-narrow-content .NB-story-content-container {
     min-height: 108px;
