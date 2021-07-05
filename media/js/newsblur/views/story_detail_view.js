@@ -130,18 +130,35 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     watch_images_load: function () {
-        var pane_width = NEWSBLUR.reader.$s.$story_pane.width() - (28+2); // 28px to compensate for both margins
+        var pane_width;
+        if (this.options.inline_story_title) {
+            pane_width = this.$el.width();
+        }
+        if (!pane_width) {
+            pane_width = NEWSBLUR.reader.$s.$story_pane.width()
+        }
+        if (!pane_width) {
+            pane_width = NEWSBLUR.reader.$s.$story_titles.width();
+        }
+        pane_width = pane_width - (28 + 2); // 28px to compensate for both margins
+        var has_tables = this.$("table").length;
 
         this.$el.imagesLoaded(_.bind(function() {
             var largest = 0;
             var $largest;
             // console.log(["Images loaded", this.model.get('story_title').substr(0, 30), this.$("img")]);
             this.$("img").each(function() {
-                // console.log(["Largest?", this.width, largest, this.src]);
+                // console.log(["Largest?", this.width, this.naturalWidth, this.height, this.naturalHeight, largest, pane_width, this.src]);
                 if (this.width > 60 && this.width > largest) {
                     largest = this.width;
                     $largest = $(this);
                 }
+                
+                // Can't even calculate widths because with tables, nothing fits
+                if (has_tables) {
+                    $(this).addClass('NB-table-image');
+                }
+                
                 if (this.naturalWidth >= pane_width && this.naturalHeight >= 50) {
                     $(this).addClass('NB-large-image');
                 } else if (this.naturalWidth >= 100 && this.naturalHeight >= 50) {

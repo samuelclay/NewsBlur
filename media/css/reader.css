@@ -3105,6 +3105,17 @@ body {
 }
 .NB-feed-story .NB-feed-story-content img.NB-large-image {
 }
+.NB-feed-story .NB-feed-story-content img.NB-table-image.NB-large-image,
+.NB-feed-story .NB-feed-story-content img.NB-table-image.NB-medium-image {
+    max-width: max-content !important;    
+    margin: 0;
+    width: 100% !important;
+}
+.NB-feed-story .NB-feed-story-content img.NB-table-image.NB-small-image {
+    max-width: max-content !important;    
+    margin: 0;
+    width: auto !important;
+}
 .NB-feed-story .NB-feed-story-content figure {
     margin: 0;
 }
@@ -12366,7 +12377,7 @@ form.opml_import_form input {
 .NB-modal-organizer .segmented-control li {
     padding: 2px 12px 0;
     font-size: 11px;
-    width: 50%;
+    width: 49%;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
