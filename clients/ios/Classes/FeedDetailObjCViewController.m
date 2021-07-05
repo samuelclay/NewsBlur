@@ -526,7 +526,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     NSInteger location = storiesCollection.locationOfActiveStory;
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:location inSection:0];
     
-    if (indexPath && location >= 0) {
+    if (indexPath && location >= 0 && self.view.window != nil) {
         [self tableView:self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO];
         if (deselect) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),
@@ -719,6 +719,11 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 
 - (void)showStoryImage:(NSString *)imageUrl {
     dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.view.window == nil) {
+            NSLog(@"showStoryImage when not in a window: %@", imageUrl);  // log
+            return;
+        }
+        
         [self.storyTitlesTable reloadData];
         
         for (FeedDetailTableCell *cell in [self.storyTitlesTable visibleCells]) {
@@ -841,6 +846,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     NSInteger feedPage = storiesCollection.feedPage;
     NSLog(@" ---> Loading feed url: %@", theFeedDetailURL);
     [appDelegate GET:theFeedDetailURL parameters:nil success:^(NSURLSessionTask *task, id responseObject) {
+        NSLog(@"success");  // log
         if (!self.storiesCollection.activeFeed) return;
         [self finishedLoadingFeed:responseObject feedPage:feedPage feedId:feedId];
         if (callback) {
@@ -1172,14 +1178,20 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
         }
     }
 
+    NSLog(@"finishedLoadingFeed: %@", receivedFeedId);  // log
+    
     self.pageFinished = NO;
     [self renderStories:confirmedNewStories];
+    
+    NSLog(@"...rendered");  // log
     
     if (!self.isPhoneOrCompact) {
         [appDelegate.storyPagesViewController resizeScrollView];
         [appDelegate.storyPagesViewController setStoryFromScroll:YES];
     }
     [appDelegate.storyPagesViewController advanceToNextUnread];
+    
+    NSLog(@"...advanced to next unread");  // log
     
     if (!storiesCollection.storyCount) {
         if ([results objectForKey:@"message"] && ![[results objectForKey:@"message"] isKindOfClass:[NSNull class]]) {
