@@ -14,4 +14,14 @@ class SplitViewController: UISplitViewController {
     @objc func updateTheme() {
         
     }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        print("preferredStatusBarStyle: \(ThemeManager.shared.isDarkTheme ? "light" : "dark")")
+        
+        return ThemeManager.shared.isDarkTheme ? .lightContent : .darkContent
+    }
+    
+    override var childForStatusBarStyle: UIViewController? {
+        return nil
+    }
 }
