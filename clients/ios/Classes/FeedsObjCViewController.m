@@ -2449,8 +2449,8 @@ heightForHeaderInSection:(NSInteger)section {
     int yOffset = isShort ? 0 : 6;
     UIView *userInfoView = [[UIView alloc]
                             initWithFrame:CGRectMake(0, 0,
-                                                     self.navigationController.toolbar.frame.size.width,
-                                                     self.navigationController.toolbar.frame.size.height)];
+                                                     self.navigationController.navigationBar.frame.size.width,
+                                                     self.navigationController.navigationBar.frame.size.height)];
     // adding user avatar to left
     NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@",
                                             [appDelegate.dictSocialProfile
