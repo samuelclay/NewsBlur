@@ -32,6 +32,10 @@ NSString * const ThemeStyleDark = @"dark";
     }
 }
 
+- (UIViewController *)childViewControllerForStatusBarStyle {
+    return nil;
+}
+
 @end
 
 @interface ThemeManager ()
@@ -294,6 +298,7 @@ NSString * const ThemeStyleDark = @"dark";
     self.appDelegate.feedsNavigationController.navigationBar.barStyle = style;
     
     [self.appDelegate.feedsNavigationController setNeedsStatusBarAppearanceUpdate];
+    [self.appDelegate.splitViewController setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)updateTheme {
