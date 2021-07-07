@@ -2755,8 +2755,8 @@ body {
     font-family: "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
     /* font-family: Verdana, "Helvetica Neue", Helvetica, sans-serif; */
 }
-.NB-theme-feed-font-sentinel {
-    font-family: 'Sentinel A', 'Sentinel B', "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+.NB-theme-feed-font-gotham {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', "Helvetica Neue", Helvetica, sans-serif;
     /* font-family: "Helvetica Neue", Helvetica, sans-serif; */
 }
 .NB-theme-sans-serif #story_pane {

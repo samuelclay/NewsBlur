@@ -142,9 +142,9 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         $.make('div', { className: 'NB-icon' }),
                         'Lucida Grande'
                     ]),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-feed-font-sentinel NB-theme-feed-font-sentinel', role: "button" }, [
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-feed-font-gotham NB-theme-feed-font-gotham', role: "button" }, [
                         $.make('div', { className: 'NB-icon' }),
-                        'Sentinel'
+                        'Gotham'
                     ])
                 ]),
                 $.make('ul', { className: 'segmented-control NB-options-feed-size' }, [
@@ -343,8 +343,8 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             this.update_feed_font('whitney');
         } else if ($target.hasClass("NB-view-setting-feed-font-lucida")) {
             this.update_feed_font('lucida');
-        } else if ($target.hasClass("NB-view-setting-feed-font-sentinel")) {
-            this.update_feed_font('sentinel');
+        } else if ($target.hasClass("NB-view-setting-feed-font-gotham")) {
+            this.update_feed_font('gotham');
         }
         
         if (NEWSBLUR.reader.flags.search) {
