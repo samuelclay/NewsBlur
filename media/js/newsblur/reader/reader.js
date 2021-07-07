@@ -3053,7 +3053,7 @@
             $body.addClass('NB-theme-feed-size-' + NEWSBLUR.Preferences['feed_size']);
             $body.removeClass('NB-theme-feed-font-whitney')
                  .removeClass('NB-theme-feed-font-lucida')
-                 .removeClass('NB-theme-feed-font-sentinel');
+                 .removeClass('NB-theme-feed-font-gotham');
             $body.addClass('NB-theme-feed-font-' + NEWSBLUR.Preferences['feed_font']);
             
             $body.removeClass('NB-line-spacing-xs')
@@ -3597,9 +3597,9 @@
                                 $.make('div', { className: 'NB-icon' }),
                                 'Lucida Grande'
                             ]),
-                            $.make('li', { className: 'NB-feed-font-option NB-options-feed-font-sentinel NB-theme-feed-font-sentinel', role: "button" }, [
+                            $.make('li', { className: 'NB-feed-font-option NB-options-feed-font-gotham NB-theme-feed-font-gotham', role: "button" }, [
                                 $.make('div', { className: 'NB-icon' }),
-                                'Sentinel'
+                                'Gotham'
                             ])
                         ])
                     ]),
@@ -3639,7 +3639,7 @@
                 var feed_font = this.model.preference('feed_font');
                 $(".NB-options-feed-font-whitney", $manage_menu).toggleClass('NB-active', feed_font == 'whitney');
                 $(".NB-options-feed-font-lucida", $manage_menu).toggleClass('NB-active', feed_font == 'lucida');
-                $(".NB-options-feed-font-sentinel", $manage_menu).toggleClass('NB-active', feed_font == 'sentinel');
+                $(".NB-options-feed-font-gotham", $manage_menu).toggleClass('NB-active', feed_font == 'gotham');
                 var feed_size = this.model.preference('feed_size');
                 $(".NB-options-feed-size-xs", $manage_menu).toggleClass('NB-active', feed_size == 'xs');
                 $(".NB-options-feed-size-s", $manage_menu).toggleClass('NB-active', feed_size == 's');
@@ -6558,9 +6558,9 @@
                 e.preventDefault();
                 self.switch_feed_font('lucida');
             });  
-            $.targetIs(e, { tagSelector: '.NB-options-feed-font-sentinel' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-options-feed-font-gotham' }, function($t, $p){
                 e.preventDefault();
-                self.switch_feed_font('sentinel');
+                self.switch_feed_font('gotham');
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-size' }, function($t, $p){
                 e.preventDefault();
