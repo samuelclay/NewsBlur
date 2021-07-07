@@ -2748,7 +2748,17 @@ hr {
 body {
     font-family: 'Whitney SSm A', 'Whitney SSm B', "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
 }
-
+.NB-theme-feed-font-whitney {
+    font-family: 'Whitney SSm A', 'Whitney SSm B', "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+}
+.NB-theme-feed-font-lucida {
+    font-family: "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+    /* font-family: Verdana, "Helvetica Neue", Helvetica, sans-serif; */
+}
+.NB-theme-feed-font-sentinel {
+    font-family: 'Sentinel A', 'Sentinel B', "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+    /* font-family: "Helvetica Neue", Helvetica, sans-serif; */
+}
 .NB-theme-sans-serif #story_pane {
     font-family: "Helvetica Neue", "Helvetica", sans-serif;
 }
@@ -5186,40 +5196,48 @@ background: transparent;
     background: transparent url("/media/embed/icons/circular/menu_icn_settings.png") no-repeat center center;
 }
 
-.NB-filter-popover .segmented-control.NB-options-feed-font-size li,
-.NB-style-popover .NB-options-feed-font-size li,
+.NB-filter-popover .segmented-control.NB-options-feed-size li,
+.NB-style-popover .NB-options-feed-size li,
 .NB-style-popover .NB-options-story-font-size li {
     width: 45px;
     padding: 2px 0;
     line-height: 16px;
     font-weight: bold;
 }
-.NB-filter-popover .segmented-control.NB-options-feed-font-size li {
+.NB-filter-popover .segmented-control.NB-options-feed-size li {
     width: 50px;
 }
-.NB-filter-popover .segmented-control li.NB-options-font-size-xs,
-.NB-style-popover li.NB-options-font-size-xs {
+.NB-filter-popover .segmented-control li.NB-options-feed-size-xs,
+.NB-style-popover li.NB-options-font-size-xs,
+.NB-style-popover li.NB-options-feed-size-xs {
     font-size: 9px;
     padding: 3px 0 1px;
 }
-.NB-filter-popover .segmented-control .NB-options-font-size-s,
-.NB-style-popover .NB-options-font-size-s {
+.NB-filter-popover .segmented-control .NB-options-feed-size-s,
+.NB-style-popover .NB-options-font-size-s,
+.NB-style-popover .NB-options-feed-size-s {
     font-size: 10px;
 }
-.NB-filter-popover .segmented-control li.NB-options-font-size-m,
-.NB-style-popover li.NB-options-font-size-m {
+.NB-filter-popover .segmented-control li.NB-options-feed-size-m,
+.NB-style-popover li.NB-options-font-size-m,
+.NB-style-popover li.NB-options-feed-size-m {
     font-size: 12px;
     padding: 3px 0 1px;
 }
-.NB-filter-popover .segmented-control .NB-options-font-size-l,
-.NB-style-popover .NB-options-font-size-l {
+.NB-filter-popover .segmented-control .NB-options-feed-size-l,
+.NB-style-popover .NB-options-font-size-l,
+.NB-style-popover .NB-options-feed-size-l {
     font-size: 13px;
 }
-.NB-filter-popover .segmented-control li.NB-options-font-size-xl,
-.NB-style-popover li.NB-options-font-size-xl {
+.NB-filter-popover .segmented-control li.NB-options-feed-size-xl,
+.NB-style-popover li.NB-options-font-size-xl,
+.NB-style-popover li.NB-options-feed-size-xl {
     font-size: 15px;
 }
-
+.NB-filter-popover .segmented-control.NB-options-feed-font li {
+    padding: 4px 15px;
+    width: auto;
+}
 .NB-style-popover .NB-options-line-spacing {
     margin-top: 6px;
 }
@@ -7949,6 +7967,46 @@ form.opml_import_form input {
 }
 .NB-menu-manage .NB-menu-manage-theme .segmented-control li {
     padding: 4px 8px;
+}
+.NB-menu-manage .NB-menu-manage-font .NB-menu-manage-image {
+    background: transparent url('/media/img/icons/circular/menu_icn_font.png') no-repeat  0 0;
+    background-size: 18px;
+}
+.NB-menu-manage .NB-menu-manage-font .segmented-control {
+    margin: 2px 0 0 36px;
+}
+.NB-menu-manage .NB-menu-manage-font .segmented-control li {
+    padding: 4px 8px;
+}
+.NB-menu-manage .NB-menu-manage-size .NB-menu-manage-image {
+    background: transparent url('/media/img/icons/circular/menu_icn_size.png') no-repeat  0 0;
+    background-size: 18px;
+}
+.NB-menu-manage .NB-menu-manage-size .segmented-control {
+    margin: 2px 0 0 36px;
+}
+.NB-menu-manage .NB-menu-manage-size .segmented-control li {
+    font-weight: bold;
+}
+.NB-menu-manage .NB-menu-manage-size .segmented-control li.NB-options-feed-size-xs {
+    font-size: 9px;
+    padding: 7px 12px 6px;
+}
+.NB-menu-manage .NB-menu-manage-size .segmented-control li.NB-options-feed-size-s {
+    font-size: 10px;
+    padding: 6px 12px 5px;
+}
+.NB-menu-manage .NB-menu-manage-size .segmented-control li.NB-options-feed-size-m {
+    font-size: 12px;
+    padding: 5px 12px 4px;
+}
+.NB-menu-manage .NB-menu-manage-size .segmented-control li.NB-options-feed-size-l {
+    font-size: 13px;
+    padding: 4px 12px;
+}
+.NB-menu-manage .NB-menu-manage-size .segmented-control li.NB-options-feed-size-xl {
+    font-size: 15px;
+    padding: 3px 12px 2px;
 }
 .NB-menu-manage .NB-menu-manage-account .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/menu_icn_profile.png') no-repeat  0 0;
