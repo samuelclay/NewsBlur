@@ -3086,36 +3086,26 @@ body {
     max-width: 100%;
 }
 .NB-feed-story .NB-feed-story-content img {
-    max-width: max-content !important;    
-    margin-left: -28px;
-    width: calc(100% - 56px * -1) !important;
+    max-width: 100% !important;    
+    width: auto !important;
     height: auto;
     
     /* See http://www.newsblur.com/site/1031643/le-21me for width: auto, height: auto */
 }
 .NB-feed-story .NB-feed-story-content img.NB-medium-image {
-    max-width: max-content !important;    
-    margin: 0;
-    width: auto !important;
 }
 .NB-feed-story .NB-feed-story-content img.NB-small-image {
-    max-width: max-content !important;    
-    margin: 0;
-    width: auto !important;
 }
 .NB-feed-story .NB-feed-story-content img.NB-large-image {
-}
-.NB-feed-story .NB-feed-story-content img.NB-table-image.NB-large-image,
-.NB-feed-story .NB-feed-story-content img.NB-table-image.NB-medium-image {
     max-width: max-content !important;    
+    margin-left: -28px !important;
+    width: calc(100% - 56px * -1) !important;
+}
+.NB-feed-story .NB-feed-story-content img.NB-table-image.NB-large-image {
     margin: 0;
     width: 100% !important;
 }
-.NB-feed-story .NB-feed-story-content img.NB-table-image.NB-small-image {
-    max-width: max-content !important;    
-    margin: 0;
-    width: auto !important;
-}
+
 .NB-feed-story .NB-feed-story-content figure {
     margin: 0;
 }

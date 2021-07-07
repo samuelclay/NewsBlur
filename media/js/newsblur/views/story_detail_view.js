@@ -153,12 +153,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     largest = this.width;
                     $largest = $(this);
                 }
-                
-                // Can't even calculate widths because with tables, nothing fits
+                $(this).removeClass('NB-large-image').removeClass('NB-medium-image').removeClass('NB-small-image');
+                if (pane_width >= 900) return;
+
                 if (has_tables) {
+                    // Can't even calculate widths because with tables, nothing fits
                     $(this).addClass('NB-table-image');
                 }
-                
                 if (this.naturalWidth >= pane_width && this.naturalHeight >= 50) {
                     $(this).addClass('NB-large-image');
                 } else if (this.naturalWidth >= 100 && this.naturalHeight >= 50) {
