@@ -106,48 +106,54 @@
 
 - name: Add sanity checkers cronjob for feeds fetched
   become: yes
-  cron:
-    name: feeds_fetched_sanity_checker
-    user: root
-    cron_file: /etc/cron.hourly/feeds_fetched_sanity_checker
-    job: >-
-      docker pull newsblur/newsblur_python3:latest;
+  copy:
+    owner: root
+    dest: /etc/cron.hourly/feeds_fetched_sanity_checker
+    mode: 0744
+    content: >-
+      #!/usr/bin/sh
+
       docker run --rm -it
       -v /srv/newsblur/:/srv/newsblur
       -h `cat /etc/hostname`
       --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_task_fetches.py
+      >> /var/log/sanity_checker.log
   when: "'task-work' in inventory_hostname"
   tags:
     - sanity-checker
 
 - name: Add sanity checkers cronjob for newsletter
   become: yes
-  cron:
-    name: newsletter_sanity_checker
-    user: root
-    cron_file: /etc/cron.hourly/newsletter_sanity_checker
-    job: >-
-      docker pull newsblur/newsblur_python3:latest;
+  copy:
+    owner: root
+    dest: /etc/cron.hourly/newsletter_sanity_checker
+    mode: 0744
+    content: >-
+      #!/usr/bin/sh
+
       docker run --rm -it
       -v /srv/newsblur/:/srv/newsblur
       -h `cat /etc/hostname`
       --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_newsletter_delivery.py
+      >> /var/log/sanity_checker.log
   when: "'task-work' in inventory_hostname"
   tags:
     - sanity-checker
   
 - name: Add sanity checkers cronjob for work queue
   become: yes
-  cron:
-    name: work_queue_sanity_checker
-    user: root
-    cron_file: /etc/cron.hourly/work_queue_sanity_checker
-    job: >-
-      docker pull newsblur/newsblur_python3:latest;
+  copy:
+    owner: root
+    dest: /etc/cron.hourly/work_queue_sanity_checker
+    mode: 0744
+    content: >-
+      #!/usr/bin/sh
+      
       docker run --rm -it
       -v /srv/newsblur/:/srv/newsblur
       -h `cat /etc/hostname`
       --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_work_queue.py
+      >> /var/log/sanity_checker.log
   when: "'task-work' in inventory_hostname"
   tags:
     - sanity-checker
