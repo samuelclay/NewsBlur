@@ -3051,6 +3051,10 @@
                  .removeClass('NB-theme-feed-size-l')
                  .removeClass('NB-theme-feed-size-xl');
             $body.addClass('NB-theme-feed-size-' + NEWSBLUR.Preferences['feed_size']);
+            $body.removeClass('NB-theme-feed-font-whitney')
+                 .removeClass('NB-theme-feed-font-lucida')
+                 .removeClass('NB-theme-feed-font-gotham');
+            $body.addClass('NB-theme-feed-font-' + NEWSBLUR.Preferences['feed_font']);
             
             $body.removeClass('NB-line-spacing-xs')
                  .removeClass('NB-line-spacing-s')
@@ -3082,6 +3086,8 @@
                 NEWSBLUR.app.dashboard_rivers.right.redraw();
                 NEWSBLUR.app.story_titles.render();
             }
+
+            this.load_theme();
         },
         
         // ===================
@@ -3369,14 +3375,26 @@
             }
         },
         
+        switch_feed_font: function(feed_font) {
+            this.model.preference('feed_font', feed_font);
+            this.apply_story_styling();
+        },
+        
+        switch_feed_font_size: function(feed_size) {
+            this.model.preference('feed_size', feed_size);
+            this.apply_story_styling();
+        },
+        
         switch_theme: function(theme) {
             this.model.preference('theme', theme);
-            this.load_theme();
+            this.apply_story_styling();
         },
         
         load_theme: function() {
             var theme = NEWSBLUR.assets.theme();
             var auto_theme = NEWSBLUR.assets.preference('theme'); // Add auto
+            var feed_font = NEWSBLUR.assets.preference('feed_font'); 
+            var feed_size = NEWSBLUR.assets.preference('feed_size'); 
     
             if (!this.flags.watching_system_theme && window.matchMedia) {
                 var darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -3401,8 +3419,13 @@
                 this.flags.watching_system_theme = true;
             }
             
+            // Select theme options in manage menu on the dashboard
             $('.NB-theme-option').removeClass('NB-active');
             $('.NB-options-theme-'+auto_theme).addClass('NB-active');  
+            $('.NB-feed-font-option').removeClass('NB-active');
+            $('.NB-options-feed-font-'+feed_font).addClass('NB-active');  
+            $('.NB-feed-size-option').removeClass('NB-active');
+            $('.NB-options-feed-size-'+feed_size).addClass('NB-active');  
             
             $("body").addClass('NB-theme-transitioning');
             
@@ -3562,6 +3585,34 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences')
                     ]),
+                    $.make('li', { className: 'NB-menu-separator' }), 
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-font' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('ul', { className: 'segmented-control NB-options-feed-font' }, [
+                            $.make('li', { className: 'NB-feed-font-option NB-options-feed-font-whitney NB-theme-feed-font-whitney', role: "button" }, [
+                                $.make('div', { className: 'NB-icon' }),
+                                'Whitney'
+                            ]),
+                            $.make('li', { className: 'NB-feed-font-option NB-options-feed-font-lucida NB-theme-feed-font-lucida', role: "button" }, [
+                                $.make('div', { className: 'NB-icon' }),
+                                'Lucida Grande'
+                            ]),
+                            $.make('li', { className: 'NB-feed-font-option NB-options-feed-font-gotham NB-theme-feed-font-gotham', role: "button" }, [
+                                $.make('div', { className: 'NB-icon' }),
+                                'Gotham'
+                            ])
+                        ])
+                    ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-size' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('ul', { className: 'segmented-control NB-options-feed-size' }, [
+                            $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-xs', role: "button" }, 'XS'),
+                            $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-s', role: "button" }, 'S'),
+                            $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-m', role: "button" }, 'M'),
+                            $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-l', role: "button" }, 'L'),
+                            $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-xl', role: "button" }, 'XL')
+                        ])
+                    ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-theme' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('ul', { className: 'segmented-control NB-options-theme' }, [
@@ -3585,6 +3636,16 @@
                 $(".NB-options-theme-light", $manage_menu).toggleClass('NB-active', theme == 'light');
                 $(".NB-options-theme-dark", $manage_menu).toggleClass('NB-active', theme == 'dark');
                 $(".NB-options-theme-auto", $manage_menu).toggleClass('NB-active', theme == 'auto');
+                var feed_font = this.model.preference('feed_font');
+                $(".NB-options-feed-font-whitney", $manage_menu).toggleClass('NB-active', feed_font == 'whitney');
+                $(".NB-options-feed-font-lucida", $manage_menu).toggleClass('NB-active', feed_font == 'lucida');
+                $(".NB-options-feed-font-gotham", $manage_menu).toggleClass('NB-active', feed_font == 'gotham');
+                var feed_size = this.model.preference('feed_size');
+                $(".NB-options-feed-size-xs", $manage_menu).toggleClass('NB-active', feed_size == 'xs');
+                $(".NB-options-feed-size-s", $manage_menu).toggleClass('NB-active', feed_size == 's');
+                $(".NB-options-feed-size-m", $manage_menu).toggleClass('NB-active', feed_size == 'm');
+                $(".NB-options-feed-size-l", $manage_menu).toggleClass('NB-active', feed_size == 'l');
+                $(".NB-options-feed-size-xl", $manage_menu).toggleClass('NB-active', feed_size == 'xl');
             } else if (type == 'feed') {
                 var feed = this.model.get_feed(feed_id);
                 if (!feed) return;
@@ -6485,6 +6546,44 @@
             $.targetIs(e, { tagSelector: '.NB-options-theme-auto' }, function($t, $p){
                 e.preventDefault();
                 self.switch_theme('auto');
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-font' }, function($t, $p){
+                e.preventDefault();
+            });  
+            $.targetIs(e, { tagSelector: '.NB-options-feed-font-whitney' }, function($t, $p){
+                e.preventDefault();
+                self.switch_feed_font('whitney');
+            });  
+            $.targetIs(e, { tagSelector: '.NB-options-feed-font-lucida' }, function($t, $p){
+                e.preventDefault();
+                self.switch_feed_font('lucida');
+            });  
+            $.targetIs(e, { tagSelector: '.NB-options-feed-font-gotham' }, function($t, $p){
+                e.preventDefault();
+                self.switch_feed_font('gotham');
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-size' }, function($t, $p){
+                e.preventDefault();
+            });  
+            $.targetIs(e, { tagSelector: '.NB-options-feed-size-xs' }, function($t, $p){
+                e.preventDefault();
+                self.switch_feed_font_size('xs');
+            });  
+            $.targetIs(e, { tagSelector: '.NB-options-feed-size-s' }, function($t, $p){
+                e.preventDefault();
+                self.switch_feed_font_size('s');
+            });  
+            $.targetIs(e, { tagSelector: '.NB-options-feed-size-m' }, function($t, $p){
+                e.preventDefault();
+                self.switch_feed_font_size('m');
+            });  
+            $.targetIs(e, { tagSelector: '.NB-options-feed-size-l' }, function($t, $p){
+                e.preventDefault();
+                self.switch_feed_font_size('l');
+            });  
+            $.targetIs(e, { tagSelector: '.NB-options-feed-size-xl' }, function($t, $p){
+                e.preventDefault();
+                self.switch_feed_font_size('xl');
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-logout' }, function($t, $p){
                 e.preventDefault();

@@ -536,7 +536,7 @@ hr {
     background-color: #F7F8F5;
     overflow-y: auto;
     overflow-x: hidden;
-    font-size: 11px;
+    font-size: 12px;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -544,7 +544,7 @@ hr {
     height: auto;
 }
 .NB-theme-feed-size-xs .NB-feedlist {
-    font-size: 10px;
+    font-size: 11px;
 }
 .NB-theme-feed-size-m .NB-feedlist {
     font-size: 12px;
@@ -726,10 +726,10 @@ hr {
     top: 1px;
 }
 .NB-theme-feed-size-s .NB-feedlist img.feed_favicon {
-    top: 3px;
+    top: 4px;
 }
 .NB-density-compact.NB-theme-feed-size-s .NB-feedlist img.feed_favicon {
-    top: 1px;
+    top: 2px;
 }
 .NB-theme-feed-size-m .NB-feedlist img.feed_favicon {
     top: 4px;
@@ -846,8 +846,7 @@ hr {
 .NB-feeds-header .NB-feedlist-collapse-icon {
     top: 4px;
 }
-.NB-theme-feed-size-xs .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon,
-.NB-theme-feed-size-s .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon {
+.NB-theme-feed-size-xs .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon {
     top: -1px;
 }
 .NB-theme-feed-size-xl .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon {
@@ -1017,9 +1016,7 @@ hr {
     padding-bottom: 2px;
 }
 .NB-theme-feed-size-s .NB-feedlist .unread_count {
-    margin-top: 2px;
-    padding-top: 3px;
-    padding-bottom: 1px;
+
 }
 .NB-theme-feed-size-l .NB-feedlist .unread_count {
     margin-top: 3px;
@@ -1069,7 +1066,7 @@ hr {
     padding-bottom: 1px;
 }
 .NB-theme-feed-size-s .folder_title .unread_count {
-    margin-top: -3px;
+    margin-top: -2px;
     padding-top: 2px;
     padding-bottom: 1px;
 }
@@ -1738,7 +1735,7 @@ hr {
     text-decoration: none;
     color: #272727;
     line-height: 15px;
-    font-size: 12px;
+    font-size: 13px;
 /*    background-color: white;
     border-top: 1px solid #E7EDF6;
     border-bottom: 1px solid #FFF;
@@ -1749,7 +1746,7 @@ hr {
 }
 
 .NB-theme-feed-size-xs .NB-story-title {
-    font-size: 11px;
+    font-size: 12px;
     line-height: 14px;
 }
 .NB-theme-feed-size-m .NB-story-title {
@@ -1924,7 +1921,7 @@ hr {
 }
 
 .NB-story-title.read a.story_title {
-    color: #a2a2a2;
+    color: #969696;
 }
 .NB-storytitles-title {
     overflow-wrap: break-word;
@@ -1940,10 +1937,10 @@ hr {
     font-size: 11px;
 }
 .NB-theme-feed-size-xs .NB-story-title .NB-storytitles-author {
-    font-size: 9px;
+    font-size: 10px;
 }
 .NB-theme-feed-size-s .NB-story-title .NB-storytitles-author {
-    font-size: 10px;
+    font-size: 11px;
 }
 .NB-theme-feed-size-l .NB-story-title .NB-storytitles-author {
     font-size: 12px;
@@ -2015,7 +2012,7 @@ hr {
 }
 
 .NB-theme-feed-size-xs .NB-storytitles-content-preview {
-    font-size: 10px;
+    font-size: 11px;
     line-height: 13px;
 }
 .NB-theme-feed-size-s .NB-storytitles-content-preview {
@@ -2108,7 +2105,7 @@ hr {
 .NB-story-title .NB-story-feed .feed_title {
     display: block;
 
-    font-size: 10px;
+    font-size: 11px;
     position: absolute;
     left: 20px;
     top: 0;
@@ -2121,7 +2118,7 @@ hr {
     white-space: nowrap;
 }
 .NB-theme-feed-size-xs .NB-story-title .NB-story-feed .feed_title {
-    font-size: 9px;
+    font-size: 10px;
     height: 12px;
 }
 .NB-theme-feed-size-m .NB-story-title .NB-story-feed .feed_title {
@@ -2339,9 +2336,6 @@ hr {
     display: grid;
     grid-gap: 2rem;
     padding: 2rem;
-}
-.NB-layout-grid .NB-story-content-container {
-    background-color: white;
 }
 .NB-layout-grid .NB-end-line {
     margin: 0 -2rem -2rem;
@@ -2754,7 +2748,17 @@ hr {
 body {
     font-family: 'Whitney SSm A', 'Whitney SSm B', "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
 }
-
+.NB-theme-feed-font-whitney {
+    font-family: 'Whitney SSm A', 'Whitney SSm B', "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+}
+.NB-theme-feed-font-lucida {
+    font-family: "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+    /* font-family: Verdana, "Helvetica Neue", Helvetica, sans-serif; */
+}
+.NB-theme-feed-font-gotham {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', "Helvetica Neue", Helvetica, sans-serif;
+    /* font-family: "Helvetica Neue", Helvetica, sans-serif; */
+}
 .NB-theme-sans-serif #story_pane {
     font-family: "Helvetica Neue", "Helvetica", sans-serif;
 }
@@ -3092,25 +3096,26 @@ body {
     max-width: 100%;
 }
 .NB-feed-story .NB-feed-story-content img {
-    max-width: max-content !important;    
-    margin-left: -28px;
-    width: calc(100% - 56px * -1) !important;
+    max-width: 100% !important;    
+    width: auto !important;
     height: auto;
     
     /* See http://www.newsblur.com/site/1031643/le-21me for width: auto, height: auto */
 }
 .NB-feed-story .NB-feed-story-content img.NB-medium-image {
-    max-width: max-content !important;    
-    margin: 0;
-    width: auto !important;
 }
 .NB-feed-story .NB-feed-story-content img.NB-small-image {
-    max-width: max-content !important;    
-    margin: 0;
-    width: auto !important;
 }
 .NB-feed-story .NB-feed-story-content img.NB-large-image {
+    max-width: max-content !important;    
+    margin-left: -28px !important;
+    width: calc(100% - 56px * -1) !important;
 }
+.NB-feed-story .NB-feed-story-content img.NB-table-image.NB-large-image {
+    margin: 0;
+    width: 100% !important;
+}
+
 .NB-feed-story .NB-feed-story-content figure {
     margin: 0;
 }
@@ -3530,6 +3535,7 @@ body {
     overflow: hidden;
     position: relative;
     min-height: 192px;
+    background-color: white;
 }
 .NB-narrow-content .NB-story-content-container {
     min-height: 108px;
@@ -5190,40 +5196,48 @@ background: transparent;
     background: transparent url("/media/embed/icons/circular/menu_icn_settings.png") no-repeat center center;
 }
 
-.NB-filter-popover .segmented-control.NB-options-feed-font-size li,
-.NB-style-popover .NB-options-feed-font-size li,
+.NB-filter-popover .segmented-control.NB-options-feed-size li,
+.NB-style-popover .NB-options-feed-size li,
 .NB-style-popover .NB-options-story-font-size li {
     width: 45px;
     padding: 2px 0;
     line-height: 16px;
     font-weight: bold;
 }
-.NB-filter-popover .segmented-control.NB-options-feed-font-size li {
+.NB-filter-popover .segmented-control.NB-options-feed-size li {
     width: 50px;
 }
-.NB-filter-popover .segmented-control li.NB-options-font-size-xs,
-.NB-style-popover li.NB-options-font-size-xs {
+.NB-filter-popover .segmented-control li.NB-options-feed-size-xs,
+.NB-style-popover li.NB-options-font-size-xs,
+.NB-style-popover li.NB-options-feed-size-xs {
     font-size: 9px;
     padding: 3px 0 1px;
 }
-.NB-filter-popover .segmented-control .NB-options-font-size-s,
-.NB-style-popover .NB-options-font-size-s {
+.NB-filter-popover .segmented-control .NB-options-feed-size-s,
+.NB-style-popover .NB-options-font-size-s,
+.NB-style-popover .NB-options-feed-size-s {
     font-size: 10px;
 }
-.NB-filter-popover .segmented-control li.NB-options-font-size-m,
-.NB-style-popover li.NB-options-font-size-m {
+.NB-filter-popover .segmented-control li.NB-options-feed-size-m,
+.NB-style-popover li.NB-options-font-size-m,
+.NB-style-popover li.NB-options-feed-size-m {
     font-size: 12px;
     padding: 3px 0 1px;
 }
-.NB-filter-popover .segmented-control .NB-options-font-size-l,
-.NB-style-popover .NB-options-font-size-l {
+.NB-filter-popover .segmented-control .NB-options-feed-size-l,
+.NB-style-popover .NB-options-font-size-l,
+.NB-style-popover .NB-options-feed-size-l {
     font-size: 13px;
 }
-.NB-filter-popover .segmented-control li.NB-options-font-size-xl,
-.NB-style-popover li.NB-options-font-size-xl {
+.NB-filter-popover .segmented-control li.NB-options-feed-size-xl,
+.NB-style-popover li.NB-options-font-size-xl,
+.NB-style-popover li.NB-options-feed-size-xl {
     font-size: 15px;
 }
-
+.NB-filter-popover .segmented-control.NB-options-feed-font li {
+    padding: 4px 15px;
+    width: auto;
+}
 .NB-style-popover .NB-options-line-spacing {
     margin-top: 6px;
 }
@@ -7953,6 +7967,46 @@ form.opml_import_form input {
 }
 .NB-menu-manage .NB-menu-manage-theme .segmented-control li {
     padding: 4px 8px;
+}
+.NB-menu-manage .NB-menu-manage-font .NB-menu-manage-image {
+    background: transparent url('/media/img/icons/circular/menu_icn_font.png') no-repeat  0 0;
+    background-size: 18px;
+}
+.NB-menu-manage .NB-menu-manage-font .segmented-control {
+    margin: 2px 0 0 36px;
+}
+.NB-menu-manage .NB-menu-manage-font .segmented-control li {
+    padding: 4px 8px;
+}
+.NB-menu-manage .NB-menu-manage-size .NB-menu-manage-image {
+    background: transparent url('/media/img/icons/circular/menu_icn_size.png') no-repeat  0 0;
+    background-size: 18px;
+}
+.NB-menu-manage .NB-menu-manage-size .segmented-control {
+    margin: 2px 0 0 36px;
+}
+.NB-menu-manage .NB-menu-manage-size .segmented-control li {
+    font-weight: bold;
+}
+.NB-menu-manage .NB-menu-manage-size .segmented-control li.NB-options-feed-size-xs {
+    font-size: 9px;
+    padding: 7px 12px 6px;
+}
+.NB-menu-manage .NB-menu-manage-size .segmented-control li.NB-options-feed-size-s {
+    font-size: 10px;
+    padding: 6px 12px 5px;
+}
+.NB-menu-manage .NB-menu-manage-size .segmented-control li.NB-options-feed-size-m {
+    font-size: 12px;
+    padding: 5px 12px 4px;
+}
+.NB-menu-manage .NB-menu-manage-size .segmented-control li.NB-options-feed-size-l {
+    font-size: 13px;
+    padding: 4px 12px;
+}
+.NB-menu-manage .NB-menu-manage-size .segmented-control li.NB-options-feed-size-xl {
+    font-size: 15px;
+    padding: 3px 12px 2px;
 }
 .NB-menu-manage .NB-menu-manage-account .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/menu_icn_profile.png') no-repeat  0 0;
@@ -12371,7 +12425,7 @@ form.opml_import_form input {
 .NB-modal-organizer .segmented-control li {
     padding: 2px 12px 0;
     font-size: 11px;
-    width: 50%;
+    width: 49%;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
