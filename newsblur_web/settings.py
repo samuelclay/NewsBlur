@@ -31,7 +31,6 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
-from sentry_sdk import configure_scope
 import django.http
 import re
 from mongoengine import connect
@@ -583,12 +582,11 @@ if not DEBUG:
         'django_ses',
 
     )
-    with configure_scope() as scope:
-        scope.set_extra("SERVER_NAME", SERVER_NAME)
-        
+
     sentry_sdk.init(
         dsn=SENTRY_DSN,
         integrations=[DjangoIntegration(), RedisIntegration(), CeleryIntegration()],
+        name=SERVER_NAME,
 
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
