@@ -154,7 +154,7 @@ class PushSubscription(models.Model):
 
             if needs_update:
                 logging.debug(u'   ---> [%-30s] ~FR~BKUpdating PuSH hub/topic: %s / %s' % (
-                              unicode(self.feed)[:30], hub_url, self_url))
+                              self.feed, hub_url, self_url))
                 expiration_time = self.lease_expires - datetime.now()
                 seconds = expiration_time.days*86400 + expiration_time.seconds
                 try:
@@ -163,7 +163,7 @@ class PushSubscription(models.Model):
                         lease_seconds=seconds)
                 except TimeoutError:
                     logging.debug(u'   ---> [%-30s] ~FR~BKTimed out updating PuSH hub/topic: %s / %s' % (
-                                  unicode(self.feed)[:30], hub_url, self_url))
+                                  self.feed, hub_url, self_url))
                     
                     
     def __str__(self):
@@ -173,6 +173,3 @@ class PushSubscription(models.Model):
             verified = u'unverified'
         return u'to %s on %s: %s' % (
             self.topic, self.hub, verified)
-
-    def __str__(self):
-        return str(unicode(self))
