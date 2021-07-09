@@ -1,68 +1,87 @@
 #!/usr/bin/env python
 
 import os
+import re
 import time
 import select
 import subprocess
 import sys
-from optparse import OptionParser
+import json
+from pprint import pprint
 from requests.exceptions import ConnectionError
 
 sys.path.insert(0, '/srv/newsblur')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'newsblur_web.settings'
-import fabfile
 
-NEWSBLUR_USERNAME = 'sclay'
+NEWSBLUR_USERNAME = 'nb'
 IGNORE_HOSTS = [
-    'push',
+    'app-push',
 ]
 
-def main(role="app", role2="work", command=None):
+def main(role, find):
     delay = 1
+
+    hosts = subprocess.check_output(['ansible-inventory', '--list'])
+    if not hosts:
+        print(" ***> Could not load ansible-inventory!")
+        return
+    hosts = json.loads(hosts)
+
+    path = "/srv/newsblur/logs/newsblur.log*"
+    command = "zgrep \"%s\" %s" % (find, path)
+    # if exclude:
+    #     command += " | zgrep -v \"%s\"" % exclude
+    print(f" ---> {command}")
 
     while True:
         try:
-            streams = create_streams_for_roles(role, role2, command=command)
-            print(" --- Loading %s App Log Tails ---" % len(streams))
+            streams = create_streams_for_role(hosts, role, command=command)
+            print(" --- Loading %s %s Log Tails ---" % (len(streams), role))
             read_streams(streams)
-        except (UnicodeDecodeError, ConnectionError, KeyboardInterrupt):
+        # except UnicodeDecodeError: # unexpected end of data
+        #     print " --- Lost connections - Retrying... ---"
+        #     time.sleep(1)
+        #     continue
+        except ConnectionError:
+            print(" --- Retrying in %s seconds... ---" % delay)
+            time.sleep(delay)
+            delay += 1
+            continue
+        except KeyboardInterrupt:
             print(" --- End of Logging ---")
             break
 
-def create_streams_for_roles(role, role2, command=None):
+def create_streams_for_role(hosts, role, command):
     streams = list()
-    hosts = fabfile.assign_digitalocean_roledefs(split=True)
     found = set()
+    if role in hosts:
+        for hostname in hosts[role]['hosts']:
+            if any(h in hostname for h in IGNORE_HOSTS) and role != 'push': continue
+            follow_host(hosts, streams, found, hostname, command)
+    else:
+        host = role
+        follow_host(hosts, streams, found, host, command)
 
-    if not command:
-        command = "tail -f"
-    for hostname in (hosts[role] + hosts[role2]):
-        if isinstance(hostname, dict):
-            address = hostname['address']
-            hostname = hostname['name']
-        elif ':' in hostname:
-            hostname, address = hostname.split(':', 1)
-        elif isinstance(hostname, tuple):
-            hostname, address = hostname[0], hostname[1]
-        else:
-            address = hostname
-        if any(h in hostname for h in IGNORE_HOSTS): continue
-        if hostname in found: continue
-        if 'ec2' in hostname:
-            s = subprocess.Popen(["ssh", 
-                                  "-i", os.path.expanduser(os.path.join(fabfile.env.SECRETS_PATH,
-                                                                        "keys/ec2.pem")),
-                                  address, command], stdout=subprocess.PIPE)
-        else:
-            s = subprocess.Popen(["ssh", "-l", NEWSBLUR_USERNAME, 
-                                  "-i", os.path.expanduser(os.path.join(fabfile.env.SECRETS_PATH,
-                                                                        "keys/newsblur.key")),
-                                  address, command], stdout=subprocess.PIPE)
-        s.name = hostname
-        streams.append(s)
-        found.add(hostname)
-        
     return streams
+
+def follow_host(hosts, streams, found, hostname, command=None):
+    if isinstance(hostname, dict):
+        address = hostname['address']
+        hostname = hostname['name']
+    elif ':' in hostname:
+        hostname, address = hostname.split(':', 1)
+    elif isinstance(hostname, tuple):
+        hostname, address = hostname[0], hostname[1]
+    else:
+        address = hosts['_meta']['hostvars'][hostname]['ansible_host']
+        print(" ---> Following %s \t[%s]" % (hostname, address))
+    if hostname in found: return
+    s = subprocess.Popen(["ssh", "-l", NEWSBLUR_USERNAME, 
+                            "-i", os.path.expanduser("/srv/secrets-newsblur/keys/docker.key"),
+                            address, command], stdout=subprocess.PIPE)
+    s.name = hostname
+    streams.append(s)
+    found.add(hostname)
 
 def read_streams(streams):
     while True:
@@ -76,24 +95,13 @@ def read_streams(streams):
                 if not data:
                     streams.remove(stream)
                     break
-                combination_message = "[%-6s] %s" % (stream.name[:6], data)
+                try:
+                    combination_message = "[%-13s] %s" % (stream.name[:13], data.decode())
+                except UnicodeDecodeError:
+                    continue
                 sys.stdout.write(combination_message)
+                sys.stdout.flush()
                 break
 
 if __name__ == "__main__":
-    parser = OptionParser()
-    parser.add_option("-f", "--find", dest="find")
-    parser.add_option("-p", "--path", dest="path")
-    parser.add_option("-r", "--role", dest="role")
-    parser.add_option("-e", "--exclude", dest="exclude")
-    (options, args) = parser.parse_args()
-
-    path = options.path or "/srv/newsblur/logs/newsblur.log"
-    find = options.find
-    role = options.role or 'app'
-    exclude = options.exclude or None
-    command = "zgrep \"%s\" %s" % (find, path)
-    if exclude:
-        command += " | zgrep -v \"%s\"" % exclude
-    print(command)
-    main(role=role, command=command)
+    main(*sys.argv[1:])
