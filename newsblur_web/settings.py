@@ -584,9 +584,9 @@ if not DEBUG:
     )
 
     sentry_sdk.init(
-        dsn=settings.SENTRY_DSN,
+        dsn=SENTRY_DSN,
         integrations=[DjangoIntegration(), RedisIntegration(), CeleryIntegration()],
-        server_name=settings.SERVER_NAME,
+        server_name=SERVER_NAME,
 
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
