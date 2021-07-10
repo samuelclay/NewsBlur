@@ -893,6 +893,9 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
     /** The webview has finished loading our desired content. */
     public void onWebLoadFinished() {
+        if (!isWebLoadFinished) {
+            binding.readingWebview.evaluateJavascript("loadImages();", null);
+        }
         isWebLoadFinished = true;
         checkLoadStatus();
     }
@@ -939,7 +942,6 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                 }
             }, 75L);
         }
-        binding.readingWebview.evaluateJavascript("loadImages();", null);
     }
 
     public void flagWebviewError() {
