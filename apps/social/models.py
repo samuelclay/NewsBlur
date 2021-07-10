@@ -1069,7 +1069,7 @@ class MSocialSubscription(mongo.Document):
     @classmethod
     def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, 
                      order='newest', read_filter='all', relative_user_id=None, cache=True,
-                     socialsubs=None, cutoff_date=None):
+                     socialsubs=None, cutoff_date=None, dashboard_global=False):
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
         
         if not relative_user_id:
@@ -1085,7 +1085,7 @@ class MSocialSubscription(mongo.Document):
 
         ranked_stories_keys  = 'zU:%s:social' % (user_id)
         unread_ranked_stories_keys  = 'zhU:%s:social' % (user_id)
-        if (offset and cache and 
+        if ((offset or dashboard_global) and cache and 
             rt.exists(ranked_stories_keys) and 
             rt.exists(unread_ranked_stories_keys)):
             story_hashes_and_dates = range_func(ranked_stories_keys, offset, limit, withscores=True)
@@ -1605,12 +1605,13 @@ class MSharedStory(mongo.DynamicDocument):
         self.delete()
 
     def publish_to_subscribers(self):
+        feed = Feed.get_by_id(self.story_feed_id)
         try:
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             r.publish("social:%s:story" % (self.user_id), '%s,%s' % (self.story_hash, self.shared_date.strftime('%s')))
-            logging.debug("   ***> [%-30s] ~BMPublishing to Redis for real-time." % (Feed.get_by_id(self.story_feed_id).title[:30],))
+            logging.debug("   ***> [%-30s] ~BMPublishing to Redis for real-time." % (feed.title[:30] if feed else "NO FEED"))
         except redis.ConnectionError:
-            logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (Feed.get_by_id(self.story_feed_id).title[:30],))
+            logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (feed.title[:30] if feed else "NO FEED"))
     
     @classmethod
     def feed_quota(cls, user_id, story_hash, feed_id=None, days=1, quota=1):
