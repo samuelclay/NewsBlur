@@ -7,8 +7,9 @@ class AppServers(View):
 
     def get(self, request):
         data = dict((("%s" % s['_id'].replace('-', ''), s['feeds']) for s in self.stats))
-        #if self.total:
-        #    data['total'] = self.total[0]['feeds']
+        #total = self.total:
+        # if total:
+        #    data['total'] = total[0]['feeds']
         chart_name = "app_servers"
         chart_type = "counter"
 

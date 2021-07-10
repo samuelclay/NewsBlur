@@ -3059,6 +3059,10 @@
                  .removeClass('NB-line-spacing-xl');
             $body.addClass('NB-line-spacing-' + NEWSBLUR.Preferences['story_line_spacing']);
 
+            $body.removeClass('NB-density-compact')
+                .removeClass('NB-density-comfortable');
+            $body.addClass('NB-density-' + NEWSBLUR.Preferences['density']);
+
             $body.removeClass('NB-content-preview-title')
                 .removeClass('NB-content-preview-small')
                 .removeClass('NB-content-preview-medium')

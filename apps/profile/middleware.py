@@ -142,6 +142,7 @@ class SQLLogToConsoleMiddleware:
             queries = connection.queries
             if getattr(connection, 'queriesx', False):
                 queries.extend(connection.queriesx)
+                connection.queriesx = []
             for query in queries:
                 if query.get('mongo'):
                     query['sql'] = "~FM%s: %s" % (query['mongo']['collection'], query['mongo']['query'])

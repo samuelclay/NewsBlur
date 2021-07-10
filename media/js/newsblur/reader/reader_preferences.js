@@ -482,6 +482,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Mark stories read on scroll'
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-density' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-density-compact', type: 'radio', name: 'density', value: "compact" }),
+                                $.make('label', { 'for': 'NB-preference-density-compact' }, [
+                                    'Compact spacing: more dense'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-density-comfortable', type: 'radio', name: 'density', value: "comfortable" }),
+                                $.make('label', { 'for': 'NB-preference-density-comfortable' }, [
+                                    'Comfortable spacing: less dense'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Spacing between feeds and story titles'
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-showcontentpreview' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -1060,6 +1079,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=mark_read_on_scroll_titles]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.mark_read_on_scroll_titles) {
+                $(this).prop('checked', true);
+                return false;
+            }
+        });
+        $('input[name=density]', $modal).each(function() {
+            if ($(this).val() == ""+NEWSBLUR.Preferences.density) {
                 $(this).prop('checked', true);
                 return false;
             }
