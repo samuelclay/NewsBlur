@@ -6,6 +6,12 @@
     mode: 0777
     path: /var/log/mongodb
 
+- name: Copy MongoDB keyfile
+  copy:
+    content: "{{ mongodb_keyfile }}"
+    dest: /srv/newsblur/config/mongodb_keyfile.key
+    mode: 0400
+
 - name: Make docker network for newsblurnet
   become: yes
   docker_network:
@@ -30,8 +36,9 @@
     volumes:
       - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
       - /srv/newsblur/ansible/roles/mongo/templates/mongo.conf:/etc/mongod.conf
+      - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
       - /var/log/mongodb/:/var/log/mongodb/
-      - /opt/mongo/newsblur/backup:/backup/'
+      - /opt/mongo/newsblur/backup:/backup/
 
 - name: Register mongo in consul
   tags: consul
