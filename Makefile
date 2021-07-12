@@ -28,10 +28,10 @@ nb: pull
 	- RUNWITHMAKEBUILD=True docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
 
 nbdiscovery:
-	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
-	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} NEWSBLUR_BASE=discovery docker-compose up -d --build --remove-orphans
-	- docker-compose exec newsblur_web ./manage.py migrate
-	- docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} NEWSBLUR_BASE=discovery docker-compose up -d --build --remove-orphans
+	- RUNWITHMAKEBUILD=True docker-compose exec newsblur_web ./manage.py migrate
+	- RUNWITHMAKEBUILD=True docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
 
 shell:
 	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web ./manage.py shell_plus
