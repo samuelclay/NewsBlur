@@ -63,6 +63,7 @@ frontend public
     use_backend node_favicon if { path_beg /rss_feeds/icon/ }
     use_backend node_text if { path_beg /rss_feeds/original_text_fetcher }
     use_backend node_images if { hdr_end(host) -i imageproxy.newsblur.com }
+    use_backend node_images if { hdr_end(host) -i imageproxy2.newsblur.com }
     use_backend node_page if { path_beg /original_page/ }
     use_backend blog if { hdr_end(host) -i blog.newsblur.com }
     use_backend blog if { hdr_end(host) -i blog2.newsblur.com }

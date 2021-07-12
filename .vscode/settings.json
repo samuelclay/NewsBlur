@@ -21,5 +21,6 @@
         "static/*.js": true,
         "blog/.jekyll-cache": true,
         "blog/_site": true,
+        "requirements.txt": true, // It's just a symlink to config/requirements.txt, which has git history
     },
 }

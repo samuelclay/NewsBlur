@@ -3,7 +3,7 @@ global:
 scrape_configs:
     - job_name: 'node_exporter'
       consul_sd_configs:
-      - server: 'consul.newsblur.com'
+      - server: 'consul.service.nyc1.consul:8500'
         services: ['node-exporter']
       relabel_configs:
       - source_labels: ['__meta_consul_node']
@@ -12,7 +12,7 @@ scrape_configs:
 
     - job_name: 'mongo_exporter'
       consul_sd_configs:
-      - server: 'consul.newsblur.com'
+      - server: 'consul.service.nyc1.consul:8500'
         services: ['mongo-exporter']
       relabel_configs:
       - source_labels: ['__meta_consul_node']
@@ -21,7 +21,7 @@ scrape_configs:
 
     - job_name: 'postgres_exporter'
       consul_sd_configs:
-      - server: 'consul.newsblur.com'
+      - server: 'consul.service.nyc1.consul:8500'
         services: ['postgres-exporter']
       relabel_configs:
       - source_labels: ['__meta_consul_node']
@@ -31,7 +31,7 @@ scrape_configs:
     ## config for the multiple Redis targets that the exporter will scrape
     - job_name: 'redis_exporter'
       consul_sd_configs:
-      - server: 'consul.newsblur.com:'
+      - server: 'consul.service.nyc1.consul:8500'
         services: ['redis-exporter']
       relabel_configs:
       - source_labels: ['__meta_consul_service_id']
