@@ -16,7 +16,7 @@
     networks:
       - name: newsblurnet
     env:
-      MONGODB_URI: 'mongodb://db-mongo.service.nyc1.consul:27017/admin?'
+      MONGODB_URI: 'mongodb://nb:KCi@db-mongo.service.nyc1.consul:27017/admin?'
     ports:
     - '9216:9216'
 
