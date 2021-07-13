@@ -1862,6 +1862,9 @@ hr {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
+.NB-story-title.read .NB-storytitles-story-image {
+    opacity: 0.6;
+}
 .NB-image-preview-large-left:not(.NB-story-layout-grid) .NB-story-title .NB-storytitles-story-image {
     right: inherit;
     left: 8px;
