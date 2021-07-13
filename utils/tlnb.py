@@ -28,6 +28,8 @@ def main(roles=None, command=None, path=None):
 
     if not roles:
         roles = ['app']
+    if not isinstance(roles, list):
+        roles = [roles]
 
     while True:
         try:
@@ -50,7 +52,7 @@ def main(roles=None, command=None, path=None):
 def create_streams_for_roles(hosts, roles, command=None, path=None):
     streams = list()
     found = set()
-
+    print(path)
     if not path:
         path = "/srv/newsblur/logs/newsblur.log"
     if not command:
@@ -62,10 +64,7 @@ def create_streams_for_roles(hosts, roles, command=None, path=None):
                 follow_host(hosts, streams, found, hostname, command, path)
         else:
             host = role
-            role = re.search(r'([^0-9]+)', host).group()
-            for hostname in hosts[role]:
-                if hostname['name'] == host:
-                    follow_host(hosts, streams, found, hostname, command, path)
+            follow_host(hosts, streams, found, host, command)
 
     return streams
 

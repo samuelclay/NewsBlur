@@ -1,7 +1,7 @@
 ---
 - name: Copy node secrets
   copy:
-    src: /srv/secrets-newsblur/settings/dotenv.env
+    src: /srv/secrets-newsblur/settings/node_settings.env
     dest: /srv/newsblur/node/.env
   register: app_changed
   notify: restart node
