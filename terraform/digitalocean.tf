@@ -117,7 +117,7 @@ resource "digitalocean_droplet" "app-push" {
 }
 
 resource "digitalocean_droplet" "app-refresh" {
-  count    = 4
+  count    = 8
   image    = var.droplet_os
   name     = "app-refresh${count.index+1}"
   region   = var.droplet_region
