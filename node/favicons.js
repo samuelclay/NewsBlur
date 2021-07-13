@@ -35,7 +35,7 @@
       log.debug("Running as production server");
     }
     if (ENV_PROD) {
-      url = `mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_SERVER}:${MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred&authSource=nbauth`;
+      url = `mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_SERVER}:${MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred&authSource=admin`;
     } else {
       url = `mongodb://${MONGODB_SERVER}:${MONGODB_PORT}/newsblur`;
     }
