@@ -19,7 +19,7 @@ def db_check_postgres():
         settings.DATABASES['default']['NAME'],
         settings.DATABASES['default']['USER'],
         settings.DATABASES['default']['PASSWORD'],
-        'postgres',
+        'db-postgres.service.nyc1.consul',
         settings.DATABASES['default']['PORT'],
     )
     try:
@@ -67,7 +67,7 @@ def db_check_mysql():
 @app.route("/db_check/mongo")
 def db_check_mongo():
     try:
-        client = pymongo.MongoClient('mongodb://mongo')
+        client = pymongo.MongoClient(f'mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@db-mongo.server.nyc1.consul?authSource=admin')
         db = client.newsblur
     except:
         abort(503)
@@ -101,27 +101,10 @@ def db_check_mongo():
 
     return str(stories)
 
-@app.route("/db_check/redis")
-def db_check_redis():
-    try:
-        r = redis.Redis('redis', db=0)
-    except:
-        abort(503)
-    
-    try:
-        randkey = r.randomkey()
-    except:
-        abort(504)
-
-    if randkey:
-        return str(randkey)
-    else:
-        abort(505)
-
 @app.route("/db_check/redis_user")
 def db_check_redis_user():
     try:
-        r = redis.Redis('redis', db=0)
+        r = redis.Redis('db-redis-user.server.nyc1.consul', db=0)
     except:
         abort(503)
     
@@ -138,7 +121,7 @@ def db_check_redis_user():
 @app.route("/db_check/redis_story")
 def db_check_redis_story():
     try:
-        r = redis.Redis('redis', db=1)
+        r = redis.Redis('db-redis-story.server.nyc1.consul', db=1)
     except:
         abort(503)
     
@@ -155,7 +138,7 @@ def db_check_redis_story():
 @app.route("/db_check/redis_sessions")
 def db_check_redis_sessions():
     try:
-        r = redis.Redis('redis', db=5)
+        r = redis.Redis('db-redis-sessions.server.nyc1.consul', db=5)
     except:
         abort(503)
     
@@ -172,7 +155,7 @@ def db_check_redis_sessions():
 @app.route("/db_check/redis_pubsub")
 def db_check_redis_pubsub():
     try:
-        r = redis.Redis('redis', db=1)
+        r = redis.Redis('db-redis-pubsub.server.nyc1.consul', db=1)
     except:
         abort(503)
     
