@@ -29,7 +29,7 @@ favicons = (app) =>
         log.debug "Running as production server"
         
     if ENV_PROD
-        url = "mongodb://#{MONGODB_USERNAME}:#{MONGODB_PASSWORD}@#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred"
+        url = "mongodb://#{MONGODB_USERNAME}:#{MONGODB_PASSWORD}@#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred&authSource=nbauth"
     else
         url = "mongodb://#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur"
 
