@@ -20,7 +20,7 @@ def main():
     r = redis.Redis(connection_pool=settings.REDIS_ANALYTICS_POOL)
 
     try:
-        client = pymongo.MongoClient(f'mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.MONGO_DB['host']}?authSource=nbauth')
+        client = pymongo.MongoClient(f'mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.MONGO_DB['host']}?authSource=admin')
         feeds_fetched = client.newsblur.statistics.find_one({"key": "feeds_fetched"})['value']
         redis_task_fetches = int(r.get(monitor_key) or 0)
     except Exception as e:
