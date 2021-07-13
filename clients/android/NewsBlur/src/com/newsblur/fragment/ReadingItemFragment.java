@@ -457,6 +457,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                     StoryUtils.formatLongDate(getActivity(), story.starredTimestamp));
             binding.readingItemSavedTimestamp.setVisibility(View.VISIBLE);
             binding.readingItemSavedTimestamp.setText(savedTimestampText);
+        } else {
+            binding.readingItemSavedTimestamp.setVisibility(View.GONE);
         }
 
 		binding.readingItemAuthors.setOnClickListener(new OnClickListener() {
@@ -529,7 +531,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 		}
 
 		binding.readingItemUserTags.removeAllViews();
-		if (story.userTags.length > 0) {
+		if (story.starred) {
 		    for (int i = 0; i <= story.userTags.length; i++) {
                 View v = getLayoutInflater().inflate(R.layout.chip_view, null);
                 Chip chip = v.findViewById(R.id.chip);
@@ -677,6 +679,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             updateSaveButton();
             updateShareButton();
             setupItemCommentsAndShares();
+            setupTagsAndIntel();
+            setupItemMetadata();
         }
         if ((updateType & NbActivity.UPDATE_TEXT) != 0) {
             reloadStoryContent();
