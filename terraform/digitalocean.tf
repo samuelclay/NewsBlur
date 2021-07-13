@@ -117,7 +117,7 @@ resource "digitalocean_droplet" "app-push" {
 }
 
 resource "digitalocean_droplet" "app-refresh" {
-  count    = 2
+  count    = 8
   image    = var.droplet_os
   name     = "app-refresh${count.index+1}"
   region   = var.droplet_region
@@ -446,11 +446,22 @@ resource "digitalocean_droplet" "db-mongo-secondary" {
 #   }
 # }
 
+resource "digitalocean_volume" "metrics_volume" {
+  count                   = 0
+  region                  = "nyc1"
+  name                    = "metrics"
+  size                    = 100
+  initial_filesystem_type = "xfs"
+  description             = "Storage for NewsBlur Prometheus metrics"
+}
+
 resource "digitalocean_droplet" "db-metrics" {
   image    = var.droplet_os
   name     = "db-metrics"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.metrics_droplet_size
+  # volume_ids = [digitalocean_volume.metrics_volume.0.id] 
+  volume_ids = ["f815908f-e1b7-11eb-a10f-0a58ac145428"] # 100GB volume created outside TF. Remove when upgrading to 200GB
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
