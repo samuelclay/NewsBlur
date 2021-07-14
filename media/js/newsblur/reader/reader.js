@@ -3563,7 +3563,7 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Email Newsletters')
                     ]),
-                    $.make('li', { className: 'NB-menu-item NB-menu-manage-import, role: "button"' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-import', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Import or upload sites')
                     ]),
