@@ -7,10 +7,14 @@
     path: /var/log/mongodb
 
 - name: Copy MongoDB keyfile
+  become: yes
   copy:
     content: "{{ mongodb_keyfile }}"
     dest: /srv/newsblur/config/mongodb_keyfile.key
+    owner: root
     mode: 0400
+  tags:
+    - keyfile
 
 - name: Make docker network for newsblurnet
   become: yes
