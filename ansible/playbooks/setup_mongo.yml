@@ -17,5 +17,6 @@
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
     - {role: 'mongo', tags: 'mongo'}
+    - {role: 'mongo-exporter', tags: 'mongo-exporter'}
     - {role: 'monitor', tags: 'monitor'}
     - {role: 'benchmark', tags: 'benchmark'}
