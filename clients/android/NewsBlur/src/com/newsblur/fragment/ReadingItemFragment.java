@@ -378,7 +378,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         if (story.starred) {
             FeedUtils.setStorySaved(story.storyHash, false, getActivity());
         } else {
-            FeedUtils.setStorySaved(story.storyHash,true, getActivity());
+            showStoryUserTags();
         }
     }
 
@@ -544,10 +544,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                     chip.setChipIcon(ContextCompat.getDrawable(requireContext(), R.drawable.ic_add_gray75));
                 }
 
-                v.setOnClickListener(view -> {
-                    StoryUserTagsFragment userTagsFragment = StoryUserTagsFragment.newInstance(story, fs);
-                    userTagsFragment.show(getChildFragmentManager(), StoryUserTagsFragment.class.getName());
-                });
+                v.setOnClickListener(view -> showStoryUserTags());
                 binding.readingItemUserTags.addView(v);
             }
 
@@ -575,6 +572,11 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         title = UIUtils.colourTitleFromClassifier(title, classifier);
         binding.readingItemTitle.setText(UIUtils.fromHtml(title));
 	}
+
+	private void showStoryUserTags() {
+        StoryUserTagsFragment userTagsFragment = StoryUserTagsFragment.newInstance(story, fs);
+        userTagsFragment.show(getChildFragmentManager(), StoryUserTagsFragment.class.getName());
+    }
 
     public void switchSelectedViewMode() {
         // if we were already in text mode, switch back to story mode
@@ -950,11 +952,6 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
     public void flagWebviewError() {
         // TODO: enable a selective reload mechanism on load failures?
-    }
-
-    public void updateStorySavedTagList(@NotNull ArrayList<String> savedTagList) {
-        story.userTags = savedTagList.toArray(new String[]{});
-        setupTagsAndIntel();
     }
 
 	private class TextSizeReceiver extends BroadcastReceiver {
