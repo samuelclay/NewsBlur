@@ -104,6 +104,13 @@
     - container_name: task-work
   changed_when: app_changed.changed
 
+- name: Ensure permissions on sanity checker log
+  become: yes
+  file:
+    path: /var/log/sanity_checker.log
+    state: touch
+    mode: 0666
+
 - name: Add sanity checkers cronjob for feeds fetched
   become: yes
   copy:
