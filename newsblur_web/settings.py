@@ -119,6 +119,7 @@ MIDDLEWARE = (
     'apps.profile.middleware.ServerHostnameMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'utils.request_introspection_middleware.DumpRequestMiddleware',
     'apps.profile.middleware.DBProfilerMiddleware',
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
     'utils.mongo_raw_log_middleware.MongoDumpMiddleware',
@@ -763,10 +764,6 @@ accept_content = ['pickle', 'json', 'msgpack', 'yaml']
 # ==========
 
 JAMMIT = jammit.JammitAssets(ROOT_DIR)
-
-if DEBUG:
-    MIDDLEWARE += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
-    # MIDDLEWARE += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
 
 # =======
 # = AWS =
