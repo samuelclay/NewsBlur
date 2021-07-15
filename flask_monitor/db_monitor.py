@@ -66,10 +66,8 @@ def db_check_mysql():
 
 @app.route("/db_check/mongo")
 def db_check_mongo():
-    return str(1)
     try:
-        # client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@db-mongo.server.nyc1.consul?authSource=admin")
-        client = pymongo.MongoClient(f"mongodb://db-mongo.server.nyc1.consul")
+        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}.node.nyc1.consul/?authSource=admin")
         db = client.newsblur
     except:
         abort(503)
@@ -84,22 +82,22 @@ def db_check_mongo():
     
     status = client.admin.command('replSetGetStatus')
     members = status['members']
-    # primary_optime = None
-    # oldest_secondary_optime = None
-    # for member in members:
-    #     member_state = member['state']
-    #     optime = member['optime']
-    #     if member_state == PRIMARY_STATE:
-    #         primary_optime = optime.time
-    #     elif member_state == SECONDARY_STATE:
-    #         if not oldest_secondary_optime or optime.time < oldest_secondary_optime:
-    #             oldest_secondary_optime = optime.time
+    primary_optime = None
+    oldest_secondary_optime = None
+    for member in members:
+        member_state = member['state']
+        optime = member['optime']
+        if member_state == PRIMARY_STATE:
+            primary_optime = optime['ts']
+        elif member_state == SECONDARY_STATE:
+            if not oldest_secondary_optime or optime['ts'] < oldest_secondary_optime:
+                oldest_secondary_optime = optime['ts']
 
-    # if not primary_optime or not oldest_secondary_optime:
-    #     abort(505)
+    if not primary_optime or not oldest_secondary_optime:
+        abort(505)
 
-    # if primary_optime - oldest_secondary_optime > 100:
-    #     abort(506)
+    if primary_optime - oldest_secondary_optime > 100:
+        abort(506)
 
     return str(stories)
 
