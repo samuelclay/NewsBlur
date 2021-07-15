@@ -66,6 +66,7 @@ def db_check_mysql():
 
 @app.route("/db_check/mongo")
 def db_check_mongo():
+    return 1
     try:
         # client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@db-mongo.server.nyc1.consul?authSource=admin")
         client = pymongo.MongoClient(f"mongodb://db-mongo.server.nyc1.consul")
