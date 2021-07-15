@@ -55,3 +55,8 @@
       - name: newsblurnet
     ports:
       - "5579:5579"
+
+- name: Restart monitor
+  become: yes
+  shell:
+    cmd: docker restart monitor
