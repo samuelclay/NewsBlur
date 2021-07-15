@@ -18,7 +18,7 @@ class DumpRequestMiddleware:
 
     def process_response(self, request, response):
         if hasattr(request, 'sql_times_elapsed'):
-            logging.debug(" ---> %s~SN~FCDB times: ~FYsql: %s%.3f~SNs ~SN~FMmongo: %s%.3f~SNs ~SN~FCredis: %s%.3f~SNs" % (
+            logging.debug(" ---> %s~SN~FCDB times: ~FYsql: %s%.4f~SNs ~SN~FMmongo: %s%.5f~SNs ~SN~FCredis: %s%.6f~SNs" % (
                 self.elapsed_time(request),
                 self.color_db(request.sql_times_elapsed['sql'], '~FY'),
                 request.sql_times_elapsed['sql'], 
