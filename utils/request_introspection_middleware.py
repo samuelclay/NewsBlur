@@ -47,9 +47,9 @@ class DumpRequestMiddleware:
     
     def color_db(self, seconds, default):
         color = default
-        if seconds >= .1:
+        if seconds >= .25:
             color = '~SB~FR'
-        elif seconds > .01:
+        elif seconds > .1:
             color = '~FW'
         return color
 
