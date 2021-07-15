@@ -936,7 +936,7 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.ACTION_TABLE, DatabaseConstants.ACTION_ID + " = ?", new String[]{actionId});}
     }
 
-    public void setStoryStarred(String hash, boolean starred) {
+    public void setStoryStarred(String hash, @Nullable List<String> userTags, boolean starred) {
         // check the story's starting state and the desired state and adjust it as an atom so we
         // know if it truly changed or not and thus whether to update counts
         synchronized (RW_MUTEX) {
@@ -955,8 +955,15 @@ public class BlurDatabaseHelper {
                 c.moveToFirst();
                 boolean origState = (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.STORY_STARRED)) > 0);
                 c.close();
+                // if already stared, update user tags
+                if (origState == starred && starred && userTags != null) {
+                    ContentValues values = new ContentValues();
+                    values.put(DatabaseConstants.STORY_USER_TAGS, TextUtils.join(",", userTags));
+                    dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
+                    return;
+                }
                 // if there is nothing to be done, halt
-                if (origState == starred) {
+                else if (origState == starred) {
                     return;
                 }
                 // fix the state

@@ -52,6 +52,9 @@ import com.newsblur.util.StoryChangesState;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.UIUtils;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -197,6 +200,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         binding.readingWebview.activity = activity;
 
 		setupItemMetadata();
+		updateTrainButton();
 		updateShareButton();
 	    updateSaveButton();
         setupItemCommentsAndShares();
@@ -209,24 +213,10 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        binding.storyContextMenuButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickMenuButton();
-            }
-        });
-        itemCommentBinding.saveStoryButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickSave();
-            }
-        });
-        itemCommentBinding.shareStoryButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickShare();
-            }
-        });
+        binding.storyContextMenuButton.setOnClickListener(v -> onClickMenuButton());
+        itemCommentBinding.trainStoryButton.setOnClickListener(v -> clickTrain());
+        itemCommentBinding.saveStoryButton.setOnClickListener(v -> clickSave());
+        itemCommentBinding.shareStoryButton.setOnClickListener(v -> clickShare());
 	}
 
     @Override
@@ -364,8 +354,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             return true;
         } else if (item.getItemId() == R.id.menu_intel) {
             if (story.feedId.equals("0")) return true; // cannot train on feedless stories
-            StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
-            intelFrag.show(getActivity().getSupportFragmentManager(), StoryIntelTrainerFragment.class.getName());
+            clickTrain();
             return true;
         } else if(item.getItemId() == R.id.menu_go_to_feed){
             FeedItemsList.startActivity(getContext(), fs,
@@ -376,11 +365,20 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 		}
     }
 
+    private void clickTrain() {
+	    StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
+	    intelFrag.show(getActivity().getSupportFragmentManager(), StoryIntelTrainerFragment.class.getName());
+    }
+
+    private void updateTrainButton() {
+	    itemCommentBinding.trainStoryButton.setVisibility(story.feedId.equals("0") ? View.GONE: View.VISIBLE);
+    }
+
     private void clickSave() {
         if (story.starred) {
             FeedUtils.setStorySaved(story.storyHash, false, getActivity());
         } else {
-            FeedUtils.setStorySaved(story.storyHash,true, getActivity());
+            showStoryUserTags();
         }
     }
 
@@ -439,7 +437,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 			binding.readingFeedTitle.setVisibility(View.GONE);
 			binding.readingFeedIcon.setVisibility(View.GONE);
 		} else {
-			FeedUtils.iconLoader.displayImage(feedIconUrl, binding.readingFeedIcon, 0, false);
+			FeedUtils.iconLoader.displayImage(feedIconUrl, binding.readingFeedIcon, false);
 			binding.readingFeedTitle.setText(feedTitle);
 		}
 
@@ -459,6 +457,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
                     StoryUtils.formatLongDate(getActivity(), story.starredTimestamp));
             binding.readingItemSavedTimestamp.setVisibility(View.VISIBLE);
             binding.readingItemSavedTimestamp.setText(savedTimestampText);
+        } else {
+            binding.readingItemSavedTimestamp.setVisibility(View.GONE);
         }
 
 		binding.readingItemAuthors.setOnClickListener(new OnClickListener() {
@@ -530,6 +530,27 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 			binding.readingItemTags.addView(v);
 		}
 
+		binding.readingItemUserTags.removeAllViews();
+		if (story.starred) {
+		    for (int i = 0; i <= story.userTags.length; i++) {
+                View v = getLayoutInflater().inflate(R.layout.chip_view, null);
+                Chip chip = v.findViewById(R.id.chip);
+
+                if (i < story.userTags.length) {
+                    chip.setText(story.userTags[i]);
+                    chip.setChipIcon(ContextCompat.getDrawable(requireContext(), R.drawable.tag));
+                } else {
+                    chip.setText(getString(R.string.add_tag));
+                    chip.setChipIcon(ContextCompat.getDrawable(requireContext(), R.drawable.ic_add_gray75));
+                }
+
+                v.setOnClickListener(view -> showStoryUserTags());
+                binding.readingItemUserTags.addView(v);
+            }
+
+            binding.readingItemUserTags.setVisibility(View.VISIBLE);
+        }
+
         if (!TextUtils.isEmpty(story.authors)) {
             binding.readingItemAuthors.setText("•   " + story.authors);
             if (classifier != null && classifier.authors.containsKey(story.authors)) {
@@ -551,6 +572,11 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
         title = UIUtils.colourTitleFromClassifier(title, classifier);
         binding.readingItemTitle.setText(UIUtils.fromHtml(title));
 	}
+
+	private void showStoryUserTags() {
+        StoryUserTagsFragment userTagsFragment = StoryUserTagsFragment.newInstance(story, fs);
+        userTagsFragment.show(getChildFragmentManager(), StoryUserTagsFragment.class.getName());
+    }
 
     public void switchSelectedViewMode() {
         // if we were already in text mode, switch back to story mode
@@ -655,6 +681,8 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             updateSaveButton();
             updateShareButton();
             setupItemCommentsAndShares();
+            setupTagsAndIntel();
+            setupItemMetadata();
         }
         if ((updateType & NbActivity.UPDATE_TEXT) != 0) {
             reloadStoryContent();
@@ -807,6 +835,7 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
             }
             builder.append("</head><body><div class=\"NB-story\">");
             builder.append(storyText);
+            builder.append("<script type=\"text/javascript\" src=\"storyDetailView.js\"></script>");
             builder.append("</div></body></html>");
             binding.readingWebview.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null);
         }
@@ -870,6 +899,9 @@ public class ReadingItemFragment extends NbFragment implements PopupMenu.OnMenuI
 
     /** The webview has finished loading our desired content. */
     public void onWebLoadFinished() {
+        if (!isWebLoadFinished) {
+            binding.readingWebview.evaluateJavascript("loadImages();", null);
+        }
         isWebLoadFinished = true;
         checkLoadStatus();
     }

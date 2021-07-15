@@ -1,19 +1,30 @@
 body {
     overflow: hidden;
     line-height: 1.5em;
-    width: 100%;
+    width: auto;
     max-width: 100%;
     /* note that even with 0 margins, most Android WebViews still have a thin margin that cannot be removed */
     margin: 0px !important;
-    padding: 0px !important;
+    padding: 12px !important;
 }
 
 .NB-story, .NB-youtube-player {
     max-width: 100% !important;
     height: auto !important;
     max-height: none !important;
-    overflow: hidden;
     margin: 0;
+}
+
+.NB-story .NB-large-image {
+    margin-left: -12px !important;
+    max-width: calc(100% + 24px) !important;
+    height: auto !important;
+    margin-bottom: 8px !important;
+}
+
+.NB-story .NB-small-image {
+    display: inline-block;
+    margin: 2px;
 }
 
 p, div, table {
@@ -34,10 +45,9 @@ p, a, table, video, embed, object, iframe, div, figure, dl, dt, center {
 img {
     /* in addition to the tweaks for other media, set image height to auto, so aspect ratios are correct */
 	width: auto !important;
-    max-width: 99% !important;
+    max-width: 100% !important;
     height: auto !important;
     max-height: none !important;
-    margin: 4px !important;
 }
 
 p {

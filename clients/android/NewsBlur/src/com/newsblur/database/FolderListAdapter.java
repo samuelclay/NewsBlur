@@ -20,8 +20,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.newsblur.R;
@@ -149,7 +151,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         if (isRowGlobalSharedStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_global_shared_stories, null, false);
         } else if (isRowAllSharedStories(groupPosition)) {
-			if (v == null) v =  inflater.inflate(R.layout.row_all_shared_stories, null, false);
+            if (socialFeedsOrdered.isEmpty()) {
+                return inflater.inflate(R.layout.row_hidden_folder, null, false);
+            }
+			v =  inflater.inflate(R.layout.row_all_shared_stories, null, false);
             if (currentState == StateFilter.BEST || (totalSocialNeutCount == 0)) {
                 v.findViewById(R.id.row_foldersumneu).setVisibility(View.GONE);
             } else {
@@ -170,7 +175,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         } else if (isRowReadStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_read_stories, null, false);
         } else if (isRowSavedSearches(groupPosition)) {
-            if (v == null) v = inflater.inflate(R.layout.row_saved_searches, null, false);
+            if (savedSearches.isEmpty()) {
+                return inflater.inflate(R.layout.row_hidden_folder, null, false);
+            }
+            v = inflater.inflate(R.layout.row_saved_searches, null, false);
         } else if (isRowSavedStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_saved_stories, null, false);
             TextView savedSum = ((TextView) v.findViewById(R.id.row_foldersum));
@@ -243,7 +251,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             nameView.setText(f.feedTitle);
             nameView.setTextSize(textSize * defaultTextSize_childName);
             ImageView iconView = (ImageView) v.findViewById(R.id.row_socialfeed_icon);
-            FeedUtils.iconLoader.displayImage(f.photoUrl, iconView, 0, false);
+            FeedUtils.iconLoader.displayImage(f.photoUrl, iconView, false);
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_socialsumneu));
             if (f.neutralCount > 0 && currentState != StateFilter.BEST) {
                 neutCounter.setVisibility(View.VISIBLE);
@@ -284,16 +292,21 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             nameView.setText(UIUtils.fromHtml(ss.feedTitle));
             ImageView iconView = v.findViewById(R.id.row_saved_search_icon);
             FeedUtils.iconLoader.preCheck(ss.faviconUrl, iconView);
-            FeedUtils.iconLoader.displayImage(ss.faviconUrl, iconView, 0 , false);
+            FeedUtils.iconLoader.displayImage(ss.faviconUrl, iconView, false);
         } else {
             if (v == null) v = inflater.inflate(R.layout.row_feed, parent, false);
             Feed f = activeFolderChildren.get(groupPosition).get(childPosition);
+            FrameLayout containerTitle = v.findViewById(R.id.row_title);
+            int rowMarginStart = isRowAllStories(groupPosition) ? 0 : UIUtils.dp2px(context, 32);
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) containerTitle.getLayoutParams();
+            lp.setMarginStart(rowMarginStart);
+            containerTitle.setLayoutParams(lp);
             TextView nameView =((TextView) v.findViewById(R.id.row_feedname));
             nameView.setText(f.title);
             nameView.setTextSize(textSize * defaultTextSize_childName);
             ImageView iconView = (ImageView) v.findViewById(R.id.row_feedfavicon);
             FeedUtils.iconLoader.preCheck(f.faviconUrl, iconView);
-            FeedUtils.iconLoader.displayImage(f.faviconUrl, iconView, 0, false);
+            FeedUtils.iconLoader.displayImage(f.faviconUrl, iconView, false);
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_feedneutral));
             TextView posCounter = ((TextView) v.findViewById(R.id.row_feedpositive));
             TextView savedCounter = ((TextView) v.findViewById(R.id.row_feedsaved));

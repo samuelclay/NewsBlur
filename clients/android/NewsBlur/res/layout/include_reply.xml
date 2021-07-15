@@ -17,7 +17,7 @@
         android:layout_marginBottom="10dp"
         style="?storyCommentDivider" />
 
-    <ImageView
+    <com.newsblur.view.RoundedImageView
         android:id="@+id/reply_user_image"
         android:layout_width="30dp"
         android:layout_height="30dp"

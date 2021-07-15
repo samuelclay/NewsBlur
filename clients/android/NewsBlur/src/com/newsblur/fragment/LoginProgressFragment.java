@@ -88,7 +88,7 @@ public class LoginProgressFragment extends Fragment {
                 Bitmap userImage = PrefsUtils.getUserImage(c);
                 if (userImage != null ) {
                     binding.loginProfilePicture.setVisibility(View.VISIBLE);
-                    binding.loginProfilePicture.setImageBitmap(UIUtils.clipAndRound(userImage, 10f, false));
+                    binding.loginProfilePicture.setImageBitmap(UIUtils.clipAndRound(userImage, true, false));
                 }
 				binding.loginFeedProgress.setVisibility(View.VISIBLE);
 
