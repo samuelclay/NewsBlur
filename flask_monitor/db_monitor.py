@@ -67,7 +67,7 @@ def db_check_mysql():
 @app.route("/db_check/mongo")
 def db_check_mongo():
     try:
-        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}.node.nyc1.consul/?authSource=admin")
+        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.MONGO_DOCKER_IP}/?authSource=admin")
         db = client.newsblur
     except:
         abort(503)
