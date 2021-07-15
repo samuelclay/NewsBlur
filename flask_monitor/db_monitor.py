@@ -88,10 +88,10 @@ def db_check_mongo():
         member_state = member['state']
         optime = member['optime']
         if member_state == PRIMARY_STATE:
-            primary_optime = optime['ts']
+            primary_optime = optime['ts'].time
         elif member_state == SECONDARY_STATE:
-            if not oldest_secondary_optime or optime['ts'] < oldest_secondary_optime:
-                oldest_secondary_optime = optime['ts']
+            if not oldest_secondary_optime or optime['ts'].time < oldest_secondary_optime:
+                oldest_secondary_optime = optime['ts'].time
 
     if not primary_optime or not oldest_secondary_optime:
         abort(505)
