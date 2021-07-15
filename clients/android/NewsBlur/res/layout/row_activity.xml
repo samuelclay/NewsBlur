@@ -6,7 +6,7 @@
     android:paddingBottom="10dp"
     android:paddingTop="10dp" >
 
-    <ImageView
+    <com.newsblur.view.RoundedImageView
         android:id="@+id/row_activity_icon"
         android:layout_width="25dp"
         android:layout_height="25dp"

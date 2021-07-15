@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<font-family xmlns:app="http://schemas.android.com/apk/res-auto">
+    <font
+        app:font="@font/whitney_ssm_book_bas"
+        app:fontStyle="normal"
+        app:fontWeight="400" />
+    <font
+        app:font="@font/whitney_ssm_semi_bold_bas"
+        app:fontStyle="normal"
+        app:fontWeight="800" />
+</font-family>

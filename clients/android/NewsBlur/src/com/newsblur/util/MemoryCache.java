@@ -18,24 +18,24 @@ public class MemoryCache {
         this.limit = limitBytes;
 	}
 
-	public Bitmap get(String id){
+	public Bitmap get(String url){
 		try {
-			if (cache == null || !cache.containsKey(id)) {
+			if (cache == null || !cache.containsKey(url)) {
 				return null;
 			} else {
-				return cache.get(id);
+				return cache.get(url);
 			}
 		} catch (NullPointerException ex){
 			return null;
 		}
 	}
 
-	public void put(String id, Bitmap bitmap) {
+	public void put(String url, Bitmap bitmap) {
         synchronized (this) {
-            if (cache.containsKey(id)) {
-                size -= getSizeInBytes(cache.get(id));
+			if (cache.containsKey(url)) {
+                size -= getSizeInBytes(cache.get(url));
             }
-            cache.put(id, bitmap);
+            cache.put(url, bitmap);
             size += getSizeInBytes(bitmap);
             checkSize();
         }

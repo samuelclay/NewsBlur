@@ -30,6 +30,7 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryListStyle;
+import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.ProgressThrobber;
@@ -197,8 +198,6 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 	}
 
     protected void triggerRefresh(int desiredStoryCount, Integer totalSeen) {
-        if (getFeedSet().isMuted()) return;
-
         // ask the sync service for as many stories as we want
         boolean gotSome = NBSyncService.requestMoreForFeed(getFeedSet(), desiredStoryCount, totalSeen);
         // if the service thinks it can get more, or if we haven't even seen a cursor yet, start the service
@@ -233,7 +232,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     }
 
 	public void hasUpdated() {
-        if (isAdded() && !getFeedSet().isMuted()) {
+        if (isAdded()) {
 		    LoaderManager.getInstance(this).restartLoader(ITEMLIST_LOADER , null, this);
         }
 	}
@@ -247,10 +246,8 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             try {
                 getActivity().finish();
             } catch (Exception e) {
-                ;
+
             }
-            return FeedUtils.dbHelper.getNullLoader();
-        } else if (fs.isMuted()) {
             return FeedUtils.dbHelper.getNullLoader();
         } else {
             return FeedUtils.dbHelper.getActiveStoriesLoader(getFeedSet());
@@ -298,15 +295,6 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     private void updateLoadingIndicators() {
         calcFleuronPadding();
 
-        if (getFeedSet().isMuted()) {
-            binding.emptyViewText.setText(R.string.empty_list_view_muted_feed);
-            binding.emptyViewText.setTypeface(null, Typeface.NORMAL);
-            binding.emptyViewImage.setVisibility(View.VISIBLE);
-            binding.topLoadingThrob.setVisibility(View.INVISIBLE);
-            bottomProgressView.setVisibility(View.INVISIBLE);
-            return;
-        }
-
         if (cursorSeenYet && adapter.getRawStoryCount() > 0 && UIUtils.needsPremiumAccess(requireContext(), getFeedSet())) {
             fleuronBinding.getRoot().setVisibility(View.VISIBLE);
             fleuronBinding.containerSubscribe.setVisibility(View.VISIBLE);
@@ -318,7 +306,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 
         if ( (!cursorSeenYet) || NBSyncService.isFeedSetSyncing(getFeedSet(), getActivity()) ) {
             binding.emptyViewText.setText(R.string.empty_list_view_loading);
-            binding.emptyViewText.setTypeface(null, Typeface.ITALIC);
+            binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.ITALIC);
             binding.emptyViewImage.setVisibility(View.INVISIBLE);
 
             if (NBSyncService.isFeedSetStoriesFresh(getFeedSet())) {
@@ -336,7 +324,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             } else {
                 binding.emptyViewText.setText(R.string.empty_list_view_no_stories);
             }
-            binding.emptyViewText.setTypeface(null, Typeface.NORMAL);
+            binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.NORMAL);
             binding.emptyViewImage.setVisibility(View.VISIBLE);
 
             binding.topLoadingThrob.setVisibility(View.INVISIBLE);
@@ -346,6 +334,16 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
                 fleuronBinding.getRoot().setVisibility(View.VISIBLE);
             }
         }
+    }
+
+    public void notifyContentPrefsChanged() {
+        adapter.notifyAllItemsChanged();
+    }
+
+    public void updateThumbnailStyle() {
+        ThumbnailStyle thumbnailStyle = PrefsUtils.getThumbnailStyle(requireContext());
+        adapter.setThumbnailStyle(thumbnailStyle);
+        adapter.notifyAllItemsChanged();
     }
 
     public void updateStyle() {
