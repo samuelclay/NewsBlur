@@ -5,7 +5,7 @@ collections=(
     classifier_author
     classifier_feed
     classifier_title
-    userstories
+    starred_stories
     shared_stories
     category
     category_site
@@ -25,7 +25,7 @@ for collection in ${collections[@]}; do
     docker exec -it mongo mongodump --db newsblur --collection $collection -o /backup/backup_mongo_${now}
 done;
 
-echo " ---> Compressing /srv/newsblur/backup/backup_mongo_${now}.tgz"
+echo " ---> Compressing backup_mongo_${now}.tgz"
 tar -zcf /opt/mongo/newsblur/backup/backup_mongo_${now}.tgz /opt/mongo/newsblur/backup/backup_mongo_${now}
 
 echo " ---> Uploading backups to S3"
