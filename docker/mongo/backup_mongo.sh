@@ -5,7 +5,6 @@ collections=(
     classifier_author
     classifier_feed
     classifier_title
-    starred_stories
     shared_stories
     category
     category_site
