@@ -18,7 +18,7 @@ collections=(
     feedback
 )
 
-for collection in collections; do
+for collection in ${collections[@]}; do
     now=$(date '+%Y-%m-%d-%H-%M')
     echo "---> Dumping $collection - ${now}"
 
