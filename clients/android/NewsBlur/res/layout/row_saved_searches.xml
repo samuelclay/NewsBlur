@@ -23,7 +23,7 @@
         android:layout_toRightOf="@id/row_folder_icon"
         android:paddingTop="9dp"
         android:paddingBottom="9dp"
-        android:text="@string/saved_searches_row_title"
+        android:text="@string/saved_searches_title"
         android:textStyle="bold" />
 
     <View

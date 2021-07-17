@@ -28,7 +28,10 @@ from apps.notifications.tasks import QueueNotifications
 from apps.notifications.models import MUserFeedNotification
 from apps.push.models import PushSubscription
 from apps.statistics.models import MAnalyticsFetcher, MStatistics
+
 import feedparser
+feedparser.sanitizer._HTMLSanitizer.acceptable_elements.update(['iframe'])
+
 from utils.story_functions import pre_process_story, strip_tags, linkify
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError

@@ -16,6 +16,21 @@
     path: /srv/newsblur/newsblur_web/app_env.py
     line: 'SERVER_NAME = "{{ inventory_hostname }}"'
 
+- name: Register MONGO_DOCKER_IP
+  become: yes
+  shell:
+    cmd: "docker inspect -f '{% raw %}{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}{% endraw %}' mongo "
+  register: mongo_docker_ip
+  when: "'db-mongo' in inventory_hostname"
+  tags: monitor-docker
+
+- name: Add MONGO_DOCKER_IP to app env
+  lineinfile:
+    path: /srv/newsblur/newsblur_web/app_env.py
+    line: 'MONGO_DOCKER_IP = "{{ mongo_docker_ip.stdout }}"'
+  when: "'db-mongo' in inventory_hostname"
+  tags: monitor-docker
+
 - name: Make docker network for newsblurnet
   become: yes
   docker_network:
@@ -40,3 +55,8 @@
       - name: newsblurnet
     ports:
       - "5579:5579"
+
+- name: Restart monitor
+  become: yes
+  shell:
+    cmd: docker restart monitor

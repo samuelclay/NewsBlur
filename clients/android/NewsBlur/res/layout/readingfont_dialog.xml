@@ -38,9 +38,9 @@
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
                  android:text="@string/open_sans_condensed_font"/>
-    <RadioButton android:id="@+id/radio_whitney"
+    <RadioButton android:id="@+id/radio_roboto"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
-                 android:text="@string/whitney_font"/>
+                 android:text="@string/roboto_font"/>
 
 </RadioGroup>

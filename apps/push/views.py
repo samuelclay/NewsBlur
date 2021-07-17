@@ -32,7 +32,7 @@ def push_callback(request, push_id):
             subscription.save()
             subscription.feed.setup_push()
 
-            logging.debug('   ---> [%-30s] [%s] ~BBVerified PuSH' % (unicode(subscription.feed)[:30], subscription.feed_id))
+            logging.debug('   ---> [%-30s] [%s] ~BBVerified PuSH' % (subscription.feed, subscription.feed_id))
 
             verified.send(sender=subscription)
 
@@ -46,7 +46,7 @@ def push_callback(request, push_id):
             latest_push_date = datetime.datetime.strptime(latest_push, '%Y-%m-%d %H:%M:%S')
             latest_push_date_delta = datetime.datetime.now() - latest_push_date
             if latest_push_date > datetime.datetime.now() - datetime.timedelta(minutes=1):
-                logging.debug('   ---> [%-30s] ~SN~FBSkipping feed fetch, pushed %s seconds ago' % (unicode(subscription.feed)[:30], latest_push_date_delta.seconds))
+                logging.debug('   ---> [%-30s] ~SN~FBSkipping feed fetch, pushed %s seconds ago' % (subscription.feed, latest_push_date_delta.seconds))
                 return HttpResponse('Slow down, you just pushed %s seconds ago...' % latest_push_date_delta.seconds, status=429)
                 
         # XXX TODO: Optimize this by removing feedparser. It just needs to find out
@@ -62,7 +62,7 @@ def push_callback(request, push_id):
             MFetchHistory.add(feed_id=subscription.feed_id, 
                               fetch_type='push')
         else:
-            logging.debug('   ---> [%-30s] ~FBSkipping feed fetch, no actives: %s' % (unicode(subscription.feed)[:30], subscription.feed))
+            logging.debug('   ---> [%-30s] ~FBSkipping feed fetch, no actives: %s' % (subscription.feed, subscription.feed))
         
         return HttpResponse('OK')
     return Http404

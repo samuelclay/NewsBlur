@@ -119,6 +119,7 @@ MIDDLEWARE = (
     'apps.profile.middleware.ServerHostnameMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'utils.request_introspection_middleware.DumpRequestMiddleware',
     'apps.profile.middleware.DBProfilerMiddleware',
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
     'utils.mongo_raw_log_middleware.MongoDumpMiddleware',
@@ -559,8 +560,11 @@ S3_AVATARS_BUCKET_NAME = 'avatars.newsblur.com'
 
 if DOCKERBUILD:
     from newsblur_web.docker_local_settings import *
-else:
+
+try:
     from newsblur_web.local_settings import *
+except ModuleNotFoundError:
+    pass
 
 try:
     from newsblur_web.task_env import *
@@ -579,9 +583,11 @@ if not DEBUG:
         'django_ses',
 
     )
+
     sentry_sdk.init(
         dsn=SENTRY_DSN,
         integrations=[DjangoIntegration(), RedisIntegration(), CeleryIntegration()],
+        server_name=SERVER_NAME,
 
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
@@ -758,10 +764,6 @@ accept_content = ['pickle', 'json', 'msgpack', 'yaml']
 # ==========
 
 JAMMIT = jammit.JammitAssets(ROOT_DIR)
-
-if DEBUG:
-    MIDDLEWARE += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
-    # MIDDLEWARE += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
 
 # =======
 # = AWS =
