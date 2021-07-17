@@ -12,6 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth import login as login_user
+from mongoengine.errors import ValidationError
 from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
 from apps.feed_import.models import OAuthToken
@@ -36,10 +37,10 @@ def opml_upload(request):
             xml_opml = file.read()
             try:
                 UploadedOPML.objects.create(user_id=request.user.pk, opml_file=xml_opml)
-            except (UnicodeDecodeError, InvalidStringData):
+            except (UnicodeDecodeError, ValidationError, InvalidStringData):
                 folders = None
                 code = -1
-                message = "There was a Unicode decode error when reading your OPML file."
+                message = "There was a Unicode decode error when reading your OPML file. Ensure it's a text file with a .opml or .xml extension. Is it a zip file?"
             
             opml_importer = OPMLImporter(xml_opml, request.user)
             try:

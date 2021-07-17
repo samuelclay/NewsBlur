@@ -6,11 +6,52 @@
     mode: 0777
     path: /var/log/mongodb
 
+- name: Get the volume name
+  shell: ls /dev/disk/by-id/ | grep -v part
+  register: volume_name_raw
+
+- set_fact:
+    volume_name: "{{ volume_name_raw.stdout }}"
+
+- debug:
+    msg: "{{ volume_name }}"
+
+- name: Create the mount point
+  become: yes
+  file: 
+    path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}"
+    state: directory
+
+- name: Mount volume read-write
+  become: yes
+  mount:
+    path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}"
+    src: "/dev/disk/by-id/{{ volume_name }}"
+    fstype: xfs
+    opts: defaults,discard
+    state: mounted
+
+- name: Copy MongoDB keyfile
+  become: yes
+  copy:
+    content: "{{ mongodb_keyfile }}"
+    dest: /srv/newsblur/config/mongodb_keyfile.key
+    owner: root
+    mode: 0400
+  tags:
+    - keyfile
+
 - name: Make docker network for newsblurnet
   become: yes
   docker_network:
     name: newsblurnet
   notify: restart docker
+
+- name: Make backup directory
+  become: yes
+  file:
+    path: /opt/mongo/newsblur/backup/
+    state: directory
 
 - name: Start db-mongo docker container
   become: yes
@@ -30,8 +71,9 @@
     volumes:
       - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
       - /srv/newsblur/ansible/roles/mongo/templates/mongo.conf:/etc/mongod.conf
+      - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
       - /var/log/mongodb/:/var/log/mongodb/
-      - /opt/mongo/newsblur/backup:/backup/'
+      - /opt/mongo/newsblur/backup/:/backup/
 
 - name: Register mongo in consul
   tags: consul
@@ -81,38 +123,4 @@
     name: mongo backup
     minute: "0"
     hour: "4"
-    job:
-      collections=(
-        classifier_tag
-        classifier_author
-        classifier_feed
-        classifier_title
-        userstories
-        shared_stories
-        category
-        category_site
-        sent_emails
-        social_profile
-        social_subscription
-        social_services
-        statistics
-        user_search
-        feedback
-      )
-      for collection in collections; do
-        echo Dumping $collection
-        now=$(date '+%Y-%m-%d-%H-%M')
-
-        docker exec -it mongo mongodump --db newsblur --collection $collection -o /backup/backup_mongo_${now}
-        
-        echo Compressing /opt/mongo/newsblur/backup/backup_mongo_${now}.tgz
-        tar -zcf /opt/mongo/newsblur/backup/backup_mongo_${now}.tgz /opt/mongo/newsblur/backup/backup_mongo_${now})
-        
-      done;
-
-      echo Uploading backups to S3      
-      docker run --rm
-      -v /srv/newsblur:/srv/newsblur
-      -v /opt/mongo/newsblur/backup/:/opt/mongo/newsblur/backup/
-      --network=newsblurnet
-      newsblur/newsblur_python3:latest /srv/newsblur/utils/backups/backup_mongo.py
+    job: /srv/newsblur/docker/mongo/backup_mongo.sh

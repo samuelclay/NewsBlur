@@ -7,7 +7,7 @@ NEWSBLUR.ReaderFeedException = function(feed_id, options) {
         
     this.options = $.extend({}, defaults, options);
     this.model   = NEWSBLUR.assets;
-    this.feed_id = feed_id;
+    this.feed_id = _.isString(feed_id) ? parseInt(feed_id.replace('feed:', ''), 10) : feed_id;
     this.feed    = this.model.get_feed(feed_id);
     this.folder_title  = this.options.folder_title;
     this.folder  = this.folder_title && NEWSBLUR.assets.get_folder(this.folder_title);

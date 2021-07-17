@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.newsblur.R;
@@ -21,13 +20,14 @@ import com.newsblur.network.APIManager;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
+import com.newsblur.view.RoundedImageView;
 
 public class ProfileDetailsFragment extends Fragment implements OnClickListener {
 	
 	UserDetails user;
 	private TextView username, bio, location, sharedCount, followerCount, followingCount, website;
 	private View locationIcon;
-	private ImageView imageView;
+	private RoundedImageView imageView;
 	private boolean viewingSelf = false;
 	private Button followButton, unfollowButton;
 	private APIManager apiManager;
@@ -57,7 +57,7 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 		website = (TextView) v.findViewById(R.id.profile_website);
 		followerCount = (TextView) v.findViewById(R.id.profile_followercount);
 		followingCount = (TextView) v.findViewById(R.id.profile_followingcount);
-		imageView = (ImageView) v.findViewById(R.id.profile_picture);
+		imageView = (RoundedImageView) v.findViewById(R.id.profile_picture);
 		followButton = (Button) v.findViewById(R.id.profile_follow_button);
 		unfollowButton = (Button) v.findViewById(R.id.profile_unfollow_button);
 		followButton.setOnClickListener(this);
@@ -99,7 +99,7 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 		followingCount.setText("" + user.followingCount);
 		
 		if (!viewingSelf) {
-			FeedUtils.iconLoader.displayImage(user.photoUrl, imageView, 5, false);
+			FeedUtils.iconLoader.displayImage(user.photoUrl, imageView, false);
 			if (user.followedByYou) {
 				unfollowButton.setVisibility(View.VISIBLE);
 				followButton.setVisibility(View.GONE);
@@ -113,7 +113,7 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 			// seems to sometimes be an error loading the picture so prevent
 			// force close if null returned
 			if (userPicture != null) {
-		        userPicture = UIUtils.clipAndRound(userPicture, 5, false);
+		        userPicture = UIUtils.clipAndRound(userPicture, true, false);
 			    imageView.setImageBitmap(userPicture);
 			}
 		}

@@ -39,48 +39,43 @@
     <string name="title_rename_feed">Rename Feed %s</string>
     <string name="title_rename_folder">Rename Folder %s</string>
 
-	<string name="all_stories_row_title">ALL STORIES</string>
 	<string name="all_stories_title">All Stories</string>
-	<string name="infrequent_row_title">INFREQUENT SITE STORIES</string>
 	<string name="infrequent_title">Infrequent Site Stories</string>
-	<string name="all_shared_stories_row_title">ALL SHARED STORIES</string>
 	<string name="all_shared_stories_title">All Shared Stories</string>
-    <string name="global_shared_stories_row_title">GLOBAL SHARED STORIES</string>
     <string name="global_shared_stories_title">Global Shared Stories</string>
-	<string name="read_stories_row_title">READ STORIES</string>
 	<string name="read_stories_title">Read Stories</string>
-	<string name="saved_stories_row_title">SAVED STORIES</string>
 	<string name="saved_stories_title">Saved Stories</string>
-    <string name="saved_searches_row_title">SAVED SEARCHES</string>
+    <string name="saved_searches_title">Saved Searches</string>
 
     <string name="top_level">TOP LEVEL</string>
 	
 	<string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nShared with NewsBlur.com</string>
 	<string name="share_comment_hint">Comment (Optional)</string>
 	<string name="share_newsblur">Share \"%s\" to your Blurblog?</string>
-    <string name="share_this">SHARE</string>
-    <string name="already_shared">SHARED</string>
-    <string name="share_this_story">SHARE</string>
-    <string name="unshare">DELETE SHARE</string>
-    <string name="update_shared">UPDATE COMMENT</string>
-    <string name="feed_name_save">RENAME FEED</string>
-    <string name="folder_name_save">RENAME FOLDER</string>
+    <string name="share_this">Share</string>
+    <string name="already_shared">Shared</string>
+    <string name="share_this_story">Share</string>
+    <string name="unshare">Delete share</string>
+    <string name="update_shared">Update comment</string>
+    <string name="feed_name_save">Rename feed</string>
+    <string name="folder_name_save">Rename folder</string>
 
-	<string name="save_this">SAVE</string>
-	<string name="unsave_this">REMOVE FROM SAVED</string>
+	<string name="save_this">Save</string>
+	<string name="unsave_this">Unsave</string>
+    <string name="train_this">Train</string>
 
-    <string name="overlay_next">NEXT</string>
-    <string name="overlay_done">DONE</string>
+    <string name="overlay_next">Next</string>
+    <string name="overlay_done">Done</string>
     <string name="overlay_count_toast_N">%d unread stories</string>
     <string name="overlay_count_toast_1">1 unread story</string>
-    <string name="overlay_text">TEXT</string>
-    <string name="overlay_story">STORY</string>
+    <string name="overlay_text">Text</string>
+    <string name="overlay_story">Story</string>
     <string name="orig_text_failed">Sorry, the story\'s text could not be extracted.</string>
 
-    <string name="state_all">ALL</string>
-    <string name="state_unread">UNREAD</string>
-    <string name="state_focus">FOCUS</string>
-    <string name="state_saved">SAVED</string>
+    <string name="state_all">All</string>
+    <string name="state_unread">Unread</string>
+    <string name="state_focus">Focus</string>
+    <string name="state_saved">Saved</string>
 
 	<string name="reply_to">Reply to \"%s\"</string>
     <string name="edit_reply">Edit reply</string>
@@ -88,12 +83,13 @@
     <string name="edit_reply_delete">DELTE REPLY</string>
 	
 	<string name="alert_dialog_ok">OKAY</string>
-	<string name="alert_dialog_cancel">CANCEL</string>
+	<string name="alert_dialog_cancel">@android:string/cancel</string>
 	<string name="alert_dialog_done">DONE</string>
 	<string name="alert_dialog_openlink">OPEN LINK</string>
 	<string name="alert_dialog_openimage">OPEN IMAGE</string>
     <string name="dialog_folders_save">SAVE FOLDERS</string>
     <string name="dialog_story_intel_save">SAVE TRAINING</string>
+    <string name="dialog_story_tags_save">SAVE TAGS</string>
 	
     <string name="profile">Profile</string>
     <string name="profile_location_icon">Location icon</string>
@@ -165,11 +161,18 @@
     <string name="menu_intel">Intelligence trainer</string>
     <string name="menu_rename_feed">Rename feed</string>
     <string name="menu_story_list_style_choose">List style…</string>
+    <string name="menu_save_search">Save Search</string>
     <string name="list_style_list">List</string>
     <string name="list_style_grid_f">Grid (fine)</string>
     <string name="list_style_grid_m">Grid (medium)</string>
     <string name="list_style_grid_c">Grid (coarse)</string>
-    
+    <string name="story_content_preview_none">Title only (none)</string>
+    <string name="story_content_preview_small">2 lines (small)</string>
+    <string name="story_content_preview_medium">4 lines (medium)</string>
+    <string name="story_content_preview_large">6 lines (large)</string>
+    <string name="mark_read_on_scroll_disabled">Leave unread</string>
+    <string name="mark_read_on_scroll_enabled">Read on scroll</string>
+
     <string name="menu_sort_by">Sort By</string>
     <string name="menu_sort_by_name">Name</string>
     <string name="menu_sort_by_subs">Subscribers</string>
@@ -205,8 +208,12 @@
     <string name="menu_add_feed">Add new feed</string>
     <string name="adding_feed_progress">Adding feed…</string>
     <string name="add_folder_name">Please enter folder name</string>
+    <string name="add_tag_name">Please add tag name</string>
     <string name="add_new_folder">+ Add new folder</string>
+    <string name="add_new_tag">+ Add new tag</string>
+    <string name="add_tag">Add Tag</string>
     <string name="new_folder_name_hint">Enter new folder name</string>
+    <string name="new_tag_name_hint">Enter new tag name</string>
     <string name="add_feed_error">Could not add feed</string>
     <string name="add_folder_error">Could not add folder</string>
     <string name="menu_mark_all_as_read">Mark all as read</string>
@@ -219,14 +226,13 @@
 
     <string name="description_add_new_folder_icon">Add new folder icon</string>
 
-    <string name="menu_loginas">Login as...</string>
+    <string name="menu_loginas">Login as…</string>
 
     <string name="loginas_title">Login As User</string>
 
     <string name="empty_list_view_loading">Loading…</string>
     <string name="empty_list_view_no_stories">No stories to read</string>
     <string name="empty_list_view_no_stories_unread">No unread stories</string>
-    <string name="empty_list_view_muted_feed">Feed is muted</string>
 
     <string name="empty_list_view_no_unread_stories">You have no unread stories.</string>
     <string name="empty_list_view_no_focus_stories">You have no unread stories in Focus mode.\n\nSwitch to All or Unread.</string>
@@ -262,7 +268,7 @@
     <string name="widget">Widget</string>
     <string name="title_widget_setup">Tap to setup in NewsBlur</string>
     <string name="title_no_subscriptions">No active subscriptions detected</string>
-    <string name="title_widget_loading">Loading...</string>
+    <string name="title_widget_loading">Loading…</string>
     
     <string name="premium_subscribers_folder">Reading by folder is only available to</string>
     <string name="premium_subscribers_search">Search is only available to</string>
@@ -369,6 +375,9 @@
 
     <string name="all_stories">All Stories</string>
     <string name="unread_only">Unread Only</string>
+    <string name="menu_story_content_preview">Content Preview</string>
+    <string name="menu_story_thumbnail_preview">Thumbnail Preview</string>
+    <string name="menu_mark_read_on_scroll">Mark Read On Scroll</string>
     <string name="menu_read_filter">Read Filter</string>
     <string-array name="default_read_filter_entries">
         <item>@string/all_stories</item>
@@ -402,26 +411,49 @@
     <string name="settings_social">Social</string>
     <string name="settings_show_public_comments">Show Public Comments</string>
     <string name="settings_reading">Reading</string>
-    <string name="settings_show_content_preview">Show Content Preview Text</string>
+    <string name="settings_content_preview">Content Preview Text</string>
     <string name="settings_thumbnails_style">Image Preview Thumbnails</string>
     <string name="settings_notifications">Notifications</string>
     <string name="settings_enable_notifications">Enable Notifications</string>
 
-    <string name="large">Large</string>
-    <string name="small">Small</string>
-    <string-array name="thumbnails_style_entries">
-        <item>@string/large</item>
-        <item>@string/small</item>
-        <item>@string/off</item>
+    <string-array name="show_content_preview_entries">
+        <item>@string/story_content_preview_none</item>
+        <item>@string/story_content_preview_small</item>
+        <item>@string/story_content_preview_medium</item>
+        <item>@string/story_content_preview_large</item>
     </string-array>
 
-    <string-array name="thumbnails_style_values">
-        <item>LARGE</item>
+    <string-array name="show_content_preview_values">
+        <item>NONE</item>
         <item>SMALL</item>
+        <item>MEDIUM</item>
+        <item>LARGE</item>
+    </string-array>
+
+    <string name="show_content_preview_default_value">MEDIUM</string>
+
+    <string name="story_thumbnail_left_hand_small">Left-hand small</string>
+    <string name="story_thumbnail_left_hand_large">Left-hand large</string>
+    <string name="story_thumbnail_right_hand_small">Right-hand small</string>
+    <string name="story_thumbnail_right_hand_large">Right-hand large</string>
+    <string name="story_thumbnail_no_image_preview">No image preview</string>
+    <string-array name="thumbnail_style_entries">
+        <item>@string/story_thumbnail_left_hand_small</item>
+        <item>@string/story_thumbnail_left_hand_large</item>
+        <item>@string/story_thumbnail_right_hand_small</item>
+        <item>@string/story_thumbnail_right_hand_large</item>
+        <item>@string/story_thumbnail_no_image_preview</item>
+    </string-array>
+
+    <string-array name="thumbnail_style_values">
+        <item>LEFT_SMALL</item>
+        <item>LEFT_LARGE</item>
+        <item>RIGHT_SMALL</item>
+        <item>RIGHT_LARGE</item>
         <item>OFF</item>
     </string-array>
 
-    <string name="thumbnails_style_value">LARGE</string>
+    <string name="thumbnail_style_default_value">RIGHT_LARGE</string>
 
     <string name="infrequent_choice_title">Stories from sites with</string>
     <string name="infrequent_5">&lt; 5 STORIES/MONTH</string>
@@ -447,16 +479,16 @@
 
     <string name="settings_gestures">Gestures</string>
 
-    <string name="sync_status_housekeeping">Tidying up...</string>
-    <string name="sync_status_actions">Catching up %d reading actions...</string>
-    <string name="sync_status_recounts">Catching up reading actions...</string>
-    <string name="sync_status_ffsync">On its way...</string>
-    <string name="sync_status_cleanup">Cleaning up...</string>
+    <string name="sync_status_housekeeping">Tidying up…</string>
+    <string name="sync_status_actions">Catching up %d reading actions…</string>
+    <string name="sync_status_recounts">Catching up reading actions…</string>
+    <string name="sync_status_ffsync">On its way…</string>
+    <string name="sync_status_cleanup">Cleaning up…</string>
     <string name="sync_status_starred">Sync saved stories actions…</string>
-    <string name="sync_status_stories">Fetching fresh stories...</string>
-    <string name="sync_status_unreads">Storing%sunread stories...</string>
-    <string name="sync_status_text">Storing text for %s stories...</string>
-    <string name="sync_status_images">Storing %s images...</string>
+    <string name="sync_status_stories">Fetching fresh stories…</string>
+    <string name="sync_status_unreads">Storing%sunread stories…</string>
+    <string name="sync_status_text">Storing text for %s stories…</string>
+    <string name="sync_status_images">Storing %s images…</string>
     <string name="sync_status_offline">Offline</string>
     <string name="sync_status_feed_add">Adding feed …</string>
 
@@ -541,12 +573,12 @@
     <string name="default_browser">Default browser</string>
     <string name="font">Font</string>
     <string name="default_font">Default</string>
-    <string name="whitney_font">Whitney</string>
     <string name="gotham_narrow_font">Gotham Narrow</string>
     <string name="chronicle_font">Chronicle</string>
     <string name="noto_sans_font">Noto Sans</string>
     <string name="noto_serif_font">Noto Serif</string>
     <string name="open_sans_condensed_font">Open Sans Condensed</string>
+    <string name="roboto_font">Roboto</string>
     <string name="anonymous_pro_font">Anonymous Pro</string>
     <string name="anonymous_pro_font_prefvalue">ANONYMOUS_PRO</string>
     <string name="default_font_prefvalue">DEFAULT</string>
@@ -556,6 +588,7 @@
     <string name="noto_sans_font_prefvalue">NOTO_SANS</string>
     <string name="noto_serif_font_prefvalue">NOTO_SERIF</string>
     <string name="open_sans_condensed_font_prefvalue">OPEN_SANS_CONDENSED</string>
+    <string name="roboto_font_prefvalue">ROBOTO</string>
     <string name="system_default_prefvalue">SYSTEM_DEFAULT</string>
     <string name="in_app_browser_prefvalue">IN_APP_BROWSER</string>
     <string name="chrome_prefvalue">CHROME</string>
@@ -583,7 +616,7 @@
         <item>@string/noto_sans_font</item>
         <item>@string/noto_serif_font</item>
         <item>@string/open_sans_condensed_font</item>
-        <item>@string/whitney_font</item>
+        <item>@string/roboto_font</item>
     </string-array>
     <string-array name="default_font_values">
         <item>@string/anonymous_pro_font_prefvalue</item>
@@ -593,7 +626,7 @@
         <item>@string/noto_sans_font_prefvalue</item>
         <item>@string/noto_sans_font_prefvalue</item>
         <item>@string/open_sans_condensed_font_prefvalue</item>
-        <item>@string/whitney_font_prefvalue</item>
+        <item>@string/roboto_font_prefvalue</item>
     </string-array>
     <string name="default_font_value">DEFAULT</string>
     <string name="default_default_browser">@string/system_default_prefvalue</string>

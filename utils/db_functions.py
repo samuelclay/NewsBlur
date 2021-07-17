@@ -16,10 +16,10 @@ def mongo_max_replication_lag(connection):
         member_state = member['state']
         optime = member['optime']
         if member_state == PRIMARY_STATE:
-            primary_optime = optime.time
+            primary_optime = optime['ts'].time
         elif member_state == SECONDARY_STATE:
-            if not oldest_secondary_optime or optime.time < oldest_secondary_optime:
-                oldest_secondary_optime = optime.time
+            if not oldest_secondary_optime or optime['ts'].time < oldest_secondary_optime:
+                oldest_secondary_optime = optime['ts'].time
 
     if not primary_optime or not oldest_secondary_optime:
         return 0

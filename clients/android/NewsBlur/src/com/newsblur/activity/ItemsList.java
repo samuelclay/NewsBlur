@@ -29,9 +29,11 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
 import com.newsblur.util.StateFilter;
+import com.newsblur.util.StoryContentPreviewStyle;
 import com.newsblur.util.StoryListStyle;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
+import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
 
 public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, OnSeekBarChangeListener {
@@ -176,6 +178,9 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             fs.isInfrequent() || 
             fs.isAllRead() ) {
             menu.findItem(R.id.menu_read_filter).setVisible(false);
+            menu.findItem(R.id.menu_mark_read_on_scroll).setVisible(false);
+            menu.findItem(R.id.menu_story_content_preview_style).setVisible(false);
+            menu.findItem(R.id.menu_story_thumbnail_style).setVisible(false);
         }
 
         if (fs.isGlobalShared() ||
@@ -231,6 +236,37 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             menu.findItem(R.id.menu_save_search).setVisible(true);
         } else {
             menu.findItem(R.id.menu_save_search).setVisible(false);
+        }
+
+        StoryContentPreviewStyle previewStyle = PrefsUtils.getStoryContentPreviewStyle(this);
+        if (previewStyle == StoryContentPreviewStyle.NONE) {
+            menu.findItem(R.id.menu_story_content_preview_none).setChecked(true);
+        } else if (previewStyle == StoryContentPreviewStyle.SMALL) {
+            menu.findItem(R.id.menu_story_content_preview_small).setChecked(true);
+        } else if (previewStyle == StoryContentPreviewStyle.MEDIUM) {
+            menu.findItem(R.id.menu_story_content_preview_medium).setChecked(true);
+        } else if (previewStyle == StoryContentPreviewStyle.LARGE) {
+            menu.findItem(R.id.menu_story_content_preview_large).setChecked(true);
+        }
+
+        ThumbnailStyle thumbnailStyle = PrefsUtils.getThumbnailStyle(this);
+        if (thumbnailStyle == ThumbnailStyle.LEFT_SMALL) {
+            menu.findItem(R.id.menu_story_thumbnail_left_small).setChecked(true);
+        } else if (thumbnailStyle == ThumbnailStyle.LEFT_LARGE) {
+            menu.findItem(R.id.menu_story_thumbnail_left_large).setChecked(true);
+        } else if (thumbnailStyle == ThumbnailStyle.RIGHT_SMALL) {
+            menu.findItem(R.id.menu_story_thumbnail_right_small).setChecked(true);
+        } else if (thumbnailStyle == ThumbnailStyle.RIGHT_LARGE) {
+            menu.findItem(R.id.menu_story_thumbnail_right_large).setChecked(true);
+        } else if (thumbnailStyle == ThumbnailStyle.OFF) {
+            menu.findItem(R.id.menu_story_thumbnail_no_preview).setChecked(true);
+        }
+
+        boolean isMarkReadOnScroll = PrefsUtils.isMarkReadOnScroll(this);
+        if (isMarkReadOnScroll) {
+            menu.findItem(R.id.menu_mark_read_on_scroll_enabled).setChecked(true);
+        } else {
+            menu.findItem(R.id.menu_mark_read_on_scroll_disabled).setChecked(true);
         }
 
 		return true;
@@ -290,14 +326,44 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         } else if (item.getItemId() == R.id.menu_list_style_grid_c) {
             PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.GRID_C);
             itemSetFragment.updateStyle();
-        }
-        if (item.getItemId() == R.id.menu_save_search) {
+        } else if (item.getItemId() == R.id.menu_save_search) {
             String feedId = getSaveSearchFeedId();
             if (feedId != null) {
                 String query = binding.itemlistSearchQuery.getText().toString();
                 SaveSearchFragment frag = SaveSearchFragment.newInstance(feedId, query);
                 frag.show(getSupportFragmentManager(), SaveSearchFragment.class.getName());
             }
+        } else if (item.getItemId() == R.id.menu_story_content_preview_none) {
+		    PrefsUtils.setStoryContentPreviewStyle(this, StoryContentPreviewStyle.NONE);
+		    itemSetFragment.notifyContentPrefsChanged();
+        } else if (item.getItemId() == R.id.menu_story_content_preview_small) {
+            PrefsUtils.setStoryContentPreviewStyle(this, StoryContentPreviewStyle.SMALL);
+            itemSetFragment.notifyContentPrefsChanged();
+        } else if (item.getItemId() == R.id.menu_story_content_preview_medium) {
+            PrefsUtils.setStoryContentPreviewStyle(this, StoryContentPreviewStyle.MEDIUM);
+            itemSetFragment.notifyContentPrefsChanged();
+        } else if (item.getItemId() == R.id.menu_story_content_preview_large) {
+            PrefsUtils.setStoryContentPreviewStyle(this, StoryContentPreviewStyle.LARGE);
+            itemSetFragment.notifyContentPrefsChanged();
+        } else if (item.getItemId() == R.id.menu_mark_read_on_scroll_disabled) {
+		    PrefsUtils.setMarkReadOnScroll(this, false);
+        } else if (item.getItemId() == R.id.menu_mark_read_on_scroll_enabled) {
+		    PrefsUtils.setMarkReadOnScroll(this, true);
+        } else if (item.getItemId() == R.id.menu_story_thumbnail_left_small) {
+		    PrefsUtils.setThumbnailStyle(this, ThumbnailStyle.LEFT_SMALL);
+            itemSetFragment.updateThumbnailStyle();
+        } else if (item.getItemId() == R.id.menu_story_thumbnail_left_large) {
+            PrefsUtils.setThumbnailStyle(this, ThumbnailStyle.LEFT_LARGE);
+            itemSetFragment.updateThumbnailStyle();
+        } else if (item.getItemId() == R.id.menu_story_thumbnail_right_small) {
+            PrefsUtils.setThumbnailStyle(this, ThumbnailStyle.RIGHT_SMALL);
+            itemSetFragment.updateThumbnailStyle();
+        } else if (item.getItemId() == R.id.menu_story_thumbnail_right_large) {
+            PrefsUtils.setThumbnailStyle(this, ThumbnailStyle.RIGHT_LARGE);
+            itemSetFragment.updateThumbnailStyle();
+        } else if (item.getItemId() == R.id.menu_story_thumbnail_no_preview) {
+            PrefsUtils.setThumbnailStyle(this, ThumbnailStyle.OFF);
+            itemSetFragment.updateThumbnailStyle();
         }
 	
 		return false;

@@ -134,7 +134,7 @@ public class Premium extends NbActivity {
                 });
         binding.textPolicies.setText(UIUtils.fromHtml(getString(R.string.premium_policies)));
         binding.textSubTitle.setPaintFlags(binding.textSubTitle.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        FeedUtils.iconLoader.displayImage(AppConstants.SHILOH_PHOTO_URL, binding.imgShiloh, 0, false);
+        FeedUtils.iconLoader.displayImage(AppConstants.SHILOH_PHOTO_URL, binding.imgShiloh, false);
     }
 
     private void setupBillingClient() {
