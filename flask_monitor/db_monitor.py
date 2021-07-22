@@ -77,10 +77,6 @@ def db_check_mongo():
         stories = db.stories.count()
     except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
         abort(504)
-    except pymongo.errors.OperationFailure as e:
-        if 'Authentication failed' in str(e):
-            # Probably ok as this instance is not yet part of the replica set, so allow it on consul
-            return str(1)
 
     if not stories:
         abort(505)
