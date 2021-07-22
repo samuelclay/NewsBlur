@@ -574,6 +574,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
     [defaults setObject:[results objectForKey:@"share_ext_token"] forKey:@"share:token"];
     [defaults setObject:self.appDelegate.url forKey:@"share:host"];
+    [defaults setObject:appDelegate.dictSavedStoryTags forKey:@"share:tags"];
     [self validateWidgetFeedsForGroupDefaults:defaults usingResults:results];
     [defaults synchronize];
     
