@@ -67,7 +67,8 @@ def db_check_mysql():
 @app.route("/db_check/mongo")
 def db_check_mongo():
     try:
-        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.MONGO_DOCKER_IP}/?authSource=admin")
+        # The `mongo` hostname below is a reference to the newsblurnet docker network, where 172.18.0.0/16 is defined
+        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@mongo/?authSource=admin")
         db = client.newsblur
     except:
         abort(503)
@@ -76,9 +77,13 @@ def db_check_mongo():
         stories = db.stories.count()
     except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
         abort(504)
+    except pymongo.errors.OperationFailure as e:
+        if 'Authentication failed' in str(e):
+            # Probably ok as this instance is not yet part of the replica set, so allow it on consul
+            return str(1)
 
     if not stories:
-        abort(504)
+        abort(505)
     
     status = client.admin.command('replSetGetStatus')
     members = status['members']
@@ -94,10 +99,10 @@ def db_check_mongo():
                 oldest_secondary_optime = optime['ts'].time
 
     if not primary_optime or not oldest_secondary_optime:
-        abort(505)
+        abort(506)
 
     if primary_optime - oldest_secondary_optime > 100:
-        abort(506)
+        abort(507)
 
     return str(stories)
 

@@ -21,7 +21,7 @@ for collection in ${collections[@]}; do
     now=$(date '+%Y-%m-%d-%H-%M')
     echo "---> Dumping $collection - ${now}"
 
-    docker exec -it mongo mongodump --db newsblur --collection $collection -o /backup/backup_mongo_${now}
+    docker exec -it mongo mongodump -d newsblur -c $collection -o /backup/backup_mongo_${now}
 done;
 
 echo " ---> Compressing backup_mongo_${now}.tgz"
@@ -29,5 +29,5 @@ tar -zcf /opt/mongo/newsblur/backup/backup_mongo_${now}.tgz /opt/mongo/newsblur/
 
 echo " ---> Uploading backups to S3"
 docker run --rm -v /srv/newsblur:/srv/newsblur -v /opt/mongo/newsblur/backup/:/opt/mongo/newsblur/backup/ --network=newsblurnet newsblur/newsblur_python3:latest /srv/newsblur/utils/backups/backup_mongo.py
-rm /srv/newsblur/backup/backup_mongo_${now}.tgz
+rm /opt/mongo/newsblur/backup/backup_mongo_${now}.tgz
 echo " ---> Finished uploading backups to S3: backup_mongo_${now}.tgz"
