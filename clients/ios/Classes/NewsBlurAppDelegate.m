@@ -823,6 +823,8 @@
         self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorAutomatic;
         self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAutomatic;
     }
+    
+    [storyPagesViewController refreshPages];
 }
 
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController {
