@@ -46,7 +46,6 @@
 		17432C861C5343C0003F8FD6 /* FeedChooserTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 17432C851C5343C0003F8FD6 /* FeedChooserTitleView.m */; };
 		17432C891C534BC6003F8FD6 /* FeedChooserViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 17432C881C534BC6003F8FD6 /* FeedChooserViewCell.m */; };
 		1745FABB217E7FD400336F24 /* storyDetailViewLight.css in Resources */ = {isa = PBXBuildFile; fileRef = 1745FABA217E7FD400336F24 /* storyDetailViewLight.css */; };
-		174939141C251BFE003D98AA /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 174939131C251BFE003D98AA /* ShareViewController.m */; };
 		174939171C251BFE003D98AA /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 174939151C251BFE003D98AA /* MainInterface.storyboard */; };
 		1749391B1C251BFE003D98AA /* Share Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 174939101C251BFE003D98AA /* Share Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		17495166260ED61A003E900B /* ak-icon-infrequent.png in Resources */ = {isa = PBXBuildFile; fileRef = 17495165260ED619003E900B /* ak-icon-infrequent.png */; };
@@ -128,6 +127,11 @@
 		17CBD3C31BF6ED2C003FCCAE /* menu_icn_markread@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17CBD3C11BF6ED2C003FCCAE /* menu_icn_markread@2x.png */; };
 		17CE3F0723AC529E003152EF /* WidgetErrorTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17CE3F0623AC529E003152EF /* WidgetErrorTableViewCell.swift */; };
 		17CF7DD41C5C6AE40067BC5B /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17CF7DD31C5C6AE40067BC5B /* WebKit.framework */; };
+		17DC7CCA26A51BB600B0E747 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17DC7CC926A51BB600B0E747 /* ShareViewController.swift */; };
+		17DC7CCC26A51E6300B0E747 /* ShareViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17DC7CCB26A51E6300B0E747 /* ShareViewDelegate.swift */; };
+		17DC7CCE26A5212000B0E747 /* ShareSaveTagCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17DC7CCD26A5212000B0E747 /* ShareSaveTagCell.swift */; };
+		17DC7CD026A5218000B0E747 /* ShareSaveNewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17DC7CCF26A5218000B0E747 /* ShareSaveNewCell.swift */; };
+		17DC7CD226A521A300B0E747 /* ShareCommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17DC7CD126A521A300B0E747 /* ShareCommentCell.swift */; };
 		17E265DE1C0D17340060655F /* storyDetailViewDark.css in Resources */ = {isa = PBXBuildFile; fileRef = 17E265DD1C0D17340060655F /* storyDetailViewDark.css */; };
 		17E57D571C0E592600EB3D4B /* storyDetailViewMedium.css in Resources */ = {isa = PBXBuildFile; fileRef = 17E57D551C0E592600EB3D4B /* storyDetailViewMedium.css */; };
 		17E57D581C0E592600EB3D4B /* storyDetailViewSepia.css in Resources */ = {isa = PBXBuildFile; fileRef = 17E57D561C0E592600EB3D4B /* storyDetailViewSepia.css */; };
@@ -728,8 +732,6 @@
 		17432C881C534BC6003F8FD6 /* FeedChooserViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedChooserViewCell.m; sourceTree = "<group>"; };
 		1745FABA217E7FD400336F24 /* storyDetailViewLight.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailViewLight.css; path = static/storyDetailViewLight.css; sourceTree = SOURCE_ROOT; };
 		174939101C251BFE003D98AA /* Share Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Share Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
-		174939121C251BFE003D98AA /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
-		174939131C251BFE003D98AA /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
 		174939161C251BFE003D98AA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		174939181C251BFE003D98AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		174939211C251E43003D98AA /* Share Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Share Extension.entitlements"; sourceTree = "<group>"; };
@@ -819,6 +821,11 @@
 		17CE3F0523AC529B003152EF /* WidgetErrorTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WidgetErrorTableViewCell.xib; sourceTree = "<group>"; };
 		17CE3F0623AC529E003152EF /* WidgetErrorTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetErrorTableViewCell.swift; sourceTree = "<group>"; };
 		17CF7DD31C5C6AE40067BC5B /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		17DC7CC926A51BB600B0E747 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		17DC7CCB26A51E6300B0E747 /* ShareViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewDelegate.swift; sourceTree = "<group>"; };
+		17DC7CCD26A5212000B0E747 /* ShareSaveTagCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSaveTagCell.swift; sourceTree = "<group>"; };
+		17DC7CCF26A5218000B0E747 /* ShareSaveNewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSaveNewCell.swift; sourceTree = "<group>"; };
+		17DC7CD126A521A300B0E747 /* ShareCommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCommentCell.swift; sourceTree = "<group>"; };
 		17E265DD1C0D17340060655F /* storyDetailViewDark.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailViewDark.css; path = static/storyDetailViewDark.css; sourceTree = SOURCE_ROOT; };
 		17E57D551C0E592600EB3D4B /* storyDetailViewMedium.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailViewMedium.css; path = static/storyDetailViewMedium.css; sourceTree = SOURCE_ROOT; };
 		17E57D561C0E592600EB3D4B /* storyDetailViewSepia.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailViewSepia.css; path = static/storyDetailViewSepia.css; sourceTree = SOURCE_ROOT; };
@@ -1607,8 +1614,11 @@
 		174939111C251BFE003D98AA /* Share Extension */ = {
 			isa = PBXGroup;
 			children = (
-				174939121C251BFE003D98AA /* ShareViewController.h */,
-				174939131C251BFE003D98AA /* ShareViewController.m */,
+				17DC7CC926A51BB600B0E747 /* ShareViewController.swift */,
+				17DC7CCB26A51E6300B0E747 /* ShareViewDelegate.swift */,
+				17DC7CCD26A5212000B0E747 /* ShareSaveTagCell.swift */,
+				17DC7CCF26A5218000B0E747 /* ShareSaveNewCell.swift */,
+				17DC7CD126A521A300B0E747 /* ShareCommentCell.swift */,
 				174939151C251BFE003D98AA /* MainInterface.storyboard */,
 				174939211C251E43003D98AA /* Share Extension.entitlements */,
 				174939181C251BFE003D98AA /* Info.plist */,
@@ -2867,6 +2877,7 @@
 					1749390F1C251BFE003D98AA = {
 						CreatedOnToolsVersion = 7.2;
 						DevelopmentTeam = HR7P97SD72;
+						LastSwiftMigration = 1250;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -3412,7 +3423,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				174939141C251BFE003D98AA /* ShareViewController.m in Sources */,
+				17DC7CD026A5218000B0E747 /* ShareSaveNewCell.swift in Sources */,
+				17DC7CCA26A51BB600B0E747 /* ShareViewController.swift in Sources */,
+				17DC7CCE26A5212000B0E747 /* ShareSaveTagCell.swift in Sources */,
+				17DC7CCC26A51E6300B0E747 /* ShareViewDelegate.swift in Sources */,
+				17DC7CD226A521A300B0E747 /* ShareCommentCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3677,6 +3692,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -3733,6 +3749,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
