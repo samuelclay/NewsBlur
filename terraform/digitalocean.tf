@@ -374,7 +374,7 @@ resource "digitalocean_droplet" "db-postgres" {
 }
 
 resource "digitalocean_volume" "mongo_volume" {
-  count                   = 1
+  count                   = 2
   region                  = "nyc1"
   name                    = "mongo${count.index+1}"
   size                    = 400
@@ -383,7 +383,7 @@ resource "digitalocean_volume" "mongo_volume" {
 }
 
 resource "digitalocean_droplet" "db-mongo-primary" {
-  count    = 1
+  count    = 2
   image    = var.droplet_os
   name     = "db-mongo${count.index+1}"
   region   = var.droplet_region
