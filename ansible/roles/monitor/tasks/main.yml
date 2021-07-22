@@ -23,7 +23,6 @@
   register: mongo_docker_ip
   when: "'db-mongo' in inventory_hostname"
   tags: 
-    - monitor-docker
     - never # Unused because the IP address can change as other containers are added and then the host reboots
 
 - name: Add MONGO_DOCKER_IP to app env
@@ -32,7 +31,6 @@
     line: 'MONGO_DOCKER_IP = "{{ mongo_docker_ip.stdout }}"'
   when: "'db-mongo' in inventory_hostname"
   tags: 
-    - monitor-docker
     - never
 
 - name: Make docker network for newsblurnet
