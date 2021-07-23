@@ -83,6 +83,7 @@
     volumes:
       - /srv/newsblur/node:/srv/node
       - /srv/originals:/srv/originals
+      - "/mnt/{{ inventory_hostname | regex_replace('-', '') }}:/mnt/{{ inventory_hostname | regex_replace('-', '') }}"
   with_items:
     - node-socket
     - node-page
