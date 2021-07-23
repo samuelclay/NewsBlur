@@ -73,6 +73,7 @@
     pull: true
     networks_cli_compatible: yes
     network_mode: default
+    hostname: "{{ inventory_hostname }}"
     networks:
       - name: newsblurnet
     ports:
@@ -99,6 +100,7 @@
     image: "{{ item.image }}"
     state: started
     container_default_behavior: no_defaults
+    hostname: "{{ inventory_hostname }}"
     pull: true
     ports: 
       - "{{ item.ports }}"

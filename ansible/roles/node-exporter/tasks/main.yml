@@ -5,6 +5,10 @@
     name: node-exporter
     image: prom/node-exporter
     container_default_behavior: no_defaults
+    networks_cli_compatible: yes
+    network_mode: default
+    networks:
+      - name: newsblurnet
     restart_policy: unless-stopped
     ports:
     - '9100:9100'
