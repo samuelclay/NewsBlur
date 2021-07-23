@@ -254,12 +254,23 @@ resource "digitalocean_droplet" "node-images" {
   }
 }
 
+
+resource "digitalocean_volume" "node_page_volume" {
+  count                   = 1
+  region                  = "nyc1"
+  name                    = "nodepage"
+  size                    = 100
+  initial_filesystem_type = "xfs"
+  description             = "Original Pages for NewsBlur"
+}
+
 resource "digitalocean_droplet" "node-page" {
   image    = var.droplet_os
   name     = "node-page"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  volume_ids = [digitalocean_volume.node_page_volume.0.id] 
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
