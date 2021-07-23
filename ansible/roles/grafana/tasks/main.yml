@@ -20,6 +20,7 @@
     name: grafana
     image: grafana/grafana:7.5.7
     restart_policy: unless-stopped
+    hostname: "{{ inventory_hostname }}"
     user: root
     networks_cli_compatible: yes
     network_mode: default

@@ -24,10 +24,7 @@
 
 - name: Turn off Docker iptables firewall exclusion
   become: yes
-  copy:
+  template:
+    src: daemon.json
     dest: /etc/docker/daemon.json
-    content: |
-      {
-        "iptables": false
-      }
   notify: restart docker

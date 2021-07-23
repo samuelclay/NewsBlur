@@ -32,10 +32,11 @@
     image: newsblur/newsblur_python3
     state: started
     pull: yes
+    hostname: "{{ inventory_hostname }}"
     container_default_behavior: no_defaults
     env:
       DOCKERBUILD: ""
-    restart_policy: always
+    restart_policy: unless-stopped
     labels:
       autoheal: "true"
     networks_cli_compatible: yes
@@ -73,7 +74,7 @@
     container_default_behavior: no_defaults
     env:
       AUTOHEAL_CONTAINER_LABEL: all
-    restart_policy: always
+    restart_policy: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
