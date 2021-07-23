@@ -5,7 +5,7 @@ collections=(
     classifier_author
     classifier_feed
     classifier_title
-    shared_stories
+    # shared_stories
     category
     category_site
     sent_emails
