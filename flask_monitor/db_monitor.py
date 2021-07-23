@@ -77,9 +77,13 @@ def db_check_mongo():
         stories = db.stories.count()
     except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
         abort(504)
-
+    except pymongo.errors.OperationFailure as e:
+        if 'Authentication failed' in str(e):
+            abort(505)
+        abort(506)
+        
     if not stories:
-        abort(505)
+        abort(510)
     
     status = client.admin.command('replSetGetStatus')
     members = status['members']
@@ -95,10 +99,10 @@ def db_check_mongo():
                 oldest_secondary_optime = optime['ts'].time
 
     if not primary_optime or not oldest_secondary_optime:
-        abort(506)
+        abort(511)
 
     if primary_optime - oldest_secondary_optime > 100:
-        abort(507)
+        abort(512)
 
     return str(stories)
 
