@@ -256,11 +256,11 @@ resource "digitalocean_droplet" "node-images" {
 
 
 resource "digitalocean_volume" "node_page_volume" {
-  count                   = 1
+  count                   = 0
   region                  = "nyc1"
   name                    = "nodepage"
   size                    = 100
-  initial_filesystem_type = "xfs"
+  initial_filesystem_type = "ext4"
   description             = "Original Pages for NewsBlur"
 }
 
@@ -270,7 +270,8 @@ resource "digitalocean_droplet" "node-page" {
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
-  volume_ids = [digitalocean_volume.node_page_volume.0.id] 
+  # volume_ids = [digitalocean_volume.node_page_volume.0.id] 
+  volume_ids = ["70b5a115-eb5c-11eb-81b7-0a58ac144312"] # 100GB volume created outside TF. Remove when upgrading to 200GB
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
