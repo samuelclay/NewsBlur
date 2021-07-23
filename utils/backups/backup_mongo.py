@@ -11,7 +11,6 @@ for filename in filenames:
     print('Uploading %s to S3...' % filename)
     try:
         s3 = boto3.client('s3') 
-        bucket = s3.Bucket()
         bucket.upload_file(f"mongo/{filename}", settings.S3_BACKUP_BUCKET)
     except Exception as e:
         print(" ****> Exceptions: %s" % e)
