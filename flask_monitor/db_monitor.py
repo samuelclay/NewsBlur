@@ -68,7 +68,7 @@ def db_check_mysql():
 def db_check_mongo():
     try:
         # The `mongo` hostname below is a reference to the newsblurnet docker network, where 172.18.0.0/16 is defined
-        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@mongo/?authSource=admin")
+        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}/?authSource=admin")
         db = client.newsblur
     except:
         abort(503)

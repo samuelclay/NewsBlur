@@ -68,6 +68,8 @@
     # network_mode: default
     # networks:
     #   - name: newsblurnet
+    #     aliases: 
+    #       - mongo
     # ports:
     #   - "27017:27017"
     command: --config /etc/mongod.conf
