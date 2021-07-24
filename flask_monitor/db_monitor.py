@@ -74,7 +74,7 @@ def db_check_mongo():
         abort(503)
     
     try:
-        stories = db.stories.count()
+        stories = db.stories.estimated_document_count()
     except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
         abort(504)
     except pymongo.errors.OperationFailure as e:
@@ -98,8 +98,8 @@ def db_check_mongo():
             if not oldest_secondary_optime or optime['ts'].time < oldest_secondary_optime:
                 oldest_secondary_optime = optime['ts'].time
 
-    # if not primary_optime or not oldest_secondary_optime:
-    #     abort(511)
+    if not primary_optime or not oldest_secondary_optime:
+        abort(511)
 
     # if primary_optime - oldest_secondary_optime > 100:
     #     abort(512)
