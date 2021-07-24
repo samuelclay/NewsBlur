@@ -101,8 +101,8 @@ def db_check_mongo():
     if not primary_optime or not oldest_secondary_optime:
         abort(511)
 
-    if primary_optime - oldest_secondary_optime > 100:
-        abort(512)
+    # if primary_optime - oldest_secondary_optime > 100:
+    #     abort(512)
 
     return str(stories)
 
