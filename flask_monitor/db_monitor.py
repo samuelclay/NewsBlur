@@ -98,8 +98,8 @@ def db_check_mongo():
             if not oldest_secondary_optime or optime['ts'].time < oldest_secondary_optime:
                 oldest_secondary_optime = optime['ts'].time
 
-    if not primary_optime or not oldest_secondary_optime:
-        abort(511)
+    # if not primary_optime or not oldest_secondary_optime:
+    #     abort(511)
 
     # if primary_optime - oldest_secondary_optime > 100:
     #     abort(512)
