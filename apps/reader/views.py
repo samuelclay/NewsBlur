@@ -70,7 +70,7 @@ BANNED_URLS = [
 @never_cache
 @render_to('reader/dashboard.xhtml')
 def index(request, **kwargs):
-    if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'www', 'debug', 'old']:
+    if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'www', 'debug', 'old', 'py2']:
         username = request.subdomain
         if '.' in username:
             username = username.split('.')[0]
