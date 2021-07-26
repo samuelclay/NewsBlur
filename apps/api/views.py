@@ -500,7 +500,7 @@ def save_story(request, token=None):
 
 def ip_addresses(request):
     import digitalocean
-    doapi = digitalocean.Manager(token=settings.DO_TOKEN_FABRIC)
+    doapi = digitalocean.Manager(token=settings.DO_TOKEN_API_IPADDRESSES)
     droplets = doapi.get_all_droplets()
     addresses = '\n'.join([d.ip_address for d in droplets])
     return HttpResponse(addresses, content_type='text/plain')
