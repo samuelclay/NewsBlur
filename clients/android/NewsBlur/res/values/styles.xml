@@ -173,7 +173,8 @@
     <style name="actionButtons">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/button_text</item>
-        <item name="android:background">@drawable/button_background</item>
+        <item name="android:background">@color/gray90</item>
+        <item name="android:letterSpacing">0</item>
     </style>
     <style name="actionButtons.dark">
         <item name="android:textSize">14sp</item>
