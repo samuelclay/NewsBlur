@@ -45,7 +45,7 @@ class JSONFetcher:
             date_published = dateutil.parser.parse(pubdate)
         authors = item.get('authors', item.get('author', {}))
         if isinstance(authors, list):
-            author_name = [author.get('name', "") for author in authors]
+            author_name = ', '.join([author.get('name', "") for author in authors])
         else:
             author_name = authors.get('name', "")
         story = {
