@@ -38,7 +38,7 @@ dopy==0.3.7
 elasticsearch==7.12.1
 factory-boy==3.2.0
 Faker==8.8.2
-feedparser==6.0.2
+feedparser>=6,<7
 filelock==3.0.12
 Flask==1.1.2
 Flask-BasicAuth==0.2.0
