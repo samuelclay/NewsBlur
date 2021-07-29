@@ -169,7 +169,8 @@ class FetchFeed:
                                                                                                  len(smart_str(raw_feed.content)), 
                                                                                                  raw_feed.headers))
             except Exception as e:
-                logging.debug("   ***> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.log_title[:30], str(e)[:100]))
+                logging.debug("   ***> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.log_title[:30], str(e)))
+                # raise e
             
             if not self.fpf or self.options.get('force_fp', False):
                 try:
