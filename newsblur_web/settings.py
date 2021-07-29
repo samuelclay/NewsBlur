@@ -233,6 +233,10 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'subdomains.middleware': {
+            'level': 'ERROR',
+            'propagate': False,
+        }
     },
     'filters': {
         'require_debug_false': {
