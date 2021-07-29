@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 def main():
     BACKUP_DIR = '/opt/mongo/newsblur/backup/'
-    BACKUP_DIR = '/srv/newsblur'
     filenames = [f for f in os.listdir(BACKUP_DIR) if '.tgz' in f]
     for filename in filenames:
         file_path = os.path.join(BACKUP_DIR, filename)
@@ -23,10 +22,8 @@ def main():
         key_prefix = "".join(['mongo/', key_base])
         key_datestamp = datetime.utcnow().strftime("-%Y-%m-%d-%H-%M")
         key = "".join([key_prefix, key_datestamp, key_ext])
-
         print("Uploading {0} to {1}".format(file_path, key))
         upload(file_path, settings.S3_BACKUP_BUCKET, key)
-
         print('Rotating file on S3 with key prefix {0} and extension {1}'.format(key_prefix, key_ext))
         rotate(key_prefix, key_ext,  settings.S3_BACKUP_BUCKET)
 
