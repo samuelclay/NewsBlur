@@ -84,14 +84,14 @@ def rotate(key_prefix, key_ext, bucket_name, daily_backups=7, weekly_backups=4, 
 
     if len(backups) > daily_backups+1 and backups[daily_backups] - backups[daily_backups+1] < timedelta(days=7):
         key = bucket.Object("{0}{1}{2}".format(key_prefix,backups[daily_backups].strftime("_%Y-%m-%d-%H-%M"), key_ext))
-        logger.debug("deleting daily {0}".format(key))
+        logger.debug("[not] deleting daily {0}".format(key))
         # key.delete()
         del backups[daily_backups]
 
     month_offset = daily_backups + weekly_backups
     if len(backups) > month_offset+1 and backups[month_offset] - backups[month_offset+1] < timedelta(days=30):
         key = bucket.Object("{0}{1}{2}".format(key_prefix,backups[month_offset].strftime("_%Y-%m-%d-%H-%M"), key_ext))
-        logger.debug("deleting weekly {0}".format(key))
+        logger.debug("[not] deleting weekly {0}".format(key))
         # key.delete()
         del backups[month_offset]
 
