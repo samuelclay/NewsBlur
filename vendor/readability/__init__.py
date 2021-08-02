@@ -1,1 +1,0 @@
-from .readability import Document
