@@ -86,7 +86,7 @@ def add_site_load_script(request, token):
     
     def image_base64(image_name, path='icons/circular/'):
         image_file = open(os.path.join(settings.MEDIA_ROOT, 'img/%s%s' % (path, image_name)), 'rb')
-        return base64.b64encode(image_file.read())
+        return base64.b64encode(image_file.read()).decode('utf-8')
     
     accept_image     = image_base64('newuser_icn_setup.png')
     error_image      = image_base64('newuser_icn_sharewith_active.png')
