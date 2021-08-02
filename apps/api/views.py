@@ -85,7 +85,7 @@ def add_site_load_script(request, token):
     starred_counts = {}
     
     def image_base64(image_name, path='icons/circular/'):
-        image_file = open(os.path.join(settings.MEDIA_ROOT, 'img/%s%s' % (path, image_name)))
+        image_file = open(os.path.join(settings.MEDIA_ROOT, 'img/%s%s' % (path, image_name)), 'rb')
         return base64.b64encode(image_file.read())
     
     accept_image     = image_base64('newuser_icn_setup.png')
