@@ -1,6 +1,6 @@
 ---
 - name: SETUP -> mongo containers
-  hosts: mongo
+  hosts: mongo, mongo_analytics
   vars:
     - update_apt_cache: yes
     - motd_role: db
