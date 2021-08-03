@@ -22,13 +22,15 @@ class DumpRequestMiddleware:
     def process_response(self, request, response):
         if hasattr(request, 'sql_times_elapsed'):
             if request.sql_times_elapsed.get('redis_user'):
-                redis_log = "user:%s%.6f~SNs story:%s%.6f~SNs session:%s%.6f~SNs" % (
+                redis_log = "user:%s%.6f~SNs story:%s%.6f~SNs session:%s%.6f~SNs pubsub:%s%.6f~SNs" % (
                     self.color_db(request.sql_times_elapsed['redis_user'], '~FC'),
                     request.sql_times_elapsed['redis_user'],
                     self.color_db(request.sql_times_elapsed['redis_story'], '~FC'),
                     request.sql_times_elapsed['redis_story'],
                     self.color_db(request.sql_times_elapsed['redis_session'], '~FC'),
                     request.sql_times_elapsed['redis_session'],
+                    self.color_db(request.sql_times_elapsed['redis_pubsub'], '~FC'),
+                    request.sql_times_elapsed['redis_pubsub'],
                 )
             else:
                 redis_log = "%s%.6f~SNs" % (
@@ -67,6 +69,8 @@ class DumpRequestMiddleware:
             color = '~SB~FR'
         elif seconds > .1:
             color = '~FW'
+        elif seconds == 0:
+            color = '~FK'
         return color
 
     def __init__(self, get_response=None):
