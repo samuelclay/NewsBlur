@@ -198,12 +198,26 @@ class MStatistics(mongo.Document):
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
         db_times = {}
         latest_db_times = {}
-        
-        for db in ['sql', 'mongo', 'redis', 'task_sql', 'task_mongo', 'task_redis']:
+
+        for db in ['sql',
+                   'mongo',
+                   'redis',
+                   'redis_user',
+                   'redis_story',
+                   'redis_session',
+                   'redis_pubsub',
+                   'task_sql',
+                   'task_mongo',
+                   'task_redis',
+                   'task_redis_user',
+                   'task_redis_story',
+                   'task_redis_session',
+                   'task_redis_pubsub',
+                   ]:
             db_times[db] = []
             for hour in range(24):
                 start_hours_ago = now - datetime.timedelta(hours=hour+1)
-    
+
                 pipe = r.pipeline()
                 for m in range(60):
                     minute = start_hours_ago + datetime.timedelta(minutes=m)
@@ -239,9 +253,17 @@ class MStatistics(mongo.Document):
             ('latest_sql_avg',          latest_db_times['sql']),
             ('latest_mongo_avg',        latest_db_times['mongo']),
             ('latest_redis_avg',        latest_db_times['redis']),
+            ('latest_redis_user_avg',   latest_db_times['redis_user']),
+            ('latest_redis_story_avg',  latest_db_times['redis_story']),
+            ('latest_redis_session_avg',latest_db_times['redis_session']),
+            ('latest_redis_pubsub_avg', latest_db_times['redis_pubsub']),
             ('latest_task_sql_avg',     latest_db_times['task_sql']),
             ('latest_task_mongo_avg',   latest_db_times['task_mongo']),
             ('latest_task_redis_avg',   latest_db_times['task_redis']),
+            ('latest_task_redis_user_avg',   latest_db_times['task_redis_user']),
+            ('latest_task_redis_story_avg',  latest_db_times['task_redis_story']),
+            ('latest_task_redis_session_avg',latest_db_times['task_redis_session']),
+            ('latest_task_redis_pubsub_avg', latest_db_times['task_redis_pubsub']),
         )
         for key, value in values:
             cls.objects(key=key).update_one(upsert=True, set__key=key, set__value=value)
