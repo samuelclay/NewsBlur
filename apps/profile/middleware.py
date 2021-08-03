@@ -156,6 +156,8 @@ class SQLLogToConsoleMiddleware:
                     query['sql'] = "~FC%s" % (query['redis_story']['query'])
                 elif query.get('redis_session'):
                     query['sql'] = "~FC%s" % (query['redis_session']['query'])
+                elif query.get('redis_pubsub'):
+                    query['sql'] = "~FC%s" % (query['redis_pubsub']['query'])
                 elif 'sql' not in query:
                     logging.debug(" ***> Query log missing: %s" % query)
                 else:
@@ -177,12 +179,14 @@ class SQLLogToConsoleMiddleware:
                                                not q.get('redis_user') and
                                                not q.get('redis_story') and
                                                not q.get('redis_session') and
+                                               not q.get('redis_pubsub') and
                                                not q.get('db_redis')]),
                 'mongo': sum([float(q['time']) for q in queries if q.get('mongo')]),
                 'db_redis': sum([float(q['time']) for q in queries if q.get('db_redis')]),
                 'redis_user': sum([float(q['time']) for q in queries if q.get('redis_user')]),
                 'redis_story': sum([float(q['time']) for q in queries if q.get('redis_story')]),
                 'redis_session': sum([float(q['time']) for q in queries if q.get('redis_session')]),
+                'redis_pubsub': sum([float(q['time']) for q in queries if q.get('redis_pubsub')]),
             }
             setattr(request, 'sql_times_elapsed', times_elapsed)
         else:
