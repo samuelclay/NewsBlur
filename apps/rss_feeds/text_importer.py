@@ -1,7 +1,7 @@
 import requests
 import urllib3
 import zlib
-import readability
+from vendor import readability
 from simplejson.decoder import JSONDecodeError
 from requests.packages.urllib3.exceptions import LocationParseError
 from socket import error as SocketError
