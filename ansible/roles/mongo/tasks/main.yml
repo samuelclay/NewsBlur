@@ -106,7 +106,7 @@
       - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
       - /var/log/mongodb/:/var/log/mongodb/
       - /opt/mongo/newsblur/backup/:/backup/
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-secondary']
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics'
 
 - name: Register mongo in consul
   tags: consul
