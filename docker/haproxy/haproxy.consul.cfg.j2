@@ -172,14 +172,14 @@ backend mongo
     {% for host in groups.mongo %}
         server {{host}} {{host}}.node.nyc1.consul:5579
     {% endfor %}
-{#
+
 backend mongo_analytics
-    option httpchk GET /db_check/mongo
+    option httpchk GET /db_check/mongo_analytics
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     {% for host in groups.mongo_analytics %}
         server {{host}} {{host}}.node.nyc1.consul:5579
     {% endfor %}
-#}
+
 backend db_redis_user
     option httpchk GET /db_check/redis
     server db-redis-user db-redis-user.node.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
