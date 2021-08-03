@@ -148,6 +148,8 @@ class SQLLogToConsoleMiddleware:
                     query['sql'] = "~FM%s: %s" % (query['mongo']['collection'], query['mongo']['query'])
                 elif query.get('db_redis'):
                     query['sql'] = "~FC%s" % (query['db_redis']['query'])
+                elif query.get('redis'):
+                    query['sql'] = "~FC%s" % (query['redis']['query'])
                 elif query.get('redis_user'):
                     query['sql'] = "~FC%s" % (query['redis_user']['query'])
                 elif query.get('redis_story'):
