@@ -32,11 +32,10 @@
     state: mounted
 
 - name: Copy MongoDB keyfile
-  become: yes
   copy:
     content: "{{ mongodb_keyfile }}"
     dest: /srv/newsblur/config/mongodb_keyfile.key
-    owner: root
+    owner: nb
     mode: 0400
   tags:
     - keyfile
@@ -100,6 +99,7 @@
     ports:
       - "27017:27017"
     command: --config /etc/mongod.conf
+    user: nb:nb
     volumes:
       - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
       - /srv/newsblur/ansible/roles/mongo/templates/mongo.analytics.conf:/etc/mongod.conf

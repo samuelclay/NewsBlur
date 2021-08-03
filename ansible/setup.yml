@@ -10,7 +10,7 @@
 - import_playbook: playbooks/setup_postgres.yml
   when: "'postgres' in group_names"
 - import_playbook: playbooks/setup_mongo.yml
-  when: "'mongo' in group_names"
+  when: "'mongo' in group_names or 'mongo_analytics' in group_names"
 - import_playbook: playbooks/setup_redis.yml
   when: "'redis' in group_names"
 - import_playbook: playbooks/setup_elasticsearch.yml
