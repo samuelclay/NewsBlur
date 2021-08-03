@@ -4,7 +4,7 @@ public class APIConstants {
 
     private APIConstants() {} // util class - no instances
 
-    private static final String DEFAULT_NEWSBLUR_URL_BASE = "https://beta.newsblur.com";
+    private static final String DEFAULT_NEWSBLUR_URL_BASE = "https://newsblur.com";
 
     private static String CurrentUrlBase = DEFAULT_NEWSBLUR_URL_BASE;
 
