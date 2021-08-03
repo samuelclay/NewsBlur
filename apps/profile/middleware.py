@@ -156,6 +156,8 @@ class SQLLogToConsoleMiddleware:
                     query['sql'] = "~FC%s" % (query['redis_story']['query'])
                 elif query.get('redis_session'):
                     query['sql'] = "~FC%s" % (query['redis_session']['query'])
+                elif 'sql' not in query:
+                    logging.debug(" ***> Query log missing: %s" % query)
                 else:
                     query['sql'] = re.sub(r'SELECT (.*?) FROM', 'SELECT * FROM', query['sql'])
                     query['sql'] = re.sub(r'SELECT', '~FYSELECT', query['sql'])
