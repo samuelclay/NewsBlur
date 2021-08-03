@@ -109,7 +109,7 @@ def db_check_mongo():
 @app.route("/db_check/mongo_analytics")
 def db_check_mongo_analytics():
     try:
-        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}/?authSource=admin")
+        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{settings.SERVER_NAME}/?authSource=admin")
         db = client.nbanalytics
     except:
         abort(503)
