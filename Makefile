@@ -85,6 +85,8 @@ apply:
 	terraform -chdir=terraform apply -refresh=false -parallelism=15
 inventory:
 	- ./ansible/utils/generate_inventory.py
+oldinventory:
+	- OLD=1 ./ansible/utils/generate_inventory.py
 
 # Docker
 pull:
