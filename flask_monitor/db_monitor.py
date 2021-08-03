@@ -106,6 +106,28 @@ def db_check_mongo():
 
     return str(stories)
 
+@app.route("/db_check/mongo_analytics")
+def db_check_mongo_analytics():
+    try:
+        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}/?authSource=admin")
+        db = client.nbanalytics
+    except:
+        abort(503)
+    
+    try:
+        fetches = db.feed_fetches.estimated_document_count()
+    except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
+        abort(504)
+    except pymongo.errors.OperationFailure as e:
+        if 'Authentication failed' in str(e):
+            abort(505)
+        abort(506)
+        
+    if not fetches:
+        abort(510)
+    
+    return str(fetches)
+
 @app.route("/db_check/redis_user")
 def db_check_redis_user():
     try:
