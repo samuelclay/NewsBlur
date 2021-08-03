@@ -22,7 +22,7 @@ class DumpRequestMiddleware:
     def process_response(self, request, response):
         if hasattr(request, 'sql_times_elapsed'):
             if request.sql_times_elapsed.get('redis_user'):
-                redis_log = "user:%s%.6f~SNs story:%s%.6f~SNs session:%s%.6f~SNs pubsub:%s%.6f~SNs" % (
+                redis_log = "~FCuser:%s%.6f~SNs ~FCstory:%s%.6f~SNs ~FCsession:%s%.6f~SNs ~FCpubsub:%s%.6f~SNs" % (
                     self.color_db(request.sql_times_elapsed['redis_user'], '~FC'),
                     request.sql_times_elapsed['redis_user'],
                     self.color_db(request.sql_times_elapsed['redis_story'], '~FC'),
