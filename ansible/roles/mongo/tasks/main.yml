@@ -79,6 +79,34 @@
       - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
       - /var/log/mongodb/:/var/log/mongodb/
       - /opt/mongo/newsblur/backup/:/backup/
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-secondary']
+
+- name: Start db-mongo-analytics docker container
+  become: yes
+  docker_container:
+    name: mongo
+    image: mongo:3.6
+    state: started
+    container_default_behavior: no_defaults
+    hostname: "{{ inventory_hostname }}"
+    restart_policy: unless-stopped
+    networks_cli_compatible: yes
+    network_mode: host
+    # network_mode: default
+    # networks:
+    #   - name: newsblurnet
+    #     aliases: 
+    #       - mongo
+    # ports:
+    #   - "27017:27017"
+    command: --config /etc/mongod.conf
+    volumes:
+      - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
+      - /srv/newsblur/ansible/roles/mongo/templates/mongo.analytics.conf:/etc/mongod.conf
+      - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
+      - /var/log/mongodb/:/var/log/mongodb/
+      - /opt/mongo/newsblur/backup/:/backup/
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-secondary']
 
 - name: Register mongo in consul
   tags: consul
@@ -86,7 +114,7 @@
   template:
     src: consul_service.json
     dest: /etc/consul.d/mongo.json
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-secondary'] or inventory_hostname.startswith('db2')
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-secondary']
   notify:
     - reload consul
 
@@ -96,7 +124,7 @@
   template:
     src: consul_service.analytics.json
     dest: /etc/consul.d/mongo.json
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics' or inventory_hostname.startswith('db3')
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics'
   notify:
     - reload consul
 
