@@ -62,12 +62,11 @@ class RedisDumpMiddleware(object):
         for a, arg in enumerate(args):
             if isinstance(arg, Connection):
                 redis_connection = arg
-                redis_server_name = redis_connection.host
                 continue
             if len(str(arg)) > 100:
                 arg = "[%s bytes]" % len(str(arg))
             query.append(str(arg).replace('\n', ''))
-        return { 'query': ' '.join(query), 'redis_server_name': redis_server_name }
+        return { 'query': ' '.join(query), 'redis_server_name': redis_connection.host }
 
     def __call__(self, request):
         response = None
