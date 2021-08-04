@@ -32,11 +32,10 @@
     state: mounted
 
 - name: Copy MongoDB keyfile
-  become: yes
   copy:
     content: "{{ mongodb_keyfile }}"
     dest: /srv/newsblur/config/mongodb_keyfile.key
-    owner: root
+    owner: nb
     mode: 0400
   tags:
     - keyfile
@@ -52,6 +51,7 @@
   file:
     path: /opt/mongo/newsblur/backup/
     state: directory
+    mode: 0666
 
 - name: Start db-mongo docker container
   become: yes
@@ -60,13 +60,17 @@
     image: mongo:3.6
     state: started
     container_default_behavior: no_defaults
+    hostname: "{{ inventory_hostname }}"
     restart_policy: unless-stopped
     networks_cli_compatible: yes
-    network_mode: default
-    networks:
-      - name: newsblurnet
-    ports:
-      - "27017:27017"
+    network_mode: host
+    # network_mode: default
+    # networks:
+    #   - name: newsblurnet
+    #     aliases: 
+    #       - mongo
+    # ports:
+    #   - "27017:27017"
     command: --config /etc/mongod.conf
     volumes:
       - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
@@ -74,6 +78,35 @@
       - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
       - /var/log/mongodb/:/var/log/mongodb/
       - /opt/mongo/newsblur/backup/:/backup/
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-secondary']
+
+- name: Start db-mongo-analytics docker container
+  become: yes
+  docker_container:
+    name: mongo
+    image: mongo:3.6
+    state: started
+    container_default_behavior: no_defaults
+    hostname: "{{ inventory_hostname }}"
+    restart_policy: unless-stopped
+    networks_cli_compatible: yes
+    # network_mode: host
+    network_mode: default
+    networks:
+      - name: newsblurnet
+        aliases: 
+          - mongo
+    ports:
+      - "27017:27017"
+    command: --config /etc/mongod.conf
+    user: 1000:1001
+    volumes:
+      - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
+      - /srv/newsblur/ansible/roles/mongo/templates/mongo.analytics.conf:/etc/mongod.conf
+      - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
+      - /var/log/mongodb/:/var/log/mongodb/
+      - /opt/mongo/newsblur/backup/:/backup/
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics'
 
 - name: Register mongo in consul
   tags: consul
@@ -81,7 +114,7 @@
   template:
     src: consul_service.json
     dest: /etc/consul.d/mongo.json
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-secondary'] or inventory_hostname.startswith('db2')
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-secondary']
   notify:
     - reload consul
 
@@ -91,7 +124,7 @@
   template:
     src: consul_service.analytics.json
     dest: /etc/consul.d/mongo.json
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics' or inventory_hostname.startswith('db3')
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics'
   notify:
     - reload consul
 
@@ -124,3 +157,23 @@
     minute: "0"
     hour: "4"
     job: /srv/newsblur/docker/mongo/backup_mongo.sh
+  when: '"db-mongo-secondary1" in inventory_hostname'
+  tags:
+    - mongo-backup
+
+- name: Add mongo starred_stories+stories backup
+  cron:
+    name: mongo starred/shared/all stories backup
+    minute: "0"
+    hour: "5"
+    job: /srv/newsblur/docker/mongo/backup_mongo_stories.sh
+  when: '"db-mongo-secondary1" in inventory_hostname'
+  tags:
+    - mongo-backup
+
+# Renaming a db-mongo3 to db-mongo2:
+#  - Change hostname to db-mongo2 on Digital Ocean (doctl)
+#  - Change hostname to db-mongo2 in /etc/hostname
+#  - Symlink /mnt/mongo2 to /mnt/mongo3
+#  - tf state mv "digitalocean_droplet.db-mongo-primary[2]" "digitalocean_droplet.db-mongo-primary[1]"
+#  - tf state mv "digitalocean_volume.mongo_volume[2]" "digitalocean_volume.mongo_volume[1]"

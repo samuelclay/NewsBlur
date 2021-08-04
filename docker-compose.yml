@@ -21,8 +21,8 @@ services:
       nofile:
         soft: 10000
         hard: 10000
-    expose:
-      - 8000
+    ports:
+      - 8000:8000
     # only use gunicorn if the TEST env variable is not "True"
     entrypoint: /bin/sh -c newsblur_web/entrypoint.sh
     volumes: 

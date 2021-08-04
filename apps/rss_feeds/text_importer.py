@@ -1,11 +1,11 @@
 import requests
 import urllib3
 import zlib
+from vendor import readability
 from simplejson.decoder import JSONDecodeError
 from requests.packages.urllib3.exceptions import LocationParseError
 from socket import error as SocketError
 from mongoengine.queryset import NotUniqueError
-from vendor.readability import readability
 from lxml.etree import ParserError
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError

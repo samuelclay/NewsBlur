@@ -21,14 +21,29 @@ class DumpRequestMiddleware:
 
     def process_response(self, request, response):
         if hasattr(request, 'sql_times_elapsed'):
-            logging.debug(" ---> %s~SN~FCDB times: ~FYsql: %s%.4f~SNs ~SN~FMmongo: %s%.5f~SNs ~SN~FCredis: %s%.6f~SNs" % (
+            if request.sql_times_elapsed.get('redis_user'):
+                redis_log = "~FCuser:%s%.6f~SNs ~FCstory:%s%.6f~SNs ~FCsession:%s%.6f~SNs ~FCpubsub:%s%.6f~SNs" % (
+                    self.color_db(request.sql_times_elapsed['redis_user'], '~FC'),
+                    request.sql_times_elapsed['redis_user'],
+                    self.color_db(request.sql_times_elapsed['redis_story'], '~FC'),
+                    request.sql_times_elapsed['redis_story'],
+                    self.color_db(request.sql_times_elapsed['redis_session'], '~FC'),
+                    request.sql_times_elapsed['redis_session'],
+                    self.color_db(request.sql_times_elapsed['redis_pubsub'], '~FC'),
+                    request.sql_times_elapsed['redis_pubsub'],
+                )
+            else:
+                redis_log = "%s%.6f~SNs" % (
+                    self.color_db(request.sql_times_elapsed['db_redis'], '~FC'),
+                    request.sql_times_elapsed['db_redis'],
+                )
+            logging.debug(" ---> %s~SN~FCDB times: ~FYsql: %s%.4f~SNs ~SN~FMmongo: %s%.5f~SNs ~SN~FCredis: %s" % (
                 self.elapsed_time(request),
                 self.color_db(request.sql_times_elapsed['sql'], '~FY'),
                 request.sql_times_elapsed['sql'], 
                 self.color_db(request.sql_times_elapsed['mongo'], '~FM'),
                 request.sql_times_elapsed['mongo'],
-                self.color_db(request.sql_times_elapsed['redis'], '~FC'),
-                request.sql_times_elapsed['redis'],
+                redis_log
             ))
 
         return response
@@ -54,6 +69,8 @@ class DumpRequestMiddleware:
             color = '~SB~FR'
         elif seconds > .1:
             color = '~FW'
+        elif seconds == 0:
+            color = '~FK'
         return color
 
     def __init__(self, get_response=None):

@@ -39,11 +39,15 @@ debug:
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker attach ${newsblur}
 log:
 	- RUNWITHMAKEBUILD=True docker-compose logs -f --tail 20 newsblur_web newsblur_node
-	
+logweb: log
+logcelery:
+	- RUNWITHMAKEBUILD=True docker-compose logs -f --tail 20 task_celery
+logtask: logcelery
 logmongo:
 	- RUNWITHMAKEBUILD=True docker-compose logs -f db_mongo
-alllogs:
+alllogs: 
 	- RUNWITHMAKEBUILD=True docker-compose logs -f --tail 20
+logall: alllogs
 # brings down containers
 down:
 	- RUNWITHMAKEBUILD=True docker-compose -f docker-compose.yml down
@@ -81,6 +85,8 @@ apply:
 	terraform -chdir=terraform apply -refresh=false -parallelism=15
 inventory:
 	- ./ansible/utils/generate_inventory.py
+oldinventory:
+	- OLD=1 ./ansible/utils/generate_inventory.py
 
 # Docker
 pull:

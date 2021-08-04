@@ -5,7 +5,7 @@
     name: postgres
     image: postgres:13.1
     state: started
-    hostname: postgres
+    hostname: "{{ inventory_hostname }}"
     env:
       POSTGRES_USER: newsblur
       POSTGRES_PASSWORD: newsblur
