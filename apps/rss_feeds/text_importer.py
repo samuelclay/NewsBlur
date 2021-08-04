@@ -57,6 +57,7 @@ class TextImporter:
         
         if not use_mercury or not results:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY with Mercury, trying readability...", warn_color=False)
+
             results = self.fetch_manually(skip_save=skip_save, return_document=return_document)
         
         return results
@@ -106,10 +107,18 @@ class TextImporter:
         if not resp:
             return
 
+        @timelimit(5)
+        def extract_text(resp):
+            try:
+                text = resp.text
+            except (LookupError, TypeError):
+                text = resp.content
+            return text
         try:
-            text = resp.text
-        except (LookupError, TypeError):
-            text = resp.content
+            text = extract_text(resp)
+        except TimeoutError:
+            logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: timed out on resp.text")
+            return
         
         # if self.debug:
         #     logging.user(self.request, "~FBOriginal text's website: %s" % text)
@@ -227,6 +236,8 @@ class TextImporter:
             headers["content-type"] = "application/json"
             headers["x-api-key"] = mercury_api_key
             domain = Site.objects.get_current().domain
+            if settings.DOCKERBUILD:
+                domain = 'haproxy'
             url = f"https://{domain}/rss_feeds/original_text_fetcher?url={url}"
             
         try:
