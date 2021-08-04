@@ -694,6 +694,8 @@ MONGO_ANALYTICS_DB_DEFAULTS = {
     'name': 'nbanalytics',
     'host': f'db_mongo_analytics:{MONGO_PORT}',
     'alias': 'nbanalytics',
+    'username': 'newsblur',
+    'password': 'newsblur',
 }
 MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
 MONGOANALYTICSDB = connect(db=MONGO_ANALYTICS_DB['name'], host=f"mongodb://{MONGO_ANALYTICS_DB['username']}:{MONGO_ANALYTICS_DB['password']}@{MONGO_ANALYTICS_DB['host']}/?authSource=admin", alias="nbanalytics")
