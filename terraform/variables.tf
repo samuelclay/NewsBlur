@@ -45,3 +45,8 @@ variable "mongo_analytics_droplet_size" {
   type = string
   default = "s-2vcpu-4gb"
 }
+
+variable "elasticsearch_droplet_size" {
+  type = string
+  default = "m3-2vcpu-16gb"
+}

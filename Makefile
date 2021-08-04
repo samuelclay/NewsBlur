@@ -75,6 +75,10 @@ keys:
 # Digital Ocean / Terraform
 list:
 	- doctl -t `cat /srv/secrets-newsblur/keys/digital_ocean.token` compute droplet list
+sizes:
+	- doctl -t `cat /srv/secrets-newsblur/keys/digital_ocean.token` compute size list
+ratelimit:
+	- doctl -t `cat /srv/secrets-newsblur/keys/digital_ocean.token` account ratelimit
 ansible-deps:
 	ansible-galaxy install -p roles -r ansible/roles/requirements.yml --roles-path ansible/roles
 tfrefresh:
