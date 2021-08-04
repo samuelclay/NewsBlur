@@ -665,13 +665,18 @@ class FeedFetcherWorker:
         """Update feed, since it may have changed"""
         return Feed.get_by_id(feed_id)
     
-    def process_feed_wrapper(self, feed_queue):
+    def reset_database_connections(self):
         connection._connections = {}
         connection._connection_settings ={}
         connection._dbs = {}
         settings.MONGODB = connect(settings.MONGO_DB_NAME, **settings.MONGO_DB)
-        settings.MONGOANALYTICSDB = connect(db=settings.MONGO_ANALYTICS_DB['name'], host=f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{settings.MONGO_ANALYTICS_DB['host']}/?authSource=admin", alias="nbanalytics")
+        if 'username' in settings.MONGO_ANALYTICS_DB:
+            settings.MONGOANALYTICSDB = connect(db=settings.MONGO_ANALYTICS_DB['name'], host=f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{settings.MONGO_ANALYTICS_DB['host']}/?authSource=admin", alias="nbanalytics")
+        else:
+            settings.MONGOANALYTICSDB = connect(db=settings.MONGO_ANALYTICS_DB['name'], host=f"mongodb://{settings.MONGO_ANALYTICS_DB['host']}/", alias="nbanalytics")
 
+    def process_feed_wrapper(self, feed_queue):
+        self.reset_database_connections()
         
         delta = None
         current_process = multiprocessing.current_process()
