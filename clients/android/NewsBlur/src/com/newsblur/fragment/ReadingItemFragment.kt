@@ -143,7 +143,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         itemCommentBinding = IncludeReadingItemCommentBinding.bind(binding.root)
 
         val readingActivity = requireActivity() as Reading
-        fs = readingActivity.feedSet
+        fs = readingActivity.fs
 
         selectedViewMode = PrefsUtils.getDefaultViewModeForFeed(readingActivity, story!!.feedId)
 
@@ -282,14 +282,14 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         }
         R.id.menu_reading_save -> {
             if (story!!.starred) {
-                FeedUtils.setStorySaved(story, false, requireContext(), null)
+                FeedUtils.setStorySaved(story!!, false, requireContext(), null)
             } else {
                 FeedUtils.setStorySaved(story!!.storyHash, true, requireContext())
             }
             true
         }
         R.id.menu_reading_markunread -> {
-            FeedUtils.markStoryUnread(story, requireContext())
+            FeedUtils.markStoryUnread(story!!, requireContext())
             true
         }
         R.id.menu_theme_auto -> {
