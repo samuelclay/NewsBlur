@@ -1,16 +1,39 @@
 ---
+- name: Permissions for elasticsearch
+  become: yes
+  file:
+    state: directory
+    mode: 0777
+    path: /var/log/elasticsearch
+
+- name: Make docker network for newsblurnet
+  become: yes
+  docker_network:
+    name: newsblurnet
+  notify: restart docker
+  
 - name: Start Elasticsearch Docker container
   become: yes
   docker_container:
     name: elasticsearch
-    image: elasticsearch:1.7.6
+    image: elasticsearch:7.14.0
     state: started
     hostname: "{{ inventory_hostname }}"
     ports:
       - '9200:9200'
     restart_policy: unless-stopped
+    container_default_behavior: no_defaults
+    networks_cli_compatible: yes
+    # network_mode: host
+    network_mode: default
+    networks:
+      - name: newsblurnet
+        aliases: 
+          - elasticsearch
+    user: 1000:1001
     volumes:
       - /srv/newsblur/docker/volumes/elasticsearch:/usr/share/elasticsearch/data
+      - /var/log/elasticsearch/:/var/log/elasticsearch/
 
 - name: Register elasticsearch in consul
   tags: consul

@@ -287,7 +287,7 @@ resource "digitalocean_droplet" "db-elasticsearch" {
   image    = var.droplet_os
   name     = "db-elasticsearch"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.elasticsearch_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
