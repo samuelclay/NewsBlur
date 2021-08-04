@@ -700,7 +700,7 @@ MONGO_ANALYTICS_DB_NAME = MONGO_ANALYTICS_DB.pop('name')
 # MONGO_ANALYTICS_URI = 'mongodb://%s' % (MONGO_ANALYTICS_DB.pop('host'),)
 # MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), host=MONGO_ANALYTICS_URI, **MONGO_ANALYTICS_DB)
 # MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB_NAME, **MONGO_ANALYTICS_DB)
-MONGOANALYTICSDB = connect(db=MONGO_ANALYTICS_DB['db'], f"mongodb://{MONGO_ANALYTICS_DB['username']}:{MONGO_ANALYTICS_DB['password']}@{MONGO_ANALYTICS_DB['host']}/?authSource=admin", alias="nbanalytics")
+MONGOANALYTICSDB = connect(db=MONGO_ANALYTICS_DB['db'], host=f"mongodb://{MONGO_ANALYTICS_DB['username']}:{MONGO_ANALYTICS_DB['password']}@{MONGO_ANALYTICS_DB['host']}/?authSource=admin", alias="nbanalytics")
 
 # =========
 # = Redis =
