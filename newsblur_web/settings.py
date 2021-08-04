@@ -233,6 +233,10 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'subdomains.middleware': {
+            'level': 'ERROR',
+            'propagate': False,
+        }
     },
     'filters': {
         'require_debug_false': {
@@ -690,12 +694,11 @@ MONGO_ANALYTICS_DB_DEFAULTS = {
     'name': 'nbanalytics',
     'host': f'db_mongo_analytics:{MONGO_PORT}',
     'alias': 'nbanalytics',
+    'username': 'newsblur',
+    'password': 'newsblur',
 }
 MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
-MONGO_ANALYTICS_DB_NAME = MONGO_ANALYTICS_DB.pop('name')
-# MONGO_ANALYTICS_URI = 'mongodb://%s' % (MONGO_ANALYTICS_DB.pop('host'),)
-# MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), host=MONGO_ANALYTICS_URI, **MONGO_ANALYTICS_DB)
-MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB_NAME, **MONGO_ANALYTICS_DB)
+MONGOANALYTICSDB = connect(db=MONGO_ANALYTICS_DB['name'], host=f"mongodb://{MONGO_ANALYTICS_DB['username']}:{MONGO_ANALYTICS_DB['password']}@{MONGO_ANALYTICS_DB['host']}/?authSource=admin", alias="nbanalytics")
 
 # =========
 # = Redis =

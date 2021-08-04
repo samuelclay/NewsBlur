@@ -169,7 +169,8 @@ class FetchFeed:
                                                                                                  len(smart_str(raw_feed.content)), 
                                                                                                  raw_feed.headers))
             except Exception as e:
-                logging.debug("   ***> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.log_title[:30], str(e)[:100]))
+                logging.debug("   ***> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.log_title[:30], str(e)))
+                # raise e
             
             if not self.fpf or self.options.get('force_fp', False):
                 try:
@@ -669,7 +670,8 @@ class FeedFetcherWorker:
         connection._connection_settings ={}
         connection._dbs = {}
         settings.MONGODB = connect(settings.MONGO_DB_NAME, **settings.MONGO_DB)
-        settings.MONGOANALYTICSDB = connect(settings.MONGO_ANALYTICS_DB_NAME, **settings.MONGO_ANALYTICS_DB)
+        settings.MONGOANALYTICSDB = connect(db=settings.MONGO_ANALYTICS_DB['name'], host=f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{settings.MONGO_ANALYTICS_DB['host']}/?authSource=admin", alias="nbanalytics")
+
         
         delta = None
         current_process = multiprocessing.current_process()

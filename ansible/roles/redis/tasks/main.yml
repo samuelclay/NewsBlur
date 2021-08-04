@@ -5,6 +5,7 @@
     name: redis
     image: redis:6.2.1
     state: started
+    hostname: "{{ inventory_hostname }}"
     ports:
       - 6379:6379
     restart_policy: unless-stopped

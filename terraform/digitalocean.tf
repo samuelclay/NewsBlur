@@ -254,12 +254,24 @@ resource "digitalocean_droplet" "node-images" {
   }
 }
 
+
+resource "digitalocean_volume" "node_page_volume" {
+  count                   = 0
+  region                  = "nyc1"
+  name                    = "nodepage"
+  size                    = 100
+  initial_filesystem_type = "ext4"
+  description             = "Original Pages for NewsBlur"
+}
+
 resource "digitalocean_droplet" "node-page" {
   image    = var.droplet_os
   name     = "node-page"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  # volume_ids = [digitalocean_volume.node_page_volume.0.id] 
+  volume_ids = ["70b5a115-eb5c-11eb-81b7-0a58ac144312"] # 100GB volume created outside TF. Remove when upgrading to 200GB
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
@@ -374,7 +386,7 @@ resource "digitalocean_droplet" "db-postgres" {
 }
 
 resource "digitalocean_volume" "mongo_volume" {
-  count                   = 1
+  count                   = 2
   region                  = "nyc1"
   name                    = "mongo${count.index+1}"
   size                    = 400
@@ -383,7 +395,7 @@ resource "digitalocean_volume" "mongo_volume" {
 }
 
 resource "digitalocean_droplet" "db-mongo-primary" {
-  count    = 1
+  count    = 2
   image    = var.droplet_os
   name     = "db-mongo${count.index+1}"
   region   = var.droplet_region

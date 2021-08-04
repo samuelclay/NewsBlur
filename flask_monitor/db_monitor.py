@@ -67,18 +67,23 @@ def db_check_mysql():
 @app.route("/db_check/mongo")
 def db_check_mongo():
     try:
-        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.MONGO_DOCKER_IP}/?authSource=admin")
+        # The `mongo` hostname below is a reference to the newsblurnet docker network, where 172.18.0.0/16 is defined
+        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}/?authSource=admin")
         db = client.newsblur
     except:
         abort(503)
     
     try:
-        stories = db.stories.count()
+        stories = db.stories.estimated_document_count()
     except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
         abort(504)
-
+    except pymongo.errors.OperationFailure as e:
+        if 'Authentication failed' in str(e):
+            abort(505)
+        abort(506)
+        
     if not stories:
-        abort(504)
+        abort(510)
     
     status = client.admin.command('replSetGetStatus')
     members = status['members']
@@ -94,12 +99,34 @@ def db_check_mongo():
                 oldest_secondary_optime = optime['ts'].time
 
     if not primary_optime or not oldest_secondary_optime:
-        abort(505)
+        abort(511)
 
-    if primary_optime - oldest_secondary_optime > 100:
-        abort(506)
+    # if primary_optime - oldest_secondary_optime > 100:
+    #     abort(512)
 
     return str(stories)
+
+@app.route("/db_check/mongo_analytics")
+def db_check_mongo_analytics():
+    try:
+        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{settings.SERVER_NAME}/?authSource=admin")
+        db = client.nbanalytics
+    except:
+        abort(503)
+    
+    try:
+        fetches = db.feed_fetches.estimated_document_count()
+    except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
+        abort(504)
+    except pymongo.errors.OperationFailure as e:
+        if 'Authentication failed' in str(e):
+            abort(505)
+        abort(506)
+        
+    if not fetches:
+        abort(510)
+    
+    return str(fetches)
 
 @app.route("/db_check/redis_user")
 def db_check_redis_user():

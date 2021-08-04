@@ -5,6 +5,7 @@
     name: elasticsearch
     image: elasticsearch:1.7.6
     state: started
+    hostname: "{{ inventory_hostname }}"
     ports:
       - '9200:9200'
     restart_policy: unless-stopped
