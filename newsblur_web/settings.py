@@ -34,7 +34,7 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 import django.http
 import re
 from mongoengine import connect
-from boto.s3.connection import S3Connection, OrdinaryCallingFormat
+import boto3
 from utils import jammit
 
 # ===================
@@ -778,11 +778,11 @@ JAMMIT = jammit.JammitAssets(ROOT_DIR)
 
 S3_CONN = None
 if BACKED_BY_AWS.get('pages_on_s3') or BACKED_BY_AWS.get('icons_on_s3'):
-    S3_CONN = S3Connection(S3_ACCESS_KEY, S3_SECRET, calling_format=OrdinaryCallingFormat())
-    # if BACKED_BY_AWS.get('pages_on_s3'):
-    #     S3_PAGES_BUCKET = S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME)
-    # if BACKED_BY_AWS.get('icons_on_s3'):
-    #     S3_ICONS_BUCKET = S3_CONN.get_bucket(S3_ICONS_BUCKET_NAME)
+    boto_session = boto3.Session(
+        aws_access_key_id=S3_ACCESS_KEY,
+        aws_secret_access_key=S3_SECRET,
+    )
+    S3_CONN = boto_session.resource('s3')
 
 django.http.request.host_validation_re = re.compile(r"^([a-z0-9.-_\-]+|\[[a-f0-9]*:[a-f0-9:]+\])(:\d+)?$")
 

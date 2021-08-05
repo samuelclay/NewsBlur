@@ -1,6 +1,5 @@
 import datetime
 import time
-import boto
 import redis
 import requests
 import random
@@ -890,9 +889,9 @@ def load_feed_page(request, feed_id):
         
         if settings.BACKED_BY_AWS['pages_on_s3'] and feed.s3_page:
             if settings.PROXY_S3_PAGES:
-                key = settings.S3_CONN.get_bucket(settings.S3_PAGES_BUCKET_NAME).get_key(feed.s3_pages_key)
+                key = settings.S3_CONN.Bucket(settings.S3_PAGES_BUCKET_NAME).Object(key=feed.s3_pages_key)
                 if key:
-                    compressed_data = key.get_contents_as_string()
+                    compressed_data = key.get()["Body"]
                     response = HttpResponse(compressed_data, content_type="text/html; charset=utf-8")
                     response['Content-Encoding'] = 'gzip'
             
@@ -2704,11 +2703,11 @@ def send_story_email(request):
                                          cc=cc,
                                          headers={'Reply-To': "%s <%s>" % (from_name, from_email)})
         msg.attach_alternative(html, "text/html")
-        try:
-            msg.send()
-        except boto.ses.connection.BotoServerError as e:
-            code = -1
-            message = "Email error: %s" % str(e)
+        # try:
+        msg.send()
+        # except boto.ses.connection.BotoServerError as e:
+        #     code = -1
+        #     message = "Email error: %s" % str(e)
         
         share_user_profile.save_sent_email()
         
