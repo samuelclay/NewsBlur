@@ -6,7 +6,6 @@ import redis
 from newsblur_web.celeryapp import app
 from celery.exceptions import SoftTimeLimitExceeded
 from utils import log as logging
-from utils import s3_utils as s3
 from django.conf import settings
 from apps.profile.middleware import DBProfilerMiddleware
 from utils.mongo_raw_log_middleware import MongoDumpMiddleware
