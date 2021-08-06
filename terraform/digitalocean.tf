@@ -287,7 +287,7 @@ resource "digitalocean_droplet" "db-elasticsearch" {
   image    = var.droplet_os
   name     = "db-elasticsearch"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.elasticsearch_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -441,22 +441,32 @@ resource "digitalocean_droplet" "db-mongo-secondary" {
   }
 }
 
-# resource "digitalocean_droplet" "db-mongo-analytics" {
-#   image    = var.droplet_os
-#   name     = "db-mongo-analytics"
-#   region   = var.droplet_region
-#   size     = var.droplet_size
-#   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
-#   provisioner "local-exec" {
-#     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
-#   }
-#   provisioner "local-exec" {
-#     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
-#   }
-#   provisioner "local-exec" {
-#     command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
-#   }
-# }
+resource "digitalocean_volume" "mongo_analytics_volume" {
+  count                   = 1
+  region                  = "nyc1"
+  name                    = "mongoanalytics"
+  size                    = 100
+  initial_filesystem_type = "xfs"
+  description             = "Storage for NewsBlur MongoDB Analytics"
+}
+
+resource "digitalocean_droplet" "db-mongo-analytics" {
+  image    = var.droplet_os
+  name     = "db-mongo-analytics"
+  region   = var.droplet_region
+  size     = var.mongo_analytics_droplet_size
+  volume_ids = [digitalocean_volume.mongo_analytics_volume.0.id] 
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+  }
+}
 
 resource "digitalocean_volume" "metrics_volume" {
   count                   = 0

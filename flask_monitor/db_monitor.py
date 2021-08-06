@@ -8,6 +8,16 @@ import elasticsearch
 
 from newsblur_web import settings
 
+import sentry_sdk
+from flask import Flask
+from sentry_sdk.integrations.flask import FlaskIntegration
+
+sentry_sdk.init(
+    dsn=settings.FLASK_SENTRY_DSN,
+    integrations=[FlaskIntegration()],
+    traces_sample_rate=1.0,
+)
+
 app = Flask(__name__)
 
 PRIMARY_STATE = 1
@@ -131,7 +141,7 @@ def db_check_mongo_analytics():
 @app.route("/db_check/redis_user")
 def db_check_redis_user():
     try:
-        r = redis.Redis('db-redis-user.server.nyc1.consul', db=0)
+        r = redis.Redis('db-redis-user.service.nyc1.consul', db=0)
     except:
         abort(503)
     
@@ -148,7 +158,7 @@ def db_check_redis_user():
 @app.route("/db_check/redis_story")
 def db_check_redis_story():
     try:
-        r = redis.Redis('db-redis-story.server.nyc1.consul', db=1)
+        r = redis.Redis('db-redis-story.service.nyc1.consul', db=1)
     except:
         abort(503)
     
@@ -165,7 +175,7 @@ def db_check_redis_story():
 @app.route("/db_check/redis_sessions")
 def db_check_redis_sessions():
     try:
-        r = redis.Redis('db-redis-sessions.server.nyc1.consul', db=5)
+        r = redis.Redis('db-redis-sessions.service.nyc1.consul', db=5)
     except:
         abort(503)
     
@@ -182,7 +192,7 @@ def db_check_redis_sessions():
 @app.route("/db_check/redis_pubsub")
 def db_check_redis_pubsub():
     try:
-        r = redis.Redis('db-redis-pubsub.server.nyc1.consul', db=1)
+        r = redis.Redis('db-redis-pubsub.service.nyc1.consul', db=1)
     except:
         abort(503)
     
@@ -199,7 +209,7 @@ def db_check_redis_pubsub():
 @app.route("/db_check/elasticsearch")
 def db_check_elasticsearch():
     try:
-        conn = elasticsearch.Elasticsearch('elasticsearch')
+        conn = elasticsearch.Elasticsearch('db-elasticsearch.service.nyc1.consul')
     except:
         abort(503)
     
