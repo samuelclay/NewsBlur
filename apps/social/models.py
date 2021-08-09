@@ -161,6 +161,9 @@ class MSocialProfile(mongo.Document):
             profile = cls.objects.create(user_id=user_id)
             profile.save()
 
+        if not profile.username:
+            profile.save()
+
         return profile
     
     @property
@@ -171,6 +174,8 @@ class MSocialProfile(mongo.Document):
             return None
 
     def save(self, *args, **kwargs):
+        if not self.username:
+            self.import_user_fields()
         if not self.subscription_count:
             self.count_follows(skip_save=True)
         if self.bio and len(self.bio) > MSocialProfile.bio.max_length:
@@ -432,6 +437,11 @@ class MSocialProfile(mongo.Document):
         if self.user_id in self.follower_user_ids:
             return [u for u in self.follower_user_ids if u != self.user_id]
         return self.follower_user_ids
+        
+    def import_user_fields(self):
+        user = User.objects.get(pk=self.user_id)
+        self.username = user.username
+        self.email = user.email
         
     def count_follows(self, skip_save=False):
         self.subscription_count = UserSubscription.objects.filter(user__pk=self.user_id).count()
