@@ -14,7 +14,7 @@ class NotifySaveReceiver : BroadcastReceiver() {
         GlobalScope.executeAsyncTask(
                 doInBackground = {
                     FeedUtils.offerInitContext(c)
-                    FeedUtils.dbHelper.putStoryDismissed(storyHash)
+                    FeedUtils.dbHelper!!.putStoryDismissed(storyHash)
                     FeedUtils.setStorySaved(storyHash, true, c)
                 }
         )

@@ -14,7 +14,7 @@ class NotifyMarkreadReceiver : BroadcastReceiver() {
         GlobalScope.executeAsyncTask(
                 doInBackground = {
                     FeedUtils.offerInitContext(c)
-                    FeedUtils.dbHelper.putStoryDismissed(storyHash)
+                    FeedUtils.dbHelper!!.putStoryDismissed(storyHash)
                     FeedUtils.setStoryReadStateExternal(storyHash, c, true)
                 }
         )

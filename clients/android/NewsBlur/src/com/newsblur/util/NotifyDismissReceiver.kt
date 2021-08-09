@@ -13,7 +13,7 @@ class NotifyDismissReceiver : BroadcastReceiver() {
         GlobalScope.executeAsyncTask(
                 doInBackground = {
                     FeedUtils.offerInitContext(c)
-                    FeedUtils.dbHelper.putStoryDismissed(storyHash)
+                    FeedUtils.dbHelper!!.putStoryDismissed(storyHash)
                 }
         )
     }

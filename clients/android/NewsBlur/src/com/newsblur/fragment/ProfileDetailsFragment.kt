@@ -69,7 +69,7 @@ class ProfileDetailsFragment : Fragment() {
         binding.profileUserStatistics.profileFollowercount.text = user!!.followerCount.toString()
         binding.profileUserStatistics.profileFollowingcount.text = user!!.followingCount.toString()
         if (!viewingSelf) {
-            FeedUtils.iconLoader.displayImage(user!!.photoUrl, binding.profilePicture, false)
+            FeedUtils.iconLoader!!.displayImage(user!!.photoUrl, binding.profilePicture, false)
             if (user!!.followedByYou) {
                 binding.profileUnfollowButton.visibility = View.VISIBLE
                 binding.profileFollowButton.visibility = View.GONE
