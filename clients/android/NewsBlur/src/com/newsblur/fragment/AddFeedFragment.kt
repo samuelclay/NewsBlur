@@ -61,7 +61,7 @@ class AddFeedFragment : DialogFragment() {
         }
         binding.recyclerViewFolders.addItemDecoration(DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL))
         binding.recyclerViewFolders.adapter = adapter
-        adapter.setFolders(FeedUtils.dbHelper.folders)
+        adapter.setFolders(FeedUtils.dbHelper!!.folders)
         return builder.create()
     }
 

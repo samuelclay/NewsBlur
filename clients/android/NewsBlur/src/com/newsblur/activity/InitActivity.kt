@@ -58,7 +58,7 @@ class InitActivity : AppCompatActivity() {
     private fun upgradeCheck() {
         val upgrade = PrefsUtils.checkForUpgrade(this)
         if (upgrade) {
-            FeedUtils.dbHelper.dropAndRecreateTables()
+            FeedUtils.dbHelper!!.dropAndRecreateTables()
             // don't actually unset the upgrade flag, the sync service will do this same check and
             // update everything
         }

@@ -390,7 +390,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             binding.readingFeedTitle.visibility = View.GONE
             binding.readingFeedIcon.visibility = View.GONE
         } else {
-            FeedUtils.iconLoader.displayImage(feedIconUrl, binding.readingFeedIcon, false)
+            FeedUtils.iconLoader!!.displayImage(feedIconUrl, binding.readingFeedIcon, false)
             binding.readingFeedTitle.text = feedTitle
         }
 
@@ -611,7 +611,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             setupItemCommentsAndShares()
         }
         if (updateType and NbActivity.UPDATE_INTEL != 0) {
-            classifier = FeedUtils.dbHelper.getClassifierForFeed(story!!.feedId)
+            classifier = FeedUtils.dbHelper!!.getClassifierForFeed(story!!.feedId)
             setupTagsAndIntel()
         }
     }
@@ -790,7 +790,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         val imageTagMatcher = imgSniff.matcher(html)
         while (imageTagMatcher.find()) {
             val url = imageTagMatcher.group(2)
-            val localPath = FeedUtils.storyImageCache.getCachedLocation(url) ?: continue
+            val localPath = FeedUtils.storyImageCache!!.getCachedLocation(url) ?: continue
             html = html.replace(imageTagMatcher.group(1) + "\"" + url + "\"", "src=\"$localPath\"")
             imageUrlRemaps!![localPath] = url
         }
