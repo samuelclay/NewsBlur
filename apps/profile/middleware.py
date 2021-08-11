@@ -146,15 +146,27 @@ class SQLLogToConsoleMiddleware:
             for query in queries:
                 if query.get('mongo'):
                     query['sql'] = "~FM%s: %s" % (query['mongo']['collection'], query['mongo']['query'])
+                elif query.get('db_redis'):
+                    query['sql'] = "~FC%s" % (query['db_redis']['query'])
                 elif query.get('redis'):
                     query['sql'] = "~FC%s" % (query['redis']['query'])
+                elif query.get('redis_user'):
+                    query['sql'] = "~FC%s" % (query['redis_user']['query'])
+                elif query.get('redis_story'):
+                    query['sql'] = "~FC%s" % (query['redis_story']['query'])
+                elif query.get('redis_session'):
+                    query['sql'] = "~FC%s" % (query['redis_session']['query'])
+                elif query.get('redis_pubsub'):
+                    query['sql'] = "~FC%s" % (query['redis_pubsub']['query'])
+                elif 'sql' not in query:
+                    logging.debug(" ***> Query log missing: %s" % query)
                 else:
                     query['sql'] = re.sub(r'SELECT (.*?) FROM', 'SELECT * FROM', query['sql'])
                     query['sql'] = re.sub(r'SELECT', '~FYSELECT', query['sql'])
                     query['sql'] = re.sub(r'INSERT', '~FGINSERT', query['sql'])
                     query['sql'] = re.sub(r'UPDATE', '~FY~SBUPDATE', query['sql'])
                     query['sql'] = re.sub(r'DELETE', '~FR~SBDELETE', query['sql'])
-            if settings.DEBUG and settings.DEBUG_QUERIES:
+            if settings.DEBUG and settings.DEBUG_QUERIES and not getattr(settings, 'DEBUG_QUERIES_SUMMARY_ONLY', False):
                 t = Template("{% for sql in sqllog %}{% if not forloop.first %}                  {% endif %}[{{forloop.counter}}] ~FC{{sql.time}}s~FW: {{sql.sql|safe}}{% if not forloop.last %}\n{% endif %}{% endfor %}")
                 logging.debug(t.render(Context({
                     'sqllog': queries,
@@ -164,9 +176,17 @@ class SQLLogToConsoleMiddleware:
             times_elapsed = {
                 'sql': sum([float(q['time']) 
                            for q in queries if not q.get('mongo') and 
-                                               not q.get('redis')]),
+                                               not q.get('redis_user') and
+                                               not q.get('redis_story') and
+                                               not q.get('redis_session') and
+                                               not q.get('redis_pubsub') and
+                                               not q.get('db_redis')]),
                 'mongo': sum([float(q['time']) for q in queries if q.get('mongo')]),
-                'redis': sum([float(q['time']) for q in queries if q.get('redis')]),
+                'db_redis': sum([float(q['time']) for q in queries if q.get('db_redis')]),
+                'redis_user': sum([float(q['time']) for q in queries if q.get('redis_user')]),
+                'redis_story': sum([float(q['time']) for q in queries if q.get('redis_story')]),
+                'redis_session': sum([float(q['time']) for q in queries if q.get('redis_session')]),
+                'redis_pubsub': sum([float(q['time']) for q in queries if q.get('redis_pubsub')]),
             }
             setattr(request, 'sql_times_elapsed', times_elapsed)
         else:

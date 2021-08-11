@@ -20,12 +20,14 @@ rebuild:
 
 #creates newsblur, builds new images, and creates/refreshes SSL keys
 nb: pull
-	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
 	- [[ -d config/certificates ]] && echo "keys exist" || make keys
 	- cd node && npm install & cd ..
 	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d --build --remove-orphans
 	- RUNWITHMAKEBUILD=True docker-compose exec newsblur_web ./manage.py migrate
 	- RUNWITHMAKEBUILD=True docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
+coffee:
+	- coffee -c -w **/*.coffee
 
 shell:
 	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web ./manage.py shell_plus
@@ -37,11 +39,15 @@ debug:
 	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker attach ${newsblur}
 log:
 	- RUNWITHMAKEBUILD=True docker-compose logs -f --tail 20 newsblur_web newsblur_node
-
+logweb: log
+logcelery:
+	- RUNWITHMAKEBUILD=True docker-compose logs -f --tail 20 task_celery
+logtask: logcelery
 logmongo:
 	- RUNWITHMAKEBUILD=True docker-compose logs -f db_mongo
-alllogs:
+alllogs: 
 	- RUNWITHMAKEBUILD=True docker-compose logs -f --tail 20
+logall: alllogs
 # brings down containers
 down:
 	- RUNWITHMAKEBUILD=True docker-compose -f docker-compose.yml down
@@ -69,6 +75,10 @@ keys:
 # Digital Ocean / Terraform
 list:
 	- doctl -t `cat /srv/secrets-newsblur/keys/digital_ocean.token` compute droplet list
+sizes:
+	- doctl -t `cat /srv/secrets-newsblur/keys/digital_ocean.token` compute size list
+ratelimit:
+	- doctl -t `cat /srv/secrets-newsblur/keys/digital_ocean.token` account ratelimit
 ansible-deps:
 	ansible-galaxy install -p roles -r ansible/roles/requirements.yml --roles-path ansible/roles
 tfrefresh:
@@ -79,6 +89,8 @@ apply:
 	terraform -chdir=terraform apply -refresh=false -parallelism=15
 inventory:
 	- ./ansible/utils/generate_inventory.py
+oldinventory:
+	- OLD=1 ./ansible/utils/generate_inventory.py
 
 # Docker
 pull:

@@ -2827,6 +2827,8 @@ class MStory(mongo.Document):
                 continue
             if image_url and len(image_url) >= 1024:
                 continue
+            if 'feedburner.com' in image_url:
+                continue
             image_url = urllib.parse.urljoin(self.story_permalink, image_url)
             image_urls.append(image_url)
                 

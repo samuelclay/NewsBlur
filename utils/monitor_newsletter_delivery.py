@@ -19,14 +19,13 @@ def main():
     delivered = stats['delivered']['total']
     accepted = stats['delivered']['total']
     bounced = stats['failed']['permanent']['total'] + stats['failed']['temporary']['total']
-    if True:
-    #if bounced / float(delivered) > 0.5:
+    if bounced / float(delivered) > 0.5:
         requests.post(
                 "https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_SERVER_NAME,
                 auth=("api", settings.MAILGUN_ACCESS_KEY),
                 data={"from": "NewsBlur Newsletter Monitor: %s <admin@%s.newsblur.com>" % (hostname, hostname),
                       "to": [admin_email],
-                      "subject": "%s newsletters bounced: %s/%s accepted/delivered -> %s bounced" % (hostname, accepted, delivered, bounced),
+                      "subject": "%s newsletters bounced (2h): %s/%s accepted/delivered -> %s bounced" % (hostname, accepted, delivered, bounced),
                       "text": "Newsletters are not being delivered! %s delivered, %s bounced" % (delivered, bounced)})
         print(" ---> %s newsletters bounced: %s > %s > %s" % (hostname, accepted, delivered, bounced))
     else:

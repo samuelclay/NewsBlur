@@ -8,6 +8,16 @@ import elasticsearch
 
 from newsblur_web import settings
 
+import sentry_sdk
+from flask import Flask
+from sentry_sdk.integrations.flask import FlaskIntegration
+
+sentry_sdk.init(
+    dsn=settings.FLASK_SENTRY_DSN,
+    integrations=[FlaskIntegration()],
+    traces_sample_rate=1.0,
+)
+
 app = Flask(__name__)
 
 PRIMARY_STATE = 1
@@ -19,7 +29,7 @@ def db_check_postgres():
         settings.DATABASES['default']['NAME'],
         settings.DATABASES['default']['USER'],
         settings.DATABASES['default']['PASSWORD'],
-        'postgres',
+        'db-postgres.service.nyc1.consul',
         settings.DATABASES['default']['PORT'],
     )
     try:
@@ -67,18 +77,23 @@ def db_check_mysql():
 @app.route("/db_check/mongo")
 def db_check_mongo():
     try:
-        client = pymongo.MongoClient('mongodb://mongo')
+        # The `mongo` hostname below is a reference to the newsblurnet docker network, where 172.18.0.0/16 is defined
+        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}/?authSource=admin")
         db = client.newsblur
     except:
         abort(503)
     
     try:
-        stories = db.stories.count()
+        stories = db.stories.estimated_document_count()
     except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
         abort(504)
-
+    except pymongo.errors.OperationFailure as e:
+        if 'Authentication failed' in str(e):
+            abort(505)
+        abort(506)
+        
     if not stories:
-        abort(504)
+        abort(510)
     
     status = client.admin.command('replSetGetStatus')
     members = status['members']
@@ -88,40 +103,45 @@ def db_check_mongo():
         member_state = member['state']
         optime = member['optime']
         if member_state == PRIMARY_STATE:
-            primary_optime = optime.time
+            primary_optime = optime['ts'].time
         elif member_state == SECONDARY_STATE:
-            if not oldest_secondary_optime or optime.time < oldest_secondary_optime:
-                oldest_secondary_optime = optime.time
+            if not oldest_secondary_optime or optime['ts'].time < oldest_secondary_optime:
+                oldest_secondary_optime = optime['ts'].time
 
     if not primary_optime or not oldest_secondary_optime:
-        abort(505)
+        abort(511)
 
-    if primary_optime - oldest_secondary_optime > 100:
-        abort(506)
+    # if primary_optime - oldest_secondary_optime > 100:
+    #     abort(512)
 
     return str(stories)
 
-@app.route("/db_check/redis")
-def db_check_redis():
+@app.route("/db_check/mongo_analytics")
+def db_check_mongo_analytics():
     try:
-        r = redis.Redis('redis', db=0)
+        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{settings.SERVER_NAME}/?authSource=admin")
+        db = client.nbanalytics
     except:
         abort(503)
     
     try:
-        randkey = r.randomkey()
-    except:
+        fetches = db.feed_fetches.estimated_document_count()
+    except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
         abort(504)
-
-    if randkey:
-        return str(randkey)
-    else:
-        abort(505)
+    except pymongo.errors.OperationFailure as e:
+        if 'Authentication failed' in str(e):
+            abort(505)
+        abort(506)
+        
+    if not fetches:
+        abort(510)
+    
+    return str(fetches)
 
 @app.route("/db_check/redis_user")
 def db_check_redis_user():
     try:
-        r = redis.Redis('redis', db=0)
+        r = redis.Redis('db-redis-user.service.nyc1.consul', db=0)
     except:
         abort(503)
     
@@ -138,7 +158,7 @@ def db_check_redis_user():
 @app.route("/db_check/redis_story")
 def db_check_redis_story():
     try:
-        r = redis.Redis('redis', db=1)
+        r = redis.Redis('db-redis-story.service.nyc1.consul', db=1)
     except:
         abort(503)
     
@@ -155,7 +175,7 @@ def db_check_redis_story():
 @app.route("/db_check/redis_sessions")
 def db_check_redis_sessions():
     try:
-        r = redis.Redis('redis', db=5)
+        r = redis.Redis('db-redis-sessions.service.nyc1.consul', db=5)
     except:
         abort(503)
     
@@ -172,7 +192,7 @@ def db_check_redis_sessions():
 @app.route("/db_check/redis_pubsub")
 def db_check_redis_pubsub():
     try:
-        r = redis.Redis('redis', db=1)
+        r = redis.Redis('db-redis-pubsub.service.nyc1.consul', db=1)
     except:
         abort(503)
     
@@ -189,7 +209,7 @@ def db_check_redis_pubsub():
 @app.route("/db_check/elasticsearch")
 def db_check_elasticsearch():
     try:
-        conn = elasticsearch.Elasticsearch('elasticsearch')
+        conn = elasticsearch.Elasticsearch('db-elasticsearch.service.nyc1.consul')
     except:
         abort(503)
     

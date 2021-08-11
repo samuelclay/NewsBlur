@@ -1,3 +1,0 @@
-"""
-See commands sub-module.
-"""

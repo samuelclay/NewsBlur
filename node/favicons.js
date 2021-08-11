@@ -7,11 +7,13 @@
   log = require('./log.js');
 
   favicons = (app) => {
-    var ENV_DEBUG, ENV_DEV, ENV_DOCKER, ENV_PROD, MONGODB_PORT, MONGODB_SERVER, url;
+    var ENV_DEBUG, ENV_DEV, ENV_DOCKER, ENV_PROD, MONGODB_PASSWORD, MONGODB_PORT, MONGODB_SERVER, MONGODB_USERNAME, url;
     ENV_DEBUG = process.env.NODE_ENV === 'debug';
     ENV_DEV = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'development';
     ENV_PROD = process.env.NODE_ENV === 'production';
     ENV_DOCKER = process.env.NODE_ENV === 'docker';
+    MONGODB_USERNAME = process.env.MONGODB_USERNAME;
+    MONGODB_PASSWORD = process.env.MONGODB_PASSWORD;
     MONGODB_SERVER = "db_mongo";
     if (ENV_DEV) {
       MONGODB_SERVER = 'localhost';
@@ -33,7 +35,7 @@
       log.debug("Running as production server");
     }
     if (ENV_PROD) {
-      url = `mongodb://${MONGODB_SERVER}:${MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred`;
+      url = `mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_SERVER}:${MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred&authSource=admin`;
     } else {
       url = `mongodb://${MONGODB_SERVER}:${MONGODB_PORT}/newsblur`;
     }

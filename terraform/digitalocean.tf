@@ -117,7 +117,7 @@ resource "digitalocean_droplet" "app-push" {
 }
 
 resource "digitalocean_droplet" "app-refresh" {
-  count    = 2
+  count    = 8
   image    = var.droplet_os
   name     = "app-refresh${count.index+1}"
   region   = var.droplet_region
@@ -254,12 +254,24 @@ resource "digitalocean_droplet" "node-images" {
   }
 }
 
+
+resource "digitalocean_volume" "node_page_volume" {
+  count                   = 0
+  region                  = "nyc1"
+  name                    = "nodepage"
+  size                    = 100
+  initial_filesystem_type = "ext4"
+  description             = "Original Pages for NewsBlur"
+}
+
 resource "digitalocean_droplet" "node-page" {
   image    = var.droplet_os
   name     = "node-page"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  # volume_ids = [digitalocean_volume.node_page_volume.0.id] 
+  volume_ids = ["70b5a115-eb5c-11eb-81b7-0a58ac144312"] # 100GB volume created outside TF. Remove when upgrading to 200GB
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
@@ -275,7 +287,7 @@ resource "digitalocean_droplet" "db-elasticsearch" {
   image    = var.droplet_os
   name     = "db-elasticsearch"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.elasticsearch_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -374,7 +386,7 @@ resource "digitalocean_droplet" "db-postgres" {
 }
 
 resource "digitalocean_volume" "mongo_volume" {
-  count                   = 1
+  count                   = 2
   region                  = "nyc1"
   name                    = "mongo${count.index+1}"
   size                    = 400
@@ -383,7 +395,7 @@ resource "digitalocean_volume" "mongo_volume" {
 }
 
 resource "digitalocean_droplet" "db-mongo-primary" {
-  count    = 1
+  count    = 2
   image    = var.droplet_os
   name     = "db-mongo${count.index+1}"
   region   = var.droplet_region
@@ -429,28 +441,49 @@ resource "digitalocean_droplet" "db-mongo-secondary" {
   }
 }
 
-# resource "digitalocean_droplet" "db-mongo-analytics" {
-#   image    = var.droplet_os
-#   name     = "db-mongo-analytics"
-#   region   = var.droplet_region
-#   size     = var.droplet_size
-#   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
-#   provisioner "local-exec" {
-#     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
-#   }
-#   provisioner "local-exec" {
-#     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
-#   }
-#   provisioner "local-exec" {
-#     command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
-#   }
-# }
+resource "digitalocean_volume" "mongo_analytics_volume" {
+  count                   = 1
+  region                  = "nyc1"
+  name                    = "mongoanalytics"
+  size                    = 100
+  initial_filesystem_type = "xfs"
+  description             = "Storage for NewsBlur MongoDB Analytics"
+}
+
+resource "digitalocean_droplet" "db-mongo-analytics" {
+  image    = var.droplet_os
+  name     = "db-mongo-analytics"
+  region   = var.droplet_region
+  size     = var.mongo_analytics_droplet_size
+  volume_ids = [digitalocean_volume.mongo_analytics_volume.0.id] 
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+  }
+}
+
+resource "digitalocean_volume" "metrics_volume" {
+  count                   = 0
+  region                  = "nyc1"
+  name                    = "metrics"
+  size                    = 100
+  initial_filesystem_type = "xfs"
+  description             = "Storage for NewsBlur Prometheus metrics"
+}
 
 resource "digitalocean_droplet" "db-metrics" {
   image    = var.droplet_os
   name     = "db-metrics"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.metrics_droplet_size
+  # volume_ids = [digitalocean_volume.metrics_volume.0.id] 
+  volume_ids = ["f815908f-e1b7-11eb-a10f-0a58ac145428"] # 100GB volume created outside TF. Remove when upgrading to 200GB
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"

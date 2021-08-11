@@ -4,7 +4,6 @@ import html
 import redis
 import re
 import mongoengine as mongo
-from boto.ses.connection import BotoServerError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -22,7 +21,7 @@ from utils import mongoengine_fields
 from apns2.errors import BadDeviceToken, Unregistered
 from apns2.client import APNsClient
 from apns2.payload import Payload
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup
 import urllib.parse
 
 class NotificationFrequency(enum.Enum):
@@ -311,11 +310,11 @@ class MUserFeedNotification(mongo.Document):
                                          from_email='NewsBlur <%s>' % from_address,
                                          to=[to_address])
         msg.attach_alternative(html, "text/html")
-        try:
-            msg.send()
-        except BotoServerError as e:
-            logging.user(usersub.user, '~BMStory notification by email error: ~FR%s' % e)
-            return
+        # try:
+        msg.send()
+        # except BotoServerError as e:
+        #     logging.user(usersub.user, '~BMStory notification by email error: ~FR%s' % e)
+        #     return
         logging.user(usersub.user, '~BMStory notification by email: ~FY~SB%s~SN~BM~FY/~SB%s' % 
                                    (story['story_title'][:50], usersub.feed.feed_title[:50]))
     

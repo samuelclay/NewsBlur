@@ -7,14 +7,15 @@ def open_in_browser(html):
     import os
     import webbrowser
     import tempfile
-    handle, fn = tempfile.mkstemp(suffix='.html')
-    f = os.fdopen(handle, 'wb')
+
+    handle, fn = tempfile.mkstemp(suffix=".html")
+    f = os.fdopen(handle, "wb")
     try:
         f.write(b"<meta charset='UTF-8' />")
-        f.write(html.encode('utf-8'))
+        f.write(html.encode("utf-8"))
     finally:
         # we leak the file itself here, but we should at least close it
         f.close()
-    url = 'file://' + fn.replace(os.path.sep, '/')
+    url = "file://" + fn.replace(os.path.sep, "/")
     webbrowser.open(url)
     return url
