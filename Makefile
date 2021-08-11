@@ -153,6 +153,9 @@ firewall:
 	- ansible-playbook ansible/all.yml -l db --tags firewall
 oldfirewall:
 	- ANSIBLE_CONFIG=/srv/newsblur/ansible.old.cfg ansible-playbook ansible/all.yml  -l db --tags firewall
+repairmongo:
+	- sudo docker run -v "/srv/newsblur/docker/volumes/db_mongo:/data/db" mongo:4.0 mongod --repair --dbpath /data/db
+
 
 # performance tests
 perf-cli:
