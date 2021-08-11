@@ -209,11 +209,11 @@ def db_check_redis_pubsub():
 @app.route("/db_check/elasticsearch")
 def db_check_elasticsearch():
     try:
-        conn = elasticsearch.Elasticsearch('db-elasticsearch.service.nyc1.consul')
+        conn = elasticsearch.Elasticsearch('db-elasticsearch.node.nyc1.consul')
     except:
         abort(503)
     
-    if conn.indices.exists_index('feeds-index'):
+    if conn.indices.exists('feeds-index'):
         return str("Index exists, but didn't try search")
         # query = pyes.query.TermQuery("title", "daring fireball")
         # results = conn.search(query=query, size=1, doc_types=['feeds-type'], sort="num_subscribers:desc")
