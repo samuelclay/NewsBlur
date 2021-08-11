@@ -133,12 +133,26 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL']+'img/reader/image_preview_small_right.png' })
                     ])
                 ])),
-                $.make('ul', { className: 'segmented-control NB-options-feed-font-size' }, [
-                    $.make('li', { className: 'NB-view-setting-option NB-options-font-size-xs', role: "button" }, 'XS'),
-                    $.make('li', { className: 'NB-view-setting-option NB-options-font-size-s', role: "button" }, 'S'),
-                    $.make('li', { className: 'NB-view-setting-option NB-options-font-size-m NB-active', role: "button" }, 'M'),
-                    $.make('li', { className: 'NB-view-setting-option NB-options-font-size-l', role: "button" }, 'L'),
-                    $.make('li', { className: 'NB-view-setting-option NB-options-font-size-xl', role: "button" }, 'XL')
+                $.make('ul', { className: 'segmented-control NB-options-feed-font' }, [
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-feed-font-whitney NB-theme-feed-font-whitney', role: "button" }, [
+                        $.make('div', { className: 'NB-icon' }),
+                        'Whitney'
+                    ]),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-feed-font-lucida NB-theme-feed-font-lucida', role: "button" }, [
+                        $.make('div', { className: 'NB-icon' }),
+                        'Lucida Grande'
+                    ]),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-feed-font-gotham NB-theme-feed-font-gotham', role: "button" }, [
+                        $.make('div', { className: 'NB-icon' }),
+                        'Gotham'
+                    ])
+                ]),
+                $.make('ul', { className: 'segmented-control NB-options-feed-size' }, [
+                    $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-xs', role: "button" }, 'XS'),
+                    $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-s', role: "button" }, 'S'),
+                    $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-m NB-active', role: "button" }, 'M'),
+                    $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-l', role: "button" }, 'L'),
+                    $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-xl', role: "button" }, 'XL')
                 ])
             ]),
             (is_feed && $.make('div', { className: 'NB-popover-section' }, [
@@ -185,7 +199,8 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var image_preview = NEWSBLUR.assets.preference('image_preview');
         var content_preview = NEWSBLUR.assets.preference('show_content_preview');
         var infrequent = parseInt(NEWSBLUR.assets.preference('infrequent_stories_per_month'), 10);
-        var feed_font_size = NEWSBLUR.assets.preference('feed_size');
+        var feed_size = NEWSBLUR.assets.preference('feed_size');
+        var feed_font = NEWSBLUR.assets.preference('feed_font');
 
         var $oldest = this.$('.NB-view-setting-order-oldest');
         var $newest = this.$('.NB-view-setting-order-newest');
@@ -224,8 +239,10 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         $image_preview_sr.toggleClass('NB-active', image_preview == "small-right");
         $image_preview_ll.toggleClass('NB-active', image_preview == "large-left");
         $image_preview_lr.toggleClass('NB-active', image_preview == "1" || image_preview == "large-right");
-        this.$('.NB-options-feed-font-size li').removeClass('NB-active');
-        this.$('.NB-options-feed-font-size .NB-options-font-size-'+feed_font_size).addClass('NB-active');
+        this.$('.NB-options-feed-size li').removeClass('NB-active');
+        this.$('.NB-options-feed-size .NB-options-feed-size-'+feed_size).addClass('NB-active');
+        this.$('.NB-options-feed-font .NB-view-setting-option').removeClass('NB-active');
+        this.$('.NB-options-feed-font .NB-view-setting-feed-font-'+feed_font).addClass('NB-active');
 
         var frequencies = [5, 15, 30, 60, 90];
         for (var f in frequencies) {
@@ -312,16 +329,22 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         } else if ($target.hasClass("NB-view-setting-infrequent-90")) {
             NEWSBLUR.assets.preference('infrequent_stories_per_month', 90);
             NEWSBLUR.reader.reload_feed();
-        } else if ($target.hasClass("NB-options-font-size-xs")) {
+        } else if ($target.hasClass("NB-options-feed-size-xs")) {
             this.update_feed_font_size('xs');
-        } else if ($target.hasClass("NB-options-font-size-s")) {
+        } else if ($target.hasClass("NB-options-feed-size-s")) {
             this.update_feed_font_size('s');
-        } else if ($target.hasClass("NB-options-font-size-m")) {
+        } else if ($target.hasClass("NB-options-feed-size-m")) {
             this.update_feed_font_size('m');
-        } else if ($target.hasClass("NB-options-font-size-l")) {
+        } else if ($target.hasClass("NB-options-feed-size-l")) {
             this.update_feed_font_size('l');
-        } else if ($target.hasClass("NB-options-font-size-xl")) {
+        } else if ($target.hasClass("NB-options-feed-size-xl")) {
             this.update_feed_font_size('xl');
+        } else if ($target.hasClass("NB-view-setting-feed-font-whitney")) {
+            this.update_feed_font('whitney');
+        } else if ($target.hasClass("NB-view-setting-feed-font-lucida")) {
+            this.update_feed_font('lucida');
+        } else if ($target.hasClass("NB-view-setting-feed-font-gotham")) {
+            this.update_feed_font('gotham');
         }
         
         if (NEWSBLUR.reader.flags.search) {
@@ -333,6 +356,11 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     
     update_feed_font_size: function(setting) {
         NEWSBLUR.assets.preference('feed_size', setting);
+        NEWSBLUR.reader.apply_story_styling();
+    },
+    
+    update_feed_font: function(setting) {
+        NEWSBLUR.assets.preference('feed_font', setting);
         NEWSBLUR.reader.apply_story_styling();
     },
     

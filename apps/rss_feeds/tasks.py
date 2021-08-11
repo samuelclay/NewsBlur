@@ -6,7 +6,6 @@ import redis
 from newsblur_web.celeryapp import app
 from celery.exceptions import SoftTimeLimitExceeded
 from utils import log as logging
-from utils import s3_utils as s3
 from django.conf import settings
 from apps.profile.middleware import DBProfilerMiddleware
 from utils.mongo_raw_log_middleware import MongoDumpMiddleware
@@ -188,33 +187,6 @@ def PushFeeds(feed_id, xml):
     feed = Feed.get_by_id(feed_id)
     if feed:
         feed.update(options=options)
-
-@app.task(name='backup-mongo', ignore_result=True)
-def BackupMongo():
-    COLLECTIONS = "classifier_tag classifier_author classifier_feed classifier_title userstories starred_stories shared_stories category category_site sent_emails social_profile social_subscription social_services statistics feedback"
-
-    date = time.strftime('%Y-%m-%d-%H-%M')
-    collections = COLLECTIONS.split(' ')
-    db_name = 'newsblur'
-    dir_name = 'backup_mongo_%s' % date
-    filename = '%s.tgz' % dir_name
-
-    os.mkdir(dir_name)
-
-    for collection in collections:
-        cmd = 'mongodump  --db %s --collection %s -o %s' % (db_name, collection, dir_name)
-        logging.debug(' ---> ~FMDumping ~SB%s~SN: %s' % (collection, cmd))
-        os.system(cmd)
-
-    cmd = 'tar -jcf %s %s' % (filename, dir_name)
-    os.system(cmd)
-
-    logging.debug(' ---> ~FRUploading ~SB~FM%s~SN~FR to S3...' % filename)
-    s3.save_file_in_s3(filename)
-    shutil.rmtree(dir_name)
-    os.remove(filename)
-    logging.debug(' ---> ~FRFinished uploading ~SB~FM%s~SN~FR to S3.' % filename)
-
 
 @app.task()
 def ScheduleImmediateFetches(feed_ids, user_id=None):

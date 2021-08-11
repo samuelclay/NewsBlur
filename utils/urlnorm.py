@@ -111,7 +111,15 @@ def normalize(url):
     if '://' not in url:
         url = 'http://' + url
     if url.startswith('feed://'):
-        url = url.replace('feed://', 'http://')
+        if 'http://' in url or 'https://' in url:
+            url = url.replace('feed:', '')
+        else:
+            url = url.replace('feed://', 'http://')
+    if url.startswith('feed:'):
+        if 'http://' in url or 'https://' in url:
+            url = url.replace('feed:', '')
+        else:
+            url = url.replace('feed:', 'http://')
 
     return url
 

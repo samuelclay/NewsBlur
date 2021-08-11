@@ -6,6 +6,8 @@ favicons = (app) =>
     ENV_DEV = process.env.NODE_ENV == 'development' or process.env.NODE_ENV == 'development'
     ENV_PROD = process.env.NODE_ENV == 'production'
     ENV_DOCKER = process.env.NODE_ENV == 'docker'
+    MONGODB_USERNAME = process.env.MONGODB_USERNAME
+    MONGODB_PASSWORD = process.env.MONGODB_PASSWORD
     MONGODB_SERVER = "db_mongo"
     if ENV_DEV
         MONGODB_SERVER = 'localhost'
@@ -27,7 +29,7 @@ favicons = (app) =>
         log.debug "Running as production server"
         
     if ENV_PROD
-        url = "mongodb://#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred"
+        url = "mongodb://#{MONGODB_USERNAME}:#{MONGODB_PASSWORD}@#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred&authSource=admin"
     else
         url = "mongodb://#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur"
 

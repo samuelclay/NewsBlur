@@ -21,8 +21,8 @@ services:
       nofile:
         soft: 10000
         hard: 10000
-    expose:
-      - 8000
+    ports:
+      - 8000:8000
     # only use gunicorn if the TEST env variable is not "True"
     entrypoint: /bin/sh -c newsblur_web/entrypoint.sh
     volumes: 
@@ -120,7 +120,7 @@ services:
 
   db_mongo:
     container_name: db_mongo
-    image: mongo:3.6
+    image: mongo:4.0
     restart: unless-stopped
     ports:
       - 29019:29019

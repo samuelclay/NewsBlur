@@ -148,19 +148,11 @@ class TwitterFetcher:
             return
         except tweepy.error.TweepError as e:
             message = str(e).lower()
-            if ((len(e.args) >= 2 and e.args[2] == 63) or
-                ('temporarily locked' in message)):
-                # Suspended
-                logging.debug('   ***> [%-30s] ~FRTwitter failed, user locked, disconnecting twitter: %s: %s' % 
-                              (self.feed.log_title[:30], self.address, e))
-                self.disconnect_twitter()
-                self.feed.save_feed_history(561, "Twitter Error: User locked")
-                return
-            elif 'suspended' in message:
+            if 'suspended' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user suspended, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(562, "Twitter Error: User suspended")
-                self.disconnect_twitter()
+                # self.disconnect_twitter()
                 return
             elif 'expired token' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user expired, disconnecting twitter: %s: %s' % 
@@ -234,19 +226,11 @@ class TwitterFetcher:
             return None, None
         except tweepy.error.TweepError as e:
             message = str(e).lower()
-            if ((len(e.args) >= 2 and e.args[2] == 63) or
-                ('temporarily locked' in message)):
-                # Suspended
-                logging.debug('   ***> [%-30s] ~FRTwitter failed, user suspended, disconnecting twitter: %s: %s' % 
-                              (self.feed.log_title[:30], self.address, e))
-                self.disconnect_twitter()
-                self.feed.save_feed_history(571, "Twitter Error: User suspended")
-                return None, None
-            elif 'suspended' in message:
+            if 'suspended' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user suspended, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(572, "Twitter Error: User suspended")
-                self.disconnect_twitter()
+                # self.disconnect_twitter()
                 return None, None
             elif 'expired token' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter user expired, disconnecting twitter: %s: %s' % 

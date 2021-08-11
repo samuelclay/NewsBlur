@@ -21,7 +21,8 @@ DOCKERBUILD = True
 DEBUG = False
 DEBUG = True
 DEBUG_ASSETS = True
-# DEBUG_QUERIES = True
+DEBUG_QUERIES = True
+DEBUG_QUERIES_SUMMARY_ONLY = True
 MEDIA_URL = '/media/'
 IMAGES_URL = '/imageproxy'
 SECRET_KEY = 'YOUR SECRET KEY'
@@ -94,8 +95,7 @@ MONGO_DB = {
 }
 MONGO_ANALYTICS_DB = {
     'name': 'nbanalytics',
-    'host': 'db_mongo',
-    'port': 29019,
+    'host': 'db_mongo:29019',
 }
 
 MONGODB_SLAVE = {

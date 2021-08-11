@@ -29,7 +29,7 @@ groups:
   elasticsearch: inventory_hostname.startswith('db-elasticsearch')
   redis: inventory_hostname.startswith('db-redis')
   postgres: inventory_hostname.startswith('db-postgres')
-  mongo: inventory_hostname.startswith('db-mongo')
+  mongo: inventory_hostname.startswith('db-mongo') and not inventory_hostname.startswith('db-mongo-analytics')
   mongo_analytics: inventory_hostname.startswith('db-mongo-analytics')
   consul: inventory_hostname.startswith('db-consul')
   metrics: inventory_hostname.startswith('db-metrics')

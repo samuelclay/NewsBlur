@@ -8,14 +8,15 @@ RE_PRAGMA = re.compile(br'<meta.*?content=["\']*;?charset=(.+?)["\'>]', flags=re
 RE_XML = re.compile(br'^<\?xml.*?encoding=["\']*(.+?)["\'>]')
 
 CHARSETS = {
-    'big5': 'big5hkscs',
-    'gb2312': 'gb18030',
-    'ascii': 'utf-8',
-    'maccyrillic': 'cp1251',
-    'win1251': 'cp1251',
-    'win-1251': 'cp1251',
-    'windows-1251': 'cp1251',
+    "big5": "big5hkscs",
+    "gb2312": "gb18030",
+    "ascii": "utf-8",
+    "maccyrillic": "cp1251",
+    "win1251": "cp1251",
+    "win-1251": "cp1251",
+    "windows-1251": "cp1251",
 }
+
 
 def fix_charset(encoding):
     """Overrides encoding when charset declaration
@@ -27,9 +28,9 @@ def fix_charset(encoding):
 
 def get_encoding(page):
     # Regex for XML and HTML Meta charset declaration
-    declared_encodings = (RE_CHARSET.findall(page) +
-            RE_PRAGMA.findall(page) +
-            RE_XML.findall(page))
+    declared_encodings = (
+        RE_CHARSET.findall(page) + RE_PRAGMA.findall(page) + RE_XML.findall(page)
+    )
 
     # Try any declared encodings
     for declared_encoding in declared_encodings:
@@ -38,25 +39,25 @@ def get_encoding(page):
                 # declared_encoding will actually be bytes but .decode() only
                 # accepts `str` type. Decode blindly with ascii because no one should
                 # ever use non-ascii characters in the name of an encoding.
-                declared_encoding = declared_encoding.decode('ascii', 'replace')
+                declared_encoding = declared_encoding.decode("ascii", "replace")
 
             encoding = fix_charset(declared_encoding)
 
             # Now let's decode the page
-            page.decode()
+            page.decode(encoding)
             # It worked!
             return encoding
-        except UnicodeDecodeError:
+        except (UnicodeDecodeError, LookupError):
             pass
 
     # Fallback to chardet if declared encodings fail
     # Remove all HTML tags, and leave only text for chardet
-    text = re.sub(b'(\s*</?[^>]*>)+\s*', b' ', page).strip()
-    enc = 'utf-8'
+    text = re.sub(br"(\s*</?[^>]*>)+\s*", b" ", page).strip()
+    enc = "utf-8"
     if len(text) < 10:
-        return enc # can't guess
+        return enc  # can't guess
     res = chardet.detect(text)
-    enc = res['encoding'] or 'utf-8'
-    #print '->', enc, "%.2f" % res['confidence']
+    enc = res["encoding"] or "utf-8"
+    # print '->', enc, "%.2f" % res['confidence']
     enc = fix_charset(enc)
     return enc

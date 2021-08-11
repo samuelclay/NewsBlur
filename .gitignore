@@ -44,6 +44,7 @@ vendor/mms-agent/settings.py
 apps/social/spam.py
 venv*
 /backups
+config/mongodb_keyfile.key
 
 # Docker Jinja templates
 docker/haproxy/haproxy.consul.cfg

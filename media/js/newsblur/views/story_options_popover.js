@@ -19,7 +19,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     events: {
         "click .NB-font-family-option": "change_font_family",
         "click .NB-story-font-size-option": "change_story_font_size",
-        "click .NB-feed-font-size-option": "change_feed_font_size",
+        "click .NB-feed-size-option": "change_feed_font_size",
         "click .NB-view-setting-option": "change_view_setting",
         "click .NB-line-spacing-option": "change_line_spacing",
         "click .NB-story-titles-pane-option": "change_story_titles_pane",
@@ -159,12 +159,12 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('li', { className: 'NB-line-spacing-option NB-options-line-spacing-xl', role: "button" }, $.make('div', { className: 'NB-icon' }))
                 ]),
                 $.make('div', { className: 'NB-popover-section-title' }, 'Feed title styling'),
-                $.make('ul', { className: 'segmented-control NB-options-feed-font-size' }, [
-                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-xs', role: "button" }, 'XS'),
-                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-s', role: "button" }, 'S'),
-                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-m NB-active', role: "button" }, 'M'),
-                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-l', role: "button" }, 'L'),
-                    $.make('li', { className: 'NB-feed-font-size-option NB-options-font-size-xl', role: "button" }, 'XL')
+                $.make('ul', { className: 'segmented-control NB-options-feed-size' }, [
+                    $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-xs', role: "button" }, 'XS'),
+                    $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-s', role: "button" }, 'S'),
+                    $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-m NB-active', role: "button" }, 'M'),
+                    $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-l', role: "button" }, 'L'),
+                    $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-xl', role: "button" }, 'XL')
                 ]),
                 (this.options.show_contentpreview && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-contentpreview' }, [
                     $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-title', role: "button" }, 'Title only'),
@@ -209,10 +209,10 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.$('.NB-options-font-family-'+font_family).addClass('NB-active');
 
         this.$('.NB-view-setting-option').removeClass('NB-active');
-        this.$('.NB-feed-font-size-option').removeClass('NB-active');
+        this.$('.NB-feed-size-option').removeClass('NB-active');
         this.$('.NB-story-font-size-option').removeClass('NB-active');
         this.$('.NB-options-story-font-size .NB-options-font-size-'+story_font_size).addClass('NB-active');
-        this.$('.NB-options-feed-font-size .NB-options-font-size-'+feed_font_size).addClass('NB-active');
+        this.$('.NB-options-feed-size .NB-options-feed-size-'+feed_font_size).addClass('NB-active');
         this.$('.NB-line-spacing-option').removeClass('NB-active');
         this.$('.NB-options-line-spacing-'+line_spacing).addClass('NB-active');
 
@@ -296,15 +296,15 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     change_feed_font_size: function(e) {
         var $target = $(e.target);
         
-        if ($target.hasClass("NB-options-font-size-xs")) {
+        if ($target.hasClass("NB-options-feed-size-xs")) {
             this.update_feed_font_size('xs');
-        } else if ($target.hasClass("NB-options-font-size-s")) {
+        } else if ($target.hasClass("NB-options-feed-size-s")) {
             this.update_feed_font_size('s');
-        } else if ($target.hasClass("NB-options-font-size-m")) {
+        } else if ($target.hasClass("NB-options-feed-size-m")) {
             this.update_feed_font_size('m');
-        } else if ($target.hasClass("NB-options-font-size-l")) {
+        } else if ($target.hasClass("NB-options-feed-size-l")) {
             this.update_feed_font_size('l');
-        } else if ($target.hasClass("NB-options-font-size-xl")) {
+        } else if ($target.hasClass("NB-options-feed-size-xl")) {
             this.update_feed_font_size('xl');
         }
         
