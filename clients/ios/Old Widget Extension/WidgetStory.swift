@@ -3,10 +3,10 @@
 //  Widget Extension
 //
 //  Created by David Sinclair on 2019-11-29.
-//  Copyright © 2021 NewsBlur. All rights reserved.
+//  Copyright © 2019 NewsBlur. All rights reserved.
 //
 
-import SwiftUI
+import UIKit
 
 /// A story to display in the widget.
 struct Story: Codable, Identifiable {
@@ -62,20 +62,6 @@ struct Story: Codable, Identifiable {
         } else {
             imageURL = nil
         }
-    }
-    
-    /// Initializer for a sample.
-    ///
-    /// - Parameter title: The title of the sample.
-    /// - Parameter feed: The feed identifier.
-    init(sample title: String, feed: String) {
-        id = UUID().uuidString
-        self.feed = feed
-        date = "2021-08-09"
-        author = "Sample"
-        self.title = title
-        content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur nec ornare dolor. Vivamus porta mi nec libero convallis tempus. Cras semper, ante et pretium vulputate, risus urna venenatis magna, vitae fringilla ipsum ante ut augue. Cras euismod, eros convallis scelerisque congue, massa sem elementum sem, ut condimentum est tortor id mauris."
-        imageURL = nil
     }
     
     /// Keys for the codable representation.

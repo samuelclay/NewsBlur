@@ -135,6 +135,7 @@
                                                 <constraint firstItem="mfP-7f-Dq0" firstAttribute="leading" secondItem="F3X-7c-ujj" secondAttribute="leading" constant="20" symbolic="YES" id="bw5-9B-Kqo"/>
                                                 <constraint firstItem="bNI-x5-NTs" firstAttribute="top" secondItem="F3X-7c-ujj" secondAttribute="top" constant="20" symbolic="YES" id="e0y-dr-S8L"/>
                                                 <constraint firstItem="bNI-x5-NTs" firstAttribute="leading" secondItem="F3X-7c-ujj" secondAttribute="leading" constant="20" symbolic="YES" id="iRk-g2-JXQ"/>
+                                                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="bNI-x5-NTs" secondAttribute="trailing" constant="20" symbolic="YES" id="sCa-Kb-OCQ"/>
                                                 <constraint firstAttribute="trailing" secondItem="mfP-7f-Dq0" secondAttribute="trailing" constant="20" symbolic="YES" id="vRG-1O-Z4O"/>
                                             </constraints>
                                         </tableViewCellContentView>

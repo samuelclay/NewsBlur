@@ -3,10 +3,10 @@
 //  Widget Extension
 //
 //  Created by David Sinclair on 2019-12-23.
-//  Copyright © 2021 NewsBlur. All rights reserved.
+//  Copyright © 2019 NewsBlur. All rights reserved.
 //
 
-import SwiftUI
+import UIKit
 
 /// A feed to display in the widget.
 struct Feed: Identifiable {
@@ -17,10 +17,10 @@ struct Feed: Identifiable {
     let title: String
     
     /// The left bar color.
-    let leftColor: Color
+    let leftColor: UIColor
     
     /// The right bar color.
-    let rightColor: Color
+    let rightColor: UIColor
     
     /// Keys for the dictionary representation.
     struct DictionaryKeys {
@@ -53,25 +53,11 @@ struct Feed: Identifiable {
         }
     }
     
-    /// Initializer for a sample.
-    ///
-    /// - Parameter id: The identifier of the sample.
-    /// - Parameter title: The title of the sample.
-    init(sample id: String, title: String) {
-        self.id = id
-        self.title = title
-        
-        let hue = Double.random(in: 0...1)
-        
-        leftColor = Color(hue: hue, saturation: 0.5, brightness: 0.5)
-        rightColor = Color(hue: hue, saturation: 0.4, brightness: 0.5)
-    }
-    
     /// Given a hex string, returns the corresponding color.
     ///
     /// - Parameter hexString: The hex string.
     /// - Returns: The color equivalent.
-    static func from(hexString: String) -> Color {
+    static func from(hexString: String) -> UIColor {
         var red: Double = 0
         var green: Double = 0
         var blue: Double = 0
@@ -95,7 +81,7 @@ struct Feed: Identifiable {
         
         print("Reading color from '\(hexString)': red: \(red), green: \(green), blue: \(blue), alpha: \(alpha)")
         
-        return Color(.sRGB, red: red, green: green, blue: blue, opacity: alpha)
+        return UIColor(red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha: CGFloat(alpha))
     }
 }
 
