@@ -209,7 +209,7 @@ def db_check_redis_pubsub():
 @app.route("/db_check/elasticsearch")
 def db_check_elasticsearch():
     try:
-        conn = elasticsearch.Elasticsearch(settings.SERVER_NAME)
+        conn = elasticsearch.Elasticsearch("elasticsearch")
     except:
         abort(503)
     
