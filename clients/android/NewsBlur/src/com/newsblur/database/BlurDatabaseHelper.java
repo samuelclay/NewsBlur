@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.os.CancellationSignal;
 import androidx.annotation.Nullable;
 import androidx.loader.content.AsyncTaskLoader;
@@ -41,6 +40,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Utility class for executing DB operations on the local, private NB database.
@@ -71,13 +72,12 @@ public class BlurDatabaseHelper {
     public void close() {
         // when asked to close, do so via an AsyncTask. This is so that (since becoming serial in android 4.0) 
         // the closure will happen after other async tasks are done using the conn
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... arg) {
-                synchronized (RW_MUTEX) {dbWrapper.close();}
-                return null;
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> {
+            synchronized (RW_MUTEX) {
+                dbWrapper.close();
             }
-        }.execute();
+        });
     }
 
     public void dropAndRecreateTables() {

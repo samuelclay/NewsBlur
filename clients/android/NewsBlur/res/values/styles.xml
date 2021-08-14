@@ -11,8 +11,10 @@
         <item name="android:letterSpacing">0</item>
     </style>
 
-    <style name="initStyle" parent="@android:style/Theme.DeviceDefault.NoActionBar">
+    <style name="initStyle" parent="Theme.MaterialComponents.Light.DarkActionBar.Bridge">
         <item name="android:windowBackground">@color/transparent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="actionbar" parent="ThemeOverlay.MaterialComponents.Light">
@@ -171,7 +173,8 @@
     <style name="actionButtons">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/button_text</item>
-        <item name="android:background">@drawable/button_background</item>
+        <item name="android:background">@color/gray90</item>
+        <item name="android:letterSpacing">0</item>
     </style>
     <style name="actionButtons.dark">
         <item name="android:textSize">14sp</item>
