@@ -42,7 +42,6 @@
             android:layout_gravity="start"
             android:layout_marginStart="8dp"
             android:gravity="center"
-            android:onClick="overlayText"
             android:paddingStart="8dp"
             android:text="@string/overlay_text"
             android:textSize="14sp" />
@@ -53,8 +52,7 @@
             android:layout_width="50dp"
             android:layout_height="40dp"
             android:layout_gravity="start"
-            android:layout_marginStart="120dp"
-            android:onClick="overlaySend" />
+            android:layout_marginStart="120dp" />
 
         <TextView
             android:id="@+id/reading_overlay_right"
@@ -64,7 +62,6 @@
             android:layout_gravity="end"
             android:layout_marginRight="8dp"
             android:gravity="center"
-            android:onClick="overlayRight"
             android:text="@string/overlay_next"
             android:textSize="14sp" />
 
@@ -74,8 +71,7 @@
             android:layout_width="50dp"
             android:layout_height="40dp"
             android:layout_gravity="end"
-            android:layout_marginEnd="130dp"
-            android:onClick="overlayLeft" />
+            android:layout_marginEnd="130dp" />
 
         <com.newsblur.view.ProgressCircle
             android:id="@+id/reading_overlay_progress"
@@ -83,8 +79,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="end|center_vertical"
-            android:layout_marginRight="100dp"
-            android:onClick="overlayCount" />
+            android:layout_marginRight="100dp" />
 
         <ProgressBar
             android:id="@+id/reading_overlay_progress_right"

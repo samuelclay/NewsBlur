@@ -75,11 +75,11 @@ public class DeleteFeedFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (getArguments().getString(FEED_TYPE).equals(NORMAL_FEED)) {
-                    FeedUtils.deleteFeed(getArguments().getString(FEED_ID), getArguments().getString(FOLDER_NAME), getActivity(), new APIManager(getActivity()));
+                    FeedUtils.deleteFeed(getArguments().getString(FEED_ID), getArguments().getString(FOLDER_NAME), new APIManager(getActivity()));
                 } else if (getArguments().getString(FEED_TYPE).equals(SAVED_SEARCH_FEED)) {
-                    FeedUtils.deleteSavedSearch(getArguments().getString(FEED_ID), getArguments().getString(QUERY), getActivity(), new APIManager(getActivity()));
+                    FeedUtils.deleteSavedSearch(getArguments().getString(FEED_ID), getArguments().getString(QUERY), new APIManager(getActivity()));
                 } else {
-                    FeedUtils.deleteSocialFeed(getArguments().getString(FEED_ID), getActivity(), new APIManager(getActivity()));
+                    FeedUtils.deleteSocialFeed(getArguments().getString(FEED_ID), new APIManager(getActivity()));
                 }
                 // if called from a feed view, end it
                 Activity activity = DeleteFeedFragment.this.getActivity();

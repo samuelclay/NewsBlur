@@ -570,6 +570,13 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             vh.intelDot.setImageResource(android.R.color.transparent);
         }
 
+        // M text size equals to 1.0
+        if (textSize > 1.0) {
+            vh.storyTitleView.setMaxLines(3);
+        } else {
+            vh.storyTitleView.setMaxLines(2);
+        }
+
         vh.storyTitleView.setText(UIUtils.fromHtml(story.title));
         vh.storyDate.setText(StoryUtils.formatShortDate(context, story.timestamp));
 
