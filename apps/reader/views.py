@@ -1,6 +1,5 @@
 import datetime
 import time
-import boto
 import redis
 import requests
 import random
@@ -77,7 +76,6 @@ ALLOWED_SUBDOMAINS = [
     'debug', 
     'debug3', 
     'nb',
-    'old',
 ]
 
 def get_subdomain(request):
@@ -891,9 +889,9 @@ def load_feed_page(request, feed_id):
         
         if settings.BACKED_BY_AWS['pages_on_s3'] and feed.s3_page:
             if settings.PROXY_S3_PAGES:
-                key = settings.S3_CONN.get_bucket(settings.S3_PAGES_BUCKET_NAME).get_key(feed.s3_pages_key)
+                key = settings.S3_CONN.Bucket(settings.S3_PAGES_BUCKET_NAME).Object(key=feed.s3_pages_key)
                 if key:
-                    compressed_data = key.get_contents_as_string()
+                    compressed_data = key.get()["Body"]
                     response = HttpResponse(compressed_data, content_type="text/html; charset=utf-8")
                     response['Content-Encoding'] = 'gzip'
             
@@ -1070,38 +1068,50 @@ def starred_story_hashes(request):
 
     return dict(starred_story_hashes=story_hashes)
 
-def starred_stories_rss_feed(request, user_id, secret_token, tag_slug):
+def starred_stories_rss_feed(request, user_id, secret_token):
+    return starred_stories_rss_feed_tag(request, user_id, secret_token, tag_slug=None)
+
+def starred_stories_rss_feed_tag(request, user_id, secret_token, tag_slug):
     try:
         user = User.objects.get(pk=user_id)
     except User.DoesNotExist:
         raise Http404
     
-    try:
-        tag_counts = MStarredStoryCounts.objects.get(user_id=user_id, slug=tag_slug)
-    except MStarredStoryCounts.MultipleObjectsReturned:
-        tag_counts = MStarredStoryCounts.objects(user_id=user_id, slug=tag_slug).first()
-    except MStarredStoryCounts.DoesNotExist:
-        raise Http404
+    if tag_slug:
+        try:
+            tag_counts = MStarredStoryCounts.objects.get(user_id=user_id, slug=tag_slug)
+        except MStarredStoryCounts.MultipleObjectsReturned:
+            tag_counts = MStarredStoryCounts.objects(user_id=user_id, slug=tag_slug).first()
+        except MStarredStoryCounts.DoesNotExist:
+            raise Http404
+    else:
+        _, starred_count = MStarredStoryCounts.user_counts(user.pk, include_total=True)
     
     data = {}
-    data['title'] = "Saved Stories - %s" % tag_counts.tag
+    if tag_slug:
+        data['title'] = "Saved Stories - %s" % tag_counts.tag
+    else:
+        data['title'] = "Saved Stories"
     data['link'] = "%s%s" % (
         settings.NEWSBLUR_URL,
         reverse('saved-stories-tag', kwargs=dict(tag_name=tag_slug)))
-    data['description'] = "Stories saved by %s on NewsBlur with the tag \"%s\"." % (user.username,
-                                                                                    tag_counts.tag)
+    if tag_slug:
+        data['description'] = "Stories saved by %s on NewsBlur with the tag \"%s\"." % (user.username,
+                                                                                        tag_counts.tag)
+    else:
+        data['description'] = "Stories saved by %s on NewsBlur." % (user.username)
     data['lastBuildDate'] = datetime.datetime.utcnow()
     data['generator'] = 'NewsBlur - %s' % settings.NEWSBLUR_URL
     data['docs'] = None
     data['author_name'] = user.username
     data['feed_url'] = "%s%s" % (
         settings.NEWSBLUR_URL,
-        reverse('starred-stories-rss-feed', 
+        reverse('starred-stories-rss-feed-tag', 
                 kwargs=dict(user_id=user_id, secret_token=secret_token, tag_slug=tag_slug)),
     )
     rss = feedgenerator.Atom1Feed(**data)
 
-    if not tag_counts.tag:
+    if not tag_slug or not tag_counts.tag:
         starred_stories = MStarredStory.objects(
             user_id=user.pk
         ).order_by('-starred_date').limit(25)
@@ -1131,8 +1141,8 @@ def starred_stories_rss_feed(request, user_id, secret_token, tag_slug):
         
     logging.user(request, "~FBGenerating ~SB%s~SN's saved story RSS feed (%s, %s stories): ~FM%s" % (
         user.username,
-        tag_counts.tag,
-        tag_counts.count,
+        tag_counts.tag if tag_slug else "[All stories]",
+        tag_counts.count if tag_slug else starred_count,
         request.META.get('HTTP_USER_AGENT', "")[:24]
     ))
     return HttpResponse(rss.writeString('utf-8'), content_type='application/rss+xml')
@@ -2693,11 +2703,11 @@ def send_story_email(request):
                                          cc=cc,
                                          headers={'Reply-To': "%s <%s>" % (from_name, from_email)})
         msg.attach_alternative(html, "text/html")
-        try:
-            msg.send()
-        except boto.ses.connection.BotoServerError as e:
-            code = -1
-            message = "Email error: %s" % str(e)
+        # try:
+        msg.send()
+        # except boto.ses.connection.BotoServerError as e:
+        #     code = -1
+        #     message = "Email error: %s" % str(e)
         
         share_user_profile.save_sent_email()
         

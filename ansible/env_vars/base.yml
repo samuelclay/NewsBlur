@@ -7,6 +7,9 @@ git_secrets_repo: ssh://git@github.com/samuelclay/newsblur-secrets
 create_user: nb
 local_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
 copy_local_key: "{{ lookup('file', '/srv/secrets-newsblur/keys/docker.key.pub') }}"
+mongodb_keyfile: "{{ lookup('file', '/srv/secrets-newsblur/keys/mongodb_keyfile.key') }}"
+mongodb_username: "{{ lookup('ini', 'mongodb_username section=admin file=/srv/secrets-newsblur/configs/mongodb_auth.ini') }}"
+mongodb_password: "{{ lookup('ini', 'mongodb_password section=admin file=/srv/secrets-newsblur/configs/mongodb_auth.ini') }}"
 sys_packages: [ 
   'git', 
   'python3', 

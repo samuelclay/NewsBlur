@@ -29,6 +29,7 @@ urlpatterns = [
     # url(r'^remove_like_reply/?$', views.remove_like_reply, name='social-remove-like-reply'),
     url(r'^comment/(?P<comment_id>\w+)/reply/(?P<reply_id>\w+)/?$', views.comment_reply, name='social-comment-reply'),
     url(r'^comment/(?P<comment_id>\w+)/?$', views.comment, name='social-comment'),
+    url(r'^rss/(?P<user_id>\d+)/?$', views.shared_stories_rss_feed, name='shared-stories-rss-feed'),
     url(r'^rss/(?P<user_id>\d+)/(?P<username>[-\w]+)?$', views.shared_stories_rss_feed, name='shared-stories-rss-feed'),
     url(r'^stories/(?P<user_id>\w+)/(?P<username>[-\w]+)?/?$', views.load_social_stories, name='load-social-stories'),
     url(r'^page/(?P<user_id>\w+)/(?P<username>[-\w]+)?/?$', views.load_social_page, name='load-social-page'),
