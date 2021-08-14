@@ -223,10 +223,7 @@ class StoryUserTagsFragment : DialogFragment(), LoaderManager.LoaderCallbacks<Cu
 
     private fun saveTags() {
         val savedTagList = getSavedTagsList()
-        if (savedTagList.isNotEmpty()) {
-            NBSyncService.forceFeedsFolders()
-            FeedUtils.setStorySaved(story, true, requireContext(), savedTagList)
-            (parentFragment as ReadingItemFragment).updateStorySavedTagList(savedTagList)
-        }
+        NBSyncService.forceFeedsFolders()
+        FeedUtils.setStorySaved(story, true, requireContext(), savedTagList)
     }
 }

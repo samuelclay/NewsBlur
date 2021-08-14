@@ -200,7 +200,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         var $error = $(".NB-error-move", this.$modal);
         var $delete = $(".NB-action-delete", this.$modal);
         var count = this.feedlist.folder_view.highlighted_count_unique_folders();
-        console.log(['change_selection', count]);
+        // console.log(['change_selection', count]);
         $title.text(count ? count + " selected" : "Select");
         $error.text('');
         

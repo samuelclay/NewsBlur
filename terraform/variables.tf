@@ -1,3 +1,5 @@
+# doctl compute size list
+
 variable "droplet_region" {
   type = string
   default = "nyc1"
@@ -29,7 +31,22 @@ variable "mongo_droplet_size" {
   default = "m-4vcpu-32gb"
 }
 
+variable "metrics_droplet_size" {
+  type = string
+  default = "s-1vcpu-2gb"
+}
+
 variable "mongo_secondary_droplet_size" {
   type = string
   default = "m-2vcpu-16gb"
+}
+
+variable "mongo_analytics_droplet_size" {
+  type = string
+  default = "s-2vcpu-4gb"
+}
+
+variable "elasticsearch_droplet_size" {
+  type = string
+  default = "m3-2vcpu-16gb"
 }
