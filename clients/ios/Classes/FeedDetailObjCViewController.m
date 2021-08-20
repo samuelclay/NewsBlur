@@ -457,7 +457,10 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     [self updateTheme];
     
     if (self.isPhoneOrCompact) {
-        [self fadeSelectedCell:NO];
+        // Async to let the view be added to the view hierarchy.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self fadeSelectedCell:NO];
+        });
     }
     
     if (storiesCollection.activeFeed != nil) {
