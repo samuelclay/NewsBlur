@@ -207,7 +207,7 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (UIImage *)themedImage:(UIImage *)image {
-    if ([self.theme isEqualToString:ThemeStyleDark]) {
+    if (self.isDarkTheme) {
         CIImage *coreImage = [CIImage imageWithCGImage:image.CGImage];
         CIFilter *filter = [CIFilter filterWithName:@"CIColorInvert"];
         [filter setValue:coreImage forKey:kCIInputImageKey];
