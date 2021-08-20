@@ -2109,7 +2109,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         if (!self.isPhoneOrCompact) {
             [self reloadStories];
         }
-        [self.appDelegate.feedsViewController refreshFeedList];
+        // Don't do this, as it causes a race condition with the marking read call
+//        [self.appDelegate.feedsViewController refreshFeedList];
         [self.appDelegate showFeedsListAnimated:YES];
     };
     
