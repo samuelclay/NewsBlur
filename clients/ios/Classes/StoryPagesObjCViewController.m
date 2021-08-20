@@ -957,16 +957,18 @@
     
     self.traverseBottomConstraint.constant = appDelegate.detailViewController.view.safeAreaInsets.bottom / 2;
     
-    [UIView animateWithDuration:.24 delay:0
-                        options:UIViewAnimationOptionCurveEaseInOut
-                     animations:^{
-                         [self.traverseView setNeedsLayout];
-                         self.traverseView.alpha = 1;
-                         self.traversePinned = YES;
-                         [self.view layoutIfNeeded];
-                     } completion:^(BOOL finished) {
-                         
-                     }];
+    if (self.traverseView.alpha == 0) {
+        [UIView animateWithDuration:.24 delay:0
+                            options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^{
+                             [self.traverseView setNeedsLayout];
+                             self.traverseView.alpha = 1;
+                             self.traversePinned = YES;
+                             [self.view layoutIfNeeded];
+                         } completion:^(BOOL finished) {
+
+                         }];
+    }
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
