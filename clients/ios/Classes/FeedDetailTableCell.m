@@ -321,8 +321,9 @@ static UIFont *indicatorFont = nil;
     }
     CGFloat boundingRows = cell.isShort ? 1.5 : 3;
     if (!cell.isShort && (self.cell.textSize == FeedDetailTextSizeMedium || self.cell.textSize == FeedDetailTextSizeLong)) {
-        boundingRows = ((r.size.height - 24) / font.pointSize) - 2;
+        boundingRows = MIN(((r.size.height - 24) / font.pointSize) - 2, 4);
     }
+    cell.storyTitle = [NSString stringWithFormat:@"%@ %@", @(boundingRows), cell.storyTitle];
     CGSize theSize = [cell.storyTitle
                       boundingRectWithSize:CGSizeMake(rect.size.width, font.pointSize * boundingRows)
                       options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
@@ -354,6 +355,8 @@ static UIFont *indicatorFont = nil;
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}
                           context:nil];
+    
+//    CGContextStrokeRect(context, storyTitleFrame);
     
     if (cell.storyContent) {
         int storyContentWidth = rect.size.width;
@@ -398,6 +401,9 @@ static UIFont *indicatorFont = nil;
                       NSForegroundColorAttributeName: textColor,
                       NSParagraphStyleAttributeName: paragraphStyle}
          context:nil];
+        
+//        CGContextStrokeRect(context, CGRectMake(storyTitleX, storyContentY,
+//                                                rect.size.width - storyTitleX + leftMargin, contentSize.height));
     }
     
     // story date

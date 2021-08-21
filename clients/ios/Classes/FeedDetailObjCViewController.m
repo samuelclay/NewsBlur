@@ -1810,6 +1810,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 
                 if (content.length < 50 && [story[@"story_title"] length] < 30) {
                     return height + font.pointSize * 3;
+                } else if (content.length < 50 && [story[@"story_title"] length] >= 30) {
+                    return height + font.pointSize * 5;
                 } else if (content.length < 100) {
                     return height + font.pointSize * 5;
                 } else if (self.textSize == FeedDetailTextSizeMedium) {
