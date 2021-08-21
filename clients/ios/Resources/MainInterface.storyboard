@@ -335,11 +335,11 @@
             <objects>
                 <viewController storyboardIdentifier="FeedDetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="gfj-2g-i9p" customClass="FeedDetailViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Qlc-Qa-4j4">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="834"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="784"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="FeedDetailTable" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="HYy-Wb-YEm">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="834"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="784"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <connections>
@@ -348,7 +348,7 @@
                                 </connections>
                             </tableView>
                             <view hidden="YES" opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZLP-oU-XR7">
-                                <rect key="frame" x="0.0" y="274.5" width="375" height="181"/>
+                                <rect key="frame" x="0.0" y="224.5" width="375" height="181"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" alpha="0.40000000596046448" contentMode="scaleToFill" image="big_world.png" translatesAutoresizingMaskIntoConstraints="NO" id="Lzk-2I-zT1">
                                         <rect key="frame" x="155.5" y="24" width="64" height="64"/>
@@ -387,6 +387,7 @@
                             <constraint firstItem="ZLP-oU-XR7" firstAttribute="leading" secondItem="Qlc-Qa-4j4" secondAttribute="leading" id="zG5-2m-YKf"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" id="vc8-hL-CKx"/>
                     <connections>
                         <outlet property="messageLabel" destination="ugt-jY-ACR" id="KxV-ws-Fjm"/>

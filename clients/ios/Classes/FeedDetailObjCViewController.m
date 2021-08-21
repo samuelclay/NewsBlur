@@ -284,14 +284,14 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
         if (![searchText isEqualToString:storiesCollection.savedSearchQuery]) {
             storiesCollection.savedSearchQuery = nil;
         }
-        
-        [self reloadStories];
     } else {
         storiesCollection.inSearch = NO;
         storiesCollection.searchQuery = nil;
         storiesCollection.savedSearchQuery = nil;
-        [self reloadStories];
     }
+    
+    [FeedDetailViewController cancelPreviousPerformRequestsWithTarget:self selector:@selector(reloadStories) object:nil];
+    [self performSelector:@selector(reloadStories) withObject:nil afterDelay:1.0];
 }
 
 - (void)preferredContentSizeChanged:(NSNotification *)aNotification {
@@ -430,7 +430,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     [self.notifier setNeedsLayout];
     [appDelegate hideShareView:YES];
     
-    if (!!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
+    if (!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
         [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
     }
     if (storiesCollection.inSearch && storiesCollection.searchQuery) {
@@ -796,7 +796,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
             }];
         });
     }
-    if (!!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
+    if (!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
         [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
     }
     
@@ -986,7 +986,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
        [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, CGRectGetHeight(self.searchBar.frame), 1) animated:YES];
     }
     
-    if (!!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
+    if (!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
         [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
     }
     if (storiesCollection.feedPage == 1) {
