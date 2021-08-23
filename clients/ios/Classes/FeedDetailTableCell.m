@@ -323,7 +323,7 @@ static UIFont *indicatorFont = nil;
     if (!cell.isShort && (self.cell.textSize == FeedDetailTextSizeMedium || self.cell.textSize == FeedDetailTextSizeLong)) {
         boundingRows = MIN(((r.size.height - 24) / font.pointSize) - 2, 4);
     }
-    cell.storyTitle = [NSString stringWithFormat:@"%@ %@", @(boundingRows), cell.storyTitle];
+//    cell.storyTitle = [NSString stringWithFormat:@"%@ %@", @(boundingRows), cell.storyTitle];
     CGSize theSize = [cell.storyTitle
                       boundingRectWithSize:CGSizeMake(rect.size.width, font.pointSize * boundingRows)
                       options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
