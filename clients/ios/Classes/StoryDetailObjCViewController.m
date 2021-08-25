@@ -1427,6 +1427,7 @@
             [appDelegate.storyPagesViewController.view layoutIfNeeded];
 
             appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin;
+            [appDelegate.storyPagesViewController.view layoutIfNeeded];
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
              animations:^{
@@ -1440,6 +1441,7 @@
             [appDelegate.storyPagesViewController.view layoutIfNeeded];
 
             appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin;
+            [appDelegate.storyPagesViewController.view layoutIfNeeded];
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
              animations:^{
