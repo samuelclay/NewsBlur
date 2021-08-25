@@ -553,6 +553,8 @@
         });
     }
     
+    [self.view layoutIfNeeded];
+    
     [UIView animateWithDuration:0.2 animations:^{
         [self setNeedsStatusBarAppearanceUpdate];
     } completion:^(BOOL finished) {
@@ -1637,6 +1639,8 @@
 - (void)hideAutoscrollWithAnimation {
     [self.autoscrollViewTimer invalidate];
     self.autoscrollViewTimer = nil;
+    
+    [self.view layoutIfNeeded];
     
     [UIView animateWithDuration:1 animations:^{
         [self.view layoutIfNeeded];
