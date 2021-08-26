@@ -1889,14 +1889,14 @@
 }
 
 - (void)updateStoryTheme {
-    self.view.backgroundColor = UIColorFromLightDarkRGB(0x707070, 0x404040);
+    self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     
     NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-theme-style').href='storyDetailView%@.css';",
                           [ThemeManager themeManager].themeCSSSuffix];
     
     [self.webView evaluateJavaScript:jsString completionHandler:nil];
     
-    self.webView.backgroundColor = UIColorFromLightDarkRGB(0x707070, 0x404040);
+    self.webView.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     
     if ([ThemeManager themeManager].isDarkTheme) {
         self.webView.scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
