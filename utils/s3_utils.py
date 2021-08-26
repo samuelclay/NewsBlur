@@ -73,7 +73,7 @@ class S3Store:
 
         if content_type:
             s3_object.put(Body=file_object, ExtraArgs={
-                'Content-Type': content_type,
+                'ContentType': content_type,
                 'ACL': 'public-read',
             })
         else:
