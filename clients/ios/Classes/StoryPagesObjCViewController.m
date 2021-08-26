@@ -553,6 +553,8 @@
         });
     }
     
+    [self.view layoutIfNeeded];
+    
     [UIView animateWithDuration:0.2 animations:^{
         [self setNeedsStatusBarAppearanceUpdate];
     } completion:^(BOOL finished) {
@@ -957,16 +959,18 @@
     
     self.traverseBottomConstraint.constant = appDelegate.detailViewController.view.safeAreaInsets.bottom / 2;
     
-    [UIView animateWithDuration:.24 delay:0
-                        options:UIViewAnimationOptionCurveEaseInOut
-                     animations:^{
-                         [self.traverseView setNeedsLayout];
-                         self.traverseView.alpha = 1;
-                         self.traversePinned = YES;
-                         [self.view layoutIfNeeded];
-                     } completion:^(BOOL finished) {
-                         
-                     }];
+    if (self.traverseView.alpha == 0) {
+        [UIView animateWithDuration:.24 delay:0
+                            options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^{
+                             [self.traverseView setNeedsLayout];
+                             self.traverseView.alpha = 1;
+                             self.traversePinned = YES;
+                             [self.view layoutIfNeeded];
+                         } completion:^(BOOL finished) {
+
+                         }];
+    }
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
@@ -1635,6 +1639,8 @@
 - (void)hideAutoscrollWithAnimation {
     [self.autoscrollViewTimer invalidate];
     self.autoscrollViewTimer = nil;
+    
+    [self.view layoutIfNeeded];
     
     [UIView animateWithDuration:1 animations:^{
         [self.view layoutIfNeeded];
