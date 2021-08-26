@@ -325,13 +325,11 @@ class PageImporter(object):
         s3_object = settings.S3_CONN.Object(settings.S3_PAGES_BUCKET_NAME, 
                                             self.feed.s3_pages_key)
         s3_object.put(Body=compress_string_with_gzip(html.encode('utf-8')), 
-                      ExtraArgs={
-                          'ContentType': 'text/html',
-                          'ContentEncoding': 'gzip',
-                          'Access-Control-Allow-Origin': '*',
-                          'Expires': expires,
-                          'ACL': 'public-read',
-                      })
+                      ContentType='text/html',
+                      ContentEncoding='gzip',
+                      Expires=expires,
+                      ACL='public-read'
+                      )
         
         try:
             feed_page = MFeedPage.objects.get(feed_id=self.feed.pk)
