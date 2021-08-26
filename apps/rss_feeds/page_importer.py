@@ -326,8 +326,8 @@ class PageImporter(object):
                                             self.feed.s3_pages_key)
         s3_object.put(Body=compress_string_with_gzip(html.encode('utf-8')), 
                       ExtraArgs={
-                          'Content-Type': 'text/html',
-                          'Content-Encoding': 'gzip',
+                          'ContentType': 'text/html',
+                          'ContentEncoding': 'gzip',
                           'Access-Control-Allow-Origin': '*',
                           'Expires': expires,
                           'ACL': 'public-read',

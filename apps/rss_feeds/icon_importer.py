@@ -110,7 +110,7 @@ class IconImporter(object):
         settings.S3_CONN.Object(settings.S3_ICONS_BUCKET_NAME, 
                                 self.feed.s3_icons_key).put(Body=base64.b64decode(image_str), 
                                                             ExtraArgs={
-                                                                'Content-Type': 'image/png',
+                                                                'ContentType': 'image/png',
                                                                 'Expires': expires,
                                                                 'ACL': 'public-read',
                                                             })
