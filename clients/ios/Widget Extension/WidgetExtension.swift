@@ -31,8 +31,12 @@ struct Provider: TimelineProvider {
             // Generate a timeline consisting of five entries an hour apart, starting from the current date.
             let currentDate = Date()
             for hourOffset in 0 ..< 5 {
-                #warning("hack: was .hour")
-                let entryDate = Calendar.current.date(byAdding: .minute, value: hourOffset, to: currentDate)!
+                #if DEBUG
+                let units = Calendar.Component.minute
+                #else
+                let units = Calendar.Component.hour
+                #endif
+                let entryDate = Calendar.current.date(byAdding: units, value: hourOffset, to: currentDate)!
                 let entry = SimpleEntry(date: entryDate, cache: cache)
                 entries.append(entry)
             }
