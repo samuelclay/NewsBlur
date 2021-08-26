@@ -44,7 +44,7 @@ struct WidgetStoryView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .lineLimit(3)
                 HStack {
-                    Text(cache.cleaned(story.author).uppercased())
+                    Text(cache.cleaned(story.author))
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .frame(height: 15)
