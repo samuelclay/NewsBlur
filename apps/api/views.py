@@ -410,7 +410,7 @@ def save_story(request, token=None):
     message   = None
     profile   = None
     
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile = request.user.profile
     else:
         try:
