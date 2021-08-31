@@ -85,6 +85,8 @@
 - name: Setup logrotate
   become: yes
   copy: src=logrotate.conf dest=/etc/logrotate.d/newsblur mode=0755
+  tags:
+    - logrotate
 
 - name: Reload gunicorn
   debug: 
