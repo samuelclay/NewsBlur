@@ -42,7 +42,7 @@ class MongoDBHeapUsage(MongoGrafanaMetric):
     def get_context(self):
         value = self.connection.admin.command('serverStatus')
         try:
-            value = status['extra_info']['heap_usage_bytes']
+            value = value['extra_info']['heap_usage_bytes']
         except KeyError:
             # I am getting this
             value = "U"
