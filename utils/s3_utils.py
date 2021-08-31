@@ -2,8 +2,8 @@ import os
 import sys
 import time
 import mimetypes
-from boto.s3.connection import S3Connection
-from boto.s3.key import Key
+#from boto.s3.connection import S3Connection
+#from boto.s3.key import Key
 from utils.image_functions import ImageOps
 
 if '/srv/newsblur' not in ' '.join(sys.path):
