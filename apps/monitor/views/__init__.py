@@ -14,4 +14,4 @@ from apps.monitor.views.newsblur_tasks_times import TasksTimes
 from apps.monitor.views.newsblur_updates import Updates
 from apps.monitor.views.newsblur_users import Users
 
-from apps.monitor.views.monitor import MongoDBHeapUsage, MongoDBObjects, MongoDBOpsReplsetLag, MongoDBSize, MongoDBOps, MongoDBPageFaults, MongoDBPageQueues
+from apps.monitor.views.mongo_monitor import MongoDBHeapUsage, MongoDBObjects, MongoDBOpsReplsetLag, MongoDBSize, MongoDBOps, MongoDBPageFaults, MongoDBPageQueues
