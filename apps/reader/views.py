@@ -1126,16 +1126,18 @@ def starred_stories_rss_feed_tag(request, user_id, secret_token, tag_slug):
             user_id=user.pk,
             user_tags__contains=tag_counts.tag
         ).order_by('-starred_date').limit(25)
+
+    starred_stories = Feed.format_stories(starred_stories)
+
     for starred_story in starred_stories:
         story_data = {
-            'title': starred_story.story_title,
-            'link': starred_story.story_permalink,
-            'description': (starred_story.story_content_z and
-                            zlib.decompress(starred_story.story_content_z)),
-            'author_name': starred_story.story_author_name,
-            'categories': starred_story.story_tags,
-            'unique_id': starred_story.story_guid,
-            'pubdate': starred_story.starred_date,
+            'title': smart_str(starred_story['story_title']),
+            'link': starred_story['story_permalink'],
+            'description': smart_str(starred_story['story_content']),
+            'author_name': starred_story['story_authors'],
+            'categories': starred_story['story_tags'],
+            'unique_id': starred_story['story_permalink'],
+            'pubdate': starred_story['starred_date'],
         }
         rss.add_item(**story_data)
         
