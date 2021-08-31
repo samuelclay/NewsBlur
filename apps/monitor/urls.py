@@ -1,4 +1,3 @@
-from apps.monitor.views.monitor import MongoDBOps, MongoDBSize
 from django.conf.urls import url
 from apps.monitor.views import ( AppServers, AppTimes,
 Classifiers, DbTimes, Errors, FeedCounts, Feeds, LoadTimes,
