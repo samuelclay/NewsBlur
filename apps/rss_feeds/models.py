@@ -2200,6 +2200,10 @@ class Feed(models.Model):
         # Craigslist feeds get 6 hours minimum
         if 'craigslist' in self.feed_address:
             total = max(total, 60*6)
+
+        # Twitter feeds get 2 hours minimum
+        if 'twitter' in self.feed_address:
+            total = max(total, 60*2)
                 
         if verbose:
             logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s Stories/day: %s" % (

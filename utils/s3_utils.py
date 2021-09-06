@@ -2,8 +2,6 @@ import os
 import sys
 import time
 import mimetypes
-#from boto.s3.connection import S3Connection
-#from boto.s3.key import Key
 from utils.image_functions import ImageOps
 
 if '/srv/newsblur' not in ' '.join(sys.path):
@@ -75,7 +73,7 @@ class S3Store:
 
         if content_type:
             s3_object.put(Body=file_object, ExtraArgs={
-                'Content-Type': content_type,
+                'ContentType': content_type,
                 'ACL': 'public-read',
             })
         else:

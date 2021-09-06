@@ -89,9 +89,8 @@
     container_default_behavior: no_defaults
     command: "haproxy -f /srv/newsblur/docker/haproxy/haproxy.consul.cfg"
     volumes:
-      - /srv/newsblur:/srv/newsblur:consistent
-      - /etc/letsencrypt/live/newsblur.com:/etc/letsencrypt/live/newsblur.com:consistent
-      - /etc/letsencrypt/archive/newsblur.com:/etc/letsencrypt/archive/newsblur.com:consistent
+      - /srv/newsblur:/srv/newsblur
+      - /etc/letsencrypt:/etc/letsencrypt
 
 - name: Reload haproxy
   debug: 
