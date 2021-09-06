@@ -123,13 +123,13 @@ scrape_configs:
       tls_config:
         insecure_skip_verify: true
 
-    - job_name: 'mongo heap usage'
-      static_configs:
-        - targets: ['haproxy']
-      metrics_path: /monitor/mongo-heap-usage
-      scheme: https
-      tls_config:
-        insecure_skip_verify: true
+    #- job_name: 'mongo heap usage'
+    #  static_configs:
+    #    - targets: ['haproxy']
+    #  metrics_path: /monitor/mongo-heap-usage
+    #  scheme: https
+    #  tls_config:
+    #    insecure_skip_verify: true
     - job_name: 'mongo objects'
       static_configs:
         - targets: ['haproxy']
