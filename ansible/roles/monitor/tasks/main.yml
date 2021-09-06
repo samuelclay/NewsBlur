@@ -30,6 +30,7 @@
     pull: yes
     state: started
     command: bash -c "python /srv/newsblur/flask_monitor/db_monitor.py"
+    hostname: "{{ inventory_hostname }}"
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
     volumes:

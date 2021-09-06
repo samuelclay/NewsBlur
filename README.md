@@ -59,6 +59,12 @@
 
     Note: You will be warned that you are using a self signed certificate. In order to get around this warning you must type "thisisunsafe" as per https://dblazeski.medium.com/chrome-bypass-net-err-cert-invalid-for-development-daefae43eb12
 
+  3. To change the domain from localhost, you'll need to change it in a few places:
+
+   * Change `NEWSBLUR_URL` and `SESSION_COOKIE_DOMAIN` in `newsblur_web/docker_local_settings.py`
+   * Change the domain in `config/fixtures/bootstrap.json`, or if you've already created a site, edit the `Site.objects.all()[0]` domain in the shell, which you can access with `make shell`
+   * If you're using a custom subdomain, you'll also want to add it to `ALLOWED_SUBDOMAINS` in `apps/reader/views.py`
+
 ## Making docker-compose work with your database
 
 To make docker-compose work with your database, upgrade your local database to the docker-compose version and then volumize the database data path by changing the `./docker/volumes/` part of the volume directive in the service to point to your local database's data directory.
