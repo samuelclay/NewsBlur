@@ -51,14 +51,14 @@ class MongoDBHeapUsage(MongoGrafanaMetric):
         }
         return {
             "data": data,
-            "chart_name": 'MongoDB heap usage',
+            "chart_name": 'heap_usage',
             "chart_type": 'gauge',
         }
 
 class MongoDBObjects(MongoGrafanaMetric):
 
     def get_context(self):
-        stats = self.connection.db.command("dbstats")
+        stats = self.connection.newsblur.command("dbstats")
         data = dict(objects=stats['objects'])
         formatted_data = {}
         for k, v in data.items():
@@ -66,14 +66,14 @@ class MongoDBObjects(MongoGrafanaMetric):
 
         return {
             "data": formatted_data,
-            "chart_name": 'Number of objects stored',
+            "chart_name": 'objects',
             "chart_type": 'gauge',
         }
 
 class MongoDBOpsReplsetLag(MongoGrafanaMetric):
-
+    # needs  --replSet in docker command but when I do this, newsblur_web cnat connect to mongo
     def _get_oplog_length(self):
-        oplog = self.connection['local'].oplog.rs
+        oplog = self.connection.local.oplog.rs
         last_op = oplog.find({}, {'ts': 1}).sort([('$natural', -1)]).limit(1)[0]['ts'].time
         first_op = oplog.find({}, {'ts': 1}).sort([('$natural', 1)]).limit(1)[0]['ts'].time
         oplog_length = last_op - first_op
@@ -114,13 +114,24 @@ class MongoDBOpsReplsetLag(MongoGrafanaMetric):
 
         return {
             "data": formatted_data,
-            "chart_name": 'Oplog Metrics',
+            "chart_name": 'oplog_metrics',
             "chart_type": 'gauge',
         }
 
 class MongoDBSize(MongoGrafanaMetric):
     def get_context(self):
-        pass
+        stats = self.connection.newsblur.command("dbstats")
+        data = dict(size=stats['fsUsedSize'])
+        formatted_data = {}
+        for k, v in data.items():
+            formatted_data[k] = f'mongo_db_size{{db="{self.host}"}} {v}'
+
+        return {
+            "data": formatted_data,
+            "chart_name": 'db_size_bytes',
+            "chart_type": 'gauge',
+        }
+
 
 class MongoDBOps(MongoGrafanaMetric):
 
@@ -137,7 +148,7 @@ class MongoDBOps(MongoGrafanaMetric):
         
         return {
             "data": formatted_data,
-            "chart_name": 'Number of DB Ops',
+            "chart_name": 'ops',
             "chart_type": 'gauge',
         }
 
@@ -156,7 +167,7 @@ class MongoDBPageFaults(MongoGrafanaMetric):
 
         return {
             "data": formatted_data,
-            "chart_name": 'MongoDB page faults',
+            "chart_name": 'page_faults',
             "chart_type": 'counter',
         }
 
@@ -175,6 +186,6 @@ class MongoDBPageQueues(MongoGrafanaMetric):
 
         return {
             "data": formatted_data,
-            "chart_name": 'MongoDB queues',
+            "chart_name": 'queues',
             "chart_type": 'gauge',
         }
