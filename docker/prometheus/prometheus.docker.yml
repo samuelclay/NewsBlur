@@ -125,50 +125,50 @@ scrape_configs:
 
     #- job_name: 'mongo heap usage'
     #  static_configs:
-    #    - targets: ['haproxy']
-    #  metrics_path: /monitor/mongo-heap-usage
-    #  scheme: https
+    #    - targets: ['flask_metrics:5000']
+    #  metrics_path: /mongo/heap-usage
+    #  scheme: http
     #  tls_config:
     #    insecure_skip_verify: true
     - job_name: 'mongo objects'
       static_configs:
-        - targets: ['haproxy']
-      metrics_path: /monitor/mongo-objects
-      scheme: https
+        - targets: ['flask_metrics:5000']
+      metrics_path: /mongo/objects/
+      scheme: http
       tls_config:
         insecure_skip_verify: true
     - job_name: 'mongo repl set lag'
       static_configs:
-        - targets: ['haproxy']
-      metrics_path: /monitor/mongo-replset-lag
-      scheme: https
+        - targets: ['flask_metrics:5000']
+      metrics_path: /mongo/repl-set-lag/
+      scheme: http
       tls_config:
         insecure_skip_verify: true
     - job_name: 'mongo size'
       static_configs:
-        - targets: ['haproxy']
-      metrics_path: /monitor/mongo-size
-      scheme: https
+        - targets: ['flask_metrics:5000']
+      metrics_path: /mongo/size/
+      scheme: http
       tls_config:
         insecure_skip_verify: true
     - job_name: 'mongo ops'
       static_configs:
-        - targets: ['haproxy']
-      metrics_path: /monitor/mongo-ops
-      scheme: https
+        - targets: ['flask_metrics:5000']
+      metrics_path: /mongo/ops/
+      scheme: http
       tls_config:
         insecure_skip_verify: true
     - job_name: 'mongo page faults'
       static_configs:
-        - targets: ['haproxy']
-      metrics_path: /monitor/mongo-page-faults
-      scheme: https
+        - targets: ['flask_metrics:5000']
+      metrics_path: /mongo/page-faults/
+      scheme: http
       tls_config:
         insecure_skip_verify: true
     - job_name: 'mongo page queues'
       static_configs:
-        - targets: ['haproxy']
-      metrics_path: /monitor/mongo-page-queues
-      scheme: https
+        - targets: ['flask_metrics:5000']
+      metrics_path: /mongo/page-queues/
+      scheme: http
       tls_config:
         insecure_skip_verify: true

@@ -14,8 +14,10 @@ services:
     depends_on:
       - node-exporter
       - haproxy
+      - flask_metrics
     external_links:
       - haproxy
+      - flask_metrics
 
   node-exporter:
     container_name: node-exporter
@@ -34,7 +36,25 @@ services:
       - 3000:3000
     volumes:
       - ./docker/volumes/grafana_data:/var/lib/grafana
-      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources/
+      - ./docker/grafana/datasources/datasource.docker.yaml:/etc/grafana/provisioning/datasources/datasource.docker.yaml
       - ./docker/grafana/dashboards/:/etc/grafana/provisioning/dashboards/
     external_links:
       - prometheus
+  flask_metrics:
+    container_name: flask_metrics
+    build:
+      context: .
+      dockerfile: docker/flask_metrics/Dockerfile
+    environment:
+      - FLASK_APP=flask_metrics:app
+      - MONGODB_SERVER=db_mongo
+      - MONGODB_PORT=29019
+    ports:
+      - 5000:5000
+    volumes:
+      - ./flask_metrics:/srv/newsblur
+    depends_on:
+      - db_mongo
+    external_links:
+      - db_mongo
+    command: flask run --host=0.0.0.0
