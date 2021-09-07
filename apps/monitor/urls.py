@@ -2,8 +2,7 @@ from django.conf.urls import url
 from apps.monitor.views import ( AppServers, AppTimes,
 Classifiers, DbTimes, Errors, FeedCounts, Feeds, LoadTimes,
  Stories, TasksCodes, TasksPipeline, TasksServers, TasksTimes,
- Updates, Users, MongoDBHeapUsage, MongoDBObjects, MongoDBOpsReplsetLag,
- MongoDBSize, MongoDBOps, MongoDBPageFaults, MongoDBPageQueues
+ Updates, Users 
 )
 urlpatterns = [
     url(r'^app-servers?$', AppServers.as_view(), name="app_servers"),
@@ -21,11 +20,4 @@ urlpatterns = [
     url(r'^task-times?$', TasksTimes.as_view(), name="task_times"),
     url(r'^updates?$', Updates.as_view(), name="updates"),
     url(r'^users?$', Users.as_view(), name="users"),
-    url(r'^mongo-heap-usage?$', MongoDBHeapUsage.as_view(), name="mongo_heap_usage"),
-    url(r'^mongo-objects?$', MongoDBObjects.as_view(), name="mongo_db_objects"),
-    url(r'^mongo-replset-lag?$', MongoDBOpsReplsetLag.as_view(), name="mongo_ops_replset_lag"),
-    url(r'^mongo-size?$', MongoDBSize.as_view(), name="mongo_size"),
-    url(r'^mongo-ops?$', MongoDBOps.as_view(), name="mongo_ops"),
-    url(r'^mongo-page-faults?$', MongoDBPageFaults.as_view(), name="mongo_page_faults"),
-    url(r'^mongo-page-queues?$', MongoDBPageQueues.as_view(), name="mongo_page_queues"),
 ]

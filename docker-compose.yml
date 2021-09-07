@@ -120,7 +120,7 @@ services:
 
   db_mongo:
     container_name: db_mongo
-    image: mongo:3.6
+    image: mongo:4.0
     restart: unless-stopped
     ports:
       - 29019:29019

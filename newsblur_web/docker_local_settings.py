@@ -170,8 +170,8 @@ DO_TOKEN_FABRIC = '0000000000000000000000000000000000000000000000000000000000000
 SERVER_NAME = "nblocalhost"
 NEWSBLUR_URL = os.getenv("NEWSBLUR_URL", "https://localhost")
 
-if NEWSBLUR_URL == 'https://localhost':
-    SESSION_COOKIE_DOMAIN = "localhost"
+if NEWSBLUR_URL == 'https://nb.local.com':
+    SESSION_COOKIE_DOMAIN = ".nb.local.com"
 
 SESSION_ENGINE = 'redis_sessions.session'
 
