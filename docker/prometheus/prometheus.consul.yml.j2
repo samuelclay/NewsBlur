@@ -115,3 +115,53 @@ scrape_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/users
       scheme: https
+
+    - job_name: 'mongo heap usage'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/mongo-heap-usage
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'mongo objects'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/mongo-objects
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'mongo repl set lag'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/mongo-replset-lag
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'mongo size'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/mongo-size
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'mongo ops'
+      static_configs:
+        - targets: ['{{ monitor_server}}']
+      metrics_path: /monitor/mongo-ops
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'mongo page faults'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/mongo-page-faults
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'mongo page queues'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/mongo-page-queues
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
