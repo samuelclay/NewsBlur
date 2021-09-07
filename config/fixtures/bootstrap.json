@@ -16,14 +16,6 @@
         }
     },
     {
-        "pk": 3,
-        "model": "sites.site",
-        "fields": {
-            "domain": "nb.local.com",
-            "name": "NewsBlur"
-        }
-    },
-    {
         "pk": 1,
         "model": "auth.user",
         "fields": {
