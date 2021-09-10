@@ -51,6 +51,7 @@
 
 - name: Start NewsBlur Web Docker container
   become: yes
+  throttle: 3
   docker_container:
     name: newsblur_web
     image: newsblur/newsblur_python3
@@ -61,6 +62,9 @@
     state: started
     command: gunicorn --config /srv/newsblur/config/gunicorn_conf.py newsblur_web.wsgi:application
     hostname: "{{ inventory_hostname }}"
+    log_driver: json-file
+    log_options:
+      max-size: 100m
     networks_cli_compatible: yes
     network_mode: default
     networks:
