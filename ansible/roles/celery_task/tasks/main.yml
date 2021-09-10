@@ -44,7 +44,9 @@
     networks:
       - name: newsblurnet
     command: "{{ item.command }}"
-    log_driver: local
+    log_driver: json-file
+    log_options:
+      max-size: 100m
     healthcheck: 
       # test: celery inspect ping -A newsblur_web -d celery@$HOSTNAME
       test: bash -c "(($(date +%s) - $(stat /srv/newsblur/logs/newsblur.log -c %Y) < 120)) && exit 0 || exit 1"
