@@ -74,6 +74,9 @@
     networks_cli_compatible: yes
     network_mode: default
     hostname: "{{ inventory_hostname }}"
+    log_driver: json-file
+    log_options:
+      max-size: 100m    
     networks:
       - name: newsblurnet
     ports:
