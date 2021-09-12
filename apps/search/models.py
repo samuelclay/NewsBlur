@@ -263,7 +263,7 @@ class SearchStory:
             'author': {
                 'store': False,
                 'type': 'text',
-                'analyzer': 'simple',
+                'analyzer': 'default',
             },
             'feed_id': {
                 'store': False,
