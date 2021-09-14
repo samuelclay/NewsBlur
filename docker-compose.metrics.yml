@@ -45,16 +45,15 @@ services:
     build:
       context: .
       dockerfile: docker/flask_metrics/Dockerfile
-    environment:
-      - FLASK_APP=flask_metrics:app
-      - MONGODB_SERVER=db_mongo
-      - MONGODB_PORT=29019
+    command: bash -c "python /srv/newsblur/flask_metrics/flask_metrics.py"
     ports:
       - 5000:5000
+    depends_on: 
+      - db_mongo
+      - newsblur_web
+      - nginx
+    environment:
+      - MONGODB_PORT=29019
+      - MONGODB_SERVER=db_mongo
     volumes:
-      - ./flask_metrics:/srv/newsblur
-    depends_on:
-      - db_mongo
-    external_links:
-      - db_mongo
-    command: flask run --host=0.0.0.0
+      - ${PWD}:/srv/newsblur
