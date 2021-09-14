@@ -153,3 +153,8 @@ def page_queues():
     }
     html_body = render_template('prometheus_data.html', **context)
     return Response(html_body, content_type="text/plain")
+
+
+if __name__ == "__main__":
+    print(" ---> Starting NewsBlur Flask Metrics server...")
+    app.run(host="0.0.0.0", port=5000)
