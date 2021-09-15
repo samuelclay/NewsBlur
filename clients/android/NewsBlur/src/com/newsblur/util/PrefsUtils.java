@@ -47,6 +47,19 @@ public class PrefsUtils {
 		edit.commit();
 	}
 
+	@Nullable
+	public static String getCustomSever(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getString(PrefConstants.PREF_CUSTOM_SERVER, null);
+    }
+
+	public static void clearCustomServer(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor edit = preferences.edit();
+        edit.remove(PrefConstants.PREF_CUSTOM_SERVER);
+        edit.commit();
+    }
+
 	public static void saveLogin(Context context, String userName, String cookie) {
 		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		Editor edit = preferences.edit();
