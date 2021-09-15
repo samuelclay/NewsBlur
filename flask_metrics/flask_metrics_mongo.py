@@ -1,14 +1,16 @@
-import os
 from flask import Flask, render_template, Response
 import pymongo
+from newsblur_web import settings
 
 app = Flask(__name__)
-
-MONGO_HOST = os.environ.get('MONGODB_SERVER')
-MONGO_PORT = int(os.environ.get('MONGODB_PORT'))
-connection = pymongo.MongoClient(MONGO_HOST, MONGO_PORT)
-
-@app.route("/mongo/objects/")
+if settings.MONGO_DB['host'] == 'db_mongo:29019':
+    host = settings.MONGO_DB['host'].split(":")[0]
+    port = int(settings.MONGO_DB['host'].split(":")[1])
+    connection = pymongo.MongoClient(host, port)
+else:
+    connection = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}/?authSource=admin")
+MONGO_HOST = settings.SERVER_NAME
+@app.route("/objects/")
 def objects():
     stats = connection.newsblur.command("dbstats")
     data = dict(objects=stats['objects'])
@@ -25,11 +27,10 @@ def objects():
     return Response(html_body, content_type="text/plain")
 
 
-@app.route("/mongo/repl-set-lag/")
+@app.route("/repl-set-lag/")
 def repl_set_lag():
-
     def _get_oplog_length():
-        oplog = connection.local.oplog.rs
+        oplog = connection.rs.command('printReplicationInfo')
         last_op = oplog.find({}, {'ts': 1}).sort([('$natural', -1)]).limit(1)[0]['ts'].time
         first_op = oplog.find({}, {'ts': 1}).sort([('$natural', 1)]).limit(1)[0]['ts'].time
         oplog_length = last_op - first_op
@@ -76,7 +77,7 @@ def repl_set_lag():
     return Response(html_body, content_type="text/plain")
 
 
-@app.route("/mongo/size/")
+@app.route("/size/")
 def size():
     stats = connection.newsblur.command("dbstats")
     data = dict(size=stats['fsUsedSize'])
@@ -93,7 +94,7 @@ def size():
     return Response(html_body, content_type="text/plain")
 
 
-@app.route("/mongo/ops/")
+@app.route("/ops/")
 def ops():
     status = connection.admin.command('serverStatus')
     data = dict(
@@ -114,7 +115,7 @@ def ops():
     return Response(html_body, content_type="text/plain")
 
 
-@app.route("/mongo/page-faults/")
+@app.route("/page-faults/")
 def page_faults():
     status = connection.admin.command('serverStatus')
     try:
@@ -135,7 +136,7 @@ def page_faults():
     return Response(html_body, content_type="text/plain")
 
 
-@app.route("/mongo/page-queues/")
+@app.route("/page-queues/")
 def page_queues():
     status = connection.admin.command('serverStatus')
     data = dict(
@@ -157,4 +158,4 @@ def page_queues():
 
 if __name__ == "__main__":
     print(" ---> Starting NewsBlur Flask Metrics server...")
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5569)
