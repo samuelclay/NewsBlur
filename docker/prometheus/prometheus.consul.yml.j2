@@ -116,59 +116,59 @@ scrape_configs:
       metrics_path: /monitor/users
       scheme: https
 
-    - job_name: 'mongo heap usage'
-      consul_sd_configs:
-      - server: 'consul.service.nyc1.consul:8500'
-        services: ['flask_metrics']
-      relabel_configs:
-      - source_labels: ['__meta_consul_node']
-        target_label: instance
-      metrics_path: /monitor/mongo-heap-usage
+    #- job_name: 'mongo heap usage'
+    #  consul_sd_configs:
+    #  - server: 'consul.service.nyc1.consul:8500'
+    #    services: ['flask_metrics_mongo']
+    #  relabel_configs:
+    #  - source_labels: ['__meta_consul_node']
+    #    target_label: instance
+    #  metrics_path: /mongo-heap-usage
     - job_name: 'mongo objects'
       consul_sd_configs:
       - server: 'consul.service.nyc1.consul:8500'
-        services: ['flask_metrics']
+        services: ['flask_metrics_mongo']
       relabel_configs:
       - source_labels: ['__meta_consul_node']
         target_label: instance
-      metrics_path: /monitor/mongo-objects
+      metrics_path: /objects/
     - job_name: 'mongo repl set lag'
       consul_sd_configs:
       - server: 'consul.service.nyc1.consul:8500'
-        services: ['flask_metrics']
+        services: ['flask_metrics_mongo']
       relabel_configs:
       - source_labels: ['__meta_consul_node']
         target_label: instance
-      metrics_path: /monitor/mongo-replset-lag
+      metrics_path: /mongo-replset-lag/
     - job_name: 'mongo size'
       consul_sd_configs:
       - server: 'consul.service.nyc1.consul:8500'
-        services: ['flask_metrics']
+        services: ['flask_metrics_mongo']
       relabel_configs:
       - source_labels: ['__meta_consul_node']
         target_label: instance
-      metrics_path: /monitor/mongo-size
+      metrics_path: /size/
     - job_name: 'mongo ops'
       consul_sd_configs:
       - server: 'consul.service.nyc1.consul:8500'
-        services: ['flask_metrics']
+        services: ['flask_metrics_mongo']
       relabel_configs:
       - source_labels: ['__meta_consul_node']
         target_label: instance
-      metrics_path: /monitor/mongo-ops
+      metrics_path: /ops/
     - job_name: 'mongo page faults'
       consul_sd_configs:
       - server: 'consul.service.nyc1.consul:8500'
-        services: ['flask_metrics']
+        services: ['flask_metrics_mongo']
       relabel_configs:
       - source_labels: ['__meta_consul_node']
         target_label: instance
-      metrics_path: /monitor/mongo-page-faults
+      metrics_path: /page-faults/
     - job_name: 'mongo page queues'
       consul_sd_configs:
       - server: 'consul.service.nyc1.consul:8500'
-        services: ['flask_metrics']
+        services: ['flask_metrics_mongo']
       relabel_configs:
       - source_labels: ['__meta_consul_node']
         target_label: instance
-      metrics_path: /monitor/mongo-page-queues
+      metrics_path: /page-queues/
