@@ -36,10 +36,10 @@
   become: yes
   docker_container:
     name: flask_metrics
-    image: newsblur/flask_metrics:latest
+    image: newsblur/flask_monitor:latest
     pull: yes
     state: started
-    command: bash -c "python /srv/newsblur/flask_metrics/flask_metrics.py"
+    command: bash -c "python {{ item.file }}"
     hostname: "{{ inventory_hostname }}"
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
@@ -50,8 +50,12 @@
     networks:
       - name: newsblurnet
     ports:
-      - "5000:5000"
-
+      - "{{ item.port }}:{{ item.port }}"
+  when: "{{ item.service_name }} in inventory_hostname"
+  with_items:
+    - service_name: mongo
+      port: 5569
+      file: /srv/newsblur/flask_metrics/flask_metrics_mongo.py
 - name: Restart monitor
   become: yes
   shell:

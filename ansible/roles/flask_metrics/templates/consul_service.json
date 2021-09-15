@@ -1,15 +1,11 @@
 {
     "service": {
-        "name": "flask_metrics",
+        {% if 'mongo' in inventory_hostname %}
+        "name": "flask_metrics_mongo",
+        {% endif %}
         "tags": [
             "flask_metrics"
         ],
-        "checks": [{
-            "id": "flask_metrics-ping",
-            "http": "http://{{ ansible_ssh_host }}:5000/mongo/page-queues/",
-            "interval": "15s",
-            "failures_before_critical": 4
-          }],
-        "port": 5000
+        "port": 5569
     }
 }
