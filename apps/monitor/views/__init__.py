@@ -13,5 +13,3 @@ from apps.monitor.views.newsblur_tasks_servers import TasksServers
 from apps.monitor.views.newsblur_tasks_times import TasksTimes
 from apps.monitor.views.newsblur_updates import Updates
 from apps.monitor.views.newsblur_users import Users
-
-from apps.monitor.views.prometheus_mongo import MongoDBHeapUsage, MongoDBObjects, MongoDBOpsReplsetLag, MongoDBSize, MongoDBOps, MongoDBPageFaults, MongoDBPageQueues
