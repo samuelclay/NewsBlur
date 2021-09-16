@@ -1,4 +1,0 @@
-flask==2.0.1
-pymongo==3.11.2
-redis==3.5.3
-mongoengine==0.21.0
