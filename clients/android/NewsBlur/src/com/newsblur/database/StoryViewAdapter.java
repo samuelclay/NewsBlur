@@ -582,7 +582,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         // lists with mixed feeds get added info, but single feeds do not
         if (!singleFeed) {
-            FeedUtils.iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView, false);
+            FeedUtils.iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView);
             vh.feedTitleView.setText(story.extern_feedTitle);
             vh.feedIconView.setVisibility(View.VISIBLE);
             vh.feedTitleView.setVisibility(View.VISIBLE);
@@ -651,7 +651,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             // the view will display a stale, recycled thumb before the new one loads if the old is not cleared
             int thumbSizeGuess = vh.thumbTileView.getMeasuredHeight();
             vh.thumbTileView.setImageBitmap(null);
-            vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbTileView, true, thumbSizeGuess, true);
+            vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbTileView, thumbSizeGuess, true);
             vh.lastThumbUrl = story.thumbnailUrl;
         }
     }
@@ -686,13 +686,13 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             if (thumbnailStyle == ThumbnailStyle.LEFT_LARGE || thumbnailStyle == ThumbnailStyle.LEFT_SMALL) {
                 int thumbSizeGuess = vh.thumbViewLeft.getMeasuredHeight();
                 vh.thumbViewLeft.setImageBitmap(null);
-                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewLeft, true, thumbSizeGuess, true);
+                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewLeft, thumbSizeGuess, true);
                 vh.thumbViewRight.setVisibility(View.GONE);
                 vh.thumbViewLeft.setVisibility(View.VISIBLE);
             } else if (thumbnailStyle == ThumbnailStyle.RIGHT_LARGE || thumbnailStyle == ThumbnailStyle.RIGHT_SMALL) {
                 int thumbSizeGuess = vh.thumbViewRight.getMeasuredHeight();
                 vh.thumbViewRight.setImageBitmap(null);
-                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight, true, thumbSizeGuess, true);
+                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight, thumbSizeGuess, true);
                 vh.thumbViewLeft.setVisibility(View.GONE);
                 vh.thumbViewRight.setVisibility(View.VISIBLE);
             }

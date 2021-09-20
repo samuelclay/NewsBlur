@@ -110,7 +110,7 @@ class Premium : NbActivity() {
                 }
         binding.textPolicies.text = UIUtils.fromHtml(getString(R.string.premium_policies))
         binding.textSubTitle.paintFlags = binding.textSubTitle.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-        FeedUtils.iconLoader!!.displayImage(AppConstants.SHILOH_PHOTO_URL, binding.imgShiloh, false)
+        FeedUtils.iconLoader!!.displayImage(AppConstants.SHILOH_PHOTO_URL, binding.imgShiloh)
     }
 
     private fun setupBillingClient() {

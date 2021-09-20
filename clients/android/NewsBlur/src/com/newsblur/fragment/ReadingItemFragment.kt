@@ -390,7 +390,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             binding.readingFeedTitle.visibility = View.GONE
             binding.readingFeedIcon.visibility = View.GONE
         } else {
-            FeedUtils.iconLoader!!.displayImage(feedIconUrl, binding.readingFeedIcon, false)
+            FeedUtils.iconLoader!!.displayImage(feedIconUrl, binding.readingFeedIcon)
             binding.readingFeedTitle.text = feedTitle
         }
 
@@ -857,11 +857,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     fun flagWebviewError() {
         // TODO: enable a selective reload mechanism on load failures?
-    }
-
-    fun updateStorySavedTagList(savedTagList: ArrayList<String>) {
-        story!!.userTags = savedTagList.toArray(arrayOf())
-        setupTagsAndIntel()
     }
 
     private inner class TextSizeReceiver : BroadcastReceiver() {

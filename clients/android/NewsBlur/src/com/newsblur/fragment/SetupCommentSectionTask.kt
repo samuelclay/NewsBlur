@@ -96,7 +96,7 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
                     val favouriteImage = RoundedImageView(context)
                     val user = FeedUtils.dbHelper!!.getUserProfile(id)
                     if (user != null) {
-                        FeedUtils.iconLoader!!.displayImage(user.photoUrl, favouriteImage, false)
+                        FeedUtils.iconLoader!!.displayImage(user.photoUrl, favouriteImage)
                         favouriteContainer.addView(favouriteImage)
                     }
                 }
@@ -133,7 +133,7 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
                 val replyImage = replyView.findViewById<View>(R.id.reply_user_image) as RoundedImageView
                 val replyUser = FeedUtils.dbHelper!!.getUserProfile(reply.userId)
                 if (replyUser != null) {
-                    FeedUtils.iconLoader!!.displayImage(replyUser.photoUrl, replyImage, false)
+                    FeedUtils.iconLoader!!.displayImage(replyUser.photoUrl, replyImage)
                     replyImage.setOnClickListener {
                         val i = Intent(context, Profile::class.java)
                         i.putExtra(Profile.USER_ID, replyUser.userId)
@@ -178,11 +178,11 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
                 commentImage.visibility = View.INVISIBLE
                 val sourceUser = FeedUtils.dbHelper!!.getUserProfile(comment.sourceUserId)
                 if (sourceUser != null) {
-                    FeedUtils.iconLoader!!.displayImage(sourceUser.photoUrl, sourceUserImage, false)
-                    FeedUtils.iconLoader!!.displayImage(userPhoto, usershareImage, false)
+                    FeedUtils.iconLoader!!.displayImage(sourceUser.photoUrl, sourceUserImage)
+                    FeedUtils.iconLoader!!.displayImage(userPhoto, usershareImage)
                 }
             } else {
-                FeedUtils.iconLoader!!.displayImage(userPhoto, commentImage, false)
+                FeedUtils.iconLoader!!.displayImage(userPhoto, commentImage)
             }
             commentImage.setOnClickListener {
                 val i = Intent(context, Profile::class.java)
