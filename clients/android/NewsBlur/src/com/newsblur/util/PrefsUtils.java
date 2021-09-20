@@ -131,9 +131,9 @@ public class PrefsUtils {
         StringBuilder s = new StringBuilder();
         s.append("app version: ").append(getVersion(context));
         s.append("\n");
-        s.append("android version: ").append(Build.VERSION.RELEASE).append(" (" + Build.DISPLAY + ")");
+        s.append("android version: ").append(Build.VERSION.RELEASE).append(" (").append(Build.DISPLAY).append(")");
         s.append("\n");
-        s.append("device: ").append(Build.MANUFACTURER + " " + Build.MODEL + " (" + Build.BOARD + ")");
+        s.append("device: ").append(Build.MANUFACTURER).append(" ").append(Build.MODEL).append(" (").append(Build.BOARD).append(")");
         s.append("\n");
         s.append("sqlite version: ").append(FeedUtils.dbHelper.getEngineVersion());
         s.append("\n");

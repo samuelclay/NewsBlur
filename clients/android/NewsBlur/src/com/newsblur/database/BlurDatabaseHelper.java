@@ -307,9 +307,7 @@ public class BlurDatabaseHelper {
         Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, new String[]{DatabaseConstants.STORY_IMAGE_URLS}, null, null, null, null, null);
         Set<String> urls = new HashSet<String>(c.getCount());
         while (c.moveToNext()) {
-            for (String url : TextUtils.split(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_IMAGE_URLS)), ",")) {
-                urls.add(url);
-            }
+            urls.addAll(Arrays.asList(TextUtils.split(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_IMAGE_URLS)), ",")));
         }
         c.close();
         return urls;
@@ -681,9 +679,7 @@ public class BlurDatabaseHelper {
             socialIds.add(story.socialUserId);
         }
         if (story.friendUserIds != null) {
-            for (String id : story.friendUserIds) {
-                socialIds.add(id);
-            }
+            socialIds.addAll(Arrays.asList(story.friendUserIds));
         }
         if (socialIds.size() > 0) {
             impactedFeeds.add(FeedSet.multipleSocialFeeds(socialIds));
@@ -1227,11 +1223,11 @@ public class BlurDatabaseHelper {
         StringBuilder q = new StringBuilder(DatabaseConstants.SESSION_STORY_QUERY_BASE);
         
         if (fs.isAllRead()) {
-            q.append(" ORDER BY " + DatabaseConstants.READ_STORY_ORDER);
+            q.append(" ORDER BY ").append(DatabaseConstants.READ_STORY_ORDER);
         } else if (fs.isGlobalShared()) {
-            q.append(" ORDER BY " + DatabaseConstants.SHARED_STORY_ORDER);
+            q.append(" ORDER BY ").append(DatabaseConstants.SHARED_STORY_ORDER);
         } else if (fs.isAllSaved()) {
-            q.append(" ORDER BY " + DatabaseConstants.getSavedStoriesSortOrder(order));
+            q.append(" ORDER BY ").append(DatabaseConstants.getSavedStoriesSortOrder(order));
         } else {
             q.append(" ORDER BY ").append(DatabaseConstants.getStorySortOrder(order));
         }
@@ -1292,7 +1288,7 @@ public class BlurDatabaseHelper {
 
             sel.append(" FROM " + DatabaseConstants.STORY_TABLE);
             sel.append(" WHERE " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " IN ( ");
-            sel.append(TextUtils.join(",", fs.getMultipleFeeds()) + ")");
+            sel.append(TextUtils.join(",", fs.getMultipleFeeds())).append(")");
             DatabaseConstants.appendStorySelection(sel, selArgs, readFilter, stateFilter, fs.getSearchQuery());
 
         } else if (fs.getSingleSocialFeed() != null) {

@@ -717,12 +717,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
      */
     private Set<String> getSubFoldersRecursive(Set<String> parentFolders) {
         HashSet<String> subFolders = new HashSet<String>();
-        outerloop: for (String folder : parentFolders) {
+        for (String folder : parentFolders) {
             Folder f = folders.get(folder);
             if (f == null) continue;
-            innerloop: for (String child : f.children) {
-                subFolders.add(child);
-            }
+            subFolders.addAll(f.children);
             subFolders.addAll(getSubFoldersRecursive(subFolders));
         }
         return subFolders;
@@ -806,9 +804,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     public Set<String> getAllFeedsForFolder(int groupPosition) {
         String flatFolderName = activeFolderNames.get(groupPosition);
         Folder folder = flatFolders.get(flatFolderName);
-        Set<String> feedIds = new HashSet<String>();
-        feedIds.addAll(folder.feedIds);
-        return feedIds;
+        return new HashSet<>(folder.feedIds);
     }
 
     /** Get the cached SocialFeed object for the feed at the given list location. */
