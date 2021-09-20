@@ -770,11 +770,8 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
 
     companion object {
         const val EXTRA_FEEDSET = "feed_set"
-        const val EXTRA_POSITION = "feed_position"
         const val EXTRA_STORY_HASH = "story_hash"
-        private const val BUNDLE_POSITION = "position"
         private const val BUNDLE_STARTING_UNREAD = "starting_unread"
-        private const val BUNDLE_SELECTED_FEED_VIEW = "selectedFeedView"
 
         /** special value for starting story hash that jumps to the first unread.  */
         const val FIND_FIRST_UNREAD = "FIND_FIRST_UNREAD"

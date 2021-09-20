@@ -5,6 +5,8 @@ import android.graphics.Typeface;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Parcelable;
+
+import androidx.annotation.Nullable;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -78,16 +80,11 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 		fragment.setArguments(arguments);
 		return fragment;
 	}
-    
-    @Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        LoaderManager.getInstance(this).initLoader(ITEMLIST_LOADER, null, this);
-    }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        LoaderManager.getInstance(this).initLoader(ITEMLIST_LOADER, null, this);
     }
 
     @Override

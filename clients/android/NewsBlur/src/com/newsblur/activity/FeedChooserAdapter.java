@@ -150,11 +150,6 @@ public class FeedChooserAdapter extends BaseExpandableListAdapter {
         return true;
     }
 
-    @Override
-    public boolean areAllItemsEnabled() {
-        return super.areAllItemsEnabled();
-    }
-
     protected void setData(ArrayList<String> activeFoldersNames, ArrayList<ArrayList<Feed>> activeFolderChildren, ArrayList<Feed> feeds) {
         if (folderViewFilter == FolderViewFilter.NESTED) {
             this.folderNames = activeFoldersNames;
