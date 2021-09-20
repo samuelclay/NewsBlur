@@ -424,5 +424,11 @@
     <style name="dialogPreference" parent="Preference.DialogPreference.Material">
         <item name="iconSpaceReserved">false</item>
     </style>
+    
+    <style name="circleProgressIndicator" parent="Widget.MaterialComponents.CircularProgressIndicator">
+        <item name="indicatorColor">@color/newsblur_blue</item>
+        <item name="indicatorSize">24dp</item>
+        <item name="trackThickness">3dp</item>
+    </style>
 
 </resources>

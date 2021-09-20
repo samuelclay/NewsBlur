@@ -73,29 +73,38 @@
             android:layout_gravity="end"
             android:layout_marginEnd="130dp" />
 
-        <com.newsblur.view.ProgressCircle
+        <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/reading_overlay_progress"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            android:layout_marginRight="100dp" />
+            android:layout_marginRight="98dp"
+            app:indicatorColor="@color/progress_circle_remaining"
+            app:indicatorSize="20dp"
+            app:trackColor="@color/progress_circle_complete"
+            app:trackThickness="2dp" />
 
-        <ProgressBar
+        <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/reading_overlay_progress_right"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
             android:layout_marginRight="100dp"
-            android:indeterminate="true" />
+            android:indeterminate="true"
+            app:indicatorColor="@color/newsblur_blue"
+            app:indicatorSize="16dp"
+            app:trackThickness="2dp" />
 
-        <ProgressBar
+        <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/reading_overlay_progress_left"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
             android:layout_marginStart="90dp"
-            android:indeterminate="true" />
+            android:indeterminate="true"
+            app:indicatorColor="@color/newsblur_blue"
+            app:indicatorSize="20dp"
+            app:trackThickness="2dp" />
 
         <TextView
             android:id="@+id/reading_sync_status"
