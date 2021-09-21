@@ -50,12 +50,14 @@
     networks:
       - name: newsblurnet
     ports:
-      - "{{ item.port }}:{{ item.port }}"
+      - 5569:5569
   when: "{{ item.service_name }} in inventory_hostname"
   with_items:
     - service_name: mongo
-      port: 5569
       file: /srv/newsblur/flask_metrics/flask_metrics_mongo.py
+    - service_name: redis
+      file: /srv/newsblur/flask_metrics/flask_metrics_redis.py
+
 - name: Restart monitor
   become: yes
   shell:
