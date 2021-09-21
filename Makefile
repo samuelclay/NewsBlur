@@ -50,7 +50,7 @@ alllogs:
 logall: alllogs
 # brings down containers
 down:
-	- RUNWITHMAKEBUILD=True docker-compose -f docker-compose.yml down
+	- RUNWITHMAKEBUILD=True docker-compose -f docker-compose.yml -f docker-compose.metrics.yml down
 nbdown: down
 jekyll:
 	- cd blog && bundle exec jekyll serve
