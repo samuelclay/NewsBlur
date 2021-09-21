@@ -16,7 +16,7 @@ app = Flask(__name__)
 if settings.DOCKERBUILD:
     connection = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['host']}")
 else:
-    connection = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}/?authSource=admin")
+    connection = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}.node.consul/?authSource=admin")
 
 MONGO_HOST = settings.SERVER_NAME
 
