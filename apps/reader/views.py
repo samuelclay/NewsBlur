@@ -1600,7 +1600,7 @@ def load_river_stories__redis(request):
 def complete_river(request):
     user              = get_user(request)
     feed_ids          = request.POST.getlist('feeds') or request.POST.getlist('feeds[]')
-    feed_ids          = [int(feed_id) for feed_id in feed_ids if feed_id]
+    feed_ids          = [int(feed_id) for feed_id in feed_ids if feed_id and feed_id.isnumeric()]
     page              = int(request.POST.get('page', 1))
     read_filter       = request.POST.get('read_filter', 'unread')
     stories_truncated = 0
