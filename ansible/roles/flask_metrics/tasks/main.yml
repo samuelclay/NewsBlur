@@ -30,7 +30,7 @@
   become: yes
   docker_container:
     name: flask_metrics
-    image: newsblur/flask_monitor:latest
+    image: newsblur/newsblur_monitor:latest
     pull: yes
     state: started
     command: bash -c "python {{ item.file }}"
@@ -45,14 +45,14 @@
       - name: newsblurnet
     ports:
       - 5569:5569
-  when: "{{ item.service_name }} in inventory_hostname"
+  when: item.service_name in inventory_hostname
   with_items:
     - service_name: mongo
       file: /srv/newsblur/flask_metrics/flask_metrics_mongo.py
     - service_name: redis
       file: /srv/newsblur/flask_metrics/flask_metrics_redis.py
 
-- name: Restart monitor
+- name: Restart flask_metrics
   become: yes
   shell:
-    cmd: docker restart monitor
+    cmd: docker restart flask_metrics

@@ -37,7 +37,7 @@ def objects():
     return Response(html_body, content_type="text/plain")
 
 
-@app.route("/repl-set-lag/")
+@app.route("/mongo-replset-lag/")
 def repl_set_lag():
     def _get_oplog_length():
         oplog = connection.rs.command('printReplicationInfo')
