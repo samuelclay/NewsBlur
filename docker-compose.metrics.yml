@@ -43,7 +43,7 @@ services:
       - prometheus
   flask_metrics_mongo:
     container_name: flask_metrics_mongo
-    image: newsblur/flask_monitor:latest
+    image: newsblur/newsblur_monitor:latest
     command: bash -c "python /srv/newsblur/flask_metrics/flask_metrics_mongo.py"
     environment: 
       - DOCKERBUILD=True
@@ -57,7 +57,7 @@ services:
       - ${PWD}:/srv/newsblur
   flask_metrics_redis:
     container_name: flask_metrics_redis
-    image: newsblur/flask_monitor:latest
+    image: newsblur/newsblur_monitor:latest
     command: bash -c "python /srv/newsblur/flask_metrics/flask_metrics_redis.py"
     environment: 
       - DOCKERBUILD=True
