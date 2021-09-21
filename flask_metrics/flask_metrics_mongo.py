@@ -4,18 +4,17 @@ from newsblur_web import settings
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
-sentry_sdk.init(
-    dsn=settings.FLASK_SENTRY_DSN,
-    integrations=[FlaskIntegration()],
-    traces_sample_rate=1.0,
-)
+if settings.FLASK_SENTRY_DSN is not None:
+    sentry_sdk.init(
+        dsn=settings.FLASK_SENTRY_DSN,
+        integrations=[FlaskIntegration()],
+        traces_sample_rate=1.0,
+    )
 
 app = Flask(__name__)
 
-if settings.MONGO_DB['host'] == 'db_mongo:29019':
-    host = settings.MONGO_DB['host'].split(":")[0]
-    port = int(settings.MONGO_DB['host'].split(":")[1])
-    connection = pymongo.MongoClient(host, port)
+if settings.DOCKERBUILD:
+    connection = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['host']}")
 else:
     connection = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}/?authSource=admin")
 

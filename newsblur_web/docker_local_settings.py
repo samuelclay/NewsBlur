@@ -107,7 +107,7 @@ BROKER_URL = "redis://db_redis:6579/0"
 CELERY_RESULT_BACKEND = BROKER_URL
 CELERY_WORKER_CONCURRENCY = 1
 
-REDIS = {
+REDIS_USER = {
     'host': 'db_redis',
     'port': 6579
 }

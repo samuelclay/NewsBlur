@@ -1,22 +1,23 @@
 from flask import Flask, render_template, Response
 from newsblur_web import settings
-#import sentry_sdk
-#from sentry_sdk.integrations.flask import FlaskIntegration
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 import redis
 
-#sentry_sdk.init(
-#    dsn=settings.FLASK_SENTRY_DSN,
-#    integrations=[FlaskIntegration()],
-#    traces_sample_rate=1.0,
-#)
+if settings.FLASK_SENTRY_DSN is not None:
+    sentry_sdk.init(
+        dsn=settings.FLASK_SENTRY_DSN,
+        integrations=[FlaskIntegration()],
+        traces_sample_rate=1.0,
+    )
 
 app = Flask(__name__)
 
 INSTANCES = {
-    'redis-sessions': settings.REDIS_SESSIONS,
-    'redis-story': settings.REDIS_STORY,
-    'redis-pubsub': settings.REDIS_PUBSUB,
-    'redis-user': settings.REDIS,
+    'db-redis-sessions': settings.REDIS_SESSIONS,
+    'db-redis-story': settings.REDIS_STORY,
+    'db-redis-pubsub': settings.REDIS_PUBSUB,
+    'db-redis-user': settings.REDIS_USER,
 }
 
 class RedisMetric(object):
@@ -29,13 +30,18 @@ class RedisMetric(object):
         r = redis.Redis(host, port)
         return r.info()
 
-    def execute(self):
-        data = {}
+    def redis_servers_stats(self):
         for instance, redis_config in INSTANCES.items():
+            if not settings.DOCKERBUILD and settings.SERVER_NAME != instance:
+                continue
             host = redis_config['host']
             port = redis_config['port']
             stats = self.get_info(host, port)
-
+            yield instance, stats
+  
+    def execute(self):
+        data = {}
+        for instance, stats in self.redis_servers_stats():
             values = {}
             for k in self.fields:
                 try:
@@ -55,17 +61,14 @@ class RedisMetric(object):
     
     def get_db_size_data(self):
         data = {}
-        for instance, redis_config in INSTANCES.items():
-            host = redis_config['host']
-            port = redis_config['port']
-            stats = self.get_info(host, port)
+        for instance, stats in self.redis_servers_stats():
             dbs = [stat for stat in stats.keys() if stat.startswith('db')]
             for db in dbs:
-                data[f'{instance}-{db}'] = f'size {{db="{db}", instance="{instance}"}} {stats[db]["keys"]}'
+                data[f'{instance}-{db}'] = f' size {{db="{db}", instance="{instance}"}} {stats[db]["keys"]}'
         return data
 
     def get_context(self):
-        if self.fields[0][0] == 'db-size':
+        if self.fields[0][0] == 'size':
             formatted_data = self.get_db_size_data()
         else:
             values = self.execute()
@@ -137,8 +140,8 @@ def size():
     conf = {
         'title': "Redis DB size",
         'fields': (
-            ('db-size', dict(
-                label="db-size",
+            ('size', dict(
+                label="size",
                 type="gauge",
             )),
         )
