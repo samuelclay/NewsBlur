@@ -1861,6 +1861,20 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             callback(data);
         }, this));
     },
+
+    mute_user: function (user_id, callback) {
+        this.make_request('/social/mute_user', {'user_id': user_id}, _.bind(function(data) {
+            this.user_profile.set(data.user_profile);
+            callback(data);
+        }, this));        
+    },
+
+    unmute_user: function (user_id, callback) {
+        this.make_request('/social/unmute_user', {'user_id': user_id}, _.bind(function(data) {
+            this.user_profile.set(data.user_profile);
+            callback(data);
+        }, this));        
+    },
     
     approve_follower: function(user_id, callback) {
         this.make_request('/social/approve_follower', {'user_id': user_id}, _.bind(function(data) {
