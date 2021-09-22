@@ -777,6 +777,26 @@
           desc: "ID of user to unfollow."
           required: true
           example: "42"
+    - url: /social/mute_user
+      method: POST
+      short_desc: "Mute a user to not see thier shares or replies."
+      long_desc: 
+        - "Mute a user to not see thier shares or replies."
+      params:
+        - key: user_id
+          desc: "ID of user to mute."
+          required: true
+          example: "42"
+    - url: /social/unmute_user
+      method: POST
+      short_desc: "Un-mute a user"
+      long_desc: 
+        - "Un-mute a user to see thier shares and replies."
+      params:
+        - key: user_id
+          desc: "ID of user to unmute."
+          required: true
+          example: "42"
     - url: /social/feed_trainer
       method: GET
       short_desc: "Get the intelligence classifiers for a blurblog."
