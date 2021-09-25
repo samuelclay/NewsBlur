@@ -22,10 +22,10 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
@@ -311,7 +311,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             TextView posCounter = ((TextView) v.findViewById(R.id.row_feedpositive));
             TextView savedCounter = ((TextView) v.findViewById(R.id.row_feedsaved));
             ImageView muteIcon = ((ImageView) v.findViewById(R.id.row_feedmuteicon));
-            ProgressBar fetchingIcon = ((ProgressBar) v.findViewById(R.id.row_feedfetching));
+            CircularProgressIndicator fetchingIcon = ((CircularProgressIndicator) v.findViewById(R.id.row_feedfetching));
             if (!f.active) {
                 muteIcon.setVisibility(View.VISIBLE);
                 neutCounter.setVisibility(View.GONE);
