@@ -54,16 +54,17 @@
  2. Before starting to run any commands: decide whether you will access Newsblur via localhost or a domain!
  3. Open a bash shell & navigate to the Newsblur directory. Ensure that the mydomain.sh script is executable ('sudo chmod +x' if it isn't).
  4. Type `./mydomain.sh <domain name>` (where <domain name> is the domain that you want to use to access Newsblur.
+
    If you need to fix a typo then you can use `./mydomain.sh <old domain> <new domain>`
+   * What it does (you could do it manually instead):
+      * Changes `NEWSBLUR_URL` and `SESSION_COOKIE_DOMAIN` in `newsblur_web/docker_local_settings.py`
+      * Changes the domain in `config/fixtures/bootstrap.json`
+  
+ 5. If you're using a custom subdomain, you'll also want to add it to `ALLOWED_SUBDOMAINS` in `apps/reader/views.py`
    
-   What it does (you could do it manually instead):
-   * Changes `NEWSBLUR_URL` and `SESSION_COOKIE_DOMAIN` in `newsblur_web/docker_local_settings.py`
-   * Changes the domain in `config/fixtures/bootstrap.json`
-  3b. If you're using a custom subdomain, you'll also want to add it to `ALLOWED_SUBDOMAINS` in `apps/reader/views.py`
-   
- 4. Run `make nb` to build Newsblur containers. This will set up all necessary databases, celery tasks, node applications,
+ 6. Run `make nb` to build Newsblur containers. This will set up all necessary databases, celery tasks, node applications,
     flask database monitor, NGINX, and a Haproxy load balancer.
- 5. Navigate to: 
+ 7. Navigate to: 
 
          https://localhost or https://<domain name> if you chose to use your own domain
 
