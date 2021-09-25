@@ -50,21 +50,37 @@
     * Docker-Compose
 
 ## Installation Instructions
- 1. Run `make nb` to build Newsblur containers. This will set up all necessary databases, celery tasks, node applications,
+ 1. Clone this repo
+ 2. Before starting to run any commands: decide whether you will access Newsblur via localhost or a domain!
+ 3. Open a bash shell & navigate to the Newsblur directory. Ensure that the mydomain.sh script is executable ('sudo chmod +x' if it isn't).
+ 4. Type `./mydomain.sh <domain name>` (where <domain name> is the domain that you want to use to access Newsblur.
+   If you need to fix a typo then you can use `./mydomain.sh <old domain> <new domain>`
+   What it does (you could do it manually instead):
+   * Changes `NEWSBLUR_URL` and `SESSION_COOKIE_DOMAIN` in `newsblur_web/docker_local_settings.py`
+   * Changes the domain in `config/fixtures/bootstrap.json`
+  3b. If you're using a custom subdomain, you'll also want to add it to `ALLOWED_SUBDOMAINS` in `apps/reader/views.py`
+   
+ 4. Run `make nb` to build Newsblur containers. This will set up all necessary databases, celery tasks, node applications,
     flask database monitor, NGINX, and a Haproxy load balancer.
+ 5. Navigate to: 
 
- 2. Navigate to: 
-
-         https://localhost
+         https://localhost or https://<domain name> if you chose to use your own domain
 
     Note: You will be warned that you are using a self signed certificate. In order to get around this warning you must type "thisisunsafe" as per https://dblazeski.medium.com/chrome-bypass-net-err-cert-invalid-for-development-daefae43eb12
 
-  3. To change the domain from localhost, you'll need to change it in a few places:
+## Unable to log in after registering?
+   A way to make sure you updated all the correct places (thanks to Djagatahel via Reddit):
 
-   * Change `NEWSBLUR_URL` and `SESSION_COOKIE_DOMAIN` in `newsblur_web/docker_local_settings.py`
-   * Change the domain in `config/fixtures/bootstrap.json`, or if you've already created a site, edit the `Site.objects.all()[0]` domain in the shell, which you can access with `make shell`
-   * If you're using a custom subdomain, you'll also want to add it to `ALLOWED_SUBDOMAINS` in `apps/reader/views.py`
+    * Go to the website address in your browser
+    * Open developer tools and look at the network tab
+    * Try to login
+    * Look again at the developer tools, there should be a POST call to /login
+    * Observe the Response headers for that call
+    * The value of the "set-cookie" header should contain a "Domain=" string
 
+If the string after Domain= is not the domain you are using to access the website, then your configuration is missing a piece.
+   You can also confirm that there is a domain name mismatch in the database by running `make shell` & typing `Site.objects.all()[0]` to show the domain that Newsblur is using.
+   
 ## Making docker-compose work with your database
 
 To make docker-compose work with your database, upgrade your local database to the docker-compose version and then volumize the database data path by changing the `./docker/volumes/` part of the volume directive in the service to point to your local database's data directory.
