@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
-import android.widget.ProgressBar
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
@@ -18,6 +17,7 @@ import androidx.loader.app.LoaderManager
 import androidx.loader.content.Loader
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.newsblur.R
 import com.newsblur.database.ReadingAdapter
 import com.newsblur.databinding.ActivityReadingBinding
@@ -526,7 +526,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
         enableProgressCircle(binding.readingOverlayProgressLeft, enabled)
     }
 
-    private fun enableProgressCircle(view: ProgressBar, enabled: Boolean) {
+    private fun enableProgressCircle(view: CircularProgressIndicator, enabled: Boolean) {
         runOnUiThread {
             if (enabled) {
                 view.progress = 0
