@@ -48,7 +48,7 @@
         await client.connect();
       } catch (error) {
         err = error;
-        log.debug(`Error connecting to Mongo: ${err}`);
+        log.debug(`Error connecting to Mongo (${url}): ${err}`);
         return;
       }
       db = client.db("newsblur");

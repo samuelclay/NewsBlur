@@ -15,15 +15,25 @@
   lineinfile:
     path: /srv/newsblur/newsblur_web/app_env.py
     line: 'SERVER_NAME = "{{ inventory_hostname }}"'
-  
-- name: Start monitor docker container
+
+- name: Register flask_metrics in consul
+  tags: consul
+  become: yes
+  template:
+    src: /srv/newsblur/ansible/roles/flask_metrics/templates/consul_service.json
+    dest: /etc/consul.d/flask_metrics.json
+  notify:
+    - reload consul
+  when: disable_consul_services_ie_staging is not defined
+
+- name: Start flask_metrics docker container
   become: yes
   docker_container:
-    name: monitor
+    name: flask_metrics
     image: newsblur/newsblur_monitor:latest
     pull: yes
     state: started
-    command: bash -c "python /srv/newsblur/flask_monitor/db_monitor.py"
+    command: bash -c "python {{ item.file }}"
     hostname: "{{ inventory_hostname }}"
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
@@ -34,9 +44,15 @@
     networks:
       - name: newsblurnet
     ports:
-      - "5579:5579"
+      - 5569:5569
+  when: item.service_name in inventory_hostname
+  with_items:
+    - service_name: mongo
+      file: /srv/newsblur/flask_metrics/flask_metrics_mongo.py
+    - service_name: redis
+      file: /srv/newsblur/flask_metrics/flask_metrics_redis.py
 
-- name: Restart monitor
+- name: Restart flask_metrics
   become: yes
   shell:
-    cmd: docker restart monitor
+    cmd: docker restart flask_metrics
