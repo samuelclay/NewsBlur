@@ -55,6 +55,7 @@
  3. Open a bash shell & navigate to the Newsblur directory. Ensure that the mydomain.sh script is executable ('sudo chmod +x' if it isn't).
  4. Type `./mydomain.sh <domain name>` (where <domain name> is the domain that you want to use to access Newsblur.
    If you need to fix a typo then you can use `./mydomain.sh <old domain> <new domain>`
+   
    What it does (you could do it manually instead):
    * Changes `NEWSBLUR_URL` and `SESSION_COOKIE_DOMAIN` in `newsblur_web/docker_local_settings.py`
    * Changes the domain in `config/fixtures/bootstrap.json`
