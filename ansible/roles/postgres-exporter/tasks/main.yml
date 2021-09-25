@@ -1,8 +1,3 @@
-- name: Make docker network for newsblurnet
-  become: yes
-  docker_network:
-    name: newsblurnet
-  notify: restart docker
 
 - name: Register Postgres user and password
   become: no
