@@ -48,6 +48,8 @@
 ### Prerequisites
     * Docker
     * Docker-Compose
+    * You may need to `sudo apt install nodejs npm`
+    * Github SSH keys. You may meet this error `The authenticity of host 'github.com (140.82.121.3)' can't be established. In which case you need to access Github direct & accept the key, after verifying it here (https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints)
 
 ## Installation Instructions
  1. Clone this repo
