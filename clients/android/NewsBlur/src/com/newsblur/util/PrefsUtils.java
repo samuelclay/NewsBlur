@@ -804,6 +804,11 @@ public class PrefsUtils {
         return PrefConstants.CACHE_AGE_VALUE_30D;
     }
 
+    public static FeedListOrder getFeedListOrder(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return FeedListOrder.valueOf(prefs.getString(PrefConstants.FEED_LIST_ORDER, FeedListOrder.ALPHABETICAL.toString()));
+    }
+
     public static void applyThemePreference(Activity activity) {
         ThemeValue value = getSelectedTheme(activity);
         if (value == ThemeValue.LIGHT) {
