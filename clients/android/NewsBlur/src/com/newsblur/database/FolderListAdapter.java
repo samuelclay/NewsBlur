@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -33,6 +34,7 @@ import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.FeedListOrder;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
@@ -676,6 +678,14 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 }
             }
         }
+
+        // sort feeds within each folder
+        FeedListOrder feedListOrder = PrefsUtils.getFeedListOrder(context);
+        Comparator<Feed> feedComparator = Feed.getFeedListOrderComparator(feedListOrder);
+        for (List<Feed> folderChildren : activeFolderChildren) {
+            Collections.sort(folderChildren, feedComparator);
+        }
+
         // add the always-present (if enabled) special rows/folders that got at the bottom of the list
         addSpecialRow(READ_STORIES_GROUP_KEY);
         addSpecialRow(SAVED_SEARCHES_GROUP_KEY);

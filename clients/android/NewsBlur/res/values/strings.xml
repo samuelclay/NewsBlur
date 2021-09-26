@@ -355,6 +355,7 @@
 
     <string name="settings_cat_feed_list">Feed List</string>
 
+    <string name="setting_feed_list_order">Feed list order</string>
     <string name="settings_enable_row_global_shared">Show Global Shared Stories</string>
     <string name="settings_enable_row_global_shared_sum">Show the Global Shared Stories folder</string>
     <string name="settings_enable_row_infrequent_stories">Show Infrequent Stories</string>
@@ -374,6 +375,18 @@
         <item>OLDEST</item>
     </string-array>
     <string name="default_story_order_value">NEWEST</string>
+
+    <string name="alphabetical">Alphabetical</string>
+    <string name="most_used_at_top">Most used at top</string>
+    <string-array name="default_feed_list_order_entries">
+        <item>@string/alphabetical</item>
+        <item>@string/most_used_at_top</item>
+    </string-array>
+    <string-array name="default_feed_list_order_values">
+        <item>ALPHABETICAL</item>
+        <item>MOST_USED_AT_TOP</item>
+    </string-array>
+    <string name="default_feed_list_order_value">ALPHABETICAL</string>
 
     <string name="all_stories">All Stories</string>
     <string name="unread_only">Unread Only</string>
