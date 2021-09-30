@@ -160,6 +160,8 @@ class TextImporter:
             story_image_urls = []
         
         content = self.add_hero_image(content, story_image_urls)
+        if content:
+            content = self.rewrite_content(content)
 
         full_content_is_longer = False
         if self.feed and self.feed.is_newsletter:
@@ -184,9 +186,6 @@ class TextImporter:
                 len(original_story_content)
             )), warn_color=False)
             return
-        
-        if content:
-            content = self.rewrite_content(content)
         
         if return_document:
             return dict(content=content, title=title, url=url, doc=original_text_doc, image=image)
