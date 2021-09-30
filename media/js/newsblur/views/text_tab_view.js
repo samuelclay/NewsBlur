@@ -69,8 +69,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         this.hide_loading();
         var $content = this.$('.NB-feed-story-content');
 
-        if (!this.story.get('original_text') || 
-            this.story.get('original_text').length < (this.story.get('story_content').length / 3)) {
+        if (!this.story.get('original_text')) {
             this.error();
         } else {
             $content.html(this.story.original_text());
