@@ -26,17 +26,17 @@ class RedisMetric(object):
         self.title = title
         self.fields = fields
 
-    def get_info(self, host, port):
-        r = redis.Redis(host, port)
+    def get_info(self):
+        r = redis.Redis(self.host, self.port)
         return r.info()
 
     def redis_servers_stats(self):
         for instance, redis_config in INSTANCES.items():
             if not settings.DOCKERBUILD and settings.SERVER_NAME != instance:
                 continue
-            host = redis_config['host']
-            port = redis_config['port']
-            stats = self.get_info(host, port)
+            self.host = redis_config['host']
+            self.port = redis_config['port']
+            stats = self.get_info()
             yield instance, stats
   
     def execute(self):
@@ -64,7 +64,7 @@ class RedisMetric(object):
         for instance, stats in self.redis_servers_stats():
             dbs = [stat for stat in stats.keys() if stat.startswith('db')]
             for db in dbs:
-                data[f'{instance}-{db}'] = f' size {{db="{db}", instance="{instance}"}} {stats[db]["keys"]}'
+                data[f'{instance}-{db}'] = f'redis_size{{db="{db}"}} {stats[db]["keys"]}'
         return data
 
     def get_context(self):
@@ -92,7 +92,7 @@ def active_connections():
         'title': "Redis active connections",
         'fields': (
             ('connected_clients', dict(
-                label="connections",
+                label="redis_active_connections",
                 type="gauge",
             )),
         ),
@@ -106,7 +106,7 @@ def commands():
         'title': "Redis commands",
         'fields': (
             ('total_commands_processed', dict(
-                label="commands",
+                label="redis_commands",
                 type="gauge",
             )),
         ),
@@ -123,7 +123,7 @@ def connects():
         'title': "Redis connections per second",
         'fields': (
             ('total_connections_received', dict(
-                label="connections",
+                label="redis_connects",
                 type="counter",
             )),
         ),
@@ -141,7 +141,7 @@ def size():
         'title': "Redis DB size",
         'fields': (
             ('size', dict(
-                label="size",
+                label="redis_size",
                 type="gauge",
             )),
         )
@@ -158,7 +158,7 @@ def memory():
         'title': "Redis Total Memory",
         'fields': (
             ('total_system_memory', dict(
-                label="memory",
+                label="redis_memory",
                 type="gauge",
             )),
         ),
@@ -175,7 +175,7 @@ def memory_used():
         'title': "Redis Used Memory",
         'fields': (
             ('used_memory', dict(
-                label="used_memory",
+                label="redis_used_memory",
                 type="gauge",
             )),
         ),
