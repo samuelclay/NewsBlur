@@ -715,6 +715,10 @@ if DOCKERBUILD:
 else:
     REDIS_PORT = 6379
 
+if REDIS_USER is None:
+    # REDIS has been renamed to REDIS_USER. 
+    REDIS_USER = REDIS
+
 CELERY_REDIS_DB_NUM = 4
 SESSION_REDIS_DB = 5
 CELERY_BROKER_URL = "redis://%s:%s/%s" % (REDIS_USER['host'], REDIS_PORT,CELERY_REDIS_DB_NUM)
@@ -735,10 +739,6 @@ SESSION_REDIS = {
     'socket_timeout': 10,
     'retry_on_timeout': True
 }
-
-if REDIS_USER is None:
-    # REDIS has been renamed to REDIS_USER. 
-    REDIS_USER = REDIS
 
 CACHES = {
     'default': {
