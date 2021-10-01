@@ -48,7 +48,7 @@ def newsletter_receive(request):
     if settings.DEBUG or 'samuel' in params.get('To', ''):
         logging.debug(" ---> Email newsletter: %s" % params)
     
-    if not params or len(params.keys()):
+    if not params or not len(params.keys()):
         logging.debug(" ***> Email newsletter blank body: %s" % request.body)
         raise Http404
     
