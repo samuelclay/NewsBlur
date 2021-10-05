@@ -6,36 +6,41 @@
     mode: 0777
     path: /var/log/mongodb
 
-- name: Get the volume name
-  shell: ls /dev/disk/by-id/ | grep -v part
-  register: volume_name_raw
+- name: Block for mongo volume
+  block:
+    - name: Get the volume name
+      shell: ls /dev/disk/by-id/ | grep -v part
+      register: volume_name_raw
 
-- set_fact:
-    volume_name: "{{ volume_name_raw.stdout }}"
+    - set_fact:
+        volume_name: "{{ volume_name_raw.stdout }}"
 
-- debug:
-    msg: "{{ volume_name }}"
+    - debug:
+        msg: "{{ volume_name }}"
 
-- name: Create the mount point
-  become: yes
-  file: 
-    path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}"
-    state: directory
+    - name: Create the mount point
+      become: yes
+      file: 
+        path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}"
+        state: directory
 
-- name: Mount volume read-write
-  become: yes
-  mount:
-    path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}"
-    src: "/dev/disk/by-id/{{ volume_name }}"
-    fstype: xfs
-    opts: defaults,discard
-    state: mounted
+    - name: Mount volume read-write
+      become: yes
+      mount:
+        path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}"
+        src: "/dev/disk/by-id/{{ volume_name }}"
+        fstype: xfs
+        opts: defaults,discard
+        state: mounted
+  when: false
 
 - name: Copy MongoDB keyfile
+  become: yes
   copy:
     content: "{{ mongodb_keyfile }}"
     dest: /srv/newsblur/config/mongodb_keyfile.key
-    owner: nb
+    owner: 999
+    group: 999
     mode: 0400
   tags:
     - keyfile
@@ -72,7 +77,7 @@
       - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
       - /var/log/mongodb/:/var/log/mongodb/
       - /opt/mongo/newsblur/backup/:/backup/
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-secondary']
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-primary', 'db-mongo-secondary']
 
 - name: Start db-mongo-analytics docker container
   become: yes
@@ -95,7 +100,7 @@
     command: --config /etc/mongod.conf
     user: 1000:1001
     volumes:
-      - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
+      # - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
       - /srv/newsblur/ansible/roles/mongo/templates/mongo.analytics.conf:/etc/mongod.conf
       - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
       - /var/log/mongodb/:/var/log/mongodb/
@@ -108,7 +113,7 @@
   template:
     src: consul_service.json
     dest: /etc/consul.d/mongo.json
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-secondary']
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-primary', 'db-mongo-secondary']
   notify:
     - reload consul
 

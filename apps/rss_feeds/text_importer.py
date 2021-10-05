@@ -160,8 +160,16 @@ class TextImporter:
             story_image_urls = []
         
         content = self.add_hero_image(content, story_image_urls)
+        if content:
+            content = self.rewrite_content(content)
 
-        if content and len(content) > len(original_story_content):
+        full_content_is_longer = False
+        if self.feed and self.feed.is_newsletter:
+            full_content_is_longer = True
+        elif len(content) > len(original_story_content):
+            full_content_is_longer = True
+        
+        if content and full_content_is_longer:
             if self.story and not skip_save:
                 self.story.original_text_z = zlib.compress(smart_bytes(content))
                 try:
@@ -178,9 +186,6 @@ class TextImporter:
                 len(original_story_content)
             )), warn_color=False)
             return
-        
-        if content:
-            content = self.rewrite_content(content)
         
         if return_document:
             return dict(content=content, title=title, url=url, doc=original_text_doc, image=image)

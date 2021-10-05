@@ -132,14 +132,14 @@ scrape_configs:
       - source_labels: ['__meta_consul_node']
         target_label: instance
       metrics_path: /objects/
-    - job_name: 'mongo repl set lag'
-      consul_sd_configs:
-      - server: 'consul.service.nyc1.consul:8500'
-        services: ['flask_metrics_mongo']
-      relabel_configs:
-      - source_labels: ['__meta_consul_node']
-        target_label: instance
-      metrics_path: /mongo-replset-lag/
+    # - job_name: 'mongo repl set lag'
+    #   consul_sd_configs:
+    #   - server: 'consul.service.nyc1.consul:8500'
+    #     services: ['flask_metrics_mongo']
+    #   relabel_configs:
+    #   - source_labels: ['__meta_consul_node']
+    #     target_label: instance
+    #   metrics_path: /mongo-replset-lag/
     - job_name: 'mongo size'
       consul_sd_configs:
       - server: 'consul.service.nyc1.consul:8500'
