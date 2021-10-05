@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.newsblur.R
 import com.newsblur.activity.LoginProgress
@@ -61,10 +62,14 @@ class LoginRegisterFragment : Fragment() {
         if (!TextUtils.isEmpty(binding.loginUsername.text.toString())) {
             // set the custom server endpoint before any API access, even the cookie fetch.
             val customServerValue = binding.loginCustomServerValue.text.toString()
-            if (!TextUtils.isEmpty(customServerValue)) {
+            if (!TextUtils.isEmpty(customServerValue) && customServerValue.startsWith("https://")) {
                 APIConstants.setCustomServer(customServerValue)
                 PrefsUtils.saveCustomServer(activity, customServerValue)
+            } else if (!TextUtils.isEmpty(customServerValue)) {
+                Toast.makeText(requireActivity(), R.string.login_custom_server_scheme_error, Toast.LENGTH_LONG).show()
+                return
             }
+
             val loginIntent = Intent(activity, LoginProgress::class.java).apply {
                 putExtra("username", binding.loginUsername.text.toString())
                 putExtra("password", binding.loginPassword.text.toString())
