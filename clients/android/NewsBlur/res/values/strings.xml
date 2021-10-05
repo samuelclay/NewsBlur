@@ -14,7 +14,8 @@
     <string name="login_logged_in">Logged in!</string>
     <string name="login_retrieving_feeds">Retrieving feeds…</string>
     <string name="login_next">Next</string>
-    
+    <string name="login_custom_server_scheme_error">Expected \'https://\' custom server URL</string>
+
     <string name="search_for_feed">Search for feeds</string>
 
     <string name="loading">Loading…</string>
