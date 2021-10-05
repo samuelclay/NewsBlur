@@ -6,7 +6,8 @@
         "name": "flask_metrics_redis",
         {% endif %}
         "tags": [
-            "flask_metrics"
+            "flask_metrics",
+            "metrics"
         ],
         "port": 5569
     }

@@ -413,6 +413,24 @@ resource "digitalocean_droplet" "db-mongo-primary" {
   }
 }
 
+resource "digitalocean_droplet" "db-mongo-primary-s" {
+  count    = 4
+  image    = var.droplet_os
+  name     = "db-mongo-primary${count.index+1}"
+  region   = var.droplet_region
+  size     = var.mongo_primary_droplet_size
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+  }
+}
+
 resource "digitalocean_volume" "mongo_secondary_volume" {
   count                   = 2
   region                  = "nyc1"
