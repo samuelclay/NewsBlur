@@ -13,3 +13,15 @@ providers:
     options:
       path: /etc/grafana/provisioning/dashboards/node_exporter_dashboard.json
       foldersFromFilesStructure: true
+  - name: MongoDB
+    allowUiUpdates: true
+    type: file
+    options:
+      path: /etc/grafana/provisioning/dashboards/mongo_dashboard.json
+      foldersFromFilesStructure: true
+  - name: Redis
+    allowUiUpdates: true
+    type: file
+    options:
+      path: /etc/grafana/provisioning/dashboards/redis_dashboard.json
+      foldersFromFilesStructure: true
