@@ -80,6 +80,7 @@ def db_check_mongo():
         # The `mongo` hostname below is a reference to the newsblurnet docker network, where 172.18.0.0/16 is defined
         client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}/?authSource=admin")
         db = client.newsblur
+        return str(1)
     except:
         abort(503)
     
@@ -209,11 +210,11 @@ def db_check_redis_pubsub():
 @app.route("/db_check/elasticsearch")
 def db_check_elasticsearch():
     try:
-        conn = elasticsearch.Elasticsearch('db-elasticsearch.service.nyc1.consul')
+        conn = elasticsearch.Elasticsearch("elasticsearch")
     except:
         abort(503)
     
-    if conn.indices.exists_index('feeds-index'):
+    if conn.indices.exists('feeds-index'):
         return str("Index exists, but didn't try search")
         # query = pyes.query.TermQuery("title", "daring fireball")
         # results = conn.search(query=query, size=1, doc_types=['feeds-type'], sort="num_subscribers:desc")

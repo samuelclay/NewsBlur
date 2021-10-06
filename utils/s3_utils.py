@@ -72,10 +72,10 @@ class S3Store:
         s3_object = self.s3.Object(bucket_name=self.bucket_name, key=key)
 
         if content_type:
-            s3_object.put(Body=file_object, ExtraArgs={
-                'Content-Type': content_type,
-                'ACL': 'public-read',
-            })
+            s3_object.put(Body=file_object, 
+                ContentType=content_type,
+                ACL='public-read'
+            )
         else:
             s3_object.put(Body=file_object)
         
