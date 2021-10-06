@@ -57,13 +57,13 @@ public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetail
 
         activityTime.setText(activity.timeSince.toUpperCase() + " " + ago);
         if (activity.category == Category.FEED_SUBSCRIPTION) {
-            FeedUtils.iconLoader.displayImage(APIConstants.S3_URL_FEED_ICONS + activity.feedId + ".png", imageView, false);
+            FeedUtils.iconLoader.displayImage(APIConstants.S3_URL_FEED_ICONS + activity.feedId + ".png", imageView);
         } else if (activity.category == Category.SHARED_STORY) {
-            FeedUtils.iconLoader.displayImage(currentUserDetails.photoUrl, imageView, false);
+            FeedUtils.iconLoader.displayImage(currentUserDetails.photoUrl, imageView);
         } else if (activity.category == Category.STAR) {
             imageView.setImageResource(R.drawable.ic_clock);
         } else if (activity.user != null) {
-            FeedUtils.iconLoader.displayImage(activity.user.photoUrl, imageView, false);
+            FeedUtils.iconLoader.displayImage(activity.user.photoUrl, imageView);
         } else {
             imageView.setImageResource(R.drawable.logo);
         }
