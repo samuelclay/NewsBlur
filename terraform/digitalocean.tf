@@ -414,7 +414,7 @@ resource "digitalocean_droplet" "db-mongo-primary" {
 }
 
 resource "digitalocean_droplet" "db-mongo-primary-s" {
-  count    = 4
+  count    = 1
   image    = var.droplet_os
   name     = "db-mongo-primary${count.index+1}"
   region   = var.droplet_region
