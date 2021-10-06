@@ -14,7 +14,7 @@ def main():
     admin_email = settings.ADMINS[0][1]
     failed = False
     feeds_fetched = 0
-    FETCHES_DROP_AMOUNT = 100,000
+    FETCHES_DROP_AMOUNT = 100000
     redis_task_fetches = 0
     monitor_key = "Monitor:task_fetches"
     r = redis.Redis(connection_pool=settings.REDIS_ANALYTICS_POOL)
