@@ -215,3 +215,10 @@ scrape_configs:
       scheme: http
       tls_config:
         insecure_skip_verify: true
+
+    - job_name: 'elastic search exporter'
+      static_configs:
+        - targets: ['elasticsearch_exporter:9114']
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
