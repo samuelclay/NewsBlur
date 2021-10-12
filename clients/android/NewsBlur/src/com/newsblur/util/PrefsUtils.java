@@ -47,6 +47,19 @@ public class PrefsUtils {
 		edit.commit();
 	}
 
+	@Nullable
+	public static String getCustomSever(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getString(PrefConstants.PREF_CUSTOM_SERVER, null);
+    }
+
+	public static void clearCustomServer(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor edit = preferences.edit();
+        edit.remove(PrefConstants.PREF_CUSTOM_SERVER);
+        edit.commit();
+    }
+
 	public static void saveLogin(Context context, String userName, String cookie) {
 		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		Editor edit = preferences.edit();
@@ -118,9 +131,9 @@ public class PrefsUtils {
         StringBuilder s = new StringBuilder();
         s.append("app version: ").append(getVersion(context));
         s.append("\n");
-        s.append("android version: ").append(Build.VERSION.RELEASE).append(" (" + Build.DISPLAY + ")");
+        s.append("android version: ").append(Build.VERSION.RELEASE).append(" (").append(Build.DISPLAY).append(")");
         s.append("\n");
-        s.append("device: ").append(Build.MANUFACTURER + " " + Build.MODEL + " (" + Build.BOARD + ")");
+        s.append("device: ").append(Build.MANUFACTURER).append(" ").append(Build.MODEL).append(" (").append(Build.BOARD).append(")");
         s.append("\n");
         s.append("sqlite version: ").append(FeedUtils.dbHelper.getEngineVersion());
         s.append("\n");
@@ -789,6 +802,11 @@ public class PrefsUtils {
         if (val.equals(PrefConstants.CACHE_AGE_SELECT_14D)) return PrefConstants.CACHE_AGE_VALUE_14D;
         if (val.equals(PrefConstants.CACHE_AGE_SELECT_30D)) return PrefConstants.CACHE_AGE_VALUE_30D;
         return PrefConstants.CACHE_AGE_VALUE_30D;
+    }
+
+    public static FeedListOrder getFeedListOrder(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return FeedListOrder.valueOf(prefs.getString(PrefConstants.FEED_LIST_ORDER, FeedListOrder.ALPHABETICAL.toString()));
     }
 
     public static void applyThemePreference(Activity activity) {

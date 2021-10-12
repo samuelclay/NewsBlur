@@ -47,6 +47,13 @@
 
     <PreferenceCategory
         android:title="@string/settings_cat_feed_list">
+        <ListPreference
+            android:key="feed_list_order"
+            android:title="@string/setting_feed_list_order"
+            android:dialogTitle="@string/setting_feed_list_order"
+            android:entries="@array/default_feed_list_order_entries"
+            android:entryValues="@array/default_feed_list_order_values"
+            android:defaultValue="@string/default_feed_list_order_value" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="enable_row_global_shared"

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    style="?selectorFeedBackground" >
+    style="?selectorFeedBackground">
 
     <LinearLayout
         android:id="@+id/row_feedcounters"
@@ -72,13 +73,15 @@
             style="?muteicon"
             android:background="@drawable/neutral_count_rect"/>
 
-        <ProgressBar
+        <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/row_feedfetching"
-            android:layout_width="21dp"
-            android:layout_height="21dp"
-            android:layout_marginRight="3dp"
+            style="?circleProgressIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
             android:visibility="gone"
-            android:indeterminate="true" />
+            app:trackThickness="2dp"
+            app:indicatorSize="16dp"/>
 
     </LinearLayout>
 

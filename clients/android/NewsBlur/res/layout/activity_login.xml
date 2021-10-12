@@ -31,10 +31,10 @@
         <FrameLayout
             android:id="@+id/login_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp" />
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp" />
     
     </ScrollView>
 
