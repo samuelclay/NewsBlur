@@ -405,16 +405,16 @@ public class DatabaseConstants {
      */ 
     public static void appendStorySelection(StringBuilder q, List<String> selArgs, ReadFilter readFilter, StateFilter stateFilter, String requireQueryHit) {
         if (readFilter == ReadFilter.UNREAD) {
-            q.append(" AND (" + STORY_READ + " = 0)");
+            q.append(" AND (").append(STORY_READ).append(" = 0)");
         }
 
         String stateSelection =  getStorySelectionFromState(stateFilter);
         if (stateSelection != null) {
-            q.append(" AND " + stateSelection);
+            q.append(" AND ").append(stateSelection);
         }
 
         if (requireQueryHit != null) {
-            q.append(" AND (" + STORY_TABLE + "." + STORY_SEARCH_HIT + " = ?)");
+            q.append(" AND (").append(STORY_TABLE).append(".").append(STORY_SEARCH_HIT).append(" = ?)");
             selArgs.add(requireQueryHit);
         }
     }

@@ -1,6 +1,5 @@
 package com.newsblur.activity
 
-import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -8,12 +7,14 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.lifecycleScope
 import com.newsblur.activity.FeedSearchAdapter.OnFeedSearchResultClickListener
 import com.newsblur.databinding.ActivityFeedSearchBinding
 import com.newsblur.domain.FeedResult
 import com.newsblur.fragment.AddFeedFragment
 import com.newsblur.fragment.AddFeedFragment.AddFeedProgressListener
 import com.newsblur.network.APIManager
+import com.newsblur.util.executeAsyncTask
 import java.net.MalformedURLException
 import java.net.URL
 import java.util.*
@@ -39,6 +40,7 @@ class SearchForFeeds : NbActivity(), OnFeedSearchResultClickListener, AddFeedPro
         setupListeners()
         apiManager = APIManager(this)
         binding.inputSearchQuery.requestFocus()
+        lifecycleScope
     }
 
     override fun onFeedSearchResultClickListener(result: FeedResult) {
@@ -89,25 +91,20 @@ class SearchForFeeds : NbActivity(), OnFeedSearchResultClickListener, AddFeedPro
     }
 
     private fun searchQuery(query: Editable) {
-        object : AsyncTask<Void?, Void?, Array<FeedResult>?>() {
-            override fun onPreExecute() {
-                super.onPreExecute()
-                binding.loadingCircle.visibility = View.VISIBLE
-                binding.clearText.visibility = View.GONE
-            }
-
-            override fun doInBackground(vararg params: Void?): Array<FeedResult>? {
-                return apiManager.searchForFeed(query.toString())
-            }
-
-            override fun onPostExecute(result: Array<FeedResult>?) {
-                binding.loadingCircle.visibility = View.GONE
-                binding.clearText.visibility = View.VISIBLE
-                syncSearchResults(result ?: arrayOf())
-            }
-
-
-        }.execute()
+        lifecycleScope.executeAsyncTask(
+                onPreExecute = {
+                    binding.loadingCircle.visibility = View.VISIBLE
+                    binding.clearText.visibility = View.GONE
+                },
+                doInBackground = {
+                    apiManager.searchForFeed(query.toString())
+                },
+                onPostExecute = {
+                    binding.loadingCircle.visibility = View.GONE
+                    binding.clearText.visibility = View.VISIBLE
+                    syncSearchResults(it ?: arrayOf())
+                }
+        )
     }
 
     private fun syncClearIconVisibility(query: Editable) {
