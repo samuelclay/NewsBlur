@@ -14,7 +14,7 @@ public class RegisterResponse {
 	public boolean authenticated;
     public RegisterResponseErrors errors;
 
-    public class RegisterResponseErrors {
+    public static class RegisterResponseErrors {
         public String[] email;
         public String[] username;
         @SerializedName("__all__")

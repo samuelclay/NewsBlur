@@ -15,7 +15,7 @@ public class UnreadCountResponse extends NewsBlurResponse {
 	@SerializedName("social_feeds")
 	public Map<String,UnreadMD> socialFeeds;
 
-    public class UnreadMD {
+    public static class UnreadMD {
 
         public int ps;
         public int nt;

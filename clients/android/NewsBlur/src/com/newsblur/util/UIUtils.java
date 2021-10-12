@@ -35,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -52,7 +53,6 @@ public class UIUtils {
 
     private UIUtils() {} // util class - no instances
 	
-    @SuppressWarnings("deprecation")
 	public static Bitmap clipAndRound(Bitmap source, boolean roundCorners, boolean clipSquare) {
         Bitmap result = source;
         if (clipSquare) {
@@ -95,8 +95,8 @@ public class UIUtils {
         return result;
     }
 
-    @SuppressWarnings("deprecation")
-    public static Bitmap decodeImage(File f, int maxDim, boolean cropSquare) {
+    @Nullable
+    public static Bitmap decodeImage(File f, int maxDim) {
         try {
             // not only can cache misses occur, users can delete files, the system can clean up
             // files, storage can be unmounted, etc.  fail fast.
@@ -126,22 +126,8 @@ public class UIUtils {
             decodeOpts.inJustDecodeBounds = false;
             //decodeOpts.inPreferredConfig = Bitmap.Config.RGB_565;
             //decodeOpts.inDither = true;
-            Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(), decodeOpts);
 
-            if (bitmap == null) return null;
-
-            // crop the image square if flagged
-            if (cropSquare) {
-                // image size will be a squared off version of the now-downsampled original
-                int targetSize = Math.min(bitmap.getWidth(), bitmap.getHeight());
-                // to clip square, calculate x and y offsets
-                int offsetX = (bitmap.getWidth() - targetSize) / 2;
-                int offsetY = (bitmap.getHeight() - targetSize) / 2;
-                // crop the bitmap. the returned object will likely be the same
-                bitmap = Bitmap.createBitmap(bitmap, offsetX, offsetY, targetSize, targetSize);
-            }
-
-            return bitmap;
+            return BitmapFactory.decodeFile(f.getAbsolutePath(), decodeOpts);
         } catch (Throwable t) {
             // due to low memory, corrupt files, or bad source files, image processing can fail
             // in countless ways even on happy systems.  these failures are virtually impossible
@@ -193,7 +179,7 @@ public class UIUtils {
      */
     public static void setupToolbar(AppCompatActivity activity, String imageUrl, String title, boolean showHomeEnabled) {
         ImageView iconView = setupCustomToolbar(activity, title, showHomeEnabled);
-        FeedUtils.iconLoader.displayImage(imageUrl, iconView, false);
+        FeedUtils.iconLoader.displayImage(imageUrl, iconView);
     }
 
     public static void setupToolbar(AppCompatActivity activity, int imageId, String title, boolean showHomeEnabled) {
