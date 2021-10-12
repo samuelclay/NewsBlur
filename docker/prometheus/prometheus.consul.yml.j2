@@ -229,3 +229,11 @@ scrape_configs:
       relabel_configs:
       - source_labels: ['__meta_consul_node']
         target_label: instance
+
+    - job_name: 'postgres exporter'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['postgres_exporter']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance

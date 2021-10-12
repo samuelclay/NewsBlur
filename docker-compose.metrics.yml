@@ -70,6 +70,7 @@ services:
     volumes:
       - ${PWD}:/srv/newsblur
   elasticsearch_exporter:
+    container_name: elasticsearch_exporter
     image: prometheuscommunity/elasticsearch-exporter:latest
     command:
       - '--es.uri=http://db_elasticsearch:9200'
@@ -78,3 +79,10 @@ services:
       - "9210:9114"
     depends_on:
       - db_elasticsearch
+  postgres_exporter:
+    container_name: postgres-exporter
+    image:  prometheuscommunity/postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: 'postgresql://newsblur:newsblur@db_postgres:5432/postgres?sslmode=disable'
+    ports:
+    - '9187:9187'
