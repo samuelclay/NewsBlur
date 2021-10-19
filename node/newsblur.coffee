@@ -8,7 +8,8 @@ if envresult.error
   # throw envresult.error
   envresult = require('dotenv').config()
   if envresult.error
-    throw envresult.error
+    log.debug " ---> No .env file found, using defaults"
+    # throw envresult.error
 
 ENV_DEV = process.env.NODE_ENV == 'development'
 ENV_PROD = process.env.NODE_ENV == 'production'
@@ -28,12 +29,12 @@ if ENV_PROD
     debug: true,
     tracesSampleRate: 1.0
 
-  app.use(Sentry.Handlers.requestHandler())
+  app.use Sentry.Handlers.requestHandler()
 
-original_page(app)
-original_text(app)
-favicons(app)
-unread_counts(server)
+original_page app
+original_text app
+favicons app
+unread_counts server
 
 if ENV_PROD
   app.get "/debug", (req, res) ->
