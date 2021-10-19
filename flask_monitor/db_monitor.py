@@ -1,4 +1,4 @@
-from flask import Flask, abort
+from flask import Flask, abort, request
 import os
 import psycopg2
 import pymysql
@@ -80,42 +80,43 @@ def db_check_mongo():
         # The `mongo` hostname below is a reference to the newsblurnet docker network, where 172.18.0.0/16 is defined
         client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}/?authSource=admin")
         db = client.newsblur
-        return str(1)
+        if request.args.get('consul') == '1':
+            return str(1)
     except:
         abort(503)
-    
-    try:
-        stories = db.stories.estimated_document_count()
-    except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
-        abort(504)
-    except pymongo.errors.OperationFailure as e:
-        if 'Authentication failed' in str(e):
-            abort(505)
-        abort(506)
+    if request.args.get('haproxy') == '1':
+        try:
+            stories = db.stories.estimated_document_count()
+        except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
+            abort(504)
+        except pymongo.errors.OperationFailure as e:
+            if 'Authentication failed' in str(e):
+                abort(505)
+            abort(506)
+            
+        if not stories:
+            abort(510)
         
-    if not stories:
-        abort(510)
-    
-    status = client.admin.command('replSetGetStatus')
-    members = status['members']
-    primary_optime = None
-    oldest_secondary_optime = None
-    for member in members:
-        member_state = member['state']
-        optime = member['optime']
-        if member_state == PRIMARY_STATE:
-            primary_optime = optime['ts'].time
-        elif member_state == SECONDARY_STATE:
-            if not oldest_secondary_optime or optime['ts'].time < oldest_secondary_optime:
-                oldest_secondary_optime = optime['ts'].time
+        status = client.admin.command('replSetGetStatus')
+        members = status['members']
+        primary_optime = None
+        oldest_secondary_optime = None
+        for member in members:
+            member_state = member['state']
+            optime = member['optime']
+            if member_state == PRIMARY_STATE:
+                primary_optime = optime['ts'].time
+            elif member_state == SECONDARY_STATE:
+                if not oldest_secondary_optime or optime['ts'].time < oldest_secondary_optime:
+                    oldest_secondary_optime = optime['ts'].time
 
-    if not primary_optime or not oldest_secondary_optime:
-        abort(511)
+        if not primary_optime or not oldest_secondary_optime:
+            abort(511)
 
-    # if primary_optime - oldest_secondary_optime > 100:
-    #     abort(512)
+        # if primary_optime - oldest_secondary_optime > 100:
+        #     abort(512)
 
-    return str(stories)
+        return str(stories)
 
 @app.route("/db_check/mongo_analytics")
 def db_check_mongo_analytics():
