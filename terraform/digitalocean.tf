@@ -519,7 +519,7 @@ resource "digitalocean_droplet" "task-celery" {
   image    = var.droplet_os
   name     = format("task-celery%02v", count.index+1)
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.droplet_size_10
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     # command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -538,7 +538,7 @@ resource "digitalocean_droplet" "task-work" {
   image    = var.droplet_os
   name     = "task-work${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.droplet_size_10
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
