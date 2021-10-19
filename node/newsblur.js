@@ -20,11 +20,11 @@
     // throw envresult.error
     envresult = require('dotenv').config();
     if (envresult.error) {
-      log.debug(`There is no .env file. Continuing...`);
-      //throw envresult.error;
+      log.debug(" ---> No .env file found, using defaults");
     }
   }
 
+  // throw envresult.error
   ENV_DEV = process.env.NODE_ENV === 'development';
 
   ENV_PROD = process.env.NODE_ENV === 'production';
