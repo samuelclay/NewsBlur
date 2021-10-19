@@ -146,7 +146,7 @@ backend postgres
   server postgres-db02      db_pgsql:5000           check inter 2000ms
   
 backend mongo
-  option httpchk GET /db_check/mongo
+  option httpchk GET /db_check/mongo?haproxy=1
   server mongo-db20d        db20d:5000              check inter 2000ms
   server mongo-db22         db22:5000               check inter 2000ms
   server mongo-db23a        db23a:5000              check inter 2000ms

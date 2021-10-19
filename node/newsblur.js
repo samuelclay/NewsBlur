@@ -20,7 +20,8 @@
     // throw envresult.error
     envresult = require('dotenv').config();
     if (envresult.error) {
-      throw envresult.error;
+      log.debug(`There is no .env file. Continuing...`);
+      //throw envresult.error;
     }
   }
 

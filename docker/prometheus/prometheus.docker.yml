@@ -215,3 +215,17 @@ scrape_configs:
       scheme: http
       tls_config:
         insecure_skip_verify: true
+
+    - job_name: 'elastic search exporter'
+      static_configs:
+        - targets: ['elasticsearch_exporter:9114']
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
+
+    - job_name: 'postgres exporter'
+      static_configs:
+        - targets: ['postgres_exporter:9187']
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true

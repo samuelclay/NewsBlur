@@ -44,6 +44,214 @@
         "x": 0,
         "y": 0
       },
+      "id": 62,
+      "panels": [],
+      "title": "Redis",
+      "type": "row"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 1
+      },
+      "hiddenSeries": false,
+      "id": 64,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.7",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "redis_pubsub_channels",
+          "interval": "",
+          "legendFormat": "",
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Redis PubSub Channels",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:233",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:234",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 1
+      },
+      "hiddenSeries": false,
+      "id": 66,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.7",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "rate(redis_commands_total[5m])",
+          "interval": "",
+          "legendFormat": "",
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Redis Commands",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:320",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:321",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
       "id": 46,
       "panels": [],
       "title": "Feeds Loaded",
@@ -67,7 +275,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 1
+        "y": 10
       },
       "hiddenSeries": false,
       "id": 22,
@@ -179,7 +387,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 17
       },
       "hiddenSeries": false,
       "id": 38,
@@ -283,7 +491,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 15
+        "y": 24
       },
       "id": 20,
       "panels": [],
@@ -310,7 +518,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 25
       },
       "hiddenSeries": false,
       "id": 2,
@@ -416,7 +624,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 6,
@@ -484,7 +692,7 @@
           "format": "s",
           "label": null,
           "logBase": 1,
-          "max": null,
+          "max": "5",
           "min": "0",
           "show": true
         },
@@ -510,7 +718,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 34
+        "y": 43
       },
       "id": 4,
       "panels": [],
@@ -547,7 +755,7 @@
         "h": 22,
         "w": 24,
         "x": 0,
-        "y": 35
+        "y": 44
       },
       "id": 10,
       "options": {
@@ -601,7 +809,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 57
+        "y": 66
       },
       "hiddenSeries": false,
       "id": 47,
@@ -706,7 +914,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 64
+        "y": 73
       },
       "hiddenSeries": false,
       "id": 48,
@@ -797,7 +1005,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 71
+        "y": 80
       },
       "id": 42,
       "panels": [],
@@ -820,7 +1028,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 72
+        "y": 81
       },
       "hiddenSeries": false,
       "id": 33,
@@ -921,7 +1129,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 81
+        "y": 90
       },
       "hiddenSeries": false,
       "id": 44,
@@ -1049,7 +1257,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 89
+        "y": 98
       },
       "hiddenSeries": false,
       "id": 30,
@@ -1244,7 +1452,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 97
+        "y": 106
       },
       "hiddenSeries": false,
       "id": 32,
@@ -1345,7 +1553,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 105
+        "y": 114
       },
       "hiddenSeries": false,
       "id": 28,
@@ -1462,7 +1670,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 112
+        "y": 121
       },
       "hiddenSeries": false,
       "id": 12,
@@ -1560,7 +1768,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 112
+        "y": 121
       },
       "hiddenSeries": false,
       "id": 26,
@@ -1655,7 +1863,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 120
+        "y": 129
       },
       "hiddenSeries": false,
       "id": 14,
@@ -1741,7 +1949,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 128
+        "y": 137
       },
       "id": 50,
       "panels": [],
@@ -1764,7 +1972,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 129
+        "y": 138
       },
       "hiddenSeries": false,
       "id": 56,
@@ -1861,7 +2069,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 137
+        "y": 146
       },
       "hiddenSeries": false,
       "id": 52,
@@ -1956,7 +2164,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 137
+        "y": 146
       },
       "hiddenSeries": false,
       "id": 54,
@@ -2053,7 +2261,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 145
+        "y": 154
       },
       "hiddenSeries": false,
       "id": 58,
@@ -2150,7 +2358,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 145
+        "y": 154
       },
       "hiddenSeries": false,
       "id": 60,
@@ -2238,7 +2446,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 153
+        "y": 162
       },
       "id": 16,
       "panels": [
@@ -2633,7 +2841,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 154
+        "y": 163
       },
       "id": 40,
       "panels": [
@@ -2663,10 +2871,10 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 10,
+            "h": 27,
             "w": 24,
             "x": 0,
-            "y": 96
+            "y": 164
           },
           "id": 37,
           "options": {
@@ -2720,5 +2928,5 @@
   "timezone": "",
   "title": "NewsBlur",
   "uid": "T86VjXrG2",
-  "version": 33
+  "version": 36
 }
