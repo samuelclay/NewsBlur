@@ -87,12 +87,14 @@ def db_check_mongo():
 
     try:
         stories = db.stories.estimated_document_count()
-    except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
+    except pymongo.errors.NotMasterError:
         abort(504)
+    except pymongo.errors.ServerSelectionTimeoutError:
+        abort(505)
     except pymongo.errors.OperationFailure as e:
         if 'Authentication failed' in str(e):
-            abort(505)
-        abort(506)
+            abort(506)
+        abort(507)
         
     if not stories:
         abort(510)
