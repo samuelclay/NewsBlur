@@ -9,6 +9,10 @@ variable "droplet_size" {
   type = string
   default = "s-1vcpu-1gb"
 }
+variable "droplet_size_10" {
+  type = string
+  default = "s-1vcpu-2gb"
+}
 
 variable "droplet_size_20" {
   type = string
