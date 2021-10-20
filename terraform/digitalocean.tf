@@ -304,7 +304,7 @@ resource "digitalocean_droplet" "db-redis-user" {
   image    = var.droplet_os
   name     = "db-redis-user"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.droplet_size_40
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -321,7 +321,7 @@ resource "digitalocean_droplet" "db-redis-sessions" {
   image    = var.droplet_os
   name     = "db-redis-sessions"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.droplet_size_20
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -338,7 +338,7 @@ resource "digitalocean_droplet" "db-redis-story" {
   image    = var.droplet_os
   name     = "db-redis-story"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.redis_story_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -519,7 +519,7 @@ resource "digitalocean_droplet" "task-celery" {
   image    = var.droplet_os
   name     = format("task-celery%02v", count.index+1)
   region   = var.droplet_region
-  size     = var.droplet_size_10
+  size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     # command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -534,11 +534,11 @@ resource "digitalocean_droplet" "task-celery" {
 }
 
 resource "digitalocean_droplet" "task-work" {
-  count    = 2
+  count    = 3
   image    = var.droplet_os
   name     = "task-work${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size_10
+  size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
