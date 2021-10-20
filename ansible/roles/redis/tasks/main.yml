@@ -1,4 +1,11 @@
 ---
+- name: Template redis_replica.conf file
+  template:
+    src: /srv/newsblur/docker/redis_replica.conf.j2
+    dest: /srv/newsblur/docker/redis/redis_replica.conf
+  notify: restart redis
+  register: updated_config
+
 - name: Start redis docker containers
   become: yes
   docker_container:
@@ -20,8 +27,8 @@
     restart_policy: unless-stopped
     volumes:
       - /srv/newsblur/docker/volumes/redis:/data
-      - /srv/newsblur/ansible/roles/redis/templates/redis.conf:/usr/local/etc/redis/redis_server.conf
-      - /srv/newsblur/ansible/roles/redis/templates/redis_replica.conf:/usr/local/etc/redis/redis_replica.conf
+      - /srv/newsblur/docker/redis/redis.conf:/usr/local/etc/redis/redis_server.conf
+      - /srv/newsblur/docker/redis/redis_replica.conf:/usr/local/etc/redis/redis_replica.conf
       - /srv/newsblur/docker/volumes/redis.var.lib:/var/lib/redis
 
 # - name: Register redis in consul
