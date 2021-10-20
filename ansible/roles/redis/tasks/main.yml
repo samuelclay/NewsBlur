@@ -5,14 +5,23 @@
     name: redis
     image: redis:6.2.6
     state: started
+    command: /usr/local/etc/redis/redis_server.conf
+    container_default_behavior: no_defaults
     hostname: "{{ inventory_hostname }}"
+    networks_cli_compatible: yes
+    # network_mode: host
+    network_mode: default
+    networks:
+      - name: newsblurnet
+        aliases: 
+          - redis
     ports:
       - 6379:6379
     restart_policy: unless-stopped
     volumes:
       - /srv/newsblur/docker/volumes/redis:/data
-      - /srv/newsblur/ansible/roles/redis/templates/redis.conf:/usr/local/etc/redis_server.conf
-      - /srv/newsblur/ansible/roles/redis/templates/redis_replica.conf:/usr/local/etc/redis_replica.conf
+      - /srv/newsblur/ansible/roles/redis/templates/redis.conf:/usr/local/etc/redis/redis_server.conf
+      - /srv/newsblur/ansible/roles/redis/templates/redis_replica.conf:/usr/local/etc/redis/redis_replica.conf
       - /srv/newsblur/docker/volumes/redis.var.lib:/var/lib/redis
 
 # - name: Register redis in consul
