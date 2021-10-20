@@ -3,7 +3,7 @@
   become: yes
   docker_container:
     name: redis
-    image: redis:6.2.1
+    image: redis:6.2.6
     state: started
     hostname: "{{ inventory_hostname }}"
     ports:
@@ -11,18 +11,18 @@
     restart_policy: unless-stopped
     volumes:
       - /srv/newsblur/docker/volumes/redis:/data
-      - /srv/newsblur/config/redis.conf:/usr/local/etc/redis_server.conf
-      - /srv/newsblur/config/redis_docker.conf:/etc/redis_server.conf
+      - /srv/newsblur/ansible/roles/redis/templates/redis.conf:/usr/local/etc/redis_server.conf
+      - /srv/newsblur/ansible/roles/redis/templates/redis_replica.conf:/usr/local/etc/redis_replica.conf
       - /srv/newsblur/docker/volumes/redis.var.lib:/var/lib/redis
 
-- name: Register redis in consul
-  tags: consul
-  become: yes
-  template:
-    src: consul_service.json
-    dest: /etc/consul.d/redis.json
-  notify:
-    - reload consul
+# - name: Register redis in consul
+#   become: yes
+#   template:
+#     src: consul_service.json
+#     dest: /etc/consul.d/redis.json
+#   notify:
+#     - reload consul
+#   tags: consul
 
 - name: Add sanity checkers cronjob for disk usage
   become: yes
