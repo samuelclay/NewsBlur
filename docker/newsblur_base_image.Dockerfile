@@ -9,7 +9,6 @@ RUN       set -ex \
                             ' \
           && buildDeps=' \
                     patch \
-                    python-dev \
                     gfortran \
                     lib32ncurses5-dev  \
                     libblas-dev \

@@ -3,7 +3,7 @@
   tags: consul
   become: yes
   template:
-    src: /srv/newsblur/ansible/roles/elasticsearch_exporter/templates/consul_service.json
+    src: /srv/newsblur/ansible/roles/elasticsearch-exporter/templates/consul_service.json
     dest: /etc/consul.d/elasticsearch_exporter.json
   notify:
     - reload consul
@@ -16,7 +16,7 @@
     image: prometheuscommunity/elasticsearch-exporter:latest
     pull: yes
     state: started
-    command: '--es.uri=http://db_elasticsearch:9200'
+    command: '--es.uri=http://elasticsearch:9200'
     hostname: "{{ inventory_hostname }}"
     restart_policy: unless-stopped
     container_default_behavior: no_defaults

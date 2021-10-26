@@ -137,7 +137,7 @@ class TextImporter:
                                                  positive_keywords="post, entry, postProp, article, postContent, postField")
         try:
             content = original_text_doc.summary(html_partial=True)
-        except (readability.Unparseable, ParserError) as e:
+        except (ParserError) as e:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % e)
             return
 
