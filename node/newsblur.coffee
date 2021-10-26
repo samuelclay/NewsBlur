@@ -3,6 +3,7 @@ Tracing = require "@sentry/tracing"
 app = require('express')()
 server = require('http').createServer(app)
 log    = require './log.js'
+os    = require 'os'
 envresult = require('dotenv').config({path: 'node/.env'})
 if envresult.error
   # throw envresult.error
@@ -28,6 +29,7 @@ if ENV_PROD
     dsn: process.env.SENTRY_DSN,
     debug: true,
     tracesSampleRate: 1.0
+    serverName: os.hostname()
 
   app.use Sentry.Handlers.requestHandler()
 
