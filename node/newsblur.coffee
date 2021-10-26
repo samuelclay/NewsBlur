@@ -40,7 +40,7 @@ if ENV_PROD
   app.get "/debug", (req, res) ->
     throw new Error("Debugging Sentry")
 
-  app.use(Sentry.Handlers.errorHandler())
+  app.use Sentry.Handlers.errorHandler()
   log.debug "Setting up Sentry debugging: #{process.env.SENTRY_DSN.substr(0, 20)}..."
 
 log.debug "Starting NewsBlur Node Server: #{process.env.SERVER_NAME || 'localhost'}"
