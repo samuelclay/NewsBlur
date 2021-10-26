@@ -386,18 +386,18 @@ resource "digitalocean_droplet" "db-postgres" {
 }
 
 resource "digitalocean_volume" "mongo_volume" {
-  count                   = 2
+  count                   = 1
   region                  = "nyc1"
-  name                    = "mongo${count.index+1}"
+  name                    = "mongo${count.index+2}"
   size                    = 400
   initial_filesystem_type = "xfs"
   description             = "Storage for NewsBlur MongoDB"
 }
 
 resource "digitalocean_droplet" "db-mongo-primary" {
-  count    = 2
+  count    = 1
   image    = var.droplet_os
-  name     = "db-mongo${count.index+1}"
+  name     = "db-mongo${count.index+2}"
   region   = var.droplet_region
   size     = var.mongo_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -538,7 +538,7 @@ resource "digitalocean_droplet" "task-work" {
   image    = var.droplet_os
   name     = "task-work${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.droplet_size_10
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
