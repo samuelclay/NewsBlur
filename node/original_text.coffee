@@ -33,7 +33,7 @@ original_text = (app) =>
             res.end JSON.stringify result
         .catch (error) =>
             log.debug "Failed to fetch: #{url}: #{error}"
-            throw new Error("Failed to fetch: #{url}: #{error}")
+            # throw new Error("Failed to fetch: #{url}: #{error}")
             return res.end JSON.stringify error: "Failed to fetch #{url}: #{error}"
 
 
