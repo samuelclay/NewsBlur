@@ -84,39 +84,41 @@ def db_check_mongo():
             return str(1)
     except:
         abort(503)
-    if request.args.get('haproxy') == '1':
-        try:
-            stories = db.stories.estimated_document_count()
-        except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
-            abort(504)
-        except pymongo.errors.OperationFailure as e:
-            if 'Authentication failed' in str(e):
-                abort(505)
+
+    try:
+        stories = db.stories.estimated_document_count()
+    except pymongo.errors.NotMasterError:
+        abort(504)
+    except pymongo.errors.ServerSelectionTimeoutError:
+        abort(505)
+    except pymongo.errors.OperationFailure as e:
+        if 'Authentication failed' in str(e):
             abort(506)
-            
-        if not stories:
-            abort(510)
+        abort(507)
         
-        status = client.admin.command('replSetGetStatus')
-        members = status['members']
-        primary_optime = None
-        oldest_secondary_optime = None
-        for member in members:
-            member_state = member['state']
-            optime = member['optime']
-            if member_state == PRIMARY_STATE:
-                primary_optime = optime['ts'].time
-            elif member_state == SECONDARY_STATE:
-                if not oldest_secondary_optime or optime['ts'].time < oldest_secondary_optime:
-                    oldest_secondary_optime = optime['ts'].time
+    if not stories:
+        abort(510)
+    
+    status = client.admin.command('replSetGetStatus')
+    members = status['members']
+    primary_optime = None
+    oldest_secondary_optime = None
+    for member in members:
+        member_state = member['state']
+        optime = member['optime']
+        if member_state == PRIMARY_STATE:
+            primary_optime = optime['ts'].time
+        elif member_state == SECONDARY_STATE:
+            if not oldest_secondary_optime or optime['ts'].time < oldest_secondary_optime:
+                oldest_secondary_optime = optime['ts'].time
 
-        if not primary_optime or not oldest_secondary_optime:
-            abort(511)
+    if not primary_optime or not oldest_secondary_optime:
+        abort(511)
 
-        # if primary_optime - oldest_secondary_optime > 100:
-        #     abort(512)
+    # if primary_optime - oldest_secondary_optime > 100:
+    #     abort(512)
 
-        return str(stories)
+    return str(stories)
 
 @app.route("/db_check/mongo_analytics")
 def db_check_mongo_analytics():

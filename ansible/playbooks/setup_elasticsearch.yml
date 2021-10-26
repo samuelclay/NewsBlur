@@ -16,5 +16,5 @@
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'elasticsearch', tags: 'elasticsearch'}
     - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
-    - {role: 'elasticsearch-exporter', tags: ['metrics', elasticsearch]}
+    - {role: 'elasticsearch-exporter', tags: ['metrics', 'elasticsearch']}
     - {role: 'monitor', tags: 'monitor'}
