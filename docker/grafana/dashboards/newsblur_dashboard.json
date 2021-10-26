@@ -692,7 +692,7 @@
           "format": "s",
           "label": null,
           "logBase": 1,
-          "max": null,
+          "max": "5",
           "min": "0",
           "show": true
         },
@@ -2835,7 +2835,7 @@
       "type": "row"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "datasource": null,
       "gridPos": {
         "h": 1,
@@ -2844,72 +2844,73 @@
         "y": 163
       },
       "id": 40,
-      "panels": [],
-      "title": "Prometheus",
-      "type": "row"
-    },
-    {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 27,
-        "w": 24,
-        "x": 0,
-        "y": 164
-      },
-      "id": 37,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "auto"
-      },
-      "pluginVersion": "7.5.7",
-      "targets": [
+      "panels": [
         {
-          "exemplar": true,
-          "expr": "scrape_duration_seconds",
-          "interval": "",
-          "legendFormat": "{{ instance}}  {{ job }}",
-          "queryType": "randomWalk",
-          "refId": "A"
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 27,
+            "w": 24,
+            "x": 0,
+            "y": 164
+          },
+          "id": 37,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "7.5.7",
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "scrape_duration_seconds",
+              "interval": "",
+              "legendFormat": "{{ instance}}  {{ job }}",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Scrape Duration (seconds)",
+          "type": "stat"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Scrape Duration (seconds)",
-      "type": "stat"
+      "title": "Prometheus",
+      "type": "row"
     }
   ],
   "refresh": "1m",
@@ -2927,5 +2928,5 @@
   "timezone": "",
   "title": "NewsBlur",
   "uid": "T86VjXrG2",
-  "version": 35
+  "version": 36
 }
