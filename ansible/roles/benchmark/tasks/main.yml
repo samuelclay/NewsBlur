@@ -22,7 +22,7 @@
 
 - name: Run sysbench CPU
   shell:
-    chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
+    # chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
     cmd: sysbench cpu --cpu-max-prime=20000 run
   register: cpu
 
@@ -32,20 +32,20 @@
 - name: Prepare sysbench disk i/o 
   become: yes
   shell:
-    chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
+    # chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
     cmd: sysbench fileio --file-total-size=150G prepare
   
 - name: Run sysbench disk i/o
   become: yes
   shell:
-    chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
+    # chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
     cmd: sysbench fileio --file-total-size=150G --file-test-mode=rndrw --time=300 --max-requests=0 run
   register: io
   
 - name: Cleanup sysbench
   become: yes
   shell:
-    chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
+    # chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
     cmd: sysbench fileio --file-total-size=150G cleanup
 
 - name: Benchmark io results

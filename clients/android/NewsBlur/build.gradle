@@ -50,7 +50,7 @@ android {
         applicationId "com.newsblur"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 195
+        versionCode 197
         versionName "11.1"
     }
     compileOptions.with {

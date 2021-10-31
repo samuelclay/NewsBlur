@@ -31,6 +31,11 @@ variable "mongo_droplet_size" {
   default = "m-4vcpu-32gb"
 }
 
+variable "mongo_primary_droplet_size" {
+  type = string
+  default = "s-8vcpu-16gb"
+}
+
 variable "metrics_droplet_size" {
   type = string
   default = "s-1vcpu-2gb"
