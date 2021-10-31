@@ -19,7 +19,6 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.chip.Chip
 import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
-import com.newsblur.activity.NbActivity
 import com.newsblur.activity.Reading
 import com.newsblur.databinding.FragmentReadingitemBinding
 import com.newsblur.databinding.IncludeReadingItemCommentBinding
@@ -28,6 +27,10 @@ import com.newsblur.domain.Story
 import com.newsblur.domain.UserDetails
 import com.newsblur.fragment.StoryUserTagsFragment.Companion.newInstance
 import com.newsblur.network.APIManager
+import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_INTEL
+import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_SOCIAL
+import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_STORY
+import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_TEXT
 import com.newsblur.service.OriginalTextService
 import com.newsblur.util.*
 import com.newsblur.util.PrefConstants.ThemeValue
@@ -598,19 +601,19 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     }
 
     fun handleUpdate(updateType: Int) {
-        if (updateType and NbActivity.UPDATE_STORY != 0) {
+        if (updateType and UPDATE_STORY != 0) {
             updateSaveButton()
             updateShareButton()
             setupItemCommentsAndShares()
         }
-        if (updateType and NbActivity.UPDATE_TEXT != 0) {
+        if (updateType and UPDATE_TEXT != 0) {
             reloadStoryContent()
         }
-        if (updateType and NbActivity.UPDATE_SOCIAL != 0) {
+        if (updateType and UPDATE_SOCIAL != 0) {
             updateShareButton()
             setupItemCommentsAndShares()
         }
-        if (updateType and NbActivity.UPDATE_INTEL != 0) {
+        if (updateType and UPDATE_INTEL != 0) {
             classifier = FeedUtils.dbHelper!!.getClassifierForFeed(story!!.feedId)
             setupTagsAndIntel()
         }

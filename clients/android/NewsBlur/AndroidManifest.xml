@@ -12,7 +12,8 @@
         android:label="@string/newsblur"
         android:theme="@style/NewsBlurTheme"
         android:hardwareAccelerated="true"
-        android:fullBackupContent="@xml/backupscheme" >
+        android:fullBackupContent="@xml/backupscheme"
+        android:name=".NbApplication">
         
         <activity
             android:name=".activity.InitActivity"
