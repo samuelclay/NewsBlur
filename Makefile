@@ -1,6 +1,7 @@
 SHELL := /bin/bash
 CURRENT_UID := $(shell id -u)
 CURRENT_GID := $(shell id -g)
+newsblur := $(shell docker ps -qf "name=newsblur_web")
 
 .PHONY: node
 
@@ -35,8 +36,7 @@ bash:
 	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web bash
 # allows user to exec into newsblur_web and use pdb.
 debug:
-	- newsblur := $(shell docker ps -qf "name=newsblur_web")
-	- CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker attach ${newsblur}
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker attach ${newsblur}
 log:
 	- RUNWITHMAKEBUILD=True docker-compose logs -f --tail 20 newsblur_web newsblur_node
 logweb: log
@@ -50,7 +50,7 @@ alllogs:
 logall: alllogs
 # brings down containers
 down:
-	- RUNWITHMAKEBUILD=True docker-compose -f docker-compose.yml down
+	- RUNWITHMAKEBUILD=True docker-compose -f docker-compose.yml -f docker-compose.metrics.yml down
 nbdown: down
 jekyll:
 	- cd blog && bundle exec jekyll serve
@@ -153,6 +153,9 @@ firewall:
 	- ansible-playbook ansible/all.yml -l db --tags firewall
 oldfirewall:
 	- ANSIBLE_CONFIG=/srv/newsblur/ansible.old.cfg ansible-playbook ansible/all.yml  -l db --tags firewall
+repairmongo:
+	- sudo docker run -v "/srv/newsblur/docker/volumes/db_mongo:/data/db" mongo:4.0 mongod --repair --dbpath /data/db
+
 
 # performance tests
 perf-cli:
