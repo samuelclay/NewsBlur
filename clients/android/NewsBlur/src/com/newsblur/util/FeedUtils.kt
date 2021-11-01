@@ -17,7 +17,6 @@ import com.newsblur.service.NBSyncReceiver
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_METADATA
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_SOCIAL
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_STORY
-import kotlinx.coroutines.GlobalScope
 import java.util.*
 
 object FeedUtils {
@@ -75,7 +74,7 @@ object FeedUtils {
 
     @JvmStatic
     fun prepareReadingSession(fs: FeedSet?, resetFirst: Boolean) {
-        GlobalScope.executeAsyncTask(
+        NBScope.executeAsyncTask(
                 doInBackground = {
                     try {
                         if (resetFirst) NBSyncService.resetReadingSession(dbHelper)
@@ -101,7 +100,7 @@ object FeedUtils {
     }
 
     private fun setStorySaved(storyHash: String?, saved: Boolean, context: Context, userTags: List<String?>?) {
-        GlobalScope.executeAsyncTask(
+        NBScope.executeAsyncTask(
                 doInBackground = {
                     val ra = if (saved) ReadingAction.saveStory(storyHash, userTags) else ReadingAction.unsaveStory(storyHash)
                     ra.doLocal(dbHelper)
@@ -114,7 +113,7 @@ object FeedUtils {
 
     @JvmStatic
     fun deleteSavedSearch(feedId: String?, query: String?, context: Context) {
-        GlobalScope.executeAsyncTask(
+        NBScope.executeAsyncTask(
                 doInBackground = {
                     APIManager(context).deleteSearch(feedId, query)
                 },
@@ -129,7 +128,7 @@ object FeedUtils {
 
     @JvmStatic
     fun saveSearch(feedId: String?, query: String?, context: Context, apiManager: APIManager) {
-        GlobalScope.executeAsyncTask(
+        NBScope.executeAsyncTask(
                 doInBackground = {
                     apiManager.saveSearch(feedId, query)
                 },
@@ -144,7 +143,7 @@ object FeedUtils {
 
     @JvmStatic
     fun deleteFeed(feedId: String?, folderName: String?, context: Context) {
-        GlobalScope.executeAsyncTask(
+        NBScope.executeAsyncTask(
                 doInBackground = {
                     APIManager(context).deleteFeed(feedId, folderName)
                 },
@@ -158,7 +157,7 @@ object FeedUtils {
 
     @JvmStatic
     fun deleteSocialFeed(userId: String?, context: Context) {
-        GlobalScope.executeAsyncTask(
+        NBScope.executeAsyncTask(
                 doInBackground = {
                     APIManager(context).unfollowUser(userId)
                 },
@@ -172,7 +171,7 @@ object FeedUtils {
 
     @JvmStatic
     fun deleteFolder(folderName: String?, inFolder: String?, context: Context, apiManager: APIManager) {
-        GlobalScope.executeAsyncTask(
+        NBScope.executeAsyncTask(
                 doInBackground = {
                     apiManager.deleteFolder(folderName, inFolder)
                 },
@@ -194,7 +193,7 @@ object FeedUtils {
 
     @JvmStatic
     fun renameFolder(folderName: String?, newFolderName: String?, inFolder: String?, context: Context, apiManager: APIManager) {
-        GlobalScope.executeAsyncTask(
+        NBScope.executeAsyncTask(
                 doInBackground = {
                     apiManager.renameFolder(folderName, newFolderName, inFolder)
                 },
@@ -209,7 +208,7 @@ object FeedUtils {
 
     @JvmStatic
     fun markStoryUnread(story: Story, context: Context) {
-        GlobalScope.executeAsyncTask(
+        NBScope.executeAsyncTask(
                 doInBackground = {
                     setStoryReadState(story, context, false)
                 }
@@ -218,7 +217,7 @@ object FeedUtils {
 
     @JvmStatic
     fun markStoryAsRead(story: Story, context: Context) {
-        GlobalScope.executeAsyncTask(
+        NBScope.executeAsyncTask(
                 doInBackground = {
                     setStoryReadState(story, context, true)
                 }
@@ -356,7 +355,7 @@ object FeedUtils {
     }
 
     private fun updateFeedNotifications(context: Context, feed: Feed, enable: Boolean, focusOnly: Boolean) {
-        GlobalScope.executeAsyncTask(
+        NBScope.executeAsyncTask(
                 doInBackground = {
                     if (focusOnly) {
                         feed.setNotifyFocus()
@@ -374,7 +373,7 @@ object FeedUtils {
     @JvmStatic
     fun doAction(ra: ReadingAction?, context: Context) {
         requireNotNull(ra) { "ReadingAction must not be null" }
-        GlobalScope.executeAsyncTask(
+        NBScope.executeAsyncTask(
                 doInBackground = {
                     dbHelper!!.enqueueAction(ra)
                     val impact = ra.doLocal(dbHelper)
@@ -491,7 +490,7 @@ object FeedUtils {
     @JvmStatic
     fun moveFeedToFolders(context: Context, feedId: String?, toFolders: Set<String?>, inFolders: Set<String?>?) {
         if (toFolders.isEmpty()) return
-        GlobalScope.executeAsyncTask(
+        NBScope.executeAsyncTask(
                 doInBackground = {
                     val apiManager = APIManager(context)
                     apiManager.moveFeedToFolders(feedId, toFolders, inFolders)
@@ -514,7 +513,7 @@ object FeedUtils {
     }
 
     private fun updateFeedActiveState(context: Context, feedIds: Set<String>, active: Boolean) {
-        GlobalScope.executeAsyncTask(
+        NBScope.executeAsyncTask(
                 doInBackground = {
                     val activeFeeds = dbHelper!!.allActiveFeeds
                     for (feedId in feedIds) {
