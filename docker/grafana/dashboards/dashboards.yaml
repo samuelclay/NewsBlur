@@ -31,3 +31,9 @@ providers:
     options:
       path: /etc/grafana/provisioning/dashboards/elasticsearch_dashboard.json
       foldersFromFilesStructure: true
+  - name: Postgres
+    allowUiUpdates: true
+    type: file
+    options:
+      path: /etc/grafana/provisioning/dashboards/postgres_dashboard.json
+      foldersFromFilesStructure: true
