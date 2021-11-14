@@ -1,5 +1,6 @@
 {% load utils_tags %}
-{% load static%}
+{% load static %}
+{% load pipeline %}
 {% autoescape off %}
 <!DOCTYPE html>
 <html>
@@ -118,7 +119,7 @@
     NEWSBLUR.app = {};
   </script>
   
-  {% include_stylesheets "common" %}
+  {% stylesheet "common" %}
   
   {% if debug %}
       <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" />

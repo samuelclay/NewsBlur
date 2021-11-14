@@ -1,5 +1,6 @@
 import sys
 import os
+import yaml 
 
 # ===========================
 # = Directory Declaractions =
@@ -35,7 +36,6 @@ import django.http
 import re
 from mongoengine import connect
 import boto3
-from utils import jammit
 
 # ===================
 # = Server Settings =
@@ -80,10 +80,8 @@ MEDIA_URL             = '/media/'
 
 if DEBUG:
     STATIC_URL        = '/static/'
-    STATIC_ROOT       = '/static/static_root/'
 else:
     STATIC_URL        = '/media/'
-    STATIC_ROOT       = '/media/'
 
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
@@ -311,6 +309,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.messages',
+    'django.contrib.staticfiles',
     'django_extensions',
     'paypal.standard.ipn',
     'apps.rss_feeds',
@@ -335,6 +334,7 @@ INSTALLED_APPS = (
     'anymail',
     'oauth2_provider',
     'corsheaders',
+    'pipeline',
 )
 
 # ==========
@@ -777,7 +777,63 @@ accept_content = ['pickle', 'json', 'msgpack', 'yaml']
 # = Assets =
 # ==========
 
-JAMMIT = jammit.JammitAssets(ROOT_DIR)
+STATICFILES_STORAGE = 'pipeline.storage.PipelineManifestStorage'
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+)
+STATICFILES_DIRS = (
+    MEDIA_ROOT,
+)
+with open(os.path.join(ROOT_DIR, 'assets.yml')) as stream:
+    assets = yaml.safe_load(stream)
+
+PIPELINE = {
+    'PIPELINE_ENABLED': not DEBUG_ASSETS,
+    'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
+    'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
+    'JAVASCRIPT': {
+        'common': {
+            'source_filenames': assets['javascripts']['common'],
+            'output_filename': 'static/js/common.js',
+        },
+        'statistics': {
+            'source_filenames': assets['javascripts']['statistics'],
+            'output_filename': 'static/js/statistics.js',
+        },
+        'payments': {
+            'source_filenames': assets['javascripts']['payments'],
+            'output_filename': 'static/js/payments.js',
+        },
+        'bookmarklet': {
+            'source_filenames': assets['javascripts']['bookmarklet'],
+            'output_filename': 'static/js/bookmarklet.js',
+        },
+        'blurblog': {
+            'source_filenames': assets['javascripts']['blurblog'],
+            'output_filename': 'static/js/blurblog.js',
+        },
+    },
+    'STYLESHEETS': {
+        'common': {
+            'source_filenames': assets['stylesheets']['common'],
+            'output_filename': 'static/css/common.css',
+        },
+        'mobile': {
+            'source_filenames': assets['stylesheets']['mobile'],
+            'output_filename': 'static/css/mobile.css',
+        },
+        'bookmarklet': {
+            'source_filenames': assets['stylesheets']['bookmarklet'],
+            'output_filename': 'static/css/bookmarklet.css',
+        },
+        'blurblog': {
+            'source_filenames': assets['stylesheets']['blurblog'],
+            'output_filename': 'static/css/blurblog.css',
+        },
+    }
+}
 
 # =======
 # = AWS =

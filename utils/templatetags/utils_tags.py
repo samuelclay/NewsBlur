@@ -8,6 +8,7 @@ from apps.social.models import MSocialProfile
 from vendor.timezones.utilities import localtime_for_timezone
 from utils.user_functions import get_user
 from django.utils.safestring import mark_safe
+from pipeline.templatetags.pipeline import stylesheet, javascript
 
 register = template.Library()
 
@@ -212,15 +213,17 @@ def commify(n):
     return out
 
 
-@register.simple_tag
-def include_javascripts(asset_package):
+@register.tag
+def include_javascripts(parser, token):
     """Prints out a template of <script> tags based on an asset package name."""
-    asset_type = 'javascripts'
-    return mark_safe(settings.JAMMIT.render_tags(asset_type, asset_package))
+    return javascript(parser, token)
+    # asset_type = 'javascripts'
+    # return mark_safe(settings.JAMMIT.render_tags(asset_type, asset_package))
         
         
-@register.simple_tag
-def include_stylesheets(asset_package):
+@register.tag
+def include_stylesheets(parser, token):
     """Prints out a template of <link> tags based on an asset package name."""
-    asset_type = 'stylesheets'
-    return mark_safe(settings.JAMMIT.render_tags(asset_type, asset_package))
+    return stylesheet(parser, token)
+    # asset_type = 'stylesheets'
+    # return mark_safe(settings.JAMMIT.render_tags(asset_type, asset_package))
