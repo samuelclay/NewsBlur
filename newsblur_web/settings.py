@@ -796,8 +796,8 @@ with open(os.path.join(ROOT_DIR, 'assets.yml')) as stream:
 PIPELINE = {
     'PIPELINE_ENABLED': True,
     'PIPELINE_ROOT': NEWSBLUR_DIR,
-    'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
-    'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
+    'CSS_COMPRESSOR': 'pipeline.compressors.yuglify.YuglifyCompressor',
+    'JS_COMPRESSOR': 'pipeline.compressors.yuglify.YuglifyCompressor',
     'JAVASCRIPT': {
         'common': {
             'source_filenames': assets['javascripts']['common'],
@@ -818,9 +818,9 @@ PIPELINE = {
         'blurblog': {
             'source_filenames': assets['javascripts']['blurblog'],
             'output_filename': 'js/blurblog.js',
+        },
     },
     'STYLESHEETS': {
-        },
         'common': {
             'source_filenames': assets['stylesheets']['common'],
             'output_filename': 'css/common.css',

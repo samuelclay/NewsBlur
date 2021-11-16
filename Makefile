@@ -19,6 +19,9 @@ rebuild:
 	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
 	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d
 
+collectstatic: 
+	- docker run --rm -v $(shell pwd):/srv/newsblur --platform linux/amd64 newsblur/newsblur_deploy
+
 #creates newsblur, builds new images, and creates/refreshes SSL keys
 nb: pull
 	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
@@ -103,14 +106,18 @@ build_node:
 	- docker image build . --platform linux/amd64 --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
 build_monitor: 
 	- docker image build . --platform linux/amd64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
-build: build_web build_node build_monitor
+build_deploy: 
+	- docker image build . --platform linux/amd64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
+build: build_web build_node build_monitor build_deploy
 push_web: build_web
 	- docker push newsblur/newsblur_python3
 push_node: build_node
 	- docker push newsblur/newsblur_node
 push_monitor: build_monitor
 	- docker push newsblur/newsblur_monitor
-push_images: push_web push_node push_monitor
+push_deploy: build_deploy
+	- docker push newsblur/newsblur_deploy
+push_images: push_web push_node push_monitor push_deploy
 push: build push_images
 
 # Tasks
