@@ -14,11 +14,10 @@
     - name: Compressing JS/CSS assets 
       run_once: yes
       connection: local
-      command: chdir=/srv/newsblur jammit -c /srv/newsblur/newsblur_web/assets.yml --base-url https://www.newsblur.com --output /srv/newsblur/static
+      command: chdir=/srv/newsblur docker exec -it newsblur_web ./manage.py collectstatic --noinput
       tags:
         - never
         - static
-        - jammit
     
     - name: Archive JS/CSS assets for uploading
       run_once: yes

@@ -779,58 +779,59 @@ accept_content = ['pickle', 'json', 'msgpack', 'yaml']
 
 STATICFILES_STORAGE = 'pipeline.storage.PipelineManifestStorage'
 STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # 'pipeline.finders.FileSystemFinder',
+    'utils.pipeline_utils.FileSystemFinder',
+    # 'django.contrib.staticfiles.finders.FileSystemFinder',
+    # 'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'pipeline.finders.PipelineFinder',
 )
 STATICFILES_DIRS = (
-    MEDIA_ROOT,
+  MEDIA_ROOT,
+#   os.path.join(MEDIA_ROOT, 'js'),
+#   os.path.join(MEDIA_ROOT, 'css'),
 )
 with open(os.path.join(ROOT_DIR, 'assets.yml')) as stream:
     assets = yaml.safe_load(stream)
 
 PIPELINE = {
-    'PIPELINE_ENABLED': not DEBUG_ASSETS,
+    'PIPELINE_ENABLED': True,
+    'PIPELINE_ROOT': NEWSBLUR_DIR,
     'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
     'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
     'JAVASCRIPT': {
         'common': {
             'source_filenames': assets['javascripts']['common'],
-            'output_filename': 'static/js/common.js',
+            'output_filename': 'js/common.js',
         },
         'statistics': {
             'source_filenames': assets['javascripts']['statistics'],
-            'output_filename': 'static/js/statistics.js',
+            'output_filename': 'js/statistics.js',
         },
         'payments': {
             'source_filenames': assets['javascripts']['payments'],
-            'output_filename': 'static/js/payments.js',
+            'output_filename': 'js/payments.js',
         },
         'bookmarklet': {
             'source_filenames': assets['javascripts']['bookmarklet'],
-            'output_filename': 'static/js/bookmarklet.js',
+            'output_filename': 'js/bookmarklet.js',
         },
         'blurblog': {
             'source_filenames': assets['javascripts']['blurblog'],
-            'output_filename': 'static/js/blurblog.js',
-        },
+            'output_filename': 'js/blurblog.js',
     },
     'STYLESHEETS': {
+        },
         'common': {
             'source_filenames': assets['stylesheets']['common'],
-            'output_filename': 'static/css/common.css',
-        },
-        'mobile': {
-            'source_filenames': assets['stylesheets']['mobile'],
-            'output_filename': 'static/css/mobile.css',
+            'output_filename': 'css/common.css',
         },
         'bookmarklet': {
             'source_filenames': assets['stylesheets']['bookmarklet'],
-            'output_filename': 'static/css/bookmarklet.css',
+            'output_filename': 'css/bookmarklet.css',
         },
         'blurblog': {
             'source_filenames': assets['stylesheets']['blurblog'],
-            'output_filename': 'static/css/blurblog.css',
+            'output_filename': 'css/blurblog.css',
         },
     }
 }
