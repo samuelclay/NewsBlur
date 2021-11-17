@@ -78,12 +78,6 @@ LOGIN_REDIRECT_URL    = '/'
 LOGIN_URL             = '/account/login'
 MEDIA_URL             = '/media/'
 
-if DEBUG:
-    STATIC_URL        = '/static/'
-else:
-    STATIC_URL        = '/media/'
-
-
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
@@ -777,7 +771,11 @@ accept_content = ['pickle', 'json', 'msgpack', 'yaml']
 # = Assets =
 # ==========
 
-STATICFILES_STORAGE = 'pipeline.storage.PipelineManifestStorage'
+STATIC_URL        = '/static/'
+
+# STATICFILES_STORAGE = 'pipeline.storage.PipelineManifestStorage'
+STATICFILES_STORAGE = 'utils.pipeline_utils.GzipPipelineStorage'
+# STATICFILES_STORAGE = 'utils.pipeline_utils.PipelineStorage'
 STATICFILES_FINDERS = (
     # 'pipeline.finders.FileSystemFinder',
     'utils.pipeline_utils.FileSystemFinder',
@@ -794,10 +792,14 @@ with open(os.path.join(ROOT_DIR, 'assets.yml')) as stream:
     assets = yaml.safe_load(stream)
 
 PIPELINE = {
-    'PIPELINE_ENABLED': True,
+    'PIPELINE_ENABLED': not DEBUG_ASSETS,
     'PIPELINE_ROOT': NEWSBLUR_DIR,
     'CSS_COMPRESSOR': 'pipeline.compressors.yuglify.YuglifyCompressor',
-    'JS_COMPRESSOR': 'pipeline.compressors.yuglify.YuglifyCompressor',
+    'JS_COMPRESSOR': 'pipeline.compressors.closure.ClosureCompressor',
+    # 'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
+    # 'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
+    'CLOSURE_BINARY': '/usr/bin/env google-closure-compiler',
+    'CLOSURE_ARGUMENTS': '--language_in ECMASCRIPT_2021 --warning_level QUIET',
     'JAVASCRIPT': {
         'common': {
             'source_filenames': assets['javascripts']['common'],

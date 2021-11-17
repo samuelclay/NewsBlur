@@ -1,5 +1,18 @@
+from django.conf import settings
 from pipeline.finders import FileSystemFinder as PipelineFileSystemFinder
+from pipeline.storage import GZIPMixin
+from pipeline.storage import PipelineManifestStorage
 
+class PipelineStorage(PipelineManifestStorage):
+    def url(self, *args, **kwargs):
+        url = super().url(*args, **kwargs)
+        if settings.DEBUG_ASSETS:
+            url = url.replace(settings.STATIC_URL, settings.MEDIA_URL)
+        print(f"Pipeline storage: {args} {kwargs} {url}")
+        return url
+
+class GzipPipelineStorage(GZIPMixin, PipelineStorage):
+    pass
 
 class FileSystemFinder(PipelineFileSystemFinder):
     """
