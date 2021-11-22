@@ -6,8 +6,8 @@ import yaml
 # = Directory Declaractions =
 # ===========================
 
-ROOT_DIR   = os.path.dirname(__file__)
-NEWSBLUR_DIR  = os.path.join(ROOT_DIR, "../")
+SETTINGS_DIR  = os.path.dirname(__file__)
+NEWSBLUR_DIR  = os.path.join(SETTINGS_DIR, "../")
 MEDIA_ROOT    = os.path.join(NEWSBLUR_DIR, 'media')
 STATIC_ROOT   = os.path.join(NEWSBLUR_DIR, 'static')
 UTILS_ROOT    = os.path.join(NEWSBLUR_DIR, 'utils')
@@ -784,16 +784,13 @@ STATICFILES_FINDERS = (
     'pipeline.finders.PipelineFinder',
 )
 STATICFILES_DIRS = (
-  MEDIA_ROOT,
-#   os.path.join(MEDIA_ROOT, 'js'),
-#   os.path.join(MEDIA_ROOT, 'css'),
+    MEDIA_ROOT,
 )
-with open(os.path.join(ROOT_DIR, 'assets.yml')) as stream:
+with open(os.path.join(SETTINGS_DIR, 'assets.yml')) as stream:
     assets = yaml.safe_load(stream)
 
 PIPELINE = {
     'PIPELINE_ENABLED': not DEBUG_ASSETS,
-    'PIPELINE_ROOT': NEWSBLUR_DIR,
     'CSS_COMPRESSOR': 'pipeline.compressors.yuglify.YuglifyCompressor',
     'JS_COMPRESSOR': 'pipeline.compressors.closure.ClosureCompressor',
     # 'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
@@ -826,14 +823,17 @@ PIPELINE = {
         'common': {
             'source_filenames': assets['stylesheets']['common'],
             'output_filename': 'css/common.css',
+            # 'variant': 'datauri',
         },
         'bookmarklet': {
             'source_filenames': assets['stylesheets']['bookmarklet'],
             'output_filename': 'css/bookmarklet.css',
+            # 'variant': 'datauri',
         },
         'blurblog': {
             'source_filenames': assets['stylesheets']['blurblog'],
             'output_filename': 'css/blurblog.css',
+            # 'variant': 'datauri',
         },
     }
 }
