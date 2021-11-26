@@ -75,7 +75,7 @@ javascripts:
         - js/vendor/bootstrap-transition.js
         - js/vendor/highlight.js
         - js/vendor/fitvid.js
-        - js/vendor/imagesLoaded-*.js
+        - js/vendor/il.js
         - js/vendor/mark.js
         - js/newsblur/reader/reader_utils.js
         - js/newsblur/reader/reader.js
