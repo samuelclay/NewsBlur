@@ -383,11 +383,11 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         binding.itemFeedBorder.setBackgroundColor(Color.parseColor("#$feedBorder"))
 
         if (faviconText == "black") {
-            binding.readingFeedTitle.setTextColor(UIUtils.getColor(requireContext(), R.color.text))
-            binding.readingFeedTitle.setShadowLayer(1f, 0f, 1f, UIUtils.getColor(requireContext(), R.color.half_white))
+            binding.readingFeedTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.text))
+            binding.readingFeedTitle.setShadowLayer(1f, 0f, 1f, ContextCompat.getColor(requireContext(), R.color.half_white))
         } else {
-            binding.readingFeedTitle.setTextColor(UIUtils.getColor(requireContext(), R.color.white))
-            binding.readingFeedTitle.setShadowLayer(1f, 0f, 1f, UIUtils.getColor(requireContext(), R.color.half_black))
+            binding.readingFeedTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            binding.readingFeedTitle.setShadowLayer(1f, 0f, 1f, ContextCompat.getColor(requireContext(), R.color.half_black))
         }
         if (!displayFeedDetails) {
             binding.readingFeedTitle.visibility = View.GONE
@@ -500,8 +500,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             binding.readingItemAuthors.text = "•   " + story!!.authors
             if (classifier != null && classifier!!.authors.containsKey(story!!.authors)) {
                 when (classifier!!.authors[story!!.authors]) {
-                    Classifier.LIKE -> binding.readingItemAuthors.setTextColor(UIUtils.getColor(requireContext(), R.color.positive))
-                    Classifier.DISLIKE -> binding.readingItemAuthors.setTextColor(UIUtils.getColor(requireContext(), R.color.negative))
+                    Classifier.LIKE -> binding.readingItemAuthors.setTextColor(ContextCompat.getColor(requireContext(), R.color.positive))
+                    Classifier.DISLIKE -> binding.readingItemAuthors.setTextColor(ContextCompat.getColor(requireContext(), R.color.negative))
                     else -> binding.readingItemAuthors.setTextColor(UIUtils.getThemedColor(requireContext(), R.attr.readingItemMetadata, android.R.attr.textColor))
                 }
             }
