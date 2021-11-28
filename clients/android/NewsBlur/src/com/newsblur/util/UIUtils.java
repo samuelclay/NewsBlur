@@ -8,6 +8,7 @@ import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROL
 import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP;
 
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -581,6 +582,16 @@ public class UIUtils {
             com.newsblur.util.Log.e(context.getClass().getName(), "apps not available to open URLs");
             // fallback to system default if apps cannot be opened
             openSystemDefaultBrowser(context, uri);
+        }
+    }
+
+    public static void openWebSearch(Context context, String query) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_WEB_SEARCH );
+            intent.putExtra(SearchManager.QUERY, query);
+            context.startActivity(intent);
+        } catch (Exception e) {
+            com.newsblur.util.Log.e(context.getClass().getName(), "Browser app not available to search: " + query);
         }
     }
 
