@@ -1,6 +1,6 @@
 {
     "service": {
-        "name": "{% if inventory_hostname.startswith('db-redis') %}{{ inventory_hostname|regex_replace('\d+', '') }}{% else %}{% if inventory_hostname == 'db40a' %}db-redis-user{% elif inventory_hostname == 'db41a' %}db-redis-sessions{% elif inventory_hostname == 'db42a' %}db-redis-story{% elif inventory_hostname == 'db43a' %}db-redis-pubsub{% endif %}{% endif %}",
+        "name": "{{ inventory_hostname|regex_replace('\d+', '') }}",
         "id": "{{ inventory_hostname }}",
         "tags": [
             "redis"
