@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 6,
-  "iteration": 1633110345895,
+  "id": 8,
+  "iteration": 1638808327674,
   "links": [],
   "panels": [
     {
@@ -603,9 +603,10 @@
       {
         "allValue": null,
         "current": {
+          "isNone": true,
           "selected": false,
-          "text": "flask_metrics_redis:5569",
-          "value": "flask_metrics_redis:5569"
+          "text": "None",
+          "value": ""
         },
         "datasource": "Prometheus",
         "definition": "label_values(redis_active_connections, instance)",
@@ -641,5 +642,5 @@
   "timezone": "",
   "title": "Redis",
   "uid": "7IvPZkDnk",
-  "version": 18
+  "version": 1
 }
