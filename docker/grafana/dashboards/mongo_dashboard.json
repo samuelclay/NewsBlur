@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 4,
-  "iteration": 1633112201898,
+  "id": 7,
+  "iteration": 1638808302912,
   "links": [],
   "panels": [
     {
@@ -68,7 +68,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "mongo_page_queues",
+          "expr": "mongo_page_queues{instance=\"$instance\"}",
           "interval": "",
           "legendFormat": "{{ type }}",
           "queryType": "randomWalk",
@@ -95,6 +95,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:978",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -103,6 +104,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:979",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -192,6 +194,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:1056",
           "format": "decbytes",
           "label": null,
           "logBase": 1,
@@ -200,6 +203,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:1057",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -214,62 +218,102 @@
       }
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
       "datasource": "Prometheus",
       "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
+        "defaults": {},
         "overrides": []
       },
+      "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
         "y": 8
       },
+      "hiddenSeries": false,
       "id": 8,
-      "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "text": {}
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
       },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
       "pluginVersion": "7.5.7",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
       "targets": [
         {
           "exemplar": true,
-          "expr": "mongo_page_faults{instance=\"$instance\"}",
+          "expr": "rate(mongo_page_faults{instance=\"$instance\"}[6h])",
           "interval": "",
           "legendFormat": "Page Faults",
           "queryType": "randomWalk",
           "refId": "A"
         }
       ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
       "title": "Page Faults",
-      "type": "gauge"
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1212",
+          "decimals": null,
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": ".01",
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1213",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     },
     {
       "aliasColors": {},
@@ -440,6 +484,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:1134",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -448,6 +493,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:1135",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -472,8 +518,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "flask_metrics_mongo:5569",
-          "value": "flask_metrics_mongo:5569"
+          "text": "db-mongo-primary1",
+          "value": "db-mongo-primary1"
         },
         "datasource": "Prometheus",
         "definition": "label_values(mongo_objects, instance)",
@@ -509,5 +555,5 @@
   "timezone": "",
   "title": "MongoDB",
   "uid": "y5QlZvM7k",
-  "version": 4
+  "version": 35
 }

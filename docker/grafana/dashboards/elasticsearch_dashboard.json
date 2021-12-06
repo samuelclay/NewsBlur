@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 7,
+  "id": 9,
   "links": [],
   "panels": [
     {
@@ -73,7 +73,9 @@
         }
       ],
       "thresholds": [],
+      "timeFrom": null,
       "timeRegions": [],
+      "timeShift": null,
       "title": "Memory Free",
       "tooltip": {
         "shared": true,
@@ -95,7 +97,7 @@
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -168,7 +170,9 @@
         }
       ],
       "thresholds": [],
+      "timeFrom": null,
       "timeRegions": [],
+      "timeShift": null,
       "title": "Memory Used",
       "tooltip": {
         "shared": true,
@@ -186,11 +190,11 @@
       "yaxes": [
         {
           "$$hashKey": "object:329",
-          "format": "bytes",
+          "format": "decbytes",
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -263,7 +267,9 @@
         }
       ],
       "thresholds": [],
+      "timeFrom": null,
       "timeRegions": [],
+      "timeShift": null,
       "title": "Bytes Received",
       "tooltip": {
         "shared": true,
@@ -281,11 +287,11 @@
       "yaxes": [
         {
           "$$hashKey": "object:766",
-          "format": "bytes",
+          "format": "decbytes",
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -479,7 +485,7 @@
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -516,7 +522,7 @@
         "y": 16
       },
       "hiddenSeries": false,
-      "id": 10,
+      "id": 15,
       "legend": {
         "avg": false,
         "current": false,
@@ -544,16 +550,18 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "elasticsearch_process_cpu_percent",
+          "expr": "rate(elasticsearch_indices_docs[1h])",
           "interval": "",
-          "legendFormat": "",
+          "legendFormat": "Documents",
           "queryType": "randomWalk",
           "refId": "A"
         }
       ],
       "thresholds": [],
+      "timeFrom": null,
       "timeRegions": [],
-      "title": "Process CPU Percent",
+      "timeShift": null,
+      "title": "Number of Documents",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -569,16 +577,16 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:457",
-          "format": "percentunit",
+          "$$hashKey": "object:265",
+          "format": "short",
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
-          "$$hashKey": "object:458",
+          "$$hashKey": "object:266",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -675,7 +683,104 @@
       "yaxes": [
         {
           "$$hashKey": "object:26",
-          "format": "bytes",
+          "format": "decbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:27",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "hiddenSeries": false,
+      "id": 10,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.7",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "elasticsearch_process_cpu_percent",
+          "interval": "",
+          "legendFormat": "",
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Process CPU Percent",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:457",
+          "format": "percentunit",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -683,7 +788,7 @@
           "show": true
         },
         {
-          "$$hashKey": "object:27",
+          "$$hashKey": "object:458",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -712,5 +817,5 @@
   "timezone": "",
   "title": "ElasticSearch",
   "uid": "77sLElDnk",
-  "version": 9
+  "version": 2
 }
