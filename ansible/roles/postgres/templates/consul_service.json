@@ -7,7 +7,7 @@
         "port": 5432,
         "checks": [{
             "id": "postgres-ping",
-            "http": "{% if inventory_hostname.startswith('db-postgres') %}http://{{ ansible_ssh_host }}:5579/db_check/postgres{% else %}http://{{ ansible_ssh_host }}:5000/db_check/postgres{% endif %}",
+            "http": "http://{{ ansible_ssh_host }}:5579/db_check/postgres?consul=1",
             "interval": "15s",
             "failures_before_critical": 4
           }]

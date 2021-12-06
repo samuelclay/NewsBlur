@@ -25,11 +25,14 @@ SECONDARY_STATE = 2
 
 @app.route("/db_check/postgres")
 def db_check_postgres():
+    if request.args.get('consul') == '1':
+        return str(1)
+
     connect_params = "dbname='%s' user='%s' password='%s' host='%s' port='%s'" % (
         settings.DATABASES['default']['NAME'],
         settings.DATABASES['default']['USER'],
         settings.DATABASES['default']['PASSWORD'],
-        'db-postgres.service.nyc1.consul',
+        f'{settings.SERVER_NAME}.node.nyc1.consul',
         settings.DATABASES['default']['PORT'],
     )
     try:
@@ -48,6 +51,9 @@ def db_check_postgres():
 
 @app.route("/db_check/mysql")
 def db_check_mysql():
+    if request.args.get('consul') == '1':
+        return str(1)
+
     connect_params = "dbname='%s' user='%s' password='%s' host='%s' port='%s'" % (
         settings.DATABASES['default']['NAME'],
         settings.DATABASES['default']['USER'],
@@ -76,12 +82,13 @@ def db_check_mysql():
 
 @app.route("/db_check/mongo")
 def db_check_mongo():
+    if request.args.get('consul') == '1':
+        return str(1)
+
     try:
         # The `mongo` hostname below is a reference to the newsblurnet docker network, where 172.18.0.0/16 is defined
-        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}/?authSource=admin")
+        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}.node.nyc1.consul/?authSource=admin")
         db = client.newsblur
-        if request.args.get('consul') == '1':
-            return str(1)
     except:
         abort(503)
 
@@ -122,6 +129,9 @@ def db_check_mongo():
 
 @app.route("/db_check/mongo_analytics")
 def db_check_mongo_analytics():
+    if request.args.get('consul') == '1':
+        return str(1)
+
     try:
         client = pymongo.MongoClient(f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{settings.SERVER_NAME}/?authSource=admin")
         db = client.nbanalytics
@@ -144,6 +154,9 @@ def db_check_mongo_analytics():
 
 @app.route("/db_check/redis_user")
 def db_check_redis_user():
+    if request.args.get('consul') == '1':
+        return str(1)
+
     try:
         r = redis.Redis('db-redis-user.service.nyc1.consul', db=0)
     except:
@@ -160,7 +173,10 @@ def db_check_redis_user():
         abort(505)
 
 @app.route("/db_check/redis_story")
-def db_check_redis_story():
+def db_check_redis_story():    
+    if request.args.get('consul') == '1':
+        return str(1)
+    
     try:
         r = redis.Redis('db-redis-story.service.nyc1.consul', db=1)
     except:
@@ -178,6 +194,9 @@ def db_check_redis_story():
 
 @app.route("/db_check/redis_sessions")
 def db_check_redis_sessions():
+    if request.args.get('consul') == '1':
+        return str(1)
+
     try:
         r = redis.Redis('db-redis-sessions.service.nyc1.consul', db=5)
     except:
@@ -195,6 +214,9 @@ def db_check_redis_sessions():
 
 @app.route("/db_check/redis_pubsub")
 def db_check_redis_pubsub():
+    if request.args.get('consul') == '1':
+        return str(1)
+
     try:
         r = redis.Redis('db-redis-pubsub.service.nyc1.consul', db=1)
     except:
