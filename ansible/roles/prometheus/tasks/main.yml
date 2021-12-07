@@ -27,6 +27,7 @@
     user: root
     networks_cli_compatible: yes
     network_mode: default
+    command: --storage.tsdb.retention.time=10y
     networks:
       - name: newsblurnet
     state: started
