@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
@@ -84,10 +86,11 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		super.onCreate(savedInstanceState);
         currentState = PrefsUtils.getStateFilter(getActivity());
 		adapter = new FolderListAdapter(getActivity(), currentState);
+        sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
         FeedUtils.currentFolderName = null;
         // NB: it is by design that loaders are not started until we get a
         // ping from the sync service indicating that it has initialised
-	}
+    }
 
     @Override
     public void onResume() {
@@ -99,13 +102,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         }
     }
 
+	@NonNull
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-		sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
-    }
-
-	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case SOCIALFEEDS_LOADER:
@@ -124,7 +122,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	}
 
     @Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+	public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
         if (cursor == null) return;
         try {
             switch (loader.getId()) {
@@ -161,7 +159,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     }
 
 	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
+	public void onLoaderReset(@NonNull Loader<Cursor> loader) {
 		; // our adapter doesn't hold on to cursors
 	}
 

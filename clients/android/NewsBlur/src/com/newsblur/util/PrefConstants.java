@@ -70,6 +70,7 @@ public class PrefConstants {
     public static final String NETWORK_SELECT = "offline_network_select";
     public static final String KEEP_OLD_STORIES = "keep_old_stories";
     public static final String CACHE_AGE_SELECT = "cache_age_select";
+    public static final String FEED_LIST_ORDER = "feed_list_order";
 
     public static final String NETWORK_SELECT_ANY = "ANY";
     public static final String NETWORK_SELECT_NOMO = "NOMO";
@@ -86,6 +87,9 @@ public class PrefConstants {
 
     public static final String ENABLE_ROW_GLOBAL_SHARED = "enable_row_global_shared";
     public static final String ENABLE_ROW_INFREQUENT_STORIES = "enable_row_infrequent_stories";
+
+    public static final String FEED_LIST_ORDER_ALPHABETICAL = "feed_list_order_alphabetical";
+    public static final String FEED_LIST_ORDER_MOST_USED_AT_TOP = "feed_list_order_most_used_at_top";
 
     public static final String THEME = "theme";
     public enum ThemeValue {

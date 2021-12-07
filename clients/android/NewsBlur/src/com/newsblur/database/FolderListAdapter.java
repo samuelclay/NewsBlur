@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -22,10 +23,10 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
@@ -33,6 +34,7 @@ import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.FeedListOrder;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
@@ -251,7 +253,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             nameView.setText(f.feedTitle);
             nameView.setTextSize(textSize * defaultTextSize_childName);
             ImageView iconView = (ImageView) v.findViewById(R.id.row_socialfeed_icon);
-            FeedUtils.iconLoader.displayImage(f.photoUrl, iconView, false);
+            FeedUtils.iconLoader.displayImage(f.photoUrl, iconView);
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_socialsumneu));
             if (f.neutralCount > 0 && currentState != StateFilter.BEST) {
                 neutCounter.setVisibility(View.VISIBLE);
@@ -292,7 +294,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             nameView.setText(UIUtils.fromHtml(ss.feedTitle));
             ImageView iconView = v.findViewById(R.id.row_saved_search_icon);
             FeedUtils.iconLoader.preCheck(ss.faviconUrl, iconView);
-            FeedUtils.iconLoader.displayImage(ss.faviconUrl, iconView, false);
+            FeedUtils.iconLoader.displayImage(ss.faviconUrl, iconView);
         } else {
             if (v == null) v = inflater.inflate(R.layout.row_feed, parent, false);
             Feed f = activeFolderChildren.get(groupPosition).get(childPosition);
@@ -306,12 +308,12 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             nameView.setTextSize(textSize * defaultTextSize_childName);
             ImageView iconView = (ImageView) v.findViewById(R.id.row_feedfavicon);
             FeedUtils.iconLoader.preCheck(f.faviconUrl, iconView);
-            FeedUtils.iconLoader.displayImage(f.faviconUrl, iconView, false);
+            FeedUtils.iconLoader.displayImage(f.faviconUrl, iconView);
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_feedneutral));
             TextView posCounter = ((TextView) v.findViewById(R.id.row_feedpositive));
             TextView savedCounter = ((TextView) v.findViewById(R.id.row_feedsaved));
             ImageView muteIcon = ((ImageView) v.findViewById(R.id.row_feedmuteicon));
-            ProgressBar fetchingIcon = ((ProgressBar) v.findViewById(R.id.row_feedfetching));
+            CircularProgressIndicator fetchingIcon = ((CircularProgressIndicator) v.findViewById(R.id.row_feedfetching));
             if (!f.active) {
                 muteIcon.setVisibility(View.VISIBLE);
                 neutCounter.setVisibility(View.GONE);
@@ -676,6 +678,14 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 }
             }
         }
+
+        // sort feeds within each folder
+        FeedListOrder feedListOrder = PrefsUtils.getFeedListOrder(context);
+        Comparator<Feed> feedComparator = Feed.getFeedListOrderComparator(feedListOrder);
+        for (List<Feed> folderChildren : activeFolderChildren) {
+            Collections.sort(folderChildren, feedComparator);
+        }
+
         // add the always-present (if enabled) special rows/folders that got at the bottom of the list
         addSpecialRow(READ_STORIES_GROUP_KEY);
         addSpecialRow(SAVED_SEARCHES_GROUP_KEY);
@@ -717,12 +727,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
      */
     private Set<String> getSubFoldersRecursive(Set<String> parentFolders) {
         HashSet<String> subFolders = new HashSet<String>();
-        outerloop: for (String folder : parentFolders) {
+        for (String folder : parentFolders) {
             Folder f = folders.get(folder);
             if (f == null) continue;
-            innerloop: for (String child : f.children) {
-                subFolders.add(child);
-            }
+            subFolders.addAll(f.children);
             subFolders.addAll(getSubFoldersRecursive(subFolders));
         }
         return subFolders;
@@ -806,9 +814,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     public Set<String> getAllFeedsForFolder(int groupPosition) {
         String flatFolderName = activeFolderNames.get(groupPosition);
         Folder folder = flatFolders.get(flatFolderName);
-        Set<String> feedIds = new HashSet<String>();
-        feedIds.addAll(folder.feedIds);
-        return feedIds;
+        return new HashSet<>(folder.feedIds);
     }
 
     /** Get the cached SocialFeed object for the feed at the given list location. */

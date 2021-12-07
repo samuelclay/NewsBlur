@@ -50,6 +50,7 @@
         <item name="android:textColor">@color/black</item>
         <item name="preferenceTheme">@style/preferenceTheme</item>
         <item name="fontFamily">@font/whitney</item>
+        <item name="circleProgressIndicator">@style/circleProgressIndicator</item>
     </style>
 
     <style name="NewsBlurDarkTheme" parent="Theme.MaterialComponents.NoActionBar">
@@ -103,6 +104,7 @@
         <item name="preferenceTheme">@style/preferenceTheme</item>
         <item name="android:navigationBarColor">@android:color/black</item>
         <item name="fontFamily">@font/whitney</item>
+        <item name="circleProgressIndicator">@style/circleProgressIndicator</item>
     </style>
 
     <style name="NewsBlurBlackTheme" parent="Theme.MaterialComponents.NoActionBar" >
@@ -156,5 +158,6 @@
         <item name="preferenceTheme">@style/preferenceTheme</item>
         <item name="android:navigationBarColor">@android:color/black</item>
         <item name="fontFamily">@font/whitney</item>
+        <item name="circleProgressIndicator">@style/circleProgressIndicator</item>
     </style>
 </resources>
