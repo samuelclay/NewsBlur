@@ -35,7 +35,7 @@ class RedisMetric(object):
             if not settings.DOCKERBUILD and settings.SERVER_NAME != instance:
                 continue
             self.host = redis_config['host']
-            self.port = redis_config['port']
+            self.port = redis_config.get('port', settings.REDIS_PORT)
             stats = self.get_info()
             yield instance, stats
   
