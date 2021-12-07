@@ -122,4 +122,110 @@ scrape_configs:
       scheme: https
       tls_config:
         insecure_skip_verify: true
-        
+
+    #- job_name: 'mongo heap usage'
+    #  static_configs:
+    #    - targets: ['flask_metrics:5569']
+    #  metrics_path: /mongo/heap-usage
+    #  scheme: http
+    #  tls_config:
+    #    insecure_skip_verify: true
+    - job_name: 'mongo objects'
+      static_configs:
+        - targets: ['flask_metrics_mongo:5569']
+      metrics_path: /objects/
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'mongo repl set lag'
+      static_configs:
+        - targets: ['flask_metrics_mongo:5569']
+      metrics_path: /repl-set-lag/
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'mongo size'
+      static_configs:
+        - targets: ['flask_metrics_mongo:5569']
+      metrics_path: /size/
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'mongo ops'
+      static_configs:
+        - targets: ['flask_metrics_mongo:5569']
+      metrics_path: /ops/
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'mongo page faults'
+      static_configs:
+        - targets: ['flask_metrics_mongo:5569']
+      metrics_path: /page-faults/
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'mongo page queues'
+      static_configs:
+        - targets: ['flask_metrics_mongo:5569']
+      metrics_path: /page-queues/
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
+
+    - job_name: 'redis active connections'
+      static_configs:
+        - targets: ['flask_metrics_redis:5569']
+      metrics_path: /active-connections/
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'redis commands'
+      static_configs:
+        - targets: ['flask_metrics_redis:5569']
+      metrics_path: /commands/
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'redis connects'
+      static_configs:
+        - targets: ['flask_metrics_redis:5569']
+      metrics_path: /connects/
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'redis size'
+      static_configs:
+        - targets: ['flask_metrics_redis:5569']
+      metrics_path: /size/
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'redis memory'
+      static_configs:
+        - targets: ['flask_metrics_redis:5569']
+      metrics_path: /memory/
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'redis used memory'
+      static_configs:
+        - targets: ['flask_metrics_redis:5569']
+      metrics_path: /used-memory/
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
+
+    - job_name: 'elastic search exporter'
+      static_configs:
+        - targets: ['elasticsearch_exporter:9114']
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
+
+    - job_name: 'postgres exporter'
+      static_configs:
+        - targets: ['postgres_exporter:9187']
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true

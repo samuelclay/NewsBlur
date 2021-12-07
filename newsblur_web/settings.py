@@ -57,6 +57,9 @@ RECAPTCHA_SECRET_KEY = "YOUR_RECAPTCHA_KEY"
 YOUTUBE_API_KEY = "YOUR_YOUTUBE_API_KEY"
 IMAGES_SECRET_KEY = "YOUR_IMAGES_SECRET_KEY"
 DOCKERBUILD = os.getenv("DOCKERBUILD")
+REDIS_USER = None
+FLASK_SENTRY_DSN = None
+
 # ===================
 # = Global Settings =
 # ===================
@@ -419,7 +422,7 @@ CELERY_IMPORTS              = ("apps.rss_feeds.tasks",
                                "apps.feed_import.tasks",
                                "apps.search.tasks",
                                "apps.statistics.tasks",)
-CELERY_WORKER_CONCURRENCY         = 3
+CELERY_WORKER_CONCURRENCY         = 5
 CELERY_TASK_IGNORE_RESULT        = True
 CELERY_TASK_ACKS_LATE            = True # Retry if task fails
 CELERY_WORKER_MAX_TASKS_PER_CHILD = 10
@@ -712,9 +715,13 @@ if DOCKERBUILD:
 else:
     REDIS_PORT = 6379
 
+if REDIS_USER is None:
+    # REDIS has been renamed to REDIS_USER. 
+    REDIS_USER = REDIS
+
 CELERY_REDIS_DB_NUM = 4
 SESSION_REDIS_DB = 5
-CELERY_BROKER_URL = "redis://%s:%s/%s" % (REDIS['host'], REDIS_PORT,CELERY_REDIS_DB_NUM)
+CELERY_BROKER_URL = "redis://%s:%s/%s" % (REDIS_USER['host'], REDIS_PORT,CELERY_REDIS_DB_NUM)
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 BROKER_TRANSPORT_OPTIONS = {
     "max_retries": 3, 
@@ -736,7 +743,7 @@ SESSION_REDIS = {
 CACHES = {
     'default': {
         'BACKEND': 'redis_cache.RedisCache',
-        'LOCATION': '%s:%s' % (REDIS['host'], REDIS_PORT),
+        'LOCATION': '%s:%s' % (REDIS_USER['host'], REDIS_PORT),
         'OPTIONS': {
             'DB': 6,
             'PARSER_CLASS': 'redis.connection.HiredisParser',
@@ -745,13 +752,13 @@ CACHES = {
     },
 }
 
-REDIS_POOL                 = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=0, decode_responses=True)
-REDIS_ANALYTICS_POOL       = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=2, decode_responses=True)
-REDIS_STATISTICS_POOL      = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=3, decode_responses=True)
-REDIS_FEED_UPDATE_POOL     = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=4, decode_responses=True)
-# REDIS_STORY_HASH_POOL2   = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=8) # Only used when changing DAYS_OF_UNREAD
-REDIS_STORY_HASH_TEMP_POOL = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=10, decode_responses=True)
-# REDIS_CACHE_POOL         = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=6) # Duped in CACHES
+REDIS_POOL                 = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=0, decode_responses=True)
+REDIS_ANALYTICS_POOL       = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=2, decode_responses=True)
+REDIS_STATISTICS_POOL      = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=3, decode_responses=True)
+REDIS_FEED_UPDATE_POOL     = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=4, decode_responses=True)
+# REDIS_STORY_HASH_POOL2   = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=8) # Only used when changing DAYS_OF_UNREAD
+REDIS_STORY_HASH_TEMP_POOL = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=10, decode_responses=True)
+# REDIS_CACHE_POOL         = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=6) # Duped in CACHES
 REDIS_STORY_HASH_POOL      = redis.ConnectionPool(host=REDIS_STORY['host'], port=REDIS_PORT, db=1, decode_responses=True)
 REDIS_STORY_HASH_POOL_ENCODED = redis.ConnectionPool(host=REDIS_STORY['host'], port=REDIS_PORT, db=1, decode_responses=False)
 REDIS_FEED_READ_POOL       = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=REDIS_PORT, db=1, decode_responses=True)

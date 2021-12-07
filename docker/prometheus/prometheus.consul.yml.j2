@@ -115,3 +115,125 @@ scrape_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/users
       scheme: https
+
+    #- job_name: 'mongo heap usage'
+    #  consul_sd_configs:
+    #  - server: 'consul.service.nyc1.consul:8500'
+    #    services: ['flask_metrics_mongo']
+    #  relabel_configs:
+    #  - source_labels: ['__meta_consul_node']
+    #    target_label: instance
+    #  metrics_path: /mongo-heap-usage
+    - job_name: 'mongo objects'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['flask_metrics_mongo']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+      metrics_path: /objects/
+    # - job_name: 'mongo repl set lag'
+    #   consul_sd_configs:
+    #   - server: 'consul.service.nyc1.consul:8500'
+    #     services: ['flask_metrics_mongo']
+    #   relabel_configs:
+    #   - source_labels: ['__meta_consul_node']
+    #     target_label: instance
+    #   metrics_path: /mongo-replset-lag/
+    - job_name: 'mongo size'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['flask_metrics_mongo']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+      metrics_path: /size/
+    - job_name: 'mongo ops'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['flask_metrics_mongo']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+      metrics_path: /ops/
+    - job_name: 'mongo page faults'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['flask_metrics_mongo']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+      metrics_path: /page-faults/
+    - job_name: 'mongo page queues'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['flask_metrics_mongo']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+      metrics_path: /page-queues/
+
+    - job_name: 'redis active connections'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['flask_metrics_redis']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+      metrics_path: /active-connections/
+    - job_name: 'redis commands'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['flask_metrics_redis']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+      metrics_path: /commands/
+    - job_name: 'redis connects'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['flask_metrics_redis']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+      metrics_path: /connects/
+    - job_name: 'redis db size'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['flask_metrics_redis']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+      metrics_path: /size/
+    - job_name: 'redis total memory'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['flask_metrics_redis']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+      metrics_path: /memory/
+    - job_name: 'redis used memory'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['flask_metrics_redis']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+      metrics_path: /used-memory/
+
+    - job_name: 'elastic search exporter'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['elasticsearch_exporter']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+
+    - job_name: 'postgres exporter'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['postgres_exporter']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance

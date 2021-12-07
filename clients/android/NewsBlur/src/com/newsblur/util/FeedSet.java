@@ -307,9 +307,7 @@ public class FeedSet implements Serializable {
     public Set<String> getFlatFeedIds() {
         Set<String> result = new HashSet<String>();
         if (feeds != null) {
-            for (String id : feeds) {
-                result.add(id);
-            }
+            result.addAll(feeds);
         }
         if (socialFeeds != null) {
             for (Map.Entry<String,String> e : socialFeeds.entrySet()) {

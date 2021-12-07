@@ -11,12 +11,6 @@
   notify: restart nginx
   register: updated_config
 
-- name: Make docker network for newsblurnet
-  become: yes
-  docker_network:
-    name: newsblurnet
-  notify: restart docker
-
 - name: Start nginx docker container
   become: yes
   docker_container:

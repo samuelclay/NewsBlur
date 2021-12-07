@@ -14,8 +14,11 @@ services:
     depends_on:
       - node-exporter
       - haproxy
+      - flask_metrics_mongo
     external_links:
       - haproxy
+      - flask_metrics_mongo
+      - flask_metrics_redis
 
   node-exporter:
     container_name: node-exporter
@@ -34,7 +37,52 @@ services:
       - 3000:3000
     volumes:
       - ./docker/volumes/grafana_data:/var/lib/grafana
-      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources/
+      - ./docker/grafana/datasources/datasource.docker.yaml:/etc/grafana/provisioning/datasources/datasource.docker.yaml
       - ./docker/grafana/dashboards/:/etc/grafana/provisioning/dashboards/
     external_links:
       - prometheus
+  flask_metrics_mongo:
+    container_name: flask_metrics_mongo
+    image: newsblur/newsblur_monitor:latest
+    command: bash -c "python /srv/newsblur/flask_metrics/flask_metrics_mongo.py"
+    environment: 
+      - DOCKERBUILD=True
+    ports:
+      - 5569:5569
+    depends_on: 
+      - db_mongo
+      - newsblur_web
+      - nginx
+    volumes:
+      - ${PWD}:/srv/newsblur
+  flask_metrics_redis:
+    container_name: flask_metrics_redis
+    image: newsblur/newsblur_monitor:latest
+    command: bash -c "python /srv/newsblur/flask_metrics/flask_metrics_redis.py"
+    environment: 
+      - DOCKERBUILD=True
+    ports:
+      - 5589:5569
+    depends_on: 
+      - db_redis
+      - newsblur_web
+      - nginx
+    volumes:
+      - ${PWD}:/srv/newsblur
+  elasticsearch_exporter:
+    container_name: elasticsearch_exporter
+    image: prometheuscommunity/elasticsearch-exporter:latest
+    command:
+      - '--es.uri=http://db_elasticsearch:9200'
+    restart: always
+    ports:
+      - "9210:9114"
+    depends_on:
+      - db_elasticsearch
+  postgres_exporter:
+    container_name: postgres-exporter
+    image:  prometheuscommunity/postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: 'postgresql://newsblur:newsblur@db_postgres:5432/postgres?sslmode=disable'
+    ports:
+    - '9187:9187'

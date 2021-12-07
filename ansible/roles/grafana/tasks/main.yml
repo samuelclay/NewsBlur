@@ -3,6 +3,7 @@
   template:
     src: /srv/newsblur/docker/grafana/grafana.ini.j2
     dest: /srv/newsblur/docker/grafana/grafana.ini
+  notify: restart grafana
 
 - name: Register grafana in consul
   tags: consul
@@ -18,7 +19,7 @@
   docker_container:
     pull: true
     name: grafana
-    image: grafana/grafana:7.5.7
+    image: grafana/grafana:8.2.6
     restart_policy: unless-stopped
     hostname: "{{ inventory_hostname }}"
     user: root
@@ -33,3 +34,10 @@
       - /srv/newsblur/docker/volumes/grafana_data:/var/lib/grafana
       - /srv/newsblur/docker/grafana/datasources/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
       - /srv/newsblur/docker/grafana/dashboards/:/etc/grafana/provisioning/dashboards/
+
+- name: Restart grafana
+  debug: 
+    msg: Restarting grafana
+  changed_when: yes
+  notify:
+    - restart grafana

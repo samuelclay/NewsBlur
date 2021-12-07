@@ -18,7 +18,7 @@ LPURPLE='\033[01;35m'
 LCYAN='\033[01;36m'
 WHITE='\033[01;37m'
 
-ipaddr=`python /srv/newsblur/utils/hostname_ssh.py $1 $2`
+ipaddr=`python3 /srv/newsblur/utils/hostname_ssh.py $1 $2`
 printf "\n ${BLUE}---> ${LBLUE}Connecting to ${LGREEN}$1${BLUE} / ${LRED}$ipaddr${BLUE} <--- ${RESTORE}\n\n"
 if [ "$2" == "old" ];
 then

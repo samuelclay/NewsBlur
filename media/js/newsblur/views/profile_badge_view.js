@@ -6,6 +6,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
         "click .NB-profile-badge-action-follow": "follow_user",
         "click .NB-profile-badge-action-unfollow": "unfollow_user",
         "click .NB-profile-badge-action-preview": "preview_user",
+        "click .NB-profile-badge-action-mute": "mute_user",
         "click .NB-profile-badge-action-approve": "approve_user",
         "click .NB-profile-badge-action-ignore": "ignore_user",
         "click .NB-profile-badge-username": "open_profile",
@@ -115,7 +116,10 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                 (!profile.get('private') && $.make('div', { 
                     className: 'NB-profile-badge-action-preview NB-modal-submit-button NB-modal-submit-grey ' +
                                (!profile.get('shared_stories_count') ? 'NB-disabled' : '')
-                }, 'Preview'))
+                }, 'Preview')),
+                ($.make('div', { 
+                    className: 'NB-profile-badge-action-mute NB-modal-submit-button NB-modal-submit-grey'
+                }, $.make('span', (profile.get('muted') ? 'Unmute' : 'Mute'))))
             ]);            
         } else {
             $actions = $.make('div', { className: 'NB-profile-badge-action-buttons' }, [
@@ -127,7 +131,10 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                 $.make('div', { 
                     className: 'NB-profile-badge-action-preview NB-modal-submit-button NB-modal-submit-grey ' +
                                (!profile.get('shared_stories_count') ? 'NB-disabled' : '')
-                }, 'Preview')
+                }, 'Preview'),
+                $.make('div', { 
+                    className: 'NB-profile-badge-action-mute NB-modal-submit-button NB-modal-submit-grey '
+                }, $.make('span', (profile.get('muted') ? 'Unmute' : 'Mute')))
             ]);
         }
         this.$('.NB-profile-badge-actions').append($actions);
@@ -206,6 +213,32 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
         }, this));
     },
     
+    mute_user: function () {
+        if (this.model.get('muted')) {
+            return this.unmute_user();
+        }
+
+        this.$('.NB-loading').addClass('NB-active');
+        NEWSBLUR.assets.mute_user(this.model.get('user_id'), _.bind(function(data) {
+            this.model.set('muted', true);
+            
+            this.$('.NB-loading').removeClass('NB-active');
+            var $button = this.$('.NB-profile-badge-action-mute');
+            $button.find('span').text('Muted');
+        }, this));
+    },
+    
+    unmute_user: function() {
+        this.$('.NB-loading').addClass('NB-active');
+        NEWSBLUR.assets.unmute_user(this.model.get('user_id'), _.bind(function(data) {
+            this.model.set('muted', false);
+            
+            this.$('.NB-loading').removeClass('NB-active');
+            var $button = this.$('.NB-profile-badge-action-mute');
+            $button.find('span').text('Unmuted');
+        }, this));
+    },
+    
     preview_user: function() {
         if (this.$('.NB-profile-badge-action-preview').hasClass('NB-disabled')) return;
         var open_preview = _.bind(function() {
@@ -220,7 +253,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
             $.modal.close(open_preview);
         }
     },
-    
+
     open_profile: function() {
         var user_id = this.model.get('user_id');
         NEWSBLUR.reader.model.add_user_profiles([this.model]);
