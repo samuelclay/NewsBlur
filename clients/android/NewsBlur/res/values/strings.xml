@@ -14,7 +14,8 @@
     <string name="login_logged_in">Logged in!</string>
     <string name="login_retrieving_feeds">Retrieving feeds…</string>
     <string name="login_next">Next</string>
-    
+    <string name="login_custom_server_scheme_error">Expected \'https://\' custom server URL</string>
+
     <string name="search_for_feed">Search for feeds</string>
 
     <string name="loading">Loading…</string>
@@ -110,7 +111,7 @@
     <string name="profile_comment">comment</string>
     <string name="profile_reply">reply</string>
     <string name="profile_button_follow">FOLLOW</string>
-    <string name="profile_button_unfollow">FOLLOWING</string>
+    <string name="profile_button_unfollow">UNFOLLOW</string>
     <string name="profile_subscribed_to">subscribed to</string>
     <string name="profile_saved">saved</string>
     <string name="profile_reshared">re-shared</string>
@@ -238,6 +239,8 @@
     <string name="empty_list_view_no_focus_stories">You have no unread stories in Focus mode.\n\nSwitch to All or Unread.</string>
     <string name="empty_list_view_no_saved_stories">You have no saved stories.\n\nSwitch to All or Unread.</string>
     
+    <string name="login_registration_custom_server">Custom server</string>
+    <string name="login_registration_reset_url"><u>Reset</u></string>
     <string name="login_registration_register">Register</string>
     <string name="register_message_error">There was problem registering for NewsBlur.</string>
     <string name="get_started">Let\'s get started</string>
@@ -353,6 +356,7 @@
 
     <string name="settings_cat_feed_list">Feed List</string>
 
+    <string name="setting_feed_list_order">Feed list order</string>
     <string name="settings_enable_row_global_shared">Show Global Shared Stories</string>
     <string name="settings_enable_row_global_shared_sum">Show the Global Shared Stories folder</string>
     <string name="settings_enable_row_infrequent_stories">Show Infrequent Stories</string>
@@ -372,6 +376,18 @@
         <item>OLDEST</item>
     </string-array>
     <string name="default_story_order_value">NEWEST</string>
+
+    <string name="alphabetical">Alphabetical</string>
+    <string name="most_used_at_top">Most used at top</string>
+    <string-array name="default_feed_list_order_entries">
+        <item>@string/alphabetical</item>
+        <item>@string/most_used_at_top</item>
+    </string-array>
+    <string-array name="default_feed_list_order_values">
+        <item>ALPHABETICAL</item>
+        <item>MOST_USED_AT_TOP</item>
+    </string-array>
+    <string name="default_feed_list_order_value">ALPHABETICAL</string>
 
     <string name="all_stories">All Stories</string>
     <string name="unread_only">Unread Only</string>

@@ -1,5 +1,7 @@
 package com.newsblur.network;
 
+import android.text.TextUtils;
+
 public class APIConstants {
 
     private APIConstants() {} // util class - no instances
@@ -9,10 +11,9 @@ public class APIConstants {
     private static String CurrentUrlBase = DEFAULT_NEWSBLUR_URL_BASE;
 
     public static void setCustomServer(String newUrlBase) {
-        if (newUrlBase == null) return;
-        if (newUrlBase.length() <= 0) return;
-        android.util.Log.i(APIConstants.class.getName(), "setting custom server: " + newUrlBase);
+        if (TextUtils.isEmpty(newUrlBase)) return;
         CurrentUrlBase = newUrlBase;
+        android.util.Log.i(APIConstants.class.getName(), "setting custom server: " + newUrlBase);
     }
 
     public static void unsetCustomServer() {

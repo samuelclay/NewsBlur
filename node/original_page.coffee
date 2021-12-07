@@ -25,12 +25,12 @@ original_page = (app) =>
             log.debug "Loading: #{feedId} (#{filePath}). " +
                         "#{if exists then "" else "NOT FOUND"}"
             if not exists
-                return res.send 404
+                return res.sendStatus 404
             fs.stat filePath, (err, stats) ->
                 if not err and etag and stats.mtime == etag
-                    return res.send 304
+                    return res.sendStatus 304
                 if not err and lastModified and stats.mtime == lastModified
-                    return res.send 304
+                    return res.sendStatus 304
             
                 fs.readFile filePath, (err, content) ->
                     res.header 'Etag', Date.parse(stats.mtime)

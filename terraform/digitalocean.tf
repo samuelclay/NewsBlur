@@ -304,7 +304,7 @@ resource "digitalocean_droplet" "db-redis-user" {
   image    = var.droplet_os
   name     = "db-redis-user"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.droplet_size_40
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -321,7 +321,7 @@ resource "digitalocean_droplet" "db-redis-sessions" {
   image    = var.droplet_os
   name     = "db-redis-sessions"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.droplet_size_20
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -338,7 +338,7 @@ resource "digitalocean_droplet" "db-redis-story" {
   image    = var.droplet_os
   name     = "db-redis-story"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.redis_story_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -386,22 +386,40 @@ resource "digitalocean_droplet" "db-postgres" {
 }
 
 resource "digitalocean_volume" "mongo_volume" {
-  count                   = 2
+  count                   = 1
   region                  = "nyc1"
-  name                    = "mongo${count.index+1}"
+  name                    = "mongo${count.index+2}"
   size                    = 400
   initial_filesystem_type = "xfs"
   description             = "Storage for NewsBlur MongoDB"
 }
 
 resource "digitalocean_droplet" "db-mongo-primary" {
-  count    = 2
+  count    = 1
   image    = var.droplet_os
-  name     = "db-mongo${count.index+1}"
+  name     = "db-mongo${count.index+2}"
   region   = var.droplet_region
   size     = var.mongo_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   volume_ids = [element(digitalocean_volume.mongo_volume.*.id, count.index)]
+  provisioner "local-exec" {
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+  }
+}
+
+resource "digitalocean_droplet" "db-mongo-primary-s" {
+  count    = 1
+  image    = var.droplet_os
+  name     = "db-mongo-primary${count.index+1}"
+  region   = var.droplet_region
+  size     = var.mongo_primary_droplet_size
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
@@ -496,12 +514,13 @@ resource "digitalocean_droplet" "db-metrics" {
   }
 }
 
+# apd -l "task-celery4*" --tags stop; servers=$(for i in {39..48}; do echo -n "-target=\"digitalocean_droplet.task-celery[$i]\" " ; done); tf apply -refresh=false `eval echo $servers`
 resource "digitalocean_droplet" "task-celery" {
   count    = 79
   image    = var.droplet_os
   name     = format("task-celery%02v", count.index+1)
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.droplet_size_10
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     # command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -516,11 +535,11 @@ resource "digitalocean_droplet" "task-celery" {
 }
 
 resource "digitalocean_droplet" "task-work" {
-  count    = 2
+  count    = 3
   image    = var.droplet_os
   name     = "task-work${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.droplet_size_10
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"

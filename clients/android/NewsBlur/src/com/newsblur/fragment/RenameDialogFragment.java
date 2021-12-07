@@ -85,7 +85,7 @@ public class RenameDialogFragment extends DialogFragment {
             builder.setPositiveButton(R.string.folder_name_save, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    String newFolderName = binding.inputName.getText().toString().toUpperCase();
+                    String newFolderName = binding.inputName.getText().toString();
                     if (TextUtils.isEmpty(newFolderName)) {
                         Toast.makeText(activity, R.string.add_folder_name, Toast.LENGTH_SHORT).show();
                         return;

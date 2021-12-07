@@ -20,6 +20,7 @@ import urllib.parse
 from django.conf import settings
 from django.db import IntegrityError
 from django.core.cache import cache
+from sentry_sdk import set_user
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
@@ -696,8 +697,11 @@ class FeedFetcherWorker:
             ret_entries = None
             start_time = time.time()
             ret_feed = FEED_ERREXC
+
+            set_user({"id": feed_id})
             try:
                 feed = self.refresh_feed(feed_id)
+                set_user({"id": feed_id, "username": feed.feed_title})
                 
                 skip = False
                 if self.options.get('fake'):
