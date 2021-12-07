@@ -54,7 +54,7 @@ def CleanupUser(user_id):
     MActivity.trim(user_id)
     UserSubscriptionFolders.add_missing_feeds_for_user(user_id)
     UserSubscriptionFolders.compact_for_user(user_id)
-    # UserSubscription.refresh_stale_feeds(user_id)
+    UserSubscription.refresh_stale_feeds(user_id)
     
     try:
         ss = MSocialServices.objects.get(user_id=user_id)
