@@ -203,7 +203,7 @@ public class Story implements Serializable {
         extern_feedTitle = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
     }
 
-	public class Intelligence implements Serializable {
+	public static class Intelligence implements Serializable {
 		private static final long serialVersionUID = -1314486209455376730L;
 
 		@SerializedName("feed")

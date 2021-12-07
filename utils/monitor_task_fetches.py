@@ -14,7 +14,7 @@ def main():
     admin_email = settings.ADMINS[0][1]
     failed = False
     feeds_fetched = 0
-    FETCHES_DROP_AMOUNT = 50000
+    FETCHES_DROP_AMOUNT = 100000
     redis_task_fetches = 0
     monitor_key = "Monitor:task_fetches"
     r = redis.Redis(connection_pool=settings.REDIS_ANALYTICS_POOL)
@@ -29,8 +29,9 @@ def main():
     if feeds_fetched < 5000000 and not failed:
         if redis_task_fetches > 0 and feeds_fetched < (redis_task_fetches - FETCHES_DROP_AMOUNT):
             failed = True
-        elif redis_task_fetches <= 0:
-            failed = True
+        # Ignore 0's below, as they simply imply low number, not falling    
+        # elif redis_task_fetches <= 0:
+        #     failed = True
     if failed:
         requests.post(
                 "https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_SERVER_NAME,

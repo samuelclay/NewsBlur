@@ -52,7 +52,7 @@ class StoryUserTagsFragment : DialogFragment(), LoaderManager.LoaderCallbacks<Cu
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> =
-            FeedUtils.dbHelper.savedStoryCountsLoader
+            FeedUtils.dbHelper!!.savedStoryCountsLoader
 
     override fun onLoadFinished(loader: Loader<Cursor>, cursor: Cursor) {
         if (!cursor.isBeforeFirst) return

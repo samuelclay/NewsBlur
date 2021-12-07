@@ -1,0 +1,9 @@
+{
+    "service": {
+        "name": "elasticsearch_exporter",
+        "tags": [
+            "metrics"
+        ],
+        "port": 9210
+    }
+}

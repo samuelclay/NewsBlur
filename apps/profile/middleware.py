@@ -146,10 +146,6 @@ class SQLLogToConsoleMiddleware:
             for query in queries:
                 if query.get('mongo'):
                     query['sql'] = "~FM%s: %s" % (query['mongo']['collection'], query['mongo']['query'])
-                elif query.get('db_redis'):
-                    query['sql'] = "~FC%s" % (query['db_redis']['query'])
-                elif query.get('redis'):
-                    query['sql'] = "~FC%s" % (query['redis']['query'])
                 elif query.get('redis_user'):
                     query['sql'] = "~FC%s" % (query['redis_user']['query'])
                 elif query.get('redis_story'):
@@ -179,10 +175,8 @@ class SQLLogToConsoleMiddleware:
                                                not q.get('redis_user') and
                                                not q.get('redis_story') and
                                                not q.get('redis_session') and
-                                               not q.get('redis_pubsub') and
-                                               not q.get('db_redis')]),
+                                               not q.get('redis_pubsub')]),
                 'mongo': sum([float(q['time']) for q in queries if q.get('mongo')]),
-                'db_redis': sum([float(q['time']) for q in queries if q.get('db_redis')]),
                 'redis_user': sum([float(q['time']) for q in queries if q.get('redis_user')]),
                 'redis_story': sum([float(q['time']) for q in queries if q.get('redis_story')]),
                 'redis_session': sum([float(q['time']) for q in queries if q.get('redis_session')]),

@@ -93,7 +93,7 @@ services:
       - ./docker/volumes/postgres:/var/lib/postgresql/data
 
   db_redis:
-    image: redis:3.2.6
+    image: redis:latest
     ports:
       - 6579:6579
     container_name: db_redis
@@ -120,7 +120,7 @@ services:
 
   db_mongo:
     container_name: db_mongo
-    image: mongo:4.0
+    image: mongo:3.6
     restart: unless-stopped
     ports:
       - 29019:29019

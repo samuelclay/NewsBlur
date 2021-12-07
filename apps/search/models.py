@@ -207,7 +207,7 @@ class SearchStory:
     
     @classmethod
     def doc_type(cls):
-        if settings.DOCKERBUILD:
+        if settings.DOCKERBUILD or getattr(settings, 'ES_IGNORE_TYPE', True):
             return None
         return "%s-type" % cls.name
         
@@ -230,34 +230,40 @@ class SearchStory:
             logging.debug(" ***> ~FRCould not create search index for ~FM%s: %s" % (cls.index_name(), e))
             return
         except (elasticsearch.exceptions.ConnectionError, 
-                urllib3.exceptions.NewConnectionError, 
+                urllib3.exceptions.NewConnectionError,
                 urllib3.exceptions.ConnectTimeoutError) as e:
-            logging.debug(f" ***> ~FRNo search server available for creating story mapping: {e}")
+            logging.debug(
+                f" ***> ~FRNo search server available for creating story mapping: {e}")
             return
-        
-        mapping = { 
+
+        mapping = {
             'title': {
-                'boost': 3.0,
                 'store': False,
                 'type': 'text',
                 'analyzer': 'snowball',
+                "term_vector": "yes",
             },
             'content': {
-                'boost': 1.0,
                 'store': False,
                 'type': 'text',
                 'analyzer': 'snowball',
+                "term_vector": "yes",
             },
             'tags': {
-                'boost': 2.0,
                 'store': False,
-                'type': 'keyword',
+                "type": "text",
+                "fields": {
+                    "raw": {
+                        "type": "text",
+                        "analyzer": "keyword",
+                        "term_vector": "yes"
+                    }
+                }
             },
             'author': {
-                'boost': 1.0,
                 'store': False,
-                'type': 'text',   
-                'analyzer': 'simple',
+                'type': 'text',
+                'analyzer': 'default',
             },
             'feed_id': {
                 'store': False,
@@ -274,34 +280,35 @@ class SearchStory:
         cls.ES().indices.flush(cls.index_name())
 
     @classmethod
-    def index(cls, story_hash, story_title, story_content, story_tags, story_author, story_feed_id, 
+    def index(cls, story_hash, story_title, story_content, story_tags, story_author, story_feed_id,
               story_date):
         cls.create_elasticsearch_mapping()
 
         doc = {
-            "content"   : story_content,
-            "title"     : story_title,
-            "tags"      : ', '.join(story_tags),
-            "author"    : story_author,
-            "feed_id"   : story_feed_id,
-            "date"      : story_date,
+            "content": story_content,
+            "title": story_title,
+            "tags": ', '.join(story_tags),
+            "author": story_author,
+            "feed_id": story_feed_id,
+            "date": story_date,
         }
         try:
-            cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
-        except (elasticsearch.exceptions.ConnectionError, 
+            cls.ES().create(index=cls.index_name(), id=story_hash,
+                            body=doc, doc_type=cls.doc_type())
+        except (elasticsearch.exceptions.ConnectionError,
                 urllib3.exceptions.NewConnectionError) as e:
-            logging.debug(f" ***> ~FRNo search server available for story indexing: {e}")
+            logging.debug(
+                f" ***> ~FRNo search server available for story indexing: {e}")
         except elasticsearch.exceptions.ConflictError as e:
             logging.debug(f" ***> ~FBAlready indexed story: {e}")
         # if settings.DEBUG:
         #     logging.debug(f" ***> ~FBIndexed {story_hash}")
 
-    
     @classmethod
     def remove(cls, story_hash):
         if not cls.ES().exists(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type()):
             return
-        
+
         try:
             cls.ES().delete(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type())
         except elasticsearch.exceptions.NotFoundError:
@@ -443,7 +450,7 @@ class SearchFeed:
         
     @classmethod
     def doc_type(cls):
-        if settings.DOCKERBUILD:
+        if settings.DOCKERBUILD or getattr(settings, 'ES_IGNORE_TYPE', True):
             return None
         return "%s-type" % cls.name
         
