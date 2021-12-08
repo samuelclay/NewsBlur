@@ -1,5 +1,10 @@
 package com.newsblur.activity;
 
+import static com.newsblur.service.NBSyncReceiver.UPDATE_DB_READY;
+import static com.newsblur.service.NBSyncReceiver.UPDATE_METADATA;
+import static com.newsblur.service.NBSyncReceiver.UPDATE_REBUILD;
+import static com.newsblur.service.NBSyncReceiver.UPDATE_STATUS;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
