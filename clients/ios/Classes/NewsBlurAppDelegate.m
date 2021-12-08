@@ -1623,6 +1623,10 @@
     storiesCollection.activeFeed = feed;
     storiesCollection.activeFolder = nil;
     
+    if (-self.feedsViewController.lastUpdate.timeIntervalSinceNow > 120.0) {
+        [self reloadFeedsView:NO];
+    }
+    
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self loadFeedDetailView];
     } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
