@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
@@ -202,7 +203,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
         binding = FragmentFolderfeedlistBinding.bind(v);
 
-        binding.folderfeedList.setGroupIndicator(UIUtils.getDrawable(getActivity(), R.drawable.transparent));
+        binding.folderfeedList.setGroupIndicator(ContextCompat.getDrawable(requireContext(), R.drawable.transparent));
         binding.folderfeedList.setOnCreateContextMenuListener(this);
         binding.folderfeedList.setOnChildClickListener(this);
         binding.folderfeedList.setOnGroupClickListener(this);

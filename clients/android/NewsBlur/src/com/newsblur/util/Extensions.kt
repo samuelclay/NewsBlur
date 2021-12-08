@@ -1,16 +1,23 @@
 package com.newsblur.util
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+
+private const val TAG = "NBScope"
 
 fun <R> CoroutineScope.executeAsyncTask(
-        onPreExecute: () -> Unit = {  },
+        onPreExecute: () -> Unit = { },
         doInBackground: () -> R,
-        onPostExecute: (R) -> Unit = {  }) =
+        onPostExecute: (R) -> Unit = { }) =
         launch {
             onPreExecute()
             val result = withContext(Dispatchers.IO) { doInBackground() }
             onPostExecute(result)
         }
+
+val NBScope = CoroutineScope(
+        CoroutineName(TAG) +
+                Dispatchers.Default +
+                SupervisorJob() + // children coroutines won't stop parent if they cancel or error
+                CoroutineExceptionHandler { context, throwable ->
+                    Log.e(TAG, "Coroutine exception on context $context with $throwable")
+                })
