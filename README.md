@@ -21,7 +21,6 @@
 ## Technologies
 
 ### Server-side
-
  * [Python 3.7+](http://www.python.org): The language of choice.
  * [Django](http://www.djangoproject.com): Web framework written in Python, used 
    to serve all pages.
@@ -48,35 +47,34 @@
 
 ### Prerequisites
     * Docker
-    * Docker-compose
+    * Docker-Compose
+    * You may need to `sudo apt install nodejs npm`
+    * Github SSH keys. 
+You may meet this error `The authenticity of host 'github.com (140.82.121.3)` can't be established. In which case you need to access Github direct & accept the key, after verifying it here (https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints) & make sure that you have an SSH key associated with your Github account (https://docs.github.com/en/authentication/troubleshooting-ssh/error-permission-denied-publickey)
 
 ## Installation Instructions
  1. Clone this repo
- 2. Run `make nb` to build all of the NewsBlur containers. This will set up all necessary databases, front-end django apps, celery tasks, node apps, flask database monitor and metrics, nginx, and a haproxy load balancer.
+ 2. Before starting to run any commands: decide whether you will access Newsblur via localhost or a domain!
+ 3. Open a bash shell & navigate to the Newsblur directory. Ensure that the mydomain.sh script is executable ('sudo chmod +x' if it isn't).
+ 4. Type `./mydomain.sh <domain name>` (where <domain name> is the domain that you want to use to access Newsblur.
+
+   If you need to fix a typo then you can use `./mydomain.sh <old domain> <new domain>`
+   * What it does (you could do it manually instead):
+      * Changes `NEWSBLUR_URL` and `SESSION_COOKIE_DOMAIN` in `newsblur_web/docker_local_settings.py`
+      * Changes the domain in `config/fixtures/bootstrap.json`
+  
+ 5. If you're using a custom subdomain, you'll also want to add it to `ALLOWED_SUBDOMAINS` in `apps/reader/views.py`
+   
+ 6. Run `make nb` to build Newsblur containers. This will set up all necessary databases, celery tasks, node applications,
+    flask database monitor, NGINX, and a Haproxy load balancer.
  7. Navigate to: 
 
-         https://localhost
+         https://localhost or https://<domain name> if you chose to use your own domain
 
-    Note: You will be warned that you are using a self signed certificate. In order to get around this warning you must type "thisisunsafe" as per [this blog post](https://dblazeski.medium.com/chrome-bypass-net-err-cert-invalid-for-development-daefae43eb12).
+    Note: You will be warned that you are using a self signed certificate. In order to get around this warning you must type "thisisunsafe" as per https://dblazeski.medium.com/chrome-bypass-net-err-cert-invalid-for-development-daefae43eb12
 
-## Using a custom domain
-
- 1. Run the custom domain script
- 
-    ```
-    bash ./utils/custom_domain.sh <domain name>
-    ```
-   
-    This script will do the following:
-
-      * Change `NEWSBLUR_URL` and `SESSION_COOKIE_DOMAIN` in `newsblur_web/docker_local_settings.py`
-      * Change the domain in `config/fixtures/bootstrap.json`
-   
-   You can also change domains: `bash ./utils/custom_domain.sh <old domain> <new domain>`
-  
- 2. If you're using a custom subdomain, you'll also want to add it to `ALLOWED_SUBDOMAINS` in `apps/reader/views.py`
-
- 3. A way to make sure you updated all the correct places:
+## Unable to log in after registering?
+   A way to make sure you updated all the correct places (thanks to Djagatahel via Reddit):
 
     * Go to the website address in your browser
     * Open developer tools and look at the network tab
@@ -85,11 +83,10 @@
     * Observe the Response headers for that call
     * The value of the "set-cookie" header should contain a "Domain=" string
 
-    If the string after `Domain=` is not the domain you are using to access the website, then your configuration still needs your custom domain.
-    
-    You can also confirm that there is a domain name mismatch in the database by running `make shell` & typing `Site.objects.all()[0]` to show the domain that NewsBlur is expecting.
+If the string after Domain= is not the domain you are using to access the website, then your configuration is missing a piece.
+   You can also confirm that there is a domain name mismatch in the database by running `make shell` & typing `Site.objects.all()[0]` to show the domain that Newsblur is using.
    
-## Making docker-compose work with your existing database
+## Making docker-compose work with your database
 
 To make docker-compose work with your database, upgrade your local database to the docker-compose version and then volumize the database data path by changing the `./docker/volumes/` part of the volume directive in the service to point to your local database's data directory.
 
@@ -147,6 +144,7 @@ To run locust using docker, just run `make perf-docker` and navigate to http://1
  * Created by [Samuel Clay](http://www.samuelclay.com).
  * Email address: <samuel@newsblur.com>
  * [@samuelclay](http://twitter.com/samuelclay) on Twitter.
+ 
 
 ## License
 
