@@ -1,7 +1,4 @@
 #! /bin/bash
-
-# This script is written by a NewsBlur user, lineuctterx, and is unmaintained. Use at your own risk.
-
 if [ $# -eq 0 ]
   then
     echo "No arguments supplied"
