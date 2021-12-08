@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r">
     <device id="ipad11_0rounded" orientation="landscape" layout="fullscreen" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -16,7 +17,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bPa-u1-Aml">
-                                <rect key="frame" x="0.0" y="50" width="1194" height="604"/>
+                                <rect key="frame" x="0.0" y="74" width="1194" height="580"/>
                                 <connections>
                                     <segue destination="afA-W0-XsQ" kind="embed" id="jh9-xN-7qk"/>
                                 </connections>
@@ -113,10 +114,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hRx-bd-6Da">
-                                <rect key="frame" x="100" y="50" width="320" height="714"/>
+                                <rect key="frame" x="0.0" y="74" width="420" height="690"/>
                                 <subviews>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="FeedTitlesTable" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="6" estimatedRowHeight="6" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="Gil-Jz-die" userLabel="Table View">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="714"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="420" height="690"/>
                                         <color key="backgroundColor" systemColor="lightTextColor"/>
                                         <connections>
                                             <outlet property="dataSource" destination="c70-P4-4n6" id="Q8t-jW-lg8"/>
@@ -124,17 +125,17 @@
                                         </connections>
                                     </tableView>
                                     <view hidden="YES" opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Uec-kH-7Z4">
-                                        <rect key="frame" x="20" y="271.5" width="280" height="171"/>
+                                        <rect key="frame" x="20" y="259.5" width="380" height="171"/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" alpha="0.40000000596046448" contentMode="scaleToFill" image="big_world.png" translatesAutoresizingMaskIntoConstraints="NO" id="1Pk-CL-YhV">
-                                                <rect key="frame" x="108" y="0.0" width="64" height="64"/>
+                                                <rect key="frame" x="158" y="0.0" width="64" height="64"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="64" id="8Sf-Bs-LaE"/>
                                                     <constraint firstAttribute="height" constant="64" id="pE1-dB-d91"/>
                                                 </constraints>
                                             </imageView>
                                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="You have no unread stories in Focus mode." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uTm-aQ-Q7P">
-                                                <rect key="frame" x="15" y="99" width="250" height="48"/>
+                                                <rect key="frame" x="65" y="99" width="250" height="48"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="250" id="bGD-a1-f6G"/>
                                                 </constraints>
@@ -143,7 +144,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Switch to All or Unread." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2aD-co-ccO">
-                                                <rect key="frame" x="15" y="147" width="250" height="24"/>
+                                                <rect key="frame" x="65" y="147" width="250" height="24"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="250" id="aCa-me-1n0"/>
                                                 </constraints>
@@ -177,7 +178,7 @@
                                 </constraints>
                             </view>
                             <toolbar clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pWr-U1-GMQ">
-                                <rect key="frame" x="96" y="764" width="328" height="50"/>
+                                <rect key="frame" x="-20" y="764" width="444" height="50"/>
                                 <items>
                                     <barButtonItem image="nav_icn_add.png" width="34" style="plain" id="Wu8-MQ-nN6">
                                         <connections>
@@ -187,7 +188,7 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="Em8-Dp-DwK"/>
                                     <barButtonItem id="ohG-9s-dlt">
                                         <segmentedControl key="customView" contentMode="center" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="plain" selectedSegmentIndex="0" id="ADC-ot-Aao">
-                                            <rect key="frame" x="41.5" y="9" width="250" height="32"/>
+                                            <rect key="frame" x="157.5" y="9" width="250" height="32"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <segments>
                                                 <segment title="" image="all.png" width="36"/>
@@ -243,7 +244,7 @@
             <objects>
                 <navigationController storyboardIdentifier="FeedsNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="TEt-aw-KDr" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="FYM-Eb-jEE">
-                        <rect key="frame" x="0.0" y="0.0" width="420" height="50"/>
+                        <rect key="frame" x="0.0" y="24" width="420" height="50"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -275,7 +276,7 @@
             <objects>
                 <navigationController storyboardIdentifier="FeedDetailNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="u8Q-0B-JY9" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Sc3-NO-Rlz">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+                        <rect key="frame" x="0.0" y="24" width="375" height="50"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -291,7 +292,7 @@
             <objects>
                 <navigationController storyboardIdentifier="DetailNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="HsP-cn-nIY" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Noh-2M-34G">
-                        <rect key="frame" x="0.0" y="0.0" width="818.5" height="50"/>
+                        <rect key="frame" x="0.0" y="24" width="818.5" height="50"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -335,11 +336,11 @@
             <objects>
                 <viewController storyboardIdentifier="FeedDetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="gfj-2g-i9p" customClass="FeedDetailViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Qlc-Qa-4j4">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="784"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="760"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="FeedDetailTable" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="HYy-Wb-YEm">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="784"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="760"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <connections>
@@ -348,7 +349,7 @@
                                 </connections>
                             </tableView>
                             <view hidden="YES" opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZLP-oU-XR7">
-                                <rect key="frame" x="0.0" y="224.5" width="375" height="181"/>
+                                <rect key="frame" x="0.0" y="212.5" width="375" height="181"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" alpha="0.40000000596046448" contentMode="scaleToFill" image="big_world.png" translatesAutoresizingMaskIntoConstraints="NO" id="Lzk-2I-zT1">
                                         <rect key="frame" x="155.5" y="24" width="64" height="64"/>
@@ -404,7 +405,7 @@
             <objects>
                 <viewController id="afA-W0-XsQ" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="jBw-7b-YGl">
-                        <rect key="frame" x="0.0" y="0.0" width="1194" height="604"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1194" height="580"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="xqp-qa-ugn"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
