@@ -327,15 +327,12 @@ class FetchFeed:
             if not thumbnail:
                 thumbnail = video['snippet']['thumbnails'].get('medium')
             duration_sec = isodate.parse_duration(video['contentDetails']['duration']).seconds
-            if duration_sec >= 3600:
-                hours = (duration_sec / 3600)
-                minutes = (duration_sec - (hours*3600)) / 60
-                seconds = duration_sec - (hours*3600) - (minutes*60)
-                duration = "%s:%s:%s" % (hours, '{0:02d}'.format(round(minutes)), '{0:02d}'.format(round(seconds)))
+            duration_min, seconds = divmod(duration_sec, 60)
+            hours, minutes = divmod(duration_min, 60)
+            if hours >= 1:
+                duration = "%s:%s:%s" % (hours, '{0:02d}'.format(minutes), '{0:02d}'.format(seconds))
             else:
-                minutes = duration_sec / 60
-                seconds = duration_sec - (minutes*60)
-                duration = "%s:%s" % ('{0:02d}'.format(round(minutes)), '{0:02d}'.format(round(seconds)))
+                duration = "%s:%s" % (minutes, '{0:02d}'.format(seconds))
             content = """<div class="NB-youtube-player">
                             <iframe allowfullscreen="true" src="%s?iv_load_policy=3"></iframe>
                          </div>
