@@ -2616,6 +2616,13 @@
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
     feedCounts = [self.dictUnreadCounts objectForKey:feedIdStr];
     
+    NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
+    BOOL isActive = [[feed objectForKey:@"active"] boolValue];
+    
+    if (!isActive) {
+        return counts;
+    }
+    
     counts.ps += [[feedCounts objectForKey:@"ps"] intValue];
     counts.nt += [[feedCounts objectForKey:@"nt"] intValue];
     counts.ng += [[feedCounts objectForKey:@"ng"] intValue];
