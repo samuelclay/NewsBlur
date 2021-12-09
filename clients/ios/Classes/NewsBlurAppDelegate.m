@@ -1623,26 +1623,26 @@
     storiesCollection.activeFeed = feed;
     storiesCollection.activeFolder = nil;
     
-    if (-self.feedsViewController.lastUpdate.timeIntervalSinceNow > 120.0) {
-        [self reloadFeedsView:NO];
-    }
+    [self reloadFeedsView:NO];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [self loadFeedDetailView];
-    } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-//        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-        [self showFeedsListAnimated:NO];
-//        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
-        [self hidePopoverAnimated:NO completion:^{
-            if (self.feedsNavigationController.presentedViewController) {
-                [self.feedsNavigationController dismissViewControllerAnimated:NO completion:^{
-                    [self loadFeedDetailView];
-                }];
-            } else {
-                [self loadFeedDetailView];
-            }
-        }];
-    }
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+//        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//            [self loadFeedDetailView];
+//        } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+//    //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+//            [self showFeedsListAnimated:NO];
+//    //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+//            [self hidePopoverAnimated:NO completion:^{
+//                if (self.feedsNavigationController.presentedViewController) {
+//                    [self.feedsNavigationController dismissViewControllerAnimated:NO completion:^{
+//                        [self loadFeedDetailView];
+//                    }];
+//                } else {
+//                    [self loadFeedDetailView];
+//                }
+//            }];
+//        }
+//    });
 }
 
 - (void)loadTryFeedDetailView:(NSString *)feedId
@@ -1689,6 +1689,31 @@
                 [self loadFeedDetailView];
             }
         }];
+    }
+}
+
+- (void)backgroundLoadNotificationStory {
+    if (self.inFindingStoryMode) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            [self loadFeedDetailView];
+        } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+            [self showFeedsListAnimated:NO];
+            [self hidePopoverAnimated:NO completion:^{
+                if (self.feedsNavigationController.presentedViewController) {
+                    [self.feedsNavigationController dismissViewControllerAnimated:NO completion:^{
+                        [self loadFeedDetailView];
+                    }];
+                } else {
+                    [self loadFeedDetailView];
+                }
+            }];
+        }
+    }
+    
+    if (self.tryFeedFeedId && !self.isTryFeedView) {
+        [self loadFeed:self.tryFeedFeedId withStory:self.tryFeedStoryId animated:NO];
+    } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !self.isCompactWidth) {
+        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"everything"];
     }
 }
 

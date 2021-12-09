@@ -62,7 +62,7 @@ class FeedsViewController: FeedsObjCViewController {
                 return
             }
             
-            self.backgroundLoadNotificationStory()
+            self.appDelegate.backgroundLoadNotificationStory()
         }
         
         loadWorkItem = workItem

@@ -956,14 +956,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     @throw [NSException exceptionWithName:@"Missing loadNotificationStory implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
 
-- (void)backgroundLoadNotificationStory {
-    if (self.appDelegate.tryFeedFeedId && !self.appDelegate.isTryFeedView) {
-        [self.appDelegate loadFeed:self.appDelegate.tryFeedFeedId withStory:self.appDelegate.tryFeedStoryId animated:NO];
-    } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !self.appDelegate.isCompactWidth) {
-        [self.appDelegate loadRiverFeedDetailView:self.appDelegate.feedDetailViewController withFolder:@"everything"];
-    }
-}
-
 - (void)showUserProfile {
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"username"]];
