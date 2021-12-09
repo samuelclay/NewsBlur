@@ -128,7 +128,7 @@ class FetchFeed:
                 return FEED_ERRHTTP, None
             self.fpf = feedparser.parse(facebook_feed)
         
-        if not self.fpf:
+        if not self.fpf and 'json' in address:
             try:
                 headers = self.feed.fetch_headers()
                 if etag:
@@ -173,19 +173,19 @@ class FetchFeed:
                 logging.debug("   ***> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.log_title[:30], str(e)))
                 # raise e
             
-            if not self.fpf or self.options.get('force_fp', False):
-                try:
-                    self.fpf = feedparser.parse(address,
-                                                agent=self.feed.user_agent,
-                                                etag=etag,
-                                                modified=modified)
-                except (TypeError, ValueError, KeyError, EOFError, MemoryError, 
-                        urllib.error.URLError, http.client.InvalidURL, 
-                        http.client.BadStatusLine, http.client.IncompleteRead, 
-                        ConnectionResetError) as e:
-                    logging.debug('   ***> [%-30s] ~FRFeed fetch error: %s' % 
-                                  (self.feed.log_title[:30], e))
-                    pass
+        if not self.fpf or self.options.get('force_fp', False):
+            try:
+                self.fpf = feedparser.parse(address,
+                                            agent=self.feed.user_agent,
+                                            etag=etag,
+                                            modified=modified)
+            except (TypeError, ValueError, KeyError, EOFError, MemoryError, 
+                    urllib.error.URLError, http.client.InvalidURL, 
+                    http.client.BadStatusLine, http.client.IncompleteRead, 
+                    ConnectionResetError) as e:
+                logging.debug('   ***> [%-30s] ~FRFeed fetch error: %s' % 
+                                (self.feed.log_title[:30], e))
+                pass
                 
         if not self.fpf:
             try:
