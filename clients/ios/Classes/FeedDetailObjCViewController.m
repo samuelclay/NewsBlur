@@ -2767,6 +2767,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (void)updateTheme {
     [super updateTheme];
     
+    UINavigationBarAppearance *appearance = [[UINavigationBarAppearance alloc] initWithIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
+    appearance.backgroundColor = [UINavigationBar appearance].barTintColor;
+    
+    self.navigationController.navigationBar.scrollEdgeAppearance = appearance;
+    self.navigationController.navigationBar.standardAppearance = appearance;
     self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
     self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
     self.navigationController.navigationBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
