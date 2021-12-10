@@ -8,15 +8,23 @@
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "editable": true,
+  "fiscalYearStartMonth": 0,
   "gnetId": null,
   "graphTooltip": 0,
   "id": 9,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
       "aliasColors": {},
@@ -24,10 +32,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -54,7 +58,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "8.2.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -121,10 +125,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -151,7 +151,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "8.2.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -218,10 +218,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -248,7 +244,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "8.2.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -315,10 +311,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -345,7 +337,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "8.2.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -412,10 +404,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -442,7 +430,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "8.2.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -509,10 +497,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -539,7 +523,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "8.2.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -606,10 +590,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -636,7 +616,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "8.2.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -711,10 +691,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -741,7 +717,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "8.2.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -803,7 +779,7 @@
       }
     }
   ],
-  "schemaVersion": 27,
+  "schemaVersion": 32,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -817,5 +793,5 @@
   "timezone": "",
   "title": "ElasticSearch",
   "uid": "77sLElDnk",
-  "version": 2
+  "version": 3
 }
