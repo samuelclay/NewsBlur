@@ -3,6 +3,8 @@ package com.newsblur.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import android.view.View;
 
@@ -25,10 +27,10 @@ public class AddFeedExternal extends NbActivity implements AddFeedFragment.AddFe
         UIUtils.setupToolbar(this, R.drawable.logo, "Add Feed", true);
 
         binding.loadingThrob.setEnabled(!ViewUtils.isPowerSaveMode(this));
-        binding.loadingThrob.setColors(UIUtils.getColor(this, R.color.refresh_1),
-                               UIUtils.getColor(this, R.color.refresh_2),
-                               UIUtils.getColor(this, R.color.refresh_3),
-                               UIUtils.getColor(this, R.color.refresh_4));
+        binding.loadingThrob.setColors(ContextCompat.getColor(this, R.color.refresh_1),
+                ContextCompat.getColor(this, R.color.refresh_2),
+                ContextCompat.getColor(this, R.color.refresh_3),
+                ContextCompat.getColor(this, R.color.refresh_4));
 
         Intent intent = getIntent();
         Uri uri = intent.getData();
