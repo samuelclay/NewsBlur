@@ -1331,10 +1331,12 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
         return;
     }
     NSLog(@"Test for try feed");
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
-    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    HUD.labelText = @"Finding story...";
-
+    if (![[MBProgressHUD HUDForView:self.view].labelText isEqualToString:@"Finding story..."]) {
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        HUD.labelText = @"Finding story...";
+    }
+    
     for (int i = 0; i < [storiesCollection.activeFeedStories count]; i++) {
         NSString *storyIdStr = [[storiesCollection.activeFeedStories
                                  objectAtIndex:i] objectForKey:@"id"];
@@ -2765,6 +2767,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (void)updateTheme {
     [super updateTheme];
     
+    UINavigationBarAppearance *appearance = [[UINavigationBarAppearance alloc] initWithIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
+    appearance.backgroundColor = [UINavigationBar appearance].barTintColor;
+    
+    self.navigationController.navigationBar.scrollEdgeAppearance = appearance;
+    self.navigationController.navigationBar.standardAppearance = appearance;
     self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
     self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
     self.navigationController.navigationBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;

@@ -21,10 +21,9 @@ class LastSeenMiddleware(object):
              request.path.startswith('/reader/load_feeds') or
              request.path.startswith('/reader/feeds'))
             and hasattr(request, 'user')
-            and request.user.is_authenticated): 
+            and request.user.is_authenticated):
             hour_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=60)
             ip = request.META.get('HTTP_X_FORWARDED_FOR', None) or request.META['REMOTE_ADDR']
-            # SUBSCRIBER_EXPIRE = datetime.datetime.utcnow() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
             if request.user.profile.last_seen_on < hour_ago:
                 logging.user(request, "~FG~BBRepeat visitor: ~SB%s (%s)" % (
                     request.user.profile.last_seen_on, ip))
@@ -101,7 +100,8 @@ class DBProfilerMiddleware:
             self._save_times(self.sql_times_elapsed, 'app_')
     
     def _save_times(self, db_times, prefix=""):
-        if not db_times: return
+        if not db_times: 
+            return
         
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
         pipe = r.pipeline()
@@ -154,6 +154,8 @@ class SQLLogToConsoleMiddleware:
                     query['sql'] = "~FC%s" % (query['redis_session']['query'])
                 elif query.get('redis_pubsub'):
                     query['sql'] = "~FC%s" % (query['redis_pubsub']['query'])
+                elif query.get('db_redis'):
+                    query['sql'] = "~FC%s" % (query['db_redis']['query'])
                 elif 'sql' not in query:
                     logging.debug(" ***> Query log missing: %s" % query)
                 else:

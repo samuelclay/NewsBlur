@@ -14,6 +14,7 @@ public class NewsBlurResponse {
     public String message;
 	public String[] errors;
     public long readTime;
+    public int impactCode;
 
     public boolean isError() {
         if (isProtocolError) return true;

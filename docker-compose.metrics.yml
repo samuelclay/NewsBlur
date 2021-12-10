@@ -6,7 +6,7 @@ services:
     image: prom/prometheus
     ports:
       - 9090:9090
-    command: '--config.file=/etc/prometheus/prometheus.yml'
+    command: '--config.file=/etc/prometheus/prometheus.yml --storage.tsdb.retention.time=10y'
     volumes:
       - ./docker/prometheus/prometheus.docker.yml:/etc/prometheus/prometheus.yml
       - ./docker/prometheus/prometheus_rules.yml:/etc/prometheus/prometheus_rules.yml

@@ -193,6 +193,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.feedTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
     self.feedTitlesTable.estimatedRowHeight = 0;
     
+    if (@available(iOS 15.0, *)) {
+        self.feedTitlesTable.sectionHeaderTopPadding = 0;
+    }
+    
     self.currentRowAtIndexPath = nil;
     self.currentSection = NewsBlurTopSectionAllStories;
     
@@ -956,14 +960,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     @throw [NSException exceptionWithName:@"Missing loadNotificationStory implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
 
-- (void)backgroundLoadNotificationStory {
-    if (self.appDelegate.tryFeedFeedId && !self.appDelegate.isTryFeedView) {
-        [self.appDelegate loadFeed:self.appDelegate.tryFeedFeedId withStory:self.appDelegate.tryFeedStoryId animated:NO];
-    } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !self.appDelegate.isCompactWidth) {
-        [self.appDelegate loadRiverFeedDetailView:self.appDelegate.feedDetailViewController withFolder:@"everything"];
-    }
-}
-
 - (void)showUserProfile {
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"username"]];
@@ -1199,6 +1195,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     [self.appDelegate hidePopoverAnimated:YES];
     
+    UINavigationBarAppearance *appearance = [[UINavigationBarAppearance alloc] initWithIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
+    appearance.backgroundColor = [UINavigationBar appearance].barTintColor;
+    
+    self.navigationController.navigationBar.scrollEdgeAppearance = appearance;
+    self.navigationController.navigationBar.standardAppearance = appearance;
     self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
     self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
     self.navigationController.navigationBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;

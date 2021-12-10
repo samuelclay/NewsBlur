@@ -24,6 +24,9 @@ import com.newsblur.databinding.ActivityReadingBinding
 import com.newsblur.domain.Story
 import com.newsblur.fragment.ReadingItemFragment
 import com.newsblur.fragment.ReadingPagerFragment
+import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_REBUILD
+import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_STATUS
+import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_STORY
 import com.newsblur.service.NBSyncService
 import com.newsblur.util.*
 import com.newsblur.util.PrefConstants.ThemeValue
