@@ -3,8 +3,8 @@ package com.newsblur.activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import com.newsblur.R
 import com.newsblur.util.*
 
 /**
@@ -13,17 +13,18 @@ import com.newsblur.util.*
  * DB connection used by all other Activities.
  */
 class InitActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_init)
+        installSplashScreen().also {
+            it.setKeepVisibleCondition {
+                // keep showing the splash screen until FeedUtils.offerInitContext(...)
+                // finishes and UI ready to display
+                FeedUtils.dbHelper != null || FeedUtils.thumbnailLoader != null
+            }
+        }
 
-        // do actual app launch after just a moment so the init screen smoothly loads
-        lifecycleScope.executeAsyncTask(
-                doInBackground = {
-                    start()
-                }
-        )
-
+        lifecycleScope.executeAsyncTask(doInBackground = { start() })
         Log.i(this, "cold launching version " + PrefsUtils.getVersion(this))
     }
 

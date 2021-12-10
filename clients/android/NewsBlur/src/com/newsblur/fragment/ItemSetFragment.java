@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -121,21 +122,19 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
         fleuronBinding = RowFleuronBinding.bind(fleuronView);
 
         // disable the throbbers if animations are going to have a zero time scale
-        boolean isDisableAnimations = ViewUtils.isPowerSaveMode(getActivity());
+        boolean isDisableAnimations = ViewUtils.isPowerSaveMode(requireContext());
 
+        int[] colorsArray = {ContextCompat.getColor(requireContext(), R.color.refresh_1),
+                ContextCompat.getColor(requireContext(), R.color.refresh_2),
+                ContextCompat.getColor(requireContext(), R.color.refresh_3),
+                ContextCompat.getColor(requireContext(), R.color.refresh_4)};
         binding.topLoadingThrob.setEnabled(!isDisableAnimations);
-        binding.topLoadingThrob.setColors(UIUtils.getColor(getActivity(), R.color.refresh_1),
-                                  UIUtils.getColor(getActivity(), R.color.refresh_2),
-                                  UIUtils.getColor(getActivity(), R.color.refresh_3),
-                                  UIUtils.getColor(getActivity(), R.color.refresh_4));
+        binding.topLoadingThrob.setColors(colorsArray);
 
         View footerView = inflater.inflate(R.layout.row_loading_throbber, null);
         bottomProgressView = (ProgressThrobber) footerView.findViewById(R.id.itemlist_loading_throb);
         bottomProgressView.setEnabled(!isDisableAnimations);
-        bottomProgressView.setColors(UIUtils.getColor(getActivity(), R.color.refresh_1),
-                                     UIUtils.getColor(getActivity(), R.color.refresh_2),
-                                     UIUtils.getColor(getActivity(), R.color.refresh_3),
-                                     UIUtils.getColor(getActivity(), R.color.refresh_4));
+        bottomProgressView.setColors(colorsArray);
 
         fleuronBinding.getRoot().setVisibility(View.INVISIBLE);
         fleuronBinding.containerSubscribe.setOnClickListener(view -> UIUtils.startPremiumActivity(requireContext()));

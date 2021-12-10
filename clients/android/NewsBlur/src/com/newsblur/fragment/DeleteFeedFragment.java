@@ -2,11 +2,9 @@ package com.newsblur.fragment;
 
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
-import com.newsblur.activity.NbActivity;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.SocialFeed;
-import com.newsblur.network.APIManager;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.UIUtils;
 
@@ -75,18 +73,17 @@ public class DeleteFeedFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (getArguments().getString(FEED_TYPE).equals(NORMAL_FEED)) {
-                    FeedUtils.deleteFeed(getArguments().getString(FEED_ID), getArguments().getString(FOLDER_NAME), new APIManager(getActivity()));
+                    FeedUtils.deleteFeed(getArguments().getString(FEED_ID), getArguments().getString(FOLDER_NAME), getActivity());
                 } else if (getArguments().getString(FEED_TYPE).equals(SAVED_SEARCH_FEED)) {
-                    FeedUtils.deleteSavedSearch(getArguments().getString(FEED_ID), getArguments().getString(QUERY), new APIManager(getActivity()));
+                    FeedUtils.deleteSavedSearch(getArguments().getString(FEED_ID), getArguments().getString(QUERY), getActivity());
                 } else {
-                    FeedUtils.deleteSocialFeed(getArguments().getString(FEED_ID), new APIManager(getActivity()));
+                    FeedUtils.deleteSocialFeed(getArguments().getString(FEED_ID), getActivity());
                 }
                 // if called from a feed view, end it
                 Activity activity = DeleteFeedFragment.this.getActivity();
                 if (activity instanceof ItemsList) {
                     activity.finish();
                 }
-                NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
                 DeleteFeedFragment.this.dismiss();
             }
         });
