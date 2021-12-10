@@ -8,6 +8,7 @@ import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROL
 import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP;
 
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -303,15 +304,6 @@ public class UIUtils {
         return memInfo;
     }
 
-    @SuppressWarnings("deprecation")
-    public static int getColor(Context activity, int rid) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return activity.getResources().getColor(rid, activity.getTheme());
-        } else {
-            return activity.getResources().getColor(rid);
-        }
-    }
-
     /**
      * Get a color defined by our particular way of using styles that are indirectly defined by themes.
      *
@@ -376,15 +368,6 @@ public class UIUtils {
         return result;
     }
 
-    @SuppressWarnings("deprecation")
-    public static Drawable getDrawable(Context activity, int rid) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return activity.getResources().getDrawable(rid, activity.getTheme());
-        } else {
-            return activity.getResources().getDrawable(rid);
-        }
-    }
-
     /**
      * Sets the background resource of a view, working around a platform bug that causes the declared
      * padding to get reset.
@@ -440,26 +423,17 @@ public class UIUtils {
      */
     public static void setupIntelDialogRow(final View row, final Map<String,Integer> classifier, final String key) {
         colourIntelDialogRow(row, classifier, key);
-        row.findViewById(R.id.intel_row_like).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                classifier.put(key, Classifier.LIKE);
-                colourIntelDialogRow(row, classifier, key);
-            }
+        row.findViewById(R.id.intel_row_like).setOnClickListener(v -> {
+            classifier.put(key, Classifier.LIKE);
+            colourIntelDialogRow(row, classifier, key);
         });
-        row.findViewById(R.id.intel_row_dislike).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                classifier.put(key, Classifier.DISLIKE);
-                colourIntelDialogRow(row, classifier, key);
-            }
+        row.findViewById(R.id.intel_row_dislike).setOnClickListener(v -> {
+            classifier.put(key, Classifier.DISLIKE);
+            colourIntelDialogRow(row, classifier, key);
         });
-        row.findViewById(R.id.intel_row_clear).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                classifier.put(key, Classifier.CLEAR_LIKE);
-                colourIntelDialogRow(row, classifier, key);
-            }
+        row.findViewById(R.id.intel_row_clear).setOnClickListener(v -> {
+            classifier.put(key, Classifier.CLEAR_LIKE);
+            colourIntelDialogRow(row, classifier, key);
         });
     }
 
@@ -581,6 +555,16 @@ public class UIUtils {
             com.newsblur.util.Log.e(context.getClass().getName(), "apps not available to open URLs");
             // fallback to system default if apps cannot be opened
             openSystemDefaultBrowser(context, uri);
+        }
+    }
+
+    public static void openWebSearch(Context context, String query) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_WEB_SEARCH );
+            intent.putExtra(SearchManager.QUERY, query);
+            context.startActivity(intent);
+        } catch (Exception e) {
+            com.newsblur.util.Log.e(context.getClass().getName(), "Browser app not available to search: " + query);
         }
     }
 
