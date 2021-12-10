@@ -336,6 +336,7 @@ SFSafariViewControllerDelegate>  {
 - (void)loadFeedDetailView:(BOOL)transition;
 - (void)loadFeed:(NSString *)feedId withStory:(NSString *)contentId animated:(BOOL)animated;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
+- (void)backgroundLoadNotificationStory;
 - (void)loadStarredDetailViewWithStory:(NSString *)contentId showFindingStory:(BOOL)showHUD;
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder;
 - (void)openDashboardRiverForStory:(NSString *)contentId

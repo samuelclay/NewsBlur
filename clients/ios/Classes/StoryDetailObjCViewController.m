@@ -185,7 +185,7 @@
 //        NSLog(@"Tapped point: %@", NSStringFromCGPoint(pt));
         [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *tagName, NSError *error) {
             // Special case to handle the story title, Train, Save, and Share buttons.
-            if ([tagName isEqualToString:@"DIV"]) {
+            if ([self isTag:tagName equalTo:@"DIV"]) {
                 [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'id');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *identifier, NSError *error) {
                     [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'outerHTML');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *outerHTML, NSError *error) {
                         if ([identifier isEqualToString:@"NB-story"] || ![outerHTML containsString:@"NB-"]) {
@@ -260,7 +260,7 @@
         if (inDoubleTap) return;
         
         [webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *tagName, NSError *error) {
-            if ([tagName isEqualToString:@"IMG"]) {
+            if ([self isTag:tagName equalTo:@"IMG"]) {
                 [self showImageMenu:pt];
             }
         }];
@@ -2060,12 +2060,16 @@
     [appDelegate openUserTagsStory:[NSValue valueWithCGRect:frame]];
 }
 
+- (BOOL)isTag:(NSString *)tagName equalTo:(NSString *)tagValue {
+    return [tagName isKindOfClass:[NSString class]] && [tagName isEqualToString:tagValue];
+}
+
 - (void)tapImage:(UIGestureRecognizer *)gestureRecognizer {
     CGPoint pt = [self pointForGesture:gestureRecognizer];
     if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
 //    NSLog(@"Tapped point: %@", NSStringFromCGPoint(pt));
     [webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *tagName, NSError *error) {
-        if ([tagName isEqualToString:@"IMG"]) {
+        if ([self isTag:tagName equalTo:@"IMG"]) {
             [self showImageMenu:pt];
             [gestureRecognizer setEnabled:NO];
             [gestureRecognizer setEnabled:YES];

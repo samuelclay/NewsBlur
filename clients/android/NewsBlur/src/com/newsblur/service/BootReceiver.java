@@ -7,6 +7,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.Nullable;
+
 import com.newsblur.util.AppConstants;
 import com.newsblur.widget.WidgetUtils;
 
@@ -17,10 +19,12 @@ import com.newsblur.widget.WidgetUtils;
 public class BootReceiver extends BroadcastReceiver {
 
     @Override
-    public void onReceive(Context context, Intent intent) {
-        com.newsblur.util.Log.d(this, "triggering sync service from device boot");
-        scheduleSyncService(context);
-        resetWidgetSync(context);
+    public void onReceive(Context context, @Nullable Intent intent) {
+        if (intent != null && intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
+            com.newsblur.util.Log.d(this, "triggering sync service from device boot");
+            scheduleSyncService(context);
+            resetWidgetSync(context);
+        }
     }
 
     public static void scheduleSyncService(Context context) {

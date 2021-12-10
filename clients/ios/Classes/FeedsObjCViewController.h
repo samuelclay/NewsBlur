@@ -95,7 +95,6 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)returnToApp;
 - (void)fetchFeedList:(BOOL)showLoader;
 - (void)finishLoadingFeedListWithDict:(NSDictionary *)results finished:(BOOL)finished;
-- (void)backgroundLoadNotificationStory;
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (void)didSelectSectionHeaderWithTag:(NSInteger)tag;
 - (IBAction)selectIntelligence;

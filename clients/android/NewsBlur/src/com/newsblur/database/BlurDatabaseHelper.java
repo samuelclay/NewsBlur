@@ -24,6 +24,7 @@ import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
@@ -1641,6 +1642,10 @@ public class BlurDatabaseHelper {
         try {c.close();} catch (Exception e) {;}
     }
 
+    public void sendSyncUpdate(int updateType) {
+        FeedUtils.syncUpdateStatus(context, updateType);
+    }
+
     private static String conjoinSelections(CharSequence... args) {
         StringBuilder s = null;
         for (CharSequence c : args) {
@@ -1674,5 +1679,4 @@ public class BlurDatabaseHelper {
     private Cursor query(boolean distinct, String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit, CancellationSignal cancellationSignal) {
         return dbRO.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy, limit, cancellationSignal);
     }
-
 }

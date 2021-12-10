@@ -176,3 +176,14 @@
 #  - Symlink /mnt/mongo2 to /mnt/mongo3
 #  - tf state mv "digitalocean_droplet.db-mongo-primary[2]" "digitalocean_droplet.db-mongo-primary[1]"
 #  - tf state mv "digitalocean_volume.mongo_volume[2]" "digitalocean_volume.mongo_volume[1]"
+
+# Renaming a db-mongo-primary4 to db-mongo-primary2:
+#  - Set TF count to 4
+#  - doctl compute droplet delete db-mongo2
+#  - doctl compute droplet delete db-mongo3
+#  - tf state rm "digitalocean_droplet.db-mongo-primary-s[1]"
+#  - tf state rm "digitalocean_droplet.db-mongo-primary-s[2]"
+#  - tf state mv "digitalocean_droplet.db-mongo-primary-s[3]" "digitalocean_droplet.db-mongo-primary-s[1]" 
+#  - Change hostname to db-mongo2 in /etc/hostname
+#  - sudo hostname db-mongo-primary2
+
