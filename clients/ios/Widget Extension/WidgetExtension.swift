@@ -42,7 +42,28 @@ struct Provider: TimelineProvider {
             }
             
             let timeline = Timeline(entries: entries, policy: .atEnd)
-            completion(timeline)
+            
+            let imageRequestGroup = DispatchGroup()
+            
+            for feed in cache.feeds {
+                imageRequestGroup.enter()
+                
+                cache.feedImage(for: feed.id) { image, feed in
+                    imageRequestGroup.leave()
+                }
+            }
+            
+            for story in cache.stories(count: 3) {
+                imageRequestGroup.enter()
+                
+                cache.storyImage(for: story.id, imageURL: story.imageURL) { image, feed in
+                    imageRequestGroup.leave()
+                }
+            }
+            
+            imageRequestGroup.notify(queue: .main) {
+                completion(timeline)
+            }
         }
     }
 }
@@ -68,16 +89,21 @@ struct WidgetEntryView : View {
                 .ignoresSafeArea()
             
             if let error = entry.cache.error {
-                Text(message(for: error))
-                    .font(.headline)
-                    .foregroundColor(.secondary)
+                Link(destination: URL(string: "newsblurwidget://?error=\(error)")!) {
+                        Text(message(for: error))
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                }
             } else {
                 VStack(alignment: .leading, spacing: 0, content: {
                     ForEach(entry.cache.stories(count: isCompact ? 2 : 3)) { story in
-                        WidgetStoryView(cache: entry.cache, story: story)
+                        Link(destination: URL(string: "newsblurwidget://?feedId=\(story.feed)&storyHash=\(story.id)")!) {
+                            WidgetStoryView(cache: entry.cache, story: story)
+                        }
                         Divider()
                     }
                 })
+                    .widgetURL(URL(string: "newsblurwidget://open"))
             }
         }
     }

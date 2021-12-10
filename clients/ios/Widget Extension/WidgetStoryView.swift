@@ -25,37 +25,52 @@ struct WidgetStoryView: View {
             if let feed = cache.feed(for: story) {
                 WidgetBarView(leftColor: feed.leftColor, rightColor: feed.rightColor)
             }
-            VStack(alignment: .leading) {
-                if let feed = cache.feed(for: story) {
-                    Text(feed.title)
-                        .font(.caption)
+            HStack {
+                VStack(alignment: .leading) {
+                    if let feed = cache.feed(for: story) {
+                        HStack {
+                            if let image = cache.cachedFeedImage(for: feed.id) {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .frame(width: 16, height: 16)
+                            }
+                            
+                            Text(feed.title)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
+                        }
+                    }
+                    Text(cache.cleaned(story.title))
+                        .font(isCompact ? .footnote : .subheadline)
+                        .lineLimit(2)
+                    Text(cache.cleaned(story.content))
+                        .font(isCompact ? .footnote : .subheadline)
                         .foregroundColor(.secondary)
-                        .frame(height: 15)
+                        .lineLimit(3)
+                        .padding([.bottom], isCompact ? 0 : 1)
+                    HStack {
+                        Text(cache.cleaned(story.author))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text(story.date)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
-                Text(cache.cleaned(story.title))
-                    .font(.subheadline)
-                    .frame(height: isCompact ? 18 : 42)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .lineLimit(2)
-                Text(cache.cleaned(story.content))
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .frame(height: isCompact ? 25 : 42)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .lineLimit(3)
-                HStack {
-                    Text(cache.cleaned(story.author))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .frame(height: 15)
-                    Spacer()
-                    Text(story.date)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                .padding([.leading, .trailing])
+                .padding([.top, .bottom], 5)
+                
+                if let image = cache.cachedStoryImage(for: story.id) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 70)
+                        .clipped()
+                        .padding([.leading], -15)
                 }
             }
-            .padding([.leading, .trailing])
-            .padding([.top, .bottom], 5)
         }
     }
 }

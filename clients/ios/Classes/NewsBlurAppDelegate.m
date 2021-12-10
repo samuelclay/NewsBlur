@@ -592,16 +592,27 @@
             return NO;
         }
         
-        [self popToRootWithCompletion:^{
-            self.inFindingStoryMode = YES;
-            [self.storiesCollection reset];
-            self.storiesCollection.isRiverView = YES;
-            
-            self.tryFeedStoryId = storyHash;
-            self.storiesCollection.activeFolder = @"everything";
-            
-            [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:self.storiesCollection.activeFolder];
-        }];
+        NSDictionary *feed = [self getFeed:feedId];
+        
+        self.inFindingStoryMode = YES;
+        self.tryFeedStoryId = storyHash;
+        self.tryFeedFeedId = nil;
+        storiesCollection.isSocialView = NO;
+        storiesCollection.activeFeed = feed;
+        storiesCollection.activeFolder = nil;
+        
+        [self reloadFeedsView:NO];
+        
+//        [self popToRootWithCompletion:^{
+//            self.inFindingStoryMode = YES;
+//            [self.storiesCollection reset];
+//            self.storiesCollection.isRiverView = YES;
+//
+//            self.tryFeedStoryId = storyHash;
+//            self.storiesCollection.activeFolder = @"everything";
+//
+//            [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:self.storiesCollection.activeFolder];
+//        }];
         
         return YES;
     }
@@ -2925,6 +2936,8 @@
     }
     
     [self.feedsViewController updateFeedTitlesTable];
+    
+    [self.storyPagesViewController reloadWidget];
 }
 
 - (void)finishMarkAsUnread:(NSDictionary *)story {

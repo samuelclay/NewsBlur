@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import WidgetKit
 
 /// Manages story pages, containing the previous, current, and next stories.
 class StoryPagesViewController: StoryPagesObjCViewController {
@@ -15,5 +16,10 @@ class StoryPagesViewController: StoryPagesObjCViewController {
         self.init(nibName: "StoryPagesViewController", bundle: nil)
         
         self.appDelegate = NewsBlurAppDelegate.shared()
+    }
+    
+    /// Reload the widget timeline.
+    @objc func reloadWidget() {
+        WidgetCenter.shared.reloadTimelines(ofKind: "Latest")
     }
 }
