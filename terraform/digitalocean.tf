@@ -2,7 +2,7 @@ terraform {
   required_providers {
     digitalocean = {
       source = "digitalocean/digitalocean"
-      version = "1.22.2"
+      version = "~> 2.0"
     }
   }
 
@@ -385,43 +385,49 @@ resource "digitalocean_droplet" "db-postgres" {
   }
 }
 
-resource "digitalocean_volume" "mongo_volume" {
-  count                   = 1
-  region                  = "nyc1"
-  name                    = "mongo${count.index+2}"
-  size                    = 400
-  initial_filesystem_type = "xfs"
-  description             = "Storage for NewsBlur MongoDB"
-}
+# resource "digitalocean_volume" "mongo_volume" {
+#   count                   = 1
+#   region                  = "nyc1"
+#   name                    = "mongo${count.index+2}"
+#   size                    = 400
+#   initial_filesystem_type = "xfs"
+#   description             = "Storage for NewsBlur MongoDB"
+# }
 
-resource "digitalocean_droplet" "db-mongo-primary" {
-  count    = 1
-  image    = var.droplet_os
-  name     = "db-mongo${count.index+2}"
-  region   = var.droplet_region
-  size     = var.mongo_droplet_size
-  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
-  volume_ids = [element(digitalocean_volume.mongo_volume.*.id, count.index)]
-  provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
-  }
-  provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
-  }
-  provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
-  }
-}
+# resource "digitalocean_droplet" "db-mongo-primary" {
+#   count    = 1
+#   image    = var.droplet_os
+#   name     = "db-mongo-primary${count.index+1}"
+#   region   = var.droplet_region
+#   size     = var.mongo_droplet_size
+#   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+#   volume_ids = [element(digitalocean_volume.mongo_volume.*.id, count.index)]
+#   provisioner "local-exec" {
+#     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
+#   }
+#   provisioner "local-exec" {
+#     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+#   }
+#   provisioner "local-exec" {
+#     command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+#   }
+# }
 
+
+# When creating and benchmarking new mongo servers, target only the new servers
+# servers=$(for i in {1..9}; do echo -n "-target=\"digitalocean_droplet.db-mongo-primary-s[$i]\" " ; done); tf plan -refresh=false `eval echo $servers`
+# 
 resource "digitalocean_droplet" "db-mongo-primary-s" {
-  count    = 1
+  count    = 2
+  backups  = true
   image    = var.droplet_os
   name     = "db-mongo-primary${count.index+1}"
   region   = var.droplet_region
   size     = var.mongo_primary_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
+    # command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
+    command = "sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
