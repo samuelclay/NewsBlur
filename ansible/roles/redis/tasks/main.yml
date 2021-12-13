@@ -88,4 +88,4 @@
       -v /srv/newsblur/docker/volumes/redis.var.lib/dump.rdb:/var/lib/redis/dump.rdb
       --network=newsblurnet
       --hostname={{ ansible_hostname }}
-      newsblur/newsblur_python3 /srv/newsblur/utils/backups/backup_redis.py
+      newsblur/newsblur_python3 python /srv/newsblur/utils/backups/backup_redis.py
