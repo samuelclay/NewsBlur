@@ -30,7 +30,6 @@
       - /srv/newsblur/docker/volumes/redis:/data
       - /srv/newsblur/docker/redis/redis.conf:/usr/local/etc/redis/redis_server.conf
       - /srv/newsblur/docker/redis/redis_replica.conf:/usr/local/etc/redis/redis_replica.conf
-      - /srv/newsblur/docker/volumes/redis.var.lib:/var/lib/redis
 
 # - name: Register redis in consul
 #   become: yes
@@ -85,7 +84,7 @@
     job: >
       docker run --rm
       -v /srv/newsblur:/srv/newsblur
-      -v /srv/newsblur/docker/volumes/redis.var.lib/dump.rdb:/var/lib/redis/dump.rdb
+      -v /srv/newsblur/docker/volumes/redis/dump.rdb:/data/dump.rdb
       --network=newsblurnet
       --hostname={{ ansible_hostname }}
       newsblur/newsblur_python3 python /srv/newsblur/utils/backups/backup_redis.py
