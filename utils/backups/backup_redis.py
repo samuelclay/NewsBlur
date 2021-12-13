@@ -12,7 +12,7 @@ import boto3
 from django.conf import settings
 
 s3 = boto3.resource('s3') 
-bucket = s3.Bucket(settings.get('S3_BACKUP_BUCKET'))
+bucket = s3.Bucket(settings.S3_BACKUP_BUCKET)
 
 hostname = socket.gethostname().replace('-','_')
 filename = f'backup_{hostname}/backup_{hostname}_{time.strftime("%Y-%m-%d-%H-%M")}.rdb.gz'
