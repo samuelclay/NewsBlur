@@ -170,3 +170,7 @@ perf-docker:
 
 clean:
 	- find . -name \*.pyc -delete
+
+
+grafana-dashboards:
+	- python3 utils/grafana_backup.py
