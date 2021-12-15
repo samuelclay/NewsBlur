@@ -69,20 +69,6 @@ services:
       - nginx
     volumes:
       - ${PWD}:/srv/newsblur
-  flask_metrics_state:
-    container_name: flask_metrics_state
-    image: newsblur/newsblur_monitor:latest
-    command: bash -c "python /srv/newsblur/flask_metrics/state_timeline.py"
-    environment: 
-      - DOCKERBUILD=True
-    ports:
-      - 5599:5569
-    depends_on: 
-      - haproxy
-      - newsblur_web
-      - nginx
-    volumes:
-      - ${PWD}:/srv/newsblur
   elasticsearch_exporter:
     container_name: elasticsearch_exporter
     image: prometheuscommunity/elasticsearch-exporter:latest
