@@ -36,7 +36,7 @@ def format_state_data(label, data):
     formatted_data = {}
     for k, v in data.items():
         if v:
-            formatted_data[k] = f'{label}{{servername="{k}"}} {STATUS_MAPPING[v]}'
+            formatted_data[k] = f'{label}{{servername="{k}"}} {STATUS_MAPPING[v.strip()]}'
     return formatted_data
 
 def get_state():
