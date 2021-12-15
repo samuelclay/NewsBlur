@@ -51,7 +51,7 @@
       file: /srv/newsblur/flask_metrics/flask_metrics_mongo.py
     - service_name: redis
       file: /srv/newsblur/flask_metrics/flask_metrics_redis.py
-    - service_name: state
+    - service_name: metrics
       file: /srv/newsblur/flask_metrics/state_timeline.py
 - name: Restart flask_metrics
   become: yes
