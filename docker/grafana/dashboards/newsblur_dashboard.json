@@ -144,8 +144,8 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 27,
+        "w": 24,
         "x": 0,
         "y": 0
       },
@@ -166,525 +166,393 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "redis_state",
+          "expr": "state",
           "interval": "",
           "legendFormat": "{{ servername }}",
           "refId": "A"
         }
       ],
-      "title": "Redis State",
+      "title": "Service State",
       "type": "state-timeline"
     },
     {
-      "datasource": "Prometheus",
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "fillOpacity": 70,
-            "lineWidth": 0
-          },
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "color": "super-light-red",
-                  "index": 0,
-                  "text": "UNK"
-                },
-                "1": {
-                  "color": "semi-dark-yellow",
-                  "index": 1,
-                  "text": "INI"
-                },
-                "2": {
-                  "color": "semi-dark-red",
-                  "index": 2,
-                  "text": "SOCKERR"
-                },
-                "3": {
-                  "color": "dark-green",
-                  "index": 3,
-                  "text": "L4OK"
-                },
-                "4": {
-                  "color": "dark-red",
-                  "index": 4,
-                  "text": "L4TOUT"
-                },
-                "5": {
-                  "color": "dark-red",
-                  "index": 5,
-                  "text": "L4CON"
-                },
-                "6": {
-                  "color": "dark-green",
-                  "index": 6,
-                  "text": "L6OK"
-                },
-                "7": {
-                  "color": "dark-red",
-                  "index": 7,
-                  "text": "L6TOUT"
-                },
-                "8": {
-                  "color": "dark-red",
-                  "index": 8,
-                  "text": "L6RSP"
-                },
-                "9": {
-                  "color": "dark-green",
-                  "index": 9,
-                  "text": "L7OK"
-                },
-                "10": {
-                  "color": "semi-dark-red",
-                  "index": 10,
-                  "text": "L7OKC"
-                },
-                "11": {
-                  "color": "dark-red",
-                  "index": 11,
-                  "text": "L7TOUT"
-                },
-                "12": {
-                  "color": "dark-red",
-                  "index": 12,
-                  "text": "L7RSP"
-                },
-                "13": {
-                  "color": "dark-red",
-                  "index": 13,
-                  "text": "L7STS"
-                }
-              },
-              "type": "value"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 0
-      },
-      "id": 83,
-      "options": {
-        "alignValue": "left",
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom"
-        },
-        "mergeValues": true,
-        "rowHeight": 0.9,
-        "showValue": "auto",
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "mongo_state",
-          "interval": "",
-          "legendFormat": "{{ servername }}",
-          "refId": "A"
-        }
-      ],
-      "title": "Mongo State",
-      "type": "state-timeline"
-    },
-    {
-      "collapsed": false,
+      "collapsed": true,
       "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 27
       },
       "id": 46,
-      "panels": [],
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 0,
+            "y": 28
+          },
+          "hiddenSeries": false,
+          "id": 22,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "8.2.6",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "load_times",
+              "interval": "",
+              "legendFormat": "{{category}}",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "NewsBlur feeds loaded past hour",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "Time",
+                    "feeds_loaded_hour"
+                  ]
+                }
+              }
+            }
+          ],
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:336",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "$$hashKey": "object:337",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 8,
+            "y": 28
+          },
+          "hiddenSeries": false,
+          "id": 44,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": false,
+            "min": false,
+            "rightSide": false,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "8.2.6",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "task_servers",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Feed fetches past 5 min",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "transformations": [
+            {
+              "id": "seriesToRows",
+              "options": {}
+            },
+            {
+              "id": "groupBy",
+              "options": {
+                "fields": {
+                  "Time": {
+                    "aggregations": [],
+                    "operation": "groupby"
+                  },
+                  "Value": {
+                    "aggregations": [
+                      "sum"
+                    ],
+                    "operation": "aggregate"
+                  }
+                }
+              }
+            }
+          ],
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:169",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:170",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 10,
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 16,
+            "y": 28
+          },
+          "hiddenSeries": false,
+          "id": 38,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideEmpty": false,
+            "hideZero": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "8.2.6",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": true,
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "load_times",
+              "interval": "",
+              "legendFormat": "{{category}}",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "NewsBlur Load Times",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "Time",
+                    "feed_loadtimes_avg_hour"
+                  ]
+                }
+              }
+            }
+          ],
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:264",
+              "decimals": 1,
+              "format": "s",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:265",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        }
+      ],
       "title": "Top Line",
       "type": "row"
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 6,
-        "w": 8,
-        "x": 0,
-        "y": 9
-      },
-      "hiddenSeries": false,
-      "id": 22,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": true,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.2.6",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "load_times",
-          "interval": "",
-          "legendFormat": "{{category}}",
-          "queryType": "randomWalk",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "NewsBlur feeds loaded past hour",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "Time",
-                "feeds_loaded_hour"
-              ]
-            }
-          }
-        }
-      ],
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:336",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": true
-        },
-        {
-          "$$hashKey": "object:337",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 6,
-        "w": 8,
-        "x": 8,
-        "y": 9
-      },
-      "hiddenSeries": false,
-      "id": 44,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": true,
-        "max": false,
-        "min": false,
-        "rightSide": false,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.2.6",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "task_servers",
-          "format": "time_series",
-          "instant": false,
-          "interval": "",
-          "legendFormat": "",
-          "queryType": "randomWalk",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Feed fetches past 5 min",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "transformations": [
-        {
-          "id": "seriesToRows",
-          "options": {}
-        },
-        {
-          "id": "groupBy",
-          "options": {
-            "fields": {
-              "Time": {
-                "aggregations": [],
-                "operation": "groupby"
-              },
-              "Value": {
-                "aggregations": [
-                  "sum"
-                ],
-                "operation": "aggregate"
-              }
-            }
-          }
-        }
-      ],
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:169",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:170",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 10,
-      "gridPos": {
-        "h": 6,
-        "w": 8,
-        "x": 16,
-        "y": 9
-      },
-      "hiddenSeries": false,
-      "id": 38,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": true,
-        "hideEmpty": false,
-        "hideZero": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.2.6",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": true,
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "load_times",
-          "interval": "",
-          "legendFormat": "{{category}}",
-          "queryType": "randomWalk",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "NewsBlur Load Times",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "Time",
-                "feed_loadtimes_avg_hour"
-              ]
-            }
-          }
-        }
-      ],
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:264",
-          "decimals": 1,
-          "format": "s",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:265",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
       "collapsed": false,
       "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 15
+        "y": 28
       },
       "id": 20,
       "panels": [],
@@ -711,7 +579,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 16
+        "y": 29
       },
       "hiddenSeries": false,
       "id": 2,
@@ -817,7 +685,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 16
+        "y": 29
       },
       "hiddenSeries": false,
       "id": 6,
@@ -913,7 +781,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 37
       },
       "id": 4,
       "panels": [],
@@ -950,7 +818,7 @@
         "h": 21,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 38
       },
       "id": 10,
       "options": {
@@ -1004,7 +872,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 46
+        "y": 59
       },
       "hiddenSeries": false,
       "id": 48,
@@ -1095,7 +963,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 53
+        "y": 66
       },
       "id": 42,
       "panels": [],
@@ -1114,7 +982,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 54
+        "y": 67
       },
       "hiddenSeries": false,
       "id": 33,
@@ -1217,7 +1085,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 63
+        "y": 76
       },
       "hiddenSeries": false,
       "id": 30,
@@ -1412,7 +1280,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 71
+        "y": 84
       },
       "hiddenSeries": false,
       "id": 32,
@@ -1511,7 +1379,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 79
+        "y": 92
       },
       "hiddenSeries": false,
       "id": 28,
@@ -1624,7 +1492,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 86
+        "y": 99
       },
       "hiddenSeries": false,
       "id": 12,
@@ -1718,7 +1586,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 86
+        "y": 99
       },
       "hiddenSeries": false,
       "id": 26,
@@ -1809,7 +1677,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 94
+        "y": 107
       },
       "hiddenSeries": false,
       "id": 14,
@@ -1895,7 +1763,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 102
+        "y": 115
       },
       "id": 50,
       "panels": [],
@@ -1914,7 +1782,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 103
+        "y": 116
       },
       "hiddenSeries": false,
       "id": 56,
@@ -2009,7 +1877,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 111
+        "y": 124
       },
       "hiddenSeries": false,
       "id": 52,
@@ -2102,7 +1970,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 111
+        "y": 124
       },
       "hiddenSeries": false,
       "id": 54,
@@ -2195,7 +2063,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 119
+        "y": 132
       },
       "hiddenSeries": false,
       "id": 58,
@@ -2288,7 +2156,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 119
+        "y": 132
       },
       "hiddenSeries": false,
       "id": 60,
@@ -2376,7 +2244,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 127
+        "y": 140
       },
       "id": 62,
       "panels": [],
@@ -2395,7 +2263,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 128
+        "y": 141
       },
       "hiddenSeries": false,
       "id": 75,
@@ -2490,7 +2358,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 136
+        "y": 149
       },
       "hiddenSeries": false,
       "id": 66,
@@ -2651,7 +2519,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 144
+        "y": 157
       },
       "hiddenSeries": false,
       "id": 71,
@@ -2797,7 +2665,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 152
+        "y": 165
       },
       "hiddenSeries": false,
       "id": 72,
@@ -2929,7 +2797,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 160
+        "y": 173
       },
       "hiddenSeries": false,
       "id": 73,
@@ -3029,7 +2897,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 167
+        "y": 180
       },
       "hiddenSeries": false,
       "id": 78,
@@ -3122,7 +2990,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 175
+        "y": 188
       },
       "hiddenSeries": false,
       "id": 80,
@@ -3215,7 +3083,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 175
+        "y": 188
       },
       "hiddenSeries": false,
       "id": 64,
@@ -3303,7 +3171,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 183
+        "y": 196
       },
       "id": 68,
       "panels": [],
@@ -3322,7 +3190,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 184
+        "y": 197
       },
       "hiddenSeries": false,
       "id": 70,
@@ -3415,7 +3283,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 184
+        "y": 197
       },
       "hiddenSeries": false,
       "id": 76,
@@ -3503,7 +3371,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 192
+        "y": 205
       },
       "id": 16,
       "panels": [],
@@ -3522,7 +3390,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 193
+        "y": 206
       },
       "hiddenSeries": false,
       "id": 18,
@@ -3613,7 +3481,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 193
+        "y": 206
       },
       "hiddenSeries": false,
       "id": 24,
@@ -3704,7 +3572,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 201
+        "y": 214
       },
       "hiddenSeries": false,
       "id": 35,
@@ -3795,7 +3663,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 201
+        "y": 214
       },
       "hiddenSeries": false,
       "id": 8,
@@ -3881,7 +3749,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 209
+        "y": 222
       },
       "id": 40,
       "panels": [
@@ -3961,12 +3829,12 @@
     "list": []
   },
   "time": {
-    "from": "now-7d",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "NewsBlur",
   "uid": "T86VjXrG2",
-  "version": 17
+  "version": 22
 }
