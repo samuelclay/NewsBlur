@@ -238,19 +238,7 @@ scrape_configs:
       - source_labels: ['__meta_consul_node']
         target_label: instance
 
-    - job_name: 'redis state'
-      consul_sd_configs:
-      - server: 'consul.service.nyc1.consul:8500'
-        services: ['flask_metrics_redis']
-      relabel_configs:
-      - source_labels: ['__meta_consul_node']
-        target_label: instance
-      metrics_path: /state/
-    - job_name: 'mongo state'
-      consul_sd_configs:
-      - server: 'consul.service.nyc1.consul:8500'
-        services: ['flask_metrics_mongo']
-      relabel_configs:
-      - source_labels: ['__meta_consul_node']
-        target_label: instance
+    - job_name: 'haproxy state'
+      static_configs:
+        - targets: ['localhost:5569']
       metrics_path: /state/
