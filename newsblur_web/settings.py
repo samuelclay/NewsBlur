@@ -82,7 +82,7 @@ MEDIA_URL             = '/media/'
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
 CIPHER_USERNAMES      = False
-DEBUG_ASSETS          = DEBUG
+DEBUG_ASSETS          = True
 HOMEPAGE_USERNAME     = 'popular'
 ALLOWED_HOSTS         = ['*']
 AUTO_PREMIUM_NEW_USERS = True
