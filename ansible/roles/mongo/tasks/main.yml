@@ -117,6 +117,38 @@
       - /opt/mongo/newsblur/backup/:/backup/
   when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics'
 
+- name: Create mongo database user
+  shell:
+    # Don't use this line below as it means there is already a username and password, so no need to set one
+    # sleep 2; docker exec mongo mongo -u "{{ mongodb_username }}" -p "{{ mongodb_password }}" --eval ' 
+    cmd: >-
+      sleep 2; docker exec mongo mongo --eval '
+      db.createUser(
+        {
+          user: "{{ mongodb_username }}",
+          pwd: "{{ mongodb_password }}",
+          roles: [
+            { role: "userAdminAnyDatabase", db: "admin" },
+            { role: "readWriteAnyDatabase", db: "admin" }
+          ]
+        }
+      )' admin
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics'
+  register: auth_result
+  changed_when:
+    - auth_result.rc == 0
+  failed_when:
+    - "'Successfully added user' not in auth_result.stdout"
+    - "'already exists' not in auth_result.stdout"
+    - "'there are no users authenticated' not in auth_result.stdout"
+  tags:
+    - mongoauth
+
+# - debug: 
+#     msg: "{{ auth_result }}"
+#   tags:
+#     - mongoauth
+
 - name: Register mongo in consul
   tags: consul
   become: yes
