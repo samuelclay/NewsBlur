@@ -1,6 +1,6 @@
 {
     "service": {
-        "name": "db-mongo-analytics-staging",
+        "name": "db-mongo-analytics",
         "id": "{{ inventory_hostname }}",
         "tags": [
             "db"
