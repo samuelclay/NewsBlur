@@ -33,13 +33,13 @@
   become: yes
   shell:
     # chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
-    cmd: sysbench fileio --file-total-size=150G prepare
+    cmd: sysbench fileio --file-total-size=50G prepare
   
 - name: Run sysbench disk i/o
   become: yes
   shell:
     # chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
-    cmd: sysbench fileio --file-total-size=150G --file-test-mode=rndrw --time=300 --max-requests=0 run
+    cmd: sysbench fileio --file-total-size=50G --file-test-mode=rndrw --time=300 --max-requests=0 run
   register: io
   
 - name: Cleanup sysbench

@@ -19,7 +19,7 @@
     path: /srv/newsblur/newsblur_web/task_env.py
     line: 'SERVER_NAME = "{{ inventory_hostname }}"'
 
-- name: "Start docker containers"
+- name: "Start task-celery docker containers"
   become: yes
   docker_container:
     name: "{{ item.container_name }}"
