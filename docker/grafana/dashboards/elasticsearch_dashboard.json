@@ -8,15 +8,23 @@
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "editable": true,
+  "fiscalYearStartMonth": 0,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 7,
+  "id": 9,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
       "aliasColors": {},
@@ -24,10 +32,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -54,7 +58,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "8.2.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -73,7 +77,9 @@
         }
       ],
       "thresholds": [],
+      "timeFrom": null,
       "timeRegions": [],
+      "timeShift": null,
       "title": "Memory Free",
       "tooltip": {
         "shared": true,
@@ -95,7 +101,7 @@
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -119,10 +125,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -149,7 +151,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "8.2.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -168,7 +170,9 @@
         }
       ],
       "thresholds": [],
+      "timeFrom": null,
       "timeRegions": [],
+      "timeShift": null,
       "title": "Memory Used",
       "tooltip": {
         "shared": true,
@@ -186,11 +190,11 @@
       "yaxes": [
         {
           "$$hashKey": "object:329",
-          "format": "bytes",
+          "format": "decbytes",
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -214,10 +218,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -244,7 +244,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "8.2.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -263,7 +263,9 @@
         }
       ],
       "thresholds": [],
+      "timeFrom": null,
       "timeRegions": [],
+      "timeShift": null,
       "title": "Bytes Received",
       "tooltip": {
         "shared": true,
@@ -281,11 +283,11 @@
       "yaxes": [
         {
           "$$hashKey": "object:766",
-          "format": "bytes",
+          "format": "decbytes",
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -309,10 +311,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -339,7 +337,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "8.2.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -406,10 +404,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -436,7 +430,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "8.2.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -479,7 +473,7 @@
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -503,10 +497,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -516,7 +506,7 @@
         "y": 16
       },
       "hiddenSeries": false,
-      "id": 10,
+      "id": 15,
       "legend": {
         "avg": false,
         "current": false,
@@ -533,7 +523,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "8.2.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -544,16 +534,18 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "elasticsearch_process_cpu_percent",
+          "expr": "rate(elasticsearch_indices_docs[1h])",
           "interval": "",
-          "legendFormat": "",
+          "legendFormat": "Documents",
           "queryType": "randomWalk",
           "refId": "A"
         }
       ],
       "thresholds": [],
+      "timeFrom": null,
       "timeRegions": [],
-      "title": "Process CPU Percent",
+      "timeShift": null,
+      "title": "Number of Documents",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -569,16 +561,16 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:457",
-          "format": "percentunit",
+          "$$hashKey": "object:265",
+          "format": "short",
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
-          "$$hashKey": "object:458",
+          "$$hashKey": "object:266",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -598,10 +590,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -628,7 +616,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "8.2.6",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -675,11 +663,11 @@
       "yaxes": [
         {
           "$$hashKey": "object:26",
-          "format": "bytes",
+          "format": "decbytes",
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -696,9 +684,102 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "hiddenSeries": false,
+      "id": 10,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "8.2.6",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "elasticsearch_process_cpu_percent",
+          "interval": "",
+          "legendFormat": "",
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Process CPU Percent",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:457",
+          "format": "percentunit",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:458",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
-  "schemaVersion": 27,
+  "schemaVersion": 32,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -712,5 +793,5 @@
   "timezone": "",
   "title": "ElasticSearch",
   "uid": "77sLElDnk",
-  "version": 9
+  "version": 3
 }

@@ -1,5 +1,7 @@
 package com.newsblur.activity;
 
+import static com.newsblur.service.NBSyncReceiver.UPDATE_STATUS;
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.text.TextUtils;

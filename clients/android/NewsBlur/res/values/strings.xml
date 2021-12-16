@@ -163,6 +163,7 @@
     <string name="menu_rename_feed">Rename feed</string>
     <string name="menu_story_list_style_choose">List style…</string>
     <string name="menu_save_search">Save Search</string>
+    <string name="menu_web_search">Web search</string>
     <string name="list_style_list">List</string>
     <string name="list_style_grid_f">Grid (fine)</string>
     <string name="list_style_grid_m">Grid (medium)</string>
@@ -650,4 +651,6 @@
     <string name="story_notification_channel_id">story_notification_channel</string>
     <string name="story_notification_channel_name">New Stories</string>
     <string name="go_to_feed">Go to feed</string>
+
+    <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
 </resources>

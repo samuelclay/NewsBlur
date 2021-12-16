@@ -229,3 +229,18 @@ scrape_configs:
       scheme: http
       tls_config:
         insecure_skip_verify: true
+
+    - job_name: 'redis state'
+      static_configs:
+        - targets: ['flask_metrics_redis:5569']
+      metrics_path: /state/
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'mongo state'
+      static_configs:
+        - targets: ['flask_metrics_mongo:5569']
+      metrics_path: /state/
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true

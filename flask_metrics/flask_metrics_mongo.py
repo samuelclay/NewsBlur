@@ -1,5 +1,6 @@
 from flask import Flask, render_template, Response
 import pymongo
+from flask_metrics.state_timeline import format_state_data, get_state
 from newsblur_web import settings
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -161,6 +162,20 @@ def page_queues():
         "data": formatted_data,
         "chart_name": 'queues',
         "chart_type": 'gauge',
+    }
+    html_body = render_template('prometheus_data.html', **context)
+    return Response(html_body, content_type="text/plain")
+
+@app.route("/state/")
+def mongo_state():
+    mongo_data = get_state("mongo")
+    if 'BACKEND' in mongo_data:
+        del mongo_data['BACKEND']
+    formatted_data = format_state_data("mongo_state", mongo_data)
+    context = {
+        'chart_name': 'mongo_state',
+        'chart_type': 'gauge',
+        'data': formatted_data
     }
     html_body = render_template('prometheus_data.html', **context)
     return Response(html_body, content_type="text/plain")

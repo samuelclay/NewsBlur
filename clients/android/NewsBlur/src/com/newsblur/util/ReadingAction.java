@@ -1,11 +1,15 @@
 package com.newsblur.util;
 
+import static com.newsblur.service.NBSyncReceiver.UPDATE_INTEL;
+import static com.newsblur.service.NBSyncReceiver.UPDATE_METADATA;
+import static com.newsblur.service.NBSyncReceiver.UPDATE_SOCIAL;
+import static com.newsblur.service.NBSyncReceiver.UPDATE_STORY;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 
 import java.io.Serializable;
 
-import com.newsblur.activity.NbActivity;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Classifier;
@@ -13,13 +17,13 @@ import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.APIManager;
+import com.newsblur.service.NBSyncReceiver;
 import com.newsblur.service.NBSyncService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@SuppressWarnings("serial")
 public class ReadingAction implements Serializable {
 
     private static final long serialVersionUID = 0L;
@@ -370,7 +374,7 @@ public class ReadingAction implements Serializable {
             } else {
                 com.newsblur.util.Log.w(this, "failed to refresh story data after action");
             }
-            impact |= NbActivity.UPDATE_SOCIAL;
+            impact |= NBSyncReceiver.UPDATE_SOCIAL;
         }
         if (commentResponse != null) {
             result = commentResponse;
@@ -379,10 +383,11 @@ public class ReadingAction implements Serializable {
             } else {
                 com.newsblur.util.Log.w(this, "failed to refresh comment data after action");
             }
-            impact |= NbActivity.UPDATE_SOCIAL;
+            impact |= NBSyncReceiver.UPDATE_SOCIAL;
         }
-
-        NbActivity.updateAllActivities(impact);
+        if (result != null && impact != 0) {
+            result.impactCode = impact;
+        }
         return result;
     }
 
@@ -408,48 +413,48 @@ public class ReadingAction implements Serializable {
                     dbHelper.markStoriesRead(feedSet, olderThan, newerThan);
                     dbHelper.updateLocalFeedCounts(feedSet);
                 }
-                impact |= NbActivity.UPDATE_METADATA;
-                impact |= NbActivity.UPDATE_STORY;
+                impact |= UPDATE_METADATA;
+                impact |= UPDATE_STORY;
                 break;
                 
             case MARK_UNREAD:
                 dbHelper.setStoryReadState(storyHash, false);
-                impact |= NbActivity.UPDATE_METADATA;
+                impact |= UPDATE_METADATA;
                 break;
 
             case SAVE:
                 dbHelper.setStoryStarred(storyHash, userTags, true);
-                impact |= NbActivity.UPDATE_METADATA;
+                impact |= UPDATE_METADATA;
                 break;
 
             case UNSAVE:
                 dbHelper.setStoryStarred(storyHash, null, false);
-                impact |= NbActivity.UPDATE_METADATA;
+                impact |= UPDATE_METADATA;
                 break;
 
             case SHARE:
                 if (isFollowup) break; // shares are only placeholders
                 dbHelper.setStoryShared(storyHash, true);
                 dbHelper.insertCommentPlaceholder(storyId, feedId, commentReplyText);
-                impact |= NbActivity.UPDATE_SOCIAL;
-                impact |= NbActivity.UPDATE_STORY;
+                impact |= UPDATE_SOCIAL;
+                impact |= UPDATE_STORY;
                 break;
 
             case UNSHARE:
                 dbHelper.setStoryShared(storyHash, false);
                 dbHelper.clearSelfComments(storyId);
-                impact |= NbActivity.UPDATE_SOCIAL;
-                impact |= NbActivity.UPDATE_STORY;
+                impact |= UPDATE_SOCIAL;
+                impact |= UPDATE_STORY;
                 break;
 
             case LIKE_COMMENT:
                 dbHelper.setCommentLiked(storyId, commentUserId, feedId, true);
-                impact |= NbActivity.UPDATE_SOCIAL;
+                impact |= UPDATE_SOCIAL;
                 break;
 
             case UNLIKE_COMMENT:
                 dbHelper.setCommentLiked(storyId, commentUserId, feedId, false);
-                impact |= NbActivity.UPDATE_SOCIAL;
+                impact |= UPDATE_SOCIAL;
                 break;
 
             case REPLY:
@@ -459,22 +464,22 @@ public class ReadingAction implements Serializable {
 
             case EDIT_REPLY:
                 dbHelper.editReply(replyId, commentReplyText);
-                impact |= NbActivity.UPDATE_SOCIAL;
+                impact |= UPDATE_SOCIAL;
                 break;
 
             case DELETE_REPLY:
                 dbHelper.deleteReply(replyId);
-                impact |= NbActivity.UPDATE_SOCIAL;
+                impact |= UPDATE_SOCIAL;
                 break;
                 
             case MUTE_FEEDS:
             case UNMUTE_FEEDS:
                 dbHelper.setFeedsActive(modifiedFeedIds, type == ActionType.UNMUTE_FEEDS);
-                impact |= NbActivity.UPDATE_METADATA;
+                impact |= UPDATE_METADATA;
                 break;
 
             case SET_NOTIFY:
-                impact |= NbActivity.UPDATE_METADATA;
+                impact |= UPDATE_METADATA;
                 break;
 
             case INSTA_FETCH:
@@ -489,12 +494,12 @@ public class ReadingAction implements Serializable {
                 dbHelper.clearClassifiersForFeed(feedId);
                 classifier.feedId = feedId; 
                 dbHelper.insertClassifier(classifier);
-                impact |= NbActivity.UPDATE_INTEL;
+                impact |= UPDATE_INTEL;
                 break;
 
             case RENAME_FEED:
                 dbHelper.renameFeed(feedId, newFeedName);
-                impact |= NbActivity.UPDATE_METADATA;
+                impact |= UPDATE_METADATA;
                 break;
 
             default:

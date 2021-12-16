@@ -1,5 +1,9 @@
 package com.newsblur.activity;
 
+import static com.newsblur.service.NBSyncReceiver.UPDATE_REBUILD;
+import static com.newsblur.service.NBSyncReceiver.UPDATE_STATUS;
+import static com.newsblur.service.NBSyncReceiver.UPDATE_STORY;
+
 import android.os.Bundle;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;

@@ -1,8 +1,10 @@
 package com.newsblur.service;
 
+import static com.newsblur.service.NBSyncReceiver.UPDATE_STATUS;
+
 import android.os.Process;
 
-import com.newsblur.activity.NbActivity;
+import com.newsblur.NbApplication;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.Log;
 
@@ -36,7 +38,7 @@ public abstract class SubService {
         Runnable r = new Runnable() {
             public void run() {
                 if (parent.stopSync()) return;
-                if (NbActivity.getActiveActivityCount() < 1) {
+                if (!NbApplication.isAppForeground()) {
                     Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND + Process.THREAD_PRIORITY_LESS_FAVORABLE );
                 } else {
                     Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT + Process.THREAD_PRIORITY_LESS_FAVORABLE + Process.THREAD_PRIORITY_LESS_FAVORABLE );
@@ -52,7 +54,7 @@ public abstract class SubService {
             executor.execute(new Runnable() {
                 public void run() {
                     parent.checkCompletion();
-                    NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
+                    parent.sendSyncUpdate(UPDATE_STATUS);
                 }
             });
         } catch (RejectedExecutionException ree) {
@@ -85,10 +87,6 @@ public abstract class SubService {
         }
     }
 
-    protected void gotData(int updateType) {
-        NbActivity.updateAllActivities(updateType);
-    }
-
     public boolean isRunning() {
         // don't advise completion until there are no tasks, or just one check task left
         return (executor.getQueue().size() > 0);
@@ -115,7 +113,7 @@ public abstract class SubService {
         long cooloffTimeMs = Math.round(cooloffTime / 1000000.0);
         if (cooloffTimeMs > AppConstants.DUTY_CYCLE_BACKOFF_CAP_MILLIS) cooloffTimeMs = AppConstants.DUTY_CYCLE_BACKOFF_CAP_MILLIS;
 
-        if (NbActivity.getActiveActivityCount() > 0 ) {
+        if (NbApplication.isAppForeground()) {
             com.newsblur.util.Log.d(this.getClass().getName(), "Sleeping for : " + cooloffTimeMs + "ms to enforce max duty cycle.");
             try {
                 Thread.sleep(cooloffTimeMs);

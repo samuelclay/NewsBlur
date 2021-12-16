@@ -1,5 +1,7 @@
 package com.newsblur.database;
 
+import static com.newsblur.service.NBSyncReceiver.UPDATE_STORY;
+
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -10,7 +12,6 @@ import androidx.viewpager.widget.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.newsblur.activity.NbActivity;
 import com.newsblur.activity.Reading;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
@@ -283,7 +284,7 @@ public class ReadingAdapter extends PagerAdapter {
             ReadingItemFragment rif = fragments.get(s.storyHash);
             if (rif != null ) {
                 rif.offerStoryUpdate(s);
-                rif.handleUpdate(NbActivity.UPDATE_STORY);
+                rif.handleUpdate(UPDATE_STORY);
             }
         }
     }

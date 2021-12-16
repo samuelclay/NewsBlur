@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
@@ -38,19 +39,17 @@ abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_profileactivity, null)
         binding = FragmentProfileactivityBinding.bind(view)
-        binding.emptyViewLoadingThrob.setColors(UIUtils.getColor(activity, R.color.refresh_1),
-                UIUtils.getColor(activity, R.color.refresh_2),
-                UIUtils.getColor(activity, R.color.refresh_3),
-                UIUtils.getColor(activity, R.color.refresh_4))
+        val colorsArray = intArrayOf(ContextCompat.getColor(requireContext(), R.color.refresh_1),
+                ContextCompat.getColor(requireContext(), R.color.refresh_2),
+                ContextCompat.getColor(requireContext(), R.color.refresh_3),
+                ContextCompat.getColor(requireContext(), R.color.refresh_4))
+        binding.emptyViewLoadingThrob.setColors(*colorsArray)
         binding.profileDetailsActivitylist.setFooterDividersEnabled(false)
         binding.profileDetailsActivitylist.emptyView = binding.emptyView
 
         val footerView = inflater.inflate(R.layout.row_loading_throbber, null)
         footerBinding = RowLoadingThrobberBinding.bind(footerView)
-        footerBinding.itemlistLoadingThrob.setColors(UIUtils.getColor(activity, R.color.refresh_1),
-                UIUtils.getColor(activity, R.color.refresh_2),
-                UIUtils.getColor(activity, R.color.refresh_3),
-                UIUtils.getColor(activity, R.color.refresh_4))
+        footerBinding.itemlistLoadingThrob.setColors(*colorsArray)
         binding.profileDetailsActivitylist.addFooterView(footerView, null, false)
         if (adapter != null) {
             displayActivities()
