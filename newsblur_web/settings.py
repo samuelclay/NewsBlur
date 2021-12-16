@@ -795,6 +795,8 @@ with open(os.path.join(SETTINGS_DIR, 'assets.yml')) as stream:
 
 PIPELINE = {
     'PIPELINE_ENABLED': not DEBUG_ASSETS,
+    'PIPELINE_COLLECTOR_ENABLED': False,
+    'SHOW_ERRORS_INLINE': DEBUG_ASSETS,
     'CSS_COMPRESSOR': 'pipeline.compressors.yuglify.YuglifyCompressor',
     'JS_COMPRESSOR': 'pipeline.compressors.closure.ClosureCompressor',
     # 'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',

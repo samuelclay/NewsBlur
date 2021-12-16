@@ -1,3 +1,4 @@
+import re
 from django.conf import settings
 from pipeline.finders import FileSystemFinder as PipelineFileSystemFinder
 from pipeline.storage import GZIPMixin
@@ -5,10 +6,15 @@ from pipeline.storage import PipelineManifestStorage
 
 class PipelineStorage(PipelineManifestStorage):
     def url(self, *args, **kwargs):
+        if settings.DEBUG_ASSETS:
+            # print(f"Pre-Pipeline storage: {args} {kwargs}")
+            kwargs['name'] = re.sub(r'\.[a-f0-9]{12}\.(css|js)$', r'.\1', args[0])
+            args = args[1:]
         url = super().url(*args, **kwargs)
         if settings.DEBUG_ASSETS:
             url = url.replace(settings.STATIC_URL, settings.MEDIA_URL)
-        print(f"Pipeline storage: {args} {kwargs} {url}")
+            url = re.sub(r'\.[a-f0-9]{12}\.(css|js)$', r'.\1', url)
+        # print(f"Pipeline storage: {args} {kwargs} {url}")
         return url
 
 class GzipPipelineStorage(GZIPMixin, PipelineStorage):
