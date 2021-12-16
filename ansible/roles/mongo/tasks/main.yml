@@ -32,7 +32,17 @@
         fstype: xfs
         opts: defaults,discard
         state: mounted
-  when: false
+    
+    - name: Set permissions on volume
+      become: yes
+      file:
+        path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}"
+        state: directory
+        owner: 999
+        group: 999
+        recurse: yes
+
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo-secondary', 'db-mongo-analytics']
 
 - name: Copy MongoDB keyfile
   become: yes
@@ -98,9 +108,9 @@
     ports:
       - "27017:27017"
     command: --config /etc/mongod.conf
-    user: 1000:1001
+    user: 999:999
     volumes:
-      # - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
+      - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
       - /srv/newsblur/ansible/roles/mongo/templates/mongo.analytics.conf:/etc/mongod.conf
       - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
       - /var/log/mongodb/:/var/log/mongodb/
@@ -113,7 +123,7 @@
   template:
     src: consul_service.json
     dest: /etc/consul.d/mongo.json
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-primary', 'db-mongo-secondary']
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo-primary', 'db-mongo-secondary']
   notify:
     - reload consul
 
