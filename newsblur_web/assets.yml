@@ -154,8 +154,9 @@ javascripts:
 
 stylesheets:
     common:
-        - css/reader.css
-        - css/modals.css
+        - css/reader/*.css
+        - css/controls/*.css
+        - css/pages/*.css
         - css/status.css
         - css/darkmode.css
         - css/jquery-ui/jquery.theme.css
@@ -163,15 +164,14 @@ stylesheets:
         - css/vendor/bootstrap-progressbar.css
         - css/vendor/jquery.tagit.css
         - css/vendor/highlight.css
-        - css/*.css
     # mobile:
     #     - css/mobile/jquery.mobile-1.0b1.css
     #     - css/mobile/mobile.css
     bookmarklet:
         - css/bookmarklet/reset.css
-        - css/modals.css
+        - css/reader/modals.css
         - css/bookmarklet/bookmarklet.css
     blurblog:
-        - css/jquery.tipsy.css
+        - css/controls/jquery.tipsy.css
         - css/vendor/bootstrap-*.css
         - css/circular/css/social_page.css
