@@ -1,4 +1,11 @@
 ---
+- name: Template postgresql-13.conf file
+  template:
+    src: /srv/newsblur/docker/postgres/postgreql-13.conf.j2
+    dest: /srv/newsblur/docker/postgres/postgresql-13.conf
+  notify: reload postgres
+  register: updated_config
+
 - name: Start postgres docker containers
   become: yes
   docker_container:
@@ -23,8 +30,8 @@
       - 5432:5432
     volumes:
       - /srv/newsblur/docker/volumes/postgres:/var/lib/postgresql
-      - /srv/newsblur/ansible/roles/postgres/templates/postgresql-13.conf:/etc/postgresql/postgresql.conf
-      - /srv/newsblur/ansible/roles/postgres/templates/pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - /srv/newsblur/docker/postgres/postgresql-13.conf:/etc/postgresql/postgresql.conf
+      - /srv/newsblur/docker/postgres/postgres_hba-13.conf:/etc/postgresql/pg_hba.conf
       - /backup/:/var/lib/postgresql/backup/
     restart_policy: unless-stopped
 
