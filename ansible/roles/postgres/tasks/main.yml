@@ -1,7 +1,8 @@
 ---
+
 - name: Template postgresql-13.conf file
   template:
-    src: /srv/newsblur/docker/postgres/postgreql-13.conf.j2
+    src: /srv/newsblur/docker/postgres/postgresql-13.conf.j2
     dest: /srv/newsblur/docker/postgres/postgresql-13.conf
   notify: reload postgres
   register: updated_config
@@ -10,14 +11,12 @@
   become: yes
   docker_container:
     name: postgres
-    image: postgres:13.1
+    image: postgres:13
     state: started
     container_default_behavior: no_defaults
-    command: -c config_file=/etc/postgresql/postgresql.conf
+    command: postgres -D /var/lib/postgresql/pgdata -c config_file=/etc/postgresql/postgresql.conf
     env:
-      POSTGRES_USER: newsblur
-      POSTGRES_PASSWORD: newsblur
-      PGDATA: /var/lib/postgresql/pgdata
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
     hostname: "{{ inventory_hostname }}"
     networks_cli_compatible: yes
     # network_mode: host
