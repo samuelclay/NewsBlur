@@ -128,8 +128,7 @@
           user: "{{ mongodb_username }}",
           pwd: "{{ mongodb_password }}",
           roles: [
-            { role: "userAdminAnyDatabase", db: "admin" },
-            { role: "readWriteAnyDatabase", db: "admin" }
+            { role: "root", db: "admin" },
           ]
         }
       )' admin
