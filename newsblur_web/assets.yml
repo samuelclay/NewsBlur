@@ -154,11 +154,12 @@ javascripts:
 
 stylesheets:
     common:
-        - css/reader/*.css
+        - css/reader/reader.css
         - css/controls/*.css
         - css/pages/*.css
-        - css/status.css
-        - css/darkmode.css
+        - css/reader/modals.css
+        - css/reader/status.css
+        - css/reader/darkmode.css
         - css/jquery-ui/jquery.theme.css
         - css/jquery.tipsy.css
         - css/vendor/bootstrap-progressbar.css

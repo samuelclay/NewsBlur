@@ -81,3 +81,4 @@ class FileSystemFinder(PipelineFileSystemFinder):
         'Gemfile*',
         'node_modules',
     ]
+    
