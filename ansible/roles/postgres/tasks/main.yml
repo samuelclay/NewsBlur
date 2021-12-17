@@ -6,7 +6,7 @@
     image: postgres:13.1
     state: started
     container_default_behavior: no_defaults
-    command: -c config_file=/etc/postgresql/13/main/postgresql.conf
+    command: -c config_file=/etc/postgresql/postgresql.conf
     env:
       POSTGRES_USER: newsblur
       POSTGRES_PASSWORD: newsblur
@@ -23,8 +23,8 @@
       - 5432:5432
     volumes:
       - /srv/newsblur/docker/volumes/postgres:/var/lib/postgresql
-      - /srv/newsblur/ansible/roles/postgres/templates/postgresql-13.conf:/etc/postgresql/13/main/postgresql.conf
-      - /srv/newsblur/ansible/roles/postgres/templates/pg_hba.conf:/etc/postgresql/13/main/pg_hba.conf
+      - /srv/newsblur/ansible/roles/postgres/templates/postgresql-13.conf:/etc/postgresql/postgresql.conf
+      - /srv/newsblur/ansible/roles/postgres/templates/pg_hba.conf:/etc/postgresql/pg_hba.conf
       - /backup/:/var/lib/postgresql/backup/
     restart_policy: unless-stopped
 
