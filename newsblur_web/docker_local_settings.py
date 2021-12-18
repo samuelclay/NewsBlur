@@ -1,6 +1,6 @@
 import logging
-import pymongo
 import os
+
 # ===================
 # = Server Settings =
 # ===================
@@ -17,6 +17,7 @@ SESSION_COOKIE_DOMAIN = 'localhost'
 # ===================
 # = Global Settings =
 # ===================
+
 DOCKERBUILD = True
 DEBUG = False
 DEBUG = True
@@ -29,10 +30,6 @@ SECRET_KEY = 'YOUR SECRET KEY'
 AUTO_PREMIUM_NEW_USERS = True
 AUTO_ENABLE_NEW_USERS = True
 ENFORCE_SIGNUP_CAPTCHA = False
-
-# CACHE_BACKEND = 'dummy:///'
-# CACHE_BACKEND = 'locmem:///'
-# CACHE_BACKEND = 'memcached://127.0.0.1:11211'
 
 CACHES = {
     'default': {
