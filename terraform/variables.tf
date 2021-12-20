@@ -24,6 +24,11 @@ variable "droplet_size_120" {
   default = "g-8vcpu-32gb"
 }
 
+variable "droplet_size_160" {
+  type = string
+  default = "m-4vcpu-32gb"
+}
+
 variable "droplet_size_40" {
   type = string
   default = "s-4vcpu-8gb"

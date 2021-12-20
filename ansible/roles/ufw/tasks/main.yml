@@ -46,7 +46,7 @@
     - firewall
     - ufw
 
-- name: Allow all access from inventory hosts with docker
+- name: Allow all access from inventory hosts
   become: yes
   ufw:
     rule: allow
@@ -56,6 +56,55 @@
   tags: 
     - firewall
     - ufw
+
+- name: Allow all access from inventory hosts with docker
+  become: yes
+  ufw:
+    rule: allow
+    route: yes
+    src: '{{ item }}'
+  with_items: "{{ groups['NewsBlur_Docker'] | map('extract', hostvars, ['ansible_host']) }}"
+  when: "'oldandnew' not in groups"
+  tags: 
+    - firewall
+    - ufw
+
+# Code from https://stackoverflow.com/a/51741599/8717: "What is the best practice of docker + ufw under Ubuntu"
+- name: Solving UFW and Docker issues by adding ufw after.rules
+  become: yes
+  blockinfile:
+    dest: /etc/ufw/after.rules
+    state: present
+    block: |
+      # BEGIN UFW AND DOCKER
+      *filter
+      :ufw-user-forward - [0:0]
+      :ufw-docker-logging-deny - [0:0]
+      :DOCKER-USER - [0:0]
+      -A DOCKER-USER -j ufw-user-forward
+
+      -A DOCKER-USER -j RETURN -s 10.0.0.0/8
+      -A DOCKER-USER -j RETURN -s 172.16.0.0/12
+      -A DOCKER-USER -j RETURN -s 192.168.0.0/16
+
+      -A DOCKER-USER -p udp -m udp --sport 53 --dport 1024:65535 -j RETURN
+
+      -A DOCKER-USER -j ufw-docker-logging-deny -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -d 192.168.0.0/16
+      -A DOCKER-USER -j ufw-docker-logging-deny -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -d 10.0.0.0/8
+      -A DOCKER-USER -j ufw-docker-logging-deny -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -d 172.16.0.0/12
+      -A DOCKER-USER -j ufw-docker-logging-deny -p udp -m udp --dport 0:32767 -d 192.168.0.0/16
+      -A DOCKER-USER -j ufw-docker-logging-deny -p udp -m udp --dport 0:32767 -d 10.0.0.0/8
+      -A DOCKER-USER -j ufw-docker-logging-deny -p udp -m udp --dport 0:32767 -d 172.16.0.0/12
+
+      -A DOCKER-USER -j RETURN
+
+      -A ufw-docker-logging-deny -j LOG --log-prefix "[UFW DOCKER BLOCK] "
+      -A ufw-docker-logging-deny -j DROP
+
+      COMMIT
+      # END UFW AND DOCKER
+  tags: docker
+  notify: restart ufw
 
 - name: Start ufw
   become: yes
