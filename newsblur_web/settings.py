@@ -275,6 +275,7 @@ SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*10 # 10 years
 SESSION_COOKIE_DOMAIN   = '.newsblur.com'
 SESSION_COOKIE_HTTPONLY = False
+SESSION_COOKIE_SECURE   = True
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None # Handle long /reader/complete_river calls
@@ -701,6 +702,9 @@ MONGO_ANALYTICS_DB_DEFAULTS = {
     'alias': 'nbanalytics',
 }
 MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
+# MONGO_ANALYTICS_DB_NAME = MONGO_ANALYTICS_DB.pop('name')
+# MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB_NAME, **MONGO_ANALYTICS_DB)
+
 if 'username' in MONGO_ANALYTICS_DB:
     MONGOANALYTICSDB = connect(db=MONGO_ANALYTICS_DB['name'], host=f"mongodb://{MONGO_ANALYTICS_DB['username']}:{MONGO_ANALYTICS_DB['password']}@{MONGO_ANALYTICS_DB['host']}/?authSource=admin", alias="nbanalytics")
 else:
