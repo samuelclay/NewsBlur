@@ -129,6 +129,7 @@ def db_check_mongo():
 
 @app.route("/db_check/mongo_analytics")
 def db_check_mongo_analytics():
+    return str(1)
     if request.args.get('consul') == '1':
         return str(1)
 
