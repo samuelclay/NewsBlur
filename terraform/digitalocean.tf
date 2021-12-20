@@ -169,6 +169,7 @@ resource "digitalocean_droplet" "staging-web" {
 }
 
 resource "digitalocean_droplet" "discovery" {
+  count    = 0 
   image    = var.droplet_os
   name     = "discovery"
   region   = var.droplet_region
@@ -372,7 +373,7 @@ resource "digitalocean_droplet" "db-postgres" {
   image    = var.droplet_os
   name     = "db-postgres"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.droplet_size_160
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -415,13 +416,13 @@ resource "digitalocean_droplet" "db-postgres" {
 
 
 # When creating and benchmarking new mongo servers, target only the new servers
-# servers=$(for i in {1..9}; do echo -n "-target=\"digitalocean_droplet.db-mongo-primary-s[$i]\" " ; done); tf plan -refresh=false `eval echo $servers`
+# servers=$(for i in {1..9}; do echo -n "-target=\"digitalocean_droplet.db-mongo-primary[$i]\" " ; done); tf plan -refresh=false `eval echo $servers`
 # 
-resource "digitalocean_droplet" "db-mongo-primary-s" {
-  count    = 2
+resource "digitalocean_droplet" "db-mongo-primary" {
+  count    = 1
   backups  = true
   image    = var.droplet_os
-  name     = "db-mongo-primary${count.index+1}"
+  name     = "db-mongo-primary${count.index+2}"
   region   = var.droplet_region
   size     = var.mongo_primary_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -466,20 +467,21 @@ resource "digitalocean_droplet" "db-mongo-secondary" {
 }
 
 resource "digitalocean_volume" "mongo_analytics_volume" {
-  count                   = 1
+  count                   = 2
   region                  = "nyc1"
-  name                    = "mongoanalytics"
+  name                    = "mongoanalytics${count.index==0 ? "" : count.index+1}"
   size                    = 100
   initial_filesystem_type = "xfs"
   description             = "Storage for NewsBlur MongoDB Analytics"
 }
 
 resource "digitalocean_droplet" "db-mongo-analytics" {
+  count    = 2
   image    = var.droplet_os
-  name     = "db-mongo-analytics"
+  name     = "db-mongo-analytics${count.index==0 ? "" : count.index+1}"
   region   = var.droplet_region
   size     = var.mongo_analytics_droplet_size
-  volume_ids = [digitalocean_volume.mongo_analytics_volume.0.id] 
+  volume_ids = [element(digitalocean_volume.mongo_analytics_volume.*.id, count.index)]
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"

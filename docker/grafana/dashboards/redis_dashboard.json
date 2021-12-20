@@ -23,7 +23,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 8,
-  "iteration": 1638880390648,
+  "iteration": 1639165333263,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -631,5 +631,5 @@
   "timezone": "",
   "title": "Redis",
   "uid": "7IvPZkDnk",
-  "version": 3
+  "version": 4
 }
