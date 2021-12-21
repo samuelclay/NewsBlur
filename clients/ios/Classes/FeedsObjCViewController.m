@@ -1019,6 +1019,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         }];
     }
     
+    [viewController addTitle:@"Support Forum" iconName:@"world.png" selectionShouldDismiss:YES handler:^{
+        NSURL *url = [NSURL URLWithString:@"https://forum.newsblur.com"];
+        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+    }];
+    
     [viewController addTitle:@"Logout" iconName:@"menu_icn_fetch_subscribers.png" selectionShouldDismiss:YES handler:^{
         [self.appDelegate confirmLogout];
     }];
