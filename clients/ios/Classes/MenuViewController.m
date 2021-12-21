@@ -106,11 +106,19 @@ NSString * const MenuHandler = @"handler";
 }
 
 - (void)addSegmentedControlWithTitles:(NSArray *)titles values:(NSArray *)values preferenceKey:(NSString *)preferenceKey selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSegmentedHandler)handler {
+    [self addSegmentedControlWithTitles:titles values:values defaultValue:nil preferenceKey:preferenceKey selectionShouldDismiss:selectionShouldDismiss handler:handler];
+}
+
+- (void)addSegmentedControlWithTitles:(NSArray *)titles values:(NSArray *)values defaultValue:(NSString *)defaultValue preferenceKey:(NSString *)preferenceKey selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSegmentedHandler)handler {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     id value = [userPreferences objectForKey:preferenceKey];
     NSUInteger valueIndex = [values indexOfObject:value];
     
-    if (valueIndex < 0) {
+    if (valueIndex == NSNotFound && defaultValue != nil) {
+        valueIndex = [values indexOfObject:defaultValue];
+    }
+    
+    if (valueIndex == NSNotFound) {
         valueIndex = 0;
     }
     

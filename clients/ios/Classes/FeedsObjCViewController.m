@@ -1046,6 +1046,14 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self.appDelegate resizeFontSize];
     }];
     
+    preferenceKey = @"feed_list_spacing";
+    titles = @[@"Compact", @"Comfortable"];
+    values = @[@"compact", @"comfortable"];
+    
+    [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"comfortable" preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+        [self reloadFeedTitlesTable];
+    }];
+    
     [viewController addThemeSegmentedControl];
     
     UINavigationController *navController = self.navigationController;
@@ -1587,7 +1595,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
     UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize];
-    return height + font.pointSize*2;
+    NSString *spacing = [[NSUserDefaults standardUserDefaults] objectForKey:@"feed_list_spacing"];
+    NSInteger offset = [spacing isEqualToString:@"compact"] ? 6 : 0;
+    
+    return height + (font.pointSize * 2) - offset;
 }
 
 - (void)resetRowHeights {
