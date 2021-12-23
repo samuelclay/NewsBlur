@@ -136,7 +136,7 @@
             android:label="@string/mute_sites"/>
 
         <activity
-            android:name=".activity.SearchForFeeds"
+            android:name=".activity.FeedSearchActivity"
             android:launchMode="singleTop" />
 
         <activity

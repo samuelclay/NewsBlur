@@ -81,6 +81,7 @@ public class APIConstants {
     public static final String PATH_RENAME_FOLDER = "/reader/rename_folder";
     public static final String PATH_SAVE_RECEIPT = "/profile/save_android_receipt";
     public static final String PATH_FEED_STATISTICS = "/rss_feeds/statistics_embedded/";
+    public static final String PATH_FEED_FAVICON_URL = "/rss_feeds/icon/";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;
