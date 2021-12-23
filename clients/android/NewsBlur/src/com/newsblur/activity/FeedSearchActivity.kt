@@ -19,7 +19,7 @@ import java.net.MalformedURLException
 import java.net.URL
 import java.util.*
 
-class SearchForFeeds : NbActivity(), OnFeedSearchResultClickListener, AddFeedProgressListener {
+class FeedSearchActivity : NbActivity(), OnFeedSearchResultClickListener, AddFeedProgressListener {
 
     private val supportedUrlProtocols: MutableSet<String> = HashSet(2)
 
@@ -40,7 +40,6 @@ class SearchForFeeds : NbActivity(), OnFeedSearchResultClickListener, AddFeedPro
         setupListeners()
         apiManager = APIManager(this)
         binding.inputSearchQuery.requestFocus()
-        lifecycleScope
     }
 
     override fun onFeedSearchResultClickListener(result: FeedResult) {
