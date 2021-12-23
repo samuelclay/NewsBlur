@@ -25,7 +25,6 @@ import com.newsblur.databinding.IncludeReadingItemCommentBinding
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
 import com.newsblur.domain.UserDetails
-import com.newsblur.fragment.StoryUserTagsFragment.Companion.newInstance
 import com.newsblur.network.APIManager
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_INTEL
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_SOCIAL
@@ -488,7 +487,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                     chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_add_gray75)
                 }
                 v.setOnClickListener {
-                    val userTagsFragment = newInstance(story!!, fs!!)
+                    val userTagsFragment = StoryUserTagsFragment.newInstance(story!!, fs!!)
                     userTagsFragment.show(childFragmentManager, StoryUserTagsFragment::class.java.name)
                 }
                 binding.readingItemUserTags.addView(v)
