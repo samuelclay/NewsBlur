@@ -579,6 +579,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [defaults setObject:[results objectForKey:@"share_ext_token"] forKey:@"share:token"];
     [defaults setObject:self.appDelegate.url forKey:@"share:host"];
     [defaults setObject:appDelegate.dictSavedStoryTags forKey:@"share:tags"];
+    [defaults setObject:appDelegate.dictFoldersArray forKey:@"share:folders"];
     [self validateWidgetFeedsForGroupDefaults:defaults usingResults:results];
     [defaults synchronize];
     

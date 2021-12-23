@@ -28,9 +28,12 @@ class ShareViewController: UIViewController {
         
         /// Share publicly.
         case share
+        
+        /// Add site.
+        case add
     }
     
-    /// Whether we are saving the story privately or sharing publicly.
+    /// Whether we are saving the story privately, sharing publicly, or adding a site.
     var mode: Mode = .save
     
     /// Dictionary representation of a tag.
@@ -60,6 +63,15 @@ class ShareViewController: UIViewController {
     /// User-entered comments, only used when sharing.
     var comments = ""
     
+    /// An array of folders, from the main app.
+    var folders = [String]()
+    
+    /// New folder name, only used when adding.
+    var newFolder = ""
+    
+    /// Index path of the selected folder.
+    var selectedFolderIndexPath = IndexPath(item: 0, section: 0)
+    
     /// Title of the item being shared.
     var itemTitle: String? = nil
     
@@ -83,6 +95,12 @@ class ShareViewController: UIViewController {
             }
         }
         
+        if let foldersArray = prefs.object(forKey: "share:folders") as? [String] {
+            folders = foldersArray
+            
+            folders.removeAll { ["river_global", "river_blurblogs", "infrequent", "read_stories", "saved_searches", "saved_stories"].contains($0) }
+        }
+        
         updateSaveButtonState()
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow(notification:)), name: UIResponder.keyboardDidShowNotification, object: nil)
@@ -90,13 +108,14 @@ class ShareViewController: UIViewController {
     }
     
     func updateSaveButtonState() {
-        if mode == .save {
+        switch mode {
+        case .save:
             if let rows = tableView.indexPathsForSelectedRows {
                 navigationItem.rightBarButtonItem?.isEnabled = !rows.isEmpty
             } else {
                 navigationItem.rightBarButtonItem?.isEnabled = false
             }
-        } else {
+        default:
             navigationItem.rightBarButtonItem?.isEnabled = true
         }
     }
@@ -112,12 +131,16 @@ class ShareViewController: UIViewController {
     }
     
     @IBAction func newTagFieldChanged(_ sender: UITextField) {
-        newTag = sender.text ?? ""
-        
-        if newTag.isEmpty {
-            tableView.deselectRow(at: indexPathForNewTag, animated: false)
-        } else {
-            tableView.selectRow(at: indexPathForNewTag, animated: false, scrollPosition: .none)
+        if mode == .save {
+            newTag = sender.text ?? ""
+            
+            if newTag.isEmpty {
+                tableView.deselectRow(at: indexPathForNewTag, animated: false)
+            } else {
+                tableView.selectRow(at: indexPathForNewTag, animated: false, scrollPosition: .none)
+            }
+        } else if mode == .add {
+            newFolder = sender.text ?? ""
         }
         
         updateSaveButtonState()
@@ -154,9 +177,17 @@ class ShareViewController: UIViewController {
     }
     
     @IBAction func changedMode(_ sender: Any) {
-        mode = modeSegmentedControl.selectedSegmentIndex == 0 ? .save : .share
-        
-        navigationItem.rightBarButtonItem?.title = mode == .save ? "Save" : "Share"
+        switch modeSegmentedControl.selectedSegmentIndex {
+        case 1:
+            mode = .share
+            navigationItem.rightBarButtonItem?.title = "Share"
+        case 2:
+            mode = .add
+            navigationItem.rightBarButtonItem?.title = "Add"
+        default:
+            mode = .save
+            navigationItem.rightBarButtonItem?.title = "Save"
+        }
         
         tableView.isEditing = mode == .save
         tableView.reloadData()
@@ -231,52 +262,89 @@ private extension ShareViewController {
     }
     
     var requestPath: String {
-        return mode == .save ? "api/save_story" : "api/share_story"
+        switch mode {
+        case .share:
+            return "api/share_story"
+        case .save:
+            return "api/save_story"
+        case .add:
+            return "reader/add_url"
+        }
     }
     
     func encoded(_ string: String?) -> String {
         return string?.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) ?? ""
     }
     
-    func postBody(url: URL?, text: String?) -> String {
+    func postSave(url: URL?, text: String?) -> String {
         let title = itemTitle
         let encodedURL = encoded(url?.absoluteString)
         let encodedTitle = encoded(title)
         let encodedContent = encoded(text)
         
-        if mode == .save {
-            let indexPaths = tableView.indexPathsForSelectedRows ?? []
-            var selectedTagsArray = [String]()
-            
-            for index in 0..<tags.count {
-                if indexPaths.contains(IndexPath(item: index, section: 0)) {
-                    selectedTagsArray.append(encoded(tags[index].name))
-                }
+        let indexPaths = tableView.indexPathsForSelectedRows ?? []
+        var selectedTagsArray = [String]()
+        
+        for index in 0..<tags.count {
+            if indexPaths.contains(IndexPath(item: index, section: 0)) {
+                selectedTagsArray.append(encoded(tags[index].name))
             }
-            
-            let selectedTags = selectedTagsArray.joined(separator: ",")
-            let encodedNewTag = encoded(newTag)
-            
-            let postBody = "story_url=\(encodedURL)&title=\(encodedTitle)&content=\(encodedContent)&user_tags=\(selectedTags)&add_user_tag=\(encodedNewTag)"
-            
-            return postBody
-        } else {
-            var comments = comments
-            
-            // Don't really need this stuff if I don't populate the comments from the title or text; leave for now just in case that is wanted.
-            if title != nil && comments == title {
-                comments = ""
-            }
-            
-            if text != nil && comments == text {
-                comments = ""
-            }
-            
-            let encodedComments = encoded(comments)
-            
-            let postBody = "story_url=\(encodedURL)&title=\(encodedTitle)&content=\(encodedContent)&comments=\(encodedComments)"
-            
-            return postBody
+        }
+        
+        let selectedTags = selectedTagsArray.joined(separator: ",")
+        let encodedNewTag = encoded(newTag)
+        
+        let postBody = "story_url=\(encodedURL)&title=\(encodedTitle)&content=\(encodedContent)&user_tags=\(selectedTags)&add_user_tag=\(encodedNewTag)"
+        
+        return postBody
+    }
+    
+    func postShare(url: URL?, text: String?) -> String {
+        let title = itemTitle
+        let encodedURL = encoded(url?.absoluteString)
+        let encodedTitle = encoded(title)
+        let encodedContent = encoded(text)
+        
+        var comments = comments
+        
+        // Don't really need this stuff if I don't populate the comments from the title or text; leave for now just in case that is wanted.
+        if title != nil && comments == title {
+            comments = ""
+        }
+        
+        if text != nil && comments == text {
+            comments = ""
+        }
+        
+        let encodedComments = encoded(comments)
+        
+        let postBody = "story_url=\(encodedURL)&title=\(encodedTitle)&content=\(encodedContent)&comments=\(encodedComments)"
+        
+        return postBody
+    }
+    
+    func postAdd(url: URL?, text: String?) -> String {
+        let folder = folders[selectedFolderIndexPath.row]
+        let encodedFolder = encoded(folder)
+        let encodedURL = encoded(url?.absoluteString)
+        
+        var postBody = "folder=\(encodedFolder)&url=\(encodedURL)"
+        
+        if newFolder != "" {
+            postBody += "&new_folder=\(encoded(newFolder))"
+        }
+        
+        return postBody
+    }
+    
+    func postBody(url: URL?, text: String?) -> String {
+        switch mode {
+        case .save:
+            return postSave(url: url, text: text)
+        case .share:
+            return postShare(url: url, text: text)
+        case .add:
+            return postAdd(url: url, text: text)
         }
     }
 }
