@@ -9,14 +9,12 @@
   become: yes
   apt_repository:
     repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
-  when: ansible_distribution_version != '14.04'
 
 - name: Installing Consul
   become: yes
   apt:
     pkg: consul
     state: latest
-  when: ansible_distribution_version != '14.04'
 
 - name: Register Manager IP
   run_once: yes
@@ -33,6 +31,13 @@
   file:
     path: /etc/consul.d
     state: directory
+
+- name: Ensure /var/log/consul exists
+  become: yes
+  file:
+    path: /var/log/consul
+    state: directory
+    mode: 0777
 
 - name: Remove default /etc/consul.d/consul.hcl
   become: yes

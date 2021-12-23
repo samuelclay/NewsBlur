@@ -1,28 +1,45 @@
 ---
+- name: Template redis_replica.conf file
+  template:
+    src: /srv/newsblur/docker/redis/redis_replica.conf.j2
+    dest: /srv/newsblur/docker/redis/redis_replica.conf
+  notify: restart redis
+  register: updated_config
+
 - name: Start redis docker containers
   become: yes
   docker_container:
     name: redis
-    image: redis:6.2.1
+    image: redis:6.2.6
     state: started
+    command: /usr/local/etc/redis/redis_server.conf
+    container_default_behavior: no_defaults
     hostname: "{{ inventory_hostname }}"
+    networks_cli_compatible: yes
+    # network_mode: host
+    network_mode: default
+    networks:
+      - name: newsblurnet
+        aliases: 
+          - redis
     ports:
       - 6379:6379
     restart_policy: unless-stopped
+    user: 1000:1001
     volumes:
       - /srv/newsblur/docker/volumes/redis:/data
-      - /srv/newsblur/config/redis.conf:/usr/local/etc/redis_server.conf
-      - /srv/newsblur/config/redis_docker.conf:/etc/redis_server.conf
+      - /srv/newsblur/docker/redis/redis.conf:/usr/local/etc/redis/redis_server.conf
+      - /srv/newsblur/docker/redis/redis_replica.conf:/usr/local/etc/redis/redis_replica.conf
       - /srv/newsblur/docker/volumes/redis.var.lib:/var/lib/redis
 
-- name: Register redis in consul
-  tags: consul
-  become: yes
-  template:
-    src: consul_service.json
-    dest: /etc/consul.d/redis.json
-  notify:
-    - reload consul
+# - name: Register redis in consul
+#   become: yes
+#   template:
+#     src: consul_service.json
+#     dest: /etc/consul.d/redis.json
+#   notify:
+#     - reload consul
+#   tags: consul
 
 - name: Add sanity checkers cronjob for disk usage
   become: yes

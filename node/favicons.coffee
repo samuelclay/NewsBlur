@@ -62,7 +62,7 @@ favicons = (app) =>
                     if ENV_DEBUG
                         log.debug "Req: #{feed_id}, etag: #{etag}/#{docs?.color} " + if err then "(err: #{err})" else ""
                     res.header 'etag', docs.color
-                    body = new Buffer(docs.data, 'base64')
+                    body = Buffer.from(docs.data, 'base64')
                     res.set("Content-Type", "image/png")
                     res.status(200).send body
                 else

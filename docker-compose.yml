@@ -7,7 +7,7 @@ services:
     image: newsblur/newsblur_${NEWSBLUR_BASE:-python3}:latest
     environment: 
       - DOCKERBUILD=True
-      - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD?use the `make` command instead of docker CLI}
+      - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD} #?use the `make` command instead of docker CLI
     stdin_open: true
     tty: true
     restart: unless-stopped
@@ -93,7 +93,7 @@ services:
       - ./docker/volumes/postgres:/var/lib/postgresql/data
 
   db_redis:
-    image: redis:3.2.6
+    image: redis:latest
     ports:
       - 6579:6579
     container_name: db_redis

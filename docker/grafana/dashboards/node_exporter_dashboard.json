@@ -18,7 +18,7 @@
   "gnetId": 1860,
   "graphTooltip": 0,
   "id": 5,
-  "iteration": 1632244192341,
+  "iteration": 1638808315141,
   "links": [
     {
       "asDropdown": false,
@@ -13942,8 +13942,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "db-mongo1",
-          "value": "db-mongo1"
+          "text": "app-counts1",
+          "value": "app-counts1"
         },
         "datasource": "Prometheus",
         "definition": "label_values(node_uname_info{job=\"$job\"}, instance)",
@@ -14028,5 +14028,5 @@
   "timezone": "browser",
   "title": "Node Exporter",
   "uid": "rYdddlPWk",
-  "version": 11
+  "version": 12
 }

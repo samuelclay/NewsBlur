@@ -34,9 +34,9 @@
     labels:
       autoheal: "true"
     networks_cli_compatible: yes
-    network_mode: default
-    networks:
-      - name: newsblurnet
+    network_mode: host
+    # networks:
+    #   - name: newsblurnet
     command: "{{ item.command }}"
     log_driver: json-file
     log_options:

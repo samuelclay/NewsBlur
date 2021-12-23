@@ -1,6 +1,6 @@
 {
     "service": {
-        "name": "{% if inventory_hostname.startswith('db-redis') %}{{ inventory_hostname|regex_replace('\d+', '') }}{% else %}{% if inventory_hostname == 'db40a' %}db-redis-user{% elif inventory_hostname == 'db41a' %}db-redis-sessions{% elif inventory_hostname == 'db42a' %}db-redis-story{% elif inventory_hostname == 'db43a' %}db-redis-pubsub{% endif %}{% endif %}",
+        "name": "{{ inventory_hostname|regex_replace('\d+', '') }}",
         "id": "{{ inventory_hostname }}",
         "tags": [
             "redis"
@@ -9,15 +9,15 @@
         "checks": [{
             "id": "{{inventory_hostname}}-ping",
             {% if inventory_hostname == 'db-redis-story' %}
-                "http": "http://{{ ansible_ssh_host }}:5579/db_check/redis_story",
+                "http": "http://{{ ansible_ssh_host }}:5579/db_check/redis_story?consul=1",
             {% elif inventory_hostname == 'db-redis-user' %}
-                "http": "http://{{ ansible_ssh_host }}:5579/db_check/redis_user",
+                "http": "http://{{ ansible_ssh_host }}:5579/db_check/redis_user?consul=1",
             {% elif inventory_hostname == 'db-redis-pubsub' %}
-                "http": "http://{{ ansible_ssh_host }}:5579/db_check/redis_pubsub",
+                "http": "http://{{ ansible_ssh_host }}:5579/db_check/redis_pubsub?consul=1",
             {% elif inventory_hostname == 'db-redis-sessions' %}
-                "http": "http://{{ ansible_ssh_host }}:5579/db_check/redis_sessions",            
+                "http": "http://{{ ansible_ssh_host }}:5579/db_check/redis_sessions?consul=1",            
             {% else %}
-                "http": "http://{{ ansible_ssh_host }}:5000/db_check/redis",            
+                "http": "http://{{ ansible_ssh_host }}:5000/db_check/redis?consul=1",
             {% endif %}
             "interval": "15s",
             "failures_before_critical": 4

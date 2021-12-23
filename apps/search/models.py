@@ -207,7 +207,7 @@ class SearchStory:
     
     @classmethod
     def doc_type(cls):
-        if settings.DOCKERBUILD or getattr(settings, 'ES_IGNORE_TYPE', False):
+        if settings.DOCKERBUILD or getattr(settings, 'ES_IGNORE_TYPE', True):
             return None
         return "%s-type" % cls.name
         
@@ -450,7 +450,7 @@ class SearchFeed:
         
     @classmethod
     def doc_type(cls):
-        if settings.DOCKERBUILD or getattr(settings, 'ES_IGNORE_TYPE', False):
+        if settings.DOCKERBUILD or getattr(settings, 'ES_IGNORE_TYPE', True):
             return None
         return "%s-type" % cls.name
         

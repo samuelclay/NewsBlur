@@ -41,6 +41,12 @@
       return Mercury.parse(url).then((result) => {
         log.debug(`Fetched: ${url}`);
         return res.end(JSON.stringify(result));
+      }).catch((error) => {
+        log.debug(`Failed to fetch: ${url}: ${error}`);
+        // throw new Error("Failed to fetch: #{url}: #{error}")
+        return res.end(JSON.stringify({
+          error: `Failed to fetch ${url}: ${error}`
+        }));
       });
     });
   };

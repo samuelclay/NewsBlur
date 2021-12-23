@@ -422,7 +422,7 @@ CELERY_IMPORTS              = ("apps.rss_feeds.tasks",
                                "apps.feed_import.tasks",
                                "apps.search.tasks",
                                "apps.statistics.tasks",)
-CELERY_WORKER_CONCURRENCY         = 3
+CELERY_WORKER_CONCURRENCY         = 5
 CELERY_TASK_IGNORE_RESULT        = True
 CELERY_TASK_ACKS_LATE            = True # Retry if task fails
 CELERY_WORKER_MAX_TASKS_PER_CHILD = 10
