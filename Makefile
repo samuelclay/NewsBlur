@@ -23,7 +23,6 @@ rebuild:
 nb: pull
 	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
 	- [[ -d config/certificates ]] && echo "keys exist" || make keys
-	- cd node && npm install & cd ..
 	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d --build --remove-orphans
 	- RUNWITHMAKEBUILD=True docker-compose exec newsblur_web ./manage.py migrate
 	- RUNWITHMAKEBUILD=True docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
@@ -99,11 +98,11 @@ pull:
 	- docker pull newsblur/newsblur_monitor
 
 build_web:
-	- docker image build . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
+	- docker image build . --platform linux/amd64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
 build_node: 
-	- docker image build . --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
+	- docker image build . --platform linux/amd64 --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
 build_monitor: 
-	- docker image build . --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
+	- docker image build . --platform linux/amd64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
 build: build_web build_node build_monitor
 push_web: build_web
 	- docker push newsblur/newsblur_python3

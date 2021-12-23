@@ -8,24 +8,15 @@
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
-        "target": {
-          "limit": 100,
-          "matchAny": false,
-          "tags": [],
-          "type": "dashboard"
-        },
         "type": "dashboard"
       }
     ]
   },
   "editable": true,
-  "fiscalYearStartMonth": 0,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 8,
-  "iteration": 1638880390648,
+  "id": 9,
   "links": [],
-  "liveNow": false,
   "panels": [
     {
       "aliasColors": {},
@@ -33,6 +24,10 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -40,192 +35,6 @@
         "w": 12,
         "x": 0,
         "y": 0
-      },
-      "hiddenSeries": false,
-      "id": 10,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.2.6",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "redis_memory{instance=\"$instance\"}",
-          "interval": "",
-          "legendFormat": "{{ db }}",
-          "queryType": "randomWalk",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Total Memory",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:349",
-          "format": "bytes",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": true
-        },
-        {
-          "$$hashKey": "object:350",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 0
-      },
-      "hiddenSeries": false,
-      "id": 12,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "8.2.6",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "redis_used_memory{instance=\"$instance\"}",
-          "interval": "",
-          "legendFormat": "used memory",
-          "queryType": "randomWalk",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Used Memory",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:382",
-          "format": "bytes",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": true
-        },
-        {
-          "$$hashKey": "object:383",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 8
       },
       "hiddenSeries": false,
       "id": 8,
@@ -245,7 +54,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.2.6",
+      "pluginVersion": "7.5.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -256,9 +65,9 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "rate(redis_connects{instance=\"$instance\"}[$__interval])",
+          "expr": "elasticsearch_os_mem_free_bytes",
           "interval": "",
-          "legendFormat": "Connections per Second",
+          "legendFormat": "",
           "queryType": "randomWalk",
           "refId": "A"
         }
@@ -267,7 +76,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Connections per Second",
+      "title": "Memory Free",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -283,8 +92,8 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:176",
-          "format": "short",
+          "$$hashKey": "object:393",
+          "format": "bytes",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -292,7 +101,7 @@
           "show": true
         },
         {
-          "$$hashKey": "object:177",
+          "$$hashKey": "object:394",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -312,13 +121,17 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 8
+        "y": 0
       },
       "hiddenSeries": false,
       "id": 6,
@@ -338,7 +151,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.2.6",
+      "pluginVersion": "7.5.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -349,9 +162,9 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "redis_active_connections{instance=\"$instance\"}",
+          "expr": "elasticsearch_os_mem_used_bytes",
           "interval": "",
-          "legendFormat": "active connections",
+          "legendFormat": "",
           "queryType": "randomWalk",
           "refId": "A"
         }
@@ -360,7 +173,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Active Connections",
+      "title": "Memory Used",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -376,8 +189,8 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:406",
-          "format": "short",
+          "$$hashKey": "object:329",
+          "format": "decbytes",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -385,7 +198,7 @@
           "show": true
         },
         {
-          "$$hashKey": "object:407",
+          "$$hashKey": "object:330",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -405,7 +218,204 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "description": "",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "hiddenSeries": false,
+      "id": 14,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.7",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "elasticsearch_transport_rx_size_bytes_total",
+          "interval": "",
+          "legendFormat": "",
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Bytes Received",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:766",
+          "format": "decbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:767",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "hiddenSeries": false,
+      "id": 12,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.7",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "irate(elasticsearch_transport_rx_packets_total[$__interval])",
+          "interval": "",
+          "legendFormat": "Packets",
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Total Packets Received",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:521",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:522",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -432,7 +442,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.2.6",
+      "pluginVersion": "7.5.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -443,9 +453,9 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "rate(redis_commands{instance=\"$instance\"}[1m])",
+          "expr": "elasticsearch_indices_docs",
           "interval": "",
-          "legendFormat": "Total Commands Processed",
+          "legendFormat": "Documents",
           "queryType": "randomWalk",
           "refId": "A"
         }
@@ -454,7 +464,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Redis Commands per minute",
+      "title": "Number of Documents",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -470,7 +480,7 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:562",
+          "$$hashKey": "object:265",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -479,7 +489,7 @@
           "show": true
         },
         {
-          "$$hashKey": "object:563",
+          "$$hashKey": "object:266",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -499,7 +509,10 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "description": "",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -507,6 +520,103 @@
         "w": 12,
         "x": 12,
         "y": 16
+      },
+      "hiddenSeries": false,
+      "id": 15,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.7",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "rate(elasticsearch_indices_docs[1h])",
+          "interval": "",
+          "legendFormat": "Documents",
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Number of Documents",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:265",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:266",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 24
       },
       "hiddenSeries": false,
       "id": 2,
@@ -526,7 +636,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.2.6",
+      "pluginVersion": "7.5.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -537,18 +647,26 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": " redis_size{instance=\"$instance\"}",
+          "expr": "elasticsearch_filesystem_data_available_bytes",
           "interval": "",
-          "legendFormat": "{{ db }}",
+          "legendFormat": "bytes free",
           "queryType": "randomWalk",
           "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "elasticsearch_filesystem_data_size_bytes",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "data size",
+          "refId": "B"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Redis Size (keys)",
+      "title": "File System Size",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -564,7 +682,105 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:26",
+          "format": "decbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:27",
           "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "hiddenSeries": false,
+      "id": 10,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.7",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "elasticsearch_process_cpu_percent",
+          "interval": "",
+          "legendFormat": "",
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Process CPU Percent",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:457",
+          "format": "percentunit",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -572,6 +788,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:458",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -586,42 +803,11 @@
       }
     }
   ],
-  "schemaVersion": 32,
+  "schemaVersion": 27,
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": [
-      {
-        "allValue": null,
-        "current": {
-          "selected": false,
-          "text": "db-redis-pubsub",
-          "value": "db-redis-pubsub"
-        },
-        "datasource": "Prometheus",
-        "definition": "label_values(redis_active_connections, instance)",
-        "description": null,
-        "error": null,
-        "hide": 0,
-        "includeAll": false,
-        "label": null,
-        "multi": false,
-        "name": "instance",
-        "options": [],
-        "query": {
-          "query": "label_values(redis_active_connections, instance)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
-      }
-    ]
+    "list": []
   },
   "time": {
     "from": "now-6h",
@@ -629,7 +815,7 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Redis",
-  "uid": "7IvPZkDnk",
-  "version": 3
+  "title": "ElasticSearch",
+  "uid": "77sLElDnk",
+  "version": 2
 }
