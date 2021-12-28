@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.util.Linkify
 import android.view.View
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
 import com.android.billingclient.api.*
 import com.newsblur.R
 import com.newsblur.databinding.ActivityPremiumBinding
@@ -36,7 +37,7 @@ class Premium : NbActivity() {
         }
 
         override fun onBillingConnectionReady() {
-            subscriptionManager.getSubscriptionState()
+            subscriptionManager.syncSubscriptionState()
         }
 
         override fun onBillingConnectionError(message: String?) {
@@ -67,8 +68,8 @@ class Premium : NbActivity() {
     }
 
     private fun setupBilling() {
-        subscriptionManager = SubscriptionManagerImpl(this, subscriptionManagerListener)
-        subscriptionManager.startBillingConnection()
+        subscriptionManager = SubscriptionManagerImpl(this, lifecycleScope)
+        subscriptionManager.startBillingConnection(subscriptionManagerListener)
     }
 
     private fun showSubscriptionDetailsError(message: String?) {
