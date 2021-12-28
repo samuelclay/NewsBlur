@@ -21,6 +21,12 @@ import com.newsblur.util.Log
 import com.newsblur.util.NBScope
 import com.newsblur.util.PrefsUtils
 import com.newsblur.util.executeAsyncTask
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -31,7 +37,7 @@ interface SubscriptionManager {
      * Open connection to Play Store to retrieve
      * purchases and subscriptions.
      */
-    fun startBillingConnection()
+    fun startBillingConnection(listener: SubscriptionsListener? = null)
 
     /**
      * Generated subscription state by retrieve all available subscriptions
@@ -39,7 +45,7 @@ interface SubscriptionManager {
      *
      * Subscriptions are configured via the Play Store console.
      */
-    fun getSubscriptionState()
+    fun syncSubscriptionState()
 
     /**
      * Launch the billing flow overlay for a specific subscription.
@@ -53,7 +59,12 @@ interface SubscriptionManager {
      */
     fun syncActiveSubscription()
 
-    fun hasActiveSubscription(): Boolean
+    /**
+     * Notify backend of active Play Store subscription.
+     */
+    fun saveReceipt(purchase: Purchase)
+
+    suspend fun hasActiveSubscription(): Boolean
 }
 
 interface SubscriptionsListener {
@@ -69,8 +80,10 @@ interface SubscriptionsListener {
 
 class SubscriptionManagerImpl(
         private val context: Context,
-        private val listener: SubscriptionsListener
+        private val scope: CoroutineScope = NBScope,
 ) : SubscriptionManager {
+
+    private var listener: SubscriptionsListener? = null
 
     private val acknowledgePurchaseListener = AcknowledgePurchaseResponseListener { billingResult: BillingResult ->
         when (billingResult.responseCode) {
@@ -121,9 +134,9 @@ class SubscriptionManagerImpl(
         override fun onBillingSetupFinished(billingResult: BillingResult) {
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 Log.d(this, "onBillingSetupFinished OK")
-                listener.onBillingConnectionReady()
+                listener?.onBillingConnectionReady()
             } else {
-                listener.onBillingConnectionError("Error connecting to Play Store.")
+                listener?.onBillingConnectionError("Error connecting to Play Store.")
             }
         }
 
@@ -131,7 +144,7 @@ class SubscriptionManagerImpl(
             Log.d(this, "onBillingServiceDisconnected")
             // Try to restart the connection on the next request to
             // Google Play by calling the startConnection() method.
-            listener.onBillingConnectionError("Error connecting to Play Store.")
+            listener?.onBillingConnectionError("Error connecting to Play Store.")
         }
     }
 
@@ -140,13 +153,17 @@ class SubscriptionManagerImpl(
             .enablePendingPurchases()
             .build()
 
-    override fun startBillingConnection() {
+    override fun startBillingConnection(listener: SubscriptionsListener?) {
+        this.listener = listener
         billingClient.startConnection(billingClientStateListener)
     }
 
-    override fun getSubscriptionState() =
+    override fun syncSubscriptionState() {
+        scope.launch {
             if (hasActiveSubscription()) syncActiveSubscription()
             else syncAvailableSubscription()
+        }
+    }
 
     override fun purchaseSubscription(activity: Activity, skuDetails: SkuDetails) {
         Log.d(this, "launchBillingFlow for sku: ${skuDetails.sku}")
@@ -157,30 +174,56 @@ class SubscriptionManagerImpl(
     }
 
     override fun syncActiveSubscription() {
-        val hasNewsBlurSubscription = PrefsUtils.getIsPremium(context)
-        val activePlayStoreSubscription = getActivePlayStoreSubscription()
+        scope.launch(Dispatchers.Default) {
+            val hasNewsBlurSubscription = PrefsUtils.getIsPremium(context)
+            val activePlayStoreSubscription = getActiveSubscriptionAsync().await()
 
-        if (hasNewsBlurSubscription || activePlayStoreSubscription != null) {
-            val renewalString: String? = getRenewalMessage(activePlayStoreSubscription)
-            listener.onActiveSubscription(renewalString)
-        }
+            if (hasNewsBlurSubscription || activePlayStoreSubscription != null) {
+                val renewalString: String? = getRenewalMessage(activePlayStoreSubscription)
+                withContext(Dispatchers.Main) {
+                    listener?.onActiveSubscription(renewalString)
+                }
+            }
 
-        if (!hasNewsBlurSubscription && activePlayStoreSubscription != null) {
-            saveSubscriptionReceipt(activePlayStoreSubscription)
-        }
-    }
-
-    override fun hasActiveSubscription(): Boolean =
-            PrefsUtils.getIsPremium(context) || getActivePlayStoreSubscription() != null
-
-    private fun getActivePlayStoreSubscription(): Purchase? {
-        val result = billingClient.queryPurchases(BillingClient.SkuType.SUBS)
-        return result.purchasesList?.let {
-            it.find { purchase -> purchase.sku == AppConstants.PREMIUM_SKU }
+            if (!hasNewsBlurSubscription && activePlayStoreSubscription != null) {
+                saveReceipt(activePlayStoreSubscription)
+            }
         }
     }
 
-    private fun syncAvailableSubscription() {
+    override suspend fun hasActiveSubscription(): Boolean =
+            PrefsUtils.getIsPremium(context) || getActiveSubscriptionAsync().await() != null
+
+    override fun saveReceipt(purchase: Purchase) {
+        Log.d(this, "saveReceipt: ${purchase.orderId}")
+        val apiManager = APIManager(context)
+        scope.executeAsyncTask(
+                doInBackground = {
+                    apiManager.saveReceipt(purchase.orderId, purchase.skus.first())
+                },
+                onPostExecute = {
+                    if (!it.isError) {
+                        NBSyncService.forceFeedsFolders()
+                        FeedUtils.triggerSync(context)
+                    }
+                }
+        )
+    }
+
+    private suspend fun syncAvailableSubscription() {
+        scope.launch(Dispatchers.Default) {
+            val skuDetails = getAvailableSubscriptionAsync().await()
+            withContext(Dispatchers.Main) {
+                skuDetails?.let {
+                    Log.d(this, it.toString())
+                    listener?.onAvailableSubscription(it)
+                } ?: listener?.onBillingConnectionError()
+            }
+        }
+    }
+
+    private fun getAvailableSubscriptionAsync(): Deferred<SkuDetails?> {
+        val deferred = CompletableDeferred<SkuDetails?>()
         val params = SkuDetailsParams.newBuilder().apply {
             // add subscription SKUs from Play Store
             setSkusList(listOf(AppConstants.PREMIUM_SKU))
@@ -191,16 +234,26 @@ class SubscriptionManagerImpl(
             Log.d(this, "SkuDetailsResponse ${skuDetailsList.toString()}")
             skuDetailsList?.let {
                 // Currently interested only in the premium yearly News Blur subscription.
-                val premiumSubscription = it.find { skuDetails ->
+                val skuDetails = it.find { skuDetails ->
                     skuDetails.sku == AppConstants.PREMIUM_SKU
                 }
 
-                premiumSubscription?.let { skuDetail ->
-                    Log.d(this, skuDetail.toString())
-                    listener.onAvailableSubscription(skuDetail)
-                } ?: listener.onBillingConnectionError()
-            }
+                Log.d(this, skuDetails.toString())
+                deferred.complete(skuDetails)
+            } ?: deferred.complete(null)
         }
+
+        return deferred
+    }
+
+    private fun getActiveSubscriptionAsync(): Deferred<Purchase?> {
+        val deferred = CompletableDeferred<Purchase?>()
+        billingClient.queryPurchasesAsync(BillingClient.SkuType.SUBS) { _, purchases ->
+            val purchase = purchases.find { purchase -> purchase.skus.contains(AppConstants.PREMIUM_SKU) }
+            deferred.complete(purchase)
+        }
+
+        return deferred
     }
 
     private fun handlePurchase(purchase: Purchase) {
@@ -217,24 +270,6 @@ class SubscriptionManagerImpl(
                         billingClient.acknowledgePurchase(it, acknowledgePurchaseListener)
                     }
         }
-    }
-
-    /**
-     * Notify backend of active Play Store subscription.
-     */
-    private fun saveSubscriptionReceipt(purchase: Purchase) {
-        val apiManager = APIManager(context)
-        NBScope.executeAsyncTask(
-                doInBackground = {
-                    apiManager.saveReceipt(purchase.orderId, purchase.sku)
-                },
-                onPostExecute = {
-                    if (!it.isError) {
-                        NBSyncService.forceFeedsFolders()
-                        FeedUtils.triggerSync(context)
-                    }
-                }
-        )
     }
 
     /**
