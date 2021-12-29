@@ -25,6 +25,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.DateFormat
@@ -57,7 +58,7 @@ interface SubscriptionManager {
     /**
      * Sync subscription state between NewsBlur and Play Store.
      */
-    fun syncActiveSubscription()
+    fun syncActiveSubscription(): Job
 
     /**
      * Notify backend of active Play Store subscription.
@@ -159,7 +160,7 @@ class SubscriptionManagerImpl(
     }
 
     override fun syncSubscriptionState() {
-        scope.launch {
+        scope.launch(Dispatchers.Default) {
             if (hasActiveSubscription()) syncActiveSubscription()
             else syncAvailableSubscription()
         }
@@ -173,21 +174,21 @@ class SubscriptionManagerImpl(
         billingClient.launchBillingFlow(activity, billingFlowParams)
     }
 
-    override fun syncActiveSubscription() {
-        scope.launch(Dispatchers.Default) {
-            val hasNewsBlurSubscription = PrefsUtils.getIsPremium(context)
-            val activePlayStoreSubscription = getActiveSubscriptionAsync().await()
+    override fun syncActiveSubscription() = scope.launch(Dispatchers.Default) {
+        val hasNewsBlurSubscription = PrefsUtils.getIsPremium(context)
+        val activePlayStoreSubscription = getActiveSubscriptionAsync().await()
 
-            if (hasNewsBlurSubscription || activePlayStoreSubscription != null) {
+        if (hasNewsBlurSubscription || activePlayStoreSubscription != null) {
+            listener?.let {
                 val renewalString: String? = getRenewalMessage(activePlayStoreSubscription)
                 withContext(Dispatchers.Main) {
-                    listener?.onActiveSubscription(renewalString)
+                    it.onActiveSubscription(renewalString)
                 }
             }
+        }
 
-            if (!hasNewsBlurSubscription && activePlayStoreSubscription != null) {
-                saveReceipt(activePlayStoreSubscription)
-            }
+        if (!hasNewsBlurSubscription && activePlayStoreSubscription != null) {
+            saveReceipt(activePlayStoreSubscription)
         }
     }
 
@@ -210,15 +211,13 @@ class SubscriptionManagerImpl(
         )
     }
 
-    private suspend fun syncAvailableSubscription() {
-        scope.launch(Dispatchers.Default) {
-            val skuDetails = getAvailableSubscriptionAsync().await()
-            withContext(Dispatchers.Main) {
-                skuDetails?.let {
-                    Log.d(this, it.toString())
-                    listener?.onAvailableSubscription(it)
-                } ?: listener?.onBillingConnectionError()
-            }
+    private suspend fun syncAvailableSubscription() = scope.launch(Dispatchers.Default) {
+        val skuDetails = getAvailableSubscriptionAsync().await()
+        withContext(Dispatchers.Main) {
+            skuDetails?.let {
+                Log.d(this, it.toString())
+                listener?.onAvailableSubscription(it)
+            } ?: listener?.onBillingConnectionError()
         }
     }
 

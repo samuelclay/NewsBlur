@@ -41,6 +41,9 @@ public class AppConstants {
     // to account for the fact that it is approximate, and missing a cycle is bad.
     public static final long BG_SERVICE_CYCLE_MILLIS = AUTO_SYNC_TIME_MILLIS + 30L * 1000L;
 
+    // how often to trigger the job scheduler to sync subscription state.
+    public static final long BG_SUBSCRIPTION_SYNC_CYCLE_MILLIS = 24L * 60 * 60 * 1000L;
+
     // how many total attemtps to make at a single API call
     public static final int MAX_API_TRIES = 3;
 
