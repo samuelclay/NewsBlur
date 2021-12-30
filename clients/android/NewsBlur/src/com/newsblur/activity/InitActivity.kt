@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.util.*
 
 /**
@@ -42,11 +43,12 @@ class InitActivity : AppCompatActivity() {
         upgradeCheck()
 
         // see if a user is already logged in; if so, jump to the Main activity
-        preferenceCheck()
+        userAuthCheck()
     }
 
-    private fun preferenceCheck() {
+    private fun userAuthCheck() {
         if (PrefsUtils.hasCookie(this)) {
+            SubscriptionSyncService.schedule(this)
             val mainIntent = Intent(this, Main::class.java)
             startActivity(mainIntent)
         } else {
