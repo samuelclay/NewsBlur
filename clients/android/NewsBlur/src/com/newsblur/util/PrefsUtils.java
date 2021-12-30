@@ -1026,4 +1026,14 @@ public class PrefsUtils {
         editor.putBoolean(PrefConstants.IN_APP_REVIEW, true);
         editor.commit();
     }
+
+    /**
+     * Check for logged in user.
+     * @return whether a cookie is stored on disk
+     * which gets saved when a user is authenticated.
+     */
+    public static boolean hasCookie(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE);
+        return preferences.getString(PrefConstants.PREF_COOKIE, null) != null;
+    }
 }
