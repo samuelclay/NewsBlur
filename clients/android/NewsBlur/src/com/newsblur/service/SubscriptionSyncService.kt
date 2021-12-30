@@ -2,6 +2,7 @@ package com.newsblur.service
 
 import android.app.job.JobInfo
 import android.app.job.JobParameters
+import android.app.job.JobScheduler
 import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
@@ -46,9 +47,10 @@ class SubscriptionSyncService : JobService() {
     override fun onStopJob(params: JobParameters?): Boolean = false
 
     companion object {
-        const val JOB_ID = 2021
 
-        fun createJobInfo(context: Context): JobInfo = JobInfo.Builder(JOB_ID,
+        private const val JOB_ID = 2021
+
+        private fun createJobInfo(context: Context): JobInfo = JobInfo.Builder(JOB_ID,
                 ComponentName(context, SubscriptionSyncService::class.java))
                 .apply {
                     // sync every 24 hours
@@ -57,5 +59,23 @@ class SubscriptionSyncService : JobService() {
                     setBackoffCriteria(JobInfo.DEFAULT_INITIAL_BACKOFF_MILLIS, JobInfo.BACKOFF_POLICY_EXPONENTIAL)
                     setPersisted(true)
                 }.build()
+
+        fun schedule(context: Context) {
+            val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+            val job = jobScheduler.allPendingJobs.find { it.id == JOB_ID }
+            if (job == null) {
+                val result: Int = jobScheduler.schedule(createJobInfo(context))
+                Log.d(this, "Scheduled subscription result: ${if (result == JobScheduler.RESULT_FAILURE) "failed" else "completed"}")
+            }
+        }
+
+        @JvmStatic
+        fun cancel(context: Context) {
+            val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+            jobScheduler.allPendingJobs.find { it.id == JOB_ID }?.let {
+                jobScheduler.cancel(JOB_ID)
+                Log.d(this, "Cancel sync job.")
+            }
+        }
     }
 }

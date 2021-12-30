@@ -30,6 +30,7 @@ import com.newsblur.R;
 import com.newsblur.activity.Login;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIConstants;
+import com.newsblur.service.SubscriptionSyncService;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.widget.WidgetUtils;
@@ -168,6 +169,9 @@ public class PrefsUtils {
     public static void logout(Context context) {
         NBSyncService.softInterrupt();
         NBSyncService.clearState();
+
+        // cancel scheduled subscription sync service
+        SubscriptionSyncService.cancel(context);
 
         NotificationUtils.clear(context);
 
