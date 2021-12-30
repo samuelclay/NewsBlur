@@ -9,6 +9,7 @@ import com.newsblur.subscription.SubscriptionManagerImpl
 import com.newsblur.util.AppConstants
 import com.newsblur.util.Log
 import com.newsblur.util.NBScope
+import com.newsblur.util.PrefsUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -24,6 +25,11 @@ class SubscriptionSyncService : JobService() {
 
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.d(this, "onStartJob")
+        if (!PrefsUtils.hasCookie(this)) {
+            // no user authenticated
+            return false
+        }
+
         NBScope.launch(Dispatchers.Default) {
             val subscriptionManager = SubscriptionManagerImpl(this@SubscriptionSyncService, this)
             val job = subscriptionManager.syncActiveSubscription()

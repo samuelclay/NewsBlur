@@ -46,8 +46,7 @@ class InitActivity : AppCompatActivity() {
     }
 
     private fun preferenceCheck() {
-        val preferences = getSharedPreferences(PrefConstants.PREFERENCES, MODE_PRIVATE)
-        if (preferences.getString(PrefConstants.PREF_COOKIE, null) != null) {
+        if (PrefsUtils.hasCookie(this)) {
             val mainIntent = Intent(this, Main::class.java)
             startActivity(mainIntent)
         } else {
