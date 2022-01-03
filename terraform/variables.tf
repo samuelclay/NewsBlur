@@ -77,5 +77,5 @@ variable "redis_story_droplet_size" {
 
 variable "sentry_droplet_size" {
   type = string
-  default = "s-2vcpu-4gb"
+  default = "s-4vcpu-8gb"
 }

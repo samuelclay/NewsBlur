@@ -12,11 +12,13 @@
     #   ignore_errors: yes
 
     - name: Update Sentry release
+      connection: local
       shell: >
         curl {{ sentry_web_release_webhook }}/ \
         -X POST \
         -H 'Content-Type: application/json' \
         -d '{"version": "{{ lookup('pipe', 'date "+%Y-%m-%d %H:%M:%S"') }}"}'
+
 
     - name: Compressing JS/CSS assets 
       run_once: yes
