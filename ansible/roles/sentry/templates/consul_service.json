@@ -1,0 +1,10 @@
+{
+    "service": {
+        "name": "{{ inventory_hostname|regex_replace('\d+', '') }}",
+        "id": "{{ inventory_hostname }}",
+        "tags": [
+            "sentry"
+        ],
+        "port": 9000
+    }
+}  

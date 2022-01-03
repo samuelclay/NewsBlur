@@ -18,3 +18,4 @@
     - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
     - {role: 'postgres', tags: 'postgres'}
     - {role: 'monitor', tags: 'monitor'}
+    - {role: 'backups', tags: 'backups'}

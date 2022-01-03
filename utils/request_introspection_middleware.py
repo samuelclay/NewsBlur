@@ -31,7 +31,7 @@ class DumpRequestMiddleware:
                 self.color_db(request.sql_times_elapsed['redis_pubsub'], '~FC'),
                 request.sql_times_elapsed['redis_pubsub'],
             )
-            logging.debug(" ---> %s~SN~FCDB times: ~FYsql: %s%.4f~SNs ~SN~FMmongo: %s%.5f~SNs ~SN~FCredis: %s" % (
+            logging.user(request, " ---> %s~SN~FCDB times: ~FYsql: %s%.4f~SNs ~SN~FMmongo: %s%.5f~SNs ~SN~FCredis: %s" % (
                 self.elapsed_time(request),
                 self.color_db(request.sql_times_elapsed['sql'], '~FY'),
                 request.sql_times_elapsed['sql'], 
