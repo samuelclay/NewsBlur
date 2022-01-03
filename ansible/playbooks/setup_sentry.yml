@@ -1,12 +1,12 @@
 ---
-- name: SETUP -> postgresql containers
-  hosts: postgres
+- name: SETUP -> sentry containers
+  hosts: sentry
   vars_files:
     - ../env_vars/base.yml
   vars:
     - update_apt_cache: yes
-    - motd_role: db
-
+    - motd_role: app
+    
   roles:
     - {role: 'base', tags: 'base'}
     - {role: 'ufw', tags: 'ufw'}
@@ -16,6 +16,5 @@
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
-    - {role: 'postgres', tags: 'postgres'}
-    - {role: 'monitor', tags: 'monitor'}
-    - {role: 'backups', tags: 'backups'}
+    
+    - {role: 'sentry', tags: 'sentry'}

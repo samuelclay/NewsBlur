@@ -29,6 +29,16 @@
   tags:
     - static
 
+- name: Prune docker
+  become: yes
+  community.docker.docker_prune:
+    containers: yes
+    images: yes
+    networks: yes
+    volumes: yes
+    builder_cache: yes
+  tags: prune
+
 - name: Install pip
   become: yes
   apt: name=python3-pip state=latest

@@ -20,7 +20,7 @@
   tags: consul
   become: yes
   template:
-    src: /srv/newsblur/ansible/roles/flask_metrics/templates/consul_service.json
+    src: consul_service.json
     dest: /etc/consul.d/flask_metrics.json
   notify:
     - reload consul
