@@ -33,3 +33,4 @@ groups:
   mongo_analytics: inventory_hostname.startswith('db-mongo-analytics')
   consul: inventory_hostname.startswith('db-consul')
   metrics: inventory_hostname.startswith('db-metrics')
+  sentry: inventory_hostname.startswith('db-sentry')
