@@ -34,9 +34,8 @@
   community.docker.docker_prune:
     containers: yes
     images: yes
-    networks: yes
-    volumes: yes
     builder_cache: yes
+    timeout: 300
   tags: 
     - prune
     - never
