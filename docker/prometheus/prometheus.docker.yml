@@ -237,3 +237,4 @@ scrape_configs:
       scheme: http
       tls_config:
         insecure_skip_verify: true
+      scrape_interval: 30s
