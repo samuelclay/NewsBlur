@@ -1,2 +1,2 @@
 ---
-# vars file for docker-ce-ansible-role
+docker_compose_version: 2.2.2
