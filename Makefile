@@ -20,7 +20,8 @@ rebuild:
 	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d
 
 collectstatic: 
-	- docker run --rm -v $(shell pwd):/srv/newsblur --platform linux/amd64 newsblur/newsblur_deploy
+	- rm -fr static
+	- docker run --rm -v $(shell pwd):/srv/newsblur newsblur/newsblur_deploy
 
 #creates newsblur, builds new images, and creates/refreshes SSL keys
 nb: pull
