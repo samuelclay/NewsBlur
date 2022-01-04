@@ -37,7 +37,9 @@
     networks: yes
     volumes: yes
     builder_cache: yes
-  tags: prune
+  tags: 
+    - prune
+    - never
 
 - name: Install pip
   become: yes
