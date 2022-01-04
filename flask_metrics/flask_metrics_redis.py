@@ -1,6 +1,5 @@
 from flask import Flask, render_template, Response
 from newsblur_web import settings
-from flask_metrics.state_timeline import format_state_data, get_state
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 import redis
@@ -183,19 +182,6 @@ def memory_used():
     }
     redis_metric = RedisMetric(**conf)
     context = redis_metric.get_context()
-    html_body = render_template('prometheus_data.html', **context)
-    return Response(html_body, content_type="text/plain")
-
-
-@app.route("/state/")
-def redis_state():
-    redis_data = get_state("db_redis")
-    formatted_data = format_state_data("redis_state", redis_data)
-    context = {
-        'chart_name': 'redis_state',
-        'chart_type': 'gauge',
-        'data': formatted_data
-    }
     html_body = render_template('prometheus_data.html', **context)
     return Response(html_body, content_type="text/plain")
 

@@ -22,8 +22,8 @@
     "fiscalYearStartMonth": 0,
     "gnetId": null,
     "graphTooltip": 0,
-    "id": 8,
-    "iteration": 1639165333263,
+    "id": 7,
+    "iteration": 1639165228171,
     "links": [],
     "liveNow": false,
     "panels": [
@@ -33,6 +33,12 @@
             "dashLength": 10,
             "dashes": false,
             "datasource": "Prometheus",
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "short"
+                },
+                "overrides": []
+            },
             "fill": 1,
             "fillGradient": 0,
             "gridPos": {
@@ -70,9 +76,9 @@
             "targets": [
                 {
                     "exemplar": true,
-                    "expr": "redis_memory{instance=\"$instance\"}",
+                    "expr": "mongo_page_queues{instance=\"$instance\"}",
                     "interval": "",
-                    "legendFormat": "{{ db }}",
+                    "legendFormat": "{{ type }}",
                     "queryType": "randomWalk",
                     "refId": "A"
                 }
@@ -81,7 +87,7 @@
             "timeFrom": null,
             "timeRegions": [],
             "timeShift": null,
-            "title": "Total Memory",
+            "title": "Page Queues",
             "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -97,16 +103,16 @@
             },
             "yaxes": [
                 {
-                    "$$hashKey": "object:349",
-                    "format": "bytes",
+                    "$$hashKey": "object:978",
+                    "format": "short",
                     "label": null,
                     "logBase": 1,
                     "max": null,
-                    "min": "0",
+                    "min": null,
                     "show": true
                 },
                 {
-                    "$$hashKey": "object:350",
+                    "$$hashKey": "object:979",
                     "format": "short",
                     "label": null,
                     "logBase": 1,
@@ -126,6 +132,12 @@
             "dashLength": 10,
             "dashes": false,
             "datasource": "Prometheus",
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "decbytes"
+                },
+                "overrides": []
+            },
             "fill": 1,
             "fillGradient": 0,
             "gridPos": {
@@ -135,7 +147,7 @@
                 "y": 0
             },
             "hiddenSeries": false,
-            "id": 12,
+            "id": 4,
             "legend": {
                 "avg": false,
                 "current": false,
@@ -163,9 +175,9 @@
             "targets": [
                 {
                     "exemplar": true,
-                    "expr": "redis_used_memory{instance=\"$instance\"}",
+                    "expr": "mongo_db_size{instance=\"$instance\"}",
                     "interval": "",
-                    "legendFormat": "used memory",
+                    "legendFormat": "DB Size in Bytes",
                     "queryType": "randomWalk",
                     "refId": "A"
                 }
@@ -174,7 +186,7 @@
             "timeFrom": null,
             "timeRegions": [],
             "timeShift": null,
-            "title": "Used Memory",
+            "title": "Size",
             "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -190,16 +202,16 @@
             },
             "yaxes": [
                 {
-                    "$$hashKey": "object:382",
-                    "format": "bytes",
+                    "$$hashKey": "object:1056",
+                    "format": "decbytes",
                     "label": null,
                     "logBase": 1,
                     "max": null,
-                    "min": "0",
+                    "min": null,
                     "show": true
                 },
                 {
-                    "$$hashKey": "object:383",
+                    "$$hashKey": "object:1057",
                     "format": "short",
                     "label": null,
                     "logBase": 1,
@@ -256,9 +268,9 @@
             "targets": [
                 {
                     "exemplar": true,
-                    "expr": "rate(redis_connects{instance=\"$instance\"}[$__interval])",
+                    "expr": "rate(mongo_page_faults{instance=\"$instance\"}[6h])",
                     "interval": "",
-                    "legendFormat": "Connections per Second",
+                    "legendFormat": "Page Faults",
                     "queryType": "randomWalk",
                     "refId": "A"
                 }
@@ -267,7 +279,7 @@
             "timeFrom": null,
             "timeRegions": [],
             "timeShift": null,
-            "title": "Connections per Second",
+            "title": "Page Faults",
             "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -283,16 +295,17 @@
             },
             "yaxes": [
                 {
-                    "$$hashKey": "object:176",
+                    "$$hashKey": "object:1212",
+                    "decimals": null,
                     "format": "short",
                     "label": null,
                     "logBase": 1,
-                    "max": null,
-                    "min": "0",
+                    "max": ".01",
+                    "min": null,
                     "show": true
                 },
                 {
-                    "$$hashKey": "object:177",
+                    "$$hashKey": "object:1213",
                     "format": "short",
                     "label": null,
                     "logBase": 1,
@@ -315,198 +328,10 @@
             "fill": 1,
             "fillGradient": 0,
             "gridPos": {
-                "h": 8,
+                "h": 9,
                 "w": 12,
                 "x": 12,
                 "y": 8
-            },
-            "hiddenSeries": false,
-            "id": 6,
-            "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-            },
-            "lines": true,
-            "linewidth": 1,
-            "nullPointMode": "null",
-            "options": {
-                "alertThreshold": true
-            },
-            "percentage": false,
-            "pluginVersion": "8.2.6",
-            "pointradius": 2,
-            "points": false,
-            "renderer": "flot",
-            "seriesOverrides": [],
-            "spaceLength": 10,
-            "stack": false,
-            "steppedLine": false,
-            "targets": [
-                {
-                    "exemplar": true,
-                    "expr": "redis_active_connections{instance=\"$instance\"}",
-                    "interval": "",
-                    "legendFormat": "active connections",
-                    "queryType": "randomWalk",
-                    "refId": "A"
-                }
-            ],
-            "thresholds": [],
-            "timeFrom": null,
-            "timeRegions": [],
-            "timeShift": null,
-            "title": "Active Connections",
-            "tooltip": {
-                "shared": true,
-                "sort": 0,
-                "value_type": "individual"
-            },
-            "type": "graph",
-            "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": []
-            },
-            "yaxes": [
-                {
-                    "$$hashKey": "object:406",
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": "0",
-                    "show": true
-                },
-                {
-                    "$$hashKey": "object:407",
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                }
-            ],
-            "yaxis": {
-                "align": false,
-                "alignLevel": null
-            }
-        },
-        {
-            "aliasColors": {},
-            "bars": false,
-            "dashLength": 10,
-            "dashes": false,
-            "datasource": "Prometheus",
-            "description": "",
-            "fill": 1,
-            "fillGradient": 0,
-            "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 0,
-                "y": 16
-            },
-            "hiddenSeries": false,
-            "id": 4,
-            "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-            },
-            "lines": true,
-            "linewidth": 1,
-            "nullPointMode": "null",
-            "options": {
-                "alertThreshold": true
-            },
-            "percentage": false,
-            "pluginVersion": "8.2.6",
-            "pointradius": 2,
-            "points": false,
-            "renderer": "flot",
-            "seriesOverrides": [],
-            "spaceLength": 10,
-            "stack": false,
-            "steppedLine": false,
-            "targets": [
-                {
-                    "exemplar": true,
-                    "expr": "rate(redis_commands{instance=\"$instance\"}[1m])",
-                    "interval": "",
-                    "legendFormat": "Total Commands Processed",
-                    "queryType": "randomWalk",
-                    "refId": "A"
-                }
-            ],
-            "thresholds": [],
-            "timeFrom": null,
-            "timeRegions": [],
-            "timeShift": null,
-            "title": "Redis Commands per minute",
-            "tooltip": {
-                "shared": true,
-                "sort": 0,
-                "value_type": "individual"
-            },
-            "type": "graph",
-            "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": []
-            },
-            "yaxes": [
-                {
-                    "$$hashKey": "object:562",
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": "0",
-                    "show": true
-                },
-                {
-                    "$$hashKey": "object:563",
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                }
-            ],
-            "yaxis": {
-                "align": false,
-                "alignLevel": null
-            }
-        },
-        {
-            "aliasColors": {},
-            "bars": false,
-            "dashLength": 10,
-            "dashes": false,
-            "datasource": "Prometheus",
-            "description": "",
-            "fill": 1,
-            "fillGradient": 0,
-            "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 12,
-                "y": 16
             },
             "hiddenSeries": false,
             "id": 2,
@@ -537,9 +362,9 @@
             "targets": [
                 {
                     "exemplar": true,
-                    "expr": " redis_size{instance=\"$instance\"}",
+                    "expr": "mongo_objects{instance=~\"$instance\"}",
                     "interval": "",
-                    "legendFormat": "{{ db }}",
+                    "legendFormat": "Number of Objects",
                     "queryType": "randomWalk",
                     "refId": "A"
                 }
@@ -548,7 +373,7 @@
             "timeFrom": null,
             "timeRegions": [],
             "timeShift": null,
-            "title": "Redis Size (keys)",
+            "title": "Objects",
             "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -584,8 +409,102 @@
                 "align": false,
                 "alignLevel": null
             }
+        },
+        {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": "Prometheus",
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 16
+            },
+            "hiddenSeries": false,
+            "id": 6,
+            "legend": {
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "show": true,
+                "total": false,
+                "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+                "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "8.2.6",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+                {
+                    "exemplar": true,
+                    "expr": "mongo_ops{instance=\"$instance\"}",
+                    "interval": "",
+                    "legendFormat": "{{ type }}",
+                    "queryType": "randomWalk",
+                    "refId": "A"
+                }
+            ],
+            "thresholds": [],
+            "timeFrom": null,
+            "timeRegions": [],
+            "timeShift": null,
+            "title": "Ops",
+            "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+            },
+            "yaxes": [
+                {
+                    "$$hashKey": "object:1134",
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                },
+                {
+                    "$$hashKey": "object:1135",
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                }
+            ],
+            "yaxis": {
+                "align": false,
+                "alignLevel": null
+            }
         }
     ],
+    "refresh": false,
     "schemaVersion": 32,
     "style": "dark",
     "tags": [],
@@ -595,11 +514,11 @@
                 "allValue": null,
                 "current": {
                     "selected": false,
-                    "text": "db-redis-pubsub",
-                    "value": "db-redis-pubsub"
+                    "text": "db-mongo-primary1",
+                    "value": "db-mongo-primary1"
                 },
                 "datasource": "Prometheus",
-                "definition": "label_values(redis_active_connections, instance)",
+                "definition": "label_values(mongo_objects, instance)",
                 "description": null,
                 "error": null,
                 "hide": 0,
@@ -609,7 +528,7 @@
                 "name": "instance",
                 "options": [],
                 "query": {
-                    "query": "label_values(redis_active_connections, instance)",
+                    "query": "label_values(mongo_objects, instance)",
                     "refId": "StandardVariableQuery"
                 },
                 "refresh": 1,
@@ -629,7 +548,7 @@
     },
     "timepicker": {},
     "timezone": "",
-    "title": "Redis",
-    "uid": "7IvPZkDnk",
-    "version": 5
+    "title": "MongoDB",
+    "uid": "y5QlZvM7k",
+    "version": 37
 }
