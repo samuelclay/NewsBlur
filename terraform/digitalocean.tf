@@ -467,20 +467,21 @@ resource "digitalocean_droplet" "db-mongo-secondary" {
 }
 
 resource "digitalocean_volume" "mongo_analytics_volume" {
-  count                   = 1
+  count                   = 2
   region                  = "nyc1"
-  name                    = "mongoanalytics"
+  name                    = "mongoanalytics${count.index==0 ? "" : count.index+1}"
   size                    = 100
   initial_filesystem_type = "xfs"
   description             = "Storage for NewsBlur MongoDB Analytics"
 }
 
 resource "digitalocean_droplet" "db-mongo-analytics" {
+  count    = 2
   image    = var.droplet_os
-  name     = "db-mongo-analytics"
+  name     = "db-mongo-analytics${count.index==0 ? "" : count.index+1}"
   region   = var.droplet_region
   size     = var.mongo_analytics_droplet_size
-  volume_ids = [digitalocean_volume.mongo_analytics_volume.0.id] 
+  volume_ids = [element(digitalocean_volume.mongo_analytics_volume.*.id, count.index)]
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -520,6 +521,24 @@ resource "digitalocean_droplet" "db-metrics" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
+
+resource "digitalocean_droplet" "db-sentry" {
+  image    = var.droplet_os
+  name     = "db-sentry"
+  region   = var.droplet_region
+  size     = var.sentry_droplet_size
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  provisioner "local-exec" {
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+  }
+  provisioner "local-exec" {
+    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+  }
+}
+
 
 # apd -l "task-celery4*" --tags stop; servers=$(for i in {39..48}; do echo -n "-target=\"digitalocean_droplet.task-celery[$i]\" " ; done); tf apply -refresh=false `eval echo $servers`
 resource "digitalocean_droplet" "task-celery" {

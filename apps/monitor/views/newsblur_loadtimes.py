@@ -7,6 +7,7 @@ class LoadTimes(View):
         from apps.statistics.models import MStatistics
         
         data = {
+            'feed_loadtimes_1min': MStatistics.get('last_1_min_time_taken'),
             'feed_loadtimes_avg_hour': MStatistics.get('latest_avg_time_taken'),
             'feeds_loaded_hour': MStatistics.get('latest_sites_loaded'),
         }

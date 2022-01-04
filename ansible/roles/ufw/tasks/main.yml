@@ -46,6 +46,17 @@
     - firewall
     - ufw
 
+- name: Allow all access from inventory hosts
+  become: yes
+  ufw:
+    rule: allow
+    src: '{{ item }}'
+  with_items: "{{ groups['NewsBlur_Docker'] | map('extract', hostvars, ['ansible_host']) }}"
+  when: "'oldandnew' not in groups"
+  tags: 
+    - firewall
+    - ufw
+
 - name: Allow all access from inventory hosts with docker
   become: yes
   ufw:

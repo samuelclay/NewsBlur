@@ -66,7 +66,7 @@ frontend public
     use_backend node_images if { hdr_end(host) -i imageproxy2.newsblur.com }
     use_backend node_page if { path_beg /original_page/ }
     use_backend blog if { hdr_end(host) -i blog.newsblur.com }
-    use_backend blog if { hdr_end(host) -i blog2.newsblur.com }
+    use_backend sentry if { hdr_end(host) -i sentry.newsblur.com }
     use_backend nginx if { path_beg /media/ }
     use_backend nginx if { path_beg /static/ }
     use_backend nginx if { path_beg /favicon }
@@ -130,6 +130,14 @@ backend blog
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     {% for host in groups.blogs %}
         server {{host}} {{host}}.node.nyc1.consul:80
+    {% endfor %}
+
+backend sentry
+    balance roundrobin
+    option httpchk GET /_health
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.sentry %}
+        server {{host}} {{host}}.node.nyc1.consul:9000
     {% endfor %}
 
 backend node_images
