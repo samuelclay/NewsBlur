@@ -84,9 +84,7 @@ services:
     ports:
       - 5599:5569
     depends_on: 
-      - db_mongo
-      - newsblur_web
-      - nginx
+      - haproxy
     volumes:
       - ${PWD}:/srv/newsblur
   
