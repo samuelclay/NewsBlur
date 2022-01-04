@@ -18,3 +18,4 @@
     - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
     - {role: 'letsencrypt', tags: 'letsencrypt'}
     - {role: 'haproxy', tags: 'haproxy'}
+    - {role: 'flask_metrics', tags: ['flask-metrics', 'metrics']}
