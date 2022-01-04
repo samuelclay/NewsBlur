@@ -11,8 +11,8 @@
     networks:
       - name: newsblurnet
     env:
-      MONGODB_URI: 'mongodb://{{ inventory_hostname }}.node.nyc1.consul:27017/admin?'
-      # MONGODB_URI: 'mongodb://{{ mongodb_username }}:{{ mongodb_password }}@{{ inventory_hostname }}.node.nyc1.consul:27017/admin?authSource=admin'
+      # MONGODB_URI: 'mongodb://{{ inventory_hostname }}.node.nyc1.consul:27017/admin?'
+      MONGODB_URI: 'mongodb://{{ mongodb_username }}:{{ mongodb_password }}@{{ inventory_hostname }}.node.nyc1.consul:27017/admin?authSource=admin'
     ports:
     - '9216:9216'
 
