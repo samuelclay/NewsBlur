@@ -198,7 +198,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
         var $story_titles = this.$story_titles;
         this.$('.NB-end-line').remove();
-        var $endline = $.make('div', { className: "NB-end-line NB-short" });
+        var $endline = $.make('div', { className: "NB-end-line NB-load-line NB-short" });
         $endline.css({'background': '#FFF'});
         this.$el.append($endline);
         
@@ -266,9 +266,9 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             var empty_space = pane_height - last_story_height - endbar_height;
             if (empty_space > 0) endbar_height += empty_space + 1;
             
-            endbar_height /= 2; // Splitting padding between top and bottom
+            // endbar_height /= 2; // Splitting padding between top and bottom
             $end_stories_line.css('paddingBottom', endbar_height);
-            $end_stories_line.css('paddingTop', endbar_height);
+            // $end_stories_line.css('paddingTop', endbar_height);
             // console.log(["endbar height list", endbar_height, empty_space, pane_height, last_story_height]);
         }
 

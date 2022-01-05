@@ -76,7 +76,7 @@
       amazon.aws.aws_s3:
         bucket: newsblur_backups
         object: /static_py3.tgz
-        dest: /srv/newsblur/static/static.tgz
+        dest: /srv/newsblur/static.tgz
         mode: get
         overwrite: different
         aws_access_key: "{{ lookup('ini', 'aws_access_key_id section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
