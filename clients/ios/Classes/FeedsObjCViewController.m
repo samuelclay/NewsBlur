@@ -1020,7 +1020,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         }];
     }
     
-    [viewController addTitle:@"Support Forum" iconName:@"world.png" selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:@"Support Forum" iconName:@"discourse.png" selectionShouldDismiss:YES handler:^{
         NSURL *url = [NSURL URLWithString:@"https://forum.newsblur.com"];
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
     }];
