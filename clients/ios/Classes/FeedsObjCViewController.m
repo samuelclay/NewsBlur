@@ -998,7 +998,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self.appDelegate showOrganizeSites];
     }];
     
-    [viewController addTitle:@"Widget Sites" iconName:@"menu_icn_widget.png" selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:@"Widget Sites" iconName:@"calendar.png" selectionShouldDismiss:YES handler:^{
         [self.appDelegate showWidgetSites];
     }];
     

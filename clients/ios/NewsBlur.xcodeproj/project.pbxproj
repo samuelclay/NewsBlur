@@ -349,6 +349,8 @@
 		FF265F12187B6D4F0080C332 /* fitvid.js in Resources */ = {isa = PBXBuildFile; fileRef = FF265F10187B6B230080C332 /* fitvid.js */; };
 		FF28C5B8278603750033D2A2 /* discourse.png in Resources */ = {isa = PBXBuildFile; fileRef = FF28C5B7278603750033D2A2 /* discourse.png */; };
 		FF28C5BA278604940033D2A2 /* discourse@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF28C5B9278604940033D2A2 /* discourse@2x.png */; };
+		FF28C5BD27860F3C0033D2A2 /* calendar.png in Resources */ = {isa = PBXBuildFile; fileRef = FF28C5BB27860F3C0033D2A2 /* calendar.png */; };
+		FF28C5BE27860F3C0033D2A2 /* calendar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF28C5BC27860F3C0033D2A2 /* calendar@2x.png */; };
 		FF2924E51E932D2900FCFA63 /* PINCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2924DF1E932D2900FCFA63 /* PINCache.m */; };
 		FF2924E61E932D2900FCFA63 /* PINDiskCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2924E21E932D2900FCFA63 /* PINDiskCache.m */; };
 		FF2924E71E932D2900FCFA63 /* PINMemoryCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2924E41E932D2900FCFA63 /* PINMemoryCache.m */; };
@@ -1123,6 +1125,8 @@
 		FF265F10187B6B230080C332 /* fitvid.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = fitvid.js; path = static/fitvid.js; sourceTree = SOURCE_ROOT; };
 		FF28C5B7278603750033D2A2 /* discourse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = discourse.png; sourceTree = "<group>"; };
 		FF28C5B9278604940033D2A2 /* discourse@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discourse@2x.png"; sourceTree = "<group>"; };
+		FF28C5BB27860F3C0033D2A2 /* calendar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = calendar.png; sourceTree = "<group>"; };
+		FF28C5BC27860F3C0033D2A2 /* calendar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "calendar@2x.png"; sourceTree = "<group>"; };
 		FF2924DD1E932D2900FCFA63 /* Nullability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Nullability.h; sourceTree = "<group>"; };
 		FF2924DE1E932D2900FCFA63 /* PINCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINCache.h; sourceTree = "<group>"; };
 		FF2924DF1E932D2900FCFA63 /* PINCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PINCache.m; sourceTree = "<group>"; };
@@ -2031,6 +2035,8 @@
 				FF03AFE219F87A770063002A /* g_icn_folder_read.png */,
 				FF03AFE319F87A770063002A /* g_icn_folder_read@2x.png */,
 				FF3964BB192BED0A004BEE1A /* tag.png */,
+				FF28C5BB27860F3C0033D2A2 /* calendar.png */,
+				FF28C5BC27860F3C0033D2A2 /* calendar@2x.png */,
 				FFB705051925921F0052101C /* line_spacing_l.png */,
 				FFB705061925921F0052101C /* line_spacing_m.png */,
 				FFB705071925921F0052101C /* line_spacing_s.png */,
@@ -3190,6 +3196,7 @@
 				17C67DA12138B2D20027CCAE /* traverse_previous_vert.png in Resources */,
 				FFB9BE4817F4B65B00FE0A36 /* logo_152.png in Resources */,
 				43A4BADF15C866FA00F3B8D4 /* popoverArrowLeft@2x.png in Resources */,
+				FF28C5BE27860F3C0033D2A2 /* calendar@2x.png in Resources */,
 				17A396D924F86A8F0023C9E2 /* MainInterface.storyboard in Resources */,
 				1750658F1C5730FB00072BF5 /* barbutton_selection_off.png in Resources */,
 				43A4BAE015C866FA00F3B8D4 /* popoverArrowLeftSimple.png in Resources */,
@@ -3472,6 +3479,7 @@
 				17BE5A731C5DDA8C0075F92C /* barbutton_sort_asc@2x.png in Resources */,
 				17E635A81C5432220075338E /* barbutton_selection@2x.png in Resources */,
 				FFEA5AEA19D3407400ED87A0 /* launch_gradient.png in Resources */,
+				FF28C5BD27860F3C0033D2A2 /* calendar.png in Resources */,
 				FF8AFE571CAC73C9005D9B40 /* unread_blue@3x.png in Resources */,
 				FF03AFEF19F87F2E0063002A /* safari@2x.png in Resources */,
 				FF8364C01756949E008F5C58 /* traverse_text_on@2x.png in Resources */,
