@@ -37,7 +37,7 @@
 
 - name: Install sentry pluging
   shell: >
-    docker exec it -grafana grafana-cli plugins install grafana-sentry-datasource
+    docker exec grafana grafana-cli plugins install grafana-sentry-datasource
   
 - name: Restart grafana
   debug: 
