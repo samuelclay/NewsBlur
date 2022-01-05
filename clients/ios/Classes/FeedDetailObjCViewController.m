@@ -95,6 +95,9 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
+    if (@available(iOS 15.0, *)) {
+        self.storyTitlesTable.allowsFocus = NO;
+    }
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         self.storyTitlesTable.dragDelegate = self;
         self.storyTitlesTable.dragInteractionEnabled = YES;
