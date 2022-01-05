@@ -579,6 +579,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [defaults setObject:[results objectForKey:@"share_ext_token"] forKey:@"share:token"];
     [defaults setObject:self.appDelegate.url forKey:@"share:host"];
     [defaults setObject:appDelegate.dictSavedStoryTags forKey:@"share:tags"];
+    [defaults setObject:appDelegate.dictFoldersArray forKey:@"share:folders"];
     [self validateWidgetFeedsForGroupDefaults:defaults usingResults:results];
     [defaults synchronize];
     
@@ -1019,6 +1020,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         }];
     }
     
+    [viewController addTitle:@"Support Forum" iconName:@"discourse.png" selectionShouldDismiss:YES handler:^{
+        NSURL *url = [NSURL URLWithString:@"https://forum.newsblur.com"];
+        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+    }];
+    
     [viewController addTitle:@"Logout" iconName:@"menu_icn_fetch_subscribers.png" selectionShouldDismiss:YES handler:^{
         [self.appDelegate confirmLogout];
     }];
@@ -1039,6 +1045,14 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         [self.appDelegate resizeFontSize];
+    }];
+    
+    preferenceKey = @"feed_list_spacing";
+    titles = @[@"Compact", @"Comfortable"];
+    values = @[@"compact", @"comfortable"];
+    
+    [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"comfortable" preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+        [self reloadFeedTitlesTable];
     }];
     
     [viewController addThemeSegmentedControl];
@@ -1582,7 +1596,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
     UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize];
-    return height + font.pointSize*2;
+    NSString *spacing = [[NSUserDefaults standardUserDefaults] objectForKey:@"feed_list_spacing"];
+    NSInteger offset = [spacing isEqualToString:@"compact"] ? 6 : 0;
+    
+    return height + (font.pointSize * 2) - offset;
 }
 
 - (void)resetRowHeights {

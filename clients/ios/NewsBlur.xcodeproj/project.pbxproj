@@ -347,6 +347,8 @@
 		FF22FE7616E557D80046165A /* toolbar_tall_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FF22FE7416E557D80046165A /* toolbar_tall_background.png */; };
 		FF22FE7716E557D80046165A /* toolbar_tall_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF22FE7516E557D80046165A /* toolbar_tall_background@2x.png */; };
 		FF265F12187B6D4F0080C332 /* fitvid.js in Resources */ = {isa = PBXBuildFile; fileRef = FF265F10187B6B230080C332 /* fitvid.js */; };
+		FF28C5B8278603750033D2A2 /* discourse.png in Resources */ = {isa = PBXBuildFile; fileRef = FF28C5B7278603750033D2A2 /* discourse.png */; };
+		FF28C5BA278604940033D2A2 /* discourse@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF28C5B9278604940033D2A2 /* discourse@2x.png */; };
 		FF2924E51E932D2900FCFA63 /* PINCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2924DF1E932D2900FCFA63 /* PINCache.m */; };
 		FF2924E61E932D2900FCFA63 /* PINDiskCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2924E21E932D2900FCFA63 /* PINDiskCache.m */; };
 		FF2924E71E932D2900FCFA63 /* PINMemoryCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2924E41E932D2900FCFA63 /* PINMemoryCache.m */; };
@@ -1119,6 +1121,8 @@
 		FF22FE7516E557D80046165A /* toolbar_tall_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toolbar_tall_background@2x.png"; sourceTree = "<group>"; };
 		FF26125318C00FEC0055FF4D /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		FF265F10187B6B230080C332 /* fitvid.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = fitvid.js; path = static/fitvid.js; sourceTree = SOURCE_ROOT; };
+		FF28C5B7278603750033D2A2 /* discourse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = discourse.png; sourceTree = "<group>"; };
+		FF28C5B9278604940033D2A2 /* discourse@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discourse@2x.png"; sourceTree = "<group>"; };
 		FF2924DD1E932D2900FCFA63 /* Nullability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Nullability.h; sourceTree = "<group>"; };
 		FF2924DE1E932D2900FCFA63 /* PINCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINCache.h; sourceTree = "<group>"; };
 		FF2924DF1E932D2900FCFA63 /* PINCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PINCache.m; sourceTree = "<group>"; };
@@ -2308,6 +2312,8 @@
 				FF5F3A81162B82B5008DBE3E /* rainbow.png */,
 				43A4C3F315B00A26008787B5 /* arrow.png */,
 				43A4C3F415B00A26008787B5 /* arrow@2x.png */,
+				FF28C5B7278603750033D2A2 /* discourse.png */,
+				FF28C5B9278604940033D2A2 /* discourse@2x.png */,
 				43A4C3F715B00A26008787B5 /* Background.png */,
 				43A4C3F815B00A26008787B5 /* Background@2X.png */,
 				43A4C41115B00A26008787B5 /* fleuron.png */,
@@ -3423,6 +3429,7 @@
 				FFDD847F16E887D3000AA0A2 /* g_icn_folder@2x.png in Resources */,
 				1740C6881C10FD75005EA453 /* theme_color_dark.png in Resources */,
 				FFDD848016E887D3000AA0A2 /* g_icn_hidden.png in Resources */,
+				FF28C5B8278603750033D2A2 /* discourse.png in Resources */,
 				FF21B11C1C8228740053938A /* disclosure_border_medium.png in Resources */,
 				17C67DA02138B2D20027CCAE /* traverse_next_vert@2x.png in Resources */,
 				FFDD848116E887D3000AA0A2 /* g_icn_hidden@2x.png in Resources */,
@@ -3489,6 +3496,7 @@
 				17F39EB526478319004B46D1 /* image_preview_small_right@2x.png in Resources */,
 				FFCDD8F817F4BCB4000C6483 /* Default.png in Resources */,
 				FF5D4017179A00B900349659 /* traverse_send.png in Resources */,
+				FF28C5BA278604940033D2A2 /* discourse@2x.png in Resources */,
 				FFCDD8FA17F50C08000C6483 /* drag_icon.png in Resources */,
 				FF5D4018179A00B900349659 /* traverse_send@2x.png in Resources */,
 				FF5D401B179A03E700349659 /* traverse_previous_off.png in Resources */,
