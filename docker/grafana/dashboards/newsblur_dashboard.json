@@ -44,145 +44,13 @@
   "liveNow": false,
   "panels": [
     {
-      "datasource": "Prometheus",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "fillOpacity": 70,
-            "lineWidth": 0
-          },
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "color": "super-light-red",
-                  "index": 0,
-                  "text": "UNK"
-                },
-                "1": {
-                  "color": "semi-dark-yellow",
-                  "index": 1,
-                  "text": "INI"
-                },
-                "2": {
-                  "color": "semi-dark-red",
-                  "index": 2,
-                  "text": "SOCKERR"
-                },
-                "3": {
-                  "color": "dark-green",
-                  "index": 3,
-                  "text": "L4OK"
-                },
-                "4": {
-                  "color": "dark-red",
-                  "index": 4,
-                  "text": "L4TOUT"
-                },
-                "5": {
-                  "color": "dark-red",
-                  "index": 5,
-                  "text": "L4CON"
-                },
-                "6": {
-                  "color": "dark-green",
-                  "index": 6,
-                  "text": "L6OK"
-                },
-                "7": {
-                  "color": "dark-red",
-                  "index": 7,
-                  "text": "L6TOUT"
-                },
-                "8": {
-                  "color": "dark-red",
-                  "index": 8,
-                  "text": "L6RSP"
-                },
-                "9": {
-                  "color": "dark-green",
-                  "index": 9,
-                  "text": "L7OK"
-                },
-                "10": {
-                  "color": "semi-dark-red",
-                  "index": 10,
-                  "text": "L7OKC"
-                },
-                "11": {
-                  "color": "dark-red",
-                  "index": 11,
-                  "text": "L7TOUT"
-                },
-                "12": {
-                  "color": "dark-red",
-                  "index": 12,
-                  "text": "L7RSP"
-                },
-                "13": {
-                  "color": "dark-red",
-                  "index": 13,
-                  "text": "L7STS"
-                }
-              },
-              "type": "value"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 26,
-        "w": 24,
-        "x": 0,
-        "y": 0
-      },
-      "id": 84,
-      "options": {
-        "alignValue": "left",
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom"
-        },
-        "mergeValues": true,
-        "rowHeight": 0.9,
-        "showValue": "auto",
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "haproxy_state",
-          "interval": "",
-          "legendFormat": "{{ servername }}",
-          "refId": "A"
-        }
-      ],
-      "title": "Redis State",
-      "type": "state-timeline"
-    },
-    {
       "collapsed": false,
       "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 0
       },
       "id": 46,
       "panels": [],
@@ -204,10 +72,10 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 6,
+        "h": 8,
         "w": 8,
         "x": 0,
-        "y": 27
+        "y": 1
       },
       "hiddenSeries": false,
       "id": 22,
@@ -317,10 +185,10 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 6,
+        "h": 8,
         "w": 8,
         "x": 8,
-        "y": 27
+        "y": 1
       },
       "hiddenSeries": false,
       "id": 44,
@@ -443,10 +311,10 @@
       "fill": 1,
       "fillGradient": 10,
       "gridPos": {
-        "h": 6,
+        "h": 8,
         "w": 8,
         "x": 16,
-        "y": 27
+        "y": 1
       },
       "hiddenSeries": false,
       "id": 38,
@@ -458,6 +326,7 @@
         "hideZero": false,
         "max": false,
         "min": false,
+        "rightSide": false,
         "show": true,
         "total": false,
         "values": true
@@ -504,7 +373,8 @@
             "include": {
               "names": [
                 "Time",
-                "feed_loadtimes_avg_hour"
+                "feed_loadtimes_avg_hour",
+                "feed_loadtimes_1min"
               ]
             }
           }
@@ -551,7 +421,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 9
       },
       "id": 20,
       "panels": [],
@@ -578,7 +448,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 34
+        "y": 10
       },
       "hiddenSeries": false,
       "id": 2,
@@ -684,7 +554,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 34
+        "y": 10
       },
       "hiddenSeries": false,
       "id": 6,
@@ -774,13 +644,145 @@
       }
     },
     {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "fillOpacity": 70,
+            "lineWidth": 0
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "super-light-red",
+                  "index": 0,
+                  "text": "UNK"
+                },
+                "1": {
+                  "color": "semi-dark-yellow",
+                  "index": 1,
+                  "text": "INI"
+                },
+                "2": {
+                  "color": "semi-dark-red",
+                  "index": 2,
+                  "text": "SOCKERR"
+                },
+                "3": {
+                  "color": "dark-green",
+                  "index": 3,
+                  "text": "L4OK"
+                },
+                "4": {
+                  "color": "dark-red",
+                  "index": 4,
+                  "text": "L4TOUT"
+                },
+                "5": {
+                  "color": "dark-red",
+                  "index": 5,
+                  "text": "L4CON"
+                },
+                "6": {
+                  "color": "dark-green",
+                  "index": 6,
+                  "text": "L6OK"
+                },
+                "7": {
+                  "color": "dark-red",
+                  "index": 7,
+                  "text": "L6TOUT"
+                },
+                "8": {
+                  "color": "dark-red",
+                  "index": 8,
+                  "text": "L6RSP"
+                },
+                "9": {
+                  "color": "dark-green",
+                  "index": 9,
+                  "text": "L7OK"
+                },
+                "10": {
+                  "color": "semi-dark-red",
+                  "index": 10,
+                  "text": "L7OKC"
+                },
+                "11": {
+                  "color": "dark-red",
+                  "index": 11,
+                  "text": "L7TOUT"
+                },
+                "12": {
+                  "color": "dark-red",
+                  "index": 12,
+                  "text": "L7RSP"
+                },
+                "13": {
+                  "color": "dark-red",
+                  "index": 13,
+                  "text": "L7STS"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 26,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 84,
+      "options": {
+        "alignValue": "left",
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom"
+        },
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "never",
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "haproxy_state",
+          "interval": "",
+          "legendFormat": "{{ servername }}",
+          "refId": "A"
+        }
+      ],
+      "title": "Server health states via haproxy",
+      "type": "state-timeline"
+    },
+    {
       "collapsed": false,
       "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 44
       },
       "id": 4,
       "panels": [],
@@ -817,7 +819,7 @@
         "h": 21,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 45
       },
       "id": 10,
       "options": {
@@ -871,7 +873,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 64
+        "y": 66
       },
       "hiddenSeries": false,
       "id": 48,
@@ -962,7 +964,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 71
+        "y": 73
       },
       "id": 42,
       "panels": [],
@@ -981,7 +983,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 72
+        "y": 74
       },
       "hiddenSeries": false,
       "id": 33,
@@ -1084,7 +1086,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 81
+        "y": 83
       },
       "hiddenSeries": false,
       "id": 30,
@@ -1279,7 +1281,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 89
+        "y": 91
       },
       "hiddenSeries": false,
       "id": 32,
@@ -1378,7 +1380,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 97
+        "y": 99
       },
       "hiddenSeries": false,
       "id": 28,
@@ -1491,7 +1493,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 104
+        "y": 106
       },
       "hiddenSeries": false,
       "id": 12,
@@ -1585,7 +1587,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 104
+        "y": 106
       },
       "hiddenSeries": false,
       "id": 26,
@@ -1676,7 +1678,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 112
+        "y": 114
       },
       "hiddenSeries": false,
       "id": 14,
@@ -1762,7 +1764,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 120
+        "y": 122
       },
       "id": 50,
       "panels": [],
@@ -1781,7 +1783,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 121
+        "y": 123
       },
       "hiddenSeries": false,
       "id": 56,
@@ -1876,7 +1878,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 129
+        "y": 131
       },
       "hiddenSeries": false,
       "id": 52,
@@ -1969,7 +1971,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 129
+        "y": 131
       },
       "hiddenSeries": false,
       "id": 54,
@@ -2062,7 +2064,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 137
+        "y": 139
       },
       "hiddenSeries": false,
       "id": 58,
@@ -2155,7 +2157,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 137
+        "y": 139
       },
       "hiddenSeries": false,
       "id": 60,
@@ -2243,7 +2245,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 145
+        "y": 147
       },
       "id": 62,
       "panels": [],
@@ -2262,7 +2264,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 146
+        "y": 148
       },
       "hiddenSeries": false,
       "id": 75,
@@ -2306,7 +2308,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Redis DB Keus",
+      "title": "Redis DB Keys",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -2357,7 +2359,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 154
+        "y": 156
       },
       "hiddenSeries": false,
       "id": 66,
@@ -2518,7 +2520,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 162
+        "y": 164
       },
       "hiddenSeries": false,
       "id": 71,
@@ -2664,7 +2666,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 170
+        "y": 172
       },
       "hiddenSeries": false,
       "id": 72,
@@ -2796,7 +2798,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 178
+        "y": 180
       },
       "hiddenSeries": false,
       "id": 73,
@@ -2896,7 +2898,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 185
+        "y": 187
       },
       "hiddenSeries": false,
       "id": 78,
@@ -2989,7 +2991,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 193
+        "y": 195
       },
       "hiddenSeries": false,
       "id": 80,
@@ -3082,7 +3084,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 193
+        "y": 195
       },
       "hiddenSeries": false,
       "id": 64,
@@ -3170,7 +3172,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 201
+        "y": 203
       },
       "id": 68,
       "panels": [],
@@ -3189,7 +3191,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 202
+        "y": 204
       },
       "hiddenSeries": false,
       "id": 70,
@@ -3282,7 +3284,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 202
+        "y": 204
       },
       "hiddenSeries": false,
       "id": 76,
@@ -3370,7 +3372,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 210
+        "y": 212
       },
       "id": 16,
       "panels": [],
@@ -3389,7 +3391,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 211
+        "y": 213
       },
       "hiddenSeries": false,
       "id": 18,
@@ -3480,7 +3482,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 211
+        "y": 213
       },
       "hiddenSeries": false,
       "id": 24,
@@ -3571,7 +3573,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 219
+        "y": 221
       },
       "hiddenSeries": false,
       "id": 35,
@@ -3662,7 +3664,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 219
+        "y": 221
       },
       "hiddenSeries": false,
       "id": 8,
@@ -3748,7 +3750,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 227
+        "y": 229
       },
       "id": 40,
       "panels": [
@@ -3835,5 +3837,5 @@
   "timezone": "",
   "title": "NewsBlur",
   "uid": "T86VjXrG2",
-  "version": 60
+  "version": 62
 }
