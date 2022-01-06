@@ -98,7 +98,7 @@ class FileSystemFinder(PipelineFileSystemFinder):
         # # '*embed*',
         '*css/mobile*',
         '*extensions*',
-        '*media/fonts*',
+        'fonts/*/*.css',
         '*flash*',
         # '*jquery-ui*',
         # 'mobile*',
