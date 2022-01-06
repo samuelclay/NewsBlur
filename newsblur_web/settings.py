@@ -782,14 +782,17 @@ STATIC_URL        = '/static/'
 STATICFILES_STORAGE = 'utils.pipeline_utils.GzipPipelineStorage'
 STATICFILES_FINDERS = (
     # 'pipeline.finders.FileSystemFinder',
-    # 'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.FileSystemFinder',
     # 'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'utils.pipeline_utils.FileSystemFinder',
-    'pipeline.finders.PipelineFinder',
+    # 'pipeline.finders.AppDirectoriesFinder',
+    # 'utils.pipeline_utils.AppDirectoriesFinder',
+    # 'utils.pipeline_utils.FileSystemFinder',
+    # 'pipeline.finders.PipelineFinder',
 )
-STATICFILES_DIRS = (
-    MEDIA_ROOT,
-)
+STATICFILES_DIRS = [
+    '/usr/local/lib/python3.9/site-packages/django/contrib/admin/static/',
+    # MEDIA_ROOT,
+]
 with open(os.path.join(SETTINGS_DIR, 'assets.yml')) as stream:
     assets = yaml.safe_load(stream)
 

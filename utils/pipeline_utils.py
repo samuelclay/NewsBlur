@@ -1,28 +1,29 @@
 import re
 from django.conf import settings
 from pipeline.finders import FileSystemFinder as PipelineFileSystemFinder
+from pipeline.finders import AppDirectoriesFinder as PipelineAppDirectoriesFinder
 from pipeline.storage import GZIPMixin
 from pipeline.storage import PipelineManifestStorage
 
 class PipelineStorage(PipelineManifestStorage):
     def url(self, *args, **kwargs):
         if settings.DEBUG_ASSETS:
-            # print(f"Pre-Pipeline storage: {args} {kwargs}")
+            print(f"Pre-Pipeline storage: {args} {kwargs}")
             kwargs['name'] = re.sub(r'\.[a-f0-9]{12}\.(css|js)$', r'.\1', args[0])
             args = args[1:]
         url = super().url(*args, **kwargs)
         if settings.DEBUG_ASSETS:
             url = url.replace(settings.STATIC_URL, settings.MEDIA_URL)
             url = re.sub(r'\.[a-f0-9]{12}\.(css|js)$', r'.\1', url)
-        # print(f"Pipeline storage: {args} {kwargs} {url}")
+        print(f"Pipeline storage: {args} {kwargs} {url}")
         return url
 
-class GzipPipelineStorage(GZIPMixin, PipelineStorage):
+class GzipPipelineStorage(GZIPMixin, PipelineManifestStorage):
     pass
 
-class FileSystemFinder(PipelineFileSystemFinder):
+class AppDirectoriesFinder(PipelineAppDirectoriesFinder):
     """
-    Like FileSystemFinder, but doesn't return any additional ignored patterns
+    Like AppDirectoriesFinder, but doesn't return any additional ignored patterns
 
     This allows us to concentrate/compress our components without dragging
     the raw versions in too.
@@ -35,15 +36,17 @@ class FileSystemFinder(PipelineFileSystemFinder):
         '*.styl',
         '*.sh',
         '*.html',
+        '*.ttf',
         '*.md',
         '*.markdown',
         '*.php',
         '*.txt',
-        '*.gif',
+        # '*.gif',
         '*.png',
         '*.jpg',
-        '*.svg',
+        # '*.svg',
         '*.ico',
+        '*.icns',
         '*.psd',
         '*.ai',
         '*.sketch',
@@ -51,34 +54,59 @@ class FileSystemFinder(PipelineFileSystemFinder):
         '*.eps',
         '*.pdf',
         '*.xml',
-        'README*',
-        'LICENSE*',
-        '*examples*',
-        '*test*',
-        '*bin*',
-        '*samples*',
-        '*docs*',
-        '*build*',
-        '*demo*',
-        '*admin*',
-        '*android*',
-        '*blog*',
-        # '*bookmarklet*',
-        # '*circular*',
-        # '*embed*',
+        '*LICENSE*',
+        '*README*',
+    ]
+    
+class FileSystemFinder(PipelineFileSystemFinder):
+    """
+    Like FileSystemFinder, but doesn't return any additional ignored patterns
+
+    This allows us to concentrate/compress our components without dragging
+    the raw versions in too.
+    """
+    ignore_patterns = [
+        # '*.js',
+        # '*.css',
+        # '*.less',
+        # '*.scss',
+        # '*.styl',
+        '*.sh',
+        '*.html',
+        '*.ttf',
+        '*.md',
+        '*.markdown',
+        '*.php',
+        '*.txt',
+        '*.gif',
+        '*.png',
+        '*.jpg',
+        '*media/**/*.svg',
+        '*.ico',
+        '*.icns',
+        '*.psd',
+        '*.ai',
+        '*.sketch',
+        '*.emf',
+        '*.eps',
+        '*.pdf',
+        '*.xml',
+        '*embed*',
+        'blog*',
+        # # '*bookmarklet*',
+        # # '*circular*',
+        # # '*embed*',
+        '*css/mobile*',
         '*extensions*',
-        '*ios*',
-        '*android*',
+        '*media/fonts*',
         '*flash*',
-        '*fonts*',
-        '*images*',
         # '*jquery-ui*',
-        '*mobile*',
+        # 'mobile*',
         '*safari*',
-        # '*social*',
-        # '*vendor*',
-        'Makefile*',
-        'Gemfile*',
+        # # '*social*',
+        # # '*vendor*',
+        # 'Makefile*',
+        # 'Gemfile*',
         'node_modules',
     ]
     
