@@ -9,5 +9,4 @@ RUN	npm -g install yuglify
 RUN	npm -g install google-closure-compiler
 
 WORKDIR /srv/newsblur
-CMD python manage.py collectstatic --no-input --clear -v 3 -l
-# CMD python manage.py findstatic -v 3 js/newsblur/reader/reader_admin.js
+CMD python manage.py collectstatic --no-input --clear -v 1 -l
