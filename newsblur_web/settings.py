@@ -778,14 +778,14 @@ accept_content = ['pickle', 'json', 'msgpack', 'yaml']
 STATIC_URL        = '/static/'
 
 # STATICFILES_STORAGE = 'pipeline.storage.PipelineManifestStorage'
-# STATICFILES_STORAGE = 'utils.pipeline_utils.PipelineStorage'
-STATICFILES_STORAGE = 'utils.pipeline_utils.GzipPipelineStorage'
+STATICFILES_STORAGE = 'utils.pipeline_utils.PipelineStorage'
+# STATICFILES_STORAGE = 'utils.pipeline_utils.GzipPipelineStorage'
 STATICFILES_FINDERS = (
     # 'pipeline.finders.FileSystemFinder',
     # 'django.contrib.staticfiles.finders.FileSystemFinder',
     # 'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     # 'pipeline.finders.AppDirectoriesFinder',
-    # 'utils.pipeline_utils.AppDirectoriesFinder',
+    'utils.pipeline_utils.AppDirectoriesFinder',
     'utils.pipeline_utils.FileSystemFinder',
     # 'pipeline.finders.PipelineFinder',
 )
