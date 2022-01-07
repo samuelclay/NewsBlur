@@ -15,7 +15,7 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 sentry_sdk.init(
     dsn=settings.FLASK_SENTRY_DSN,
     integrations=[FlaskIntegration()],
-    traces_sample_rate=1.0,
+    traces_sample_rate=0.001,
 )
 
 app = Flask(__name__)
@@ -129,6 +129,7 @@ def db_check_mongo():
 
 @app.route("/db_check/mongo_analytics")
 def db_check_mongo_analytics():
+    return str(1)
     if request.args.get('consul') == '1':
         return str(1)
 

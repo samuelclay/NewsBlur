@@ -175,42 +175,42 @@ scrape_configs:
 
     - job_name: 'redis active connections'
       static_configs:
-        - targets: ['flask_metrics_redis:5569']
+        - targets: ['flask_metrics_redis:5589']
       metrics_path: /active-connections/
       scheme: http
       tls_config:
         insecure_skip_verify: true
     - job_name: 'redis commands'
       static_configs:
-        - targets: ['flask_metrics_redis:5569']
+        - targets: ['flask_metrics_redis:5589']
       metrics_path: /commands/
       scheme: http
       tls_config:
         insecure_skip_verify: true
     - job_name: 'redis connects'
       static_configs:
-        - targets: ['flask_metrics_redis:5569']
+        - targets: ['flask_metrics_redis:5589']
       metrics_path: /connects/
       scheme: http
       tls_config:
         insecure_skip_verify: true
     - job_name: 'redis size'
       static_configs:
-        - targets: ['flask_metrics_redis:5569']
+        - targets: ['flask_metrics_redis:5589']
       metrics_path: /size/
       scheme: http
       tls_config:
         insecure_skip_verify: true
     - job_name: 'redis memory'
       static_configs:
-        - targets: ['flask_metrics_redis:5569']
+        - targets: ['flask_metrics_redis:5589']
       metrics_path: /memory/
       scheme: http
       tls_config:
         insecure_skip_verify: true
     - job_name: 'redis used memory'
       static_configs:
-        - targets: ['flask_metrics_redis:5569']
+        - targets: ['flask_metrics_redis:5589']
       metrics_path: /used-memory/
       scheme: http
       tls_config:
@@ -229,3 +229,12 @@ scrape_configs:
       scheme: http
       tls_config:
         insecure_skip_verify: true
+
+    - job_name: 'haproxy state'
+      static_configs:
+        - targets: ['flask_metrics_haproxy:5599']
+      metrics_path: /state/
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
+      scrape_interval: 30s
