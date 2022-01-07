@@ -17,7 +17,7 @@
   - name: Set backup vars
     set_fact:
       redis_story_filename: backup_redis_story_2021-04-13-04-00.rdb.gz
-      postgres_filename: backup_postgresql_2021-12-17-20-25.sql.gz
+      postgres_filename: backup_postgresql_2022-01-06-19-46.sql.gz
       mongo_filename: backup_mongo_2021-03-15-04-00.tgz
       redis_filename: backup_redis_2021-03-15-04-00.rdb.gz
     tags: never, restore_postgres, restore_mongo, restore_redis, restore_redis_story
@@ -44,16 +44,11 @@
   
   - name: Restore postgres
     block:
-      - name: move postgres archive
-        become: yes
-        command: "mv -f /srv/newsblur/backups/{{ postgres_filename }} /srv/newsblur/docker/volumes/postgres/"
-        ignore_errors: yes
-        
       - name: pg_restore
         become: yes
         command: |
           docker exec -i postgres bash -c 
-          "pg_restore -U newsblur --role=newsblur --dbname=newsblur /var/lib/postgresql/{{ postgres_filename }}"
+          "pg_restore -U newsblur --role=newsblur --dbname=newsblur /var/lib/postgresql/backup/{{ postgres_filename }}"
     tags: never, restore_postgres
   
   - name: Restore mongo
