@@ -15,10 +15,13 @@ services:
       - node-exporter
       - haproxy
       - flask_metrics_mongo
+      - flask_metrics_redis
+      - flask_metrics_haproxy
     external_links:
       - haproxy
       - flask_metrics_mongo
       - flask_metrics_redis
+      - flask_metrics_haproxy
 
   node-exporter:
     container_name: node-exporter
@@ -28,7 +31,7 @@ services:
 
   grafana:
     container_name: grafana
-    image: grafana/grafana:7.5.7
+    image: grafana/grafana:8.2.6
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=pass
     depends_on:
@@ -41,6 +44,7 @@ services:
       - ./docker/grafana/dashboards/:/etc/grafana/provisioning/dashboards/
     external_links:
       - prometheus
+  
   flask_metrics_mongo:
     container_name: flask_metrics_mongo
     image: newsblur/newsblur_monitor:latest
@@ -55,6 +59,7 @@ services:
       - nginx
     volumes:
       - ${PWD}:/srv/newsblur
+  
   flask_metrics_redis:
     container_name: flask_metrics_redis
     image: newsblur/newsblur_monitor:latest
@@ -69,6 +74,20 @@ services:
       - nginx
     volumes:
       - ${PWD}:/srv/newsblur
+
+  flask_metrics_haproxy:
+    container_name: flask_metrics_haproxy
+    image: newsblur/newsblur_monitor:latest
+    command: bash -c "python /srv/newsblur/flask_metrics/flask_metrics_haproxy.py"
+    environment: 
+      - DOCKERBUILD=True
+    ports:
+      - 5599:5569
+    depends_on: 
+      - haproxy
+    volumes:
+      - ${PWD}:/srv/newsblur
+  
   elasticsearch_exporter:
     container_name: elasticsearch_exporter
     image: prometheuscommunity/elasticsearch-exporter:latest

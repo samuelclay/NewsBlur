@@ -32,7 +32,17 @@
         fstype: xfs
         opts: defaults,discard
         state: mounted
-  when: false
+    
+    - name: Set permissions on volume
+      become: yes
+      file:
+        path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}"
+        state: directory
+        owner: 999
+        group: 999
+        recurse: yes
+
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo-secondary', 'db-mongo-analytics']
 
 - name: Copy MongoDB keyfile
   become: yes
@@ -98,14 +108,45 @@
     ports:
       - "27017:27017"
     command: --config /etc/mongod.conf
-    user: 1000:1001
+    user: 999:999
     volumes:
-      # - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
+      - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
       - /srv/newsblur/ansible/roles/mongo/templates/mongo.analytics.conf:/etc/mongod.conf
       - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
       - /var/log/mongodb/:/var/log/mongodb/
       - /opt/mongo/newsblur/backup/:/backup/
   when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics'
+
+- name: Create mongo database user
+  shell:
+    # Don't use this line below as it means there is already a username and password, so no need to set one
+    # sleep 2; docker exec mongo mongo -u "{{ mongodb_username }}" -p "{{ mongodb_password }}" --eval ' 
+    cmd: >-
+      sleep 2; docker exec mongo mongo --eval '
+      db.createUser(
+        {
+          user: "{{ mongodb_username }}",
+          pwd: "{{ mongodb_password }}",
+          roles: [
+            { role: "root", db: "admin" },
+          ]
+        }
+      )' admin
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics'
+  register: auth_result
+  changed_when:
+    - auth_result.rc == 0
+  failed_when:
+    - "'Successfully added user' not in auth_result.stdout"
+    - "'already exists' not in auth_result.stdout"
+    - "'there are no users authenticated' not in auth_result.stdout"
+  tags:
+    - mongoauth
+
+# - debug: 
+#     msg: "{{ auth_result }}"
+#   tags:
+#     - mongoauth
 
 - name: Register mongo in consul
   tags: consul
@@ -113,7 +154,7 @@
   template:
     src: consul_service.json
     dest: /etc/consul.d/mongo.json
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-primary', 'db-mongo-secondary']
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo-primary', 'db-mongo-secondary']
   notify:
     - reload consul
 
@@ -176,3 +217,14 @@
 #  - Symlink /mnt/mongo2 to /mnt/mongo3
 #  - tf state mv "digitalocean_droplet.db-mongo-primary[2]" "digitalocean_droplet.db-mongo-primary[1]"
 #  - tf state mv "digitalocean_volume.mongo_volume[2]" "digitalocean_volume.mongo_volume[1]"
+
+# Renaming a db-mongo-primary4 to db-mongo-primary2:
+#  - Set TF count to 4
+#  - doctl compute droplet delete db-mongo2
+#  - doctl compute droplet delete db-mongo3
+#  - tf state rm "digitalocean_droplet.db-mongo-primary-s[1]"
+#  - tf state rm "digitalocean_droplet.db-mongo-primary-s[2]"
+#  - tf state mv "digitalocean_droplet.db-mongo-primary-s[3]" "digitalocean_droplet.db-mongo-primary-s[1]" 
+#  - Change hostname to db-mongo2 in /etc/hostname
+#  - sudo hostname db-mongo-primary2
+

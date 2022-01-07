@@ -1,4 +1,8 @@
 ---
+- name: Add a vm.overcommit_memory setting at the end of the sysctl.conf
+  become: yes
+  sysctl: name=vm.overcommit_memory value=1 state=present reload=yes
+
 - name: Template redis_replica.conf file
   template:
     src: /srv/newsblur/docker/redis/redis_replica.conf.j2
@@ -6,6 +10,20 @@
   notify: restart redis
   register: updated_config
 
+- name: Turning off secondary for redis by deleting redis_replica.conf
+  copy:
+    dest: /srv/newsblur/docker/redis/redis_replica.conf
+    content: ""
+  tags:
+    # - never
+    - replicaofnoone
+
+- name: Setting Redis REPLICAOF NO ONE
+  shell: docker exec redis redis-cli REPLICAOF NO ONE
+  tags:
+    # - never
+    - replicaofnoone
+    
 - name: Start redis docker containers
   become: yes
   docker_container:
@@ -30,16 +48,15 @@
       - /srv/newsblur/docker/volumes/redis:/data
       - /srv/newsblur/docker/redis/redis.conf:/usr/local/etc/redis/redis_server.conf
       - /srv/newsblur/docker/redis/redis_replica.conf:/usr/local/etc/redis/redis_replica.conf
-      - /srv/newsblur/docker/volumes/redis.var.lib:/var/lib/redis
 
-# - name: Register redis in consul
-#   become: yes
-#   template:
-#     src: consul_service.json
-#     dest: /etc/consul.d/redis.json
-#   notify:
-#     - reload consul
-#   tags: consul
+- name: Register redis in consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/redis.json
+  notify:
+    - reload consul
+  tags: consul
 
 - name: Add sanity checkers cronjob for disk usage
   become: yes
@@ -85,7 +102,7 @@
     job: >
       docker run --rm
       -v /srv/newsblur:/srv/newsblur
-      -v /srv/newsblur/docker/volumes/redis.var.lib/dump.rdb:/var/lib/redis/dump.rdb
+      -v /srv/newsblur/docker/volumes/redis/dump.rdb:/data/dump.rdb
       --network=newsblurnet
       --hostname={{ ansible_hostname }}
-      newsblur/newsblur_python3 /srv/newsblur/utils/backups/backup_redis.py
+      newsblur/newsblur_python3 python /srv/newsblur/utils/backups/backup_redis.py

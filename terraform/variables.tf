@@ -24,6 +24,11 @@ variable "droplet_size_120" {
   default = "g-8vcpu-32gb"
 }
 
+variable "droplet_size_160" {
+  type = string
+  default = "m-4vcpu-32gb"
+}
+
 variable "droplet_size_40" {
   type = string
   default = "s-4vcpu-8gb"
@@ -42,7 +47,7 @@ variable "mongo_droplet_size" {
 
 variable "mongo_primary_droplet_size" {
   type = string
-  default = "s-8vcpu-16gb"
+  default = "so1_5-2vcpu-16gb"
 }
 
 variable "metrics_droplet_size" {
@@ -68,4 +73,9 @@ variable "elasticsearch_droplet_size" {
 variable "redis_story_droplet_size" {
   type = string
   default = "m-2vcpu-16gb"
+}
+
+variable "sentry_droplet_size" {
+  type = string
+  default = "s-4vcpu-8gb"
 }

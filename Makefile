@@ -76,6 +76,7 @@ list:
 	- doctl -t `cat /srv/secrets-newsblur/keys/digital_ocean.token` compute droplet list
 sizes:
 	- doctl -t `cat /srv/secrets-newsblur/keys/digital_ocean.token` compute size list
+size: sizes
 ratelimit:
 	- doctl -t `cat /srv/secrets-newsblur/keys/digital_ocean.token` account ratelimit
 ansible-deps:
@@ -169,3 +170,7 @@ perf-docker:
 
 clean:
 	- find . -name \*.pyc -delete
+
+
+grafana-dashboards:
+	- python3 utils/grafana_backup.py

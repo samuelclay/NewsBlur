@@ -1,20 +1,58 @@
 ---
-- name: Start postgres container
+
+- name: Template postgresql-13.conf file
+  template:
+    src: /srv/newsblur/docker/postgres/postgresql-13.conf.j2
+    dest: /srv/newsblur/docker/postgres/postgres.conf
+  notify: reload postgres
+  register: updated_config
+
+- name: Ensure postgres archive directory
+  become: yes
+  file:
+    path: /srv/newsblur/docker/volumes/postgres/archive
+    state: directory
+    mode: 0777
+  
+- name: Start postgres docker containers
   become: yes
   docker_container:
     name: postgres
-    image: postgres:13.1
+    image: postgres:13
     state: started
-    hostname: "{{ inventory_hostname }}"
+    container_default_behavior: no_defaults
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
     env:
-      POSTGRES_USER: newsblur
-      POSTGRES_PASSWORD: newsblur
-    restart_policy: unless-stopped
+      # POSTGRES_USER: "{{ postgres_user }}" # Don't auto-create newsblur, manually add it
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+    hostname: "{{ inventory_hostname }}"
+    networks_cli_compatible: yes
+    # network_mode: host
+    network_mode: default
+    networks:
+      - name: newsblurnet
+        aliases: 
+          - postgres
     ports:
-    - '5432:5432'
+      - 5432:5432
     volumes:
-    - /srv/newsblur/docker/volumes/postgres:/var/lib/postgresql/data
-    - /backup/:/var/lib/postgresql/backup/
+      - /srv/newsblur/docker/volumes/postgres:/var/lib/postgresql
+      - /srv/newsblur/docker/postgres/postgres.conf:/etc/postgresql/postgresql.conf
+      - /srv/newsblur/docker/postgres/postgres_hba-13.conf:/etc/postgresql/pg_hba.conf
+      - /srv/newsblur/backups/:/var/lib/postgresql/backup/
+    restart_policy: unless-stopped
+
+- name: Ensure newsblur role in postgres
+  shell: >
+    sleep 5; 
+    docker exec postgres createuser -s newsblur -U postgres;
+    docker exec postgres createdb newsblur -U newsblur;
+  register: ensure_role
+  changed_when:
+      - "ensure_role.rc == 0"
+  failed_when: 
+    - "'already exists' not in ensure_role.stderr"
+    - "ensure_role.rc != 0"
 
 - name: Register postgres in consul
   tags: consul
@@ -24,12 +62,6 @@
     dest: /etc/consul.d/postgres.json
   notify:
     - reload consul
-
-- name: Register backup bucket
-  become: no
-  run_once: yes
-  register: backup_bucket
-  local_action: command /srv/newsblur/ansible/roles/postgres-exporter/tasks/get_credentials.py s3_bucket
 
 - name: Add sanity checkers cronjob for disk usage
   become: yes
@@ -56,10 +88,9 @@
       BACKUP_FILE=backup_postgresql_${NOW}.sql;
       sudo docker exec -it postgres
       /usr/lib/postgresql/13/bin/pg_dump -U newsblur -h 127.0.0.1 -Fc newsblur > backup/$BACKUP_FILE;
-      BUCKET={{ backup_bucket.stdout }};
       sudo docker run --rm -it
       -v /srv/newsblur:/srv/newsblur
       -v /backup/:/backup/
       --network=newsblurnet
       newsblur/newsblur_python3
-      /srv/newsblur/utils/backups/backup_psql.py $BUCKET
+      python /srv/newsblur/utils/backups/backup_psql.py
