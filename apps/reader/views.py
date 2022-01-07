@@ -2199,7 +2199,11 @@ def delete_feeds_by_folder(request):
 @json.json_view
 def rename_feed(request):
     feed = get_object_or_404(Feed, pk=int(request.POST['feed_id']))
-    user_sub = UserSubscription.objects.get(user=request.user, feed=feed)
+    try:
+        user_sub = UserSubscription.objects.get(user=request.user, feed=feed)
+    except UserSubscription.DoesNotExist:
+        return dict(code=-1, message=f"You are not subscribed to {feed.feed_title}")
+    
     feed_title = request.POST['feed_title']
     
     logging.user(request, "~FRRenaming feed '~SB%s~SN' to: ~SB%s" % (
