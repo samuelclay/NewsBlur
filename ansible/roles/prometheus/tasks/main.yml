@@ -13,7 +13,7 @@
   tags: consul
   become: yes
   template:
-    src: /srv/newsblur/ansible/roles/prometheus/templates/consul_service.json
+    src: consul_service.json
     dest: /etc/consul.d/prometheus.json
   notify:
     - reload consul

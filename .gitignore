@@ -52,6 +52,7 @@ docker/haproxy/haproxy.consul.cfg
 docker/nginx/nginx.consul.conf
 docker/prometheus/prometheus.yml
 docker/redis/redis_replica.conf
+docker/postgres/postgres.conf
 
 # ----------------------
 # Android

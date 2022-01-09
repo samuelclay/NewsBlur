@@ -26,7 +26,7 @@
   tags: consul
   become: yes
   template:
-    src: /srv/newsblur/ansible/roles/consul-manager/templates/consul_service.json
+    src: consul_service.json
     dest: /etc/consul.d/consul-manager.json
   notify:
     - reload consul
