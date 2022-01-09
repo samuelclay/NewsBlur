@@ -25,7 +25,6 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.DateFormat
@@ -58,7 +57,7 @@ interface SubscriptionManager {
     /**
      * Sync subscription state between NewsBlur and Play Store.
      */
-    fun syncActiveSubscription(): Job
+    suspend fun syncActiveSubscription()
 
     /**
      * Notify backend of active Play Store subscription.
@@ -70,13 +69,13 @@ interface SubscriptionManager {
 
 interface SubscriptionsListener {
 
-    fun onActiveSubscription(renewalMessage: String?)
+    fun onActiveSubscription(renewalMessage: String?) {}
 
-    fun onAvailableSubscription(skuDetails: SkuDetails)
+    fun onAvailableSubscription(skuDetails: SkuDetails) {}
 
-    fun onBillingConnectionReady()
+    fun onBillingConnectionReady() {}
 
-    fun onBillingConnectionError(message: String? = null)
+    fun onBillingConnectionError(message: String? = null) {}
 }
 
 class SubscriptionManagerImpl(
@@ -90,7 +89,9 @@ class SubscriptionManagerImpl(
         when (billingResult.responseCode) {
             BillingClient.BillingResponseCode.OK -> {
                 Log.d(this, "acknowledgePurchaseResponseListener OK")
-                syncActiveSubscription()
+                scope.launch(Dispatchers.Default) {
+                    syncActiveSubscription()
+                }
             }
             BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
                 // Billing API version is not supported for the type requested.
@@ -174,7 +175,7 @@ class SubscriptionManagerImpl(
         billingClient.launchBillingFlow(activity, billingFlowParams)
     }
 
-    override fun syncActiveSubscription() = scope.launch(Dispatchers.Default) {
+    override suspend fun syncActiveSubscription() {
         val hasNewsBlurSubscription = PrefsUtils.getIsPremium(context)
         val activePlayStoreSubscription = getActiveSubscriptionAsync().await()
 
@@ -258,7 +259,9 @@ class SubscriptionManagerImpl(
     private fun handlePurchase(purchase: Purchase) {
         Log.d(this, "handlePurchase: ${purchase.orderId}")
         if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED && purchase.isAcknowledged) {
-            syncActiveSubscription()
+            scope.launch(Dispatchers.Default) {
+                syncActiveSubscription()
+            }
         } else if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged) {
             // need to acknowledge first time sub otherwise it will void
             Log.d(this, "acknowledge purchase: ${purchase.orderId}")
