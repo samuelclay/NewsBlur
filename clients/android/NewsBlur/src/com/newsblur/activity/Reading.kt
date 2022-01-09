@@ -164,12 +164,10 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
         enableProgressCircle(binding.readingOverlayProgressLeft, false)
         enableProgressCircle(binding.readingOverlayProgressRight, false)
 
-        supportFragmentManager.commit {
-            val fragment =
-                    supportFragmentManager.findFragmentByTag(ReadingPagerFragment::class.java.name) as ReadingPagerFragment?
-                            ?: ReadingPagerFragment.newInstance()
-            add(R.id.activity_reading_container, fragment, ReadingPagerFragment::class.java.name)
-        }
+        supportFragmentManager.findFragmentByTag(ReadingPagerFragment::class.java.name)
+                ?: supportFragmentManager.commit {
+                    add(R.id.activity_reading_container, ReadingPagerFragment.newInstance(), ReadingPagerFragment::class.java.name)
+                }
     }
 
     private fun setupListeners() {
