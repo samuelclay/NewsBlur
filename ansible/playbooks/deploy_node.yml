@@ -6,6 +6,14 @@
     - ../env_vars/base.yml
 
   tasks:
+    - name: Update Sentry release
+      connection: local
+      shell: >
+        curl {{ sentry_node_release_webhook }}/ \
+        -X POST \
+        -H 'Content-Type: application/json' \
+        -d '{"version": "{{ lookup('pipe', 'date "+%Y-%m-%d %H:%M:%S"') }}"}'
+
     - name: Pull newsblur_web github
       git:
         repo: https://github.com/samuelclay/NewsBlur.git

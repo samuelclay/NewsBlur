@@ -16,6 +16,8 @@
 - name: Add SERVER_NAME to app secrets
   lineinfile:
     path: /srv/newsblur/node/.env
+    create: yes
+    mode: 0600
     line: 'SERVER_NAME = "{{ inventory_hostname }}"'
 
 - name: Get the volume name

@@ -154,6 +154,8 @@ class SQLLogToConsoleMiddleware:
                     query['sql'] = "~FC%s" % (query['redis_session']['query'])
                 elif query.get('redis_pubsub'):
                     query['sql'] = "~FC%s" % (query['redis_pubsub']['query'])
+                elif query.get('db_redis'):
+                    query['sql'] = "~FC%s" % (query['db_redis']['query'])
                 elif 'sql' not in query:
                     logging.debug(" ***> Query log missing: %s" % query)
                 else:
