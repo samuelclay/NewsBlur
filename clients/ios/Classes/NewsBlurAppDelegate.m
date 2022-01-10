@@ -2264,6 +2264,13 @@
 - (void)showSafariViewControllerWithURL:(NSURL *)url useReader:(BOOL)useReader {
     SFSafariViewControllerConfiguration *config = [SFSafariViewControllerConfiguration new];
     config.entersReaderIfAvailable = useReader;
+    
+    NSRange prefix = [[url absoluteString] rangeOfString: @"http"];
+    if (NSNotFound == prefix.location) {
+        [self informError:@"URL scheme invalid"];
+        return;
+    }
+    
     self.safariViewController = [[SFSafariViewController alloc] initWithURL:url configuration:config];
     self.safariViewController.delegate = self;
     [self.storyPagesViewController setNavigationBarHidden:NO];
