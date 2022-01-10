@@ -914,7 +914,7 @@ class Feed(models.Model):
         if (self.num_subscribers != original_num_subscribers or
             self.active_subscribers != original_active_subs or
             self.premium_subscribers != original_premium_subscribers or
-            self.active_premium_subscribers != original_active_premium_subscribers):
+            self.active_premium_subscribers != original_active_premium_subscribers or
             self.pro_subscribers != original_pro_subscribers):
             if original_premium_subscribers == -1 or original_active_premium_subscribers == -1:
                 self.save()
