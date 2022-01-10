@@ -642,8 +642,10 @@ class Profile(models.Model):
             premium = 0
             active = 0
             active_premium = 0
+            pro = 0
             key = 's:%s' % feed_id
             premium_key = 'sp:%s' % feed_id
+            pro_key = 'spro:%s' % feed_id
             
             if user_id:
                 active = UserSubscription.objects.get(feed_id=feed_id, user_id=user_id).only('active').active
@@ -651,12 +653,13 @@ class Profile(models.Model):
             else:
                 user_ids = dict([(us.user_id, us.active) 
                                  for us in UserSubscription.objects.filter(feed_id=feed_id).only('user', 'active')])
-            profiles = Profile.objects.filter(user_id__in=list(user_ids.keys())).values('user_id', 'last_seen_on', 'is_premium')
+            profiles = Profile.objects.filter(user_id__in=list(user_ids.keys())).values('user_id', 'last_seen_on', 'is_premium', 'is_pro')
             feed = Feed.get_by_id(feed_id)
             
             if entire_feed_counted:
                 r.delete(key)
                 r.delete(premium_key)
+                r.delete(pro_key)
             
             for profiles_group in chunks(profiles, 20):
                 pipeline = r.pipeline()
@@ -672,6 +675,11 @@ class Profile(models.Model):
                         premium += 1
                     else:
                         pipeline.zrem(premium_key, profile['user_id'])
+                    if profile['is_pro']:
+                        pipeline.zadd(pro_key, { profile['user_id']: last_seen_on })
+                        pro += 1
+                    else:
+                        pipeline.zrem(pro_key, profile['user_id'])
                     if profile['last_seen_on'] > SUBSCRIBER_EXPIRE and not muted_feed:
                         active += 1
                         if profile['is_premium']:
@@ -686,8 +694,8 @@ class Profile(models.Model):
                 r.zadd(premium_key, {-1: now})
                 r.expire(premium_key, settings.SUBSCRIBER_EXPIRE*24*60*60)
             
-            logging.info("   ---> [%-30s] ~SN~FBCounting subscribers, storing in ~SBredis~SN: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s" % 
-                          (feed.log_title[:30], total, active, premium, active_premium))
+            logging.info("   ---> [%-30s] ~SN~FBCounting subscribers, storing in ~SBredis~SN: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s~SN pro:~SB%s" % 
+                          (feed.log_title[:30], total, active, premium, active_premium, pro))
 
     @classmethod
     def count_all_feed_subscribers_for_user(self, user):
@@ -705,6 +713,7 @@ class Profile(models.Model):
                 for feed_id in feeds_group:
                     key = 's:%s' % feed_id
                     premium_key = 'sp:%s' % feed_id
+                    pro_key = 'spro:%s' % feed_id
 
                     last_seen_on = int(user.profile.last_seen_on.strftime('%s'))
                     if feed_ids is muted_feed_ids:
@@ -714,6 +723,10 @@ class Profile(models.Model):
                         pipeline.zadd(premium_key, { user.pk: last_seen_on })
                     else:
                         pipeline.zrem(premium_key, user.pk)
+                    if user.profile.is_pro:
+                        pipeline.zadd(pro_key, { user.pk: last_seen_on })
+                    else:
+                        pipeline.zrem(pro_key, user.pk)
                 pipeline.execute()
     
     def send_new_user_email(self):

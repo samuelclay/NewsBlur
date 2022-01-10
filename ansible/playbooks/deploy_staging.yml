@@ -10,7 +10,7 @@
       git:
         repo: https://github.com/samuelclay/NewsBlur.git
         dest: /srv/newsblur/
-        version: master
+        version: pro
       register: pulled
     
     - name: Reload gunicorn
