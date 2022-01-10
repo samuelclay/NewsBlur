@@ -38,6 +38,7 @@ from zebra.signals import zebra_webhook_charge_succeeded
 class Profile(models.Model):
     user              = models.OneToOneField(User, unique=True, related_name="profile", on_delete=models.CASCADE)
     is_premium        = models.BooleanField(default=False)
+    is_pro            = models.BooleanField(default=False, blank=True, null=True)
     premium_expire    = models.DateTimeField(blank=True, null=True)
     send_emails       = models.BooleanField(default=True)
     preferences       = models.TextField(default="{}")
@@ -58,7 +59,12 @@ class Profile(models.Model):
     stripe_id         = models.CharField(max_length=24, blank=True, null=True)
     
     def __str__(self):
-        return "%s <%s> (Premium: %s)" % (self.user, self.user.email, self.is_premium)
+        return "%s <%s> (Premium: %s%s)" % (
+            self.user, 
+            self.user.email, 
+            self.is_premium, 
+            " (PRO)" if self.is_pro else "",
+        )
     
     @property
     def unread_cutoff(self, force_premium=False):
@@ -74,6 +80,7 @@ class Profile(models.Model):
     def canonical(self):
         return {
             'is_premium': self.is_premium,
+            'is_pro': self.is_pro,
             'premium_expire': int(self.premium_expire.strftime('%s')) if self.premium_expire else 0,
             'preferences': json.decode(self.preferences),
             'tutorial_finished': self.tutorial_finished,
