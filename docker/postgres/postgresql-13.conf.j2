@@ -38,7 +38,7 @@
 # The default values of these variables are driven from the -D command-line
 # option or PGDATA environment variable, represented here as ConfigDir.
 
-data_directory = '/var/lib/postgresql/13/pgdata'		# use data in another directory
+data_directory = '/var/lib/postgresql/data'		# use data in another directory
 					# (change requires restart)
 hba_file = '/etc/postgresql/pg_hba.conf'	# host-based authentication file
 					# (change requires restart)
@@ -235,7 +235,7 @@ min_wal_size = 80MB
 
 archive_mode = on		# enables archiving; off, on, or always
 				# (change requires restart)
-archive_command = 'test ! -f ../archive/%f && cp -f %p ../archive/%f'
+archive_command = 'test ! -f /var/lib/postgresql/archive/%f && cp -f %p /var/lib/postgresql/archive/%f'
 				# placeholders: %p = path of file to archive
 				#               %f = file name only
 				# e.g. 'test ! -f /mnt/server/archivedir/%f && cp %p /mnt/server/archivedir/%f'
@@ -583,7 +583,7 @@ track_counts = on
 #track_io_timing = off
 #track_functions = none			# none, pl, all
 #track_activity_query_size = 1024	# (change requires restart)
-stats_temp_directory = '/var/run/postgresql/13-main.pg_stat_tmp'
+stats_temp_directory = '/var/run/postgresql/'
 
 
 # - Monitoring -

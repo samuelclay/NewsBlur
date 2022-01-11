@@ -35,6 +35,10 @@
       - /srv/newsblur/docker/grafana/datasources/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
       - /srv/newsblur/docker/grafana/dashboards/:/etc/grafana/provisioning/dashboards/
 
+- name: Install sentry pluging
+  shell: >
+    docker exec grafana grafana-cli plugins install grafana-sentry-datasource
+  
 - name: Restart grafana
   debug: 
     msg: Restarting grafana

@@ -5,6 +5,7 @@ services:
     hostname: nb.com
     container_name: newsblur_web
     image: newsblur/newsblur_${NEWSBLUR_BASE:-python3}:latest
+    user: "${CURRENT_UID}:${CURRENT_GID}"
     environment: 
       - DOCKERBUILD=True
       - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD?Use the `make` command instead of docker CLI}
@@ -29,8 +30,9 @@ services:
       - ${PWD}:/srv/newsblur
 
   newsblur_node:
-    image: newsblur/newsblur_node:latest
     container_name: node
+    image: newsblur/newsblur_node:latest
+    user: "${CURRENT_UID}:${CURRENT_GID}"
     environment:
       - NODE_ENV=docker
       - MONGODB_PORT=29019
@@ -47,8 +49,9 @@ services:
       - ${PWD}/node:/srv
   
   imageproxy:
-    image: willnorris/imageproxy:latest
     container_name: imageproxy
+    image: willnorris/imageproxy:latest
+    user: "${CURRENT_UID}:${CURRENT_GID}"
     entrypoint: /app/imageproxy -addr 0.0.0.0:8088 -cache /tmp/imageproxy -verbose
     restart: unless-stopped
     ports:
@@ -93,10 +96,10 @@ services:
       - ./docker/volumes/postgres:/var/lib/postgresql/data
 
   db_redis:
+    container_name: db_redis
     image: redis:latest
     ports:
       - 6579:6579
-    container_name: db_redis
     restart: unless-stopped
     volumes:
       - ./config/redis.conf:/etc/redis/redis.conf
@@ -106,7 +109,7 @@ services:
 
   db_elasticsearch:
     container_name: db_elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
     mem_limit: 512mb
     restart: unless-stopped
     environment:
@@ -131,13 +134,13 @@ services:
   task_celery:
     container_name: task_celery
     image: newsblur/newsblur_python3
+    user: "${CURRENT_UID}:${CURRENT_GID}"
     command: "celery worker -A newsblur_web -B --loglevel=INFO"
     restart: unless-stopped
     volumes:
       - ${PWD}:/srv/newsblur
     environment: 
       - DOCKERBUILD=True
-    user: "${CURRENT_UID}:${CURRENT_GID}"
 
   haproxy:
     container_name: haproxy
