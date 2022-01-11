@@ -38,6 +38,7 @@ from zebra.signals import zebra_webhook_charge_succeeded
 class Profile(models.Model):
     user              = models.OneToOneField(User, unique=True, related_name="profile", on_delete=models.CASCADE)
     is_premium        = models.BooleanField(default=False)
+    is_archive        = models.BooleanField(default=False, blank=True, null=True)
     is_pro            = models.BooleanField(default=False, blank=True, null=True)
     premium_expire    = models.DateTimeField(blank=True, null=True)
     send_emails       = models.BooleanField(default=True)
@@ -59,11 +60,12 @@ class Profile(models.Model):
     stripe_id         = models.CharField(max_length=24, blank=True, null=True)
     
     def __str__(self):
-        return "%s <%s> (Premium: %s%s)" % (
+        return "%s <%s>%s%s%s" % (
             self.user, 
             self.user.email, 
-            self.is_premium, 
-            " (PRO)" if self.is_pro else "",
+            " (Premium)" if self.is_premium and not self.is_archive and not self.is_pro else "", 
+            " (Premium ARCHIVE)" if self.is_archive and not self.is_pro else "",
+            " (Premium PRO)" if self.is_pro else "",
         )
     
     @property
@@ -80,6 +82,7 @@ class Profile(models.Model):
     def canonical(self):
         return {
             'is_premium': self.is_premium,
+            'is_archive': self.is_archive,
             'is_pro': self.is_pro,
             'premium_expire': int(self.premium_expire.strftime('%s')) if self.premium_expire else 0,
             'preferences': json.decode(self.preferences),
@@ -642,9 +645,11 @@ class Profile(models.Model):
             premium = 0
             active = 0
             active_premium = 0
+            archive = 0
             pro = 0
             key = 's:%s' % feed_id
             premium_key = 'sp:%s' % feed_id
+            archive_key = 'sarchive:%s' % feed_id
             pro_key = 'spro:%s' % feed_id
             
             if user_id:
@@ -653,12 +658,13 @@ class Profile(models.Model):
             else:
                 user_ids = dict([(us.user_id, us.active) 
                                  for us in UserSubscription.objects.filter(feed_id=feed_id).only('user', 'active')])
-            profiles = Profile.objects.filter(user_id__in=list(user_ids.keys())).values('user_id', 'last_seen_on', 'is_premium', 'is_pro')
+            profiles = Profile.objects.filter(user_id__in=list(user_ids.keys())).values('user_id', 'last_seen_on', 'is_premium', 'is_archive', 'is_pro')
             feed = Feed.get_by_id(feed_id)
             
             if entire_feed_counted:
                 r.delete(key)
                 r.delete(premium_key)
+                r.delete(archive_key)
                 r.delete(pro_key)
             
             for profiles_group in chunks(profiles, 20):
@@ -675,6 +681,11 @@ class Profile(models.Model):
                         premium += 1
                     else:
                         pipeline.zrem(premium_key, profile['user_id'])
+                    if profile['is_archive']:
+                        pipeline.zadd(archive_key, { profile['user_id']: last_seen_on })
+                        archive += 1
+                    else:
+                        pipeline.zrem(archive_key, profile['user_id'])
                     if profile['is_pro']:
                         pipeline.zadd(pro_key, { profile['user_id']: last_seen_on })
                         pro += 1
@@ -713,6 +724,7 @@ class Profile(models.Model):
                 for feed_id in feeds_group:
                     key = 's:%s' % feed_id
                     premium_key = 'sp:%s' % feed_id
+                    archive_key = 'sarchive:%s' % feed_id
                     pro_key = 'spro:%s' % feed_id
 
                     last_seen_on = int(user.profile.last_seen_on.strftime('%s'))
@@ -723,6 +735,10 @@ class Profile(models.Model):
                         pipeline.zadd(premium_key, { user.pk: last_seen_on })
                     else:
                         pipeline.zrem(premium_key, user.pk)
+                    if user.profile.is_archive:
+                        pipeline.zadd(archive_key, { user.pk: last_seen_on })
+                    else:
+                        pipeline.zrem(archive_key, user.pk)
                     if user.profile.is_pro:
                         pipeline.zadd(pro_key, { user.pk: last_seen_on })
                     else:
