@@ -857,7 +857,7 @@ class Feed(models.Model):
             original_premium_subscribers = self.premium_subscribers
             original_active_premium_subscribers = self.active_premium_subscribers
             original_pro_subscribers = self.pro_subscribers
-            logging.info("   ---> [%-30s] ~SN~FBCounting subscribers from ~FCredis~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s pro:~SB%s ~SN~FC%s" % 
+            logging.info("   ---> [%-30s] ~SN~FBCounting subscribers from ~FCredis~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s~SN pro:~SB%s ~SN~FC%s" % 
                           (self.log_title[:30], total, active, premium, active_premium, pro, "(%s branches)" % (len(feed_ids)-1) if len(feed_ids)>1 else ""))
         else:
             from apps.reader.models import UserSubscription
