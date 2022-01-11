@@ -303,6 +303,8 @@ class Profile(models.Model):
     
     def deactivate_premium(self):
         self.is_premium = False
+        self.is_pro = False
+        self.is_archive = False
         self.save()
         
         subs = UserSubscription.objects.filter(user=self.user)
@@ -745,24 +747,26 @@ class Profile(models.Model):
             
             if user_id:
                 active = UserSubscription.objects.get(feed_id=feed_id, user_id=user_id).only('active').active
-                user_ids = dict([(user_id, active)])
+                user_active_feeds = dict([(user_id, active)])
             else:
-                user_ids = dict([(us.user_id, us.active) 
+                user_active_feeds = dict([(us.user_id, us.active) 
                                  for us in UserSubscription.objects.filter(feed_id=feed_id).only('user', 'active')])
-            profiles = Profile.objects.filter(user_id__in=list(user_ids.keys())).values('user_id', 'last_seen_on', 'is_premium', 'is_archive', 'is_pro')
+            profiles = Profile.objects.filter(user_id__in=list(user_active_feeds.keys())).values('user_id', 'last_seen_on', 'is_premium', 'is_archive', 'is_pro')
             feed = Feed.get_by_id(feed_id)
             
             if entire_feed_counted:
-                r.delete(key)
-                r.delete(premium_key)
-                r.delete(archive_key)
-                r.delete(pro_key)
+                pipeline = r.pipeline()
+                pipeline.delete(key)
+                pipeline.delete(premium_key)
+                pipeline.delete(archive_key)
+                pipeline.delete(pro_key)
+                pipeline.execute()
             
             for profiles_group in chunks(profiles, 20):
                 pipeline = r.pipeline()
                 for profile in profiles_group:
                     last_seen_on = int(profile['last_seen_on'].strftime('%s'))
-                    muted_feed = not bool(user_ids[profile['user_id']])
+                    muted_feed = not bool(user_active_feeds[profile['user_id']])
                     if muted_feed:
                         last_seen_on = 0
                     pipeline.zadd(key, { profile['user_id']: last_seen_on })
@@ -795,6 +799,10 @@ class Profile(models.Model):
                 r.expire(key, settings.SUBSCRIBER_EXPIRE*24*60*60)
                 r.zadd(premium_key, {-1: now})
                 r.expire(premium_key, settings.SUBSCRIBER_EXPIRE*24*60*60)
+                r.zadd(archive_key, {-1: now})
+                r.expire(archive_key, settings.SUBSCRIBER_EXPIRE*24*60*60)
+                r.zadd(pro_key, {-1: now})
+                r.expire(pro_key, settings.SUBSCRIBER_EXPIRE*24*60*60)
             
             logging.info("   ---> [%-30s] ~SN~FBCounting subscribers, storing in ~SBredis~SN: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s~SN archive:~SB%s~SN pro:~SB%s" % 
                           (feed.log_title[:30], total, active, premium, active_premium, archive, pro))
@@ -954,6 +962,76 @@ class Profile(models.Model):
         msg.send(fail_silently=True)
         
         logging.user(self.user, "~BB~FM~SBSending email for new premium: %s" % self.user.email)
+    
+    def send_new_premium_archive_email(self, force=False):
+        # subs = UserSubscription.objects.filter(user=self.user)
+#         message = """Woohoo!
+#
+# User: %(user)s
+# Feeds: %(feeds)s
+#
+# Sincerely,
+# NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
+        # mail_admins('New premium account', message, fail_silently=True)
+        
+        if not self.user.email or not self.send_emails:
+            return
+        
+        params = dict(receiver_user_id=self.user.pk, email_type='new_premium_archive')
+        try:
+            MSentEmail.objects.get(**params)
+            if not force:
+                # Return if email already sent
+                return
+        except MSentEmail.DoesNotExist:
+            MSentEmail.objects.create(**params)
+
+        user    = self.user
+        text    = render_to_string('mail/email_new_premium_archive.txt', locals())
+        html    = render_to_string('mail/email_new_premium_archive.xhtml', locals())
+        subject = "Thanks for subscribing to NewsBlur Premium Archive!"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send(fail_silently=True)
+        
+        logging.user(self.user, "~BB~FM~SBSending email for new premium archive: %s" % self.user.email)
+    
+    def send_new_premium_pro_email(self, force=False):
+        # subs = UserSubscription.objects.filter(user=self.user)
+#         message = """Woohoo!
+#
+# User: %(user)s
+# Feeds: %(feeds)s
+#
+# Sincerely,
+# NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
+        # mail_admins('New premium account', message, fail_silently=True)
+        
+        if not self.user.email or not self.send_emails:
+            return
+        
+        params = dict(receiver_user_id=self.user.pk, email_type='new_premium_pro')
+        try:
+            MSentEmail.objects.get(**params)
+            if not force:
+                # Return if email already sent
+                return
+        except MSentEmail.DoesNotExist:
+            MSentEmail.objects.create(**params)
+
+        user    = self.user
+        text    = render_to_string('mail/email_new_premium_pro.txt', locals())
+        html    = render_to_string('mail/email_new_premium_pro.xhtml', locals())
+        subject = "Thanks for subscribing to NewsBlur Premium Pro!"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send(fail_silently=True)
+        
+        logging.user(self.user, "~BB~FM~SBSending email for new premium pro: %s" % self.user.email)
     
     def send_forgot_password_email(self, email=None):
         if not self.user.email and not email:

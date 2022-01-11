@@ -255,6 +255,8 @@ DAYS_OF_UNREAD_FREE     = 14
 # you can then up the DAYS_OF_UNREAD value with no impact.
 DAYS_OF_STORY_HASHES    = 30
 
+# SUBSCRIBER_EXPIRE sets the number of days after which a user who hasn't logged in
+# is no longer considered an active subscriber
 SUBSCRIBER_EXPIRE       = 7
 
 ROOT_URLCONF            = 'newsblur_web.urls'

@@ -28,18 +28,18 @@ nb: pull
 	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
 	- [[ -d config/certificates ]] && echo "keys exist" || make keys
 	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d --build --remove-orphans
-	- RUNWITHMAKEBUILD=True docker-compose exec newsblur_web ./manage.py migrate
-	- RUNWITHMAKEBUILD=True docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
+	- docker exec newsblur_web ./manage.py migrate
+	- docker exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
 coffee:
 	- coffee -c -w **/*.coffee
 
 shell:
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web ./manage.py shell_plus
+	- docker exec -it newsblur_web ./manage.py shell_plus
 bash:
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web bash
+	- docker exec -it newsblur_web bash
 # allows user to exec into newsblur_web and use pdb.
 debug:
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker attach ${newsblur}
+	- docker attach ${newsblur}
 log:
 	- RUNWITHMAKEBUILD=True docker-compose logs -f --tail 20 newsblur_web newsblur_node
 logweb: log
@@ -51,7 +51,10 @@ logmongo:
 alllogs: 
 	- RUNWITHMAKEBUILD=True docker-compose logs -f --tail 20
 logall: alllogs
-# brings down containers
+mongo:
+	- docker exec -it db_mongo mongo --port 29019
+redis:
+	- docker exec -it db_redis redis-cli -p 6579
 down:
 	- RUNWITHMAKEBUILD=True docker-compose -f docker-compose.yml -f docker-compose.metrics.yml down
 nbdown: down
@@ -163,7 +166,6 @@ oldfirewall:
 	- ANSIBLE_CONFIG=/srv/newsblur/ansible.old.cfg ansible-playbook ansible/all.yml  -l db --tags firewall
 repairmongo:
 	- sudo docker run -v "/srv/newsblur/docker/volumes/db_mongo:/data/db" mongo:4.0 mongod --repair --dbpath /data/db
-
 
 # performance tests
 perf-cli:
