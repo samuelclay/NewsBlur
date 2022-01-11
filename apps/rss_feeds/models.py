@@ -798,7 +798,6 @@ class Feed(models.Model):
         total_key = "s:%s" % self.original_feed_id
         premium_key = "sp:%s" % self.original_feed_id
         last_recount = r.zscore(total_key, -1) # Need to subtract this extra when counting subs
-        last_recount = r.zscore(premium_key, -1) # Need to subtract this extra when counting subs
 
         # Check for expired feeds with no active users who would have triggered a cleanup
         if last_recount and last_recount > subscriber_expire:
@@ -2164,6 +2163,8 @@ class Feed(models.Model):
         
         if premium_speed:
             self.active_premium_subscribers += 1
+        if pro_speed:
+            self.pro_subscribers += 1
         
         spd  = self.stories_last_month / 30.0
         subs = (self.active_premium_subscribers + 
@@ -2246,7 +2247,7 @@ class Feed(models.Model):
             total = max(total, 60*2)
         
         # Pro subscribers get absolute minimum
-        if pro_speed or self.pro_subscribers >= 1:
+        if self.pro_subscribers >= 1:
             total = min(total, 5)
 
         if verbose:
