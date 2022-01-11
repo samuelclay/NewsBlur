@@ -210,6 +210,97 @@ class Profile(models.Model):
         
         return True
     
+    def activate_archive(self, never_expire=False):
+        from apps.profile.tasks import EmailNewPremiumArchive
+        
+        EmailNewPremiumArchive.delay(user_id=self.user.pk)
+        
+        was_premium = self.is_premium
+        was_archive = self.is_archive
+        was_pro = self.is_pro
+        self.is_premium = True
+        self.is_archive = True
+        self.save()
+        self.user.is_active = True
+        self.user.save()
+        
+        # Only auto-enable every feed if a free user is moving to premium
+        subs = UserSubscription.objects.filter(user=self.user)
+        if not was_premium:
+            for sub in subs:
+                if sub.active: continue
+                sub.active = True
+                try:
+                    sub.save()
+                except (IntegrityError, Feed.DoesNotExist):
+                    pass
+    
+        try:
+            scheduled_feeds = [sub.feed.pk for sub in subs]
+        except Feed.DoesNotExist:
+            scheduled_feeds = []
+        logging.user(self.user, "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..." % 
+                     len(scheduled_feeds))
+        SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
+    
+        UserSubscription.queue_new_feeds(self.user)
+        
+        self.setup_premium_history()
+        
+        if never_expire:
+            self.premium_expire = None
+            self.save()
+        
+        logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ~BBARCHIVE~BY ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
+        
+        return True
+    
+    def activate_pro(self, never_expire=False):
+        from apps.profile.tasks import EmailNewPremiumPro
+        
+        EmailNewPremiumPro.delay(user_id=self.user.pk)
+        
+        was_premium = self.is_premium
+        was_archive = self.is_archive
+        was_pro = self.is_pro
+        self.is_premium = True
+        self.is_archive = True
+        self.is_pro = True
+        self.save()
+        self.user.is_active = True
+        self.user.save()
+        
+        # Only auto-enable every feed if a free user is moving to premium
+        subs = UserSubscription.objects.filter(user=self.user)
+        if not was_premium:
+            for sub in subs:
+                if sub.active: continue
+                sub.active = True
+                try:
+                    sub.save()
+                except (IntegrityError, Feed.DoesNotExist):
+                    pass
+    
+        try:
+            scheduled_feeds = [sub.feed.pk for sub in subs]
+        except Feed.DoesNotExist:
+            scheduled_feeds = []
+        logging.user(self.user, "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..." % 
+                     len(scheduled_feeds))
+        SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
+    
+        UserSubscription.queue_new_feeds(self.user)
+        
+        self.setup_premium_history()
+        
+        if never_expire:
+            self.premium_expire = None
+            self.save()
+        
+        logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ~BGPRO~BY ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
+        
+        return True
+    
     def deactivate_premium(self):
         self.is_premium = False
         self.save()
@@ -705,8 +796,8 @@ class Profile(models.Model):
                 r.zadd(premium_key, {-1: now})
                 r.expire(premium_key, settings.SUBSCRIBER_EXPIRE*24*60*60)
             
-            logging.info("   ---> [%-30s] ~SN~FBCounting subscribers, storing in ~SBredis~SN: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s~SN pro:~SB%s" % 
-                          (feed.log_title[:30], total, active, premium, active_premium, pro))
+            logging.info("   ---> [%-30s] ~SN~FBCounting subscribers, storing in ~SBredis~SN: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s~SN archive:~SB%s~SN pro:~SB%s" % 
+                          (feed.log_title[:30], total, active, premium, active_premium, archive, pro))
 
     @classmethod
     def count_all_feed_subscribers_for_user(self, user):

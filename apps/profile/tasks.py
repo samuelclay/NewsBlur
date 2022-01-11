@@ -15,6 +15,16 @@ def EmailNewPremium(user_id):
     user_profile = Profile.objects.get(user__pk=user_id)
     user_profile.send_new_premium_email()
 
+@app.task(name="email-new-premium-archive")
+def EmailNewPremiumArchive(user_id):
+    user_profile = Profile.objects.get(user__pk=user_id)
+    user_profile.send_new_premium_archive_email()
+
+@app.task(name="email-new-premium-pro")
+def EmailNewPremiumPro(user_id):
+    user_profile = Profile.objects.get(user__pk=user_id)
+    user_profile.send_new_premium_pro_email()
+
 @app.task(name="premium-expire")
 def PremiumExpire(**kwargs):
     # Get expired but grace period users
