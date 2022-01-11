@@ -9,8 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
-import androidx.loader.app.LoaderManager
-import androidx.loader.content.Loader
+import androidx.lifecycle.ViewModelProvider
 import com.newsblur.R
 import com.newsblur.databinding.DialogStoryUserTagsBinding
 import com.newsblur.databinding.RowSavedTagBinding
@@ -20,16 +19,18 @@ import com.newsblur.service.NBSyncService
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.TagsAdapter
+import com.newsblur.viewModel.StoryUserTagsViewModel
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 
-class StoryUserTagsFragment : DialogFragment(), LoaderManager.LoaderCallbacks<Cursor>, TagsAdapter.OnTagClickListener {
+class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
 
     private lateinit var story: Story
     private lateinit var fs: FeedSet
     private lateinit var binding: DialogStoryUserTagsBinding
+    private lateinit var storyUserTagsViewModel: StoryUserTagsViewModel
 
     private lateinit var otherTagsAdapter: TagsAdapter
     private lateinit var savedTagsAdapter: TagsAdapter
@@ -40,7 +41,6 @@ class StoryUserTagsFragment : DialogFragment(), LoaderManager.LoaderCallbacks<Cu
 
     companion object {
 
-        @JvmStatic
         fun newInstance(story: Story, fs: FeedSet): StoryUserTagsFragment {
             val fragment = StoryUserTagsFragment()
             val args = Bundle()
@@ -51,23 +51,10 @@ class StoryUserTagsFragment : DialogFragment(), LoaderManager.LoaderCallbacks<Cu
         }
     }
 
-    override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> =
-            FeedUtils.dbHelper!!.savedStoryCountsLoader
-
-    override fun onLoadFinished(loader: Loader<Cursor>, cursor: Cursor) {
-        if (!cursor.isBeforeFirst) return
-        val starredTags = ArrayList<StarredCount>()
-        while (cursor.moveToNext()) {
-            val sc = StarredCount.fromCursor(cursor)
-            if (sc.tag != null && !sc.isTotalCount) {
-                starredTags.add(sc)
-            }
-        }
-        Collections.sort(starredTags, StarredCount.StarredCountComparatorByTag)
-        setTags(starredTags)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        storyUserTagsViewModel = ViewModelProvider(this).get(StoryUserTagsViewModel::class.java)
     }
-
-    override fun onLoaderReset(loader: Loader<Cursor>) {}
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         super.onCreateDialog(savedInstanceState)
@@ -82,7 +69,9 @@ class StoryUserTagsFragment : DialogFragment(), LoaderManager.LoaderCallbacks<Cu
         story = requireArguments().getSerializable("story") as Story
         fs = requireArguments().getSerializable("feed_set") as FeedSet
 
-        LoaderManager.getInstance(this).initLoader(0, null, this)
+        storyUserTagsViewModel.savedStoryCountsLiveData.observe(this) {
+            setCursor(it)
+        }
 
         binding.textAddNewTag.setOnClickListener {
             if (binding.containerAddTag.isVisible) {
@@ -127,7 +116,22 @@ class StoryUserTagsFragment : DialogFragment(), LoaderManager.LoaderCallbacks<Cu
             binding.containerStoryTags.visibility = View.GONE
         }
 
+        storyUserTagsViewModel.getSavedStoryCounts()
+
         return builder.create()
+    }
+
+    private fun setCursor(cursor: Cursor) {
+        if (!cursor.isBeforeFirst) return
+        val starredTags = ArrayList<StarredCount>()
+        while (cursor.moveToNext()) {
+            val sc = StarredCount.fromCursor(cursor)
+            if (sc.tag != null && !sc.isTotalCount) {
+                starredTags.add(sc)
+            }
+        }
+        Collections.sort(starredTags, StarredCount.StarredCountComparatorByTag)
+        setTags(starredTags)
     }
 
     private fun processNewTag(newTag: StarredCount) {

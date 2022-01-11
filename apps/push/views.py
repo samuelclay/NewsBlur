@@ -5,6 +5,7 @@ import random
 import datetime
 
 from django.http import HttpResponse, Http404
+from django.http.request import UnreadablePostError
 from django.shortcuts import get_object_or_404
 
 from apps.push.models import PushSubscription
@@ -52,8 +53,11 @@ def push_callback(request, push_id):
         # XXX TODO: Optimize this by removing feedparser. It just needs to find out
         # the hub_url or topic has changed. ElementTree could do it.
         if random.random() < 0.1:
-            parsed = feedparser.parse(request.body)
-            subscription.check_urls_against_pushed_data(parsed)
+            try:
+                parsed = feedparser.parse(request.body)
+                subscription.check_urls_against_pushed_data(parsed)
+            except UnreadablePostError:
+                pass
 
         # Don't give fat ping, just fetch.
         # subscription.feed.queue_pushed_feed_xml(request.body)
