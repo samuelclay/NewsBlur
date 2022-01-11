@@ -3,10 +3,17 @@
 - name: Template postgresql-13.conf file
   template:
     src: /srv/newsblur/docker/postgres/postgresql-13.conf.j2
-    dest: /srv/newsblur/docker/postgres/postgresql-13.conf
+    dest: /srv/newsblur/docker/postgres/postgres.conf
   notify: reload postgres
   register: updated_config
 
+- name: Ensure postgres archive directory
+  become: yes
+  file:
+    path: /srv/newsblur/docker/volumes/postgres/archive
+    state: directory
+    mode: 0777
+  
 - name: Start postgres docker containers
   become: yes
   docker_container:
@@ -14,8 +21,9 @@
     image: postgres:13
     state: started
     container_default_behavior: no_defaults
-    command: postgres -D /var/lib/postgresql/pgdata -c config_file=/etc/postgresql/postgresql.conf
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
     env:
+      # POSTGRES_USER: "{{ postgres_user }}" # Don't auto-create newsblur, manually add it
       POSTGRES_PASSWORD: "{{ postgres_password }}"
     hostname: "{{ inventory_hostname }}"
     networks_cli_compatible: yes
@@ -29,10 +37,22 @@
       - 5432:5432
     volumes:
       - /srv/newsblur/docker/volumes/postgres:/var/lib/postgresql
-      - /srv/newsblur/docker/postgres/postgresql-13.conf:/etc/postgresql/postgresql.conf
+      - /srv/newsblur/docker/postgres/postgres.conf:/etc/postgresql/postgresql.conf
       - /srv/newsblur/docker/postgres/postgres_hba-13.conf:/etc/postgresql/pg_hba.conf
-      - /backup/:/var/lib/postgresql/backup/
+      - /srv/newsblur/backups/:/var/lib/postgresql/backup/
     restart_policy: unless-stopped
+
+- name: Ensure newsblur role in postgres
+  shell: >
+    sleep 5; 
+    docker exec postgres createuser -s newsblur -U postgres;
+    docker exec postgres createdb newsblur -U newsblur;
+  register: ensure_role
+  changed_when:
+      - "ensure_role.rc == 0"
+  failed_when: 
+    - "'already exists' not in ensure_role.stderr"
+    - "ensure_role.rc != 0"
 
 - name: Register postgres in consul
   tags: consul

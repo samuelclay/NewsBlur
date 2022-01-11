@@ -6,17 +6,15 @@ import java.util.Set;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.Loader;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Handler;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -58,20 +56,15 @@ import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
+import com.newsblur.viewModel.AllFoldersViewModel;
 
 public class FolderListFragment extends NbFragment implements OnCreateContextMenuListener, 
-                                                              LoaderManager.LoaderCallbacks<Cursor>,
-                                                              OnChildClickListener, 
+                                                              OnChildClickListener,
                                                               OnGroupClickListener,
                                                               OnGroupCollapseListener,
                                                               OnGroupExpandListener {
 
-    private static final int SOCIALFEEDS_LOADER = 1;
-    private static final int FOLDERS_LOADER = 2;
-    private static final int FEEDS_LOADER = 3;
-    private static final int SAVEDCOUNT_LOADER = 4;
-    private static final int SAVED_SEARCH_LOADER = 5;
-
+    private AllFoldersViewModel allFoldersViewModel;
 	private FolderListAdapter adapter;
 	public StateFilter currentState = StateFilter.SOME;
 	private SharedPreferences sharedPreferences;
@@ -85,12 +78,19 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		allFoldersViewModel = new ViewModelProvider(this).get(AllFoldersViewModel.class);
         currentState = PrefsUtils.getStateFilter(getActivity());
 		adapter = new FolderListAdapter(getActivity(), currentState);
         sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
         FeedUtils.currentFolderName = null;
         // NB: it is by design that loaders are not started until we get a
         // ping from the sync service indicating that it has initialised
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setupObservers();
     }
 
     @Override
@@ -103,93 +103,40 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         }
     }
 
-	@NonNull
-    @Override
-	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch (id) {
-            case SOCIALFEEDS_LOADER:
-                return FeedUtils.dbHelper.getSocialFeedsLoader();
-            case FOLDERS_LOADER:
-                return FeedUtils.dbHelper.getFoldersLoader();
-            case FEEDS_LOADER:
-                return FeedUtils.dbHelper.getFeedsLoader();
-            case SAVEDCOUNT_LOADER:
-                return FeedUtils.dbHelper.getSavedStoryCountsLoader();
-            case SAVED_SEARCH_LOADER:
-                return FeedUtils.dbHelper.getSavedSearchLoader();
-            default:
-                throw new IllegalArgumentException("unknown loader created");
-        }
-	}
-
-    @Override
-	public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
-        if (cursor == null) return;
-        try {
-            switch (loader.getId()) {
-                case SOCIALFEEDS_LOADER:
-                    adapter.setSocialFeedCursor(cursor);
-                    pushUnreadCounts();
-                    break;
-                case FOLDERS_LOADER:
-                    adapter.setFoldersCursor(cursor);
-                    pushUnreadCounts();
-                    checkOpenFolderPreferences();
-                    break;
-                case FEEDS_LOADER:
-                    adapter.setFeedCursor(cursor);
-                    checkOpenFolderPreferences();
-                    firstCursorSeenYet = true;
-                    pushUnreadCounts();
-                    checkAccountFeedsLimit();
-                    break;
-                case SAVEDCOUNT_LOADER:
-                    adapter.setStarredCountCursor(cursor);
-                    break;
-                case SAVED_SEARCH_LOADER:
-                    adapter.setSavedSearchesCursor(cursor);
-                    break;
-                default:
-                    throw new IllegalArgumentException("unknown loader created");
-            }
-        } catch (Exception e) {
-            // for complex folder sets, these ops can take so long that they butt heads
-            // with the destruction of the fragment and adapter. crashes can ensue.
-            Log.w(this.getClass().getName(), "failed up update fragment state", e);
-        }
+    private void setupObservers() {
+        allFoldersViewModel.getSocialFeeds().observe(getViewLifecycleOwner(), cursor -> {
+            adapter.setSocialFeedCursor(cursor);
+            pushUnreadCounts();
+        });
+        allFoldersViewModel.getFolders().observe(getViewLifecycleOwner(), cursor -> {
+            adapter.setFoldersCursor(cursor);
+            pushUnreadCounts();
+        });
+        allFoldersViewModel.getFeeds().observe(getViewLifecycleOwner(), cursor -> {
+            adapter.setFeedCursor(cursor);
+            checkOpenFolderPreferences();
+            firstCursorSeenYet = true;
+            pushUnreadCounts();
+            checkAccountFeedsLimit();
+        });
+        allFoldersViewModel.getSavedStoryCounts().observe(getViewLifecycleOwner(), cursor ->
+                adapter.setStarredCountCursor(cursor));
+        allFoldersViewModel.getSavedSearch().observe(getViewLifecycleOwner(), cursor ->
+                adapter.setSavedSearchesCursor(cursor));
     }
-
-	@Override
-	public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-		; // our adapter doesn't hold on to cursors
-	}
 
 	public void hasUpdated() {
         if (isAdded()) {
+            allFoldersViewModel.getData();
             com.newsblur.util.Log.d(this, "loading feeds in mode: " + currentState);
-            try {
-                LoaderManager.getInstance(this).restartLoader(SOCIALFEEDS_LOADER, null, this);
-                LoaderManager.getInstance(this).restartLoader(FOLDERS_LOADER, null, this);
-                LoaderManager.getInstance(this).restartLoader(FEEDS_LOADER, null, this);
-                LoaderManager.getInstance(this).restartLoader(SAVEDCOUNT_LOADER, null, this);
-                LoaderManager.getInstance(this).restartLoader(SAVED_SEARCH_LOADER, null, this);
-            } catch (Exception e) {
-                // on heavily loaded devices, the time between isAdded() going false
-                // and the loader subsystem shutting down can be nontrivial, causing
-                // IllegalStateExceptions to be thrown here.
-            }
         }
 	}
 
     public synchronized void startLoaders() {
         if (isAdded()) {
-            if (LoaderManager.getInstance(this).getLoader(FOLDERS_LOADER) == null) {
-                // if the loaders haven't yet been created, do so
-                LoaderManager.getInstance(this).initLoader(SOCIALFEEDS_LOADER, null, this);
-                LoaderManager.getInstance(this).initLoader(FOLDERS_LOADER, null, this);
-                LoaderManager.getInstance(this).initLoader(FEEDS_LOADER, null, this);
-                LoaderManager.getInstance(this).initLoader(SAVEDCOUNT_LOADER, null, this);
-                LoaderManager.getInstance(this).initLoader(SAVED_SEARCH_LOADER, null, this);
+            if (allFoldersViewModel.getFolders().getValue() == null) {
+                // if the data haven't yet been fetched, do so
+                allFoldersViewModel.getData();
             }
         }
     }
