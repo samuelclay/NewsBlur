@@ -65,6 +65,7 @@ class Feed(models.Model):
     num_subscribers = models.IntegerField(default=-1)
     active_subscribers = models.IntegerField(default=-1, db_index=True)
     premium_subscribers = models.IntegerField(default=-1)
+    archive_subscribers = models.IntegerField(default=0, null=True, blank=True)
     pro_subscribers = models.IntegerField(default=0, null=True, blank=True)
     active_premium_subscribers = models.IntegerField(default=-1)
     branch_from_feed = models.ForeignKey('Feed', blank=True, null=True, db_index=True, on_delete=models.CASCADE)
@@ -101,13 +102,14 @@ class Feed(models.Model):
         if not self.feed_title:
             self.feed_title = "[Untitled]"
             self.save()
-        return "%s%s: %s - %s/%s/%s/%s" % (
+        return "%s%s: %s - %s/%s/%s/%s/%s" % (
             self.pk, 
             (" [B: %s]" % self.branch_from_feed.pk if self.branch_from_feed else ""),
             self.feed_title, 
             self.num_subscribers,
             self.active_subscribers,
             self.active_premium_subscribers,
+            self.archive_subscribers,
             self.pro_subscribers,
             )
     
@@ -151,7 +153,7 @@ class Feed(models.Model):
     
     @property
     def unread_cutoff(self):
-        if self.pro_subscribers > 0:
+        if self.archive_subscribers > 0:
             return datetime.datetime.utcnow() - datetime.timedelta(days=9999)
         if self.active_premium_subscribers > 0:
             return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
@@ -820,6 +822,7 @@ class Feed(models.Model):
         total = 0
         active = 0
         premium = 0
+        archive = 0
         pro = 0
         active_premium = 0
         
@@ -836,11 +839,13 @@ class Feed(models.Model):
                 # now+1 ensures `-1` flag will be corrected for later with - 1
                 total_key = "s:%s" % feed_id
                 premium_key = "sp:%s" % feed_id
+                archive_key = "sarchive:%s" % feed_id
                 pro_key = "spro:%s" % feed_id
                 pipeline.zcard(total_key)
                 pipeline.zcount(total_key, subscriber_expire, now+1)
                 pipeline.zcard(premium_key)
                 pipeline.zcount(premium_key, subscriber_expire, now+1)
+                pipeline.zcard(archive_key)
                 pipeline.zcard(pro_key)
 
                 results = pipeline.execute()
@@ -850,15 +855,17 @@ class Feed(models.Model):
                 active += max(0, results[1] - 1)
                 premium += max(0, results[2] - 1)
                 active_premium += max(0, results[3] - 1)
-                pro += max(0, results[4] - 1)
+                archive += max(0, results[4] - 1)
+                pro += max(0, results[5] - 1)
                 
             original_num_subscribers = self.num_subscribers
             original_active_subs = self.active_subscribers
             original_premium_subscribers = self.premium_subscribers
             original_active_premium_subscribers = self.active_premium_subscribers
+            original_archive_subscribers = self.archive_subscribers
             original_pro_subscribers = self.pro_subscribers
-            logging.info("   ---> [%-30s] ~SN~FBCounting subscribers from ~FCredis~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s~SN pro:~SB%s ~SN~FC%s" % 
-                          (self.log_title[:30], total, active, premium, active_premium, pro, "(%s branches)" % (len(feed_ids)-1) if len(feed_ids)>1 else ""))
+            logging.info("   ---> [%-30s] ~SN~FBCounting subscribers from ~FCredis~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s~SN archive:~SB%s~SN pro:~SB%s ~SN~FC%s" % 
+                          (self.log_title[:30], total, active, premium, active_premium, archive, pro, "(%s branches)" % (len(feed_ids)-1) if len(feed_ids)>1 else ""))
         else:
             from apps.reader.models import UserSubscription
             
@@ -882,6 +889,14 @@ class Feed(models.Model):
             original_premium_subscribers = self.premium_subscribers
             premium = premium_subs.count()
             
+            archive_subs = UserSubscription.objects.filter(
+                feed__in=feed_ids, 
+                active=True,
+                user__profile__is_archive=True
+            )
+            original_archive_subscribers = self.archive_subscribers
+            archive = archive_subs.count()
+        
             pro_subs = UserSubscription.objects.filter(
                 feed__in=feed_ids, 
                 active=True,
@@ -898,8 +913,8 @@ class Feed(models.Model):
             )
             original_active_premium_subscribers = self.active_premium_subscribers
             active_premium = active_premium_subscribers.count()
-            logging.debug("   ---> [%-30s] ~SN~FBCounting subscribers from ~FYpostgres~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s~SN pro:~SB%s" % 
-                          (self.log_title[:30], total, active, premium, active_premium, pro))
+            logging.debug("   ---> [%-30s] ~SN~FBCounting subscribers from ~FYpostgres~FB: ~FMt:~SB~FM%s~SN a:~SB%s~SN p:~SB%s~SN ap:~SB%s~SN archive:~SB%s~SN pro:~SB%s" % 
+                          (self.log_title[:30], total, active, premium, active_premium, archive, pro))
 
         if settings.DOCKERBUILD:
             # Local installs enjoy 100% active feeds
@@ -910,18 +925,20 @@ class Feed(models.Model):
         self.active_subscribers = active
         self.premium_subscribers = premium
         self.active_premium_subscribers = active_premium
+        self.archive_subscribers = archive
         self.pro_subscribers = pro
         if (self.num_subscribers != original_num_subscribers or
             self.active_subscribers != original_active_subs or
             self.premium_subscribers != original_premium_subscribers or
             self.active_premium_subscribers != original_active_premium_subscribers or
+            self.archive_subscribers != original_archive_subscribers or
             self.pro_subscribers != original_pro_subscribers):
             if original_premium_subscribers == -1 or original_active_premium_subscribers == -1:
                 self.save()
             else:
                 self.save(update_fields=['num_subscribers', 'active_subscribers', 
                                          'premium_subscribers', 'active_premium_subscribers',
-                                         'pro_subscribers'])
+                                         'archive_subscribers', 'pro_subscribers'])
         
         if verbose:
             if self.num_subscribers <= 1:
@@ -1521,7 +1538,7 @@ class Feed(models.Model):
     
     @property
     def story_cutoff(self):
-        if self.pro_subscribers >= 1:
+        if self.archive_subscribers >= 1:
             return 10000
         
         cutoff = 500
@@ -2233,11 +2250,12 @@ class Feed(models.Model):
             total = min(total, 5)
 
         if verbose:
-            logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s/%s Stories/day: %s" % (
+            logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s/%s/%s Stories/day: %s" % (
                                                 self.log_title[:30], total, 
                                                 self.num_subscribers,
                                                 self.active_subscribers,
                                                 self.active_premium_subscribers,
+                                                self.archive_subscribers,
                                                 self.pro_subscribers,
                                                 spd))
         return total
