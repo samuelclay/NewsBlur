@@ -1,5 +1,6 @@
 import datetime
 import base64
+import redis
 from urllib.parse import urlparse
 from utils import log as logging
 from django.shortcuts import get_object_or_404, render
@@ -501,16 +502,35 @@ def exception_change_feed_link(request):
 
 @login_required
 def status(request):
-    if not request.user.is_staff:
+    if not request.user.is_staff and not settings.DEBUG:
         logging.user(request, "~SKNON-STAFF VIEWING RSS FEEDS STATUS!")
         assert False
         return HttpResponseForbidden()
     minutes  = int(request.GET.get('minutes', 1))
     now      = datetime.datetime.now()
-    hour_ago = now - datetime.timedelta(minutes=minutes)
-    feeds    = Feed.objects.filter(last_update__gte=hour_ago).order_by('-last_update')
+    username = request.GET.get('user', '') or request.GET.get('username', '')
+    if username:
+        user = User.objects.get(username=username)
+    else:
+        user = request.user
+    usersubs = UserSubscription.objects.filter(user=user)
+    feed_ids = usersubs.values('feed_id')
+    if minutes > 0:
+        hour_ago = now + datetime.timedelta(minutes=minutes)
+        feeds    = Feed.objects.filter(pk__in=feed_ids, next_scheduled_update__lte=hour_ago).order_by('next_scheduled_update')
+    else:
+        hour_ago = now + datetime.timedelta(minutes=minutes)
+        feeds    = Feed.objects.filter(pk__in=feed_ids, last_update__gte=hour_ago).order_by('-last_update')
+    
+    r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+    queues = {
+        'tasked_feeds': r.zcard('tasked_feeds'),
+        'queued_feeds': r.scard('queued_feeds'),
+        'scheduled_updates': r.zcard('scheduled_updates'),
+    }
     return render(request, 'rss_feeds/status.xhtml', {
-        'feeds': feeds
+        'feeds': feeds,
+        'queues': queues
     })
 
 @json.json_view

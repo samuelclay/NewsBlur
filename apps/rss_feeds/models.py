@@ -645,7 +645,7 @@ class Feed(models.Model):
 
     def setup_feed_for_premium_subscribers(self):
         self.count_subscribers()
-        self.set_next_scheduled_update()
+        self.set_next_scheduled_update(verbose=settings.DEBUG)
         
     def check_feed_link_for_feed_address(self):
         @timelimit(10)
@@ -713,7 +713,7 @@ class Feed(models.Model):
         if status_code not in (200, 304):
             self.errors_since_good += 1
             self.count_errors_in_history('feed', status_code, fetch_history=fetch_history)
-            self.set_next_scheduled_update()
+            self.set_next_scheduled_update(verbose=settings.DEBUG)
         elif self.has_feed_exception or self.errors_since_good:
             self.errors_since_good = 0
             self.has_feed_exception = False
@@ -1249,7 +1249,7 @@ class Feed(models.Model):
             feed = Feed.get_by_id(feed.pk)
         if feed:
             feed.last_update = datetime.datetime.utcnow()
-            feed.set_next_scheduled_update()
+            feed.set_next_scheduled_update(verbose=settings.DEBUG)
             r.zadd('fetched_feeds_last_hour', { feed.pk: int(datetime.datetime.now().strftime('%s')) })
         
         if not feed or original_feed_id != feed.pk:
@@ -2248,7 +2248,10 @@ class Feed(models.Model):
         
         # Pro subscribers get absolute minimum
         if self.pro_subscribers >= 1:
-            total = min(total, 5)
+            if self.stories_last_month == 0:
+                total = min(total, 60)
+            else:
+                total = min(total, settings.PRO_MINUTES_BETWEEN_FETCHES)
 
         if verbose:
             logging.debug("   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s/%s/%s Stories/day: %s" % (

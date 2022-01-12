@@ -259,6 +259,11 @@ DAYS_OF_STORY_HASHES    = 30
 # is no longer considered an active subscriber
 SUBSCRIBER_EXPIRE       = 7
 
+# PRO_MINUTES_BETWEEN_FETCHES sets the number of minutes to fetch feeds for 
+# Premium Pro accounts. Defaults to every 5 minutes, but that's for NewsBlur
+# servers. On your local, you should probably set this to 10-15 minutes
+PRO_MINUTES_BETWEEN_FETCHES = 5
+
 ROOT_URLCONF            = 'newsblur_web.urls'
 INTERNAL_IPS            = ('127.0.0.1',)
 LOGGING_LOG_SQL         = True
