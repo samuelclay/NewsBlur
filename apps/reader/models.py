@@ -994,10 +994,10 @@ class UserSubscription(models.Model):
 
         if not safety_net: return
 
-        logging.user(user, "~FBFound ~FR%s unscheduled feeds~FB, scheduling..." % len(safety_net))
+        logging.user(user, "~FBFound ~FR%s unscheduled feeds~FB, scheduling immediately..." % len(safety_net))
         for feed_id in safety_net:
             feed = Feed.get_by_id(feed_id)
-            feed.set_next_scheduled_update()
+            feed.schedule_feed_fetch_immediately()
 
     @classmethod
     def count_subscribers_to_other_subscriptions(cls, feed_id):
