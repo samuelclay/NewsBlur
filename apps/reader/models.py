@@ -123,7 +123,7 @@ class UserSubscription(models.Model):
             feed_ids = [sub.feed_id for sub in usersubs]
             if not feed_ids:
                 return story_hashes
-        
+
         current_time = int(time.time() + 60*60*24)
         if not cutoff_date:
             cutoff_date = datetime.datetime.now() - datetime.timedelta(days=UserSubscription.days_of_story_hashes_for_user(user_id))
@@ -1160,10 +1160,10 @@ class RUserStory:
         message = None
         if story.story_date < user.profile.unread_cutoff:
             if user.profile.is_archive:
-                message = "Story is more than %s days old, cannot mark as unread." % (
-                          settings.DAYS_OF_UNREAD_ARCHIVE)
+                message = "Story is more than %s days old, change your days of unreads under Preferences." % (
+                          user.profile.days_of_unread)
             elif user.profile.is_premium:
-                message = "Story is more than %s days old, cannot mark as unread." % (
+                message = "Story is more than %s days old. Premium Archive accounts can mark any story as unread." % (
                           settings.DAYS_OF_UNREAD)
             elif story.story_date > user.profile.unread_cutoff_premium:
                 message = "Story is more than %s days old. Premium accounts can mark unread up to %s days, and Premium Archive accounts can mark any story as unread." % (

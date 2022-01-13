@@ -914,9 +914,11 @@ class FeedFetcherWorker:
             logging.debug("   ***> [%-30s] ~BMRedis is unavailable for real-time." % (feed.log_title[:30],))
         
     def count_unreads_for_subscribers(self, feed):
-        user_subs = UserSubscription.objects.filter(feed=feed, 
+        subscriber_expire = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
+
+        user_subs = UserSubscription.objects.filter(feed=feed,
                                                     active=True,
-                                                    user__profile__last_seen_on__gte=feed.unread_cutoff)\
+                                                    user__profile__last_seen_on__gte=subscriber_expire)\
                                             .order_by('-last_read_date')
         
         if not user_subs.count():
