@@ -251,9 +251,12 @@ logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 DAYS_OF_UNREAD          = 30
 DAYS_OF_UNREAD_FREE     = 14
+DAYS_OF_UNREAD_ARCHIVE  = 9999
 # DoSH can be more, since you can up this value by N, and after N days,
-# you can then up the DAYS_OF_UNREAD value with no impact.
-DAYS_OF_STORY_HASHES    = 30
+# you can then up the DAYS_OF_UNREAD value with no impact. 
+# The max is for archive subscribers.
+DAYS_OF_STORY_HASHES    = DAYS_OF_UNREAD
+DAYS_OF_STORY_HASHES_ARCHIVE = DAYS_OF_UNREAD_ARCHIVE
 
 # SUBSCRIBER_EXPIRE sets the number of days after which a user who hasn't logged in
 # is no longer considered an active subscriber
