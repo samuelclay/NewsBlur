@@ -32,7 +32,10 @@ nb: pull
 	- docker exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
 coffee:
 	- coffee -c -w **/*.coffee
-
+migrations:
+	- docker exec -it newsblur_web ./manage.py makemigrations
+migrate:
+	- docker exec -it newsblur_web ./manage.py migrate
 shell:
 	- docker exec -it newsblur_web ./manage.py shell_plus
 bash:

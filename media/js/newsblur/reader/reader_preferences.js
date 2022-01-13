@@ -163,26 +163,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Timezone'
                         ])
                     ]),
-                    $.make('div', { className: 'NB-preference NB-preference-ssl' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-ssl-1', type: 'radio', name: 'ssl', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-ssl-1' }, [
-                                    'Use a standard connection'
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-ssl-2', type: 'radio', name: 'ssl', value: 1 }),
-                                $.make('label', { 'for': 'NB-preference-ssl-2' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/g_icn_lock.png' }),
-                                    'Only use a secure https connection'
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label'}, [
-                            'SSL'
-                        ])
-                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-showunreadcountsintitle' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [

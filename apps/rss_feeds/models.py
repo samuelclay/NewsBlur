@@ -656,6 +656,7 @@ class Feed(models.Model):
     def setup_feed_for_premium_subscribers(self):
         self.count_subscribers()
         self.set_next_scheduled_update(verbose=settings.DEBUG)
+        self.sync_redis()
         
     def check_feed_link_for_feed_address(self):
         @timelimit(10)
