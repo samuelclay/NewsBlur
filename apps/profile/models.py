@@ -69,7 +69,9 @@ class Profile(models.Model):
         )
     
     @property
-    def unread_cutoff(self, force_premium=False):
+    def unread_cutoff(self, force_premium=False, force_archive=False):
+        if self.is_archive or force_archive:
+            return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_ARCHIVE)
         if self.is_premium or force_premium:
             return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         
@@ -78,7 +80,13 @@ class Profile(models.Model):
     @property
     def unread_cutoff_premium(self):
         return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        
+    
+    @property
+    def days_of_story_hashes(self):
+        if self.is_archive:
+            return settings.DAYS_OF_STORY_HASHES_ARCHIVE
+        return settings.DAYS_OF_STORY_HASHES
+
     def canonical(self):
         return {
             'is_premium': self.is_premium,
