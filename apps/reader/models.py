@@ -214,14 +214,16 @@ class UserSubscription(models.Model):
                 pipeline.execute()
                 r.delete(unread_ranked_stories_key)
         
-        current_time = int(time.time() + 60*60*24)
         if not cutoff_date:
-            cutoff_date = datetime.datetime.now() - datetime.timedelta(days=self.user.profile.days_of_story_hashes)
             if read_filter == "unread":
+                cutoff_date = datetime.datetime.now() - datetime.timedelta(days=self.user.profile.days_of_unread)
                 cutoff_date = max(cutoff_date, self.mark_read_date)
+            elif read_filter == "all":
+                cutoff_date = datetime.datetime.now() - datetime.timedelta(days=self.user.profile.days_of_story_hashes)
             elif default_cutoff_date:
                 cutoff_date = default_cutoff_date
 
+        current_time = int(time.time() + 60*60*24)
         if order == 'oldest':
             byscorefunc = rt.zrangebyscore
             if read_filter == 'unread':
