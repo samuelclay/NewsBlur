@@ -10546,6 +10546,14 @@ form.opml_import_form input {
     -webkit-box-shadow:2px 2px 0 #D0D0D0;
     box-shadow:2px 2px 0 #D0D0D0;
 }
+.NB-modal-preferences .NB-preference-daysofunread .NB-tangle-daysofunread-control {
+    margin-top: 4px;
+    margin-left: 32px;
+    width: 300px;
+}
+.NB-modal-preferences .NB-preference-daysofunread .NB-preference-options label {
+    float: none;
+}
 .NB-modal-preferences .NB-preference-readstorydelay .NB-tangle-readstorydelay,
 .NB-modal-preferences .NB-preference-slider {
     display: inline-block;

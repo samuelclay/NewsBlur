@@ -213,6 +213,10 @@ def commify(n):
         out += '.' + cents
     return out
 
+@register.simple_tag
+def settings_value(name):
+    return getattr(settings, name, "")
+
 @register.filter
 def smooth_timedelta(timedeltaobj):
     """Convert a datetime.timedelta object into Days, Hours, Minutes, Seconds."""
