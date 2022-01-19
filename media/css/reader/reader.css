@@ -3021,7 +3021,7 @@ body {
     );
     padding: 2px 200px 2px 28px;
     position: sticky;
-    top: 0;
+    top: -1px;
     border-bottom: 1px solid #000;
     border-top: 1px solid #707070;
     z-index: 2;
