@@ -846,10 +846,9 @@ def load_single_feed(request, feed_id):
     # if not usersub and feed.num_subscribers <= 1:
     #     data = dict(code=-1, message="You must be subscribed to this feed.")
     
+    # time.sleep(random.randint(1, 3))
     if delay and user.is_staff:
-        # import random
         # time.sleep(random.randint(2, 7) / 10.0)
-        # time.sleep(random.randint(1, 10))
         time.sleep(delay)
     # if page == 1:
     #     time.sleep(1)

@@ -1,12 +1,13 @@
 import sys
 import os
+import yaml 
 
 # ===========================
 # = Directory Declaractions =
 # ===========================
 
-ROOT_DIR   = os.path.dirname(__file__)
-NEWSBLUR_DIR  = os.path.join(ROOT_DIR, "../")
+SETTINGS_DIR  = os.path.dirname(__file__)
+NEWSBLUR_DIR  = os.path.join(SETTINGS_DIR, "../")
 MEDIA_ROOT    = os.path.join(NEWSBLUR_DIR, 'media')
 STATIC_ROOT   = os.path.join(NEWSBLUR_DIR, 'static')
 UTILS_ROOT    = os.path.join(NEWSBLUR_DIR, 'utils')
@@ -35,7 +36,6 @@ import django.http
 import re
 from mongoengine import connect
 import boto3
-from utils import jammit
 
 # ===================
 # = Server Settings =
@@ -78,19 +78,11 @@ LOGIN_REDIRECT_URL    = '/'
 LOGIN_URL             = '/account/login'
 MEDIA_URL             = '/media/'
 
-if DEBUG:
-    STATIC_URL        = '/static/'
-    STATIC_ROOT       = '/static/static_root/'
-else:
-    STATIC_URL        = '/media/'
-    STATIC_ROOT       = '/media/'
-
-
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
 CIPHER_USERNAMES      = False
-DEBUG_ASSETS          = DEBUG
+DEBUG_ASSETS          = True
 HOMEPAGE_USERNAME     = 'popular'
 ALLOWED_HOSTS         = ['*']
 AUTO_PREMIUM_NEW_USERS = True
@@ -312,6 +304,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.messages',
+    'django.contrib.staticfiles',
     'django_extensions',
     'paypal.standard.ipn',
     'apps.rss_feeds',
@@ -336,6 +329,7 @@ INSTALLED_APPS = (
     'anymail',
     'oauth2_provider',
     'corsheaders',
+    'pipeline',
 )
 
 # ==========
@@ -781,7 +775,77 @@ accept_content = ['pickle', 'json', 'msgpack', 'yaml']
 # = Assets =
 # ==========
 
-JAMMIT = jammit.JammitAssets(ROOT_DIR)
+STATIC_URL        = '/static/'
+
+# STATICFILES_STORAGE = 'pipeline.storage.PipelineManifestStorage'
+STATICFILES_STORAGE = 'utils.pipeline_utils.PipelineStorage'
+# STATICFILES_STORAGE = 'utils.pipeline_utils.GzipPipelineStorage'
+STATICFILES_FINDERS = (
+    # 'pipeline.finders.FileSystemFinder',
+    # 'django.contrib.staticfiles.finders.FileSystemFinder',
+    # 'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # 'pipeline.finders.AppDirectoriesFinder',
+    'utils.pipeline_utils.AppDirectoriesFinder',
+    'utils.pipeline_utils.FileSystemFinder',
+    # 'pipeline.finders.PipelineFinder',
+)
+STATICFILES_DIRS = [
+    # '/usr/local/lib/python3.9/site-packages/django/contrib/admin/static/',
+    MEDIA_ROOT,
+]
+with open(os.path.join(SETTINGS_DIR, 'assets.yml')) as stream:
+    assets = yaml.safe_load(stream)
+
+PIPELINE = {
+    'PIPELINE_ENABLED': not DEBUG_ASSETS,
+    'PIPELINE_COLLECTOR_ENABLED': not DEBUG_ASSETS,
+    'SHOW_ERRORS_INLINE': DEBUG_ASSETS,
+    'CSS_COMPRESSOR': 'pipeline.compressors.yuglify.YuglifyCompressor',
+    'JS_COMPRESSOR': 'pipeline.compressors.closure.ClosureCompressor',
+    # 'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
+    # 'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
+    'CLOSURE_BINARY': '/usr/bin/java -jar node_modules/google-closure-compiler-java/compiler.jar',
+    'CLOSURE_ARGUMENTS': '--language_in ECMASCRIPT_2021',# --warning_level QUIET',
+    'JAVASCRIPT': {
+        'common': {
+            'source_filenames': assets['javascripts']['common'],
+            'output_filename': 'js/common.js',
+        },
+        'statistics': {
+            'source_filenames': assets['javascripts']['statistics'],
+            'output_filename': 'js/statistics.js',
+        },
+        'payments': {
+            'source_filenames': assets['javascripts']['payments'],
+            'output_filename': 'js/payments.js',
+        },
+        'bookmarklet': {
+            'source_filenames': assets['javascripts']['bookmarklet'],
+            'output_filename': 'js/bookmarklet.js',
+        },
+        'blurblog': {
+            'source_filenames': assets['javascripts']['blurblog'],
+            'output_filename': 'js/blurblog.js',
+        },
+    },
+    'STYLESHEETS': {
+        'common': {
+            'source_filenames': assets['stylesheets']['common'],
+            'output_filename': 'css/common.css',
+            # 'variant': 'datauri',
+        },
+        'bookmarklet': {
+            'source_filenames': assets['stylesheets']['bookmarklet'],
+            'output_filename': 'css/bookmarklet.css',
+            # 'variant': 'datauri',
+        },
+        'blurblog': {
+            'source_filenames': assets['stylesheets']['blurblog'],
+            'output_filename': 'css/blurblog.css',
+            # 'variant': 'datauri',
+        },
+    }
+}
 
 # =======
 # = AWS =
