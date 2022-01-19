@@ -19,19 +19,14 @@
     path: /srv/newsblur/newsblur_web/task_env.py
     line: 'SERVER_NAME = "{{ inventory_hostname }}"'
 
-- name: Make docker network for newsblurnet
-  become: yes
-  docker_network:
-    name: newsblurnet
-  notify: restart docker
-
-- name: "Start docker containers"
+- name: "Start task-celery docker containers"
   become: yes
   docker_container:
     name: "{{ item.container_name }}"
     image: newsblur/newsblur_python3
     state: started
     pull: yes
+    hostname: "{{ inventory_hostname }}"
     container_default_behavior: no_defaults
     env:
       DOCKERBUILD: ""
@@ -39,11 +34,13 @@
     labels:
       autoheal: "true"
     networks_cli_compatible: yes
-    network_mode: default
-    networks:
-      - name: newsblurnet
+    network_mode: host
+    # networks:
+    #   - name: newsblurnet
     command: "{{ item.command }}"
-    log_driver: local
+    log_driver: json-file
+    log_options:
+      max-size: 100m
     healthcheck: 
       # test: celery inspect ping -A newsblur_web -d celery@$HOSTNAME
       test: bash -c "(($(date +%s) - $(stat /srv/newsblur/logs/newsblur.log -c %Y) < 120)) && exit 0 || exit 1"
@@ -51,6 +48,7 @@
       timeout: 10s
       retries: 3
       start_period: 30s
+    user: 1000:1001
     volumes:
       - /srv/newsblur:/srv/newsblur
       - /etc/hosts:/etc/hosts
@@ -73,7 +71,7 @@
     container_default_behavior: no_defaults
     env:
       AUTOHEAL_CONTAINER_LABEL: all
-    restart_policy: always
+    restart_policy: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 

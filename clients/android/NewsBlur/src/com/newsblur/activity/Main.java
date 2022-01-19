@@ -1,5 +1,10 @@
 package com.newsblur.activity;
 
+import static com.newsblur.service.NBSyncReceiver.UPDATE_DB_READY;
+import static com.newsblur.service.NBSyncReceiver.UPDATE_METADATA;
+import static com.newsblur.service.NBSyncReceiver.UPDATE_REBUILD;
+import static com.newsblur.service.NBSyncReceiver.UPDATE_STATUS;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -78,7 +83,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         Bitmap userPicture = PrefsUtils.getUserImage(this);
         if (userPicture != null) {
-            userPicture = UIUtils.clipAndRound(userPicture, 5, false);
+            userPicture = UIUtils.clipAndRound(userPicture, true, false);
             binding.mainUserImage.setImageBitmap(userPicture);
         }
         binding.mainUserName.setText(PrefsUtils.getUserDetails(this).username);
@@ -335,7 +340,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void onClickAddButton() {
-        Intent i = new Intent(this, SearchForFeeds.class);
+        Intent i = new Intent(this, FeedSearchActivity.class);
         startActivity(i);
     }
 

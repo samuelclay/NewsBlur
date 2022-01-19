@@ -48,7 +48,7 @@
         await client.connect();
       } catch (error) {
         err = error;
-        log.debug(`Error connecting to Mongo: ${err}`);
+        log.debug(`Error connecting to Mongo (${url}): ${err}`);
         return;
       }
       db = client.db("newsblur");
@@ -78,7 +78,7 @@
               log.debug(`Req: ${feed_id}, etag: ${etag}/${docs != null ? docs.color : void 0} ` + (err ? `(err: ${err})` : ""));
             }
             res.header('etag', docs.color);
-            body = new Buffer(docs.data, 'base64');
+            body = Buffer.from(docs.data, 'base64');
             res.set("Content-Type", "image/png");
             return res.status(200).send(body);
           } else {

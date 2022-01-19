@@ -61,9 +61,8 @@ public class PrefConstants {
 
     public static final String STORIES_AUTO_OPEN_FIRST = "pref_auto_open_first_unread";
     public static final String STORIES_MARK_READ_ON_SCROLL = "pref_mark_read_on_scroll";
-    public static final String STORIES_SHOW_PREVIEWS = "pref_show_content_preview";
-    public static final String STORIES_SHOW_THUMBNAILS = "pref_show_thumbnails";
-    public static final String STORIES_THUMBNAILS_STYLE = "pref_thumbnails_style";
+    public static final String STORIES_SHOW_PREVIEWS_STYLE = "pref_show_content_preview_style";
+    public static final String STORIES_THUMBNAIL_STYLE = "pref_thumbnail_style";
 
     public static final String ENABLE_OFFLINE = "enable_offline";
     public static final String ENABLE_IMAGE_PREFETCH = "enable_image_prefetch";
@@ -71,6 +70,7 @@ public class PrefConstants {
     public static final String NETWORK_SELECT = "offline_network_select";
     public static final String KEEP_OLD_STORIES = "keep_old_stories";
     public static final String CACHE_AGE_SELECT = "cache_age_select";
+    public static final String FEED_LIST_ORDER = "feed_list_order";
 
     public static final String NETWORK_SELECT_ANY = "ANY";
     public static final String NETWORK_SELECT_NOMO = "NOMO";
@@ -87,6 +87,9 @@ public class PrefConstants {
 
     public static final String ENABLE_ROW_GLOBAL_SHARED = "enable_row_global_shared";
     public static final String ENABLE_ROW_INFREQUENT_STORIES = "enable_row_infrequent_stories";
+
+    public static final String FEED_LIST_ORDER_ALPHABETICAL = "feed_list_order_alphabetical";
+    public static final String FEED_LIST_ORDER_MOST_USED_AT_TOP = "feed_list_order_most_used_at_top";
 
     public static final String THEME = "theme";
     public enum ThemeValue {

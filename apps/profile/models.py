@@ -1125,12 +1125,13 @@ def paypal_signup(sender, **kwargs):
     try:
         user = User.objects.get(username__iexact=ipn_obj.custom)
     except User.DoesNotExist:
-        user = User.objects.get(email__iexact=ipn_obj.payer_email)
-    except User.DoesNotExist:
-        logging.debug(" ---> Paypal subscription not found during flagging: %s/%s" % (
-            ipn_obj.payer_email,
-            ipn_obj.custom))    
-        return {"code": -1, "message": "User doesn't exist."}
+        try:
+            user = User.objects.get(email__iexact=ipn_obj.payer_email)
+        except User.DoesNotExist:
+            logging.debug(" ---> Paypal subscription not found during flagging: %s/%s" % (
+                ipn_obj.payer_email,
+                ipn_obj.custom))    
+            return {"code": -1, "message": "User doesn't exist."}
 
     logging.user(user, "~BC~SB~FBPaypal subscription signup")
     try:
@@ -1149,12 +1150,13 @@ def paypal_payment_history_sync(sender, **kwargs):
     try:
         user = User.objects.get(username__iexact=ipn_obj.custom)
     except User.DoesNotExist:
-        user = User.objects.get(email__iexact=ipn_obj.payer_email)
-    except User.DoesNotExist:
-        logging.debug(" ---> Paypal subscription not found during flagging: %s/%s" % (
-            ipn_obj.payer_email,
-            ipn_obj.custom))
-        return {"code": -1, "message": "User doesn't exist."}
+        try:
+            user = User.objects.get(email__iexact=ipn_obj.payer_email)
+        except User.DoesNotExist:
+            logging.debug(" ---> Paypal subscription not found during flagging: %s/%s" % (
+                ipn_obj.payer_email,
+                ipn_obj.custom))
+            return {"code": -1, "message": "User doesn't exist."}
 
     logging.user(user, "~BC~SB~FBPaypal subscription payment")
     try:
@@ -1168,13 +1170,13 @@ def paypal_payment_was_flagged(sender, **kwargs):
     try:
         user = User.objects.get(username__iexact=ipn_obj.custom)
     except User.DoesNotExist:
-        if ipn_obj.payer_email:
+        try:
             user = User.objects.get(email__iexact=ipn_obj.payer_email)
-    except User.DoesNotExist:
-        logging.debug(" ---> Paypal subscription not found during flagging: %s/%s" % (
-            ipn_obj.payer_email,
-            ipn_obj.custom))
-        return {"code": -1, "message": "User doesn't exist."}
+        except User.DoesNotExist:
+            logging.debug(" ---> Paypal subscription not found during flagging: %s/%s" % (
+                ipn_obj.payer_email,
+                ipn_obj.custom))
+            return {"code": -1, "message": "User doesn't exist."}
         
     try:
         user.profile.setup_premium_history()

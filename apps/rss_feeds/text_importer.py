@@ -1,11 +1,11 @@
 import requests
 import urllib3
 import zlib
+from vendor import readability
 from simplejson.decoder import JSONDecodeError
 from requests.packages.urllib3.exceptions import LocationParseError
 from socket import error as SocketError
 from mongoengine.queryset import NotUniqueError
-from vendor.readability import readability
 from lxml.etree import ParserError
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
@@ -57,6 +57,7 @@ class TextImporter:
         
         if not use_mercury or not results:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY with Mercury, trying readability...", warn_color=False)
+
             results = self.fetch_manually(skip_save=skip_save, return_document=return_document)
         
         return results
@@ -106,10 +107,18 @@ class TextImporter:
         if not resp:
             return
 
+        @timelimit(5)
+        def extract_text(resp):
+            try:
+                text = resp.text
+            except (LookupError, TypeError):
+                text = resp.content
+            return text
         try:
-            text = resp.text
-        except (LookupError, TypeError):
-            text = resp.content
+            text = extract_text(resp)
+        except TimeoutError:
+            logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: timed out on resp.text")
+            return
         
         # if self.debug:
         #     logging.user(self.request, "~FBOriginal text's website: %s" % text)
@@ -128,7 +137,7 @@ class TextImporter:
                                                  positive_keywords="post, entry, postProp, article, postContent, postField")
         try:
             content = original_text_doc.summary(html_partial=True)
-        except (readability.Unparseable, ParserError) as e:
+        except (ParserError) as e:
             logging.user(self.request, "~SN~FRFailed~FY to fetch ~FGoriginal text~FY: %s" % e)
             return
 
@@ -151,8 +160,16 @@ class TextImporter:
             story_image_urls = []
         
         content = self.add_hero_image(content, story_image_urls)
+        if content:
+            content = self.rewrite_content(content)
 
-        if content and len(content) > len(original_story_content):
+        full_content_is_longer = False
+        if self.feed and self.feed.is_newsletter:
+            full_content_is_longer = True
+        elif len(content) > len(original_story_content):
+            full_content_is_longer = True
+        
+        if content and full_content_is_longer:
             if self.story and not skip_save:
                 self.story.original_text_z = zlib.compress(smart_bytes(content))
                 try:
@@ -169,9 +186,6 @@ class TextImporter:
                 len(original_story_content)
             )), warn_color=False)
             return
-        
-        if content:
-            content = self.rewrite_content(content)
         
         if return_document:
             return dict(content=content, title=title, url=url, doc=original_text_doc, image=image)
@@ -227,6 +241,8 @@ class TextImporter:
             headers["content-type"] = "application/json"
             headers["x-api-key"] = mercury_api_key
             domain = Site.objects.get_current().domain
+            if settings.DOCKERBUILD:
+                domain = 'haproxy'
             url = f"https://{domain}/rss_feeds/original_text_fetcher?url={url}"
             
         try:

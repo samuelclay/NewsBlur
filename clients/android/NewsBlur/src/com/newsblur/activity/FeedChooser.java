@@ -7,17 +7,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
-import androidx.loader.content.Loader;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.util.FeedOrderFilter;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.FolderViewFilter;
 import com.newsblur.util.ListOrderFilter;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.WidgetBackground;
+import com.newsblur.viewModel.FeedFolderViewModel;
 import com.newsblur.widget.WidgetUtils;
 
 import java.util.ArrayList;
@@ -33,6 +33,7 @@ abstract public class FeedChooser extends NbActivity {
     protected Map<String, Feed> feedMap = new HashMap<>();
     protected ArrayList<String> folderNames = new ArrayList<>();
     protected ArrayList<ArrayList<Feed>> folderChildren = new ArrayList<>();
+    private FeedFolderViewModel feedFolderViewModel;
 
     abstract void bindLayout();
 
@@ -45,10 +46,11 @@ abstract public class FeedChooser extends NbActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        feedFolderViewModel = new ViewModelProvider(this).get(FeedFolderViewModel.class);
         bindLayout();
         setupList();
-        loadFeeds();
-        loadFolders();
+        setupObservers();
+        loadData();
     }
 
     @Override
@@ -144,6 +146,11 @@ abstract public class FeedChooser extends NbActivity {
         adapter.setData(this.folderNames, this.folderChildren, this.feeds);
     }
 
+    private void setupObservers() {
+        feedFolderViewModel.getFoldersLiveData().observe(this, this::processFolders);
+        feedFolderViewModel.getFeedsLiveData().observe(this, this::processFeeds);
+    }
+
     private void replaceFeedOrderFilter(FeedOrderFilter feedOrderFilter) {
         PrefsUtils.setFeedChooserFeedOrder(this, feedOrderFilter);
         adapter.replaceFeedOrder(feedOrderFilter);
@@ -165,16 +172,8 @@ abstract public class FeedChooser extends NbActivity {
         WidgetUtils.updateWidget(this);
     }
 
-    private void loadFeeds() {
-        Loader<Cursor> loader = FeedUtils.dbHelper.getFeedsLoader();
-        loader.registerListener(loader.getId(), (loader1, cursor) -> processFeeds(cursor));
-        loader.startLoading();
-    }
-
-    private void loadFolders() {
-        Loader<Cursor> loader = FeedUtils.dbHelper.getFoldersLoader();
-        loader.registerListener(loader.getId(), (loader1, cursor) -> processFolders(cursor));
-        loader.startLoading();
+    private void loadData() {
+        feedFolderViewModel.getData();
     }
 
     private void processFolders(Cursor cursor) {

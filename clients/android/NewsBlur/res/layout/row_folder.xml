@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    style="?selectorFolderBackground"
+    style="?selectorFeedBackground"
     android:addStatesFromChildren="true" >
 
     <ImageView
@@ -85,16 +85,5 @@
         android:shadowRadius="1"
         android:maxLines="1"
         android:ellipsize="end" />
-    
-    <View 
-        android:layout_height="0.5dp"
-        android:layout_width="match_parent"
-        style="?rowBorderTop"
-        android:layout_alignParentTop="true" />
-    <View 
-        android:layout_height="0.5dp"
-        android:layout_width="match_parent"
-        style="?rowBorderBottom"
-        android:layout_alignParentBottom="true" />
    
 </RelativeLayout>

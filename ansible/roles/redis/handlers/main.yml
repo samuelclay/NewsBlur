@@ -7,3 +7,8 @@
     name: consul
     state: reloaded
   listen: reload consul
+
+- name: restart redis
+  become: yes
+  command: docker restart redis
+  listen: restart redis

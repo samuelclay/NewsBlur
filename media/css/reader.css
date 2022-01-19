@@ -11998,6 +11998,7 @@ form.opml_import_form input {
 }
 .NB-profile-badge-actions .NB-profile-badge-action-preview,
 .NB-badge-actions .NB-badge-action-add,
+.NB-profile-badge-actions .NB-profile-badge-action-mute,
 .NB-profile-badge-actions .NB-profile-badge-action-ignore {
     color: #404040;
     line-height: 1;

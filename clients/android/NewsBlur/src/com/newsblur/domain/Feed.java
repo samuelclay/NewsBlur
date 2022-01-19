@@ -6,10 +6,12 @@ import android.text.TextUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
+import com.newsblur.util.FeedListOrder;
 
 public class Feed implements Comparable<Feed>, Serializable {	
 
@@ -207,4 +209,13 @@ public class Feed implements Comparable<Feed>, Serializable {
     public static final String NOTIFY_FILTER_UNREAD = "unread";
     public static final String NOTIFY_FILTER_FOCUS = "focus";
 
+    public static Comparator<Feed> getFeedListOrderComparator(FeedListOrder feedListOrder) {
+        return (o1, o2) -> {
+            if (feedListOrder == FeedListOrder.MOST_USED_AT_TOP) {
+                return Integer.compare(o2.feedOpens, o1.feedOpens);
+            } else {
+                return o1.title.compareToIgnoreCase(o2.title);
+            }
+        };
+    }
 }

@@ -20,6 +20,7 @@ import urllib.parse
 from django.conf import settings
 from django.db import IntegrityError
 from django.core.cache import cache
+from sentry_sdk import set_user
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
@@ -28,7 +29,10 @@ from apps.notifications.tasks import QueueNotifications
 from apps.notifications.models import MUserFeedNotification
 from apps.push.models import PushSubscription
 from apps.statistics.models import MAnalyticsFetcher, MStatistics
+
 import feedparser
+feedparser.sanitizer._HTMLSanitizer.acceptable_elements.update(['iframe'])
+
 from utils.story_functions import pre_process_story, strip_tags, linkify
 from utils import log as logging
 from utils.feed_functions import timelimit, TimeoutError
@@ -124,7 +128,7 @@ class FetchFeed:
                 return FEED_ERRHTTP, None
             self.fpf = feedparser.parse(facebook_feed)
         
-        if not self.fpf:
+        if not self.fpf and 'json' in address:
             try:
                 headers = self.feed.fetch_headers()
                 if etag:
@@ -166,21 +170,22 @@ class FetchFeed:
                                                                                                  len(smart_str(raw_feed.content)), 
                                                                                                  raw_feed.headers))
             except Exception as e:
-                logging.debug("   ***> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.log_title[:30], str(e)[:100]))
+                logging.debug("   ***> [%-30s] ~FRFeed failed to fetch with request, trying feedparser: %s" % (self.feed.log_title[:30], str(e)))
+                # raise e
             
-            if not self.fpf or self.options.get('force_fp', False):
-                try:
-                    self.fpf = feedparser.parse(address,
-                                                agent=self.feed.user_agent,
-                                                etag=etag,
-                                                modified=modified)
-                except (TypeError, ValueError, KeyError, EOFError, MemoryError, 
-                        urllib.error.URLError, http.client.InvalidURL, 
-                        http.client.BadStatusLine, http.client.IncompleteRead, 
-                        ConnectionResetError) as e:
-                    logging.debug('   ***> [%-30s] ~FRFeed fetch error: %s' % 
-                                  (self.feed.log_title[:30], e))
-                    pass
+        if not self.fpf or self.options.get('force_fp', False):
+            try:
+                self.fpf = feedparser.parse(address,
+                                            agent=self.feed.user_agent,
+                                            etag=etag,
+                                            modified=modified)
+            except (TypeError, ValueError, KeyError, EOFError, MemoryError, 
+                    urllib.error.URLError, http.client.InvalidURL, 
+                    http.client.BadStatusLine, http.client.IncompleteRead, 
+                    ConnectionResetError) as e:
+                logging.debug('   ***> [%-30s] ~FRFeed fetch error: %s' % 
+                                (self.feed.log_title[:30], e))
+                pass
                 
         if not self.fpf:
             try:
@@ -322,15 +327,12 @@ class FetchFeed:
             if not thumbnail:
                 thumbnail = video['snippet']['thumbnails'].get('medium')
             duration_sec = isodate.parse_duration(video['contentDetails']['duration']).seconds
-            if duration_sec >= 3600:
-                hours = (duration_sec / 3600)
-                minutes = (duration_sec - (hours*3600)) / 60
-                seconds = duration_sec - (hours*3600) - (minutes*60)
-                duration = "%s:%s:%s" % (hours, '{0:02d}'.format(round(minutes)), '{0:02d}'.format(round(seconds)))
+            duration_min, seconds = divmod(duration_sec, 60)
+            hours, minutes = divmod(duration_min, 60)
+            if hours >= 1:
+                duration = "%s:%s:%s" % (hours, '{0:02d}'.format(minutes), '{0:02d}'.format(seconds))
             else:
-                minutes = duration_sec / 60
-                seconds = duration_sec - (minutes*60)
-                duration = "%s:%s" % ('{0:02d}'.format(round(minutes)), '{0:02d}'.format(round(seconds)))
+                duration = "%s:%s" % (minutes, '{0:02d}'.format(seconds))
             content = """<div class="NB-youtube-player">
                             <iframe allowfullscreen="true" src="%s?iv_load_policy=3"></iframe>
                          </div>
@@ -661,12 +663,18 @@ class FeedFetcherWorker:
         """Update feed, since it may have changed"""
         return Feed.get_by_id(feed_id)
     
-    def process_feed_wrapper(self, feed_queue):
+    def reset_database_connections(self):
         connection._connections = {}
         connection._connection_settings ={}
         connection._dbs = {}
         settings.MONGODB = connect(settings.MONGO_DB_NAME, **settings.MONGO_DB)
-        settings.MONGOANALYTICSDB = connect(settings.MONGO_ANALYTICS_DB_NAME, **settings.MONGO_ANALYTICS_DB)
+        if 'username' in settings.MONGO_ANALYTICS_DB:
+            settings.MONGOANALYTICSDB = connect(db=settings.MONGO_ANALYTICS_DB['name'], host=f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{settings.MONGO_ANALYTICS_DB['host']}/?authSource=admin", alias="nbanalytics")
+        else:
+            settings.MONGOANALYTICSDB = connect(db=settings.MONGO_ANALYTICS_DB['name'], host=f"mongodb://{settings.MONGO_ANALYTICS_DB['host']}/", alias="nbanalytics")
+
+    def process_feed_wrapper(self, feed_queue):
+        self.reset_database_connections()
         
         delta = None
         current_process = multiprocessing.current_process()
@@ -686,8 +694,11 @@ class FeedFetcherWorker:
             ret_entries = None
             start_time = time.time()
             ret_feed = FEED_ERREXC
+
+            set_user({"id": feed_id})
             try:
                 feed = self.refresh_feed(feed_id)
+                set_user({"id": feed_id, "username": feed.feed_title})
                 
                 skip = False
                 if self.options.get('fake'):

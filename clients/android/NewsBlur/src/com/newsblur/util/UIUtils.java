@@ -8,6 +8,7 @@ import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROL
 import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP;
 
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -35,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -52,8 +54,7 @@ public class UIUtils {
 
     private UIUtils() {} // util class - no instances
 	
-    @SuppressWarnings("deprecation")
-	public static Bitmap clipAndRound(Bitmap source, float radius, boolean clipSquare) {
+	public static Bitmap clipAndRound(Bitmap source, boolean roundCorners, boolean clipSquare) {
         Bitmap result = source;
         if (clipSquare) {
             int width = result.getWidth();
@@ -70,10 +71,12 @@ public class UIUtils {
                 return null;
             }
         }
-        if ((radius > 0f) && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)) {
+        if (roundCorners) {
             int width = result.getWidth();
             int height = result.getHeight();
-            Bitmap canvasMap = null;
+            int minBitmapSize = Math.min(width, height);
+            float cornerRadiusPx = (minBitmapSize / 10f); // round corners at 10% of bitmap min size
+            Bitmap canvasMap;
             try {
                 canvasMap = Bitmap.createBitmap(width, height, ARGB_8888);
             } catch (Throwable t) {
@@ -87,14 +90,14 @@ public class UIUtils {
             Paint paint = new Paint();
             paint.setAntiAlias(true);
             paint.setShader(shader);
-            canvas.drawRoundRect(0, 0, width, height, radius, radius, paint);
+            canvas.drawRoundRect(0, 0, width, height, cornerRadiusPx, cornerRadiusPx, paint);
             result = canvasMap;
         }
         return result;
     }
 
-    @SuppressWarnings("deprecation")
-    public static Bitmap decodeImage(File f, int maxDim, boolean cropSquare, float roundRadius) {
+    @Nullable
+    public static Bitmap decodeImage(File f, int maxDim) {
         try {
             // not only can cache misses occur, users can delete files, the system can clean up
             // files, storage can be unmounted, etc.  fail fast.
@@ -124,35 +127,8 @@ public class UIUtils {
             decodeOpts.inJustDecodeBounds = false;
             //decodeOpts.inPreferredConfig = Bitmap.Config.RGB_565;
             //decodeOpts.inDither = true;
-            Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(), decodeOpts);
 
-            if (bitmap == null) return null;
-
-            // crop the image square if flagged
-            if (cropSquare) {
-                // image size will be a squared off version of the now-downsampled original
-                int targetSize = Math.min(bitmap.getWidth(), bitmap.getHeight());
-                // to clip square, calculate x and y offsets
-                int offsetX = (bitmap.getWidth() - targetSize) / 2;
-                int offsetY = (bitmap.getHeight() - targetSize) / 2;
-                // crop the bitmap. the returned object will likely be the same
-                bitmap = Bitmap.createBitmap(bitmap, offsetX, offsetY, targetSize, targetSize);
-            }
-
-            // round the corners of the image if the caller would like
-            if ((roundRadius > 0f) && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)) {
-                Bitmap canvasMap = null;
-                canvasMap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), ARGB_8888);
-                Canvas canvas = new Canvas(canvasMap);
-                BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-                Paint paint = new Paint();
-                paint.setAntiAlias(true);
-                paint.setShader(shader);
-                canvas.drawRoundRect(0, 0, bitmap.getWidth(), bitmap.getHeight(), roundRadius, roundRadius, paint);
-                bitmap = canvasMap;
-            }
-
-            return bitmap;
+            return BitmapFactory.decodeFile(f.getAbsolutePath(), decodeOpts);
         } catch (Throwable t) {
             // due to low memory, corrupt files, or bad source files, image processing can fail
             // in countless ways even on happy systems.  these failures are virtually impossible
@@ -204,7 +180,7 @@ public class UIUtils {
      */
     public static void setupToolbar(AppCompatActivity activity, String imageUrl, String title, boolean showHomeEnabled) {
         ImageView iconView = setupCustomToolbar(activity, title, showHomeEnabled);
-        FeedUtils.iconLoader.displayImage(imageUrl, iconView, 0, false);
+        FeedUtils.iconLoader.displayImage(imageUrl, iconView);
     }
 
     public static void setupToolbar(AppCompatActivity activity, int imageId, String title, boolean showHomeEnabled) {
@@ -328,15 +304,6 @@ public class UIUtils {
         return memInfo;
     }
 
-    @SuppressWarnings("deprecation")
-    public static int getColor(Context activity, int rid) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return activity.getResources().getColor(rid, activity.getTheme());
-        } else {
-            return activity.getResources().getColor(rid);
-        }
-    }
-
     /**
      * Get a color defined by our particular way of using styles that are indirectly defined by themes.
      *
@@ -401,15 +368,6 @@ public class UIUtils {
         return result;
     }
 
-    @SuppressWarnings("deprecation")
-    public static Drawable getDrawable(Context activity, int rid) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return activity.getResources().getDrawable(rid, activity.getTheme());
-        } else {
-            return activity.getResources().getDrawable(rid);
-        }
-    }
-
     /**
      * Sets the background resource of a view, working around a platform bug that causes the declared
      * padding to get reset.
@@ -465,26 +423,17 @@ public class UIUtils {
      */
     public static void setupIntelDialogRow(final View row, final Map<String,Integer> classifier, final String key) {
         colourIntelDialogRow(row, classifier, key);
-        row.findViewById(R.id.intel_row_like).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                classifier.put(key, Classifier.LIKE);
-                colourIntelDialogRow(row, classifier, key);
-            }
+        row.findViewById(R.id.intel_row_like).setOnClickListener(v -> {
+            classifier.put(key, Classifier.LIKE);
+            colourIntelDialogRow(row, classifier, key);
         });
-        row.findViewById(R.id.intel_row_dislike).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                classifier.put(key, Classifier.DISLIKE);
-                colourIntelDialogRow(row, classifier, key);
-            }
+        row.findViewById(R.id.intel_row_dislike).setOnClickListener(v -> {
+            classifier.put(key, Classifier.DISLIKE);
+            colourIntelDialogRow(row, classifier, key);
         });
-        row.findViewById(R.id.intel_row_clear).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                classifier.put(key, Classifier.CLEAR_LIKE);
-                colourIntelDialogRow(row, classifier, key);
-            }
+        row.findViewById(R.id.intel_row_clear).setOnClickListener(v -> {
+            classifier.put(key, Classifier.CLEAR_LIKE);
+            colourIntelDialogRow(row, classifier, key);
         });
     }
 
@@ -606,6 +555,16 @@ public class UIUtils {
             com.newsblur.util.Log.e(context.getClass().getName(), "apps not available to open URLs");
             // fallback to system default if apps cannot be opened
             openSystemDefaultBrowser(context, uri);
+        }
+    }
+
+    public static void openWebSearch(Context context, String query) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_WEB_SEARCH );
+            intent.putExtra(SearchManager.QUERY, query);
+            context.startActivity(intent);
+        } catch (Exception e) {
+            com.newsblur.util.Log.e(context.getClass().getName(), "Browser app not available to search: " + query);
         }
     }
 

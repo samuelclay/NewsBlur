@@ -10,10 +10,11 @@
     - {role: 'base', tags: 'base'}
     - {role: 'ufw', tags: 'ufw'}
     - {role: 'docker', tags: 'docker'}
-    - {role: 'repo', tags: 'repo'}
+    - {role: 'repo', tags: ['repo', 'pull']}
     - {role: 'dnsmasq', tags: 'dnsmasq'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
     - {role: 'redis', tags: 'redis'}
+    - {role: 'flask_metrics', tags: ['flask-metrics', 'metrics', 'flask_metrics']}
     - {role: 'monitor', tags: 'monitor'}

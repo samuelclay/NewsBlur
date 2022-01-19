@@ -85,8 +85,8 @@ def add_site_load_script(request, token):
     starred_counts = {}
     
     def image_base64(image_name, path='icons/circular/'):
-        image_file = open(os.path.join(settings.MEDIA_ROOT, 'img/%s%s' % (path, image_name)))
-        return base64.b64encode(image_file.read())
+        image_file = open(os.path.join(settings.MEDIA_ROOT, 'img/%s%s' % (path, image_name)), 'rb')
+        return base64.b64encode(image_file.read()).decode('utf-8')
     
     accept_image     = image_base64('newuser_icn_setup.png')
     error_image      = image_base64('newuser_icn_sharewith_active.png')
@@ -128,7 +128,7 @@ def add_site(request, token):
     url        = request.GET['url']
     folder     = request.GET['folder']
     new_folder = request.GET.get('new_folder')
-    callback   = request.GET['callback']
+    callback   = request.GET.get('callback', '')
     
     if not url:
         code = -1
@@ -410,7 +410,7 @@ def save_story(request, token=None):
     message   = None
     profile   = None
     
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile = request.user.profile
     else:
         try:
@@ -500,7 +500,7 @@ def save_story(request, token=None):
 
 def ip_addresses(request):
     import digitalocean
-    doapi = digitalocean.Manager(token=settings.DO_TOKEN_FABRIC)
+    doapi = digitalocean.Manager(token=settings.DO_TOKEN_API_IPADDRESSES)
     droplets = doapi.get_all_droplets()
     addresses = '\n'.join([d.ip_address for d in droplets])
     return HttpResponse(addresses, content_type='text/plain')

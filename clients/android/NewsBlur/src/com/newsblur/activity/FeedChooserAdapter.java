@@ -141,18 +141,13 @@ public class FeedChooserAdapter extends BaseExpandableListAdapter {
             }
         }
 
-        FeedUtils.iconLoader.displayImage(feed.faviconUrl, img, 0, false, img.getHeight(), true);
+        FeedUtils.iconLoader.displayImage(feed.faviconUrl, img, img.getHeight(), true);
         return convertView;
     }
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
-    }
-
-    @Override
-    public boolean areAllItemsEnabled() {
-        return super.areAllItemsEnabled();
     }
 
     protected void setData(ArrayList<String> activeFoldersNames, ArrayList<ArrayList<Feed>> activeFolderChildren, ArrayList<Feed> feeds) {

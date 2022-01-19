@@ -2,7 +2,7 @@ from django.conf.urls import url
 from apps.monitor.views import ( AppServers, AppTimes,
 Classifiers, DbTimes, Errors, FeedCounts, Feeds, LoadTimes,
  Stories, TasksCodes, TasksPipeline, TasksServers, TasksTimes,
- Updates, Users 
+ Updates, Users
 )
 urlpatterns = [
     url(r'^app-servers?$', AppServers.as_view(), name="app_servers"),

@@ -176,6 +176,10 @@ def format_relative_date(date, future=False):
         return "%s day%s %s" % (days, '' if days == 1 else 's', '' if future else 'ago')
     
 def add_object_to_folder(obj, in_folder, folders, parent='', added=False):
+    if parent.startswith('river:'):
+        parent = parent.replace('river:', '')
+    if in_folder.startswith('river:'):
+        in_folder = in_folder.replace('river:', '')
     obj_identifier = obj
     if isinstance(obj, dict):
         obj_identifier = list(obj.keys())[0]

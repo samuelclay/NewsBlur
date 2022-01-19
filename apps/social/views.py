@@ -1178,6 +1178,42 @@ def ignore_follower(request):
         
     return {'code': code}
 
+@ajax_login_required
+@required_params('user_id', method="POST")
+@json.json_view
+def mute_user(request):
+    profile = MSocialProfile.get_user(request.user.pk)
+    muting_user_id = int(request.POST['user_id'])
+    social_profile = MSocialProfile.get_user(request.user.pk)
+    muting_profile = MSocialProfile.get_user(muting_user_id)
+    code = 1
+    
+    logging.user(request, "~FMMuting user ~SB%s" % muting_profile.username)
+    
+    social_profile.mute_user(muting_user_id)
+    
+    return {
+        'code': code,
+        'user_profile': social_profile.canonical(),
+    }
+
+@ajax_login_required
+@required_params('user_id', method="POST")
+@json.json_view
+def unmute_user(request):
+    profile = MSocialProfile.get_user(request.user.pk)
+    muting_user_id = int(request.POST['user_id'])
+    muting_profile = MSocialProfile.get_user(muting_user_id)
+    code = 1
+    
+    logging.user(request, "~FM~SBUn-~SN~FMMuting user ~SB%s" % muting_profile.username)
+    
+    profile.unmute_user(muting_user_id)
+    
+    return {
+        'code': code,
+        'user_profile': profile.canonical(),
+    }
 
 @required_params('query', method="GET")
 @json.json_view
@@ -1315,7 +1351,7 @@ def shared_stories_rss_feed_noid(request):
     return index
 
 @ratelimit(minutes=1, requests=5)
-def shared_stories_rss_feed(request, user_id, username):
+def shared_stories_rss_feed(request, user_id, username=None):
     try:
         user = User.objects.get(pk=user_id)
     except User.DoesNotExist:

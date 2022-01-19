@@ -20,7 +20,7 @@ class JSONFetcher:
             logging.debug('   ***> [%-30s] ~FRJSON fetch failed: %s' % 
                           (self.feed.log_title[:30], address))
             return
-        
+
         data = {}
         data['title'] = json_feed.get('title', '[Untitled]')
         data['link'] = json_feed.get('home_page_url', "")
@@ -43,11 +43,16 @@ class JSONFetcher:
         pubdate = item.get('date_published', None)
         if pubdate:
             date_published = dateutil.parser.parse(pubdate)
+        authors = item.get('authors', item.get('author', {}))
+        if isinstance(authors, list):
+            author_name = ', '.join([author.get('name', "") for author in authors])
+        else:
+            author_name = authors.get('name', "")
         story = {
             'title': item.get('title', ""),
             'link': item.get('external_url', item.get('url', "")),
             'description': item.get('content_html', item.get('content_text', "")),
-            'author_name': item.get('authors', item.get('author', {})).get('name', ""),
+            'author_name': author_name,
             'categories': item.get('tags', []),
             'unique_id': str(item.get('id', item.get('url', ""))),
             'pubdate': date_published,

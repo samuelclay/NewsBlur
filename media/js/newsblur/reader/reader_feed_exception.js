@@ -7,7 +7,7 @@ NEWSBLUR.ReaderFeedException = function(feed_id, options) {
         
     this.options = $.extend({}, defaults, options);
     this.model   = NEWSBLUR.assets;
-    this.feed_id = _.isString(feed_id) ? parseInt(feed_id.replace('feed:', ''), 10) : feed_id;
+    this.feed_id = _.isString(feed_id) && _.string.startsWith(feed_id, 'feed:') ? parseInt(feed_id.replace('feed:', ''), 10) : feed_id;
     this.feed    = this.model.get_feed(feed_id);
     this.folder_title  = this.options.folder_title;
     this.folder  = this.folder_title && NEWSBLUR.assets.get_folder(this.folder_title);
@@ -24,7 +24,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         if (this.folder) {
             NEWSBLUR.Modal.prototype.initialize_folder.call(this, this.folder_title);
         } else {
-            NEWSBLUR.Modal.prototype.initialize_feed.call(this, this.feed_id);            
+            NEWSBLUR.Modal.prototype.initialize_feed.call(this, this.feed_id);
         }
         this.make_modal();
         if (this.feed) {

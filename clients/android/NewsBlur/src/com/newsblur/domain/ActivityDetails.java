@@ -23,7 +23,7 @@ public class ActivityDetails {
     @SerializedName("story_hash")
     public String storyHash;
 
-    public class WithUser {
+    public static class WithUser {
         public String username;
 
         @SerializedName("photo_url")

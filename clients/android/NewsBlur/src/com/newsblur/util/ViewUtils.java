@@ -9,13 +9,14 @@ import android.widget.ImageView;
 
 import com.newsblur.activity.Profile;
 import com.newsblur.view.FlowLayout;
+import com.newsblur.view.RoundedImageView;
 
 public class ViewUtils {
 
     private ViewUtils() {} // util class - no instances
 
 	public static ImageView createSharebarImage(final Context context, final String photoUrl, final String userId) {
-		ImageView image = new ImageView(context);
+		RoundedImageView image = new RoundedImageView(context);
 		int imageLength = UIUtils.dp2px(context, 15);
 		image.setMaxHeight(imageLength);
 		image.setMaxWidth(imageLength);
@@ -29,7 +30,7 @@ public class ViewUtils {
 		image.setMaxWidth(imageLength);
 		
 		image.setLayoutParams(imageParameters);
-		FeedUtils.iconLoader.displayImage(photoUrl, image, 10f, false);
+		FeedUtils.iconLoader.displayImage(photoUrl, image);
 		image.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {

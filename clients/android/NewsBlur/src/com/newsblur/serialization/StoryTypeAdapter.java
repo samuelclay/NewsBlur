@@ -55,8 +55,8 @@ public class StoryTypeAdapter implements JsonDeserializer<Story> {
         // populate the shortContent field
         if (story.content != null) {
             CharSequence parsed = UIUtils.fromHtml(story.content);
-            int length = 200;
-            if (parsed.length() < 200) { length = parsed.length(); }
+            int length = 400;
+            if (parsed.length() < length) { length = parsed.length(); }
             story.shortContent = parsed.subSequence(0, length).toString();
             Matcher m = ShortContentExcludes .matcher(story.shortContent);
             story.shortContent = m.replaceAll(" ").trim();

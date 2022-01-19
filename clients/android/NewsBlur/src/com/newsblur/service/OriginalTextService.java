@@ -1,6 +1,7 @@
 package com.newsblur.service;
 
-import com.newsblur.activity.NbActivity;
+import static com.newsblur.service.NBSyncReceiver.UPDATE_TEXT;
+
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.util.AppConstants;
@@ -84,7 +85,7 @@ public class OriginalTextService extends SubService {
                 }
             }
         } finally {
-            gotData(NbActivity.UPDATE_TEXT);
+            parent.sendSyncUpdate(UPDATE_TEXT);
             hashes.removeAll(fetchedHashes);
         }
     }

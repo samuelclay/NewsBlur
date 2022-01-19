@@ -1,4 +1,4 @@
-from flask import Flask, abort
+from flask import Flask, abort, request
 import os
 import psycopg2
 import pymysql
@@ -8,6 +8,16 @@ import elasticsearch
 
 from newsblur_web import settings
 
+import sentry_sdk
+from flask import Flask
+from sentry_sdk.integrations.flask import FlaskIntegration
+
+sentry_sdk.init(
+    dsn=settings.FLASK_SENTRY_DSN,
+    integrations=[FlaskIntegration()],
+    traces_sample_rate=0.001,
+)
+
 app = Flask(__name__)
 
 PRIMARY_STATE = 1
@@ -15,11 +25,14 @@ SECONDARY_STATE = 2
 
 @app.route("/db_check/postgres")
 def db_check_postgres():
+    if request.args.get('consul') == '1':
+        return str(1)
+
     connect_params = "dbname='%s' user='%s' password='%s' host='%s' port='%s'" % (
         settings.DATABASES['default']['NAME'],
         settings.DATABASES['default']['USER'],
         settings.DATABASES['default']['PASSWORD'],
-        'db-postgres.service.nyc1.consul',
+        f'{settings.SERVER_NAME}.node.nyc1.consul',
         settings.DATABASES['default']['PORT'],
     )
     try:
@@ -38,6 +51,9 @@ def db_check_postgres():
 
 @app.route("/db_check/mysql")
 def db_check_mysql():
+    if request.args.get('consul') == '1':
+        return str(1)
+
     connect_params = "dbname='%s' user='%s' password='%s' host='%s' port='%s'" % (
         settings.DATABASES['default']['NAME'],
         settings.DATABASES['default']['USER'],
@@ -66,19 +82,29 @@ def db_check_mysql():
 
 @app.route("/db_check/mongo")
 def db_check_mongo():
+    if request.args.get('consul') == '1':
+        return str(1)
+
     try:
-        client = pymongo.MongoClient(f'mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@db-mongo.server.nyc1.consul?authSource=admin')
+        # The `mongo` hostname below is a reference to the newsblurnet docker network, where 172.18.0.0/16 is defined
+        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}.node.nyc1.consul/?authSource=admin")
         db = client.newsblur
     except:
         abort(503)
-    
-    try:
-        stories = db.stories.count()
-    except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
-        abort(504)
 
-    if not stories:
+    try:
+        stories = db.stories.estimated_document_count()
+    except pymongo.errors.NotMasterError:
         abort(504)
+    except pymongo.errors.ServerSelectionTimeoutError:
+        abort(505)
+    except pymongo.errors.OperationFailure as e:
+        if 'Authentication failed' in str(e):
+            abort(506)
+        abort(507)
+        
+    if not stories:
+        abort(510)
     
     status = client.admin.command('replSetGetStatus')
     members = status['members']
@@ -88,23 +114,52 @@ def db_check_mongo():
         member_state = member['state']
         optime = member['optime']
         if member_state == PRIMARY_STATE:
-            primary_optime = optime.time
+            primary_optime = optime['ts'].time
         elif member_state == SECONDARY_STATE:
-            if not oldest_secondary_optime or optime.time < oldest_secondary_optime:
-                oldest_secondary_optime = optime.time
+            if not oldest_secondary_optime or optime['ts'].time < oldest_secondary_optime:
+                oldest_secondary_optime = optime['ts'].time
 
     if not primary_optime or not oldest_secondary_optime:
-        abort(505)
+        abort(511)
 
-    if primary_optime - oldest_secondary_optime > 100:
-        abort(506)
+    # if primary_optime - oldest_secondary_optime > 100:
+    #     abort(512)
 
     return str(stories)
 
+@app.route("/db_check/mongo_analytics")
+def db_check_mongo_analytics():
+    return str(1)
+    if request.args.get('consul') == '1':
+        return str(1)
+
+    try:
+        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{settings.SERVER_NAME}/?authSource=admin")
+        db = client.nbanalytics
+    except:
+        abort(503)
+    
+    try:
+        fetches = db.feed_fetches.estimated_document_count()
+    except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
+        abort(504)
+    except pymongo.errors.OperationFailure as e:
+        if 'Authentication failed' in str(e):
+            abort(505)
+        abort(506)
+        
+    if not fetches:
+        abort(510)
+    
+    return str(fetches)
+
 @app.route("/db_check/redis_user")
 def db_check_redis_user():
+    if request.args.get('consul') == '1':
+        return str(1)
+
     try:
-        r = redis.Redis('db-redis-user.server.nyc1.consul', db=0)
+        r = redis.Redis('db-redis-user.service.nyc1.consul', db=0)
     except:
         abort(503)
     
@@ -119,9 +174,12 @@ def db_check_redis_user():
         abort(505)
 
 @app.route("/db_check/redis_story")
-def db_check_redis_story():
+def db_check_redis_story():    
+    if request.args.get('consul') == '1':
+        return str(1)
+    
     try:
-        r = redis.Redis('db-redis-story.server.nyc1.consul', db=1)
+        r = redis.Redis('db-redis-story.service.nyc1.consul', db=1)
     except:
         abort(503)
     
@@ -137,8 +195,11 @@ def db_check_redis_story():
 
 @app.route("/db_check/redis_sessions")
 def db_check_redis_sessions():
+    if request.args.get('consul') == '1':
+        return str(1)
+
     try:
-        r = redis.Redis('db-redis-sessions.server.nyc1.consul', db=5)
+        r = redis.Redis('db-redis-sessions.service.nyc1.consul', db=5)
     except:
         abort(503)
     
@@ -154,8 +215,11 @@ def db_check_redis_sessions():
 
 @app.route("/db_check/redis_pubsub")
 def db_check_redis_pubsub():
+    if request.args.get('consul') == '1':
+        return str(1)
+
     try:
-        r = redis.Redis('db-redis-pubsub.server.nyc1.consul', db=1)
+        r = redis.Redis('db-redis-pubsub.service.nyc1.consul', db=1)
     except:
         abort(503)
     
@@ -172,11 +236,11 @@ def db_check_redis_pubsub():
 @app.route("/db_check/elasticsearch")
 def db_check_elasticsearch():
     try:
-        conn = elasticsearch.Elasticsearch('elasticsearch')
+        conn = elasticsearch.Elasticsearch("elasticsearch")
     except:
         abort(503)
     
-    if conn.indices.exists_index('feeds-index'):
+    if conn.indices.exists('feeds-index'):
         return str("Index exists, but didn't try search")
         # query = pyes.query.TermQuery("title", "daring fireball")
         # results = conn.search(query=query, size=1, doc_types=['feeds-type'], sort="num_subscribers:desc")

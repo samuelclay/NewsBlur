@@ -11,5 +11,29 @@ providers:
     allowUiUpdates: true
     type: file
     options:
-      path: /etc/grafana/provisioning/dashboards/node_exporter_dashboard.json
+      path: /etc/grafana/provisioning/dashboards/node-exporter_dashboard.json
+      foldersFromFilesStructure: true
+  - name: MongoDB
+    allowUiUpdates: true
+    type: file
+    options:
+      path: /etc/grafana/provisioning/dashboards/mongodb_dashboard.json
+      foldersFromFilesStructure: true
+  - name: Redis
+    allowUiUpdates: true
+    type: file
+    options:
+      path: /etc/grafana/provisioning/dashboards/redis_dashboard.json
+      foldersFromFilesStructure: true
+  - name: ElasticSearch
+    allowUiUpdates: true
+    type: file
+    options:
+      path: /etc/grafana/provisioning/dashboards/elasticsearch_dashboard.json
+      foldersFromFilesStructure: true
+  - name: Postgres
+    allowUiUpdates: true
+    type: file
+    options:
+      path: /etc/grafana/provisioning/dashboards/postgres_dashboard.json
       foldersFromFilesStructure: true

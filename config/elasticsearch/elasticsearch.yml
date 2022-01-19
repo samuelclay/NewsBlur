@@ -1,6 +1,8 @@
 http.cors.enabled: true
 http.cors.allow-origin: "*"
 
+discovery.type: single-node
+
 cluster.routing.allocation.disk.threshold_enabled: false
 
 cluster.name: "docker-cluster"

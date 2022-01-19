@@ -10,32 +10,32 @@ import android.graphics.Bitmap;
 
 public class MemoryCache {
 
-	private Map<String, Bitmap> cache = Collections.synchronizedMap(new LinkedHashMap<String, Bitmap>(32, 1.5f, true));
+	private final Map<String, Bitmap> cache = Collections.synchronizedMap(new LinkedHashMap<>(32, 1.5f, true));
+	private final long limit; //max memory in bytes
 	private long size = 0; //current allocated size
-	private long limit; //max memory in bytes
 
 	public MemoryCache(long limitBytes) {
         this.limit = limitBytes;
 	}
 
-	public Bitmap get(String id){
+	public Bitmap get(String url){
 		try {
-			if (cache == null || !cache.containsKey(id)) {
+			if (!cache.containsKey(url)) {
 				return null;
 			} else {
-				return cache.get(id);
+				return cache.get(url);
 			}
 		} catch (NullPointerException ex){
 			return null;
 		}
 	}
 
-	public void put(String id, Bitmap bitmap) {
+	public void put(String url, Bitmap bitmap) {
         synchronized (this) {
-            if (cache.containsKey(id)) {
-                size -= getSizeInBytes(cache.get(id));
+			if (cache.containsKey(url)) {
+                size -= getSizeInBytes(cache.get(url));
             }
-            cache.put(id, bitmap);
+            cache.put(url, bitmap);
             size += getSizeInBytes(bitmap);
             checkSize();
         }
@@ -43,12 +43,12 @@ public class MemoryCache {
 
 	private void checkSize() {
 		if (size > limit) {
-			final Iterator<Entry<String, Bitmap>> iter = cache.entrySet().iterator();  
+			final Iterator<Entry<String, Bitmap>> iter = cache.entrySet().iterator();
 			while (iter.hasNext()) {
 				final Entry<String, Bitmap> entry = iter.next();
 				size -= getSizeInBytes(entry.getValue());
 				iter.remove();
-				if (size <= limit) {
+				if (size <= limit * 0.8) {
 					break;
 				}
 			}

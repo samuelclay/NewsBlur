@@ -1,0 +1,16 @@
+{
+    "service": {
+        {% if 'mongo' in inventory_hostname %}
+        "name": "flask_metrics_mongo",
+        {% elif 'redis' in inventory_hostname %}
+        "name": "flask_metrics_redis",
+        {% elif 'www' in inventory_hostname %}
+        "name": "flask_metrics_haproxy",
+        {% endif %}
+        "tags": [
+            "flask_metrics",
+            "metrics"
+        ],
+        "port": 5569
+    }
+}

@@ -41,6 +41,6 @@
     - name: Reload haproxy
       debug: 
         msg: Gracefully reloading HAProxy
-      when: updated_config and haproxy_verified.rc == 0
+      when: haproxy_verified.rc == 0
       changed_when: yes
       notify: reload haproxy

@@ -9,10 +9,18 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Process;
 
+import com.newsblur.NbApplication;
 import com.newsblur.R;
-import com.newsblur.activity.NbActivity;
 import com.newsblur.database.BlurDatabaseHelper;
 import static com.newsblur.database.BlurDatabaseHelper.closeQuietly;
+import static com.newsblur.service.NBSyncReceiver.UPDATE_DB_READY;
+import static com.newsblur.service.NBSyncReceiver.UPDATE_METADATA;
+import static com.newsblur.service.NBSyncReceiver.UPDATE_REBUILD;
+import static com.newsblur.service.NBSyncReceiver.UPDATE_STATUS;
+import static com.newsblur.service.NBSyncReceiver.UPDATE_STORY;
+
+import androidx.annotation.NonNull;
+
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
@@ -182,7 +190,7 @@ public class NBSyncService extends JobService {
     public int onStartCommand(Intent intent, int flags, final int startId) {
         com.newsblur.util.Log.d(this, "onStartCommand");
         // only perform a sync if the app is actually running or background syncs are enabled
-        if ((NbActivity.getActiveActivityCount() > 0) || PrefsUtils.isBackgroundNeeded(this)) {
+        if (NbApplication.isAppForeground() || PrefsUtils.isBackgroundNeeded(this)) {
             HaltNow = false;
             // Services actually get invoked on the main system thread, and are not
             // allowed to do tangible work.  We spawn a thread to do so.
@@ -215,7 +223,7 @@ public class NBSyncService extends JobService {
     public boolean onStartJob(final JobParameters params) {
         com.newsblur.util.Log.d(this, "onStartJob");
         // only perform a sync if the app is actually running or background syncs are enabled
-        if ((NbActivity.getActiveActivityCount() > 0) || PrefsUtils.isBackgroundNeeded(this)) {
+        if (NbApplication.isAppForeground() || PrefsUtils.isBackgroundNeeded(this)) {
             HaltNow = false;
             // Services actually get invoked on the main system thread, and are not
             // allowed to do tangible work.  We spawn a thread to do so.
@@ -260,7 +268,7 @@ public class NBSyncService extends JobService {
 
             Log.d(this, "starting primary sync");
 
-            if (NbActivity.getActiveActivityCount() < 1) {
+            if (!NbApplication.isAppForeground()) {
                 // if the UI isn't running, politely run at background priority
                 Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             } else {
@@ -273,7 +281,7 @@ public class NBSyncService extends JobService {
             if (OfflineNow) {
                 if (NetworkUtils.isOnline(this)) {
                     OfflineNow = false;   
-                    NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
+                    sendSyncUpdate(UPDATE_STATUS);
                 } else {
                     com.newsblur.util.Log.d(this, "Abandoning sync: network still offline");
                     return;
@@ -285,7 +293,7 @@ public class NBSyncService extends JobService {
             housekeeping();
 
             // check to see if we are on an allowable network only after ensuring we have CPU
-            if (!( (NbActivity.getActiveActivityCount() > 0) ||
+            if (!( NbApplication.isAppForeground() ||
                    PrefsUtils.isEnableNotifications(this) || 
                    PrefsUtils.isBackgroundNetworkAllowed(this) ||
                     WidgetUtils.hasActiveAppWidgets(this)) ) {
@@ -294,7 +302,7 @@ public class NBSyncService extends JobService {
             }
 
             // ping activities to indicate that housekeeping is done, and the DB is safe to use
-            NbActivity.updateAllActivities(NbActivity.UPDATE_DB_READY);
+            sendSyncUpdate(UPDATE_DB_READY);
 
             // async text requests might have been queued up and are being waiting on by the live UI. give them priority
             originalTextService.start();
@@ -337,10 +345,10 @@ public class NBSyncService extends JobService {
             boolean upgraded = PrefsUtils.checkForUpgrade(this);
             if (upgraded) {
                 HousekeepingRunning = true;
-                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS | NbActivity.UPDATE_REBUILD);
+                sendSyncUpdate(UPDATE_STATUS | UPDATE_REBUILD);
                 // wipe the local DB if this is a first background run. if this is a first foreground
                 // run, InitActivity will have wiped for us
-                if (NbActivity.getActiveActivityCount() < 1) {
+                if (!NbApplication.isAppForeground()) {
                     dbHelper.dropAndRecreateTables();
                 }
                 // in case this is the first time we have run since moving the cache to the new location,
@@ -353,11 +361,11 @@ public class NBSyncService extends JobService {
 
             boolean autoVac = PrefsUtils.isTimeToVacuum(this);
             // this will lock up the DB for a few seconds, only do it if the UI is hidden
-            if (NbActivity.getActiveActivityCount() > 0) autoVac = false;
+            if (NbApplication.isAppForeground()) autoVac = false;
             
             if (upgraded || autoVac) {
                 HousekeepingRunning = true;
-                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
+                sendSyncUpdate(UPDATE_STATUS);
                 com.newsblur.util.Log.i(this.getClass().getName(), "rebuilding DB . . .");
                 dbHelper.vacuum();
                 com.newsblur.util.Log.i(this.getClass().getName(), ". . . . done rebuilding DB");
@@ -366,7 +374,7 @@ public class NBSyncService extends JobService {
         } finally {
             if (HousekeepingRunning) {
                 HousekeepingRunning = false;
-                NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA);
+                sendSyncUpdate(UPDATE_METADATA);
             }
         }
     }
@@ -387,7 +395,7 @@ public class NBSyncService extends JobService {
             ActionsRunning = true;
 
             actionsloop : while (c.moveToNext()) {
-                NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
+                sendSyncUpdate(UPDATE_STATUS);
                 String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID));
                 ReadingAction ra;
                 try {
@@ -419,18 +427,19 @@ public class NBSyncService extends JobService {
                     com.newsblur.util.Log.i(this.getClass().getName(), "Discarding reading action with fatal message.");
                     dbHelper.clearAction(id);
                     String message = response.getErrorMessage(null);
-                    if (message != null) NbActivity.toastError(message);
+                    if (message != null) sendToastError(message);
                 } else {
                     // success!
                     dbHelper.clearAction(id);
                     FollowupActions.add(ra);
+                    sendSyncUpdate(response.impactCode);
                 }
                 lastActionCount--;
             }
         } finally {
             closeQuietly(c);
             ActionsRunning = false;
-            NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
+            sendSyncUpdate(UPDATE_STATUS);
         }
     }
 
@@ -448,7 +457,7 @@ public class NBSyncService extends JobService {
             int impact = ra.doLocal(dbHelper, true);
             impactFlags |= impact;
         }
-        NbActivity.updateAllActivities(impactFlags);
+        sendSyncUpdate(impactFlags);
 
         // if there is a feed fetch loop running, don't clear, there will likely be races for
         // stories that were just tapped as they were being re-fetched
@@ -484,7 +493,7 @@ public class NBSyncService extends JobService {
         com.newsblur.util.Log.i(this.getClass().getName(), "ready to sync feed list");
 
         FFSyncRunning = true;
-        NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
+        sendSyncUpdate(UPDATE_STATUS);
 
         // there is an issue with feeds that have no folder or folders that list feeds that do not exist.  capture them for workarounds.
         Set<String> debugFeedIdsFromFolders = new HashSet<String>();
@@ -618,7 +627,7 @@ public class NBSyncService extends JobService {
 
         } finally {
             FFSyncRunning = false;
-            NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA | NbActivity.UPDATE_STATUS);
+            sendSyncUpdate(UPDATE_METADATA | UPDATE_STATUS);
         }
 
     }
@@ -633,7 +642,7 @@ public class NBSyncService extends JobService {
             if (RecountCandidates.size() < 1) return;
 
             RecountsRunning = true;
-            NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
+            sendSyncUpdate(UPDATE_STATUS);
 
             // of all candidate feeds that were touched, now check to see if any
             // actually need their counts fetched
@@ -699,7 +708,7 @@ public class NBSyncService extends JobService {
         } finally {
             if (RecountsRunning) {
                 RecountsRunning = false;
-                NbActivity.updateAllActivities(NbActivity.UPDATE_METADATA | NbActivity.UPDATE_STATUS);
+                sendSyncUpdate(UPDATE_METADATA | UPDATE_STATUS);
             }
             FlushRecounts = false;
         }
@@ -760,7 +769,7 @@ public class NBSyncService extends JobService {
             ReadFilter filter = PrefsUtils.getReadFilter(this, fs);
 
             StorySyncRunning = true;
-            NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
+            sendSyncUpdate(UPDATE_STATUS);
 
             while (totalStoriesSeen < PendingFeedTarget) {
                 if (stopSync()) return;
@@ -784,7 +793,7 @@ public class NBSyncService extends JobService {
                 insertStories(apiResponse, fs);
                 // re-do any very recent actions that were incorrectly overwritten by this page
                 finishActions();
-                NbActivity.updateAllActivities(NbActivity.UPDATE_STORY | NbActivity.UPDATE_STATUS);
+                sendSyncUpdate(UPDATE_STORY | UPDATE_STATUS);
 
                 prefetchOriginalText(apiResponse);
             
@@ -804,7 +813,7 @@ public class NBSyncService extends JobService {
 
         } finally {
             StorySyncRunning = false;
-            NbActivity.updateAllActivities(NbActivity.UPDATE_STATUS);
+            sendSyncUpdate(UPDATE_STATUS);
             synchronized (PENDING_FEED_MUTEX) {
                 if (finished && fs.equals(PendingFeed)) PendingFeed = null;
             }
@@ -996,7 +1005,7 @@ public class NBSyncService extends JobService {
     }
 
     private boolean backoffBackgroundCalls() {
-        if (NbActivity.getActiveActivityCount() > 0) return false;
+        if (NbApplication.isAppForeground()) return false;
         if (System.currentTimeMillis() > (lastAPIFailure + AppConstants.API_BACKGROUND_BACKOFF_MILLIS)) return false;
         com.newsblur.util.Log.i(this.getClass().getName(), "abandoning background sync due to recent API failures.");
         return true;
@@ -1128,7 +1137,7 @@ public class NBSyncService extends JobService {
                 dbHelper.prepareReadingSession(fs);
                 // note which feedset we are loading so we can trigger another reset when it changes
                 dbHelper.setSessionFeedSet(fs);
-                NbActivity.updateAllActivities(NbActivity.UPDATE_STORY | NbActivity.UPDATE_STATUS);
+                dbHelper.sendSyncUpdate(UPDATE_STORY | UPDATE_STATUS);
             }
         }
     }
@@ -1241,4 +1250,21 @@ public class NBSyncService extends JobService {
         return s.toString();
     }
 
+    protected void sendSyncUpdate(int update) {
+        Intent i = new Intent(NBSyncReceiver.NB_SYNC_ACTION);
+        i.putExtra(NBSyncReceiver.NB_SYNC_UPDATE_TYPE, update);
+        broadcastSync(i);
+    }
+
+    protected void sendToastError(@NonNull String message) {
+        Intent i = new Intent(NBSyncReceiver.NB_SYNC_ACTION);
+        i.putExtra(NBSyncReceiver.NB_SYNC_ERROR_MESSAGE, message);
+        broadcastSync(i);
+    }
+
+    private void broadcastSync(@NonNull Intent intent) {
+        if (NbApplication.isAppForeground()) {
+            sendBroadcast(intent);
+        }
+    }
 }

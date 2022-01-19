@@ -13,14 +13,14 @@ groups:
   push: inventory_hostname.startswith('app-push')
   blogs: inventory_hostname.startswith('blog')
 
-  work: inventory_hostname.startswith('task-work')
-
   node: inventory_hostname.startswith('node')
   node_socket: inventory_hostname.startswith('node-socket')
 
   # debugs: inventory_hostname.startswith('debug')
 
   task: inventory_hostname.startswith('task')
+  celery: inventory_hostname.startswith('task-celery')
+  work: inventory_hostname.startswith('task-work')
   
   staging: inventory_hostname.startswith('staging')
   
@@ -29,7 +29,8 @@ groups:
   elasticsearch: inventory_hostname.startswith('db-elasticsearch')
   redis: inventory_hostname.startswith('db-redis')
   postgres: inventory_hostname.startswith('db-postgres')
-  mongo: inventory_hostname.startswith('db-mongo')
+  mongo: inventory_hostname.startswith('db-mongo') and not inventory_hostname.startswith('db-mongo-analytics')
   mongo_analytics: inventory_hostname.startswith('db-mongo-analytics')
   consul: inventory_hostname.startswith('db-consul')
   metrics: inventory_hostname.startswith('db-metrics')
+  sentry: inventory_hostname.startswith('db-sentry')

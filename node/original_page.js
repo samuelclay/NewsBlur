@@ -30,14 +30,14 @@
       return fs.exists(filePath, function(exists, err) {
         log.debug(`Loading: ${feedId} (${filePath}). ` + `${exists ? "" : "NOT FOUND"}`);
         if (!exists) {
-          return res.send(404);
+          return res.sendStatus(404);
         }
         return fs.stat(filePath, function(err, stats) {
           if (!err && etag && stats.mtime === etag) {
-            return res.send(304);
+            return res.sendStatus(304);
           }
           if (!err && lastModified && stats.mtime === lastModified) {
-            return res.send(304);
+            return res.sendStatus(304);
           }
           return fs.readFile(filePath, function(err, content) {
             res.header('Etag', Date.parse(stats.mtime));

@@ -13,7 +13,7 @@
         android:paddingBottom="8dp"
         android:paddingTop="8dp" >
 
-        <ImageView
+        <com.newsblur.view.RoundedImageView
             android:id="@+id/comment_user_image"
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -22,7 +22,7 @@
             android:contentDescription="@string/description_comment_user"
             android:scaleType="fitCenter" />
 
-        <ImageView
+        <com.newsblur.view.RoundedImageView
             android:id="@+id/comment_sharesource_image"
             android:layout_width="25dp"
             android:layout_height="25dp"
@@ -33,7 +33,7 @@
             android:scaleType="fitCenter"
             android:visibility="invisible" />
 
-        <ImageView
+        <com.newsblur.view.RoundedImageView
             android:id="@+id/comment_user_reshare_image"
             android:layout_width="35dp"
             android:layout_height="35dp"

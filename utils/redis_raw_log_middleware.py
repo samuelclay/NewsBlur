@@ -50,7 +50,7 @@ class RedisDumpMiddleware(object):
             if not getattr(connection, 'queriesx', False):
                 connection.queriesx = []
             connection.queriesx.append({
-                'redis': message,
+                message['redis_server_name']: message,
                 'time': '%.6f' % duration,
             })
             return result
@@ -58,13 +58,24 @@ class RedisDumpMiddleware(object):
     
     def process_message(self, *args, **kwargs):
         query = []
+        redis_server_name = None
         for a, arg in enumerate(args):
             if isinstance(arg, Connection):
+                redis_connection = arg
+                redis_server_name = redis_connection.host
+                if 'db-redis-user' in redis_server_name:
+                    redis_server_name = 'redis_user'
+                elif 'db-redis-session' in redis_server_name:
+                    redis_server_name = 'redis_session'
+                elif 'db-redis-story' in redis_server_name:
+                    redis_server_name = 'redis_story'
+                elif 'db-redis-pubsub' in redis_server_name:
+                    redis_server_name = 'redis_pubsub'
                 continue
             if len(str(arg)) > 100:
                 arg = "[%s bytes]" % len(str(arg))
             query.append(str(arg).replace('\n', ''))
-        return { 'query': ' '.join(query) }
+        return { 'query': ' '.join(query), 'redis_server_name': redis_server_name }
 
     def __call__(self, request):
         response = None

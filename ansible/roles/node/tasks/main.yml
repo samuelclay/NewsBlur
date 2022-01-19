@@ -16,13 +16,47 @@
 - name: Add SERVER_NAME to app secrets
   lineinfile:
     path: /srv/newsblur/node/.env
+    create: yes
+    mode: 0600
     line: 'SERVER_NAME = "{{ inventory_hostname }}"'
 
-- name: Make docker network for newsblurnet
+- name: Get the volume name
+  shell: ls /dev/disk/by-id/ | grep -v part
+  register: volume_name_raw
+  when: '"node-page" in inventory_hostname'
+
+- set_fact:
+    volume_name: "{{ volume_name_raw.stdout }}"
+  when: '"node-page" in inventory_hostname'
+
+- debug:
+    msg: "{{ volume_name }}"
+  when: '"node-page" in inventory_hostname'
+
+- name: Create the mount point
   become: yes
-  docker_network:
-    name: newsblurnet
-  notify: restart docker
+  file: 
+    path: "/mnt/{{ inventory_hostname | regex_replace('-', '') }}"
+    state: directory
+  when: '"node-page" in inventory_hostname'
+
+- name: Mount volume read-write
+  become: yes
+  mount:
+    path: "/mnt/{{ inventory_hostname | regex_replace('-', '') }}"
+    src: "/dev/disk/by-id/{{ volume_name }}"
+    fstype: xfs
+    opts: defaults,discard
+    state: mounted
+  when: '"node-page" in inventory_hostname'
+
+- name: Symlink node-page volume from /srv/originals
+  become: yes
+  file:
+    dest: /srv/originals
+    src: "/mnt/{{ inventory_hostname | regex_replace('-', '') }}"
+    state: link  
+  when: '"node-page" in inventory_hostname'
 
 - name: Start node docker containers
   become: yes
@@ -35,6 +69,10 @@
     pull: true
     networks_cli_compatible: yes
     network_mode: default
+    hostname: "{{ inventory_hostname }}"
+    log_driver: json-file
+    log_options:
+      max-size: 100m    
     networks:
       - name: newsblurnet
     ports:
@@ -44,6 +82,8 @@
     restart_policy: unless-stopped
     volumes:
       - /srv/newsblur/node:/srv/node
+      - /srv/originals:/srv/originals
+      - "/mnt/{{ inventory_hostname | regex_replace('-', '') }}:/mnt/{{ inventory_hostname | regex_replace('-', '') }}"
   with_items:
     - node-socket
     - node-page
@@ -59,6 +99,7 @@
     image: "{{ item.image }}"
     state: started
     container_default_behavior: no_defaults
+    hostname: "{{ inventory_hostname }}"
     pull: true
     ports: 
       - "{{ item.ports }}"
