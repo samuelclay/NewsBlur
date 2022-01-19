@@ -1,7 +1,7 @@
 ---
 - name: SETUP -> app containers
   hosts: web
-  serial: "50%"
+  # serial: "50%"
   vars_files:
     - ../env_vars/base.yml
   vars:
