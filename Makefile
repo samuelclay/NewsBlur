@@ -109,22 +109,22 @@ pull:
 	- docker pull newsblur/newsblur_monitor
 
 build_web:
-	- docker image build . --platform linux/amd64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
+	- docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
 build_node: 
-	- docker image build . --platform linux/amd64 --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
+	- docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
 build_monitor: 
-	- docker image build . --platform linux/amd64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
+	- docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
 build_deploy: 
-	- docker image build . --platform linux/amd64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
+	- docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
 build: build_web build_node build_monitor build_deploy
-push_web: build_web
-	- docker push newsblur/newsblur_python3
-push_node: build_node
-	- docker push newsblur/newsblur_node
-push_monitor: build_monitor
-	- docker push newsblur/newsblur_monitor
-push_deploy: build_deploy
-	- docker push newsblur/newsblur_deploy
+push_web:
+	- docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
+push_node:
+	- docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
+push_monitor:
+	- docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
+push_deploy:
+	- docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
 push_images: push_web push_node push_monitor push_deploy
 push: build push_images
 

@@ -50,7 +50,7 @@ services:
   
   imageproxy:
     container_name: imageproxy
-    image: willnorris/imageproxy:latest
+    image: ghcr.io/willnorris/imageproxy:latest
     user: "${CURRENT_UID}:${CURRENT_GID}"
     entrypoint: /app/imageproxy -addr 0.0.0.0:8088 -cache /tmp/imageproxy -verbose
     restart: unless-stopped
