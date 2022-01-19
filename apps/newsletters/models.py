@@ -192,6 +192,9 @@ class EmailNewsletter:
             return params['stripped-html']
         if 'body-plain' in params:
             return linkify(linebreaks(params['body-plain']))
+        
+        if force_plain:
+            return self._get_content(params, force_plain=False)
     
     def _clean_content(self, content):
         original = content
