@@ -20,6 +20,7 @@
         -d '{"version": "{{ lookup('pipe', 'date "+%Y-%m-%d %H:%M:%S"') }}"}'
 
     - name: Cleanup static assets before compression
+      run_once: yes
       connection: local
       file:
         state: absent
