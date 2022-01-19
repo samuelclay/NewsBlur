@@ -19,7 +19,6 @@ RUN mv closure-compiler-v20200719.jar /usr/local/bin/compiler.jar
 RUN curl -fsSL https://deb.nodesource.com/setup_current.x | bash -
 RUN apt install -y nodejs build-essential
 RUN	npm -g install yuglify
-# RUN	npm -g install google-closure-compiler
 
 # Cleanup
 RUN apt-get clean
