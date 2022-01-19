@@ -1168,7 +1168,7 @@ class RUserStory:
                 message = "Story is more than %s days old. Premium Archive accounts can mark any story as unread." % (
                           settings.DAYS_OF_UNREAD)
             elif story.story_date > user.profile.unread_cutoff_premium:
-                message = "Story is more than %s days old. Premium accounts can mark unread up to %s days, and Premium Archive accounts can mark any story as unread." % (
+                message = "Story is older than %s days. Premium has %s days, and Premium Archive can mark anything unread." % (
                           settings.DAYS_OF_UNREAD_FREE, settings.DAYS_OF_UNREAD)
             else:
                 message = "Story is more than %s days old, cannot mark as unread." % (
