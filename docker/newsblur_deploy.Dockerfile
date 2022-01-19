@@ -24,4 +24,4 @@ RUN	npm -g install yuglify
 RUN apt-get clean
 
 WORKDIR /srv/newsblur
-CMD python manage.py collectstatic --no-input --clear -v 3 -l
+CMD python manage.py collectstatic --no-input --clear -v 1 -l
