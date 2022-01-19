@@ -107,8 +107,8 @@ NEWSBLUR.Views.StoryTabView = Backbone.View.extend({
             //     proxied_https: true
             // }, "Imperfect proxy due<br />to http over https");
         } else if (!correct && this.flags.proxied_https) {
-            NEWSBLUR.reader.switch_taskbar_view('text', {skip_save_type: 'story'});
-            NEWSBLUR.app.taskbar_info.show_stories_error({}, "Sorry, the original story<br />could not be proxied.");
+            // NEWSBLUR.reader.switch_taskbar_view('text', {skip_save_type: 'story'});
+            // NEWSBLUR.app.taskbar_info.show_stories_error({}, "Sorry, the original story<br />could not be proxied.");
         }
     },
 
