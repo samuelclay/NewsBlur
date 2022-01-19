@@ -28,6 +28,14 @@
         - never
         - static
 
+    - name: Updating NewsBlur Deploy container
+      run_once: yes
+      connection: local
+      command: chdir=/srv/newsblur docker pull newsblur/newsblur_deploy
+      tags:
+        - never
+        - static
+
     - name: Compressing JS/CSS assets 
       run_once: yes
       connection: local
@@ -46,6 +54,17 @@
         - never
         - static
       
+    - name: Ensure AWS dependencies installed
+      run_once: yes
+      connection: local
+      pip:
+        name: 
+          - boto3
+          - botocore
+      tags:
+        - never
+        - static
+
     - name: Uploading JS/CSS assets to S3
       run_once: yes
       connection: local
@@ -65,7 +84,7 @@
       git:
         repo: https://github.com/samuelclay/NewsBlur.git
         dest: /srv/newsblur/
-        version: master
+        version: pipeline
       register: pulled
       tags:
         - static
