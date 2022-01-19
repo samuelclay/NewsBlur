@@ -1,15 +1,51 @@
 ---
+- name: Permissions for elasticsearch
+  become: yes
+  file:
+    state: directory
+    mode: 0777
+    path: /var/log/elasticsearch
+
+- name: Permissions for elasticsearch volume
+  become: yes
+  file:
+    state: directory
+    path: /srv/newsblur/docker/volumes
+    recurse: yes
+    owner: nb
+    group: nb
+
+- name: System max_map_count increase
+  become: yes
+  ansible.posix.sysctl:
+    name: vm.max_map_count
+    value: "262144"
+    state: present
+    
 - name: Start Elasticsearch Docker container
   become: yes
   docker_container:
     name: elasticsearch
-    image: elasticsearch:1.7.6
+    image: elasticsearch:7.14.0
     state: started
+    hostname: "{{ inventory_hostname }}"
     ports:
       - '9200:9200'
+      - '9300:9300'
     restart_policy: unless-stopped
+    container_default_behavior: no_defaults
+    networks_cli_compatible: yes
+    # network_mode: host
+    network_mode: default
+    networks:
+      - name: newsblurnet
+        aliases: 
+          - elasticsearch
+    user: 1000:1001
     volumes:
       - /srv/newsblur/docker/volumes/elasticsearch:/usr/share/elasticsearch/data
+      - /var/log/elasticsearch/:/var/log/elasticsearch/
+      - /srv/newsblur/config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
 
 - name: Register elasticsearch in consul
   tags: consul

@@ -4,12 +4,13 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:inAnimation="@android:anim/fade_in"
-    android:outAnimation="@android:anim/fade_out" >
-   
+    android:outAnimation="@android:anim/fade_out">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-    	android:paddingBottom="20dp">
+        android:animateLayoutChanges="true"
+        android:paddingBottom="20dp">
 
         <LinearLayout
             android:id="@+id/login_fields_container"
@@ -17,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="30dp"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <EditText
                 android:id="@+id/login_username"
@@ -46,11 +47,11 @@
             android:layout_below="@id/login_fields_container"
             android:layout_alignParentRight="true"
             android:layout_marginTop="10dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
             android:contentDescription="@string/description_login_button"
+            android:paddingLeft="16dp"
+            android:paddingTop="2dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="2dp"
             android:text="@string/login_button_login" />
 
         <TextView
@@ -83,30 +84,52 @@
             android:text="@string/login_custom_server"
             android:textSize="16sp" />
 
+        <TextView
+            android:id="@+id/text_custom_server"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/login_custom_server"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="60dp"
+            android:text="@string/login_registration_custom_server"
+            android:textSize="20sp"
+            android:visibility="invisible" />
+
         <EditText
             android:id="@+id/login_custom_server_value"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/login_custom_server"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="30dp"
+            android:layout_below="@id/text_custom_server"
             android:hint="@string/login_custom_server_hint"
-            android:textSize="20sp"
+            android:inputType="textNoSuggestions|textMultiLine"
+            android:textSize="17sp"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/button_reset_url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/login_custom_server"
+            android:layout_alignBaseline="@+id/text_custom_server"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="end|center_vertical"
+            android:text="@string/login_registration_reset_url"
+            android:textSize="16sp"
             android:visibility="invisible" />
 
     </RelativeLayout>
-    
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-    	android:paddingBottom="20dp">
+        android:paddingBottom="20dp">
 
         <LinearLayout
             android:id="@+id/registration_button_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/login_change_to_login"
@@ -129,14 +152,14 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/registration_button_container" >
+            android:layout_above="@id/registration_button_container">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <EditText
                     android:id="@+id/registration_username"
@@ -144,7 +167,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/login_username_hint"
                     android:inputType="textEmailAddress"
-                    android:textSize="22sp" >
+                    android:textSize="22sp">
 
                 </EditText>
 
@@ -171,5 +194,5 @@
             </LinearLayout>
         </ScrollView>
     </RelativeLayout>
-    
+
 </ViewSwitcher>

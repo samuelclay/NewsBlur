@@ -23,7 +23,7 @@
         android:layout_toRightOf="@id/row_everything_icon"
         android:paddingBottom="9dp"
         android:paddingTop="9dp"
-        android:text="@string/global_shared_stories_row_title"
+        android:text="@string/global_shared_stories_title"
         android:textStyle="bold" />
 
     <View

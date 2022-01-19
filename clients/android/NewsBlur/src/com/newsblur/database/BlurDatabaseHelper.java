@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.os.CancellationSignal;
 import androidx.annotation.Nullable;
 import androidx.loader.content.AsyncTaskLoader;
@@ -25,6 +24,7 @@ import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
+import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
@@ -41,6 +41,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Utility class for executing DB operations on the local, private NB database.
@@ -71,13 +73,12 @@ public class BlurDatabaseHelper {
     public void close() {
         // when asked to close, do so via an AsyncTask. This is so that (since becoming serial in android 4.0) 
         // the closure will happen after other async tasks are done using the conn
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... arg) {
-                synchronized (RW_MUTEX) {dbWrapper.close();}
-                return null;
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> {
+            synchronized (RW_MUTEX) {
+                dbWrapper.close();
             }
-        }.execute();
+        });
     }
 
     public void dropAndRecreateTables() {
@@ -307,9 +308,7 @@ public class BlurDatabaseHelper {
         Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, new String[]{DatabaseConstants.STORY_IMAGE_URLS}, null, null, null, null, null);
         Set<String> urls = new HashSet<String>(c.getCount());
         while (c.moveToNext()) {
-            for (String url : TextUtils.split(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_IMAGE_URLS)), ",")) {
-                urls.add(url);
-            }
+            urls.addAll(Arrays.asList(TextUtils.split(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_IMAGE_URLS)), ",")));
         }
         c.close();
         return urls;
@@ -681,9 +680,7 @@ public class BlurDatabaseHelper {
             socialIds.add(story.socialUserId);
         }
         if (story.friendUserIds != null) {
-            for (String id : story.friendUserIds) {
-                socialIds.add(id);
-            }
+            socialIds.addAll(Arrays.asList(story.friendUserIds));
         }
         if (socialIds.size() > 0) {
             impactedFeeds.add(FeedSet.multipleSocialFeeds(socialIds));
@@ -936,7 +933,7 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.ACTION_TABLE, DatabaseConstants.ACTION_ID + " = ?", new String[]{actionId});}
     }
 
-    public void setStoryStarred(String hash, boolean starred) {
+    public void setStoryStarred(String hash, @Nullable List<String> userTags, boolean starred) {
         // check the story's starting state and the desired state and adjust it as an atom so we
         // know if it truly changed or not and thus whether to update counts
         synchronized (RW_MUTEX) {
@@ -955,8 +952,15 @@ public class BlurDatabaseHelper {
                 c.moveToFirst();
                 boolean origState = (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.STORY_STARRED)) > 0);
                 c.close();
+                // if already stared, update user tags
+                if (origState == starred && starred && userTags != null) {
+                    ContentValues values = new ContentValues();
+                    values.put(DatabaseConstants.STORY_USER_TAGS, TextUtils.join(",", userTags));
+                    dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
+                    return;
+                }
                 // if there is nothing to be done, halt
-                if (origState == starred) {
+                else if (origState == starred) {
                     return;
                 }
                 // fix the state
@@ -1048,22 +1052,6 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.STORY_TEXT_TABLE, null, values);}
     }
 
-    /**
-     * Get a loader that always returns a null cursor, for fragments that know they will never
-     * have a result (such as muted feeds).
-     */
-    public Loader<Cursor> getNullLoader() {
-        return new AsyncTaskLoader<Cursor>(context) {
-            public Cursor loadInBackground() {return null;}
-        };
-    }
-        
-    public Loader<Cursor> getSocialFeedsLoader() {
-        return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {return getSocialFeedsCursor(cancellationSignal);}
-        };
-    }
-
     public Cursor getSocialFeedsCursor(CancellationSignal cancellationSignal) {
         return query(false, DatabaseConstants.SOCIALFEED_TABLE, null, null, null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC", null, cancellationSignal);
     }
@@ -1099,44 +1087,19 @@ public class BlurDatabaseHelper {
         return folders;
     }
 
-    public Loader<Cursor> getFoldersLoader() {
-        return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {return getFoldersCursor(cancellationSignal);}
-        };
-    }
-
     public Cursor getFoldersCursor(CancellationSignal cancellationSignal) {
         return query(false, DatabaseConstants.FOLDER_TABLE, null, null, null, null, null, null, null, cancellationSignal);
-    }
-
-    public Loader<Cursor> getFeedsLoader() {
-        return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {return getFeedsCursor(cancellationSignal);}
-        };
     }
 
     public Cursor getFeedsCursor(CancellationSignal cancellationSignal) {
         return query(false, DatabaseConstants.FEED_TABLE, null, null, null, null, null, "UPPER(" + DatabaseConstants.FEED_TITLE + ") ASC", null, cancellationSignal);
     }
 
-    public Loader<Cursor> getSavedStoryCountsLoader() {
-        return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {return getSavedStoryCountsCursor(cancellationSignal);}
-        };
+    public Cursor getSavedStoryCountsCursor(CancellationSignal cancellationSignal) {
+        return query(false, DatabaseConstants.STARREDCOUNTS_TABLE, null, null, null, null, null, null, null, cancellationSignal);
     }
 
-    public Loader<Cursor> getSavedSearchLoader() {
-        return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {return getSavedSearchCursor(cancellationSignal);}
-        };
-    }
-
-    private Cursor getSavedStoryCountsCursor(CancellationSignal cancellationSignal) {
-        Cursor c = query(false, DatabaseConstants.STARREDCOUNTS_TABLE, null, null, null, null, null, null, null, cancellationSignal);
-        return c;
-    }
-
-    private Cursor getSavedSearchCursor(CancellationSignal cancellationSignal) {
+    public Cursor getSavedSearchCursor(CancellationSignal cancellationSignal) {
         return query(false, DatabaseConstants.SAVED_SEARCH_TABLE, null, null, null, null,  null, null, null, cancellationSignal);
     }
 
@@ -1164,24 +1127,6 @@ public class BlurDatabaseHelper {
         return feedIds;
     }
 
-    public Loader<Cursor> getActiveStoriesLoader(final FeedSet fs) {
-        final StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
-        return new QueryCursorLoader(context) {
-            protected Cursor createCursor() {
-                return getActiveStoriesCursor(fs, order, cancellationSignal);
-            }
-        };
-    }
-
-    public Loader<Cursor> getStoriesLoader(@Nullable final FeedSet fs) {
-        return new QueryCursorLoader(context) {
-            @Override
-            protected Cursor createCursor() {
-                return getStoriesCursor(fs, cancellationSignal);
-            }
-        };
-    }
-
     private Cursor getStoriesCursor(@Nullable FeedSet fs, CancellationSignal cancellationSignal) {
         StringBuilder q = new StringBuilder(DatabaseConstants.STORY_QUERY_BASE_0);
 
@@ -1200,7 +1145,8 @@ public class BlurDatabaseHelper {
         return rawQuery(q.toString(), null, cancellationSignal);
     }
 
-    private Cursor getActiveStoriesCursor(FeedSet fs, StoryOrder order, CancellationSignal cancellationSignal) {
+    public Cursor getActiveStoriesCursor(FeedSet fs, CancellationSignal cancellationSignal) {
+        final StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
         // get the stories for this FS
         Cursor result = getActiveStoriesCursorNoPrep(fs, order, cancellationSignal);
         // if the result is blank, try to prime the session table with existing stories, in case we
@@ -1220,11 +1166,11 @@ public class BlurDatabaseHelper {
         StringBuilder q = new StringBuilder(DatabaseConstants.SESSION_STORY_QUERY_BASE);
         
         if (fs.isAllRead()) {
-            q.append(" ORDER BY " + DatabaseConstants.READ_STORY_ORDER);
+            q.append(" ORDER BY ").append(DatabaseConstants.READ_STORY_ORDER);
         } else if (fs.isGlobalShared()) {
-            q.append(" ORDER BY " + DatabaseConstants.SHARED_STORY_ORDER);
+            q.append(" ORDER BY ").append(DatabaseConstants.SHARED_STORY_ORDER);
         } else if (fs.isAllSaved()) {
-            q.append(" ORDER BY " + DatabaseConstants.getSavedStoriesSortOrder(order));
+            q.append(" ORDER BY ").append(DatabaseConstants.getSavedStoriesSortOrder(order));
         } else {
             q.append(" ORDER BY ").append(DatabaseConstants.getStorySortOrder(order));
         }
@@ -1285,7 +1231,7 @@ public class BlurDatabaseHelper {
 
             sel.append(" FROM " + DatabaseConstants.STORY_TABLE);
             sel.append(" WHERE " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " IN ( ");
-            sel.append(TextUtils.join(",", fs.getMultipleFeeds()) + ")");
+            sel.append(TextUtils.join(",", fs.getMultipleFeeds())).append(")");
             DatabaseConstants.appendStorySelection(sel, selArgs, readFilter, stateFilter, fs.getSearchQuery());
 
         } else if (fs.getSingleSocialFeed() != null) {
@@ -1638,6 +1584,10 @@ public class BlurDatabaseHelper {
         try {c.close();} catch (Exception e) {;}
     }
 
+    public void sendSyncUpdate(int updateType) {
+        FeedUtils.syncUpdateStatus(context, updateType);
+    }
+
     private static String conjoinSelections(CharSequence... args) {
         StringBuilder s = null;
         for (CharSequence c : args) {
@@ -1671,5 +1621,4 @@ public class BlurDatabaseHelper {
     private Cursor query(boolean distinct, String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit, CancellationSignal cancellationSignal) {
         return dbRO.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy, limit, cancellationSignal);
     }
-
 }

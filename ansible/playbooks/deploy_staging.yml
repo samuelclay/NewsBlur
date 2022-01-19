@@ -17,3 +17,10 @@
       become: yes
       command: "docker kill --signal=HUP newsblur_web"
       # when: pulled.changed
+
+    - name: Update Sentry release
+      shell: >
+        curl {{ sentry_web_release_webhook }}/ \
+        -X POST \
+        -H 'Content-Type: application/json' \
+        -d '{"version": "{{ lookup('pipe', 'date "+%Y-%m-%d %H:%M:%S"') }}"}'

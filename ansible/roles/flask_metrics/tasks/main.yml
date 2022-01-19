@@ -1,0 +1,60 @@
+---
+- name: Copy common secrets
+  copy:
+    src: /srv/secrets-newsblur/settings/common_settings.py
+    dest: /srv/newsblur/newsblur_web/local_settings.py
+  register: app_changed
+
+- name: Copy app env
+  copy:
+    src: /srv/secrets-newsblur/settings/app_env.py
+    dest: /srv/newsblur/newsblur_web/app_env.py
+  register: app_changed
+
+- name: Add SERVER_NAME to app env
+  lineinfile:
+    path: /srv/newsblur/newsblur_web/app_env.py
+    line: 'SERVER_NAME = "{{ inventory_hostname }}"'
+
+- name: Register flask_metrics in consul
+  tags: consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/flask_metrics.json
+  notify:
+    - reload consul
+  when: disable_consul_services_ie_staging is not defined
+
+- name: Start flask_metrics docker container
+  become: yes
+  docker_container:
+    name: flask_metrics
+    image: newsblur/newsblur_monitor:latest
+    pull: yes
+    state: started
+    command: bash -c "python {{ item.file }}"
+    hostname: "{{ inventory_hostname }}"
+    restart_policy: unless-stopped
+    container_default_behavior: no_defaults
+    volumes:
+      - /srv/newsblur:/srv/newsblur
+    networks_cli_compatible: yes
+    network_mode: default
+    networks:
+      - name: newsblurnet
+    ports:
+      - 5569:5569
+  when: item.service_name in inventory_hostname
+  with_items:
+    - service_name: mongo
+      file: /srv/newsblur/flask_metrics/flask_metrics_mongo.py
+    - service_name: redis
+      file: /srv/newsblur/flask_metrics/flask_metrics_redis.py
+    - service_name: www
+      file: /srv/newsblur/flask_metrics/flask_metrics_haproxy.py
+
+- name: Restart flask_metrics
+  become: yes
+  shell:
+    cmd: docker restart flask_metrics

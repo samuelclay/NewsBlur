@@ -10,7 +10,6 @@ from django.contrib.sites.models import Site
 from django.utils.encoding import smart_bytes
 from mongoengine.queryset import NotUniqueError
 from socket import error as SocketError
-from boto.s3.key import Key
 from django.conf import settings
 from django.utils.text import compress_string as compress_string_with_gzip
 from utils import log as logging
@@ -323,13 +322,14 @@ class PageImporter(object):
 
     
     def save_page_s3(self, html):
-        k = Key(settings.S3_CONN.get_bucket(settings.S3_PAGES_BUCKET_NAME))
-        k.key = self.feed.s3_pages_key
-        k.set_metadata('Content-Encoding', 'gzip')
-        k.set_metadata('Content-Type', 'text/html')
-        k.set_metadata('Access-Control-Allow-Origin', '*')
-        k.set_contents_from_string(compress_string_with_gzip(html.encode('utf-8')))
-        k.set_acl('public-read')
+        s3_object = settings.S3_CONN.Object(settings.S3_PAGES_BUCKET_NAME, 
+                                            self.feed.s3_pages_key)
+        s3_object.put(Body=compress_string_with_gzip(html.encode('utf-8')), 
+                      ContentType='text/html',
+                      ContentEncoding='gzip',
+                      Expires=expires,
+                      ACL='public-read'
+                      )
         
         try:
             feed_page = MFeedPage.objects.get(feed_id=self.feed.pk)
@@ -345,8 +345,7 @@ class PageImporter(object):
         return True
     
     def delete_page_s3(self):
-        k = Key(settings.S3_CONN.get_bucket(settings.S3_PAGES_BUCKET_NAME))
-        k.key = self.feed.s3_pages_key
+        k = settings.S3_CONN.Bucket(settings.S3_PAGES_BUCKET_NAME).Object(key=self.feed.s3_pages_key)
         k.delete()
         
         self.feed.s3_page = False

@@ -18,7 +18,7 @@
             android:gravity="center_horizontal"
             android:orientation="vertical" >
 
-            <ImageView
+            <com.newsblur.view.RoundedImageView
                 android:id="@+id/profile_picture"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
@@ -27,23 +27,25 @@
                 android:scaleType="fitCenter"
                 android:src="@drawable/person" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/profile_follow_button"
                 android:layout_height="36dp"
-                android:layout_width="100dp"
+                android:layout_width="wrap_content"
                 android:contentDescription="@string/description_follow_button"
                 android:text="@string/profile_button_follow"
                 style="?actionButtons"
+                android:letterSpacing="0"
                 android:visibility="gone" />
-            
-            <Button
+
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/profile_unfollow_button"
                 android:layout_height="36dp"
-                android:layout_width="100dp"
+                android:layout_width="wrap_content"
                 android:contentDescription="@string/description_follow_button"
                 android:text="@string/profile_button_unfollow"
                 style="?actionButtons"
-                android:visibility="gone" />            
+                android:letterSpacing="0"
+                android:visibility="gone" />
         </LinearLayout>
 
         <RelativeLayout
@@ -108,6 +110,7 @@
         android:background="@color/gray80" />
 
     <include
+        android:id="@+id/profile_user_statistics"
         layout="@layout/profile_user_statistics" />
 
     <View

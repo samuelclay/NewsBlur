@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.newsblur.R;
@@ -44,7 +43,7 @@ public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetail
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = null;
+        View view;
         if (convertView == null) {
             view = inflater.inflate(R.layout.row_activity, null);
         } else {
@@ -54,17 +53,17 @@ public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetail
 
         TextView activityText = (TextView) view.findViewById(R.id.row_activity_text);
         TextView activityTime = (TextView) view.findViewById(R.id.row_activity_time);
-        ImageView imageView = (ImageView) view.findViewById(R.id.row_activity_icon);
+        RoundedImageView imageView = (RoundedImageView) view.findViewById(R.id.row_activity_icon);
 
         activityTime.setText(activity.timeSince.toUpperCase() + " " + ago);
         if (activity.category == Category.FEED_SUBSCRIPTION) {
-            FeedUtils.iconLoader.displayImage(APIConstants.S3_URL_FEED_ICONS + activity.feedId + ".png", imageView, 5, false);
+            FeedUtils.iconLoader.displayImage(APIConstants.S3_URL_FEED_ICONS + activity.feedId + ".png", imageView);
         } else if (activity.category == Category.SHARED_STORY) {
-            FeedUtils.iconLoader.displayImage(currentUserDetails.photoUrl, imageView, 10f, false);
+            FeedUtils.iconLoader.displayImage(currentUserDetails.photoUrl, imageView);
         } else if (activity.category == Category.STAR) {
             imageView.setImageResource(R.drawable.ic_clock);
         } else if (activity.user != null) {
-            FeedUtils.iconLoader.displayImage(activity.user.photoUrl, imageView, 5, false);
+            FeedUtils.iconLoader.displayImage(activity.user.photoUrl, imageView);
         } else {
             imageView.setImageResource(R.drawable.logo);
         }

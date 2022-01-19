@@ -29,6 +29,17 @@
   tags:
     - static
 
+- name: Prune docker
+  become: yes
+  community.docker.docker_prune:
+    containers: yes
+    images: yes
+    builder_cache: yes
+    timeout: 300
+  tags: 
+    - prune
+    - never
+
 - name: Install pip
   become: yes
   apt: name=python3-pip state=latest
@@ -43,14 +54,9 @@
   tags:
     - static
 
-- name: Make docker network for newsblurnet
-  become: yes
-  docker_network:
-    name: newsblurnet
-  notify: restart docker
-
 - name: Start NewsBlur Web Docker container
   become: yes
+  throttle: 3
   docker_container:
     name: newsblur_web
     image: newsblur/newsblur_python3
@@ -60,6 +66,10 @@
       DOCKERBUILD: ""
     state: started
     command: gunicorn --config /srv/newsblur/config/gunicorn_conf.py newsblur_web.wsgi:application
+    hostname: "{{ inventory_hostname }}"
+    log_driver: json-file
+    log_options:
+      max-size: 100m
     networks_cli_compatible: yes
     network_mode: default
     networks:
@@ -67,6 +77,7 @@
     ports:
       - "8000:8000"
     restart_policy: unless-stopped
+    user: 1000:1001
     volumes:
       - /srv/newsblur:/srv/newsblur
       - /etc/hosts:/etc/hosts
@@ -84,6 +95,8 @@
 - name: Setup logrotate
   become: yes
   copy: src=logrotate.conf dest=/etc/logrotate.d/newsblur mode=0755
+  tags:
+    - logrotate
 
 - name: Reload gunicorn
   debug: 

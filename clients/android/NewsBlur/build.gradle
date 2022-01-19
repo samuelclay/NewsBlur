@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.4.31'
+    ext.kotlin_version = '1.6.0'
     repositories {
         mavenCentral()
         maven {
@@ -9,7 +9,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.3'
+        classpath 'com.android.tools.build:gradle:7.0.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -25,39 +25,38 @@ repositories {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'checkstyle'
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.fragment:fragment-ktx:1.3.1'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.fragment:fragment-ktx:1.4.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.2'
     implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'com.android.billingclient:billing:3.0.3'
+    implementation 'com.android.billingclient:billing:4.0.0'
     implementation 'nl.dionsegijn:konfetti:1.2.2'
-    implementation 'com.github.jinatonic.confetti:confetti:1.1.2'
-    implementation 'com.google.android.play:core:1.10.0'
-    implementation "com.google.android.material:material:1.3.0"
+    implementation 'com.google.android.play:core:1.10.2'
+    implementation "com.google.android.material:material:1.4.0"
     implementation "androidx.preference:preference-ktx:1.1.1"
-    implementation "androidx.browser:browser:1.3.0"
+    implementation "androidx.browser:browser:1.4.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0"
+    implementation 'androidx.lifecycle:lifecycle-process:2.4.0'
+    implementation 'androidx.core:core-splashscreen:1.0.0-alpha02'
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     defaultConfig {
         applicationId "com.newsblur"
         minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 185
-        versionName "10.3.1"
+        targetSdkVersion 31
+        versionCode 199
+        versionName "11.2"
     }
     compileOptions.with {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     android.buildFeatures.viewBinding = true
-    android.buildFeatures.dataBinding = true
 
     sourceSets {
         main {

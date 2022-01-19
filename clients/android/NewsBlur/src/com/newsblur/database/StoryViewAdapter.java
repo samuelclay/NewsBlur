@@ -4,6 +4,9 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.DiffUtil;
 import android.text.TextUtils;
@@ -38,10 +41,12 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.GestureAction;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StoryContentPreviewStyle;
 import com.newsblur.util.StoryListStyle;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
+import com.newsblur.view.StoryThumbnailView;
 
 /**
  * Story list adapter, RecyclerView style.
@@ -81,6 +86,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private boolean singleFeed;
     private float textSize;
     private UserDetails user;
+    private ThumbnailStyle thumbnailStyle;
 
     public StoryViewAdapter(NbActivity context, ItemSetFragment fragment, FeedSet fs, StoryListStyle listStyle) {
         this.context = context;
@@ -103,6 +109,8 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         user = PrefsUtils.getUserDetails(context);
 
+        thumbnailStyle = PrefsUtils.getThumbnailStyle(context);
+
         executorService = Executors.newFixedThreadPool(1);
 
         setHasStableIds(true);
@@ -114,6 +122,10 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     public void setStyle(StoryListStyle listStyle) {
         this.listStyle = listStyle;
+    }
+
+    public void setThumbnailStyle(ThumbnailStyle thumbnailStyle) {
+        this.thumbnailStyle = thumbnailStyle;
     }
 
     public void addFooterView(View v) {
@@ -286,8 +298,9 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.textSize = textSize;
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         // NB: the non-temporary calls to setLayerType() dramatically speed up list movement, but
         // are only safe because we perform fairly advanced delta updates. if any changes to invalidation
         // logic are made, check the list with hardare layer profiling to ensure we aren't over-invalidating
@@ -314,7 +327,12 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         View leftBarOne;
         View leftBarTwo;
         ImageView intelDot;
-        ImageView thumbView;
+        @Nullable
+        StoryThumbnailView thumbViewRight;
+        @Nullable
+        StoryThumbnailView thumbViewLeft;
+        @Nullable
+        ImageView thumbTileView;
         ImageView feedIconView;
         TextView feedTitleView;
         TextView storyTitleView;
@@ -336,7 +354,9 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             leftBarOne = view.findViewById(R.id.story_item_favicon_borderbar_1);
             leftBarTwo = view.findViewById(R.id.story_item_favicon_borderbar_2);
             intelDot = view.findViewById(R.id.story_item_inteldot);
-            thumbView = view.findViewById(R.id.story_item_thumbnail);
+            thumbViewRight = view.findViewById(R.id.story_item_thumbnail_right);
+            thumbViewLeft = view.findViewById(R.id.story_item_thumbnail_left);
+            thumbTileView = view.findViewById(R.id.story_item_thumbnail);
             feedIconView = view.findViewById(R.id.story_item_feedicon);
             feedTitleView = view.findViewById(R.id.story_item_feedtitle);
             storyTitleView = view.findViewById(R.id.story_item_title);
@@ -494,7 +514,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         if (viewHolder instanceof StoryViewHolder) {
             StoryViewHolder vh = (StoryViewHolder) viewHolder;
 
@@ -534,29 +554,6 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
      * Bind view elements that are common to tiles and rows.
      */
     private void bindCommon(StoryViewHolder vh, int position, Story story) {
-        if ((vh instanceof StoryTileViewHolder) ||
-            ((PrefsUtils.getThumbnailStyle(context)  != ThumbnailStyle.OFF) && (story.thumbnailUrl != null))) {
-            // when first created, tiles' views tend to not yet have their dimensions calculated, but
-            // upon being recycled they will often have a known size, which lets us give a max size to
-            // the image loader, which in turn can massively optimise loading.  the image loader will
-            // reject nonsene values
-
-            int thumbSizeGuess = vh.thumbView.getMeasuredHeight();
-            // there is a not-unlikely chance that the recycler will re-use a tile for a story with the
-            // same thumbnail.  only load it if it is different.
-            if (!TextUtils.equals(story.thumbnailUrl, vh.lastThumbUrl)) {
-                // the view will display a stale, recycled thumb before the new one loads if the old is not cleared
-                vh.thumbView.setImageDrawable(null);
-                vh.lastThumbUrl = story.thumbnailUrl;
-                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbView, 0, true, thumbSizeGuess, true);
-            }
-            vh.thumbView.setVisibility(View.VISIBLE);
-        } else {
-            // if in row mode and thubnail is disabled or missing, don't just hide but collapse
-            vh.thumbView.setVisibility(View.GONE);
-        }
-
-
         vh.leftBarOne.setBackgroundColor(UIUtils.decodeColourValue(story.extern_feedColor, Color.GRAY));
         vh.leftBarTwo.setBackgroundColor(UIUtils.decodeColourValue(story.extern_feedFade, Color.LTGRAY));
 
@@ -573,12 +570,19 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             vh.intelDot.setImageResource(android.R.color.transparent);
         }
 
+        // M text size equals to 1.0
+        if (textSize > 1.0) {
+            vh.storyTitleView.setMaxLines(3);
+        } else {
+            vh.storyTitleView.setMaxLines(2);
+        }
+
         vh.storyTitleView.setText(UIUtils.fromHtml(story.title));
         vh.storyDate.setText(StoryUtils.formatShortDate(context, story.timestamp));
 
         // lists with mixed feeds get added info, but single feeds do not
         if (!singleFeed) {
-            FeedUtils.iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView, 0, false);
+            FeedUtils.iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView);
             vh.feedTitleView.setText(story.extern_feedTitle);
             vh.feedIconView.setVisibility(View.VISIBLE);
             vh.feedTitleView.setVisibility(View.VISIBLE);
@@ -616,7 +620,9 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             vh.leftBarOne.getBackground().setAlpha(255);
             vh.leftBarTwo.getBackground().setAlpha(255);
             vh.intelDot.setImageAlpha(255);
-            vh.thumbView.setImageAlpha(255);
+            if (vh.thumbViewLeft != null) vh.thumbViewLeft.setImageAlpha(255);
+            if (vh.thumbViewRight != null) vh.thumbViewRight.setImageAlpha(255);
+            if (vh.thumbTileView != null) vh.thumbTileView.setImageAlpha(255);
             vh.feedIconView.setImageAlpha(255);
             vh.feedTitleView.setAlpha(1.0f);
             vh.storyTitleView.setAlpha(1.0f);
@@ -625,7 +631,9 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             vh.leftBarOne.getBackground().setAlpha(READ_STORY_ALPHA_B255);
             vh.leftBarTwo.getBackground().setAlpha(READ_STORY_ALPHA_B255);
             vh.intelDot.setImageAlpha(READ_STORY_ALPHA_B255);
-            vh.thumbView.setImageAlpha(READ_STORY_ALPHA_B255);
+            if (vh.thumbViewLeft != null) vh.thumbViewLeft.setImageAlpha(READ_STORY_ALPHA_B255);
+            if (vh.thumbViewRight != null) vh.thumbViewRight.setImageAlpha(READ_STORY_ALPHA_B255);
+            if (vh.thumbTileView != null) vh.thumbTileView.setImageAlpha(READ_STORY_ALPHA_B255);
             vh.feedIconView.setImageAlpha(READ_STORY_ALPHA_B255);
             vh.feedTitleView.setAlpha(READ_STORY_ALPHA);
             vh.storyTitleView.setAlpha(READ_STORY_ALPHA);
@@ -634,10 +642,30 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void bindTile(StoryTileViewHolder vh, int position, Story story) {
+        // when first created, tiles' views tend to not yet have their dimensions calculated, but
+        // upon being recycled they will often have a known size, which lets us give a max size to
+        // the image loader, which in turn can massively optimise loading.  the image loader will
+        // reject nonsene values
+
+        if (PrefsUtils.getThumbnailStyle(context)  != ThumbnailStyle.OFF && vh.thumbTileView != null) {
+            // the view will display a stale, recycled thumb before the new one loads if the old is not cleared
+            int thumbSizeGuess = vh.thumbTileView.getMeasuredHeight();
+            vh.thumbTileView.setImageBitmap(null);
+            vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbTileView, thumbSizeGuess, true);
+            vh.lastThumbUrl = story.thumbnailUrl;
+        }
     }
 
     private void bindRow(StoryRowViewHolder vh, int position, Story story) {
-        if (PrefsUtils.isShowContentPreviews(context)) {
+        StoryContentPreviewStyle storyContentPreviewStyle = PrefsUtils.getStoryContentPreviewStyle(context);
+        if (storyContentPreviewStyle != StoryContentPreviewStyle.NONE) {
+            if (storyContentPreviewStyle == StoryContentPreviewStyle.LARGE) {
+                vh.storySnippet.setMaxLines(6);
+            } else if (storyContentPreviewStyle == StoryContentPreviewStyle.MEDIUM) {
+                vh.storySnippet.setMaxLines(4);
+            } else if (storyContentPreviewStyle == StoryContentPreviewStyle.SMALL){
+                vh.storySnippet.setMaxLines(2);
+            }
             vh.storySnippet.setVisibility(View.VISIBLE);
             vh.storySnippet.setText(story.shortContent);
         } else {
@@ -647,30 +675,69 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (TextUtils.isEmpty(story.authors)) {
             vh.storyAuthor.setText("");
         } else {
-            vh.storyAuthor.setText(story.authors.toUpperCase());
+            vh.storyAuthor.setText(story.authors);
         }
 
         vh.storyAuthor.setTextSize(textSize * defaultTextSize_story_item_author);
         vh.storySnippet.setTextSize(textSize * defaultTextSize_story_item_snip);
 
-        ThumbnailStyle thumbnailStyle = PrefsUtils.getThumbnailStyle(context);
-        int sizeRes = thumbnailStyle == ThumbnailStyle.SMALL ? R.dimen.thumbnails_small_size : R.dimen.thumbnails_size;
+        if (PrefsUtils.getThumbnailStyle(context)  != ThumbnailStyle.OFF && vh.thumbViewRight != null && vh.thumbViewLeft != null) {
+            // the view will display a stale, recycled thumb before the new one loads if the old is not cleared
+            if (thumbnailStyle == ThumbnailStyle.LEFT_LARGE || thumbnailStyle == ThumbnailStyle.LEFT_SMALL) {
+                int thumbSizeGuess = vh.thumbViewLeft.getMeasuredHeight();
+                vh.thumbViewLeft.setImageBitmap(null);
+                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewLeft, thumbSizeGuess, true);
+                vh.thumbViewRight.setVisibility(View.GONE);
+                vh.thumbViewLeft.setVisibility(View.VISIBLE);
+            } else if (thumbnailStyle == ThumbnailStyle.RIGHT_LARGE || thumbnailStyle == ThumbnailStyle.RIGHT_SMALL) {
+                int thumbSizeGuess = vh.thumbViewRight.getMeasuredHeight();
+                vh.thumbViewRight.setImageBitmap(null);
+                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight, thumbSizeGuess, true);
+                vh.thumbViewLeft.setVisibility(View.GONE);
+                vh.thumbViewRight.setVisibility(View.VISIBLE);
+            }
+            vh.lastThumbUrl = story.thumbnailUrl;
+        } else if (vh.thumbViewRight != null && vh.thumbViewLeft != null) {
+            // if in row mode and thumbnail is disabled or missing, don't just hide but collapse
+            vh.thumbViewRight.setVisibility(View.GONE);
+            vh.thumbViewLeft.setVisibility(View.GONE);
+        }
+
+        int sizeRes = R.dimen.thumbnails_size;
+        if (thumbnailStyle == ThumbnailStyle.LEFT_SMALL || thumbnailStyle == ThumbnailStyle.RIGHT_SMALL) {
+            sizeRes = R.dimen.thumbnails_small_size;
+        }
         int sizeDp = context.getResources().getDimensionPixelSize(sizeRes);
 
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) vh.thumbView.getLayoutParams();
-        if (params.height != sizeDp) {
-            params.height = sizeDp;
+        RelativeLayout.LayoutParams params = null;
+        if ((thumbnailStyle == ThumbnailStyle.LEFT_LARGE || thumbnailStyle == ThumbnailStyle.LEFT_SMALL) && vh.thumbViewLeft != null) {
+            vh.thumbViewLeft.setThumbnailStyle(thumbnailStyle);
+            params = (RelativeLayout.LayoutParams) vh.thumbViewLeft.getLayoutParams();
+        } else if ((thumbnailStyle == ThumbnailStyle.RIGHT_LARGE || thumbnailStyle == ThumbnailStyle.RIGHT_SMALL) && vh.thumbViewRight != null) {
+            vh.thumbViewRight.setThumbnailStyle(thumbnailStyle);
+            params = (RelativeLayout.LayoutParams) vh.thumbViewRight.getLayoutParams();
+        }
+        if (params != null && params.width != sizeDp) {
             params.width = sizeDp;
+        }
+        if (params != null && (thumbnailStyle == ThumbnailStyle.RIGHT_SMALL || thumbnailStyle == ThumbnailStyle.LEFT_SMALL)) {
+            int verticalMargin = singleFeed ? UIUtils.dp2px(context, 10) : UIUtils.dp2px(context, 5);
+            params.setMargins(UIUtils.dp2px(context, 8), verticalMargin, 0, verticalMargin);
+            params.addRule(RelativeLayout.ALIGN_BOTTOM, vh.storySnippet.getId());
+        } else if (params != null) {
+            params.setMargins(0, 0, 0, 0);
+            params.removeRule(RelativeLayout.ALIGN_BOTTOM);
+            params.height = sizeDp;
         }
 
         if (this.ignoreReadStatus || (! story.read)) {
             vh.storyAuthor.setAlpha(1.0f);
             vh.storySnippet.setAlpha(1.0f);
-            vh.storyTitleView.setTypeface(null, Typeface.BOLD);
+            vh.storyTitleView.setTypeface(vh.storyTitleView.getTypeface(), Typeface.BOLD);
         } else {
             vh.storyAuthor.setAlpha(READ_STORY_ALPHA);
             vh.storySnippet.setAlpha(READ_STORY_ALPHA);
-            vh.storyTitleView.setTypeface(null, Typeface.NORMAL);
+            vh.storyTitleView.setTypeface(vh.storyTitleView.getTypeface(), Typeface.NORMAL);
         }
     }
 
@@ -685,7 +752,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     @Override
-    public void onViewRecycled(RecyclerView.ViewHolder viewHolder) {
+    public void onViewRecycled(@NonNull RecyclerView.ViewHolder viewHolder) {
         if (viewHolder instanceof StoryViewHolder) {
             StoryViewHolder vh = (StoryViewHolder) viewHolder;
             if (vh.thumbLoader != null) vh.thumbLoader.cancel = true;

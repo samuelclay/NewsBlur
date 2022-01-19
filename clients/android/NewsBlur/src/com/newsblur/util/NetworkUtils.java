@@ -38,7 +38,7 @@ public class NetworkUtils {
 		return (netInfo != null && netInfo.isConnected());
 	}
 
-    public static long loadURL(URL url, File file) throws IOException {
+    public static long loadURL(URL url, File file) {
         long bytesRead = 0;
         try {
             Request.Builder requestBuilder = new Request.Builder().url(url);

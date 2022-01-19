@@ -7,3 +7,8 @@
     name: consul
     state: reloaded
   listen: reload consul
+
+- name: reload postgres config
+  become: yes
+  command: docker exec postgres pg_ctl reload
+  listen: reload postgres

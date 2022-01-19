@@ -1,18 +1,19 @@
 package com.newsblur.network;
 
+import android.text.TextUtils;
+
 public class APIConstants {
 
     private APIConstants() {} // util class - no instances
 
-    private static final String DEFAULT_NEWSBLUR_URL_BASE = "https://www.newsblur.com";
+    private static final String DEFAULT_NEWSBLUR_URL_BASE = "https://newsblur.com";
 
     private static String CurrentUrlBase = DEFAULT_NEWSBLUR_URL_BASE;
 
     public static void setCustomServer(String newUrlBase) {
-        if (newUrlBase == null) return;
-        if (newUrlBase.length() <= 0) return;
-        android.util.Log.i(APIConstants.class.getName(), "setting custom server: " + newUrlBase);
+        if (TextUtils.isEmpty(newUrlBase)) return;
         CurrentUrlBase = newUrlBase;
+        android.util.Log.i(APIConstants.class.getName(), "setting custom server: " + newUrlBase);
     }
 
     public static void unsetCustomServer() {
@@ -80,6 +81,7 @@ public class APIConstants {
     public static final String PATH_RENAME_FOLDER = "/reader/rename_folder";
     public static final String PATH_SAVE_RECEIPT = "/profile/save_android_receipt";
     public static final String PATH_FEED_STATISTICS = "/rss_feeds/statistics_embedded/";
+    public static final String PATH_FEED_FAVICON_URL = "/rss_feeds/icon/";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;

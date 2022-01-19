@@ -15,7 +15,7 @@ import base64
 import http.client
 from PIL import BmpImagePlugin, PngImagePlugin, Image
 from socket import error as SocketError
-from boto.s3.key import Key
+import boto3
 from io import BytesIO
 from django.conf import settings
 from django.http import HttpResponse
@@ -106,12 +106,13 @@ class IconImporter(object):
     def save_to_s3(self, image_str):
         expires = datetime.datetime.now() + datetime.timedelta(days=60)
         expires = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
-        k = Key(settings.S3_CONN.get_bucket(settings.S3_ICONS_BUCKET_NAME))
-        k.key = self.feed.s3_icons_key
-        k.set_metadata('Content-Type', 'image/png')
-        k.set_metadata('Expires', expires)
-        k.set_contents_from_string(base64.b64decode(image_str))
-        k.set_acl('public-read')
+        base64.b64decode(image_str)
+        settings.S3_CONN.Object(settings.S3_ICONS_BUCKET_NAME, 
+                                self.feed.s3_icons_key).put(Body=base64.b64decode(image_str), 
+                                                            ContentType='image/png',
+                                                            Expires=expires,
+                                                            ACL='public-read'
+                                                            )
 
         self.feed.s3_icon = True
         self.feed.save()
@@ -217,8 +218,8 @@ class IconImporter(object):
             except requests.ConnectionError:
                 pass
         elif settings.BACKED_BY_AWS.get('pages_on_s3') and self.feed.s3_page:
-            key = settings.S3_CONN.get_bucket(settings.S3_PAGES_BUCKET_NAME).get_key(self.feed.s3_pages_key)
-            compressed_content = key.get_contents_as_string()
+            key = settings.S3_CONN.Bucket(settings.S3_PAGES_BUCKET_NAME).Object(key=self.feed.s3_pages_key)
+            compressed_content = key.get()["Body"].read()
             stream = BytesIO(compressed_content)
             gz = gzip.GzipFile(fileobj=stream)
             try:

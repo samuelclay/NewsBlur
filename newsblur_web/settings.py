@@ -34,7 +34,7 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 import django.http
 import re
 from mongoengine import connect
-from boto.s3.connection import S3Connection, OrdinaryCallingFormat
+import boto3
 from utils import jammit
 
 # ===================
@@ -57,6 +57,9 @@ RECAPTCHA_SECRET_KEY = "YOUR_RECAPTCHA_KEY"
 YOUTUBE_API_KEY = "YOUR_YOUTUBE_API_KEY"
 IMAGES_SECRET_KEY = "YOUR_IMAGES_SECRET_KEY"
 DOCKERBUILD = os.getenv("DOCKERBUILD")
+REDIS_USER = None
+FLASK_SENTRY_DSN = None
+
 # ===================
 # = Global Settings =
 # ===================
@@ -94,6 +97,8 @@ AUTO_PREMIUM_NEW_USERS = True
 AUTO_ENABLE_NEW_USERS = True
 ENFORCE_SIGNUP_CAPTCHA = False
 PAYPAL_TEST           = False
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880 # 5 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880 # 5 MB
 
 # Uncomment below to force all feeds to store this many stories. Default is to cut 
 # off at 25 stories for single subscriber non-premium feeds and 500 for popular feeds.
@@ -119,6 +124,7 @@ MIDDLEWARE = (
     'apps.profile.middleware.ServerHostnameMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'utils.request_introspection_middleware.DumpRequestMiddleware',
     'apps.profile.middleware.DBProfilerMiddleware',
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
     'utils.mongo_raw_log_middleware.MongoDumpMiddleware',
@@ -232,6 +238,10 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'subdomains.middleware': {
+            'level': 'ERROR',
+            'propagate': False,
+        }
     },
     'filters': {
         'require_debug_false': {
@@ -265,6 +275,7 @@ SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*10 # 10 years
 SESSION_COOKIE_DOMAIN   = '.newsblur.com'
 SESSION_COOKIE_HTTPONLY = False
+SESSION_COOKIE_SECURE   = True
 SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None # Handle long /reader/complete_river calls
@@ -412,7 +423,7 @@ CELERY_IMPORTS              = ("apps.rss_feeds.tasks",
                                "apps.feed_import.tasks",
                                "apps.search.tasks",
                                "apps.statistics.tasks",)
-CELERY_WORKER_CONCURRENCY         = 3
+CELERY_WORKER_CONCURRENCY         = 5
 CELERY_TASK_IGNORE_RESULT        = True
 CELERY_TASK_ACKS_LATE            = True # Retry if task fails
 CELERY_WORKER_MAX_TASKS_PER_CHILD = 10
@@ -691,10 +702,14 @@ MONGO_ANALYTICS_DB_DEFAULTS = {
     'alias': 'nbanalytics',
 }
 MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
-MONGO_ANALYTICS_DB_NAME = MONGO_ANALYTICS_DB.pop('name')
-# MONGO_ANALYTICS_URI = 'mongodb://%s' % (MONGO_ANALYTICS_DB.pop('host'),)
-# MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), host=MONGO_ANALYTICS_URI, **MONGO_ANALYTICS_DB)
-MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB_NAME, **MONGO_ANALYTICS_DB)
+# MONGO_ANALYTICS_DB_NAME = MONGO_ANALYTICS_DB.pop('name')
+# MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB_NAME, **MONGO_ANALYTICS_DB)
+
+if 'username' in MONGO_ANALYTICS_DB:
+    MONGOANALYTICSDB = connect(db=MONGO_ANALYTICS_DB['name'], host=f"mongodb://{MONGO_ANALYTICS_DB['username']}:{MONGO_ANALYTICS_DB['password']}@{MONGO_ANALYTICS_DB['host']}/?authSource=admin", alias="nbanalytics")
+else:
+    MONGOANALYTICSDB = connect(db=MONGO_ANALYTICS_DB['name'], host=f"mongodb://{MONGO_ANALYTICS_DB['host']}/", alias="nbanalytics")
+
 
 # =========
 # = Redis =
@@ -704,9 +719,13 @@ if DOCKERBUILD:
 else:
     REDIS_PORT = 6379
 
+if REDIS_USER is None:
+    # REDIS has been renamed to REDIS_USER. 
+    REDIS_USER = REDIS
+
 CELERY_REDIS_DB_NUM = 4
 SESSION_REDIS_DB = 5
-CELERY_BROKER_URL = "redis://%s:%s/%s" % (REDIS['host'], REDIS_PORT,CELERY_REDIS_DB_NUM)
+CELERY_BROKER_URL = "redis://%s:%s/%s" % (REDIS_USER['host'], REDIS_PORT,CELERY_REDIS_DB_NUM)
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 BROKER_TRANSPORT_OPTIONS = {
     "max_retries": 3, 
@@ -728,7 +747,7 @@ SESSION_REDIS = {
 CACHES = {
     'default': {
         'BACKEND': 'redis_cache.RedisCache',
-        'LOCATION': '%s:%s' % (REDIS['host'], REDIS_PORT),
+        'LOCATION': '%s:%s' % (REDIS_USER['host'], REDIS_PORT),
         'OPTIONS': {
             'DB': 6,
             'PARSER_CLASS': 'redis.connection.HiredisParser',
@@ -737,13 +756,13 @@ CACHES = {
     },
 }
 
-REDIS_POOL                 = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=0, decode_responses=True)
-REDIS_ANALYTICS_POOL       = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=2, decode_responses=True)
-REDIS_STATISTICS_POOL      = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=3, decode_responses=True)
-REDIS_FEED_UPDATE_POOL     = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=4, decode_responses=True)
-# REDIS_STORY_HASH_POOL2   = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=8) # Only used when changing DAYS_OF_UNREAD
-REDIS_STORY_HASH_TEMP_POOL = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=10, decode_responses=True)
-# REDIS_CACHE_POOL         = redis.ConnectionPool(host=REDIS['host'], port=REDIS_PORT, db=6) # Duped in CACHES
+REDIS_POOL                 = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=0, decode_responses=True)
+REDIS_ANALYTICS_POOL       = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=2, decode_responses=True)
+REDIS_STATISTICS_POOL      = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=3, decode_responses=True)
+REDIS_FEED_UPDATE_POOL     = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=4, decode_responses=True)
+# REDIS_STORY_HASH_POOL2   = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=8) # Only used when changing DAYS_OF_UNREAD
+REDIS_STORY_HASH_TEMP_POOL = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=10, decode_responses=True)
+# REDIS_CACHE_POOL         = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=6) # Duped in CACHES
 REDIS_STORY_HASH_POOL      = redis.ConnectionPool(host=REDIS_STORY['host'], port=REDIS_PORT, db=1, decode_responses=True)
 REDIS_STORY_HASH_POOL_ENCODED = redis.ConnectionPool(host=REDIS_STORY['host'], port=REDIS_PORT, db=1, decode_responses=False)
 REDIS_FEED_READ_POOL       = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=REDIS_PORT, db=1, decode_responses=True)
@@ -764,21 +783,17 @@ accept_content = ['pickle', 'json', 'msgpack', 'yaml']
 
 JAMMIT = jammit.JammitAssets(ROOT_DIR)
 
-if DEBUG:
-    MIDDLEWARE += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
-    # MIDDLEWARE += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
-
 # =======
 # = AWS =
 # =======
 
 S3_CONN = None
 if BACKED_BY_AWS.get('pages_on_s3') or BACKED_BY_AWS.get('icons_on_s3'):
-    S3_CONN = S3Connection(S3_ACCESS_KEY, S3_SECRET, calling_format=OrdinaryCallingFormat())
-    # if BACKED_BY_AWS.get('pages_on_s3'):
-    #     S3_PAGES_BUCKET = S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME)
-    # if BACKED_BY_AWS.get('icons_on_s3'):
-    #     S3_ICONS_BUCKET = S3_CONN.get_bucket(S3_ICONS_BUCKET_NAME)
+    boto_session = boto3.Session(
+        aws_access_key_id=S3_ACCESS_KEY,
+        aws_secret_access_key=S3_SECRET,
+    )
+    S3_CONN = boto_session.resource('s3')
 
 django.http.request.host_validation_re = re.compile(r"^([a-z0-9.-_\-]+|\[[a-f0-9]*:[a-f0-9:]+\])(:\d+)?$")
 

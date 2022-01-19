@@ -2,7 +2,7 @@
 
 - name: Template file for prometheus
   vars:
-    monitor_server: "{{ 'staging.newsblur.com' if disable_consul_services_ie_staging is defined else 'beta.newsblur.com' }}"
+    monitor_server: "{{ 'staging.newsblur.com' if disable_consul_services_ie_staging is defined else 'newsblur.com' }}"
   template:
     src: /srv/newsblur/docker/prometheus/prometheus.consul.yml.j2
     dest: /srv/newsblur/docker/prometheus/prometheus.yml
@@ -13,17 +13,11 @@
   tags: consul
   become: yes
   template:
-    src: /srv/newsblur/ansible/roles/prometheus/templates/consul_service.json
+    src: consul_service.json
     dest: /etc/consul.d/prometheus.json
   notify:
     - reload consul
   when: disable_consul_services_ie_staging is not defined
-
-- name: Make docker network for newsblurnet
-  become: yes
-  docker_network:
-    name: newsblurnet
-  notify: restart docker
 
 - name: Start prometheus docker container
   become: yes
@@ -33,6 +27,7 @@
     user: root
     networks_cli_compatible: yes
     network_mode: default
+    command: --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --storage.tsdb.retention.time=10y
     networks:
       - name: newsblurnet
     state: started

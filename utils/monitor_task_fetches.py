@@ -14,23 +14,24 @@ def main():
     admin_email = settings.ADMINS[0][1]
     failed = False
     feeds_fetched = 0
-    FETCHES_DROP_AMOUNT = 50000
+    FETCHES_DROP_AMOUNT = 100000
     redis_task_fetches = 0
     monitor_key = "Monitor:task_fetches"
     r = redis.Redis(connection_pool=settings.REDIS_ANALYTICS_POOL)
 
     try:
-        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.MONGO_DB['host']}?authSource=admin")
+        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.MONGO_DB['host']}/?authSource=admin")
         feeds_fetched = client.newsblur.statistics.find_one({"key": "feeds_fetched"})['value']
         redis_task_fetches = int(r.get(monitor_key) or 0)
     except Exception as e:
         failed = e
     
-    if feeds_fetched < 5000000:
+    if feeds_fetched < 5000000 and not failed:
         if redis_task_fetches > 0 and feeds_fetched < (redis_task_fetches - FETCHES_DROP_AMOUNT):
             failed = True
-        elif redis_task_fetches <= 0:
-            failed = True
+        # Ignore 0's below, as they simply imply low number, not falling    
+        # elif redis_task_fetches <= 0:
+        #     failed = True
     if failed:
         requests.post(
                 "https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_SERVER_NAME,

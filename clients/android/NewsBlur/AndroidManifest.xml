@@ -12,13 +12,15 @@
         android:label="@string/newsblur"
         android:theme="@style/NewsBlurTheme"
         android:hardwareAccelerated="true"
-        android:fullBackupContent="@xml/backupscheme" >
+        android:fullBackupContent="@xml/backupscheme"
+        android:name=".NbApplication">
         
         <activity
             android:name=".activity.InitActivity"
             android:label="@string/newsblur"
-            android:theme="@style/initStyle"
-            android:noHistory="true">
+            android:theme="@style/splashScreen"
+            android:noHistory="true"
+            android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.intent.action.MAIN" />
@@ -134,7 +136,7 @@
             android:label="@string/mute_sites"/>
 
         <activity
-            android:name=".activity.SearchForFeeds"
+            android:name=".activity.FeedSearchActivity"
             android:launchMode="singleTop" />
 
         <activity
@@ -145,8 +147,13 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service android:name=".widget.WidgetRemoteViewsService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <service
+            android:name=".service.SubscriptionSyncService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false" />
 
-        <receiver android:name=".service.BootReceiver">
+        <receiver android:name=".service.BootReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -163,7 +170,8 @@
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/newsblur_appwidget_info" />
         </receiver>
-        <receiver android:name=".service.TimeChangeReceiver">
+        <receiver android:name=".service.TimeChangeReceiver"
+            android:exported="true">
             <intent-filter >
                 <action android:name="android.intent.action.TIME_SET"/>
             </intent-filter>
@@ -183,7 +191,8 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".activity.AddFeedExternal">
+        <activity android:name=".activity.AddFeedExternal"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -214,6 +223,8 @@
                 <data android:host="feeds2.feedburner.com"/>
             </intent-filter>
             <intent-filter>
+                <data android:scheme="http"/>
+                <data android:scheme="https"/>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />

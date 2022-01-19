@@ -131,6 +131,8 @@ class MSocialProfile(mongo.Document):
     follower_user_ids    = mongo.ListField(mongo.IntField())
     unfollowed_user_ids  = mongo.ListField(mongo.IntField())
     requested_follow_user_ids = mongo.ListField(mongo.IntField())
+    muting_user_ids      = mongo.ListField(mongo.IntField())
+    muted_by_user_ids    = mongo.ListField(mongo.IntField())
     popular_publishers   = mongo.StringField()
     stories_last_month   = mongo.IntField(default=0)
     average_stories_per_month = mongo.IntField(default=0)
@@ -145,7 +147,16 @@ class MSocialProfile(mongo.Document):
     
     meta = {
         'collection': 'social_profile',
-        'indexes': ['user_id', 'username', 'following_user_ids', 'follower_user_ids', 'unfollowed_user_ids', 'requested_follow_user_ids'],
+        'indexes': [
+            'user_id', 
+            'username', 
+            'following_user_ids', 
+            'follower_user_ids', 
+            'unfollowed_user_ids', 
+            'requested_follow_user_ids', 
+            'muting_user_ids',
+            'muted_by_user_ids',
+        ],
         'allow_inheritance': False,
     }
     
@@ -161,6 +172,9 @@ class MSocialProfile(mongo.Document):
             profile = cls.objects.create(user_id=user_id)
             profile.save()
 
+        if not profile.username:
+            profile.save()
+
         return profile
     
     @property
@@ -171,6 +185,8 @@ class MSocialProfile(mongo.Document):
             return None
 
     def save(self, *args, **kwargs):
+        if not self.username:
+            self.import_user_fields()
         if not self.subscription_count:
             self.count_follows(skip_save=True)
         if self.bio and len(self.bio) > MSocialProfile.bio.max_length:
@@ -418,6 +434,7 @@ class MSocialProfile(mongo.Document):
             if include_following_user != self.user_id:
                 params['followed_by_you'] = bool(self.is_followed_by_user(include_following_user))
                 params['following_you'] = self.is_following_user(include_following_user)
+            params['muted'] = include_following_user in self.muted_by_user_ids
 
         return params
     
@@ -432,6 +449,11 @@ class MSocialProfile(mongo.Document):
         if self.user_id in self.follower_user_ids:
             return [u for u in self.follower_user_ids if u != self.user_id]
         return self.follower_user_ids
+        
+    def import_user_fields(self):
+        user = User.objects.get(pk=self.user_id)
+        self.username = user.username
+        self.email = user.email
         
     def count_follows(self, skip_save=False):
         self.subscription_count = UserSubscription.objects.filter(user__pk=self.user_id).count()
@@ -678,7 +700,27 @@ class MSocialProfile(mongo.Document):
                           email_type='follow_request')
                 
         logging.user(user, "~BB~FM~SBSending email for follow request: %s" % follower_profile.user.username)
-            
+    
+    def mute_user(self, muting_user_id):
+        if muting_user_id not in self.muting_user_ids:
+            self.muting_user_ids.append(muting_user_id)
+            self.save()
+        
+        muting_user_profile = MSocialProfile.get_user(muting_user_id)
+        if self.user_id not in muting_user_profile.muted_by_user_ids:
+            muting_user_profile.muted_by_user_ids.append(self.user_id)
+            muting_user_profile.save()
+    
+    def unmute_user(self, muting_user_id):
+        if muting_user_id in self.muting_user_ids:
+            self.muting_user_ids.remove(muting_user_id)
+            self.save()
+
+        muting_user_profile = MSocialProfile.get_user(muting_user_id)
+        if self.user_id in muting_user_profile.muted_by_user_ids:
+            muting_user_profile.muted_by_user_ids.remove(self.user_id)
+            muting_user_profile.save()
+    
     def save_feed_story_history_statistics(self):
         """
         Fills in missing months between earlier occurances and now.
@@ -2028,17 +2070,20 @@ class MSharedStory(mongo.DynamicDocument):
                         profile_user_ids = profile_user_ids.union(comments['liking_users'])
             
         profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
-        profiles = [profile.canonical(compact=True) for profile in profiles]
         
-        # Toss public comments by private profiles
+        # Toss public comments by private profiles and muted users
         profiles_dict = dict((profile['user_id'], profile) for profile in profiles)
         for story in stories:
             commented_by_public = story.get('commented_by_public') or [c['user_id'] for c in story['public_comments']]
-            for user_id in commented_by_public:
-                if profiles_dict[user_id]['private']:
-                    story['public_comments'] = [c for c in story['public_comments'] if c['user_id'] != user_id]
+            for comment_user_id in commented_by_public:
+                private = profiles_dict[comment_user_id].private
+                muted = user_id in profiles_dict[comment_user_id].muted_by_user_ids
+                if private or muted:
+                    story['public_comments'] = [c for c in story['public_comments'] if c['user_id'] != comment_user_id]
                     story['comment_count_public'] -= 1
-        
+
+        profiles = [profile.canonical(compact=True) for profile in profiles]
+            
         return stories, profiles
     
     @staticmethod

@@ -45,21 +45,17 @@ public class ImageLoader {
 	}
 
     public static ImageLoader asIconLoader(Context context) {
-        return new ImageLoader(FileCache.asIconCache(context), R.drawable.world, 2, false, (Runtime.getRuntime().maxMemory()/20));
-    }
-
-    public static ImageLoader asThumbnailLoader(Context context) {
-        return new ImageLoader(FileCache.asThumbnailCache(context), android.R.color.transparent, 32, true, (Runtime.getRuntime().maxMemory()/6));
+        return new ImageLoader(FileCache.asIconCache(context), R.drawable.world, UIUtils.dp2px(context, 4), false, (Runtime.getRuntime().maxMemory()/20));
     }
 
     public static ImageLoader asThumbnailLoader(Context context, FileCache chainCache) {
         FileCache cache = FileCache.asThumbnailCache(context);
         cache.addChain(chainCache);
-        return new ImageLoader(cache, android.R.color.transparent, 32, true, (Runtime.getRuntime().maxMemory()/6));
+        return new ImageLoader(cache, android.R.color.transparent, UIUtils.dp2px(context, 32), false, (Runtime.getRuntime().maxMemory()/8));
     }
 	
-    public PhotoToLoad displayImage(String url, ImageView imageView, float roundRadius, boolean cropSquare) {
-        return displayImage(url, imageView, roundRadius, cropSquare, imageView.getHeight(), false);
+    public PhotoToLoad displayImage(String url, ImageView imageView) {
+        return displayImage(url, imageView, imageView.getHeight(), false);
     }
 
     /**
@@ -93,10 +89,10 @@ public class ImageLoader {
         }
 
         // try from disk
-        bitmap = getImageFromDisk(url, maxDimPX, false, 0f);
+        bitmap = getImageFromDisk(url, maxDimPX);
         if (bitmap == null) {
             // try for network
-            bitmap = getImageFromNetwork(url, maxDimPX,false, 0f);
+            bitmap = getImageFromNetwork(url, maxDimPX);
         }
 
         if (bitmap != null) {
@@ -108,7 +104,7 @@ public class ImageLoader {
         }
     }
 
-	public PhotoToLoad displayImage(String url, ImageView imageView, float roundRadius, boolean cropSquare, int maxDimPX, boolean allowDelay) {
+	public PhotoToLoad displayImage(String url, ImageView imageView, int maxDimPX, boolean allowDelay) {
         if (url == null) {
 			imageView.setImageResource(emptyRID);
             return null;
@@ -117,25 +113,21 @@ public class ImageLoader {
         url = buildUrlIfNeeded(url);
 
 		imageViewMappings.put(imageView, url);
-        PhotoToLoad photoToLoad = new PhotoToLoad(url, imageView, roundRadius, cropSquare, maxDimPX, allowDelay);
+        PhotoToLoad photoToLoad = new PhotoToLoad(url, imageView, maxDimPX, allowDelay);
 
         executorService.submit(new PhotosLoader(photoToLoad));
         return photoToLoad;
 	}
 
-	public class PhotoToLoad {
+	public static class PhotoToLoad {
 		public String url;
 		public ImageView imageView;
-        public float roundRadius;
-        public boolean cropSquare;
         public int maxDimPX;
         public boolean allowDelay;
         public boolean cancel;
-		public PhotoToLoad(final String url, final ImageView imageView, float roundRadius, boolean cropSquare, int maxDimPX, boolean allowDelay) {
+		public PhotoToLoad(final String url, final ImageView imageView, int maxDimPX, boolean allowDelay) {
 			PhotoToLoad.this.url = url; 
 			PhotoToLoad.this.imageView = imageView;
-            PhotoToLoad.this.roundRadius = roundRadius;
-            PhotoToLoad.this.cropSquare = cropSquare;
             PhotoToLoad.this.maxDimPX = maxDimPX;
             PhotoToLoad.this.allowDelay = allowDelay;
             PhotoToLoad.this.cancel = false;
@@ -185,15 +177,15 @@ public class ImageLoader {
             }
             
             // try from disk
-            bitmap = getImageFromDisk(photoToLoad.url, photoToLoad.maxDimPX, photoToLoad.cropSquare, photoToLoad.roundRadius);
+            bitmap = getImageFromDisk(photoToLoad.url, photoToLoad.maxDimPX);
             if (bitmap == null) {
                 // try for network
                 if (photoToLoad.cancel) return;
-                bitmap = getImageFromNetwork(photoToLoad.url, photoToLoad.maxDimPX, photoToLoad.cropSquare, photoToLoad.roundRadius);
+                bitmap = getImageFromNetwork(photoToLoad.url, photoToLoad.maxDimPX);
             }
 
             if (bitmap != null) {
-                memoryCache.put(photoToLoad.url, bitmap);			
+                memoryCache.put(photoToLoad.url, bitmap);
             }
             if (photoToLoad.cancel) return;
             setViewImage(bitmap, photoToLoad);
@@ -264,16 +256,16 @@ public class ImageLoader {
         return url;
     }
 
-    private Bitmap getImageFromDisk(String url, int maxDimPX, boolean cropSquare, float roundRadius) {
+    private Bitmap getImageFromDisk(String url, int maxDimPX) {
         // the only reliable way to check a cached file is to try decoding it. the util method will
         // return null if it fails
         File f = fileCache.getCachedFile(url);
-        return UIUtils.decodeImage(f, maxDimPX, cropSquare, roundRadius);
+        return UIUtils.decodeImage(f, maxDimPX);
     }
 
-    private Bitmap getImageFromNetwork(String url, int maxDimPX, boolean cropSquare, float roundRadius) {
+    private Bitmap getImageFromNetwork(String url, int maxDimPX) {
         fileCache.cacheFile(url);
         File f = fileCache.getCachedFile(url);
-        return UIUtils.decodeImage(f, maxDimPX, cropSquare, roundRadius);
+        return UIUtils.decodeImage(f, maxDimPX);
     }
 }
