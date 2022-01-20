@@ -814,7 +814,7 @@ PIPELINE = {
     # 'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
     # 'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
     'CLOSURE_BINARY': '/usr/bin/java -jar node_modules/google-closure-compiler-java/compiler.jar',
-    'CLOSURE_ARGUMENTS': '--language_in ECMASCRIPT_2021',# --warning_level QUIET',
+    'CLOSURE_ARGUMENTS': '--language_in ECMASCRIPT_2016 --language_out ECMASCRIPT_2016 --warning_level DEFAULT',
     'JAVASCRIPT': {
         'common': {
             'source_filenames': assets['javascripts']['common'],

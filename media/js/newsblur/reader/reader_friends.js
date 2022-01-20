@@ -168,7 +168,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         if (this.recommended_users && this.recommended_users.length) {
             _.each(this.recommended_users, function(profile) {
                 var profile_model = new NEWSBLUR.Models.User(profile);
-                $profile_badge = new NEWSBLUR.Views.SocialProfileBadge({
+                var $profile_badge = new NEWSBLUR.Views.SocialProfileBadge({
                     model: profile_model
                 });
                 $findlist.append($profile_badge);
