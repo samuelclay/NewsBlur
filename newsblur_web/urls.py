@@ -55,6 +55,7 @@ urlpatterns = [
     url(r'^feedback/?',     static_views.feedback, name='feedback'),
     url(r'^privacy/?',      static_views.privacy, name='privacy'),
     url(r'^tos/?',          static_views.tos, name='tos'),
+    url(r'^manifest.webmanifest',          static_views.webmanifest, name='webmanifest'),
     url(r'^.well-known/apple-app-site-association',     static_views.apple_app_site_assoc, name='apple-app-site-assoc'),
     url(r'^ios/download/?', static_views.ios_download, name='ios-download'),
     url(r'^ios/NewsBlur.plist', static_views.ios_plist, name='ios-download-plist'),

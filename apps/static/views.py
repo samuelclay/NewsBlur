@@ -29,7 +29,13 @@ def privacy(request):
 
 def tos(request):
     return render(request, 'static/tos.xhtml')
-                        
+
+def webmanifest(request):
+    filename = settings.MEDIA_ROOT + '/extensions/edge/manifest.json'
+    manifest = open(filename).read()
+    
+    return HttpResponse(manifest, content_type='application/manifest+json')
+
 def apple_app_site_assoc(request):
     return render(request, 'static/apple_app_site_assoc.xhtml')
                                                       

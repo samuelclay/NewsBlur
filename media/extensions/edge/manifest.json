@@ -1,0 +1,24 @@
+{
+    "name": "NewsBlur",
+    "short_name": "NewsBlur",
+    "description": "A personalized RSS news reader.",
+    "display": "standalone",
+    "id": ".",
+    "start_url": ".",
+    "scope": "/",
+    "background_color": "#F6F8F0",
+    "theme_color": "#F6F8F0",
+    "icons": [
+        {
+            "src": "https://www.newsblur.com/media/img/logo_512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "https://www.newsblur.com/media/img/logo_black_512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
