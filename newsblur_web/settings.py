@@ -801,11 +801,11 @@ PIPELINE = {
     'PIPELINE_COLLECTOR_ENABLED': not DEBUG_ASSETS,
     'SHOW_ERRORS_INLINE': DEBUG_ASSETS,
     'CSS_COMPRESSOR': 'pipeline.compressors.yuglify.YuglifyCompressor',
-    'JS_COMPRESSOR': 'pipeline.compressors.closure.ClosureCompressor',
+    # 'JS_COMPRESSOR': 'pipeline.compressors.closure.ClosureCompressor',
     # 'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
-    # 'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
+    'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
     'CLOSURE_BINARY': '/usr/bin/java -jar node_modules/google-closure-compiler-java/compiler.jar',
-    'CLOSURE_ARGUMENTS': '--language_in ECMASCRIPT_2021',# --warning_level QUIET',
+    'CLOSURE_ARGUMENTS': '--language_in ECMASCRIPT_2016 --warning_level VERBOSE',
     'JAVASCRIPT': {
         'common': {
             'source_filenames': assets['javascripts']['common'],

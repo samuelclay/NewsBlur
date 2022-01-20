@@ -5,7 +5,7 @@
     "display": "standalone",
     "id": ".",
     "start_url": ".",
-    "scope": "https://newsblur.com/",
+    "scope": "/",
     "background_color": "#F6F8F0",
     "theme_color": "#F6F8F0",
     "icons": [
