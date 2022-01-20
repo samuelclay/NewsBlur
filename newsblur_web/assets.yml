@@ -27,7 +27,7 @@ compress_assets: on
 
 javascripts:
     common:
-        - js/vendor/jquery-3.5.1.js
+        - js/vendor/jquery-3.6.0.min.js
         # - js/vendor/jquery.migrate-*.js
         - js/vendor/jquery.browser.js
         - js/vendor/jquery.json.js
@@ -41,17 +41,7 @@ javascripts:
         - js/vendor/jquery.simplemodal-1.4.js
         - js/vendor/jquery.color.js
         - js/vendor/jquery.wakeup.js
-        - js/vendor/jquery-ui-1.12.1.js
-        # - js/vendor/jquery.ui.autocomplete.js
-        # - js/vendor/jquery.ui.core.js
-        # - js/vendor/jquery.ui.draggable.js
-        # - js/vendor/jquery.ui.menu.js
-        # - js/vendor/jquery.ui.mouse.js
-        # - js/vendor/jquery.ui.position.js
-        # - js/vendor/jquery.ui.progressbar.js
-        # - js/vendor/jquery.ui.slider.js
-        # - js/vendor/jquery.ui.sortable.js
-        # - js/vendor/jquery.ui.widget.js
+        - js/vendor/jquery-ui-1.13.1.js
         - js/vendor/jquery.cookie.js
         - js/vendor/jquery.layout.js
         - js/vendor/jquery.tinysort.js
@@ -101,7 +91,7 @@ javascripts:
     #     - js/newsblur/common/assetmodel.js
     #     - js/mobile/newsblur/mobile_workspace.js
     statistics:
-        - js/vendor/jquery-3.5.1.min.js
+        - js/vendor/jquery-3.6.0.min.js
         - js/vendor/jquery.newsblur.js
         - js/vendor/jquery.simplemodal-1.3.js
         - js/vendor/inflector.js
@@ -116,7 +106,7 @@ javascripts:
         - js/newsblur/payments/paypal_return.js
         - js/newsblur/payments/stripe_form.js
     bookmarklet:
-        - js/vendor/jquery-3.5.1.min.js
+        - js/vendor/jquery-3.6.0.min.js
         # - js/vendor/jquery.migrate-*.js
         - js/vendor/jquery.noConflict.js
         - js/vendor/jquery.browser.js
@@ -131,7 +121,7 @@ javascripts:
         - js/vendor/underscore.noconflict.js
         - js/vendor/readability-*.js
     blurblog:
-        - js/vendor/jquery-3.5.1.js
+        - js/vendor/jquery-3.6.0.js
         # - js/vendor/jquery.migrate-*.js
         - js/vendor/jquery.browser.js
         - js/vendor/jquery.color.js
@@ -160,7 +150,8 @@ stylesheets:
         - css/reader/modals.css
         - css/reader/status.css
         - css/reader/darkmode.css
-        - css/jquery-ui/jquery.theme.css
+        - css/jquery-ui/jquery-ui.theme.css
+        - css/jquery-ui/jquery-ui.structure.css
         - css/jquery.tipsy.css
         - css/vendor/bootstrap-progressbar.css
         - css/vendor/jquery.tagit.css
