@@ -671,6 +671,9 @@ color: #a85b40;
 .NB-dark .NB-modal-feedchooser .NB-modal-subtitle b {
     color: #85bd67;
 }
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-premium-plan {
+    background-color: #303739;
+}
 .NB-dark .NB-modal-feedchooser .NB-feedchooser-info-reset {
     text-shadow: 0 1px 0 #181818;
 }
@@ -679,7 +682,7 @@ color: #a85b40;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
 }
 .NB-dark .NB-modal-feedchooser .NB-feedchooser-premium-bullets li {
-    background-color: #3b484b;
+    border-top-color:rgba(0, 0, 0, .1);
 }
 .NB-dark .NB-modal-feedchooser .NB-feedchooser-dollar-value {
     text-shadow: 0 1px 0 #2b2a1e;
@@ -693,13 +696,16 @@ color: #a85b40;
 .NB-dark .NB-modal-feedchooser .NB-modal-submit.NB-modal-submit-paypal {
     background-color: #3b3725;
     background-image: -webkit-gradient(
-    linear,
-    left bottom,
-    left top,
-    color-stop(0.16, #3b3725),
-    color-stop(0.84, #3b392e)
-    );
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #3b3725),
+        color-stop(0.84, #3b392e)
+        );
     box-shadow: 0 2px 0 #383215;
+}
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-premium-already {
+    border-color: rgba(255,255,255,0.1);
 }
 
 /* Intelligence Trainer: Container color */
