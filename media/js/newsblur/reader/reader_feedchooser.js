@@ -135,7 +135,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                     ]),
                     (!NEWSBLUR.Globals.is_premium && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
                         $.make('div', {
-                            className: "NB-stripe-button NB-modal-submit-button NB-modal-submit-green"
+                            className: "NB-stripe-button NB-stripe-button-premium NB-modal-submit-button NB-modal-submit-green"
                         }, [
                             "Upgrade to Premium"
                         ]),
@@ -486,6 +486,10 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         window.location.href = "/profile/stripe_form?plan=" + this.plan + renew;
     },
     
+    open_stripe_checkout: function(plan) {
+        window.location.href = "/profile/stripe_checkout?plan=" + plan;
+    },
+    
     choose_dollar_amount: function(plan) {
         var $value = $('.NB-feedchooser-dollar-value', this.$modal);
         var $input = $('input[name=a3]');
@@ -535,9 +539,19 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
             this.close_and_add();
         }, this));
         
-        $.targetIs(e, { tagSelector: '.NB-stripe-button' }, _.bind(function($t, $p) {
+        $.targetIs(e, { tagSelector: '.NB-stripe-button-premium' }, _.bind(function($t, $p) {
             e.preventDefault();
-            this.open_stripe_form();
+            this.open_stripe_checkout('premium');
+        }, this));
+        
+        $.targetIs(e, { tagSelector: '.NB-stripe-button-archive' }, _.bind(function($t, $p) {
+            e.preventDefault();
+            this.open_stripe_checkout('archive');
+        }, this));
+        
+        $.targetIs(e, { tagSelector: '.NB-stripe-button-pro' }, _.bind(function($t, $p) {
+            e.preventDefault();
+            this.open_stripe_checkout('pro');
         }, this));
         
         $.targetIs(e, { tagSelector: '.NB-feedchooser-info-reset' }, _.bind(function($t, $p) {
