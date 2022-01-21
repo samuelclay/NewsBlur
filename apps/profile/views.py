@@ -474,11 +474,22 @@ def stripe_form(request):
 @login_required
 def stripe_checkout(request):
     domain = Site.objects.get_current().domain
-    
+    plan = request.GET['plan']
+    if plan == "premium":
+        price = "newsblur-premium-36"
+    elif plan == "archive":
+        price = "price_0KK5a7wdsmP8XBlaHfbQNnaL"
+        if settings.DEBUG:
+            price = "price_0KK5tVwdsmP8XBlaXW1vYUn9"
+    elif plan == "pro":
+        price = "price_0KK5cvwdsmP8XBlaZDq068bA"
+        if settings.DEBUG:
+            price = "price_0KK5twwdsmP8XBlasifbX56Z"
+        
     checkout_session = stripe.checkout.Session.create(
         line_items=[
             {
-                'price': 'price_0KK5tVwdsmP8XBlaXW1vYUn9',
+                'price': price,
                 'quantity': 1,
             },
         ],
