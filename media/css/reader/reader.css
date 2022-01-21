@@ -9639,21 +9639,28 @@ form.opml_import_form input {
 .NB-modal-feedchooser .NB-feedchooser-subtitle-type-prefix {
     color: #C0C0C0;
 }
+.NB-modal-feedchooser .NB-feedchooser-subtitle-type-price {
+    color: #C0C0C0;
+    float: right;
+}
 
 .NB-modal-feedchooser .NB-feedchooser-type {
-    width: 345px;
+    width: 300px;
     margin: 0 52px 0 26px;
     padding: 0;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-type.NB-right {
     margin: 0 0 0 0;
-    width: 375px;
-    padding: 0 0 0 52px;
+    width: 425px;
+    padding: 0 0 0 42px;
     margin-right: 24px;
     float: right;
     position: relative;
     border-left: 1px solid #B0B0B0;
+}
+.NB-modal-feedchooser .NB-feedchooser-type.NB-right .NB-feedchooser-info {
+    clear: both;
 }
 
 .NB-modal-feedchooser.NB-feedchooser-chooser-only .NB-feedchooser-type {
@@ -9668,7 +9675,7 @@ form.opml_import_form input {
 
 .NB-modal-feedchooser.NB-feedchooser-premium .NB-feedchooser-type {
     float: none;
-    width: 400px;
+    width: 440px;
     margin: 0 auto;
     padding: 0;
     border-left: none;
@@ -9692,15 +9699,20 @@ form.opml_import_form input {
     overflow: hidden;
 }
 .NB-modal-feedchooser .NB-feedchooser-info-type {
-    padding: 12px;
+    padding: 20px 16px;
     background-color: #505050;
     color: white;
     text-shadow: 1px 1px 0 #000;
     font-size: 16px;
     font-weight: bold;
     text-transform: uppercase;
-    text-align: center;
-    border: 1px solid #101010;
+    text-align: left;
+}
+.NB-modal-feedchooser .NB-feedchooser-premium-plan {
+    overflow: hidden;
+    border-radius: 6px 6px 0px 0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    margin: 0 0 28px;
 }
 .NB-modal-feedchooser .NB-feedchooser-info-counts {
     float: right;
@@ -9992,27 +10004,32 @@ form.opml_import_form input {
 .NB-modal-feedchooser .NB-modal-submit-add {
     display: none;
 }
+
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets {
     list-style: none;
-    margin: 24px 0 0;
-    padding: 0;
+    margin: 0;
+    padding: 16px 0;
     font-size: 13px;
     color: #505050;
     text-shadow: 0px 1px 0 rgba(255, 255, 255, .6);
     font-weight: bold;
+    background-color: #F7F7F5;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li {
-    margin: 0 0 8px 20px;
-    padding: 3px 8px 4px;
-    background-color: #F7F7F5;
+    margin: 0;
+    padding: 8px 12px 8px 42px;
+    border-top: 1px solid white;
     position: relative;
+}
+.NB-modal-feedchooser .NB-feedchooser-premium-bullets li:first-child {
+    border-top: none;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li .NB-feedchooser-premium-bullet-image {
     position: absolute;
-    left: -20px;
-    top: 4px;
+    left: 12px;
+    top: 8px;
     width: 16px;
     height: 16px;
 }
@@ -10075,7 +10092,35 @@ form.opml_import_form input {
     width: 128px;
     height: 96px;
 }
-
+.NB-modal-feedchooser .NB-stripe-button {
+    margin: 0 12px 24px 12px;
+    width: 180px;
+    text-align: center;
+    float: left;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+.NB-modal-feedchooser .NB-stripe-button-archive {
+    width: 240px;
+}
+.NB-modal-feedchooser .NB-paypal-option {
+    float: left;
+    margin: 12px 0 0 0;
+    font-size: 0.8em;
+}
+.NB-modal-feedchooser .NB-feedchooser-premium-upgrade {
+    overflow: hidden;
+    background-color: #F7F7F5;
+}
+.NB-modal-feedchooser .NB-feedchooser-premium-already {
+    margin: 0 24px 24px;
+    padding: 16px 16px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    text-align: center;
+    font-size: 0.8em;
+    color: #477648;
+}
 /* ===================== */
 /* = Newsletters Modal = */
 /* ===================== */

@@ -1,7 +1,7 @@
 NEWSBLUR.ReaderFeedchooser = function(options) {
     options = options || {};
     var defaults = {
-        'width': options.premium_only || options.chooser_only ? 460 : 900,
+        'width': options.premium_only || options.chooser_only ? 500 : 900,
         'height': 750,
         'premium_only': false,
         'chooser_only': false,
@@ -59,168 +59,184 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         this.$modal.bind('change', $.rescope(this.handle_change, this));
     },
     
-    make_modal: function() {
+    make_modal: function () {
         var self = this;
-        
+
         this.$modal = $.make('div', { className: 'NB-modal-feedchooser NB-modal ' + (this.options.premium_only ? "NB-feedchooser-premium" : this.options.chooser_only ? "NB-feedchooser-chooser-only" : "NB-feedchooser-standard") }, [
             // $.make('h2', { className: 'NB-modal-title' }, 'Choose Your '+this.MAX_FEEDS),
             (!this.options.chooser_only && $.make('div', { className: 'NB-feedchooser-type NB-right' }, [
-              (!this.options.premium_only && $.make('div', { className: 'NB-feedchooser-porpoise' }, 'OR')),
-              (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info'}, [
-                  $.make('div', { className: 'NB-feedchooser-info-type' }, [
+                (!this.options.premium_only && $.make('div', { className: 'NB-feedchooser-porpoise' }, 'OR')),
+                (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info' }, [
+                    $.make('div', { className: 'NB-feedchooser-info-type' }, [
                         $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, 'Thank you'),
                         ' for going premium!'
-                  ]),
-                  $.make('h2', { className: 'NB-modal-subtitle' }, [
-                      'Your premium account is paid until:',
-                      $.make('br'),
-                      $.make('b', { style: 'display: block; margin: 8px 0' }, [
-                          $.make('span', { className: 'NB-raquo' }, '&raquo;'),
-                          ' ',
-                          NEWSBLUR.Globals.premium_expire && NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire),
-                          (!NEWSBLUR.Globals.premium_expire && $.make('b', "Never gonna expire. Congrats!"))
-                      ]),
-                      'You can change your payment method and card details. ',
-                      (NEWSBLUR.Globals.premium_expire < new Date) ? 
-                      'This will charge your card immediately.' :
-                      'You won\'t be charged until this date.'
-                  ])
-              ])),
-              (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info'}, [
-                  $.make('div', { className: 'NB-feedchooser-info-type' }, [
-                    $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, 'Unlimited'),
-                    ' Premium Account'
-                  ])
-              ])),
-              $.make('ul', { className: 'NB-feedchooser-premium-bullets' }, [
-                $.make('li', { className: 'NB-1' }, [
-                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Enable every site by going premium'
-                ]),
-                $.make('li', { className: 'NB-2' }, [
-                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Sites updated up to 10x more often'
-                ]),
-                $.make('li', { className: 'NB-3' }, [
-                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'River of News (reading by folder)'
-                ]),
-                $.make('li', { className: 'NB-4' }, [
-                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Search sites and folders'
-                ]),
-                $.make('li', { className: 'NB-5' }, [
-                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Save stories with searchable tags'
-                ]),
-                $.make('li', { className: 'NB-6' }, [
-                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Privacy options for your blurblog'
-                ]),
-                $.make('li', { className: 'NB-7' }, [
-                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Custom RSS feeds for folders and saved stories'
-                ]),
-                $.make('li', { className: 'NB-8' }, [
-                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Text view conveniently extracts the story'
-                ]),
-                $.make('li', { className: 'NB-9' }, [
-                  $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'You feed Lyric, my poor, hungry dog, for ',
-                  $.make('span', { className: 'NB-feedchooser-hungry-dog' }, '6 days'),
-                  $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/lyric.jpg' })
-                ])
-              ]),
-              $.make('div', { className: 'NB-modal-submit NB-modal-submit-paypal' }, [
-                  // $.make('div', { className: 'NB-feedchooser-payextra' }, [
-                  //   $.make('input', { type: 'checkbox', name: 'payextra', id: 'NB-feedchooser-payextra-checkbox' }),
-                  //   $.make('label', { 'for': 'NB-feedchooser-payextra-checkbox' }, 'I\'m feeling generous')
-                  // ]),
-                  $.make('div', { className: 'NB-feedchooser-dollar' }, [
-                      // $.make('div', { className: 'NB-feedchooser-dollar-value NB-2' }, [
-                      //     $.make('div', { className: 'NB-feedchooser-dollar-month' }, [
-                      //       $.make('div', { className: 'NB-feedchooser-dollar-image' }, [
-                      //           $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_coffeecup_gold16.png', style: "position: absolute; left: -56px;top: 15px;width: 16px;" }),
-                      //           $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_coffeecup_gold24.png', style: "position: absolute; left: -31px;top: 10px; width: 24px;" }),
-                      //           $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_coffeecup_gold32.png', style: "position: absolute; left: 0; top: 6px; width: 32px" })
-                      //       ]),
-                      //       '$24/year'
-                      //     ]),
-                      //     $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($2/month)')
-                      // ]),
-                      $.make('div', { className: 'NB-feedchooser-dollar-value NB-3' }, [
-                          $.make('div', { className: 'NB-feedchooser-dollar-month' }, [
-                            $.make('div', { className: 'NB-feedchooser-dollar-image' }, [
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_coffeecup_gold24.png', style: "position: absolute; left: -68px;top: 11px;width: 24px;" }),
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_coffeecup_gold32.png', style: "position: absolute; left: -42px;top: 7px; width: 32px;" }),
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_coffeecup_gold40.png', style: "position: absolute; left: -8px; top: 4px; width: 40px" })
-                            ]),
-                            '$36/year'
-                          ]),
-                          $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($3/month)')
-                      ])
-                  ]),
-                  $.make('div', { className: 'NB-feedchooser-processor' }, [
-                      $.make('div', { className: 'NB-feedchooser-paypal' }, [
-                        $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/logo-paypal.png', height: 30 }),
-                        $.make('div', { className: 'NB-feedchooser-paypal-form' })
-                      ]),
-                      $.make('div', { className: 'NB-feedchooser-stripe' }, [
-                        $.make('div', { className: 'NB-creditcards' }, [
-                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + "/img/reader/cc_visa.png" }),
-                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + "/img/reader/cc_mastercard.png" }),
-                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + "/img/reader/cc_amex.png" }),
-                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + "/img/reader/cc_discover.png" })
+                    ]),
+                    $.make('h2', { className: 'NB-modal-subtitle' }, [
+                        'Your premium account is paid until:',
+                        $.make('br'),
+                        $.make('b', { style: 'display: block; margin: 8px 0' }, [
+                            $.make('span', { className: 'NB-raquo' }, '&raquo;'),
+                            ' ',
+                            NEWSBLUR.Globals.premium_expire && NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire),
+                            (!NEWSBLUR.Globals.premium_expire && $.make('b', "Never gonna expire. Congrats!"))
                         ]),
-                        $.make('div', { 
+                        'You can change your payment method and card details. ',
+                        (NEWSBLUR.Globals.premium_expire < new Date) ?
+                            'This will charge your card immediately.' :
+                            'You won\'t be charged until this date.'
+                    ])
+                ])),
+                $.make('div', { className: 'NB-feedchooser-premium-plan' }, [
+                    $.make('div', { className: 'NB-feedchooser-info' }, [
+                        $.make('div', { className: 'NB-feedchooser-info-type' }, [
+                            'Premium Subscription',
+                            $.make('span', { className: 'NB-feedchooser-subtitle-type-price' }, '$36/year'),
+                        ])
+                    ]),
+                    $.make('ul', { className: 'NB-feedchooser-premium-bullets' }, [
+                        $.make('li', { className: 'NB-1' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'Enable every site by going premium'
+                        ]),
+                        $.make('li', { className: 'NB-2' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'Sites updated up to 5x more often'
+                        ]),
+                        $.make('li', { className: 'NB-3' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'River of News (reading by folder)'
+                        ]),
+                        $.make('li', { className: 'NB-4' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'Search sites and folders'
+                        ]),
+                        $.make('li', { className: 'NB-5' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'Save stories with searchable tags'
+                        ]),
+                        $.make('li', { className: 'NB-6' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'Privacy options for your blurblog'
+                        ]),
+                        $.make('li', { className: 'NB-7' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'Custom RSS feeds for saved stories'
+                        ]),
+                        $.make('li', { className: 'NB-8' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'Text view conveniently extracts the story'
+                        ])
+                        // $.make('li', { className: 'NB-9' }, [
+                        //   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                        //   'You feed Lyric, my poor, hungry dog, for ',
+                        //   $.make('span', { className: 'NB-feedchooser-hungry-dog' }, '6 days'),
+                        //   $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/lyric.jpg' })
+                        // ])
+                    ]),
+                    (NEWSBLUR.Globals.is_premium && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
+                        $.make('div', {
                             className: "NB-stripe-button NB-modal-submit-button NB-modal-submit-green"
                         }, [
-                            (this.options.renew ? "Renew by" : "Pay by"),
-                            $.make('br'),
-                            "Credit Card"
+                            "Upgrade to Premium"
+                        ]),
+                        $.make("div", { className: "NB-paypal-option" }, [
+                            "or ",
+                            $.make("a", { className: "NB-splash-link NB-paypal-button" }, "PayPal")
                         ])
-                      ])
-                  ])
-              ])
+                    ])),
+                    (!NEWSBLUR.Globals.is_premium && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
+                        $.make('div', {
+                            className: "NB-feedchooser-premium-already"
+                        }, [
+                            "Your premium subscription is active"
+                        ])
+                    ]))
+                ]),
+                $.make('div', { className: 'NB-feedchooser-premium-plan' }, [
+                    $.make('div', { className: 'NB-feedchooser-info' }, [
+                        $.make('div', { className: 'NB-feedchooser-info-type' }, [
+                            'Premium Archive Subscription',
+                            $.make('span', { className: 'NB-feedchooser-subtitle-type-price' }, '$99/year'),
+                        ])
+                    ]),
+                    $.make('ul', { className: 'NB-feedchooser-premium-bullets' }, [
+                        $.make('li', { className: 'NB-1' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'Everything in the premium subscription'
+                        ]),
+                        $.make('li', { className: 'NB-1' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'Stories can stay unread forever'
+                        ]),
+                        $.make('li', { className: 'NB-2' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'All stories are stored forever'
+                        ]),
+                        $.make('li', { className: 'NB-1' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'Choose when stories are automatically marked as read'
+                        ]),
+                        $.make('li', { className: 'NB-3' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'Export stories from any folder as RSS feeds'
+                        ])
+                        // $.make('li', { className: 'NB-9' }, [
+                        //   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                        //   'You feed Lyric, my poor, hungry dog, for ',
+                        //   $.make('span', { className: 'NB-feedchooser-hungry-dog' }, '6 days'),
+                        //   $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/lyric.jpg' })
+                        // ])
+                    ]),
+                    $.make('div', { className: 'NB-feedchooser-premium-upgrade' }, [
+                        $.make('div', {
+                            className: "NB-stripe-button NB-stripe-button-archive NB-modal-submit-button NB-modal-submit-green"
+                        }, [
+                            "Upgrade to Premium Archive"
+                        ]),
+                        $.make("div", { className: "NB-paypal-option" }, [
+                            "or ",
+                            $.make("a", { className: "NB-splash-link NB-paypal-button" }, "PayPal")
+                        ])
+                    ])
+                ])
             ])),
-            (!this.options.premium_only && $.make('div', { className: 'NB-feedchooser-type NB-feedchooser-left'}, [
-              (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info'}, [
-                  $.make('div', { className: 'NB-feedchooser-info-type' }, [
-                        $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, 'Free'),
-                        ' Standard Account'
-                  ]),
+            (!this.options.premium_only && $.make('div', { className: 'NB-feedchooser-type NB-feedchooser-left' }, [
+                (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info' }, [
+                    $.make('div', { className: 'NB-feedchooser-info-type' }, [
+                        'Standard Account',
+                        $.make('span', { className: 'NB-feedchooser-subtitle-type-price' }, 'Free'),
+                    ]),
                     $.make('h2', { className: 'NB-modal-subtitle' }, [
                         $.make('b', [
-                            'You can follow up to '+this.MAX_FEEDS+' sites.'
+                            'You can follow up to ' + this.MAX_FEEDS + ' sites.'
                         ]),
                         $.make('br'),
                         'You can always change these.'
                     ]),
-                  $.make('div', { className: 'NB-feedchooser-info-counts'}),
-                  $.make('div', { className: 'NB-feedchooser-info-sort'}, 'Auto-Selected By Popularity'),
-                  $.make('div', { className: 'NB-feedchooser-info-reset NB-splash-link'}, 'Reset to popular sites')
-              ])),
-              (this.options.chooser_only && $.make('div', { className: 'NB-feedchooser-info' }, [
+                    $.make('div', { className: 'NB-feedchooser-info-counts' }),
+                    $.make('div', { className: 'NB-feedchooser-info-sort' }, 'Auto-Selected By Popularity'),
+                    $.make('div', { className: 'NB-feedchooser-info-reset NB-splash-link' }, 'Reset to popular sites')
+                ])),
+                (this.options.chooser_only && $.make('div', { className: 'NB-feedchooser-info' }, [
                     $.make('h2', { className: 'NB-modal-title' }, [
                         $.make('div', { className: 'NB-icon' }),
                         'Mute sites',
                         $.make('div', { className: 'NB-icon-dropdown' })
                     ]),
-                    $.make('div', { className: 'NB-feedchooser-info-reset NB-splash-link'}, 'Turn every site on'),
-                    $.make('div', { className: 'NB-feedchooser-info-counts'})
-              ])),
-              this.make_feeds(),
-              $.make('form', { className: 'NB-feedchooser-form' }, [
-                  $.make('div', { className: 'NB-modal-submit' }, [
-                      // $.make('div', { className: 'NB-modal-submit-or' }, 'or'),
-                      $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled NB-modal-submit-button NB-modal-submit-save NB-modal-submit-green', value: 'Check what you like above...' }),
-                      $.make('input', { type: 'submit', className: 'NB-modal-submit-add NB-modal-submit-button NB-modal-submit-green', value: 'First, add sites' })
-                  ])
-              ]).bind('submit', function(e) {
-                  e.preventDefault();
-                  return false;
-              })
+                    $.make('div', { className: 'NB-feedchooser-info-reset NB-splash-link' }, 'Turn every site on'),
+                    $.make('div', { className: 'NB-feedchooser-info-counts' })
+                ])),
+                this.make_feeds(),
+                $.make('form', { className: 'NB-feedchooser-form' }, [
+                    $.make('div', { className: 'NB-modal-submit' }, [
+                        // $.make('div', { className: 'NB-modal-submit-or' }, 'or'),
+                        $.make('input', { type: 'submit', disabled: 'true', className: 'NB-disabled NB-modal-submit-button NB-modal-submit-save NB-modal-submit-green', value: 'Check what you like above...' }),
+                        $.make('input', { type: 'submit', className: 'NB-modal-submit-add NB-modal-submit-button NB-modal-submit-green', value: 'First, add sites' })
+                    ])
+                ]).bind('submit', function (e) {
+                    e.preventDefault();
+                    return false;
+                })
             ]))
         ]);
     },
