@@ -9713,6 +9713,7 @@ form.opml_import_form input {
     border-radius: 6px 6px 0px 0;
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     margin: 0 0 28px;
+    background-color: #F7F7F5;
 }
 .NB-modal-feedchooser .NB-feedchooser-info-counts {
     float: right;
@@ -10013,7 +10014,6 @@ form.opml_import_form input {
     color: #505050;
     text-shadow: 0px 1px 0 rgba(255, 255, 255, .6);
     font-weight: bold;
-    background-color: #F7F7F5;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li {
@@ -10110,7 +10110,6 @@ form.opml_import_form input {
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-upgrade {
     overflow: hidden;
-    background-color: #F7F7F5;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-already {
     margin: 0 24px 24px;
