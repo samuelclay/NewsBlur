@@ -9715,6 +9715,9 @@ form.opml_import_form input {
     margin: 0 0 28px;
     background-color: #F7F7F5;
 }
+.NB-modal-feedchooser .NB-feedchooser-premium-plan:last-child {
+    margin-bottom: 0;
+}
 .NB-modal-feedchooser .NB-feedchooser-info-counts {
     float: right;
     font-size: 14px;
@@ -10118,7 +10121,15 @@ form.opml_import_form input {
     border-radius: 4px;
     text-align: center;
     font-size: 0.8em;
-    color: #477648;
+    color: #354e35;
+}
+.NB-modal-feedchooser .NB-feedchooser-premium-already-icon {
+    background: transparent url('/media/embed/icons/circular/newuser_icn_setup.png') no-repeat center center;
+    background-size: 28px;
+    width: 36px; 
+    height: 36px;
+    margin: -12px 8px;
+    display: inline-block;
 }
 /* ===================== */
 /* = Newsletters Modal = */

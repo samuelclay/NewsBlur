@@ -706,6 +706,7 @@ color: #a85b40;
 }
 .NB-dark .NB-modal-feedchooser .NB-feedchooser-premium-already {
     border-color: rgba(255,255,255,0.1);
+    color: #85bd67;
 }
 
 /* Intelligence Trainer: Container color */

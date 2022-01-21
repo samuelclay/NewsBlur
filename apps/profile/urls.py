@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^paypal_ipn/?', include('paypal.standard.ipn.urls'), name='paypal-ipn'),
     url(r'^paypal_webhooks/?', include('paypal.standard.ipn.urls'), name='paypal-webhooks'),
     url(r'^stripe_form/?', views.stripe_form, name='stripe-form'),
+    url(r'^stripe_checkout/?', views.stripe_checkout, name='stripe-checkout'),
     url(r'^activities/?', views.load_activities, name='profile-activities'),
     url(r'^payment_history/?', views.payment_history, name='profile-payment-history'),
     url(r'^cancel_premium/?', views.cancel_premium, name='profile-cancel-premium'),

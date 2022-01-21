@@ -471,6 +471,28 @@ def stripe_form(request):
         }
     )
 
+@login_required
+def stripe_checkout(request):
+    domain = Site.objects.get_current().domain
+    
+    checkout_session = stripe.checkout.Session.create(
+        line_items=[
+            {
+                'price': 'price_0KK5tVwdsmP8XBlaXW1vYUn9',
+                'quantity': 1,
+            },
+        ],
+        mode='subscription',
+        customer_email=request.user.email,
+        metadata={"newsblur_user_id": request.user.pk},
+        success_url="http://%s%s" % (domain, reverse('paypal-return')),
+        cancel_url="http://%s%s" % (domain, reverse('index')),
+    )
+
+    logging.user(request, "~BM~FBLoading Stripe checkout")
+
+    return HttpResponseRedirect(checkout_session.url, status=303)
+
 @render_to('reader/activities_module.xhtml')
 def load_activities(request):
     user = get_user(request)
