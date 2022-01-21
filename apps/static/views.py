@@ -39,6 +39,9 @@ def webmanifest(request):
 def apple_app_site_assoc(request):
     return render(request, 'static/apple_app_site_assoc.xhtml')
                                                       
+def apple_developer_merchantid(request):
+    return render(request, 'static/apple_developer_merchantid.xhtml')
+
 def feedback(request):
     return render(request, 'static/feedback.xhtml')
 
