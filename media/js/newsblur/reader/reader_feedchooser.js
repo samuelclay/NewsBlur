@@ -133,7 +133,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         //   $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/lyric.jpg' })
                         // ])
                     ]),
-                    (NEWSBLUR.Globals.is_premium && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
+                    (!NEWSBLUR.Globals.is_premium && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
                         $.make('div', {
                             className: "NB-stripe-button NB-modal-submit-button NB-modal-submit-green"
                         }, [
@@ -144,10 +144,11 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                             $.make("a", { className: "NB-splash-link NB-paypal-button" }, "PayPal")
                         ])
                     ])),
-                    (!NEWSBLUR.Globals.is_premium && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
+                    (NEWSBLUR.Globals.is_premium && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
                         $.make('div', {
                             className: "NB-feedchooser-premium-already"
                         }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-already-icon' }),
                             "Your premium subscription is active"
                         ])
                     ]))
