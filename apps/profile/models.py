@@ -34,6 +34,7 @@ from vendor.paypalapi.interface import PayPalInterface
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
 from zebra.signals import zebra_webhook_customer_subscription_created
 from zebra.signals import zebra_webhook_charge_succeeded
+from zebra.signals import zebra_webhook_charge_succeeded
 
 class Profile(models.Model):
     user              = models.OneToOneField(User, unique=True, related_name="profile", on_delete=models.CASCADE)
