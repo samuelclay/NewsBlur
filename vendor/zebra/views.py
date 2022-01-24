@@ -6,8 +6,7 @@ from zebra.conf import options
 from zebra.signals import *
 from django.views.decorators.csrf import csrf_exempt
 
-import logging
-log = logging.getLogger("zebra.%s" % __name__)
+from utils import log as logging
 
 stripe.api_key = options.STRIPE_SECRET
 
@@ -66,7 +65,9 @@ def webhooks_v2(request):
 
     event_json = json.loads(request.body)
     event_key = event_json['type'].replace('.', '_')
-    log.debug(request, "~FBStripe webhook ~SB%s~SN~FB: ~FC%s" % (event_key, event_json))
+    
+    if settings.DEBUG:
+        logging.user(request.user, "~FBStripe webhook ~SB%s~SN~FB: ~FC%s" % (event_key, event_json))
     
     if event_key in WEBHOOK_MAP:
         WEBHOOK_MAP[event_key].send(sender=None, full_json=event_json)
