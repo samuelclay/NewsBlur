@@ -1,10 +1,10 @@
-{% load bookmarklet_includes utils_tags %}
+{% load utils_tags %}
 
 (function() {
     window.NEWSBLUR = window.NEWSBLUR || {};
     var exports = undefined;
 
-    {% include_bookmarklet_js %}
+    {% include_javascripts "bookmarklet" %}
 
     NEWSBLUR.Bookmarklet = function(options) {
         var defaults = {};
@@ -634,7 +634,7 @@
         },
         
         attach_css: function() {
-            var css = "{% include_bookmarklet_css %}";
+            var css = '{% include_stylesheets "bookmarklet" %}';
             var style = '<style id="newsblur_bookmarklet_css">' + css + '</style>';
             if ($('#newsblur_bookmarklet_css').length) {
                 $('#newsblur_bookmarklet_css').replaceWith(style);

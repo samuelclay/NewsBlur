@@ -6,10 +6,10 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.Loader;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.GestureDetector;
@@ -37,10 +37,10 @@ import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.view.ProgressThrobber;
+import com.newsblur.viewModel.StoriesViewModel;
 
-public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ItemSetFragment extends NbFragment {
 
-	public static int ITEMLIST_LOADER = 0x01;
     private static final String BUNDLE_GRIDSTATE = "gridstate";
 
     protected boolean cursorSeenYet = false; // have we yet seen a valid cursor for our particular feedset?
@@ -74,6 +74,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 
     private FragmentItemgridBinding binding;
     private RowFleuronBinding fleuronBinding;
+    private StoriesViewModel storiesViewModel;
 
 	public static ItemSetFragment newInstance() {
 		ItemSetFragment fragment = new ItemSetFragment();
@@ -85,7 +86,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LoaderManager.getInstance(this).initLoader(ITEMLIST_LOADER, null, this);
+        storiesViewModel = new ViewModelProvider(this).get(StoriesViewModel.class);
     }
 
     @Override
@@ -147,7 +148,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
                 updateStyle();
             }
         });
-    
+
         StoryListStyle listStyle = PrefsUtils.getStoryListStyle(getActivity(), getFeedSet());
 
         calcColumnCount(listStyle);
@@ -193,6 +194,22 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
 		return v;
 	}
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        storiesViewModel.getActiveStoriesLiveData().observe(getViewLifecycleOwner(), this::setCursor);
+
+        FeedSet fs = getFeedSet();
+        if (fs == null) {
+            com.newsblur.util.Log.e(this.getClass().getName(), "can't create fragment, no feedset ready");
+            // this is probably happening in a finalisation cycle or during a crash, pop the activity stack
+            try {
+                getActivity().finish();
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
     protected void triggerRefresh(int desiredStoryCount, Integer totalSeen) {
         // ask the sync service for as many stories as we want
         boolean gotSome = NBSyncService.requestMoreForFeed(getFeedSet(), desiredStoryCount, totalSeen);
@@ -228,32 +245,29 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
     }
 
 	public void hasUpdated() {
-        if (isAdded()) {
-		    LoaderManager.getInstance(this).restartLoader(ITEMLIST_LOADER , null, this);
+        FeedSet fs = getFeedSet();
+        if (isAdded() && fs != null) {
+            storiesViewModel.getActiveStories(fs);
         }
 	}
 
-	@Override
-	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-        FeedSet fs = getFeedSet();
-        if (fs == null) {
-            com.newsblur.util.Log.e(this.getClass().getName(), "can't create fragment, no feedset ready");
-            // this is probably happening in a finalisation cycle or during a crash, pop the activity stack
-            try {
-                getActivity().finish();
-            } catch (Exception e) {
-
-            }
-            return FeedUtils.dbHelper.getNullLoader();
+    protected void updateAdapter(@Nullable Cursor cursor) {
+        adapter.swapCursor(cursor, binding.itemgridfragmentGrid, gridState);
+        gridState = null;
+        adapter.updateFeedSet(getFeedSet());
+        if ((cursor != null) && (cursor.getCount() > 0)) {
+            binding.emptyView.setVisibility(View.INVISIBLE);
         } else {
-            return FeedUtils.dbHelper.getActiveStoriesLoader(getFeedSet());
+            binding.emptyView.setVisibility(View.VISIBLE);
         }
+
+        // though we have stories, we might not yet have as many as we want
+        ensureSufficientStories();
     }
 
-    @Override
-	public synchronized void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		if (cursor != null) {
-            if (! FeedUtils.dbHelper.isFeedSetReady(getFeedSet())) {
+    private void setCursor(Cursor cursor) {
+        if (cursor != null) {
+            if (!FeedUtils.dbHelper.isFeedSetReady(getFeedSet())) {
                 // the DB hasn't caught up yet from the last story list; don't display stale stories.
                 com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
                 updateAdapter(null);
@@ -268,25 +282,7 @@ public class ItemSetFragment extends NbFragment implements LoaderManager.LoaderC
             }
 		}
         updateLoadingIndicators();
-	}
-
-    protected void updateAdapter(Cursor cursor) {
-        adapter.swapCursor(cursor, binding.itemgridfragmentGrid, gridState);
-        gridState = null;
-        adapter.updateFeedSet(getFeedSet());
-        if ((cursor != null) && (cursor.getCount() > 0)) {
-            binding.emptyView.setVisibility(View.INVISIBLE);
-        } else {
-            binding.emptyView.setVisibility(View.VISIBLE);
-        }
-
-        // though we have stories, we might not yet have as many as we want
-        ensureSufficientStories();
     }
-
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-	}
 
     private void updateLoadingIndicators() {
         calcFleuronPadding();

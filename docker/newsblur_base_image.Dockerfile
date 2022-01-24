@@ -10,7 +10,6 @@ RUN       set -ex \
           && buildDeps=' \
                     patch \
                     gfortran \
-                    lib32ncurses5-dev  \
                     libblas-dev \
                     libffi-dev \
                     libjpeg-dev \
