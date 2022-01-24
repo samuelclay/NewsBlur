@@ -34,7 +34,7 @@ from vendor.paypalapi.interface import PayPalInterface
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
 from zebra.signals import zebra_webhook_customer_subscription_created
 from zebra.signals import zebra_webhook_charge_succeeded
-from zebra.signals import zebra_webhook_charge_succeeded
+from zebra.signals import zebra_webhook_checkout_session_completed
 
 class Profile(models.Model):
     user              = models.OneToOneField(User, unique=True, related_name="profile", on_delete=models.CASCADE)
@@ -69,6 +69,21 @@ class Profile(models.Model):
             " (Premium ARCHIVE)" if self.is_archive and not self.is_pro else "",
             " (Premium PRO)" if self.is_pro else "",
         )
+    
+    @classmethod
+    def plan_to_stripe_price(cls, plan):
+        price = None
+        if plan == "premium":
+            price = "newsblur-premium-36"
+        elif plan == "archive":
+            price = "price_0KK5a7wdsmP8XBlaHfbQNnaL"
+            if settings.DEBUG:
+                price = "price_0KK5tVwdsmP8XBlaXW1vYUn9"
+        elif plan == "pro":
+            price = "price_0KK5cvwdsmP8XBlaZDq068bA"
+            if settings.DEBUG:
+                price = "price_0KK5twwdsmP8XBlasifbX56Z"
+        return price
     
     @property
     def unread_cutoff(self, force_premium=False, force_archive=False):
@@ -178,13 +193,15 @@ class Profile(models.Model):
         logging.user(self.user, "Deleting user: %s" % self.user)
         self.user.delete()
     
-    def activate_premium(self, never_expire=False):
+    def activate_premium(self, never_expire=False, archive=False, pro=False):
         from apps.profile.tasks import EmailNewPremium
         
         EmailNewPremium.delay(user_id=self.user.pk)
         
         was_premium = self.is_premium
         self.is_premium = True
+        self.is_archive = archive
+        self.is_pro = pro
         self.save()
         self.user.is_active = True
         self.user.save()
@@ -1400,12 +1417,42 @@ def paypal_payment_was_flagged(sender, **kwargs):
         return {"code": -1, "message": "User doesn't exist."}
 invalid_ipn_received.connect(paypal_payment_was_flagged)
 
+def stripe_checkout_completed(sender, full_json, **kwargs):
+    newsblur_user_id = full_json['data']['object']['metadata']['newsblur_user_id']
+    stripe_id = full_json['data']['object']['customer']
+    profile = None
+    try:
+        profile = Profile.objects.get(stripe_id=stripe_id)
+    except Profile.DoesNotExist:
+        pass
+    
+    if not profile:
+        try:
+            profile = User.objects.get(pk=int(newsblur_user_id)).profile
+            profile.stripe_id = stripe_id
+            profile.save()
+        except User.DoesNotExist:
+            pass
+    
+    if profile:
+        logging.user(profile.user, "~BC~SB~FBStripe checkout subscription signup")
+        profile.retrieve_stripe_ids()
+    else:
+        return {"code": -1, "message": "User doesn't exist."}
+zebra_webhook_checkout_session_completed.connect(stripe_checkout_completed)
+
 def stripe_signup(sender, full_json, **kwargs):
     stripe_id = full_json['data']['object']['customer']
+    plan_id = full_json['data']['object']['plan']['id']
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         logging.user(profile.user, "~BC~SB~FBStripe subscription signup")
-        profile.activate_premium()
+        if plan_id == Profile.plan_to_stripe_price('premium'):
+            profile.activate_premium()
+        elif plan_id == Profile.plan_to_stripe_price('archive'):
+            profile.activate_premium(archive=True)
+        elif plan_id == Profile.plan_to_stripe_price('pro'):
+            profile.activate_premium(archive=True, pro=True)
         profile.cancel_premium_paypal()
         profile.retrieve_stripe_ids()
     except Profile.DoesNotExist:
