@@ -66,7 +66,8 @@ def webhooks_v2(request):
 
     event_json = json.loads(request.body)
     event_key = event_json['type'].replace('.', '_')
-
+    log.debug(request, "~FBStripe webhook ~SB%s~SN~FB: ~FC%s" % (event_key, event_json))
+    
     if event_key in WEBHOOK_MAP:
         WEBHOOK_MAP[event_key].send(sender=None, full_json=event_json)
 

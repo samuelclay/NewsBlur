@@ -42,9 +42,35 @@
     state: present
     update_cache: yes
 
-- name: Install Docker Compose
+- name: Check current docker-compose version
+  command: docker-compose --version
+  register: docker_compose_vsn
+  changed_when: false
+  failed_when: false
+  check_mode: no
+  tags: docker-compose
+
+- set_fact:
+    docker_compose_current_version: "{{ docker_compose_vsn.stdout | regex_search('(\\d+(\\.\\d+)+)') }}"
+  when:
+    - docker_compose_vsn.stdout is defined
+  tags: docker-compose
+
+- name: Docker compsoe current version
+  debug: 
+    msg: "{{ docker_compose_current_version }}"
+  tags: docker-compose
+
+- name: Install or upgrade docker-compose
   become: yes
-  apt:
-    name: docker-compose
-    state: present
-    update_cache: yes
+  get_url: 
+    url : "https://github.com/docker/compose/releases/download/v{{ docker_compose_version }}/docker-compose-linux-x86_64"
+    dest: /usr/local/bin/docker-compose
+    mode: 'a+x'
+    force: yes
+  when: >
+    docker_compose_current_version is not defined 
+    or docker_compose_current_version == ""
+    or docker_compose_current_version is version(docker_compose_version, '<')
+  tags: docker-compose
+    

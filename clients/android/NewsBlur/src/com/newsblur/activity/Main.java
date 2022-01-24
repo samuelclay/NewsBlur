@@ -340,7 +340,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void onClickAddButton() {
-        Intent i = new Intent(this, SearchForFeeds.class);
+        Intent i = new Intent(this, FeedSearchActivity.class);
         startActivity(i);
     }
 

@@ -170,6 +170,11 @@ class TwitterFetcher:
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(460, "Twitter Error: Over capacity")
                 return
+            elif '503' in message:
+                logging.debug('   ***> [%-30s] ~FRTwitter throwing a 503, ignoring... %s: %s' % 
+                              (self.feed.log_title[:30], self.address, e))
+                self.feed.save_feed_history(463, "Twitter Error: Twitter's down")
+                return
             else:
                 raise e
         

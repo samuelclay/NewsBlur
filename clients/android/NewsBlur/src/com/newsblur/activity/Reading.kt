@@ -12,9 +12,9 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.commit
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.loader.app.LoaderManager
-import androidx.loader.content.Loader
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.google.android.material.progressindicator.CircularProgressIndicator
@@ -31,16 +31,17 @@ import com.newsblur.service.NBSyncService
 import com.newsblur.util.*
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.view.ReadingScrollView.ScrollChangeListener
+import com.newsblur.viewModel.StoriesViewModel
 import java.lang.Runnable
 import java.util.*
 import kotlin.math.abs
 
-abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeListener, ScrollChangeListener, LoaderManager.LoaderCallbacks<Cursor?>, ReadingFontChangedListener {
+abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeListener,
+        ScrollChangeListener, ReadingFontChangedListener {
 
     @JvmField
     var fs: FeedSet? = null
 
-    private val storiesMutex = Any()
     private var stories: Cursor? = null
 
     // Activities navigate to a particular story by hash.
@@ -58,11 +59,12 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
     private var overlayRangeBotPx = 0f
     private var lastVScrollPos = 0
 
-    private val pageHistory: MutableList<Story> = ArrayList()
+    private val pageHistory = mutableListOf<Story>()
 
     private lateinit var volumeKeyNavigation: VolumeKeyNavigation
     private lateinit var intelState: StateFilter
     private lateinit var binding: ActivityReadingBinding
+    private lateinit var storiesViewModel: StoriesViewModel
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
@@ -71,9 +73,9 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
 
     override fun onCreate(savedInstanceBundle: Bundle?) {
         super.onCreate(savedInstanceBundle)
+        storiesViewModel = ViewModelProvider(this).get(StoriesViewModel::class.java)
         binding = ActivityReadingBinding.inflate(layoutInflater)
         setContentView(binding.root)
-//        contentView = findViewById(android.R.id.content)
 
         try {
             fs = intent.getSerializableExtra(EXTRA_FEEDSET) as FeedSet?
@@ -106,38 +108,10 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
         intelState = PrefsUtils.getStateFilter(this)
         volumeKeyNavigation = PrefsUtils.getVolumeKeyNavigation(this)
 
-        // this value is expensive to compute but doesn't change during a single runtime
-        overlayRangeTopPx = UIUtils.dp2px(this, OVERLAY_RANGE_TOP_DP).toFloat()
-        overlayRangeBotPx = UIUtils.dp2px(this, OVERLAY_RANGE_BOT_DP).toFloat()
-
-        ViewUtils.setViewElevation(binding.readingOverlayLeft, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlayRight, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlayText, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlaySend, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlayProgress, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlayProgressLeft, OVERLAY_ELEVATION_DP)
-        ViewUtils.setViewElevation(binding.readingOverlayProgressRight, OVERLAY_ELEVATION_DP)
-
-        // this likes to default to 'on' for some platforms
-        enableProgressCircle(binding.readingOverlayProgressLeft, false)
-        enableProgressCircle(binding.readingOverlayProgressRight, false)
-
-        val fragmentManager = supportFragmentManager
-        var fragment = fragmentManager.findFragmentByTag(ReadingPagerFragment::class.java.name) as ReadingPagerFragment?
-        if (fragment == null) {
-            fragment = ReadingPagerFragment.newInstance()
-            val transaction = fragmentManager.beginTransaction()
-            transaction.add(R.id.activity_reading_container, fragment, ReadingPagerFragment::class.java.name)
-            transaction.commit()
-        }
-
-        binding.readingOverlayText.setOnClickListener { overlayTextClick() }
-        binding.readingOverlaySend.setOnClickListener { overlaySendClick() }
-        binding.readingOverlayLeft.setOnClickListener { overlayLeftClick() }
-        binding.readingOverlayRight.setOnClickListener { overlayRightClick() }
-        binding.readingOverlayProgress.setOnClickListener { overlayProgressCountClick() }
-
-        LoaderManager.getInstance(this).initLoader(0, null, this)
+        setupViews()
+        setupListeners()
+        setupObservers()
+        getActiveStoriesCursor(true)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -173,45 +147,78 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
         super.onPause()
     }
 
-    override fun onCreateLoader(loaderId: Int, bundle: Bundle?): Loader<Cursor?> {
-        if (fs == null) {
-            Log.e(this.javaClass.name, "can't create activity, no feedset ready")
-            // this is probably happening in a finalisation cycle or during a crash, pop the activity stack
-            finish()
+    private fun setupViews() {
+        // this value is expensive to compute but doesn't change during a single runtime
+        overlayRangeTopPx = UIUtils.dp2px(this, OVERLAY_RANGE_TOP_DP).toFloat()
+        overlayRangeBotPx = UIUtils.dp2px(this, OVERLAY_RANGE_BOT_DP).toFloat()
+
+        ViewUtils.setViewElevation(binding.readingOverlayLeft, OVERLAY_ELEVATION_DP)
+        ViewUtils.setViewElevation(binding.readingOverlayRight, OVERLAY_ELEVATION_DP)
+        ViewUtils.setViewElevation(binding.readingOverlayText, OVERLAY_ELEVATION_DP)
+        ViewUtils.setViewElevation(binding.readingOverlaySend, OVERLAY_ELEVATION_DP)
+        ViewUtils.setViewElevation(binding.readingOverlayProgress, OVERLAY_ELEVATION_DP)
+        ViewUtils.setViewElevation(binding.readingOverlayProgressLeft, OVERLAY_ELEVATION_DP)
+        ViewUtils.setViewElevation(binding.readingOverlayProgressRight, OVERLAY_ELEVATION_DP)
+
+        // this likes to default to 'on' for some platforms
+        enableProgressCircle(binding.readingOverlayProgressLeft, false)
+        enableProgressCircle(binding.readingOverlayProgressRight, false)
+
+        supportFragmentManager.commit {
+            val fragment =
+                    supportFragmentManager.findFragmentByTag(ReadingPagerFragment::class.java.name) as ReadingPagerFragment?
+                            ?: ReadingPagerFragment.newInstance()
+            add(R.id.activity_reading_container, fragment, ReadingPagerFragment::class.java.name)
         }
-        return FeedUtils.dbHelper!!.getActiveStoriesLoader(fs)
     }
 
-    override fun onLoaderReset(loader: Loader<Cursor?>) {}
+    private fun setupListeners() {
+        binding.readingOverlayText.setOnClickListener { overlayTextClick() }
+        binding.readingOverlaySend.setOnClickListener { overlaySendClick() }
+        binding.readingOverlayLeft.setOnClickListener { overlayLeftClick() }
+        binding.readingOverlayRight.setOnClickListener { overlayRightClick() }
+        binding.readingOverlayProgress.setOnClickListener { overlayProgressCountClick() }
+    }
 
-    override fun onLoadFinished(loader: Loader<Cursor?>, cursor: Cursor?) {
-        synchronized(storiesMutex) {
-            if (cursor == null) return
-            if (stopLoading) return
+    private fun setupObservers() {
+        storiesViewModel.activeStoriesLiveData.observe(this) {
+            setCursorData(it)
+        }
+    }
 
-            if (!FeedUtils.dbHelper!!.isFeedSetReady(fs)) {
-                com.newsblur.util.Log.i(this.javaClass.name, "stale load")
-                // the system can and will re-use activities, so during the initial mismatch of
-                // data, don't show the old stories
-                pager!!.visibility = View.INVISIBLE
-                binding.readingEmptyViewText.visibility = View.VISIBLE
-                stories = null
-                triggerRefresh(AppConstants.READING_STORY_PRELOAD)
-                return
+    private fun getActiveStoriesCursor(finishOnInvalidFs: Boolean = false) {
+        fs?.let {
+            storiesViewModel.getActiveStories(it)
+        } ?: run {
+            if (finishOnInvalidFs) {
+                Log.e(this.javaClass.name, "can't create activity, no feedset ready")
+                // this is probably happening in a finalisation cycle or during a crash, pop the activity stack
+                finish()
             }
+        }
+    }
 
-            if (readingAdapter != null) {
-                // swapCursor() will asynch process the new cursor and fully update the pager,
-                // update child fragments, and then call pagerUpdated()
-                readingAdapter!!.swapCursor(cursor, pager)
-            }
+    private fun setCursorData(cursor: Cursor) {
+        if (!FeedUtils.dbHelper!!.isFeedSetReady(fs)) {
+            com.newsblur.util.Log.i(this.javaClass.name, "stale load")
+            // the system can and will re-use activities, so during the initial mismatch of
+            // data, don't show the old stories
+            pager!!.visibility = View.INVISIBLE
+            binding.readingEmptyViewText.visibility = View.VISIBLE
+            stories = null
+            triggerRefresh(AppConstants.READING_STORY_PRELOAD)
+            return
+        }
 
-            stories = cursor
+        // swapCursor() will asynch process the new cursor and fully update the pager,
+        // update child fragments, and then call pagerUpdated()
+        readingAdapter?.swapCursor(cursor, pager)
 
-            com.newsblur.util.Log.d(this.javaClass.name, "loaded cursor with count: " + cursor.count)
-            if (cursor.count < 1) {
-                triggerRefresh(AppConstants.READING_STORY_PRELOAD)
-            }
+        stories = cursor
+
+        com.newsblur.util.Log.d(this.javaClass.name, "loaded cursor with count: " + cursor.count)
+        if (cursor.count < 1) {
+            triggerRefresh(AppConstants.READING_STORY_PRELOAD)
         }
     }
 
@@ -334,7 +341,6 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
         }
         if (updateType and UPDATE_STATUS != 0) {
             enableMainProgress(NBSyncService.isFeedSetSyncing(fs, this))
-//            if (binding!!.readingSyncStatus != null) {
             var syncStatus = NBSyncService.getSyncStatusMessage(this, true)
             if (syncStatus != null) {
                 if (AppConstants.VERBOSE_LOG) {
@@ -345,25 +351,13 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
             } else {
                 binding.readingSyncStatus.visibility = View.GONE
             }
-//            }
         }
         if (updateType and UPDATE_STORY != 0) {
-            updateCursor()
+            getActiveStoriesCursor()
             updateOverlayNav()
         }
 
         readingFragment?.handleUpdate(updateType)
-    }
-
-    private fun updateCursor() {
-        synchronized(storiesMutex) {
-            try {
-                LoaderManager.getInstance(this).restartLoader(0, null, this)
-            } catch (ise: IllegalStateException) {
-                // our heavy use of async can race loader calls, which it will gripe about, but this
-                //  is only a refresh call, so dropping a refresh during creation is perfectly fine.
-            }
-        }
     }
 
     // interface OnPageChangeListener
@@ -482,7 +476,6 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
     }
 
     private fun updateOverlayText() {
-//        if (binding!!.readingOverlayText == null) return
         runOnUiThread(Runnable {
             val item = readingFragment ?: return@Runnable
             if (item.selectedViewMode == DefaultFeedView.STORY) {

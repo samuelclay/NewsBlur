@@ -128,7 +128,7 @@ def add_site(request, token):
     url        = request.GET['url']
     folder     = request.GET['folder']
     new_folder = request.GET.get('new_folder')
-    callback   = request.GET['callback']
+    callback   = request.GET.get('callback', '')
     
     if not url:
         code = -1
