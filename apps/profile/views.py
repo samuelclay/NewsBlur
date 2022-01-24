@@ -485,20 +485,25 @@ def stripe_checkout(request):
         price = "price_0KK5cvwdsmP8XBlaZDq068bA"
         if settings.DEBUG:
             price = "price_0KK5twwdsmP8XBlasifbX56Z"
-        
-    checkout_session = stripe.checkout.Session.create(
-        line_items=[
+    
+    session_dict = {
+        "line_items": [
             {
                 'price': price,
                 'quantity': 1,
             },
         ],
-        mode='subscription',
-        customer_email=request.user.email,
-        metadata={"newsblur_user_id": request.user.pk},
-        success_url="http://%s%s" % (domain, reverse('paypal-return')),
-        cancel_url="http://%s%s" % (domain, reverse('index')),
-    )
+        "mode": 'subscription',
+        "metadata": {"newsblur_user_id": request.user.pk},
+        "success_url": "http://%s%s" % (domain, reverse('stripe-return')),
+        "cancel_url": "http://%s%s" % (domain, reverse('index')),
+    }
+    if request.user.profile.stripe_id:
+        session_dict['customer'] = request.user.profile.stripe_id
+    else:
+        session_dict["customer_email"] = request.user.email
+
+    checkout_session = stripe.checkout.Session.create(**session_dict)
 
     logging.user(request, "~BM~FBLoading Stripe checkout")
 
