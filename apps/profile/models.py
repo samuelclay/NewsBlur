@@ -1417,7 +1417,7 @@ def paypal_payment_was_flagged(sender, **kwargs):
         return {"code": -1, "message": "User doesn't exist."}
 invalid_ipn_received.connect(paypal_payment_was_flagged)
 
-def stripe_checkout_completed(sender, full_json, **kwargs):
+def stripe_checkout_session_completed(sender, full_json, **kwargs):
     newsblur_user_id = full_json['data']['object']['metadata']['newsblur_user_id']
     stripe_id = full_json['data']['object']['customer']
     profile = None
@@ -1438,8 +1438,9 @@ def stripe_checkout_completed(sender, full_json, **kwargs):
         logging.user(profile.user, "~BC~SB~FBStripe checkout subscription signup")
         profile.retrieve_stripe_ids()
     else:
+        logging.user(profile.user, "~BR~SB~FRCouldn't find Stripe user: ~FW%s" % full_json)
         return {"code": -1, "message": "User doesn't exist."}
-zebra_webhook_checkout_session_completed.connect(stripe_checkout_completed)
+zebra_webhook_checkout_session_completed.connect(stripe_checkout_session_completed)
 
 def stripe_signup(sender, full_json, **kwargs):
     stripe_id = full_json['data']['object']['customer']
