@@ -215,6 +215,12 @@ LOGGING = {
             # 'level': 'DEBUG',
             'propagate': False,
         },
+        'zebra': {
+            'handlers': ['console', 'log_file'],
+            # 'level': 'ERROR',
+            'level': 'DEBUG',
+            'propagate': False,
+        },
         'newsblur': {
             'handlers': ['console', 'log_file'],
             'level': 'DEBUG',

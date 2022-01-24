@@ -61,6 +61,7 @@ zebra_webhook_charge_succeeded = django.dispatch.Signal(providing_args=WEBHOOK2_
 zebra_webhook_charge_failed = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
 zebra_webhook_charge_refunded = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
 zebra_webhook_charge_disputed = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
+zebra_webhook_checkout_session_completed = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
 zebra_webhook_customer_created = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
 zebra_webhook_customer_updated = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
 zebra_webhook_customer_deleted = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
@@ -93,6 +94,7 @@ WEBHOOK_MAP = {
     'charge_failed': zebra_webhook_charge_failed,
     'charge_refunded': zebra_webhook_charge_refunded,
     'charge_disputed': zebra_webhook_charge_disputed,
+    'checkout_session_completed': zebra_webhook_checkout_session_completed,
     'customer_created': zebra_webhook_customer_created,
     'customer_updated': zebra_webhook_customer_updated,
     'customer_deleted': zebra_webhook_customer_deleted,
