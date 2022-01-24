@@ -20,7 +20,7 @@
   tags: consul
   become: yes
   template:
-    src: /srv/newsblur/ansible/roles/flask_metrics/templates/consul_service.json
+    src: consul_service.json
     dest: /etc/consul.d/flask_metrics.json
   notify:
     - reload consul
@@ -51,6 +51,8 @@
       file: /srv/newsblur/flask_metrics/flask_metrics_mongo.py
     - service_name: redis
       file: /srv/newsblur/flask_metrics/flask_metrics_redis.py
+    - service_name: www
+      file: /srv/newsblur/flask_metrics/flask_metrics_haproxy.py
 
 - name: Restart flask_metrics
   become: yes

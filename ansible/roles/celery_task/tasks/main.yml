@@ -48,6 +48,7 @@
       timeout: 10s
       retries: 3
       start_period: 30s
+    user: 1000:1001
     volumes:
       - /srv/newsblur:/srv/newsblur
       - /etc/hosts:/etc/hosts

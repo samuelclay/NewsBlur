@@ -136,7 +136,7 @@
             android:label="@string/mute_sites"/>
 
         <activity
-            android:name=".activity.SearchForFeeds"
+            android:name=".activity.FeedSearchActivity"
             android:launchMode="singleTop" />
 
         <activity
@@ -147,6 +147,10 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service android:name=".widget.WidgetRemoteViewsService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <service
+            android:name=".service.SubscriptionSyncService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false" />
 
         <receiver android:name=".service.BootReceiver"
             android:exported="true">

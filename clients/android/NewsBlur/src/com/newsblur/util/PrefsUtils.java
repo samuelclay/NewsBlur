@@ -30,6 +30,7 @@ import com.newsblur.R;
 import com.newsblur.activity.Login;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIConstants;
+import com.newsblur.service.SubscriptionSyncService;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.widget.WidgetUtils;
@@ -168,6 +169,9 @@ public class PrefsUtils {
     public static void logout(Context context) {
         NBSyncService.softInterrupt();
         NBSyncService.clearState();
+
+        // cancel scheduled subscription sync service
+        SubscriptionSyncService.cancel(context);
 
         NotificationUtils.clear(context);
 
@@ -1025,5 +1029,15 @@ public class PrefsUtils {
         Editor editor = preferences.edit();
         editor.putBoolean(PrefConstants.IN_APP_REVIEW, true);
         editor.commit();
+    }
+
+    /**
+     * Check for logged in user.
+     * @return whether a cookie is stored on disk
+     * which gets saved when a user is authenticated.
+     */
+    public static boolean hasCookie(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE);
+        return preferences.getString(PrefConstants.PREF_COOKIE, null) != null;
     }
 }

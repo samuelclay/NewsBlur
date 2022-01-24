@@ -11,14 +11,39 @@
     #   command: consul leave
     #   ignore_errors: yes
 
-    - name: Compressing JS/CSS assets 
+    - name: Update Sentry release
+      connection: local
+      shell: >
+        curl {{ sentry_web_release_webhook }}/ \
+        -X POST \
+        -H 'Content-Type: application/json' \
+        -d '{"version": "{{ lookup('pipe', 'date "+%Y-%m-%d %H:%M:%S"') }}"}'
+
+    - name: Cleanup static assets before compression
       run_once: yes
       connection: local
-      command: chdir=/srv/newsblur jammit -c /srv/newsblur/newsblur_web/assets.yml --base-url https://www.newsblur.com --output /srv/newsblur/static
+      file:
+        state: absent
+        path: /srv/newsblur/static
       tags:
         - never
         - static
-        - jammit
+
+    - name: Updating NewsBlur Deploy container
+      run_once: yes
+      connection: local
+      command: chdir=/srv/newsblur docker pull newsblur/newsblur_deploy
+      tags:
+        - never
+        - static
+
+    - name: Compressing JS/CSS assets 
+      run_once: yes
+      connection: local
+      command: chdir=/srv/newsblur docker run --rm -v /srv/newsblur:/srv/newsblur newsblur/newsblur_deploy
+      tags:
+        - never
+        - static
     
     - name: Archive JS/CSS assets for uploading
       run_once: yes
@@ -30,6 +55,17 @@
         - never
         - static
       
+    - name: Ensure AWS dependencies installed
+      run_once: yes
+      connection: local
+      pip:
+        name: 
+          - boto3
+          - botocore
+      tags:
+        - never
+        - static
+
     - name: Uploading JS/CSS assets to S3
       run_once: yes
       connection: local
@@ -60,7 +96,7 @@
       amazon.aws.aws_s3:
         bucket: newsblur_backups
         object: /static_py3.tgz
-        dest: /srv/newsblur/static/static.tgz
+        dest: /srv/newsblur/static.tgz
         mode: get
         overwrite: different
         aws_access_key: "{{ lookup('ini', 'aws_access_key_id section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
