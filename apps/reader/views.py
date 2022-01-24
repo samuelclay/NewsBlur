@@ -846,10 +846,9 @@ def load_single_feed(request, feed_id):
     # if not usersub and feed.num_subscribers <= 1:
     #     data = dict(code=-1, message="You must be subscribed to this feed.")
     
+    # time.sleep(random.randint(1, 3))
     if delay and user.is_staff:
-        # import random
         # time.sleep(random.randint(2, 7) / 10.0)
-        # time.sleep(random.randint(1, 10))
         time.sleep(delay)
     # if page == 1:
     #     time.sleep(1)
@@ -2199,7 +2198,11 @@ def delete_feeds_by_folder(request):
 @json.json_view
 def rename_feed(request):
     feed = get_object_or_404(Feed, pk=int(request.POST['feed_id']))
-    user_sub = UserSubscription.objects.get(user=request.user, feed=feed)
+    try:
+        user_sub = UserSubscription.objects.get(user=request.user, feed=feed)
+    except UserSubscription.DoesNotExist:
+        return dict(code=-1, message=f"You are not subscribed to {feed.feed_title}")
+    
     feed_title = request.POST['feed_title']
     
     logging.user(request, "~FRRenaming feed '~SB%s~SN' to: ~SB%s" % (

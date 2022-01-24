@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.databinding.ActivityLoginProgressBinding
 import com.newsblur.network.APIManager
+import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
@@ -60,6 +61,9 @@ class LoginProgress : FragmentActivity() {
                         val b = AnimationUtils.loadAnimation(this, R.anim.text_up)
                         binding.loginRetrievingFeeds.setText(R.string.login_retrieving_feeds)
                         binding.loginFeedProgress.startAnimation(b)
+
+                        SubscriptionSyncService.schedule(this)
+
                         val startMain = Intent(this, Main::class.java)
                         startActivity(startMain)
                     } else {
