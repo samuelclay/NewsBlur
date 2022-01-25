@@ -2533,7 +2533,7 @@
     [params setObject:[self.activeStory objectForKey:@"story_hash"] forKey:@"story_hash"];
     [params setObject:@"true" forKey:@"show_changes"];
     NSString *storyId = [self.activeStory objectForKey:@"id"];
-    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [appDelegate GET:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishFetchStoryChanges:responseObject storyId:storyId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedFetchStoryChanges:error];
