@@ -910,7 +910,7 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>FooterText</key>
-			<string>Leave blank to use the NewsBlur site, or enter the URL of your self-hosted NewsBlur installation, e.g. &quot;https://www.domain.com&quot;.</string>
+			<string>Leave blank to use the NewsBlur site, or enter the URL of your self-hosted NewsBlur installation, e.g. &quot;https://www.domain.com&quot;. Takes effect next time app is opened.</string>
 		</dict>
 		<dict>
 			<key>Type</key>
