@@ -431,7 +431,6 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     }
     
     [self.notifier setNeedsLayout];
-    [appDelegate hideShareView:YES];
     
     if (!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
         [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
