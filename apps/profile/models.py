@@ -354,11 +354,41 @@ class Profile(models.Model):
         self.user.is_active = True
         self.user.save()
         self.send_new_user_queue_email()
+    
+    def switch_subscription(self, plan):
+        stripe_customer = self.stripe_customer()
+        if not stripe_customer:
+            return
+        
+        stripe_subscriptions = stripe.Subscription.list(customer=stripe_customer.id).data
+        existing_subscription = None
+        for subscription in stripe_subscriptions:
+            if subscription.plan.active:
+                existing_subscription = subscription
+                break
+        if not existing_subscription: 
+            return
+        
+        stripe.Subscription.modify(
+            existing_subscription.id,
+            cancel_at_period_end=False,
+            proration_behavior='create_prorations',
+            items=[{
+                'id': existing_subscription['items']['data'][0].id,
+                'price': Profile.plan_to_stripe_price(plan)
+            }]
+        )
+        
+        self.setup_premium_history()
+        
+        return True            
         
     def setup_premium_history(self, alt_email=None, set_premium_expire=True, force_expiration=False):
         paypal_payments = []
         stripe_payments = []
         total_stripe_payments = 0
+        active_plan = None
+        premium_renewal = False
         existing_history = PaymentHistory.objects.filter(user=self.user, 
                                                          payment_provider__in=['paypal', 'stripe'])
         if existing_history.count():
@@ -400,7 +430,14 @@ class Profile(models.Model):
                 stripe_id = stripe_id_model.stripe_id
                 stripe_customer = stripe.Customer.retrieve(stripe_id)
                 stripe_payments = stripe.Charge.list(customer=stripe_customer.id).data
+                stripe_subscriptions = stripe.Subscription.list(customer=stripe_customer.id).data
                 
+                for subscription in stripe_subscriptions:
+                    if subscription.plan.active:
+                        active_plan = subscription.plan.id
+                        premium_renewal = True
+                        break
+                            
                 for payment in stripe_payments:
                     created = datetime.datetime.fromtimestamp(payment.created)
                     if payment.status == 'failed': continue
@@ -441,13 +478,23 @@ class Profile(models.Model):
                 self.premium_expire = new_premium_expire
                 self.save()
 
+        if self.premium_renewal != premium_renewal:
+            logging.user(self.user, "~FCTurning ~SB~%s~SN~FC premium renewal" % ("FRoff" if not premium_renewal else "FBon"))
+            self.premium_renewal = premium_renewal
+            self.save()
+        
         logging.user(self.user, "~BY~SN~FWFound ~SB~FB%s paypal~FW~SN and ~SB~FC%s stripe~FW~SN payments (~SB%s payments expire: ~SN~FB%s~FW)" % (
                      len(paypal_payments), total_stripe_payments, len(payment_history), self.premium_expire))
 
         if (set_premium_expire and not self.is_premium and
             (not self.premium_expire or self.premium_expire > datetime.datetime.now())):
             self.activate_premium()
-
+        
+        if (active_plan == Profile.plan_to_stripe_price('pro') and not self.is_pro):
+            self.activate_pro()
+        elif (active_plan == Profile.plan_to_stripe_price('archive') and not self.is_archive):
+            self.activate_archive()
+        
     def preference_value(self, key, default=None):
         preferences = json.decode(self.preferences)
         return preferences.get(key, default)

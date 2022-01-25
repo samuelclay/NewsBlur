@@ -292,7 +292,7 @@ def paypal_return(request):
     return render(request, 'reader/paypal_return.xhtml', {
         'user_profile': request.user.profile,
     })
-    
+
 @login_required
 def activate_premium(request):
     return HttpResponseRedirect(reverse('index'))
@@ -473,9 +473,24 @@ def stripe_form(request):
     )
 
 @login_required
+def switch_subscription(request):
+    plan = request.POST['plan']
+    switch_successful = request.user.profile.switch_subscription(plan)
+    
+    logging.user(request, "~FCSwitching subscription to ~SB%s~SN~FC (%s)" %(
+        plan,
+        '~FGsucceeded~FC' if switch_successful else '~FRfailed~FC'
+    ))
+    
+    if switch_successful:
+        return HttpResponseRedirect(reverse('stripe-return'))
+    
+    return stripe_checkout(request)
+
+@login_required
 def stripe_checkout(request):
     domain = Site.objects.get_current().domain
-    plan = request.GET['plan']
+    plan = request.POST['plan']
     if plan == "premium":
         price = "newsblur-premium-36"
     elif plan == "archive":
