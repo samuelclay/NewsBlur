@@ -12,6 +12,7 @@ ADMINS                = (
 SERVER_EMAIL          = 'server@newsblur.com'
 HELLO_EMAIL           = 'hello@newsblur.com'
 NEWSBLUR_URL          = 'https://localhost'
+PUSH_DOMAIN           = 'localhost'
 SESSION_COOKIE_DOMAIN = 'localhost'
 
 # ===================
@@ -40,6 +41,7 @@ SECRET_KEY = 'YOUR SECRET KEY'
 AUTO_PREMIUM_NEW_USERS = True
 AUTO_ENABLE_NEW_USERS = True
 ENFORCE_SIGNUP_CAPTCHA = False
+ENABLE_PUSH = False
 
 CACHES = {
     'default': {
