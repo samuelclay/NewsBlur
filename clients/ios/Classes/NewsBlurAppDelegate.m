@@ -2277,7 +2277,7 @@
     config.entersReaderIfAvailable = useReader;
     
     NSRange prefix = [[url absoluteString] rangeOfString: @"http"];
-    if (NSNotFound == prefix.location) {
+    if (url == nil || NSNotFound == prefix.location) {
         [self informError:@"URL scheme invalid"];
         return;
     }

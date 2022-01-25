@@ -80,16 +80,16 @@ static UIFont *indicatorFont = nil;
 }
 
 - (NSString *)accessibilityLabel {
-    NSMutableString *output = [NSMutableString stringWithString:self.siteTitle];
+    NSMutableString *output = [NSMutableString stringWithString:self.siteTitle ?: @"no site"];
     
-    [output appendFormat:@", \"%@\"", self.storyTitle];
+    [output appendFormat:@", \"%@\"", self.storyTitle ?: @"no story"];
     
     if (self.storyAuthor.length) {
-        [output appendFormat:@", by %@", self.storyAuthor];
+        [output appendFormat:@", by %@", self.storyAuthor ?: @"no author"];
     }
     
-    [output appendFormat:@", at %@", self.storyDate];
-    [output appendFormat:@". %@", self.storyContent];
+    [output appendFormat:@", at %@", self.storyDate ?: @"no date"];
+    [output appendFormat:@". %@", self.storyContent ?: @"no content"];
     
     return output;
 }

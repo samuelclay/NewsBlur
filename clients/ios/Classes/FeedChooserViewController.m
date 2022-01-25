@@ -81,6 +81,10 @@ static const CGFloat kFolderTitleHeight = 36.0;
     self.tableView.sectionIndexColor = UIColorFromRGB(0x303030);
     self.tableView.sectionIndexBackgroundColor = UIColorFromRGB(0xDCDFD6);
     
+    if (@available(iOS 15.0, *)) {
+        self.tableView.sectionHeaderTopPadding = 0;
+    }
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishedLoadingFeedsNotification:) name:@"FinishedLoadingFeedsNotification" object:nil];
     
     [self updateTitle];
