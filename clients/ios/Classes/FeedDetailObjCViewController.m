@@ -1318,6 +1318,11 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
         !appDelegate.tryFeedStoryId) {
         if (appDelegate.activeStory == nil && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && appDelegate.splitViewController.splitBehavior != UISplitViewControllerSplitBehaviorOverlay) {
             NSInteger storyIndex = [storiesCollection indexFromLocation:0];
+            
+            if (storyIndex == -1) {
+                return;
+            }
+            
             appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
             appDelegate.suppressMarkAsRead = YES;
             [appDelegate loadStoryDetailView];
