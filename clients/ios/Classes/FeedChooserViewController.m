@@ -396,7 +396,20 @@ static const CGFloat kFolderTitleHeight = 36.0;
 }
 
 - (NSDictionary *)widgetFeedForItem:(FeedChooserItem *)item {
-    return @{@"id" : item.identifierString, @"feed_title" : item.title, @"favicon_fade" : item.info[@"favicon_fade"], @"favicon_color" : item.info[@"favicon_color"]};
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    
+    dict[@"id"] = item.identifierString;
+    dict[@"feed_title"] = item.title;
+    
+    if (item.info[@"favicon_fade"] != [NSNull null]) {
+        dict[@"favicon_fade"] = item.info[@"favicon_fade"];
+    }
+    
+    if (item.info[@"favicon_color"] != [NSNull null]) {
+        dict[@"favicon_color"] = item.info[@"favicon_color"];
+    }
+    
+    return dict;
 }
 
 - (NSInteger)widgetIndexOfFeed:(NSString *)feedId {
@@ -690,6 +703,10 @@ static const CGFloat kFolderTitleHeight = 36.0;
     if (self.operation == FeedChooserOperationMuteSites && [self didChangeActiveFeeds]) {
         [self performSaveActiveFeeds];
     } else {
+        if (self.operation == FeedChooserOperationWidgetSites) {
+            [self.appDelegate.storyPagesViewController reloadWidget];
+        }
+        
         [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
