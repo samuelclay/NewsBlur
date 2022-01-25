@@ -149,7 +149,8 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                             className: "NB-feedchooser-premium-already"
                         }, [
                             $.make('div', { className: 'NB-feedchooser-premium-already-icon' }),
-                            "Your premium subscription is active"
+                            (NEWSBLUR.Globals.is_archive && "Your premium archive subscription includes everything above"),
+                            (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro && "Your premium subscription is active")
                         ])
                     ]))
                 ]),
