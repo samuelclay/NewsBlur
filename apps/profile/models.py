@@ -372,7 +372,7 @@ class Profile(models.Model):
         stripe.Subscription.modify(
             existing_subscription.id,
             cancel_at_period_end=False,
-            proration_behavior='create_prorations',
+            proration_behavior='always_invoice',
             items=[{
                 'id': existing_subscription['items']['data'][0].id,
                 'price': Profile.plan_to_stripe_price(plan)
@@ -490,6 +490,7 @@ class Profile(models.Model):
             (not self.premium_expire or self.premium_expire > datetime.datetime.now())):
             self.activate_premium()
         
+        # logging.user(self.user, "~FCActive plan: %s, archive: %s, is_archive? %s" % (active_plan, Profile.plan_to_stripe_price('archive'), self.is_archive))
         if (active_plan == Profile.plan_to_stripe_price('pro') and not self.is_pro):
             self.activate_pro()
         elif (active_plan == Profile.plan_to_stripe_price('archive') and not self.is_archive):
