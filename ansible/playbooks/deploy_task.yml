@@ -8,6 +8,7 @@
   tasks:
     - name: Update Sentry release
       connection: local
+      run_once: yes
       shell: >
         curl {{ sentry_task_release_webhook }}/ \
         -X POST \
