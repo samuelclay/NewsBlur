@@ -58,6 +58,8 @@ mongo:
 	- docker exec -it db_mongo mongo --port 29019
 redis:
 	- docker exec -it db_redis redis-cli -p 6579
+postgres:
+	- docker exec -it db_postgres psql -U newsblur
 down:
 	- RUNWITHMAKEBUILD=True docker-compose -f docker-compose.yml -f docker-compose.metrics.yml down
 nbdown: down

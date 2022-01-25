@@ -290,6 +290,7 @@ def paypal_form(request):
 def paypal_return(request):
 
     return render(request, 'reader/paypal_return.xhtml', {
+        'user_profile': request.user.profile,
     })
     
 @login_required
