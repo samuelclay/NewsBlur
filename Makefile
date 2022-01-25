@@ -60,6 +60,8 @@ redis:
 	- docker exec -it db_redis redis-cli -p 6579
 postgres:
 	- docker exec -it db_postgres psql -U newsblur
+stripe:
+	- stripe listen --forward-to localhost/zebra/webhooks/v2/
 down:
 	- RUNWITHMAKEBUILD=True docker-compose -f docker-compose.yml -f docker-compose.metrics.yml down
 nbdown: down
