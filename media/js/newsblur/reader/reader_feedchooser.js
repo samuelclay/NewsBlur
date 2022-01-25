@@ -140,7 +140,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                             "Upgrade to Premium"
                         ]),
                         $.make("div", { className: "NB-paypal-option" }, [
-                            "or ",
+                            "or use ",
                             $.make("a", { className: "NB-splash-link NB-paypal-button" }, "PayPal")
                         ])
                     ])),
@@ -188,17 +188,25 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         //   $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/lyric.jpg' })
                         // ])
                     ]),
-                    $.make('div', { className: 'NB-feedchooser-premium-upgrade' }, [
+                    (!NEWSBLUR.Globals.is_archive && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
                         $.make('div', {
                             className: "NB-stripe-button NB-stripe-button-archive NB-modal-submit-button NB-modal-submit-green"
                         }, [
                             "Upgrade to Premium Archive"
                         ]),
                         $.make("div", { className: "NB-paypal-option" }, [
-                            "or ",
+                            "or use ",
                             $.make("a", { className: "NB-splash-link NB-paypal-button" }, "PayPal")
                         ])
-                    ])
+                    ])),
+                    (NEWSBLUR.Globals.is_archive && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
+                        $.make('div', {
+                            className: "NB-feedchooser-premium-already"
+                        }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-already-icon' }),
+                            "Your premium archive subscription is active"
+                        ])
+                    ]))
                 ])
             ])),
             (!this.options.premium_only && $.make('div', { className: 'NB-feedchooser-type NB-feedchooser-left' }, [
@@ -487,7 +495,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
     },
     
     open_stripe_checkout: function(plan) {
-        window.location.href = "/profile/stripe_checkout?plan=" + plan;
+        $.redirectPost("/profile/switch_subscription", { "plan": plan });
     },
     
     choose_dollar_amount: function(plan) {

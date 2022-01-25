@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^paypal_form/?', views.paypal_form),
     url(r'^paypal_return/?', views.paypal_return, name='paypal-return'),
     url(r'^stripe_return/?', views.paypal_return, name='stripe-return'),
+    url(r'^switch_subscription/?', views.switch_subscription, name='switch-subscription'),
     url(r'^is_premium/?', views.profile_is_premium, name='profile-is-premium'),
     url(r'^paypal_ipn/?', include('paypal.standard.ipn.urls'), name='paypal-ipn'),
     url(r'^paypal_webhooks/?', include('paypal.standard.ipn.urls'), name='paypal-webhooks'),
