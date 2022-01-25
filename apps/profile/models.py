@@ -60,6 +60,7 @@ class Profile(models.Model):
     secret_token      = models.CharField(max_length=12, blank=True, null=True)
     stripe_4_digits   = models.CharField(max_length=4, blank=True, null=True)
     stripe_id         = models.CharField(max_length=24, blank=True, null=True)
+    premium_renewal   = models.BooleanField(default=False, blank=True, null=True)
     
     def __str__(self):
         return "%s <%s>%s%s%s" % (
