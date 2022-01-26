@@ -562,11 +562,29 @@ def payment_history(request):
         }
     }
     
+    next_invoice = None
+    stripe_customer = user.profile.stripe_customer()
+    if stripe_customer:
+        try:
+            invoice = stripe.Invoice.upcoming(customer=stripe_customer.id)
+            for lines in invoice.lines.data:
+                next_invoice = dict(payment_date=datetime.datetime.fromtimestamp(lines.period.start), 
+                                    payment_amount=invoice.amount_due/100.0,
+                                    payment_provider="(scheduled)",
+                                    scheduled=True)
+                break
+        except stripe.error.InvalidRequestError:
+            pass
+    
     return {
         'is_premium': user.profile.is_premium,
+        'is_archive': user.profile.is_archive,
+        'is_pro': user.profile.is_pro,
         'premium_expire': user.profile.premium_expire,
+        'premium_renewal': user.profile.premium_renewal,
         'payments': history,
         'statistics': statistics,
+        'next_invoice': next_invoice,
     }
 
 @ajax_login_required

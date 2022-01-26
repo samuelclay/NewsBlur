@@ -10811,6 +10811,13 @@ form.opml_import_form input {
     float: left;
     width: 100px;
 }
+.NB-account-payments .NB-scheduled .NB-account-payment-provider {
+    color: darkgrey;
+}
+.NB-account-payments .NB-scheduled.NB-canceled .NB-account-payment-provider {
+    text-decoration: line-through;
+    color: darkred;
+}
 .NB-modal-account .NB-error {
     clear: both;
     margin-top: 12px;

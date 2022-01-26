@@ -33,7 +33,9 @@ from paypal.standard.ipn.models import PayPalIPN
 from vendor.paypalapi.interface import PayPalInterface
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
 from zebra.signals import zebra_webhook_customer_subscription_created
+from zebra.signals import zebra_webhook_customer_subscription_updated
 from zebra.signals import zebra_webhook_charge_succeeded
+from zebra.signals import zebra_webhook_charge_refunded
 from zebra.signals import zebra_webhook_checkout_session_completed
 
 class Profile(models.Model):
@@ -1510,6 +1512,24 @@ def stripe_signup(sender, full_json, **kwargs):
         return {"code": -1, "message": "User doesn't exist."}
 zebra_webhook_customer_subscription_created.connect(stripe_signup)
 
+def stripe_subscription_updated(sender, full_json, **kwargs):
+    stripe_id = full_json['data']['object']['customer']
+    plan_id = full_json['data']['object']['plan']['id']
+    try:
+        profile = Profile.objects.get(stripe_id=stripe_id)
+        logging.user(profile.user, "~BC~SB~FBStripe subscription updated")
+        if plan_id == Profile.plan_to_stripe_price('premium'):
+            profile.activate_premium()
+        elif plan_id == Profile.plan_to_stripe_price('archive'):
+            profile.activate_premium(archive=True)
+        elif plan_id == Profile.plan_to_stripe_price('pro'):
+            profile.activate_premium(archive=True, pro=True)
+        profile.cancel_premium_paypal()
+        profile.retrieve_stripe_ids()
+    except Profile.DoesNotExist:
+        return {"code": -1, "message": "User doesn't exist."}
+zebra_webhook_customer_subscription_updated.connect(stripe_subscription_updated)
+
 def stripe_payment_history_sync(sender, full_json, **kwargs):
     stripe_id = full_json['data']['object']['customer']
     try:
@@ -1519,6 +1539,7 @@ def stripe_payment_history_sync(sender, full_json, **kwargs):
     except Profile.DoesNotExist:
         return {"code": -1, "message": "User doesn't exist."}    
 zebra_webhook_charge_succeeded.connect(stripe_payment_history_sync)
+zebra_webhook_charge_refunded.connect(stripe_payment_history_sync)
 
 def change_password(user, old_password, new_password, only_check=False):
     user_db = authenticate(username=user.username, password=old_password)
