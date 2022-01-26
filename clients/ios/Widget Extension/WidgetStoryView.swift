@@ -21,56 +21,48 @@ struct WidgetStoryView: View {
     }
     
     var body: some View {
-        ZStack {
-            if let feed = cache.feed(for: story) {
-                WidgetBarView(leftColor: feed.leftColor, rightColor: feed.rightColor)
-            }
-            HStack {
-                VStack(alignment: .leading) {
-                    if let feed = cache.feed(for: story) {
-                        HStack {
-                            if let image = cache.cachedFeedImage(for: feed.id) {
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .frame(width: 16, height: 16)
+        GeometryReader { geometry in
+            ZStack {
+                if let feed = cache.feed(for: story) {
+                    WidgetBarView(leftColor: feed.leftColor, rightColor: feed.rightColor)
+                }
+                HStack {
+                    VStack(alignment: .leading) {
+                        if let feed = cache.feed(for: story) {
+                            HStack {
+                                if let image = cache.cachedFeedImage(for: feed.id) {
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .frame(width: 16, height: 16)
+                                }
+                                
+                                Text(feed.title)
+                                    .font(.system(size: 8))
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(1)
                             }
-                            
-                            Text(feed.title)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                                .lineLimit(1)
+                            .padding([.bottom], 0)
                         }
+                        
+                        Text(cache.cleaned(story.title))
+                            .font(.system(size: 12, weight: .bold))
+                            .lineLimit(2)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding([.top], -6)
                     }
-                    Text(cache.cleaned(story.title))
-                        .font(isCompact ? .footnote : .subheadline)
-                        .lineLimit(2)
-                    Text(cache.cleaned(story.content))
-                        .font(isCompact ? .footnote : .subheadline)
-                        .foregroundColor(.secondary)
-                        .lineLimit(3)
-                        .padding([.bottom], isCompact ? 0 : 1)
-                    HStack {
-                        Text(cache.cleaned(story.author))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        Text(story.date)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                    .padding([.leading, .trailing])
+                    
+                    if let image = cache.cachedStoryImage(for: story.id) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 70, height: geometry.size.height)
+                            .clipped()
+                            .padding([.leading], -15)
                     }
-                }
-                .padding([.leading, .trailing])
-                .padding([.top, .bottom], 5)
-                
-                if let image = cache.cachedStoryImage(for: story.id) {
-                    Image(uiImage: image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 70)
-                        .clipped()
-                        .padding([.leading], -15)
                 }
             }
+            .frame(minHeight: geometry.size.height, maxHeight: geometry.size.height)
         }
     }
 }
