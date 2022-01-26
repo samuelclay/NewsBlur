@@ -1,6 +1,7 @@
 import json
 from django.http import HttpResponse
 from django.apps import apps
+from django.conf import settings
 import stripe
 from zebra.conf import options
 from zebra.signals import *
