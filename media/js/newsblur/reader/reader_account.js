@@ -347,8 +347,10 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         };
 
         this.model.cancel_premium_subscription(_.bind(function(data) {
+            NEWSBLUR.Globals.premium_renewal = false;
             post_cancel("Your subscription will no longer automatically renew.");
         }, this), _.bind(function(data) {
+            NEWSBLUR.Globals.premium_renewal = false;
             post_cancel(data.message || "You have no active subscriptions.");
         }, this));
     },
