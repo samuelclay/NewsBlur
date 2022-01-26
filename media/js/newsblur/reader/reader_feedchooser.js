@@ -132,7 +132,30 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                             (NEWSBLUR.Globals.is_archive && "Your premium archive subscription includes everything above"),
                             (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro && "Your premium subscription is active")
                         ])
-                    ]))
+                    ])),
+                    (NEWSBLUR.Globals.is_premium && !NEWSBLUR.Globals.premium_renewal && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
+                        $.make('div', {
+                            className: "NB-stripe-button NB-stripe-button-premium NB-modal-submit-button NB-modal-submit-green"
+                        }, [
+                            (NEWSBLUR.Globals.is_archive || NEWSSBLUR.Globals.is_pro) && "Switch plans to a premium subscription",
+                            !(NEWSBLUR.Globals.is_archive || NEWSSBLUR.Globals.is_pro) && "Restart your premium subscription",
+                        ]),
+                        $.make("div", { className: "NB-paypal-option" }, [
+                            "or use ",
+                            $.make("a", { className: "NB-splash-link NB-paypal-button" }, "PayPal")
+                        ])
+                    ])),
+                    (NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.premium_renewal && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
+                        $.make('div', {
+                            className: "NB-stripe-button NB-stripe-button-premium NB-modal-submit-button NB-modal-submit-green"
+                        }, [
+                            "Change your billing details"
+                        ]),
+                        $.make("div", { className: "NB-paypal-option" }, [
+                            "or use ",
+                            $.make("a", { className: "NB-splash-link NB-paypal-button" }, "PayPal")
+                        ])
+                    ])),
                 ]),
                 $.make('div', { className: 'NB-feedchooser-premium-plan' }, [
                     $.make('div', { className: 'NB-feedchooser-info' }, [
@@ -187,7 +210,19 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                             $.make('div', { className: 'NB-feedchooser-premium-already-icon' }),
                             "Your premium archive subscription is active"
                         ])
-                    ]))
+                    ])),
+                    (NEWSBLUR.Globals.is_premium && !NEWSBLUR.Globals.premium_renewal && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
+                        $.make('div', {
+                            className: "NB-stripe-button NB-stripe-button-premium NB-modal-submit-button NB-modal-submit-green"
+                        }, [
+                            !NEWSBLUR.Globals.is_archive && "Switch plans to a premium archive subscription",
+                            NEWSBLUR.Globals.is_archive && "Restart your premium archive subscription",
+                        ]),
+                        $.make("div", { className: "NB-paypal-option" }, [
+                            "or use ",
+                            $.make("a", { className: "NB-splash-link NB-paypal-button" }, "PayPal")
+                        ])
+                    ])),
                 ])
             ])),
             (!this.options.premium_only && $.make('div', { className: 'NB-feedchooser-type NB-feedchooser-left' }, [
