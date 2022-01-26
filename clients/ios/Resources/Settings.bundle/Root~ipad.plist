@@ -95,6 +95,26 @@
 			<string>default_confirm_read_filter</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>When opening a site</string>
+			<key>Titles</key>
+			<array>
+				<string>Open first story</string>
+				<string>Show stories</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>story</string>
+			<key>Values</key>
+			<array>
+				<string>story</string>
+				<string>list</string>
+			</array>
+			<key>Key</key>
+			<string>feed_opening</string>
+		</dict>
+		<dict>
 			<key>FooterText</key>
 			<string>You can change this setting in the Infrequent Site Stories view.</string>
 			<key>Type</key>
@@ -910,7 +930,7 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>FooterText</key>
-			<string>Leave blank to use the NewsBlur site, or enter the URL of your self-hosted NewsBlur installation, e.g. &quot;https://www.domain.com&quot;.</string>
+			<string>Leave blank to use the NewsBlur site, or enter the URL of your self-hosted NewsBlur installation, e.g. &quot;https://www.domain.com&quot;. Takes effect next time app is opened.</string>
 		</dict>
 		<dict>
 			<key>Type</key>

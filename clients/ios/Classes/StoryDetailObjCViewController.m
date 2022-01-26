@@ -1374,7 +1374,7 @@
             hasScrolled = YES;
         }
         
-        if (hasScrolled && !atTop && !appDelegate.suppressMarkAsRead && [appDelegate.storiesCollection isStoryUnread:activeStory]) {
+        if (hasScrolled && !atTop && [appDelegate.storiesCollection isStoryUnread:activeStory]) {
             [appDelegate.storiesCollection markStoryRead:activeStory];
             [appDelegate.storiesCollection syncStoryAsRead:activeStory];
             

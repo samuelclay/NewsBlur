@@ -663,7 +663,7 @@
         
         if (url.length) {
             if ([url rangeOfString:@"://"].location == NSNotFound) {
-                url = [@"http://" stringByAppendingString:url];
+                url = [@"https://" stringByAppendingString:url];
             }
         } else {
             url = DEFAULT_NEWSBLUR_URL;

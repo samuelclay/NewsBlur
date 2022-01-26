@@ -1323,10 +1323,13 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
                 return;
             }
             
-            appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
-            appDelegate.suppressMarkAsRead = YES;
-            [appDelegate loadStoryDetailView];
-            appDelegate.suppressMarkAsRead = NO;
+            NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+            NSString *feedOpening = [preferences stringForKey:@"feed_opening"];
+            
+            if ([feedOpening isEqualToString:@"story"]) {
+                appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
+                [appDelegate loadStoryDetailView];
+            }
         }
         return;
     }
