@@ -37,15 +37,15 @@ struct WidgetStoryView: View {
                                 }
                                 
                                 Text(feed.title)
-                                    .font(.system(size: 8))
-                                    .foregroundColor(.secondary)
+                                    .font(.system(size: 10))
+                                    .foregroundColor(.gray)
                                     .lineLimit(1)
                             }
                             .padding([.bottom], 0)
                         }
                         
                         Text(cache.cleaned(story.title))
-                            .font(.system(size: 12, weight: .bold))
+                            .font(.system(size: 12, weight: .medium))
                             .lineLimit(2)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding([.top], -6)
