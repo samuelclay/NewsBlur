@@ -13,11 +13,11 @@ struct Provider: TimelineProvider {
     let cache = WidgetCache()
     
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), cache: cache)
+        SimpleEntry(date: Date(), cache: cache, isPlaceholder: true)
     }
     
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), cache: cache)
+        let entry = SimpleEntry(date: Date(), cache: cache, isPlaceholder: false)
         
         completion(entry)
     }
@@ -37,7 +37,7 @@ struct Provider: TimelineProvider {
                 let units = Calendar.Component.hour
                 #endif
                 let entryDate = Calendar.current.date(byAdding: units, value: hourOffset, to: currentDate)!
-                let entry = SimpleEntry(date: entryDate, cache: cache)
+                let entry = SimpleEntry(date: entryDate, cache: cache, isPlaceholder: false)
                 entries.append(entry)
             }
             
@@ -53,7 +53,7 @@ struct Provider: TimelineProvider {
                 }
             }
             
-            for story in cache.stories(count: 3) {
+            for story in cache.stories(count: 6) {
                 imageRequestGroup.enter()
                 
                 cache.storyImage(for: story.id, imageURL: story.imageURL) { image, feed in
@@ -71,6 +71,7 @@ struct Provider: TimelineProvider {
 struct SimpleEntry: TimelineEntry {
     let date: Date
     let cache: WidgetCache
+    let isPlaceholder: Bool
 }
 
 struct WidgetEntryView : View {
@@ -96,8 +97,8 @@ struct WidgetEntryView : View {
                 }
             } else {
                 VStack(alignment: .leading, spacing: 0, content: {
-                    ForEach(entry.cache.stories(count: isCompact ? 2 : 3)) { story in
-                        Link(destination: URL(string: "newsblurwidget://?feedId=\(story.feed)&storyHash=\(story.id)")!) {
+                    ForEach(entry.cache.stories(count: isCompact ? 3 : 6)) { story in
+                        Link(destination: URL(string: entry.isPlaceholder ? "newsblurwidget://open" : "newsblurwidget://?feedId=\(story.feed)&storyHash=\(story.id)")!) {
                             WidgetStoryView(cache: entry.cache, story: story)
                         }
                         Divider()
@@ -163,16 +164,16 @@ struct WidgetExtension_Previews: PreviewProvider {
     }()
     
     static var previews: some View {
-        WidgetEntryView(entry: SimpleEntry(date: Date(), cache: cache))
+        WidgetEntryView(entry: SimpleEntry(date: Date(), cache: cache, isPlaceholder: true))
             .previewContext(WidgetPreviewContext(family: .systemMedium))
             .colorScheme(.light)
-        WidgetEntryView(entry: SimpleEntry(date: Date(), cache: cache))
+        WidgetEntryView(entry: SimpleEntry(date: Date(), cache: cache, isPlaceholder: false))
             .previewContext(WidgetPreviewContext(family: .systemMedium))
             .colorScheme(.dark)
-        WidgetEntryView(entry: SimpleEntry(date: Date(), cache: cache))
+        WidgetEntryView(entry: SimpleEntry(date: Date(), cache: cache, isPlaceholder: false))
             .previewContext(WidgetPreviewContext(family: .systemLarge))
             .colorScheme(.light)
-        WidgetEntryView(entry: SimpleEntry(date: Date(), cache: cache))
+        WidgetEntryView(entry: SimpleEntry(date: Date(), cache: cache, isPlaceholder: false))
             .previewContext(WidgetPreviewContext(family: .systemLarge))
             .colorScheme(.dark)
     }
