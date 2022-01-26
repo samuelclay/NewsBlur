@@ -474,7 +474,11 @@ def stripe_form(request):
 
 @login_required
 def switch_subscription(request):
+    stripe.api_key = settings.STRIPE_SECRET
     plan = request.POST['plan']
+    if plan == "change":
+        return stripe_checkout(request)
+    
     switch_successful = request.user.profile.switch_subscription(plan)
     
     logging.user(request, "~FCSwitching subscription to ~SB%s~SN~FC (%s)" %(
@@ -489,8 +493,17 @@ def switch_subscription(request):
 
 @login_required
 def stripe_checkout(request):
+    stripe.api_key = settings.STRIPE_SECRET
     domain = Site.objects.get_current().domain
     plan = request.POST['plan']
+    
+    if plan == "change":
+        checkout_session = stripe.billing_portal.Session.create(
+            customer=request.user.profile.stripe_id,
+            return_url="http://%s%s?/next=payments" % (domain, reverse('index')),
+        )
+        return HttpResponseRedirect(checkout_session.url, status=303)
+    
     price = Profile.plan_to_stripe_price(plan)
     
     session_dict = {
