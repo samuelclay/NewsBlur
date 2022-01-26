@@ -66,26 +66,6 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
             // $.make('h2', { className: 'NB-modal-title' }, 'Choose Your '+this.MAX_FEEDS),
             (!this.options.chooser_only && $.make('div', { className: 'NB-feedchooser-type NB-right' }, [
                 (!this.options.premium_only && $.make('div', { className: 'NB-feedchooser-porpoise' }, 'OR')),
-                (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info' }, [
-                    $.make('div', { className: 'NB-feedchooser-info-type' }, [
-                        $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, 'Thank you'),
-                        ' for going premium!'
-                    ]),
-                    $.make('h2', { className: 'NB-modal-subtitle' }, [
-                        'Your premium account is paid until:',
-                        $.make('br'),
-                        $.make('b', { style: 'display: block; margin: 8px 0' }, [
-                            $.make('span', { className: 'NB-raquo' }, '&raquo;'),
-                            ' ',
-                            NEWSBLUR.Globals.premium_expire && NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire),
-                            (!NEWSBLUR.Globals.premium_expire && $.make('b', "Never gonna expire. Congrats!"))
-                        ]),
-                        'You can change your payment method and card details. ',
-                        (NEWSBLUR.Globals.premium_expire < new Date) ?
-                            'This will charge your card immediately.' :
-                            'You won\'t be charged until this date.'
-                    ])
-                ])),
                 $.make('div', { className: 'NB-feedchooser-premium-plan' }, [
                     $.make('div', { className: 'NB-feedchooser-info' }, [
                         $.make('div', { className: 'NB-feedchooser-info-type' }, [

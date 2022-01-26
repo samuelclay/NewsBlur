@@ -433,7 +433,7 @@ class Profile(models.Model):
                 stripe_subscriptions = stripe.Subscription.list(customer=stripe_customer.id).data
                 
                 for subscription in stripe_subscriptions:
-                    if subscription.plan.active:
+                    if subscription.plan.active and not subscription.cancel_at:
                         active_plan = subscription.plan.id
                         premium_renewal = True
                         break
@@ -597,6 +597,7 @@ class Profile(models.Model):
     def cancel_premium(self):
         paypal_cancel = self.cancel_premium_paypal()
         stripe_cancel = self.cancel_premium_stripe()
+        self.setup_premium_history()
         return stripe_cancel or paypal_cancel
     
     def cancel_premium_paypal(self, second_most_recent_only=False):
@@ -647,7 +648,7 @@ class Profile(models.Model):
         try:
             subscriptions = stripe.Subscription.list(customer=stripe_customer)
             for subscription in subscriptions.data:
-                stripe.Subscription.delete(subscription['id'])
+                stripe.Subscription.modify(subscription['id'], cancel_at_period_end=True)
                 logging.user(self.user, "~FRCanceling Stripe subscription: %s" % subscription['id'])
         except stripe.error.InvalidRequestError:
             logging.user(self.user, "~FRFailed to cancel Stripe subscription")
