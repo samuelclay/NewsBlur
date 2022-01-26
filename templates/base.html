@@ -28,6 +28,7 @@
       'is_admin'                : {{ user.is_staff|yesno:"true,false" }},
       'is_staff'                : {{ user.is_staff|yesno:"true,false" }},
       'premium_expire'          : {% if user.profile.premium_expire %}new Date('{{ user.profile.premium_expire|date:"Y-m-d" }}'){% else %}null{% endif %},
+      'premium_renewal'         : {{ user.profile.premium_renewal|yesno:"true,false" }},
       'secret_token'            : "{{ user.profile.secret_token }}",
       'username'                : "{{ user.username|safe }}",
       {% if user.pk %}'user_id'                 : {{ user.pk }},{% endif %}
