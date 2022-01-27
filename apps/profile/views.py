@@ -500,7 +500,7 @@ def stripe_checkout(request):
     if plan == "change":
         checkout_session = stripe.billing_portal.Session.create(
             customer=request.user.profile.stripe_id,
-            return_url="http://%s%s?/next=payments" % (domain, reverse('index')),
+            return_url="http://%s%s?next=payments" % (domain, reverse('index')),
         )
         return HttpResponseRedirect(checkout_session.url, status=303)
     
