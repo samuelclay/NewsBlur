@@ -23,6 +23,18 @@ class WidgetCache {
     /// The secret token for authentication.
     var token: String?
     
+    /// The preview size and position.
+    enum Preview: String {
+        case none
+        case smallLeft
+        case largeLeft
+        case largeRight
+        case smallRight
+    }
+    
+    /// The preview size and position.
+    var preview: Preview = .largeRight
+    
     /// An array of feeds to load.
     var feeds = [Feed]()
     
@@ -47,22 +59,17 @@ class WidgetCache {
     
     private var loaders = LoaderDictionary()
     
-    // Paragraph style for title and content labels.
-//    lazy var paragraphStyle: NSParagraphStyle = {
-//        let paragraph = NSMutableParagraphStyle()
-//
-//        paragraph.lineBreakMode = .byTruncatingTail
-//        paragraph.alignment = .left
-//        paragraph.lineHeightMultiple = 0.95
-//
-//        return paragraph
-//    }()
-    
     struct Constant {
         static let group = "group.com.newsblur.NewsBlur-Group"
         static let token = "share:token"
         static let host = "share:host"
         static let feeds = "widget:feeds_array"
+        static let preview = "widget:preview_images_size"
+        static let previewNone = "none"
+        static let previewSmallLeft = "small_left"
+        static let previewLargeLeft = "large_left"
+        static let previewLargeRight = "large_right"
+        static let previewSmallRight = "small_right"
         static let widgetFolder = "Widget"
         static let storiesFilename = "Stories.json"
         static let feedImagesFilename = "Feed Images"
@@ -98,12 +105,6 @@ class WidgetCache {
         
         return clean.isEmpty ? " " : clean
     }
-    
-//    func attributed(_ string: String, with font: UIFont, color: UIColor) -> NSAttributedString {
-//        let attributes: [NSAttributedString.Key : Any] = [.font : font, .foregroundColor: color, .paragraphStyle: paragraphStyle]
-//
-//        return NSAttributedString(string: cleaned(string), attributes: attributes)
-//    }
     
     func hostURL(with path: String) -> URL? {
         guard let host = host else {
@@ -165,11 +166,6 @@ class WidgetCache {
         let localCompletion = cacheCompletion
         
         DispatchQueue.main.async {
-//            self.extensionContext?.widgetLargestAvailableDisplayMode = self.error == nil ? .expanded : .compact
-//
-//            self.tableView.reloadData()
-//            self.tableView.setNeedsDisplay()
-            
             localCompletion?()
         }
     }
@@ -220,6 +216,21 @@ class WidgetCache {
         
         host = defaults.string(forKey: Constant.host)
         token = defaults.string(forKey: Constant.token)
+        
+        if let previewString = defaults.string(forKey: Constant.preview) {
+            switch previewString {
+            case Constant.previewNone:
+                preview = .none
+            case Constant.previewSmallLeft:
+                preview = .smallLeft
+            case Constant.previewLargeLeft:
+                preview = .largeLeft
+            case Constant.previewSmallRight:
+                preview = .smallRight
+            default:
+                preview = .largeRight
+            }
+        }
         
         if let array = defaults.array(forKey: Constant.feeds) as? [Feed.Dictionary] {
             feeds = array.map { Feed(from: $0) }

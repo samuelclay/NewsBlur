@@ -575,11 +575,14 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
     
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSString *preview = [userPreferences stringForKey:@"story_list_preview_images_size"];
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
     [defaults setObject:[results objectForKey:@"share_ext_token"] forKey:@"share:token"];
     [defaults setObject:self.appDelegate.url forKey:@"share:host"];
     [defaults setObject:appDelegate.dictSavedStoryTags forKey:@"share:tags"];
     [defaults setObject:appDelegate.dictFoldersArray forKey:@"share:folders"];
+    [defaults setObject:preview forKey:@"widget:preview_images_size"];
     [self validateWidgetFeedsForGroupDefaults:defaults usingResults:results];
     [defaults synchronize];
     
@@ -1287,6 +1290,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     } else if ([identifier isEqual:@"story_titles_position"]) {
         [self.appDelegate.detailViewController updateLayoutWithReload:YES];
     } else if ([identifier isEqual:@"story_list_preview_images_size"]) {
+        NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+        NSString *preview = [userPreferences stringForKey:@"story_list_preview_images_size"];
+        NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
+        [defaults setObject:preview forKey:@"widget:preview_images_size"];
+        [self.appDelegate.storyPagesViewController reloadWidget];
     }
     
     [appDelegate setHiddenPreferencesAnimated:YES];

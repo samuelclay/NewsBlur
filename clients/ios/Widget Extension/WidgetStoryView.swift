@@ -27,6 +27,26 @@ struct WidgetStoryView: View {
                     WidgetBarView(leftColor: feed.leftColor, rightColor: feed.rightColor)
                 }
                 HStack {
+                    if cache.preview == .largeLeft, let image = cache.cachedStoryImage(for: story.id) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 70, height: geometry.size.height)
+                            .clipped()
+                            .padding([.trailing], -15)
+                    }
+                    
+                    if cache.preview == .smallLeft, let image = cache.cachedStoryImage(for: story.id) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 50, height: geometry.size.height - 6)
+                            .cornerRadius(8)
+                            .clipped()
+                            .padding([.leading], 16)
+                            .padding([.trailing], -15)
+                    }
+                    
                     VStack(alignment: .leading) {
                         if let feed = cache.feed(for: story) {
                             HStack {
@@ -60,7 +80,18 @@ struct WidgetStoryView: View {
                     }
                     .padding([.leading, .trailing])
                     
-                    if let image = cache.cachedStoryImage(for: story.id) {
+                    if cache.preview == .smallRight, let image = cache.cachedStoryImage(for: story.id) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 50, height: geometry.size.height - 6)
+                            .cornerRadius(8)
+                            .clipped()
+                            .padding([.leading], -15)
+                            .padding([.trailing], 10)
+                    }
+                    
+                    if cache.preview == .largeRight, let image = cache.cachedStoryImage(for: story.id) {
                         Image(uiImage: image)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
