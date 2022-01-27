@@ -93,13 +93,23 @@
                         <h3 class="NB-module-content-header">
                             <div class="NB-module-content-subtitle NB-module-content-account-realtime-subtitle"></div>
                             <div class="NB-module-content-account-realtime" title=""></div>
-                            {% if user_profile.is_premium %}
-                            Premium Account
-                            {% else %}
-                            Free Account
-                            {% endif %}
+                            Your account
                         </h3>
                         <div class="NB-module-stats-counts">
+                            <div class="NB-module-stats-count NB-module-account-subscription">
+                                <div class="NB-module-stats-count-number"></div>
+                                <div class="NB-module-stats-count-description">
+                                    {% if user_profile.is_pro %}
+                                        Premium Pro subscription
+                                    {% elif user_profile.is_archive %}
+                                        Premium Archive subscription
+                                    {% elif user_profile.is_premium %}
+                                        Premium subscription
+                                    {% else %}
+                                        Free account
+                                    {% endif %}
+                                </div>
+                            </div>
                             <div class="NB-module-stats-count">
                                 <div class="NB-module-stats-count-number NB-module-stats-count-number-sites">{{ feed_count|commify }}</div>
                                 <div class="NB-module-stats-count-description">{{ feed_count|pluralize:"Site,Sites" }}</div>

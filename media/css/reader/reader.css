@@ -6677,9 +6677,8 @@ form.opml_import_form input {
     padding: 0 0 0px;
     margin: 0 0 4px 0;
     font-size: 13px;
-    text-transform: uppercase;
     letter-spacing: 1px;
-    color: #585a55;
+    color: #696e62;
     clear: both;
 }
 
@@ -7036,6 +7035,12 @@ form.opml_import_form input {
 	margin: 12px 0 0;
 	color: #ebc17c;
 }
+.NB-module-premium .NB-module-premium-button  {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    margin-left: 20%;
+    margin-right: 20%;
+}
 
 /* ================= */
 /* = Manage Module = */
@@ -7090,6 +7095,10 @@ form.opml_import_form input {
   margin: 4px 0 0 0;
   color: #A0A0A0;
   clear: both;
+}
+.NB-module-account-subscription .NB-module-stats-count-description {
+    color: #0D003C;
+    margin-bottom: 4px;
 }
 
 .NB-module-stats-count-graph {

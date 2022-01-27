@@ -4,7 +4,7 @@
 {% if not user_profile.is_premium %}
 <div class="NB-module NB-module-premium">
     <h5 class="NB-module-header">
-        Please Upgrade
+        Upgrade to Premium
     </h5>
 
     <div class="NB-module-item NB-module-item-intro">
@@ -14,7 +14,29 @@
 		
 		<div class="NB-modal-submit-green NB-modal-submit-button NB-module-premium-button NB-javascript">Upgrade</div>
 		
-		<p class="NB-module-premium-price">Only $36/year</p>
+		<p class="NB-module-premium-price">$36/year</p>
+    </div>
+</div>
+{% endif %}
+
+{% if not user_profile.is_archive %}
+<div class="NB-module NB-module-premium">
+    <h5 class="NB-module-header">
+        Upgrade to Premium Archive
+    </h5>
+
+
+    <div class="NB-module-stats-counts">
+      <div class="NB-module-stats-count">
+          <div class="NB-module-stats-count-number"></div>
+          <div class="NB-module-stats-count-description">
+            <div class="NB-modal-submit-green NB-modal-submit-button NB-module-premium-button NB-javascript">Upgrade your account</div>
+          </div>
+	
+          <div class="NB-module-stats-count-description">$99/year</div>
+      </div>
+      
+      
     </div>
 </div>
 {% endif %}
