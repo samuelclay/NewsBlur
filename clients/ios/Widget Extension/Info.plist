@@ -25,5 +25,10 @@
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.widgetkit-extension</string>
 	</dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>WhitneySSm-Medium-Bas.otf</string>
+		<string>WhitneySSm-Book-Bas.otf</string>
+	</array>
 </dict>
 </plist>
