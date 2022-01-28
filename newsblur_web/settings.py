@@ -350,13 +350,15 @@ INSTALLED_APPS = (
     'pipeline',
 )
 
-# ==========
-# = Stripe =
-# ==========
+# ===================
+# = Stripe & Paypal =
+# ===================
 
 STRIPE_SECRET = "YOUR-SECRET-API-KEY"
 STRIPE_PUBLISHABLE = "YOUR-PUBLISHABLE-API-KEY"
 ZEBRA_ENABLE_APP = True
+
+PAYPAL_API_CLIENTID = "YOUR-PAYPAL-API-CLIENTID"
 
 # ==========
 # = Celery =
