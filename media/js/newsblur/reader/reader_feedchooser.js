@@ -121,7 +121,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         ]),
                         $.make("div", { className: "NB-paypal-option" }, [
                             "or use ",
-                            $.make("a", { className: "NB-splash-link NB-paypal-button" }, "PayPal")
+                            $.make("div", { className: "NB-splash-link NB-paypal-button", "data-plan": "premium" }, "")
                         ])
                     ])),
                     (NEWSBLUR.Globals.is_premium && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
@@ -142,7 +142,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         ]),
                         $.make("div", { className: "NB-paypal-option" }, [
                             "or use ",
-                            $.make("a", { className: "NB-splash-link NB-paypal-button" }, "PayPal")
+                            $.make("div", { className: "NB-splash-link NB-paypal-button", "data-plan": "premium" }, "")
                         ])
                     ])),
                     (NEWSBLUR.Globals.is_premium && !NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro && NEWSBLUR.Globals.premium_renewal && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
@@ -153,7 +153,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         ]),
                         $.make("div", { className: "NB-paypal-option" }, [
                             "or use ",
-                            $.make("a", { className: "NB-splash-link NB-paypal-button" }, "PayPal")
+                            $.make("div", { className: "NB-splash-link NB-paypal-button", "data-plan": "premium" }, "")
                         ])
                     ]))
                 ]),
@@ -200,7 +200,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         ]),
                         $.make("div", { className: "NB-paypal-option" }, [
                             "or use ",
-                            $.make("a", { className: "NB-splash-link NB-paypal-button" }, "PayPal")
+                            $.make("div", { className: "NB-splash-link NB-paypal-button", "data-plan": "archive" }, "")
                         ])
                     ])),
                     (NEWSBLUR.Globals.is_archive && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
@@ -220,7 +220,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         ]),
                         $.make("div", { className: "NB-paypal-option" }, [
                             "or use ",
-                            $.make("a", { className: "NB-splash-link NB-paypal-button" }, "PayPal")
+                            $.make("div", { className: "NB-splash-link NB-paypal-button", "data-plan": "archive" }, "")
                         ])
                     ])),
                     (NEWSBLUR.Globals.is_archive && NEWSBLUR.Globals.premium_renewal && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
@@ -231,7 +231,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         ]),
                         $.make("div", { className: "NB-paypal-option" }, [
                             "or use ",
-                            $.make("a", { className: "NB-splash-link NB-paypal-button" }, "PayPal")
+                            $.make("div", { className: "NB-splash-link NB-paypal-button", "data-plan": "archive" }, "")
                         ])
                     ]))
                 ])
@@ -278,12 +278,53 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
     },
     
     make_paypal_button: function() {
-        var self = this;
-        var $paypal = $('.NB-feedchooser-paypal-form', this.$modal);
-        $.get('/profile/paypal_form', function(response) {
-          $paypal.html(response);
-          self.choose_dollar_amount(3);
-        });
+        jQuery.ajax({
+            type: "GET",
+            url: NEWSBLUR.URLs.paypal_checkout_js,
+            dataType: "script",
+            cache: true
+        }).done(_.bind(function() {
+            $(".NB-paypal-button").each(function () {
+                var $button = $(this);
+                var plan = $button.data('plan');
+                var plan_id;
+                if (NEWSBLUR.Globals.debug) {
+                    if (plan == 'premium') plan_id = "P-4RV31836YD8080909MHZROJY";
+                    else if (plan == 'archive') plan_id = "P-2EG40290653242115MHZROQQ";
+                } else {
+                    if (plan == 'premium') plan_id = "P-48R22630SD810553FMHZONIY";
+                    else if (plan == 'archive') plan_id = "P-5JM46230U31841226MHZOMZY";
+                }
+                var random_id = 'paypal-' + Math.round(Math.random() * 100000);
+                $button.attr('id', random_id);
+                paypal.Buttons({
+                    fundingSource: paypal.FUNDING.PAYPAL,
+                    style: {
+                        shape: 'rect',
+                        color: 'silver',
+                        layout: 'horizontal',
+                        label: 'paypal',
+                        
+                    },
+            
+                    createSubscription: function (data, actions) {
+                        return actions.subscription.create({
+                            'plan_id': plan_id
+                        });
+                    },
+            
+                    onApprove: function (data, actions) {
+                        // Full available details
+                        console.log('Paypal approve result', data.subscriptionID, JSON.stringify(data, null, 2));
+                        // actions.redirect(NEWSBLUR.URLs.paypal_return);
+                    },
+            
+                    onError: function (err) {
+                        console.log(err);
+                    }
+                }).render('#' + random_id);
+            });
+        }, this));
     },
     
     make_google_button: function() {
@@ -525,38 +566,6 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         $.redirectPost("/profile/switch_subscription", { "plan": plan });
     },
     
-    choose_dollar_amount: function(plan) {
-        var $value = $('.NB-feedchooser-dollar-value', this.$modal);
-        var $input = $('input[name=a3]');
-        var $days = $('.NB-feedchooser-hungry-dog', this.$modal);
-        
-        this.plan = plan;
-
-        $value.removeClass('NB-selected');
-        $value.filter('.NB-'+plan).addClass('NB-selected');
-        if (plan == 1) {
-            $input.val(12);
-            $days.text('6 days');
-        } else if (plan == 2) {
-            $input.val(24);
-            $days.text('12 days');
-        } else if (plan == 3) {
-            $input.val(36);
-            $days.text('18 days');
-        }
-    },
-    
-    switch_payextra: function() {
-        var $payextra = $("input[name=payextra]", this.$modal);
-        var selected = $payextra.is(':checked');
-        
-        if (selected) {
-            this.choose_dollar_amount(3);
-        } else {
-            this.choose_dollar_amount(2);
-        }
-    },
-    
     // ===========
     // = Actions =
     // ===========
@@ -598,27 +607,10 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
             e.preventDefault();
             this.initial_load_feeds(true);
         }, this));
-        
-        $.targetIs(e, { tagSelector: '.NB-feedchooser-dollar-value' }, _.bind(function($t, $p) {
-            e.preventDefault();
-            var step;
-            if ($t.hasClass('NB-1')) {
-                step = 1;
-            } else if ($t.hasClass('NB-2')) {
-                step = 2;
-            } else if ($t.hasClass('NB-3')) {
-                step = 3;
-            }
-            this.choose_dollar_amount(step);
-        }, this));
     },
     
     handle_change: function(elem, e) {
                 
-        $.targetIs(e, { tagSelector: 'input[name=payextra]' }, _.bind(function($t, $p) {
-            e.preventDefault();
-            this.switch_payextra();
-        }, this));
         
     },
 

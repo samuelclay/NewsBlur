@@ -10120,6 +10120,11 @@ form.opml_import_form input {
     margin: 12px 0 0 0;
     font-size: 0.8em;
 }
+.NB-modal-feedchooser .NB-paypal-button {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 80px;
+}
 .NB-modal-feedchooser .NB-feedchooser-premium-upgrade {
     overflow: hidden;
 }
@@ -10127,6 +10132,7 @@ form.opml_import_form input {
     margin: 0 24px 24px;
     padding: 16px 16px;
     border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: rgb(244 251 232);
     border-radius: 4px;
     text-align: center;
     font-size: 0.8em;

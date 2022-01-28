@@ -117,7 +117,9 @@
       'domain'                  : "{% current_domain %}",
       'favicon'                 : "/rss_feeds/icon/{id}",
       'delete-account'          : "{% url "profile-delete-account" %}",
-      'folder_rss'              : "/reader/folder_rss/{user_id}/{secret_token}/{unread_filter}/{folder_title}"
+      'folder_rss'              : "/reader/folder_rss/{user_id}/{secret_token}/{unread_filter}/{folder_title}",
+      'paypal_checkout_js'      : 'https://www.paypal.com/sdk/js?vault=true&intent=subscription&client-id={% settings_value "PAYPAL_API_CLIENTID" %}',
+      'paypal_return'           : "https://{% current_domain %}{% url "paypal-return" %}"
     };
     NEWSBLUR.Models = {};
     NEWSBLUR.Collections = {};
