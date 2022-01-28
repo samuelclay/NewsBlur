@@ -548,6 +548,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         }
         
         self.isOffline = YES;
+        appDelegate.tryFeedStoryId = nil;
+        appDelegate.inFindingStoryMode = NO;
+        appDelegate.findingStoryStartDate = nil;
+        
         [self showOfflineNotifier];
         
         return;
