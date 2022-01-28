@@ -517,6 +517,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     
     if (self.isMovingToParentViewController) {
         appDelegate.inFindingStoryMode = NO;
+        appDelegate.findingStoryStartDate = nil;
         appDelegate.tryFeedStoryId = nil;
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     }
@@ -1075,6 +1076,12 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)operation.response;
         self.isOnline = NO;
         self.isShowingFetching = NO;
+        if (self.appDelegate.inFindingStoryMode) {
+            [self informError:@"Can't find the story."];
+        }
+        self.appDelegate.tryFeedStoryId = nil;
+        self.appDelegate.inFindingStoryMode = NO;
+        self.appDelegate.findingStoryStartDate = nil;
         //            storiesCollection.feedPage = 1;
         [self loadOfflineStories];
         [self showOfflineNotifier];
@@ -1334,13 +1341,19 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
         return;
     }
     
-    if (!self.view.window) {
+    if (!self.view.window || -appDelegate.findingStoryStartDate.timeIntervalSinceNow > 15) {
         NSLog(@"No longer looking for try feed.");
+        if (appDelegate.inFindingStoryMode) {
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+        }
         appDelegate.inFindingStoryMode = NO;
+        appDelegate.findingStoryStartDate = nil;
         appDelegate.tryFeedStoryId = nil;
         return;
     }
+    
     NSLog(@"Test for try feed");
+    
     if (![[MBProgressHUD HUDForView:self.view].labelText isEqualToString:@"Finding story..."]) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -1382,6 +1395,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
             // found the story, reset the two flags.
             appDelegate.tryFeedStoryId = nil;
             appDelegate.inFindingStoryMode = NO;
+            appDelegate.findingStoryStartDate = nil;
         }
     }
 }

@@ -593,6 +593,7 @@
         }
         
         self.inFindingStoryMode = YES;
+        self.findingStoryStartDate = [NSDate date];
         self.tryFeedStoryId = storyHash;
         self.tryFeedFeedId = nil;
         
@@ -1697,16 +1698,17 @@
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             [self loadFeedDetailView];
         } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-            [self showFeedsListAnimated:NO];
-            [self hidePopoverAnimated:NO completion:^{
-                if (self.feedsNavigationController.presentedViewController) {
-                    [self.feedsNavigationController dismissViewControllerAnimated:NO completion:^{
-                        [self loadFeedDetailView];
-                    }];
-                } else {
-                    [self loadFeedDetailView];
-                }
-            }];
+            [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"everything"];
+//            [self showFeedsListAnimated:NO];
+//            [self hidePopoverAnimated:NO completion:^{
+//                if (self.feedsNavigationController.presentedViewController) {
+//                    [self.feedsNavigationController dismissViewControllerAnimated:NO completion:^{
+//                        [self loadFeedDetailView];
+//                    }];
+//                } else {
+//                    [self loadFeedDetailView];
+//                }
+//            }];
         }
     }
     
