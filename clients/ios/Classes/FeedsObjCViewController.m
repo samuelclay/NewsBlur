@@ -1662,6 +1662,12 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     self.folderTitleViews[@(section)] = folderTitle;
     
+    if (self.currentSection == section) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            folderTitle.invisibleHeaderButton.backgroundColor = UIColorFromRGB(0x214607);
+        });
+    }
+    
     return folderTitle;
 }
 
