@@ -54,6 +54,7 @@ struct WidgetStoryView: View {
                                     Image(uiImage: image)
                                         .resizable()
                                         .frame(width: 16, height: 16)
+                                        .padding([.trailing], -3)
                                 }
                                 
                                 Text(feed.title)
