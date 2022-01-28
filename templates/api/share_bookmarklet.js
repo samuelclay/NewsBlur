@@ -4,7 +4,7 @@
     window.NEWSBLUR = window.NEWSBLUR || {};
     var exports = undefined;
 
-    {% include_javascripts "bookmarklet" %}
+    {% include_javascripts_raw "bookmarklet" %}
 
     NEWSBLUR.Bookmarklet = function(options) {
         var defaults = {};

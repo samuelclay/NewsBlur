@@ -14,7 +14,7 @@
         "media/ios": true,
         "**/*.map": true,
         "ansible/playbooks/*/*": true,
-        "archive/*": true,
+        // "archive/*": true,
         "logs/*": true,
         "static/*": true,
         "media/fonts": true,
