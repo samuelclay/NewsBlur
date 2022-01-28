@@ -11,7 +11,7 @@ from vendor.timezones.utilities import localtime_for_timezone
 from utils.user_functions import get_user
 from django.utils.safestring import mark_safe
 from pipeline.templatetags.pipeline import stylesheet, javascript
-from pipeline.templatetags.pipeline import JavascriptNode
+from pipeline.templatetags.pipeline import JavascriptNode, StylesheetNode
 
 register = template.Library()
 
@@ -239,6 +239,24 @@ def include_javascripts_raw(parser, token):
     """Prints out the JS code found in the static asset packages."""
     tag_name, name = token.split_contents()
     scripts = RawJSNode(name)
+    return scripts
+
+class RawStylesheetNode(StylesheetNode):
+    def render(self, context):
+        output = super(RawStylesheetNode, self).render(context)
+        path = re.search(r"href=\"/(.*?)\"", output)
+        assert path
+        filename = path.group(1)
+        abs_filename = os.path.join(settings.NEWSBLUR_DIR, filename)
+        f = open(abs_filename, 'r')
+        output = f.read().replace('"', '\\"').replace('\n', '')
+        return output
+    
+@register.tag
+def include_stylesheets_raw(parser, token):
+    """Prints out the CSS code found in the static asset packages."""
+    tag_name, name = token.split_contents()
+    scripts = RawStylesheetNode(name)
     return scripts
         
 @register.tag
