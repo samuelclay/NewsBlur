@@ -25,6 +25,10 @@ struct Provider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         cache.loadCachedStories()
         
+        if context.isPreview && !cache.stories.isEmpty {
+            return
+        }
+        
         cache.load {
             var entries: [SimpleEntry] = []
             
