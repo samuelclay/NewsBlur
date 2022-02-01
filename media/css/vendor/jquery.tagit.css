@@ -1,0 +1,110 @@
+ul.tagit {
+    border-style: solid;
+    border-width: 1px;
+    border-color: #C6C6C6;
+    background: inherit;
+    margin-left: inherit; /* usually we don't want the regular ul margins. */
+    margin-right: inherit;
+    padding: 5px 5px 0;
+    overflow: hidden;
+}
+ul.tagit li.tagit-choice {
+    display: block;
+    margin: 2px 5px 2px 0;
+    
+    cursor: pointer;   
+    position: relative;
+    
+    float: left;
+    font-weight: normal;
+    font-size: 9px;
+    border-radius: 4px;
+    line-height: 14px;
+    
+    padding: 1px 16px 2px 5px;
+    margin: 0 4px 4px 0;
+    background: none;
+    background-color: rgba(0, 0, 0, .1);
+    color: #959B8B;
+/*    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);*/
+    border: 1px solid transparent;
+    border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
+
+}
+
+ul.tagit li.tagit-new {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+ul.tagit li.tagit-choice a.tagit-label {
+    text-decoration: none;
+}
+ul.tagit li.tagit-choice .tagit-close {
+    cursor: pointer;
+    position: absolute;
+    right: .1em;
+    top: 50%;
+    margin-top: -8px;
+    line-height: 17px;
+}
+
+/* used for some custom themes that don't need image icons */
+ul.tagit li.tagit-choice .tagit-close .text-icon {
+    display: none;
+}
+
+ul.tagit li.tagit-choice a.tagit-close {
+    text-decoration: none;
+}
+ul.tagit li.tagit-choice .tagit-close {
+    right: .4em;
+}
+ul.tagit li.tagit-choice .ui-icon {
+    display: none;
+}
+ul.tagit li.tagit-choice .tagit-close .text-icon {
+    display: inline;
+    font-family: arial, sans-serif;
+    font-size: 16px;
+    line-height: 16px;
+    color: #777;
+}
+ul.tagit li.tagit-choice:hover, ul.tagit li.tagit-choice.remove {
+    background-color: #EDADAF;
+    border-color: #D6565B;
+    color: white;
+}
+ul.tagit li.tagit-choice:active {
+    background-color: #E6888D;
+    border-color: #CA404A;
+    color: white;
+}
+
+ul.tagit li:hover a.tagit-close .text-icon {
+    color: #722;
+}
+ul.tagit input[type="text"] {
+    color: #333333;
+    -moz-box-sizing:    border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing:         border-box;
+    font-size: 11px;
+
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+
+    border: none;
+    padding: 0 1px 5px 1px;
+    width: inherit;
+    background-color: inherit;
+    outline: none;
+}
+
+ul.tagit li.tagit-choice input {
+    display: block;
+    float: left;
+    margin: 2px 5px 2px 0;
+}

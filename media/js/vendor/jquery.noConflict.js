@@ -1,1 +1,1 @@
-var $ = jQuery = jQuery.noConflict(true);
+window.NB_$ = jQuery = jQuery.noConflict(true);
