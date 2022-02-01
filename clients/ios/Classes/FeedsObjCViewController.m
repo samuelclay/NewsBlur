@@ -291,7 +291,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.2];
         [self performSelector:@selector(clearSelectedHeader) withObject:nil afterDelay:0.2];
         self.currentRowAtIndexPath = nil;
-        self.currentSection = -1;
     }
     
     self.interactiveFeedDetailTransition = NO;
@@ -1691,6 +1690,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         FolderTitleView *title = self.folderTitleViews[@(self.currentSection)];
         
         title.invisibleHeaderButton.backgroundColor = UIColor.clearColor;
+        
+        self.currentSection = -1;
     }
 }
 
