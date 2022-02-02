@@ -23,13 +23,19 @@ struct Provider: TimelineProvider {
     }
     
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
+        let operation = WidgetDebugTimer.start("🚧 getTimeline")
+        
         cache.loadCachedStories()
+        
+        WidgetDebugTimer.print(operation, step: "loadCachedStories")
         
         if context.isPreview && !cache.stories.isEmpty {
             return
         }
         
         cache.load {
+            WidgetDebugTimer.print(operation, step: "cache.load()")
+            
             var entries: [SimpleEntry] = []
             
             // Generate a timeline consisting of five entries an hour apart, starting from the current date.
@@ -46,6 +52,8 @@ struct Provider: TimelineProvider {
             }
             
             let timeline = Timeline(entries: entries, policy: .atEnd)
+            
+            WidgetDebugTimer.print(operation, step: "making timeline")
             
             let imageRequestGroup = DispatchGroup()
             
@@ -66,6 +74,8 @@ struct Provider: TimelineProvider {
             }
             
             imageRequestGroup.notify(queue: .main) {
+                WidgetDebugTimer.print(operation, step: "requesting images")
+                
                 completion(timeline)
             }
         }

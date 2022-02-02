@@ -248,7 +248,7 @@ class WidgetCache {
             
             stories = try decoder.decode([Story].self, from: json)
         } catch {
-            print("Error \(error)")
+            NSLog("Error \(error)")
         }
     }
     
@@ -269,7 +269,7 @@ class WidgetCache {
             
             try json.write(to: url)
         } catch {
-            print("Error \(error)")
+            NSLog("Error \(error)")
         }
     }
     
@@ -295,7 +295,7 @@ class WidgetCache {
             
             try image.pngData()?.write(to: imageURL)
         } catch {
-            print("Image error: \(error)")
+            NSLog("Image saving error: \(error)")
         }
     }
     
@@ -319,7 +319,7 @@ class WidgetCache {
                 storyImageCache[identifier] = nil
             }
         } catch {
-            print("Flush story images error: \(error)")
+            NSLog("Flush story images error: \(error)")
         }
     }
     
@@ -446,7 +446,7 @@ class WidgetCache {
             
             return image
         } catch {
-            print("Image error: \(error)")
+            NSLog("Cached image loading error: \(error)")
         }
         
         return nil

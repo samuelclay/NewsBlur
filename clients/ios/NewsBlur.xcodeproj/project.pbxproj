@@ -32,7 +32,7 @@
 		173CB31126BCE94700BA872A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 173CB31026BCE94700BA872A /* SwiftUI.framework */; };
 		173CB31426BCE94700BA872A /* WidgetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 173CB31326BCE94700BA872A /* WidgetExtension.swift */; };
 		173CB31626BCE94A00BA872A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 173CB31526BCE94A00BA872A /* Assets.xcassets */; };
-		173CB31A26BCE94A00BA872A /* Widget Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 173CB30D26BCE94700BA872A /* Widget Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		173CB31A26BCE94A00BA872A /* NewsBlur Widget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 173CB30D26BCE94700BA872A /* NewsBlur Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1740C6881C10FD75005EA453 /* theme_color_dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6841C10FD75005EA453 /* theme_color_dark.png */; };
 		1740C6891C10FD75005EA453 /* theme_color_light.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6851C10FD75005EA453 /* theme_color_light.png */; };
 		1740C68A1C10FD75005EA453 /* theme_color_medium.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6861C10FD75005EA453 /* theme_color_medium.png */; };
@@ -90,6 +90,7 @@
 		17876BA51C99137B0055DD15 /* accessory_disclosure@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17876BA31C99137B0055DD15 /* accessory_disclosure@2x.png */; };
 		1788939D249332E6004CBA4E /* g_icn_search.png in Resources */ = {isa = PBXBuildFile; fileRef = 1788939C249332E6004CBA4E /* g_icn_search.png */; };
 		1791C21526C4C7BC00D815AA /* WidgetStoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1791C21426C4C7BC00D815AA /* WidgetStoryView.swift */; };
+		17997C5827A8FDD100483E69 /* WidgetDebugTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17997C5727A8FDD100483E69 /* WidgetDebugTimer.swift */; };
 		179DD9CF23DFDD51007BFD21 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 179DD9CE23DFDD51007BFD21 /* CloudKit.framework */; };
 		17A396D924F86A8F0023C9E2 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 17A396D824F86A8F0023C9E2 /* MainInterface.storyboard */; };
 		17AACFE122279A3C00DE6EA4 /* autoscroll_resume@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17AACFD722279A3900DE6EA4 /* autoscroll_resume@2x.png */; };
@@ -702,7 +703,7 @@
 			files = (
 				177551DF238E228A00E27818 /* Old NewsBlur Latest.appex in Embed App Extensions */,
 				1749391B1C251BFE003D98AA /* Share Extension.appex in Embed App Extensions */,
-				173CB31A26BCE94A00BA872A /* Widget Extension.appex in Embed App Extensions */,
+				173CB31A26BCE94A00BA872A /* NewsBlur Widget.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -734,7 +735,7 @@
 		172AD273251D9F40000BB264 /* Storyboards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storyboards.swift; sourceTree = "<group>"; };
 		17362ADB23639B4E00A0FCCC /* OfflineFetchText.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OfflineFetchText.h; path = offline/OfflineFetchText.h; sourceTree = "<group>"; };
 		17362ADC23639B4E00A0FCCC /* OfflineFetchText.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OfflineFetchText.m; path = offline/OfflineFetchText.m; sourceTree = "<group>"; };
-		173CB30D26BCE94700BA872A /* Widget Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Widget Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		173CB30D26BCE94700BA872A /* NewsBlur Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "NewsBlur Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		173CB30E26BCE94700BA872A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		173CB31026BCE94700BA872A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		173CB31326BCE94700BA872A /* WidgetExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetExtension.swift; sourceTree = "<group>"; };
@@ -805,6 +806,7 @@
 		17876BA31C99137B0055DD15 /* accessory_disclosure@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "accessory_disclosure@2x.png"; sourceTree = "<group>"; };
 		1788939C249332E6004CBA4E /* g_icn_search.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_search.png; sourceTree = "<group>"; };
 		1791C21426C4C7BC00D815AA /* WidgetStoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStoryView.swift; sourceTree = "<group>"; };
+		17997C5727A8FDD100483E69 /* WidgetDebugTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDebugTimer.swift; sourceTree = "<group>"; };
 		179DD9CC23DFD20E007BFD21 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BridgingHeader.h; path = "Other Sources/BridgingHeader.h"; sourceTree = "<group>"; };
 		179DD9CE23DFDD51007BFD21 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		17A396D824F86A8F0023C9E2 /* MainInterface.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
@@ -1657,6 +1659,7 @@
 				1723388D26BE440400610784 /* WidgetFeed.swift */,
 				1723388C26BE440400610784 /* WidgetStory.swift */,
 				1723388A26BE43EB00610784 /* WidgetLoader.swift */,
+				17997C5727A8FDD100483E69 /* WidgetDebugTimer.swift */,
 				173CB31526BCE94A00BA872A /* Assets.xcassets */,
 				173CB31726BCE94A00BA872A /* Info.plist */,
 				173CB31B26BCE94A00BA872A /* WidgetExtension.entitlements */,
@@ -1756,7 +1759,7 @@
 				174939101C251BFE003D98AA /* Share Extension.appex */,
 				FF8A94971DE3BB77000A4C31 /* Story Notification Service Extension.appex */,
 				177551D3238E228A00E27818 /* Old NewsBlur Latest.appex */,
-				173CB30D26BCE94700BA872A /* Widget Extension.appex */,
+				173CB30D26BCE94700BA872A /* NewsBlur Widget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2867,9 +2870,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		173CB30C26BCE94700BA872A /* Widget Extension */ = {
+		173CB30C26BCE94700BA872A /* NewsBlur Widget */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 173CB31C26BCE94A00BA872A /* Build configuration list for PBXNativeTarget "Widget Extension" */;
+			buildConfigurationList = 173CB31C26BCE94A00BA872A /* Build configuration list for PBXNativeTarget "NewsBlur Widget" */;
 			buildPhases = (
 				173CB30926BCE94700BA872A /* Sources */,
 				173CB30A26BCE94700BA872A /* Frameworks */,
@@ -2879,9 +2882,9 @@
 			);
 			dependencies = (
 			);
-			name = "Widget Extension";
+			name = "NewsBlur Widget";
 			productName = WidgetExtension;
-			productReference = 173CB30D26BCE94700BA872A /* Widget Extension.appex */;
+			productReference = 173CB30D26BCE94700BA872A /* NewsBlur Widget.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		1749390F1C251BFE003D98AA /* Share Extension */ = {
@@ -3051,7 +3054,7 @@
 				1749390F1C251BFE003D98AA /* Share Extension */,
 				FF8A94961DE3BB77000A4C31 /* Story Notification Service Extension */,
 				177551D2238E228A00E27818 /* Old Widget Extension */,
-				173CB30C26BCE94700BA872A /* Widget Extension */,
+				173CB30C26BCE94700BA872A /* NewsBlur Widget */,
 			);
 		};
 /* End PBXProject section */
@@ -3540,6 +3543,7 @@
 				173CB31426BCE94700BA872A /* WidgetExtension.swift in Sources */,
 				1723388E26BE440400610784 /* WidgetStory.swift in Sources */,
 				1723389426C3775B00610784 /* WidgetBarView.swift in Sources */,
+				17997C5827A8FDD100483E69 /* WidgetDebugTimer.swift in Sources */,
 				1723388F26BE440400610784 /* WidgetFeed.swift in Sources */,
 				1791C21526C4C7BC00D815AA /* WidgetStoryView.swift in Sources */,
 			);
@@ -3745,7 +3749,7 @@
 /* Begin PBXTargetDependency section */
 		173CB31926BCE94A00BA872A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 173CB30C26BCE94700BA872A /* Widget Extension */;
+			target = 173CB30C26BCE94700BA872A /* NewsBlur Widget */;
 			targetProxy = 173CB31826BCE94A00BA872A /* PBXContainerItemProxy */;
 		};
 		1749391A1C251BFE003D98AA /* PBXTargetDependency */ = {
@@ -4415,7 +4419,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		173CB31C26BCE94A00BA872A /* Build configuration list for PBXNativeTarget "Widget Extension" */ = {
+		173CB31C26BCE94A00BA872A /* Build configuration list for PBXNativeTarget "NewsBlur Widget" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				173CB31D26BCE94A00BA872A /* Debug */,
