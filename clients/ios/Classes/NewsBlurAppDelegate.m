@@ -2369,7 +2369,10 @@
 //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
 //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self showFeedsListAnimated:NO];
-        [self loadFolder:folder feedID:feedID];
+        
+        if (folder != nil) {
+            [self loadFolder:folder feedID:feedID];
+        }
     }
 }
 
