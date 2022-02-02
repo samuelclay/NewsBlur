@@ -67,6 +67,12 @@ static UIFont *textFont = nil;
     [cellContent setNeedsDisplay];
 }
 
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
+    [super setHighlighted:highlighted animated:animated];
+    
+    [self setNeedsDisplay];
+}
+
 - (void) setPositiveCount:(int)ps {
     if (ps == _positiveCount) return;
     
