@@ -1459,7 +1459,7 @@ def load_river_stories__redis(request):
             story_hashes = []
             unread_feed_story_hashes = []
 
-        mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
+        mstories = MStory.objects(story_hash__in=story_hashes[:limit]).order_by(story_date_order)
         stories = Feed.format_stories(mstories)
     
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
@@ -1613,6 +1613,9 @@ def load_river_stories_widget(request):
         scontext = ssl.SSLContext(ssl.PROTOCOL_TLS)
         scontext.verify_mode = ssl.VerifyMode.CERT_NONE
         try:
+            conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
+        except urllib.request.URLError:
+            url = url.replace('localhost', 'haproxy')
             conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
         except socket.timeout:
             logging.user(request.user, '"%s" not fetched in %ss' % (url, (time.time() - start)))
