@@ -37,6 +37,8 @@ DEBUG_QUERIES_SUMMARY_ONLY = True
 
 MEDIA_URL = '/media/'
 IMAGES_URL = '/imageproxy'
+# Uncomment below to debug iOS/Android widget
+# IMAGES_URL = 'https://haproxy/imageproxy'
 SECRET_KEY = 'YOUR SECRET KEY'
 AUTO_PREMIUM_NEW_USERS = True
 AUTO_ENABLE_NEW_USERS = True

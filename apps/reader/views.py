@@ -4,7 +4,13 @@ import redis
 import requests
 import random
 import zlib
+import concurrent
 import re
+import ssl
+import socket
+import base64
+import urllib.parse
+import urllib.request
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -1594,6 +1600,50 @@ def load_river_stories__redis(request):
 
 
     return data
+
+@json.json_view
+def load_river_stories_widget(request):
+    logging.user(request, "Widget load")
+    river_stories_data = json.decode(load_river_stories__redis(request).content)
+    timeout = 3
+    start = time.time()
+    
+    def load_url(url):
+        url = urllib.parse.urljoin(settings.NEWSBLUR_URL, url)
+        scontext = ssl.SSLContext(ssl.PROTOCOL_TLS)
+        scontext.verify_mode = ssl.VerifyMode.CERT_NONE
+        try:
+            conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
+        except socket.timeout:
+            logging.user(request.user, '"%s" not fetched in %ss' % (url, (time.time() - start)))
+            return None
+        data = conn.read()
+        logging.user(request.user, '"%s" fetched in %ss' % (url, (time.time() - start)))
+        return dict(url=url, data=data)
+    
+    # Find the image thumbnails and download in parallel
+    thumbnail_urls = []
+    for story in river_stories_data['stories']:
+        thumbnail_values = list(story['secure_image_thumbnails'].values())
+        if thumbnail_values:
+            thumbnail_urls.append(thumbnail_values[0])
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
+        pages = executor.map(load_url, thumbnail_urls)
+    
+    # Reassemble thumbnails back into stories
+    thumbnail_data = dict()
+    for page in pages:
+        if not page: continue
+        thumbnail_data[page['url']] = base64.b64encode(page['data']).decode('utf-8')
+    for story in river_stories_data['stories']:
+        thumbnail_values = list(story['secure_image_thumbnails'].values())
+        if thumbnail_values and thumbnail_values[0] in thumbnail_data:
+            story['select_thumbnail_data'] = thumbnail_data[thumbnail_values[0]]
+        
+    logging.user(request, ("Elapsed Time: %ss" % (time.time() - start)))
+    
+    return river_stories_data
     
 @json.json_view
 def complete_river(request):
