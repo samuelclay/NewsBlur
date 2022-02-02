@@ -65,13 +65,13 @@ struct Provider: TimelineProvider {
                 }
             }
             
-            for story in cache.stories(count: 6) {
-                imageRequestGroup.enter()
-                
-                cache.storyImage(for: story.id, imageURL: story.imageURL) { image, feed in
-                    imageRequestGroup.leave()
-                }
-            }
+//            for story in cache.stories(count: 6) {
+//                imageRequestGroup.enter()
+//
+//                cache.storyImage(for: story.id, imageURL: story.imageURL) { image, feed in
+//                    imageRequestGroup.leave()
+//                }
+//            }
             
             imageRequestGroup.notify(queue: .main) {
                 WidgetDebugTimer.print(operation, step: "requesting images")

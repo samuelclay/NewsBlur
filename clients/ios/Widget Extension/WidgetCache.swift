@@ -53,7 +53,6 @@ class WidgetCache {
     private typealias ImageDictionary = [String : UIImage]
     
     private var feedImageCache = ImageDictionary()
-    private var storyImageCache = ImageDictionary()
     
     private typealias LoaderDictionary = [String : Loader]
     
@@ -73,12 +72,9 @@ class WidgetCache {
         static let widgetFolder = "Widget"
         static let storiesFilename = "Stories.json"
         static let feedImagesFilename = "Feed Images"
-        static let storyImagesFilename = "Story Images"
         static let imageExtension = "png"
-        static let limit = 5
+        static let limit = 6
         static let defaultRowHeight: CGFloat = 110
-        static let storyImageSize: CGFloat = 64 * 3
-        static let storyImageLimit: CGFloat = 200
         static let thumbnailHiddenConstant: CGFloat = -50
         static let thumbnailShownConstant: CGFloat = 20
     }
@@ -87,7 +83,7 @@ class WidgetCache {
         let feedIds = feeds.map { $0.id }
         let combinedFeeds = feedIds.joined(separator: "&f=")
         
-        guard let url = hostURL(with: "/reader/river_stories/?include_hidden=false&page=1&infrequent=false&order=newest&read_filter=unread&limit=\(Constant.limit)&f=\(combinedFeeds)") else {
+        guard let url = hostURL(with: "/reader/river_stories_widget/?include_hidden=false&replace_hidden_stories=true&thumbnail_size=192&page=1&infrequent=false&order=newest&read_filter=unread&limit=\(Constant.limit)&f=\(combinedFeeds)") else {
             error = .loading
             completionHandler()
             return
@@ -156,7 +152,6 @@ class WidgetCache {
         }
         
         saveStories()
-        flushStoryImages()
         
         if stories.isEmpty, error == nil {
             error = .noStories
@@ -184,10 +179,6 @@ class WidgetCache {
     
     var feedImagesURL: URL? {
         return widgetFolderURL?.appendingPathComponent(Constant.feedImagesFilename)
-    }
-    
-    var storyImagesURL: URL? {
-        return widgetFolderURL?.appendingPathComponent(Constant.storyImagesFilename)
     }
     
     func createWidgetFolder(url: URL? = nil) {
@@ -245,6 +236,7 @@ class WidgetCache {
             let decoder = JSONDecoder()
             
             decoder.dateDecodingStrategy = .iso8601
+            decoder.dataDecodingStrategy = .base64
             
             stories = try decoder.decode([Story].self, from: json)
         } catch {
@@ -262,6 +254,7 @@ class WidgetCache {
         let encoder = JSONEncoder()
         
         encoder.dateEncodingStrategy = .iso8601
+        encoder.dataEncodingStrategy = .base64
         encoder.outputFormatting = .prettyPrinted
         
         do {
@@ -278,11 +271,6 @@ class WidgetCache {
         save(image: feedImage, to: feedImagesURL, for: identifier)
     }
     
-    func save(storyImage: UIImage, for identifier: String) {
-        storyImageCache[identifier] = storyImage
-        save(image: storyImage, to: storyImagesURL, for: identifier)
-    }
-    
     func save(image: UIImage, to folderURL: URL?, for identifier: String) {
         guard let folderURL = folderURL else {
             return
@@ -296,30 +284,6 @@ class WidgetCache {
             try image.pngData()?.write(to: imageURL)
         } catch {
             NSLog("Image saving error: \(error)")
-        }
-    }
-    
-    func flushStoryImages() {
-        guard let folderURL = storyImagesURL else {
-            return
-        }
-        
-        do {
-            let manager = FileManager.default
-            let contents = try manager.contentsOfDirectory(at: folderURL, includingPropertiesForKeys: [], options: .skipsHiddenFiles)
-            
-            for imageURL in contents {
-                let identifier = imageURL.deletingPathExtension().lastPathComponent
-                
-                if stories.contains(where: { $0.id == identifier }) {
-                    continue
-                }
-                
-                try manager.removeItem(at: imageURL)
-                storyImageCache[identifier] = nil
-            }
-        } catch {
-            NSLog("Flush story images error: \(error)")
         }
     }
     
@@ -361,48 +325,6 @@ class WidgetCache {
         }
     }
     
-    func storyImage(for identifier: String, imageURL: URL?, completion: @escaping ImageCompletion) {
-        guard let url = imageURL else {
-            completion(nil, identifier)
-            return
-        }
-        
-        if let image = cachedStoryImage(for: identifier) {
-            completion(image, identifier)
-            return
-        }
-        
-        loaders[identifier] = Loader(url: url) { (result) in
-            DispatchQueue.main.async {
-                defer {
-                    self.loaders[identifier] = nil
-                }
-                
-                switch result {
-                case .success(let data):
-                    guard let loadedImage = UIImage(data: data) else {
-                        completion(nil, identifier)
-                        return
-                    }
-                    
-                    let size = loadedImage.size
-                    
-                    guard size.width >= 50, size.height >= 50 else {
-                        completion(nil, identifier)
-                        return
-                    }
-                    
-                    let scaledImage = self.scale(image: loadedImage)
-                    
-                    self.save(storyImage: scaledImage, for: identifier)
-                    completion(scaledImage, identifier)
-                case .failure:
-                    completion(nil, identifier)
-                }
-            }
-        }
-    }
-    
     func cachedFeedImage(for feed: String) -> UIImage? {
         if let image = feedImageCache[feed] {
             return image
@@ -413,20 +335,6 @@ class WidgetCache {
         }
         
         feedImageCache[feed] = image
-        
-        return image
-    }
-    
-    func cachedStoryImage(for identifier: String) -> UIImage? {
-        if let image = storyImageCache[identifier] {
-            return image
-        }
-        
-        guard let image = loadCachedImage(folderURL: storyImagesURL, identifier: identifier) else {
-            return nil
-        }
-        
-        storyImageCache[identifier] = image
         
         return image
     }
@@ -450,33 +358,5 @@ class WidgetCache {
         }
         
         return nil
-    }
-    
-    func scale(image: UIImage) -> UIImage {
-        let oldSize = image.size
-        
-        guard oldSize.width > Constant.storyImageLimit || oldSize.height > Constant.storyImageLimit else {
-            return image
-        }
-        
-        let scale: CGFloat
-        
-        if oldSize.width < oldSize.height {
-            scale = Constant.storyImageSize / oldSize.width
-        } else {
-            scale = Constant.storyImageSize / oldSize.height
-        }
-        
-        let newSize = CGSize(width: oldSize.width * scale, height: oldSize.height * scale)
-        
-        UIGraphicsBeginImageContextWithOptions(newSize, true, 1)
-        
-        image.draw(in: CGRect(origin: .zero, size: newSize))
-        
-        defer {
-            UIGraphicsEndImageContext()
-        }
-        
-        return UIGraphicsGetImageFromCurrentImageContext() ?? image
     }
 }
