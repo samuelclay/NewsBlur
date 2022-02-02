@@ -24,7 +24,7 @@
 
   - name: Download archives
     amazon.aws.aws_s3:
-      bucket: newsblur_backups
+      bucket: "newsblur-backups"
       object: "{{ item.dir }}{{ item.file }}"
       dest: "/srv/newsblur/backups/{{ item.file }}"
       mode: get
