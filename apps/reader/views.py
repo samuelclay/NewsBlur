@@ -1609,6 +1609,7 @@ def load_river_stories_widget(request):
     start = time.time()
     
     def load_url(url):
+        original_url = url
         url = urllib.parse.urljoin(settings.NEWSBLUR_URL, url)
         scontext = ssl.SSLContext(ssl.PROTOCOL_TLS)
         scontext.verify_mode = ssl.VerifyMode.CERT_NONE
@@ -1617,12 +1618,15 @@ def load_river_stories_widget(request):
         except urllib.request.URLError:
             url = url.replace('localhost', 'haproxy')
             conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
+        except urllib.request.URLError as e:
+            logging.user(request.user, '"%s" not fetched in %ss: %s' % (url, (time.time() - start), e))
+            return None
         except socket.timeout:
             logging.user(request.user, '"%s" not fetched in %ss' % (url, (time.time() - start)))
             return None
         data = conn.read()
         logging.user(request.user, '"%s" fetched in %ss' % (url, (time.time() - start)))
-        return dict(url=url, data=data)
+        return dict(url=original_url, data=data)
     
     # Find the image thumbnails and download in parallel
     thumbnail_urls = []
