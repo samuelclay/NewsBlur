@@ -79,6 +79,12 @@ static UIFont *indicatorFont = nil;
     [cellContent setNeedsDisplay];
 }
 
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
+    [super setHighlighted:highlighted animated:animated];
+    
+    [self setNeedsDisplay];
+}
+
 - (NSString *)accessibilityLabel {
     NSMutableString *output = [NSMutableString stringWithString:self.siteTitle ?: @"no site"];
     
