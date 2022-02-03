@@ -60,7 +60,7 @@
   file:
     path: /opt/mongo/newsblur/backup/
     state: directory
-    mode: 0666
+    mode: 0777
 
 - name: Start db-mongo docker container
   become: yes

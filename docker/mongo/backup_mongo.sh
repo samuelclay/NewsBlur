@@ -1,20 +1,44 @@
 #!/usr/bin/env bash
 
 collections=(
-    classifier_tag
-    classifier_author
-    classifier_feed
-    classifier_title
-    # shared_stories
+    activities
     category
     category_site
-    sent_emails
-    social_profile
-    social_subscription
-    social_services
-    statistics
-    user_search
+    classifier_author
+    classifier_feed
+    classifier_tag
+    classifier_title
+    custom_styling
+    dashboard_river
+    # feed_icons
+    # feed_pages
     feedback
+    # fetch_exception_history
+    # fetch_history
+    follow_request
+    gift_codes
+    inline
+    interactions
+    m_dashboard_river
+    notification_tokens
+    notifications
+    popularity_query
+    redeemed_codes
+    saved_searches
+    sent_emails
+    shared_stories
+    social_invites
+    social_profile
+    social_services
+    social_subscription
+    starred_stories
+    starred_stories_counts
+    statistics
+    # stories
+    system.profile
+    system.users
+    uploaded_opml
+    user_search
 )
 
 for collection in ${collections[@]}; do
