@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    BACKUP_DIR = '/opt/mongo/newsblur/backup/'
+    BACKUP_DIR = '/srv/newsblur/backup/'
     filenames = [f for f in os.listdir(BACKUP_DIR) if '.tgz' in f]
     for filename in filenames:
         file_path = os.path.join(BACKUP_DIR, filename)
