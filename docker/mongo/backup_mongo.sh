@@ -55,11 +55,11 @@ for collection in ${collections[@]}; do
     docker exec -it mongo mongodump -d newsblur -c $collection -o /backup
 done;
 
-echo " ---> Compressing /srv/newsblur/backup/backup_mongo into /srv/newsblur/backup/backup_mongo.tgz"
-tar -zcf /srv/newsblur/backup/backup_mongo.tgz -C / srv/newsblur/backup/backup_mongo
+echo " ---> Compressing /srv/newsblur/backup/newsblur into /srv/newsblur/backup/backup_mongo.tgz"
+tar -zcf /srv/newsblur/backup/backup_mongo.tgz -C / srv/newsblur/backup/newsblur
 
 echo " ---> Uploading backups to S3"
-docker run --rm -v /srv/newsblur:/srv/newsblur -v /srv/newsblur/backup/:/srv/newsblur/backup/ --network=host newsblur/newsblur_python3:latest python /srv/newsblur/utils/backups/backup_mongo.py
+docker run --user 1000:1001 --rm -v /srv/newsblur:/srv/newsblur -v /srv/newsblur/backup/:/srv/newsblur/backup/ --network=host newsblur/newsblur_python3:latest python /srv/newsblur/utils/backups/backup_mongo.py
 
 # Don't delete backup since the backup_mongo.py script will rm them
 ## rm /opt/mongo/newsblur/backup/backup_mongo_${now}.tgz
