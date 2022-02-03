@@ -14,6 +14,13 @@
     state: directory
     mode: 0777
   
+- name: Ensure postgres backup directory
+  become: yes
+  file:
+    path: /backup
+    state: directory
+    mode: 0777
+  
 - name: Start postgres docker containers
   become: yes
   docker_container:
@@ -87,7 +94,7 @@
       NOW=$(eval date +%F-%H-%M);
       BACKUP_FILE=backup_postgresql_${NOW}.sql;
       sudo docker exec -it postgres
-      /usr/lib/postgresql/13/bin/pg_dump -U newsblur -h 127.0.0.1 -Fc newsblur > backups/$BACKUP_FILE;
+      /usr/lib/postgresql/13/bin/pg_dump -U newsblur -h 127.0.0.1 -Fc newsblur > /backup/$BACKUP_FILE;
       sudo docker run --rm -it
       -v /srv/newsblur:/srv/newsblur
       -v /backup/:/backup/
