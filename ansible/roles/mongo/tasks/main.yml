@@ -192,7 +192,7 @@
       docker run --rm -it
       OUTPUT=$(eval sudo df / | head -n 2 |  tail -1);
       -v /srv/newsblur:/srv/newsblur
-      --network=newsblurnet
+      --network=host
       --hostname {{ ansible_hostname }} 
       newsblur/newsblur_python3 /srv/newsblur/utils/monitor_disk_usage.py $OUTPUT
   tags:

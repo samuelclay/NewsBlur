@@ -24,7 +24,7 @@ def main():
         key_prefix = "".join(['mongo/', key_base])
         key_datestamp = datetime.utcnow().strftime("_%Y-%m-%d-%H-%M")
         key = "".join([key_prefix, key_datestamp, key_ext])
-        print("Uploading {0} to {1}".format(file_path, key))
+        print("Uploading {0} to {1} on {2}".format(file_path, key, settings.S3_BACKUP_BUCKET))
         sys.stdout.flush()
         upload(file_path, settings.S3_BACKUP_BUCKET, key)
         print('Rotating file on S3 with key prefix {0} and extension {1}'.format(key_prefix, key_ext))
