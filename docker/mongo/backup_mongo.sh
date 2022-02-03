@@ -26,12 +26,12 @@ collections=(
     redeemed_codes
     saved_searches
     sent_emails
-    shared_stories
+    # shared_stories
     social_invites
     social_profile
     social_services
     social_subscription
-    starred_stories
+    # starred_stories
     starred_stories_counts
     statistics
     # stories
@@ -40,6 +40,13 @@ collections=(
     uploaded_opml
     user_search
 )
+
+if [$1 == "stories"]; then
+    collections +=(
+        shared_stories
+        starred_stories        
+    )
+fi
 
 for collection in ${collections[@]}; do
     now=$(date '+%Y-%m-%d-%H-%M')
