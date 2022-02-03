@@ -32,7 +32,7 @@ def main():
         rotate(key_prefix, key_ext,  settings.S3_BACKUP_BUCKET)
 
         # shutil.rmtree(filename[:-4])
-        os.remove(filename)
+        os.remove(file_path)
 
 
 def upload_rotate(file_path, s3_bucket, s3_key_prefix):

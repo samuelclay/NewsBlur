@@ -41,22 +41,23 @@ collections=(
     user_search
 )
 
-if [ $1 = "stories" ]; then
+if [ "$1" = "stories" ]; then
     collections+=(
         shared_stories
         starred_stories        
     )
 fi
 
+now=$(date '+%Y-%m-%d-%H-%M')
+
 for collection in ${collections[@]}; do
-    now=$(date '+%Y-%m-%d-%H-%M')
     echo "---> Dumping $collection - ${now}"
 
     docker exec -it mongo mongodump -d newsblur -c $collection -o /backup
 done;
 
 echo " ---> Compressing /srv/newsblur/backup/newsblur into /srv/newsblur/backup/backup_mongo.tgz"
-tar -zcf /srv/newsblur/backup/backup_mongo.tgz -C / srv/newsblur/backup/newsblur
+tar -zcf /srv/newsblur/backup/backup_mongo_${now}.tgz -C / srv/newsblur/backup/newsblur
 
 echo " ---> Uploading backups to S3"
 docker run --user 1000:1001 --rm -v /srv/newsblur:/srv/newsblur -v /srv/newsblur/backup/:/srv/newsblur/backup/ --network=host newsblur/newsblur_python3:latest python /srv/newsblur/utils/backups/backup_mongo.py
