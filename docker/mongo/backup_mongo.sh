@@ -56,7 +56,7 @@ for collection in ${collections[@]}; do
     docker exec -it mongo mongodump -d newsblur -c $collection -o /backup
 done;
 
-echo " ---> Compressing /srv/newsblur/backup/newsblur into /srv/newsblur/backup/backup_mongo.tgz"
+echo " ---> Compressing /srv/newsblur/backup/newsblur into /srv/newsblur/backup/backup_mongo_${now}.tgz"
 tar -zcf /srv/newsblur/backup/backup_mongo_${now}.tgz -C / srv/newsblur/backup/newsblur
 
 echo " ---> Uploading backups to S3"
