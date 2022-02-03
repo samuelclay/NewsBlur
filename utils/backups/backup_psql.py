@@ -41,5 +41,5 @@ s3_object_name = f'backup_{hostname}/backup_{hostname}_{time.strftime("%Y-%m-%d-
 path = os.listdir(BACKUP_DIR)[0]
 full_path = os.path.join(BACKUP_DIR, path)
 print('Uploading %s to %s on S3 bucket %s' % (full_path, s3_object_name, settings.S3_BACKUP_BUCKET))
-s3.upload_file(full_path, settings.S3_BACKUP_BUCKET, s3_object_name, Callback=ProgressPercentage(path))
+s3.upload_file(full_path, settings.S3_BACKUP_BUCKET, s3_object_name, Callback=ProgressPercentage(full_path))
 os.remove(full_path)
