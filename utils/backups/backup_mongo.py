@@ -123,8 +123,27 @@ def upload(source_path, bucketname, keyname, acl='private', guess_mimetype=True)
         mtype = mimetypes.guess_type(keyname)[0] or 'application/octet-stream'
         extra_args['ContentType'] = mtype
 
-    transfer.upload_file(source_path, bucketname, keyname, extra_args=extra_args)
+    transfer.upload_file(source_path, bucketname, keyname, extra_args=extra_args, Callback=ProgressPercentage(source_path))
 
+
+class ProgressPercentage(object):
+
+    def __init__(self, filename):
+        self._filename = filename
+        self._size = float(os.path.getsize(filename))
+        self._seen_so_far = 0
+        self._lock = threading.Lock()
+
+    def __call__(self, bytes_amount):
+        # To simplify, assume this is hooked up to a single filename
+        with self._lock:
+            self._seen_so_far += bytes_amount
+            percentage = (self._seen_so_far / self._size) * 100
+            sys.stdout.write(
+                "\r%s  %s / %s  (%.2f%%)" % (
+                    self._filename, self._seen_so_far, self._size,
+                    percentage))
+            sys.stdout.flush()
 
 if __name__ == "__main__":
     main()
