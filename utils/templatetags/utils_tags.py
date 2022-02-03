@@ -1,3 +1,5 @@
+import os
+import re
 import struct
 from django.contrib.sites.models import Site
 from django.conf import settings
@@ -9,6 +11,7 @@ from vendor.timezones.utilities import localtime_for_timezone
 from utils.user_functions import get_user
 from django.utils.safestring import mark_safe
 from pipeline.templatetags.pipeline import stylesheet, javascript
+from pipeline.templatetags.pipeline import JavascriptNode, StylesheetNode
 
 register = template.Library()
 
@@ -219,7 +222,42 @@ def include_javascripts(parser, token):
     return javascript(parser, token)
     # asset_type = 'javascripts'
     # return mark_safe(settings.JAMMIT.render_tags(asset_type, asset_package))
-        
+
+class RawJSNode(JavascriptNode):
+    def render(self, context):
+        output = super(RawJSNode, self).render(context)
+        path = re.search(r"src=\"/(.*?)\"", output)
+        assert path
+        filename = path.group(1)
+        abs_filename = os.path.join(settings.NEWSBLUR_DIR, filename)
+        f = open(abs_filename, 'r')
+        output = f.read()
+        return output
+    
+@register.tag
+def include_javascripts_raw(parser, token):
+    """Prints out the JS code found in the static asset packages."""
+    tag_name, name = token.split_contents()
+    scripts = RawJSNode(name)
+    return scripts
+
+class RawStylesheetNode(StylesheetNode):
+    def render(self, context):
+        output = super(RawStylesheetNode, self).render(context)
+        path = re.search(r"href=\"/(.*?)\"", output)
+        assert path
+        filename = path.group(1)
+        abs_filename = os.path.join(settings.NEWSBLUR_DIR, filename)
+        f = open(abs_filename, 'r')
+        output = f.read().replace('"', '\\"').replace('\n', '')
+        return output
+    
+@register.tag
+def include_stylesheets_raw(parser, token):
+    """Prints out the CSS code found in the static asset packages."""
+    tag_name, name = token.split_contents()
+    scripts = RawStylesheetNode(name)
+    return scripts
         
 @register.tag
 def include_stylesheets(parser, token):

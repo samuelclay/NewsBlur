@@ -187,6 +187,8 @@ class DetailViewController: BaseViewController {
         view.backgroundColor = navigationController?.navigationBar.barTintColor
         navigationController?.navigationBar.barStyle = manager.isDarkTheme ? .black : .default
         
+        tidyNavigationController()
+        
 //        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
 //            self.findSplitBackButton()
 //        }
@@ -391,5 +393,14 @@ private extension DetailViewController {
         viewController.willMove(toParent: nil)
         viewController.removeFromParent()
         viewController.view.removeFromSuperview()
+    }
+    
+    /// The status bar portion of the navigation controller isn't the right color, due to a white subview bleeding through the visual effect view. This somewhat hacky function will correct that.
+    func tidyNavigationController() {
+        guard let visualEffectSubviews = navigationController?.navigationBar.subviews.first?.subviews.first?.subviews, visualEffectSubviews.count == 3, visualEffectSubviews[1].alpha == 1 else {
+            return
+        }
+        
+        navigationController?.navigationBar.subviews.first?.backgroundColor = UINavigationBar.appearance().backgroundColor
     }
 }

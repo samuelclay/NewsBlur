@@ -37,6 +37,8 @@ struct Feed: Identifiable {
     ///
     /// - Parameter dictionary: Dictionary representation.
     init(from dictionary: Dictionary) {
+        let operation = WidgetDebugTimer.start("reading feed")
+        
         id = dictionary[DictionaryKeys.id] as? String ?? ""
         title = dictionary[DictionaryKeys.title] as? String ?? ""
         
@@ -51,6 +53,8 @@ struct Feed: Identifiable {
         } else {
             rightColor = Self.from(hexString: "505050")
         }
+        
+        WidgetDebugTimer.print(operation, step: "title: \(title)")
     }
     
     /// Initializer for a sample.
@@ -93,7 +97,7 @@ struct Feed: Identifiable {
             blue = Double( hex & 0x0000FF) / 255
         }
         
-        print("Reading color from '\(hexString)': red: \(red), green: \(green), blue: \(blue), alpha: \(alpha)")
+        NSLog("Reading color from '\(hexString)': red: \(red), green: \(green), blue: \(blue), alpha: \(alpha)")
         
         return Color(.sRGB, red: red, green: green, blue: blue, opacity: alpha)
     }

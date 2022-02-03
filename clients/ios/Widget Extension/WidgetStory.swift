@@ -31,8 +31,11 @@ struct Story: Codable, Identifiable {
     /// The content of the story.
     let content: String
     
-    /// The URL of the image, or `nil` if none.
-    let imageURL: URL?
+    /// The thumbnail image data, or `nil` if none.
+    let imageData: Data?
+    
+    /// The thumbnail image, or `nil` if none.
+    let image: UIImage?
     
     /// Keys for the dictionary representation.
     struct DictionaryKeys {
@@ -42,8 +45,7 @@ struct Story: Codable, Identifiable {
         static let author = "story_authors"
         static let title = "story_title"
         static let content = "story_content"
-        static let imageURLs = "image_urls"
-        static let secureImageURLs = "secure_image_thumbnails"
+        static let imageData = "select_thumbnail_data"
     }
     
     /// Initializer from a dictionary.
@@ -57,10 +59,16 @@ struct Story: Codable, Identifiable {
         title = dictionary[DictionaryKeys.title] as? String ?? ""
         content = dictionary[DictionaryKeys.content] as? String ?? ""
         
-        if let imageURLs = dictionary[DictionaryKeys.imageURLs] as? [String], let first = imageURLs.first, let secureImages = dictionary[DictionaryKeys.secureImageURLs] as? [String : String], let url = secureImages[first] {
-            imageURL = URL(string: url)
+        if let base64 = dictionary[DictionaryKeys.imageData] as? String {
+            imageData = Data(base64Encoded: base64)
         } else {
-            imageURL = nil
+            imageData = nil
+        }
+        
+        if let data = imageData {
+            image = UIImage(data: data)
+        } else {
+            image = nil
         }
     }
     
@@ -75,7 +83,8 @@ struct Story: Codable, Identifiable {
         author = "Sample"
         self.title = title
         content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur nec ornare dolor. Vivamus porta mi nec libero convallis tempus. Cras semper, ante et pretium vulputate, risus urna venenatis magna, vitae fringilla ipsum ante ut augue. Cras euismod, eros convallis scelerisque congue, massa sem elementum sem, ut condimentum est tortor id mauris."
-        imageURL = nil
+        imageData = nil
+        image = UIImage(systemName: "globe.americas.fill")
     }
     
     /// Keys for the codable representation.
@@ -87,7 +96,7 @@ struct Story: Codable, Identifiable {
         case author = "author"
         case title = "title"
         case content = "content"
-        case imageURL = "imageURL"
+        case imageData = "imageData"
     }
     
     /// Initializer to load from the JSON data.
@@ -103,7 +112,13 @@ struct Story: Codable, Identifiable {
         author = try container.decode(String.self, forKey: .author)
         title = try container.decode(String.self, forKey: .title)
         content = try container.decode(String.self, forKey: .content)
-        imageURL = try container.decodeIfPresent(URL.self, forKey: .imageURL)
+        imageData = try container.decodeIfPresent(Data.self, forKey: .imageData)
+        
+        if let data = imageData {
+            image = UIImage(data: data)
+        } else {
+            image = nil
+        }
     }
     
     /// Encodes the story into the given encoder.
@@ -120,7 +135,7 @@ struct Story: Codable, Identifiable {
         try container.encode(author, forKey: .author)
         try container.encode(title, forKey: .title)
         try container.encode(content, forKey: .content)
-        try container.encodeIfPresent(imageURL, forKey: .imageURL)
+        try container.encodeIfPresent(imageData, forKey: .imageData)
     }
 }
 

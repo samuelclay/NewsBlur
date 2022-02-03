@@ -1359,7 +1359,7 @@
     
     [self.userTagsViewController view]; // Force viewDidLoad
     CGRect frame = [sender CGRectValue];
-    [self showPopoverWithViewController:self.userTagsViewController contentSize:CGSizeMake(220, 382) sourceView:self.storyPagesViewController.view sourceRect:frame permittedArrowDirections:UIPopoverArrowDirectionDown];
+    [self showPopoverWithViewController:self.userTagsViewController contentSize:CGSizeMake(220, 382) sourceView:self.storyPagesViewController.view sourceRect:frame permittedArrowDirections:UIPopoverArrowDirectionUp];
 }
 
 #pragma mark - UIPopoverPresentationControllerDelegate
@@ -2369,7 +2369,10 @@
 //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
 //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self showFeedsListAnimated:NO];
-        [self loadFolder:folder feedID:feedID];
+        
+        if (folder != nil) {
+            [self loadFolder:folder feedID:feedID];
+        }
     }
 }
 

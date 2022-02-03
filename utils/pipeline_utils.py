@@ -8,14 +8,14 @@ from pipeline.storage import PipelineManifestStorage
 class PipelineStorage(PipelineManifestStorage):
     def url(self, *args, **kwargs):
         if settings.DEBUG_ASSETS:
-            print(f"Pre-Pipeline storage: {args} {kwargs}")
+            # print(f"Pre-Pipeline storage: {args} {kwargs}")
             kwargs['name'] = re.sub(r'\.[a-f0-9]{12}\.(css|js)$', r'.\1', args[0])
             args = args[1:]
         url = super().url(*args, **kwargs)
         if settings.DEBUG_ASSETS:
             url = url.replace(settings.STATIC_URL, settings.MEDIA_URL)
             url = re.sub(r'\.[a-f0-9]{12}\.(css|js)$', r'.\1', url)
-        print(f"Pipeline storage: {args} {kwargs} {url}")
+        # print(f"Pipeline storage: {args} {kwargs} {url}")
         return url
 
 class GzipPipelineStorage(GZIPMixin, PipelineManifestStorage):
