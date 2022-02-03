@@ -65,8 +65,8 @@
 - name: Create symlink to mounted volume for backups to live
   file:
     state: link
-    src: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup/"
-    path: /srv/newsblur/docker/backup
+    src: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup"
+    path: /srv/newsblur/backup/
     
 - name: Start db-mongo docker container
   become: yes
