@@ -66,7 +66,8 @@
   file:
     state: link
     src: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup"
-    path: /srv/newsblur/backup/
+    path: /srv/newsblur/backup
+    force: yes
     
 - name: Start db-mongo docker container
   become: yes

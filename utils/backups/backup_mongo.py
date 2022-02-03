@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 from datetime import datetime, timedelta
 import os
+import sys
 import re
 import logging
 import mimetypes
@@ -23,15 +24,17 @@ def main():
         key_datestamp = datetime.utcnow().strftime("_%Y-%m-%d-%H-%M")
         key = "".join([key_prefix, key_datestamp, key_ext])
         print("Uploading {0} to {1}".format(file_path, key))
+        sys.stdout.flush()
         upload(file_path, settings.S3_BACKUP_BUCKET, key)
         print('Rotating file on S3 with key prefix {0} and extension {1}'.format(key_prefix, key_ext))
+        sys.stdout.flush()
         rotate(key_prefix, key_ext,  settings.S3_BACKUP_BUCKET)
 
         # shutil.rmtree(filename[:-4])
         # os.remove(filename)
 
 
-def upload_rotate(file_path, s3_bucket, s3_key_prefix, aws_key=None, aws_secret=None):
+def upload_rotate(file_path, s3_bucket, s3_key_prefix):
     '''
     Upload file_path to s3 bucket with prefix
     Ex. upload_rotate('/tmp/file-2015-01-01.tar.bz2', 'backups', 'foo.net/')
@@ -42,7 +45,7 @@ def upload_rotate(file_path, s3_bucket, s3_key_prefix, aws_key=None, aws_secret=
     '''
     key = ''.join([s3_key_prefix, os.path.basename(file_path)])
     logger.debug("Uploading {0} to {1}".format(file_path, key))
-    upload(file_path, s3_bucket, key, aws_access_key_id=aws_key, aws_secret_access_key=aws_secret)
+    upload(file_path, s3_bucket, key)
 
     file_root, file_ext = splitext(os.path.basename(file_path))
     # strip timestamp from file_base
@@ -52,15 +55,15 @@ def upload_rotate(file_path, s3_bucket, s3_key_prefix, aws_key=None, aws_secret=
         raise Exception('File does not contain a timestamp')
     key_prefix = ''.join([s3_key_prefix, match.group('filename')])
     logger.debug('Rotating files on S3 with key prefix {0} and extension {1}'.format(key_prefix, file_ext))
-    rotate(key_prefix, file_ext, s3_bucket, aws_key=aws_key, aws_secret=aws_secret)
+    rotate(key_prefix, file_ext, s3_bucket)
 
 
-def rotate(key_prefix, key_ext, bucket_name, daily_backups=7, weekly_backups=4, aws_key=None, aws_secret=None):
+def rotate(key_prefix, key_ext, bucket_name, daily_backups=7, weekly_backups=4):
     """ Delete old files we've uploaded to S3 according to grandfather, father, sun strategy """
 
     session = boto3.Session(
-        aws_access_key_id=aws_key,
-        aws_secret_access_key=aws_secret
+        aws_access_key_id=settings.S3_ACCESS_KEY, 
+        aws_secret_access_key=settings.S3_SECRET
     )
     s3 = session.resource('s3')
     bucket = s3.Bucket(bucket_name)
@@ -108,9 +111,9 @@ def splitext( filename ):
     return filename[:index], filename[index:]
     return os.path.splitext(filename)
 
-def upload(source_path, bucketname, keyname, acl='private', guess_mimetype=True, aws_access_key_id=None, aws_secret_access_key=None):
+def upload(source_path, bucketname, keyname, acl='private', guess_mimetype=True):
 
-    client = boto3.client('s3', 'us-west-2', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
+    client = boto3.client('s3', aws_access_key_id=settings.S3_ACCESS_KEY, aws_secret_access_key=settings.S3_SECRET)
     transfer = S3Transfer(client)
     # Upload /tmp/myfile to s3://bucket/key
     extra_args = {
