@@ -41,7 +41,7 @@ collections=(
     user_search
 )
 
-if [ $1 == "stories" ]; then
+if [ $1 = "stories" ]; then
     collections+=(
         shared_stories
         starred_stories        
@@ -52,7 +52,7 @@ for collection in ${collections[@]}; do
     now=$(date '+%Y-%m-%d-%H-%M')
     echo "---> Dumping $collection - ${now}"
 
-    docker exec -it mongo mongodump -d newsblur -c $collection -o /srv/newsblur/backup/backup_mongo
+    docker exec -it mongo mongodump -d newsblur -c $collection -o /backup
 done;
 
 echo " ---> Compressing /srv/newsblur/backup/backup_mongo into /srv/newsblur/backup/backup_mongo.tgz"
