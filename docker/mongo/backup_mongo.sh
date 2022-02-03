@@ -56,7 +56,7 @@ for collection in ${collections[@]}; do
 done;
 
 echo " ---> Compressing /srv/newsblur/backup/backup_mongo into /srv/newsblur/backup/backup_mongo.tgz"
-tar -zcf /srv/newsblur/backup/backup_mongo.tgz /srv/newsblur/backup/backup_mongo
+tar -zcf /srv/newsblur/backup/backup_mongo.tgz -C / srv/newsblur/backup/backup_mongo
 
 echo " ---> Uploading backups to S3"
 docker run --rm -v /srv/newsblur:/srv/newsblur -v /srv/newsblur/backup/:/srv/newsblur/backup/ --network=newsblurnet newsblur/newsblur_python3:latest python /srv/newsblur/utils/backups/backup_mongo.py
