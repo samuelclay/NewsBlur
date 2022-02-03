@@ -6,6 +6,7 @@ import re
 import logging
 import mimetypes
 import boto3
+import threading
 import shutil
 from boto3.s3.transfer import S3Transfer
 from newsblur_web import settings
