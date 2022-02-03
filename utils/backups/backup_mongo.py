@@ -27,12 +27,12 @@ def main():
         print("Uploading {0} to {1} on {2}".format(file_path, key, settings.S3_BACKUP_BUCKET))
         sys.stdout.flush()
         upload(file_path, settings.S3_BACKUP_BUCKET, key)
-        print('Rotating file on S3 with key prefix {0} and extension {1}'.format(key_prefix, key_ext))
+        print('\nRotating file on S3 with key prefix {0} and extension {1}'.format(key_prefix, key_ext))
         sys.stdout.flush()
         rotate(key_prefix, key_ext,  settings.S3_BACKUP_BUCKET)
 
         # shutil.rmtree(filename[:-4])
-        # os.remove(filename)
+        os.remove(filename)
 
 
 def upload_rotate(file_path, s3_bucket, s3_key_prefix):
