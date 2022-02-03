@@ -58,10 +58,16 @@
 - name: Make backup directory
   become: yes
   file:
-    path: /opt/mongo/newsblur/backup/
+    path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup/"
     state: directory
     mode: 0777
 
+- name: Create symlink to mounted volume for backups to live
+  file:
+    state: link
+    src: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup/"
+    path: /srv/newsblur/docker/backup
+    
 - name: Start db-mongo docker container
   become: yes
   docker_container:
@@ -86,7 +92,7 @@
       - /srv/newsblur/ansible/roles/mongo/templates/mongo.conf:/etc/mongod.conf
       - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
       - /var/log/mongodb/:/var/log/mongodb/
-      - /opt/mongo/newsblur/backup/:/backup/
+      - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup/:/backup/
   when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-primary', 'db-mongo-secondary']
 
 - name: Start db-mongo-analytics docker container
@@ -114,7 +120,7 @@
       - /srv/newsblur/ansible/roles/mongo/templates/mongo.analytics.conf:/etc/mongod.conf
       - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
       - /var/log/mongodb/:/var/log/mongodb/
-      - /opt/mongo/newsblur/backup/:/backup/
+      - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup/:/backup/
   when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics'
 
 - name: Create mongo database user

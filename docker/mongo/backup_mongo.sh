@@ -37,12 +37,12 @@ collections=(
     # stories
     system.profile
     system.users
-    uploaded_opml
+    # uploaded_opml
     user_search
 )
 
-if [$1 == "stories"]; then
-    collections +=(
+if [ $1 == "stories" ]; then
+    collections+=(
         shared_stories
         starred_stories        
     )
@@ -52,14 +52,14 @@ for collection in ${collections[@]}; do
     now=$(date '+%Y-%m-%d-%H-%M')
     echo "---> Dumping $collection - ${now}"
 
-    docker exec -it mongo mongodump -d newsblur -c $collection -o /backup/backup_mongo
+    docker exec -it mongo mongodump -d newsblur -c $collection -o /srv/newsblur/backup/backup_mongo
 done;
 
-echo " ---> Compressing backup_mongo.tgz"
-tar -zcf /opt/mongo/newsblur/backup/backup_mongo.tgz /opt/mongo/newsblur/backup/backup_mongo
+echo " ---> Compressing /srv/newsblur/backup/backup_mongo into /srv/newsblur/backup/backup_mongo.tgz"
+tar -zcf /srv/newsblur/backup/backup_mongo.tgz /srv/newsblur/backup/backup_mongo
 
 echo " ---> Uploading backups to S3"
-docker run --rm -v /srv/newsblur:/srv/newsblur -v /opt/mongo/newsblur/backup/:/opt/mongo/newsblur/backup/ --network=newsblurnet newsblur/newsblur_python3:latest python /srv/newsblur/utils/backups/backup_mongo.py
+docker run --rm -v /srv/newsblur:/srv/newsblur -v /srv/newsblur/backup/:/srv/newsblur/backup/ --network=newsblurnet newsblur/newsblur_python3:latest python /srv/newsblur/utils/backups/backup_mongo.py
 
 # Don't delete backup since the backup_mongo.py script will rm them
 ## rm /opt/mongo/newsblur/backup/backup_mongo_${now}.tgz
