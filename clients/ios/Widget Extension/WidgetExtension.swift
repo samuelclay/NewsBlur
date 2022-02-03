@@ -56,8 +56,10 @@ struct Provider: TimelineProvider {
             WidgetDebugTimer.print(operation, step: "making timeline")
             
             let imageRequestGroup = DispatchGroup()
+            let storyFeeds = cache.stories.map { $0.feed }
+            let feeds = cache.feeds.filter { storyFeeds.contains($0.id) }
             
-            for feed in cache.feeds {
+            for feed in feeds {
                 imageRequestGroup.enter()
                 
                 cache.feedImage(for: feed.id) { image, feed in
@@ -65,16 +67,8 @@ struct Provider: TimelineProvider {
                 }
             }
             
-//            for story in cache.stories(count: 6) {
-//                imageRequestGroup.enter()
-//
-//                cache.storyImage(for: story.id, imageURL: story.imageURL) { image, feed in
-//                    imageRequestGroup.leave()
-//                }
-//            }
-            
             imageRequestGroup.notify(queue: .main) {
-                WidgetDebugTimer.print(operation, step: "requesting images")
+                WidgetDebugTimer.print(operation, step: "requesting favicons")
                 
                 completion(timeline)
             }
