@@ -21,15 +21,13 @@ def main():
         file_path = os.path.join(BACKUP_DIR, filename)
         basename = os.path.basename(file_path)
         key_base, key_ext = list(splitext(basename))
-        key_prefix = "".join(['mongo/', key_base])
-        key_datestamp = datetime.utcnow().strftime("_%Y-%m-%d-%H-%M")
-        key = "".join([key_prefix, key_datestamp, key_ext])
+        key_prefix = "".join(['backup_db_mongo/', key_base])
+        # key_datestamp = datetime.utcnow().strftime("_%Y-%m-%d-%H-%M")
+        # key = "".join([key_prefix, key_datestamp, key_ext])
+        key = "".join([key_prefix, key_ext])
         print("Uploading {0} to {1} on {2}".format(file_path, key, settings.S3_BACKUP_BUCKET))
         sys.stdout.flush()
-        upload(file_path, settings.S3_BACKUP_BUCKET, key)
-        print('\nRotating file on S3 with key prefix {0} and extension {1}'.format(key_prefix, key_ext))
-        sys.stdout.flush()
-        rotate(key_prefix, key_ext,  settings.S3_BACKUP_BUCKET)
+        upload_rotate(file_path, settings.S3_BACKUP_BUCKET, key)
 
         # shutil.rmtree(filename[:-4])
         os.remove(file_path)
@@ -50,7 +48,7 @@ def upload_rotate(file_path, s3_bucket, s3_key_prefix):
 
     file_root, file_ext = splitext(os.path.basename(file_path))
     # strip timestamp from file_base
-    regex = '(?P<filename>.*)-(?P<year>[\d]+?)-(?P<month>[\d]+?)-(?P<day>[\d]+?)'
+    regex = '(?P<filename>.*)_(?P<year>[\d]+?)-(?P<month>[\d]+?)-(?P<day>[\d]+?)-(?P<hour>[\d]+?)-(?P<minute>[\d]+?)'
     match = re.match(regex, file_root)
     if not match:
         raise Exception('File does not contain a timestamp')
