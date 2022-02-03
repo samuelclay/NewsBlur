@@ -214,15 +214,15 @@
   tags:
     - mongo-backup
 
-- name: Add mongo starred_stories+stories backup
-  cron:
-    name: mongo starred/shared/all stories backup
-    minute: "0"
-    hour: "5"
-    job: /srv/newsblur/docker/mongo/backup_mongo.sh stories
-  when: '"db-mongo-secondary1" in inventory_hostname'
-  tags:
-    - mongo-backup
+# - name: Add mongo starred_stories+stories backup
+#   cron:
+#     name: mongo starred/shared/all stories backup
+#     minute: "0"
+#     hour: "5"
+#     job: /srv/newsblur/docker/mongo/backup_mongo.sh stories
+#   when: '"db-mongo-secondary1" in inventory_hostname'
+#   tags:
+#     - mongo-backup
 
 # Renaming a db-mongo3 to db-mongo2:
 #  - Change hostname to db-mongo2 on Digital Ocean (doctl)

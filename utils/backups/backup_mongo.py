@@ -20,8 +20,7 @@ def main():
     for filename in filenames:
         file_path = os.path.join(BACKUP_DIR, filename)
         basename = os.path.basename(file_path)
-        key_base, key_ext = list(splitext(basename))
-        key_prefix = "".join(['backup_db_mongo/', key_base])
+        key_prefix = 'backup_db_mongo/'
         print("Uploading {0} to {1} on {2}".format(file_path, key_prefix, settings.S3_BACKUP_BUCKET))
         sys.stdout.flush()
         upload_rotate(file_path, settings.S3_BACKUP_BUCKET, key_prefix)
@@ -40,7 +39,7 @@ def upload_rotate(file_path, s3_bucket, s3_key_prefix):
     Ex file-2015-12-28.tar.bz2
     '''
     key = ''.join([s3_key_prefix, os.path.basename(file_path)])
-    logger.debug("Uploading {0} to {1}".format(file_path, key))
+    print("Uploading {0} to {1}".format(file_path, key))
     upload(file_path, s3_bucket, key)
 
     file_root, file_ext = splitext(os.path.basename(file_path))
@@ -50,7 +49,7 @@ def upload_rotate(file_path, s3_bucket, s3_key_prefix):
     if not match:
         raise Exception('File does not contain a timestamp')
     key_prefix = ''.join([s3_key_prefix, match.group('filename')])
-    logger.debug('Rotating files on S3 with key prefix {0} and extension {1}'.format(key_prefix, file_ext))
+    print('Rotating files on S3 with key prefix {0} and extension {1}'.format(key_prefix, file_ext))
     rotate(key_prefix, file_ext, s3_bucket)
 
 
