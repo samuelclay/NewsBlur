@@ -1362,7 +1362,7 @@
         
         CGFloat bottomInset = appDelegate.detailViewController.view.safeAreaInsets.bottom;
         
-        int safeBottomMargin = bottomInset / 2;
+        int safeBottomMargin = bottomInset;
         int bottomPosition = webpageHeight - topPosition - viewportHeight;
         BOOL singlePage = webpageHeight - 200 <= viewportHeight;
         BOOL atBottom = bottomPosition < 150;
@@ -1412,12 +1412,12 @@
             appDelegate.storyPagesViewController.traverseView.alpha = 1;
 //            NSLog(@" ---> Bottom position: %d", bottomPosition);
             if (bottomPosition >= 0 || !isHorizontal) {
-                appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin;
+                appDelegate.storyPagesViewController.traverseBottomConstraint.constant = 0;
             } else {
                 if (webpageHeight > 0 && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-                    appDelegate.storyPagesViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + safeBottomMargin;
+                    appDelegate.storyPagesViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) - safeBottomMargin;
                 } else {
-                    appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin;
+                    appDelegate.storyPagesViewController.traverseBottomConstraint.constant = 0;
                 }
             }
         } else if ((!singlePage && (atTop && !atBottom)) || [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
@@ -1426,7 +1426,7 @@
             appDelegate.storyPagesViewController.traverseFloating = NO;
             [appDelegate.storyPagesViewController.view layoutIfNeeded];
 
-            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin;
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = 0;
             [appDelegate.storyPagesViewController.view layoutIfNeeded];
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
@@ -1440,7 +1440,7 @@
             appDelegate.storyPagesViewController.traverseFloating = YES;
             [appDelegate.storyPagesViewController.view layoutIfNeeded];
 
-            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = safeBottomMargin;
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = 0;
             [appDelegate.storyPagesViewController.view layoutIfNeeded];
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
@@ -1454,7 +1454,7 @@
             appDelegate.storyPagesViewController.traversePinned = NO;
             appDelegate.storyPagesViewController.traverseFloating = YES;
             appDelegate.storyPagesViewController.traverseView.alpha = 1;
-            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + safeBottomMargin;
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) - safeBottomMargin;
         }
         
         [appDelegate.storyPagesViewController resizeScrollView];

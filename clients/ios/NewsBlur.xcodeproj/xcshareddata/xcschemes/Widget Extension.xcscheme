@@ -16,8 +16,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "173CB30C26BCE94700BA872A"
-               BuildableName = "Widget Extension.appex"
-               BlueprintName = "Widget Extension"
+               BuildableName = "NewsBlur Widget.appex"
+               BlueprintName = "NewsBlur Widget"
                ReferencedContainer = "container:NewsBlur.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

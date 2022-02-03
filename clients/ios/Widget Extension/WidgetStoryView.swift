@@ -27,7 +27,7 @@ struct WidgetStoryView: View {
                     WidgetBarView(leftColor: feed.leftColor, rightColor: feed.rightColor)
                 }
                 HStack {
-                    if cache.preview == .largeLeft, let image = cache.cachedStoryImage(for: story.id) {
+                    if cache.preview == .largeLeft, let image = story.image {
                         Image(uiImage: image)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -36,7 +36,7 @@ struct WidgetStoryView: View {
                             .padding([.trailing], -15)
                     }
                     
-                    if cache.preview == .smallLeft, let image = cache.cachedStoryImage(for: story.id) {
+                    if cache.preview == .smallLeft, let image = story.image {
                         Image(uiImage: image)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -81,7 +81,7 @@ struct WidgetStoryView: View {
                     }
                     .padding([.leading, .trailing])
                     
-                    if cache.preview == .smallRight, let image = cache.cachedStoryImage(for: story.id) {
+                    if cache.preview == .smallRight, let image = story.image {
                         Image(uiImage: image)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -92,7 +92,7 @@ struct WidgetStoryView: View {
                             .padding([.trailing], 10)
                     }
                     
-                    if cache.preview == .largeRight, let image = cache.cachedStoryImage(for: story.id) {
+                    if cache.preview == .largeRight, let image = story.image {
                         Image(uiImage: image)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
