@@ -17,7 +17,7 @@
 - name: Ensure postgres backup directory
   become: yes
   file:
-    path: /backup
+    path: /srv/newsblur/backups
     state: directory
     mode: 0777
   
@@ -96,5 +96,5 @@
     name: postgres backup
     minute: "0"
     hour: "4"
-    job: /srv/newsblur/docker/mongo/backup_mongo.sh
+    job: /srv/newsblur/docker/postgres/backup_postgres.sh
 

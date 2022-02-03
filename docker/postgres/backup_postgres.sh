@@ -3,7 +3,7 @@
 now=$(date '+%Y-%m-%d-%H-%M')
 
 echo "---> PG dumping - ${now}"
-BACKUP_FILE=/var/lib/postgresql/backup/backup_postgresql_${now}.sql;
+BACKUP_FILE="/srv/newsblur/backups/backup_postgresql_${now}.sql"
 sudo docker exec -it postgres /usr/lib/postgresql/13/bin/pg_dump -U newsblur -h 127.0.0.1 -Fc newsblur > $BACKUP_FILE
 
 echo " ---> Compressing $BACKUP_FILE"
