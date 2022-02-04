@@ -88,6 +88,19 @@ class Profile(models.Model):
                 price = "price_0KK5twwdsmP8XBlasifbX56Z"
         return price
     
+    @classmethod
+    def paypal_plan_id_to_plan(cls, plan_id):
+        if settings.DEBUG:
+            if plan_id == "P-4RV31836YD8080909MHZROJY":
+                return "premium"
+            elif plan_id == "P-2EG40290653242115MHZROQQ":
+                return "archive"
+        else:
+            if plan_id == "P-48R22630SD810553FMHZONIY":
+                return "premium"
+            elif plan_id == "P-5JM46230U31841226MHZOMZY":
+                return "archive"
+
     @property
     def unread_cutoff(self, force_premium=False, force_archive=False):
         if self.is_archive or force_archive:
