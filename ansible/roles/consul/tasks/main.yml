@@ -13,8 +13,9 @@
 - name: Installing Consul
   become: yes
   apt:
-    pkg: consul
-    state: latest
+    allow_downgrades: yes
+    pkg: consul=1.10.4
+    state: present
 
 - name: Register Manager IP
   run_once: yes
