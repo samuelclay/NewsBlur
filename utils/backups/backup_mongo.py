@@ -1,10 +1,12 @@
 #!/usr/bin/python3
 from datetime import datetime, timedelta
 import os
+import sys
 import re
 import logging
 import mimetypes
 import boto3
+import threading
 import shutil
 from boto3.s3.transfer import S3Transfer
 from newsblur_web import settings
@@ -13,25 +15,21 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    BACKUP_DIR = '/opt/mongo/newsblur/backup/'
+    BACKUP_DIR = '/srv/newsblur/backup/'
     filenames = [f for f in os.listdir(BACKUP_DIR) if '.tgz' in f]
     for filename in filenames:
         file_path = os.path.join(BACKUP_DIR, filename)
         basename = os.path.basename(file_path)
-        key_base, key_ext = list(splitext(basename))
-        key_prefix = "".join(['mongo/', key_base])
-        key_datestamp = datetime.utcnow().strftime("_%Y-%m-%d-%H-%M")
-        key = "".join([key_prefix, key_datestamp, key_ext])
-        print("Uploading {0} to {1}".format(file_path, key))
-        upload(file_path, settings.S3_BACKUP_BUCKET, key)
-        print('Rotating file on S3 with key prefix {0} and extension {1}'.format(key_prefix, key_ext))
-        rotate(key_prefix, key_ext,  settings.S3_BACKUP_BUCKET)
+        key_prefix = 'backup_db_mongo/'
+        print("Uploading {0} to {1} on {2}".format(file_path, key_prefix, settings.S3_BACKUP_BUCKET))
+        sys.stdout.flush()
+        upload_rotate(file_path, settings.S3_BACKUP_BUCKET, key_prefix)
 
         # shutil.rmtree(filename[:-4])
-        # os.remove(filename)
+        os.remove(file_path)
 
 
-def upload_rotate(file_path, s3_bucket, s3_key_prefix, aws_key=None, aws_secret=None):
+def upload_rotate(file_path, s3_bucket, s3_key_prefix):
     '''
     Upload file_path to s3 bucket with prefix
     Ex. upload_rotate('/tmp/file-2015-01-01.tar.bz2', 'backups', 'foo.net/')
@@ -41,26 +39,26 @@ def upload_rotate(file_path, s3_bucket, s3_key_prefix, aws_key=None, aws_secret=
     Ex file-2015-12-28.tar.bz2
     '''
     key = ''.join([s3_key_prefix, os.path.basename(file_path)])
-    logger.debug("Uploading {0} to {1}".format(file_path, key))
-    upload(file_path, s3_bucket, key, aws_access_key_id=aws_key, aws_secret_access_key=aws_secret)
+    print("Uploading {0} to {1}".format(file_path, key))
+    upload(file_path, s3_bucket, key)
 
     file_root, file_ext = splitext(os.path.basename(file_path))
     # strip timestamp from file_base
-    regex = '(?P<filename>.*)-(?P<year>[\d]+?)-(?P<month>[\d]+?)-(?P<day>[\d]+?)'
+    regex = '(?P<filename>.*)_(?P<year>[\d]+?)-(?P<month>[\d]+?)-(?P<day>[\d]+?)-(?P<hour>[\d]+?)-(?P<minute>[\d]+?)'
     match = re.match(regex, file_root)
     if not match:
         raise Exception('File does not contain a timestamp')
     key_prefix = ''.join([s3_key_prefix, match.group('filename')])
-    logger.debug('Rotating files on S3 with key prefix {0} and extension {1}'.format(key_prefix, file_ext))
-    rotate(key_prefix, file_ext, s3_bucket, aws_key=aws_key, aws_secret=aws_secret)
+    print('Rotating files on S3 with key prefix {0} and extension {1}'.format(key_prefix, file_ext))
+    rotate(key_prefix, file_ext, s3_bucket)
 
 
-def rotate(key_prefix, key_ext, bucket_name, daily_backups=7, weekly_backups=4, aws_key=None, aws_secret=None):
+def rotate(key_prefix, key_ext, bucket_name, daily_backups=7, weekly_backups=4):
     """ Delete old files we've uploaded to S3 according to grandfather, father, sun strategy """
 
     session = boto3.Session(
-        aws_access_key_id=aws_key,
-        aws_secret_access_key=aws_secret
+        aws_access_key_id=settings.S3_ACCESS_KEY, 
+        aws_secret_access_key=settings.S3_SECRET
     )
     s3 = session.resource('s3')
     bucket = s3.Bucket(bucket_name)
@@ -108,20 +106,30 @@ def splitext( filename ):
     return filename[:index], filename[index:]
     return os.path.splitext(filename)
 
-def upload(source_path, bucketname, keyname, acl='private', guess_mimetype=True, aws_access_key_id=None, aws_secret_access_key=None):
+def upload(source_path, bucketname, keyname, acl='private', guess_mimetype=True):
 
-    client = boto3.client('s3', 'us-west-2', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
-    transfer = S3Transfer(client)
-    # Upload /tmp/myfile to s3://bucket/key
-    extra_args = {
-        'ACL': acl,
-    }
-    if guess_mimetype:
-        mtype = mimetypes.guess_type(keyname)[0] or 'application/octet-stream'
-        extra_args['ContentType'] = mtype
+    client = boto3.client('s3', aws_access_key_id=settings.S3_ACCESS_KEY, aws_secret_access_key=settings.S3_SECRET)
+    client.upload_file(source_path, bucketname, keyname, Callback=ProgressPercentage(source_path))
 
-    transfer.upload_file(source_path, bucketname, keyname, extra_args=extra_args)
 
+class ProgressPercentage(object):
+
+    def __init__(self, filename):
+        self._filename = filename
+        self._size = float(os.path.getsize(filename))
+        self._seen_so_far = 0
+        self._lock = threading.Lock()
+
+    def __call__(self, bytes_amount):
+        # To simplify, assume this is hooked up to a single filename
+        with self._lock:
+            self._seen_so_far += bytes_amount
+            percentage = (self._seen_so_far / self._size) * 100
+            sys.stdout.write(
+                "\r%s  %s / %s  (%.2f%%)" % (
+                    self._filename, self._seen_so_far, self._size,
+                    percentage))
+            sys.stdout.flush()
 
 if __name__ == "__main__":
     main()

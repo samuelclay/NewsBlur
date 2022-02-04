@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^page/(?P<feed_id>\d+)', views.load_feed_page, name='load-feed-page'),
     url(r'^refresh_feed/(?P<feed_id>\d+)', views.refresh_feed, name='refresh-feed'),
     url(r'^favicons', views.load_feed_favicons, name='load-feed-favicons'),
+    url(r'^river_stories_widget', views.load_river_stories_widget, name='load-river-stories-widget'),
     url(r'^river_stories', views.load_river_stories__redis, name='load-river-stories'),
     url(r'^complete_river', views.complete_river, name='complete-river'),
     url(r'^refresh_feeds', views.refresh_feeds, name='refresh-feeds'),

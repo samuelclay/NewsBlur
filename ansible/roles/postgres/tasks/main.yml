@@ -14,6 +14,13 @@
     state: directory
     mode: 0777
   
+- name: Ensure postgres backup directory
+  become: yes
+  file:
+    path: /srv/newsblur/backups
+    state: directory
+    mode: 0777
+  
 - name: Start postgres docker containers
   become: yes
   docker_container:
@@ -63,6 +70,12 @@
   notify:
     - reload consul
 
+- name: Copy common secrets
+  copy:
+    src: /srv/secrets-newsblur/settings/common_settings.py
+    dest: /srv/newsblur/newsblur_web/local_settings.py
+  register: app_changed
+
 - name: Add sanity checkers cronjob for disk usage
   become: yes
   cron:
@@ -78,19 +91,19 @@
       --hostname {{ ansible_hostname }} 
       newsblur/newsblur_python3 /srv/newsblur/utils/monitor_disk_usage.py $OUTPUT
 
+- name: Add postgres backup log
+  become: yes
+  file:
+    path: /var/log/postgres_backup.log
+    state: touch
+    mode: 0777
+    owner: 1000
+    group: 1001
+
 - name: Add postgres backup
   cron:
     name: postgres backup
     minute: "0"
     hour: "4"
-    job: >-
-      NOW=$(eval date +%F-%H-%M);
-      BACKUP_FILE=backup_postgresql_${NOW}.sql;
-      sudo docker exec -it postgres
-      /usr/lib/postgresql/13/bin/pg_dump -U newsblur -h 127.0.0.1 -Fc newsblur > backup/$BACKUP_FILE;
-      sudo docker run --rm -it
-      -v /srv/newsblur:/srv/newsblur
-      -v /backup/:/backup/
-      --network=newsblurnet
-      newsblur/newsblur_python3
-      python /srv/newsblur/utils/backups/backup_psql.py
+    job: /srv/newsblur/docker/postgres/backup_postgres.sh 1> /var/log/postgres_backup.log 2>&1
+

@@ -218,6 +218,10 @@ def check_share_on_site(request, token):
     logging.user(request.user, "~FBFinding feed (check_share_on_site): %s" % rss_url)
     feed = Feed.get_feed_from_url(rss_url, create=False, fetch=False)
     if not feed:
+        rss_url = urllib.parse.urljoin(story_url, rss_url)
+        logging.user(request.user, "~FBFinding feed (check_share_on_site): %s" % rss_url)
+        feed = Feed.get_feed_from_url(rss_url, create=False, fetch=False)
+    if not feed:
         logging.user(request.user, "~FBFinding feed (check_share_on_site): %s" % story_url)
         feed = Feed.get_feed_from_url(story_url, create=False, fetch=False)
     if not feed:

@@ -70,7 +70,7 @@
       run_once: yes
       connection: local
       amazon.aws.aws_s3:
-        bucket: newsblur_backups
+        bucket: newsblur-backups
         object: /static_py3.tgz
         src: /srv/newsblur/static.tgz
         mode: put
@@ -94,7 +94,7 @@
       vars:
         ansible_python_interpreter: /usr/bin/python3  
       amazon.aws.aws_s3:
-        bucket: newsblur_backups
+        bucket: newsblur-backups
         object: /static_py3.tgz
         dest: /srv/newsblur/static.tgz
         mode: get
