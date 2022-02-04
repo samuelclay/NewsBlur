@@ -38,6 +38,8 @@ DEBUG_QUERIES_SUMMARY_ONLY = True
 
 MEDIA_URL = '/media/'
 IMAGES_URL = '/imageproxy'
+# Uncomment below to debug iOS/Android widget
+# IMAGES_URL = 'https://haproxy/imageproxy'
 SECRET_KEY = 'YOUR SECRET KEY'
 AUTO_PREMIUM_NEW_USERS = True
 AUTO_ENABLE_NEW_USERS = True
@@ -68,9 +70,10 @@ OAUTH_SECRET = 'SECRET_KEY_FROM_GOOGLE'
 
 S3_ACCESS_KEY = 'XXX'
 S3_SECRET = 'SECRET'
-S3_BACKUP_BUCKET = 'newsblur_backups'
+S3_BACKUP_BUCKET = 'newsblur-backups'
 S3_PAGES_BUCKET_NAME = 'pages-XXX.newsblur.com'
 S3_ICONS_BUCKET_NAME = 'icons-XXX.newsblur.com'
+S3_AVATARS_BUCKET_NAME = 'avatars-XXX.newsblur.com'
 
 STRIPE_SECRET = "YOUR-SECRET-API-KEY"
 STRIPE_PUBLISHABLE = "YOUR-PUBLISHABLE-API-KEY"
@@ -165,13 +168,6 @@ if len(logging._handlerList) < 1:
                             format='%(asctime)-12s: %(message)s',
                             datefmt='%b %d %H:%M:%S',
                             handler=logging.StreamHandler)
-
-S3_ACCESS_KEY = '000000000000000000000'
-S3_SECRET = '000000000000000000000000/0000000000000000'
-S3_BACKUP_BUCKET = 'newsblur_backups'
-S3_PAGES_BUCKET_NAME = 'pages-dev.newsblur.com'
-S3_ICONS_BUCKET_NAME = 'icons-dev.newsblur.com'
-S3_AVATARS_BUCKET_NAME = 'avatars-dev.newsblur.com'
 
 MAILGUN_ACCESS_KEY = 'key-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 MAILGUN_SERVER_NAME = 'newsblur.com'
