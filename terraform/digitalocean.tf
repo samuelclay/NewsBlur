@@ -419,7 +419,7 @@ resource "digitalocean_droplet" "db-postgres" {
 # servers=$(for i in {1..9}; do echo -n "-target=\"digitalocean_droplet.db-mongo-primary[$i]\" " ; done); tf plan -refresh=false `eval echo $servers`
 # 
 resource "digitalocean_droplet" "db-mongo-primary" {
-  count    = 8
+  count    = 2
   backups  = true
   image    = var.droplet_os
   name     = "db-mongo-primary${count.index+2}"
@@ -427,8 +427,8 @@ resource "digitalocean_droplet" "db-mongo-primary" {
   size     = var.mongo_primary_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    # command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
-    command = "sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
+    # command = "sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
