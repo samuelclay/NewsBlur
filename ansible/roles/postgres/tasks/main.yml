@@ -91,10 +91,19 @@
       --hostname {{ ansible_hostname }} 
       newsblur/newsblur_python3 /srv/newsblur/utils/monitor_disk_usage.py $OUTPUT
 
+- name: Add postgres backup log
+  become: yes
+  file:
+    path: /var/log/postgres_backup.log
+    state: touch
+    mode: 0777
+    owner: 1000
+    group: 1001
+
 - name: Add postgres backup
   cron:
     name: postgres backup
     minute: "0"
     hour: "4"
-    job: /srv/newsblur/docker/postgres/backup_postgres.sh
+    job: /srv/newsblur/docker/postgres/backup_postgres.sh 1> /var/log/postgres_backup.log 2>&1
 
