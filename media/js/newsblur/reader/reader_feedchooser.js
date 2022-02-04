@@ -303,20 +303,23 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         shape: 'rect',
                         color: 'silver',
                         layout: 'horizontal',
-                        label: 'paypal',
-                        
+                        label: 'paypal',                        
                     },
             
                     createSubscription: function (data, actions) {
                         return actions.subscription.create({
-                            'plan_id': plan_id
+                            'plan_id': plan_id,
+                            'application_context': {
+                                shipping_preference: 'NO_SHIPPING'
+                            },
+                            'custom_id': NEWSBLUR.Globals.user_id
                         });
                     },
             
                     onApprove: function (data, actions) {
                         // Full available details
                         console.log('Paypal approve result', data.subscriptionID, JSON.stringify(data, null, 2));
-                        // actions.redirect(NEWSBLUR.URLs.paypal_return);
+                        actions.redirect(NEWSBLUR.URLs.paypal_return);
                     },
             
                     onError: function (err) {

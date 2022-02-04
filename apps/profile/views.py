@@ -259,7 +259,23 @@ def set_collapsed_folders(request):
     response = dict(code=code)
     return response
 
-@ajax_login_required
+def paypal_webhooks(request):
+    data = json.decode(request.body)
+    logging.user(request, f"{data}")
+    
+    if data['event_type'] == "BILLING.SUBSCRIPTION.CREATED":
+        user = User.objects.get(pk=int(data['resource']['custom_id']))
+        plan = Profile.paypal_plan_id_to_plan(data['resource']['plan_id'])
+        if plan == "premium":
+            user.profile.activate_premium()
+        elif plan == "archive":
+            user.profile.activate_archive()
+        user.profile.cancel_premium_stripe()
+    elif data['event_type'] == "":
+        pass
+    
+    return HttpResponse("OK")
+
 def paypal_form(request):
     domain = Site.objects.get_current().domain
     
