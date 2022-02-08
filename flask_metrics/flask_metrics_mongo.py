@@ -26,6 +26,8 @@ def objects():
         stats = connection.newsblur.command("dbstats")
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
+    except pymongo.errors.NotMasterError as e:
+        return Response(f"NotMaster error: {e}", 500)
     data = dict(objects=stats['objects'])
     formatted_data = {}
     for k, v in data.items():
@@ -77,6 +79,8 @@ def repl_set_lag():
         replication_lag = _get_max_replication_lag()
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
+    except pymongo.errors.NotMasterError as e:
+        return Response(f"NotMaster error: {e}", 500)
     
     formatted_data = {}
     for k, v in oplog_length.items():
@@ -99,6 +103,8 @@ def size():
         stats = connection.newsblur.command("dbstats")
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
+    except pymongo.errors.NotMasterError as e:
+        return Response(f"NotMaster error: {e}", 500)
     data = dict(size=stats['fsUsedSize'])
     formatted_data = {}
     for k, v in data.items():
@@ -119,6 +125,8 @@ def ops():
         status = connection.admin.command('serverStatus')
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
+    except pymongo.errors.NotMasterError as e:
+        return Response(f"NotMaster error: {e}", 500)
     data = dict(
         (q, status["opcounters"][q])
         for q in status['opcounters'].keys()
@@ -143,6 +151,8 @@ def page_faults():
         status = connection.admin.command('serverStatus')
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
+    except pymongo.errors.NotMasterError as e:
+        return Response(f"NotMaster error: {e}", 500)
     try:
         value = status['extra_info']['page_faults']
     except KeyError:
@@ -167,6 +177,8 @@ def page_queues():
         status = connection.admin.command('serverStatus')
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
+    except pymongo.errors.NotMasterError as e:
+        return Response(f"NotMaster error: {e}", 500)
     data = dict(
         (q, status["globalLock"]["currentQueue"][q])
         for q in ("readers", "writers")
