@@ -29,6 +29,7 @@ import logging
 import datetime
 import redis
 import sentry_sdk
+import paypalrestsdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
@@ -359,6 +360,7 @@ STRIPE_PUBLISHABLE = "YOUR-PUBLISHABLE-API-KEY"
 ZEBRA_ENABLE_APP = True
 
 PAYPAL_API_CLIENTID = "YOUR-PAYPAL-API-CLIENTID"
+PAYPAL_API_SECRET = "YOUR-PAYPAL-API-SECRET"
 
 # ==========
 # = Celery =
@@ -865,6 +867,12 @@ PIPELINE = {
         },
     }
 }
+
+paypalrestsdk.configure({
+    "mode": "sandbox" if DEBUG else "live",
+    "client_id": PAYPAL_API_CLIENTID,
+    "client_secret": PAYPAL_API_SECRET
+})
 
 # =======
 # = AWS =

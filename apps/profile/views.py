@@ -261,10 +261,12 @@ def set_collapsed_folders(request):
 
 def paypal_webhooks(request):
     data = json.decode(request.body)
-    logging.user(request, f"{data}")
+    logging.user(request, f" ---> {data['event_type']}: {data}")
     
     if data['event_type'] == "BILLING.SUBSCRIPTION.CREATED":
         user = User.objects.get(pk=int(data['resource']['custom_id']))
+        user.profile.paypal_sub_id = data['resource']['id']
+        user.profile.save()
         plan = Profile.paypal_plan_id_to_plan(data['resource']['plan_id'])
         if plan == "premium":
             user.profile.activate_premium()
