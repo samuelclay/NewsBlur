@@ -17,6 +17,9 @@ IGNORE_HOSTS = [
     'app-push',
 ]
 
+# Use this to count the number of times each user shows up in the logs. Good for finding abusive accounts.
+# tail -n20000 logs/newsblur.log | sed 's/\x1b\[[0-9;]*m//g' | sed -En 's/.*?[0-9]s\] \[([a-zA-Z0-9]+\*?)\].*/\1/p' | sort | uniq -c | sort
+
 def main(roles=None, command=None, path=None):
     delay = 1
 
