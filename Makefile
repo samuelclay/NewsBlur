@@ -36,6 +36,8 @@ coffee:
 	- coffee -c -w **/*.coffee
 migrations:
 	- docker exec -it newsblur_web ./manage.py makemigrations
+makemigration: migrations
+migration: migrations
 migrate:
 	- docker exec -it newsblur_web ./manage.py migrate
 shell:

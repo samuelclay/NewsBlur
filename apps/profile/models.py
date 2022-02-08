@@ -6,12 +6,14 @@ import hashlib
 import re
 import redis
 import uuid
+import paypalrestsdk
 import mongoengine as mongo
 from django.db import models
 from django.db import IntegrityError
 from django.db.utils import DatabaseError
 from django.db.models.signals import post_save
 from django.db.models import Sum, Avg, Count
+from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -62,6 +64,8 @@ class Profile(models.Model):
     secret_token      = models.CharField(max_length=12, blank=True, null=True)
     stripe_4_digits   = models.CharField(max_length=4, blank=True, null=True)
     stripe_id         = models.CharField(max_length=24, blank=True, null=True)
+    paypal_sub_id     = models.CharField(max_length=24, blank=True, null=True)
+    # paypal_payer_id   = models.CharField(max_length=24, blank=True, null=True)
     premium_renewal   = models.BooleanField(default=False, blank=True, null=True)
     
     def __str__(self):
@@ -402,6 +406,7 @@ class Profile(models.Model):
         paypal_payments = []
         stripe_payments = []
         total_stripe_payments = 0
+        total_paypal_payments = 0
         active_plan = None
         premium_renewal = False
         existing_history = PaymentHistory.objects.filter(user=self.user, 
@@ -434,7 +439,41 @@ class Profile(models.Model):
                                           payment_date=payment.payment_date,
                                           payment_amount=payment.payment_gross,
                                           payment_provider='paypal')
-                
+        
+        # Find modern Paypal payments
+        self.retrieve_paypal_id()
+        if self.paypal_sub_id:
+            seen_payments = set()
+            paypalrestsdk.configure({
+                "mode": "sandbox" if settings.DEBUG else "live",
+                "client_id": settings.PAYPAL_API_CLIENTID,
+                "client_secret": settings.PAYPAL_API_SECRET
+            })
+            try:
+                paypal_subscription = paypalrestsdk.BillingAgreement.find(self.paypal_sub_id)
+            except paypalrestsdk.ResourceNotFound:
+                logging.user(self.user, f"~FRCouldn't find paypal payments: {self.paypal_sub_id}")
+                paypal_subscription = None                       
+
+            if paypal_subscription:
+                if paypal_subscription.state in ["APPROVAL_PENDING", "APPROVED", "ACTIVE"]:
+                    active_plan = paypal_subscription.plan_id
+                    premium_renewal = True
+
+                start_date = datetime.datetime(2009, 1, 1)
+                end_date = datetime.datetime.now()
+                transactions = paypal_subscription.search_transactions(start_date, end_date)
+                for transaction in transactions.agreement_transaction_list:
+                    created = dateutil.parser.parse(transaction.time)
+                    if transaction.status != 'COMPLETED': continue
+                    if created in seen_payments: continue
+                    seen_payments.add(created)
+                    total_paypal_payments += 1
+                    PaymentHistory.objects.get_or_create(user=self.user,
+                                                            payment_date=created,
+                                                            payment_amount=transaction.amount_with_breakdown.gross_amount.value,
+                                                            payment_provider='paypal')
+
         # Record Stripe payments
         if self.stripe_id:
             self.retrieve_stripe_ids()
@@ -510,6 +549,10 @@ class Profile(models.Model):
             self.activate_pro()
         elif (active_plan == Profile.plan_to_stripe_price('archive') and not self.is_archive):
             self.activate_archive()
+        elif (Profile.paypal_plan_id_to_plan(active_plan) == 'premium' and not self.is_premium):
+            self.activate_premium()
+        elif (Profile.paypal_plan_id_to_plan(active_plan) == 'archive' and not self.is_archive):
+            self.activate_archive()
         
     def preference_value(self, key, default=None):
         preferences = json.decode(self.preferences)
@@ -580,7 +623,7 @@ class Profile(models.Model):
             self.cancel_premium()
 
             paypal_opts = {
-                'API_ENVIRONMENT': 'PRODUCTION',
+                'API_ENVIRONMENT': 'SANDBOX',
                 'API_USERNAME': settings.PAYPAL_API_USERNAME,
                 'API_PASSWORD': settings.PAYPAL_API_PASSWORD,
                 'API_SIGNATURE': settings.PAYPAL_API_SIGNATURE,
@@ -688,6 +731,30 @@ class Profile(models.Model):
         self.user.stripe_ids.all().delete()
         for stripe_id in stripe_ids:
             self.user.stripe_ids.create(stripe_id=stripe_id)
+    
+    def retrieve_paypal_id(self):
+        if self.paypal_sub_id:
+            return
+        ipn = PayPalIPN.objects.filter(Q(custom=self.user.username) |
+                                        Q(payer_email=self.user.email) |
+                                        Q(custom=self.user.pk))
+        if not len(ipn):
+            return
+        self.paypal_sub_id = ipn[0].subscr_id
+        self.save()
+
+        # paypal_ids = set()
+        # for identifier in set([self.user.username, self.user.email, self.user.pk]):
+            
+        #     customers = stripe.Customer.list(email=email)
+        #     for customer in customers:
+        #         stripe_ids.add(customer.stripe_id)
+        
+        # self.user.paypal_ids.all().delete()
+        # for paypal_id in paypal_ids:
+        #     self.user.paypal_ids.create(paypal_sub_id=paypal_id)
+
+
         
     @property
     def latest_paypal_email(self):
@@ -1407,6 +1474,14 @@ class StripeIds(models.Model):
 
     def __str__(self):
         return "%s: %s" % (self.user.username, self.stripe_id)
+
+
+class PaypalIds(models.Model):
+    user = models.ForeignKey(User, related_name='paypal_ids', on_delete=models.CASCADE, null=True)
+    paypal_sub_id = models.CharField(max_length=24, blank=True, null=True)
+
+    def __str__(self):
+        return "%s: %s" % (self.user.username, self.paypal_sub_id)
 
         
 def create_profile(sender, instance, created, **kwargs):
