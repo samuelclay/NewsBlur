@@ -415,65 +415,44 @@ class Profile(models.Model):
             logging.user(self.user, "~BY~SN~FRDeleting~FW existing history: ~SB%s payments" % existing_history.count())
             existing_history.delete()
         
-        # Record Paypal payments
-        paypal_payments = PayPalIPN.objects.filter(custom=self.user.username,
-                                                   payment_status='Completed',
-                                                   txn_type='subscr_payment')
-        if not paypal_payments.count():
-            paypal_payments = PayPalIPN.objects.filter(payer_email=self.user.email,
-                                                       payment_status='Completed',
-                                                       txn_type='subscr_payment')
-        if alt_email and not paypal_payments.count():
-            paypal_payments = PayPalIPN.objects.filter(payer_email=alt_email,
-                                                       payment_status='Completed',
-                                                       txn_type='subscr_payment')
-            if paypal_payments.count():
-                # Make sure this doesn't happen again, so let's use Paypal's email.
-                self.user.email = alt_email
-                self.user.save()
-        seen_txn_ids = set()
-        for payment in paypal_payments:
-            if payment.txn_id in seen_txn_ids: continue
-            seen_txn_ids.add(payment.txn_id)
-            PaymentHistory.objects.create(user=self.user,
-                                          payment_date=payment.payment_date,
-                                          payment_amount=payment.payment_gross,
-                                          payment_provider='paypal')
-        
         # Find modern Paypal payments
-        self.retrieve_paypal_id()
+        self.retrieve_paypal_ids()
         if self.paypal_sub_id:
             seen_payments = set()
-            paypalrestsdk.configure({
+            paypal_api = paypalrestsdk.Api({
                 "mode": "sandbox" if settings.DEBUG else "live",
                 "client_id": settings.PAYPAL_API_CLIENTID,
                 "client_secret": settings.PAYPAL_API_SECRET
             })
             try:
-                paypal_subscription = paypalrestsdk.BillingAgreement.find(self.paypal_sub_id)
+                paypal_subscription = paypal_api.get(f'/v1/billing/subscriptions/{self.paypal_sub_id}')
             except paypalrestsdk.ResourceNotFound:
                 logging.user(self.user, f"~FRCouldn't find paypal payments: {self.paypal_sub_id}")
                 paypal_subscription = None                       
 
             if paypal_subscription:
-                if paypal_subscription.state in ["APPROVAL_PENDING", "APPROVED", "ACTIVE"]:
-                    active_plan = paypal_subscription.plan_id
+                from pprint import pprint
+                pprint(paypal_subscription)
+                if paypal_subscription['status'] in ["APPROVAL_PENDING", "APPROVED", "ACTIVE"]:
+                    active_plan = paypal_subscription['plan_id']
                     premium_renewal = True
 
-                start_date = datetime.datetime(2009, 1, 1)
-                end_date = datetime.datetime.now()
-                transactions = paypal_subscription.search_transactions(start_date, end_date)
-                for transaction in transactions.agreement_transaction_list:
-                    created = dateutil.parser.parse(transaction.time)
-                    if transaction.status != 'COMPLETED': continue
+                start_date = datetime.datetime(2009, 1, 1).strftime("%Y-%m-%dT%H:%M:%SZ")
+                end_date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+                transactions = paypal_api.get(f"/v1/billing/subscriptions/{self.paypal_sub_id}/transactions?start_time={start_date}&end_time={end_date}")
+                for transaction in transactions['transactions']:
+                    created = dateutil.parser.parse(transaction['time'])
+                    if transaction['status'] != 'COMPLETED': continue
                     if created in seen_payments: continue
                     seen_payments.add(created)
                     total_paypal_payments += 1
                     PaymentHistory.objects.get_or_create(user=self.user,
                                                             payment_date=created,
-                                                            payment_amount=transaction.amount_with_breakdown.gross_amount.value,
+                                                            payment_amount=int(float(transaction['amount_with_breakdown']['gross_amount']['value'])),
                                                             payment_provider='paypal')
-
+        else:
+            logging.user(self.user, "~FBNo Paypal payments")
+        
         # Record Stripe payments
         if self.stripe_id:
             self.retrieve_stripe_ids()
@@ -502,7 +481,9 @@ class Profile(models.Model):
                                                          payment_date=created,
                                                          payment_amount=payment.amount / 100.0,
                                                          payment_provider='stripe')
-        
+        else:
+            logging.user(self.user, "~FBNo Stripe payments")
+
         # Calculate payments in last year, then add together
         payment_history = PaymentHistory.objects.filter(user=self.user)
         last_year = datetime.datetime.now() - datetime.timedelta(days=364)
@@ -538,7 +519,7 @@ class Profile(models.Model):
             self.save()
         
         logging.user(self.user, "~BY~SN~FWFound ~SB~FB%s paypal~FW~SN and ~SB~FC%s stripe~FW~SN payments (~SB%s payments expire: ~SN~FB%s~FW)" % (
-                     len(paypal_payments), total_stripe_payments, len(payment_history), self.premium_expire))
+                     total_paypal_payments, total_stripe_payments, len(payment_history), self.premium_expire))
 
         if (set_premium_expire and not self.is_premium and
             (not self.premium_expire or self.premium_expire > datetime.datetime.now())):
@@ -732,29 +713,29 @@ class Profile(models.Model):
         for stripe_id in stripe_ids:
             self.user.stripe_ids.create(stripe_id=stripe_id)
     
-    def retrieve_paypal_id(self):
+    def retrieve_paypal_ids(self):
         if self.paypal_sub_id:
             return
-        ipn = PayPalIPN.objects.filter(Q(custom=self.user.username) |
+        
+        ipns = PayPalIPN.objects.filter(Q(custom=self.user.username) |
                                         Q(payer_email=self.user.email) |
-                                        Q(custom=self.user.pk))
-        if not len(ipn):
+                                        Q(custom=self.user.pk)).order_by('-payment_date')
+        if not len(ipns):
             return
-        self.paypal_sub_id = ipn[0].subscr_id
+        
+        self.paypal_sub_id = ipns[0].subscr_id
         self.save()
 
-        # paypal_ids = set()
-        # for identifier in set([self.user.username, self.user.email, self.user.pk]):
-            
-        #     customers = stripe.Customer.list(email=email)
-        #     for customer in customers:
-        #         stripe_ids.add(customer.stripe_id)
+        paypal_ids = set()
+        for ipn in ipns:
+            if not ipn.subscr_id: continue
+            paypal_ids.add(ipn.subscr_id)
         
-        # self.user.paypal_ids.all().delete()
-        # for paypal_id in paypal_ids:
-        #     self.user.paypal_ids.create(paypal_sub_id=paypal_id)
-
-
+        seen_paypal_ids = set(p.paypal_sub_id for p in self.user.paypal_ids.all())
+        for paypal_id in paypal_ids:
+            if paypal_id in seen_paypal_ids:
+                continue
+            self.user.paypal_ids.create(paypal_sub_id=paypal_id)
         
     @property
     def latest_paypal_email(self):
