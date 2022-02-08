@@ -224,9 +224,11 @@
 #   tags:
 #     - mongo-backup
 
-# Renaming a db-mongo3 to db-mongo2:
-#  - Change hostname to db-mongo2 on Digital Ocean (doctl)
-#  - Change hostname to db-mongo2 in /etc/hostname
+# Renaming a db-mongo-primary3 to db-mongo-primary2:
+#  - Change hostname to db-mongo-primary2 on Digital Ocean 
+#  -     make list; doctl compute droplet-action rename <id>  --droplet-name db-mongo-primary2
+#  - Change hostname to db-mongo-primary2 in /etc/hostname
+#  - make inventory
 #  - Symlink /mnt/mongo2 to /mnt/mongo3
 #  - tf state mv "digitalocean_droplet.db-mongo-primary[2]" "digitalocean_droplet.db-mongo-primary[1]"
 #  - tf state mv "digitalocean_volume.mongo_volume[2]" "digitalocean_volume.mongo_volume[1]"
