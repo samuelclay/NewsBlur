@@ -401,7 +401,23 @@ class Profile(models.Model):
         self.setup_premium_history()
         
         return True            
+    
+    def store_paypal_sub_id(self, paypal_sub_id):
+        if not paypal_sub_id:
+            logging.user(self.user, "~FBPaypal sub id not found, ignoring")
+            return
         
+        self.paypal_sub_id = paypal_sub_id
+        self.save()
+        
+        seen_paypal_ids = set(p.paypal_sub_id for p in self.user.paypal_ids.all())
+        if paypal_sub_id in seen_paypal_ids:
+            logging.user(self.user, f"~FBPaypal sub seen before, ignoring: {paypal_sub_id}")
+            return
+        
+        self.user.paypal_ids.create(paypal_sub_id=paypal_sub_id)
+        logging.user(self.user, f"~FBPaypal sub ~SBadded~SN: ~SB{paypal_sub_id}")
+
     def setup_premium_history(self, alt_email=None, set_premium_expire=True, force_expiration=False):
         paypal_payments = []
         stripe_payments = []
@@ -424,32 +440,32 @@ class Profile(models.Model):
                 "client_id": settings.PAYPAL_API_CLIENTID,
                 "client_secret": settings.PAYPAL_API_SECRET
             })
-            try:
-                paypal_subscription = paypal_api.get(f'/v1/billing/subscriptions/{self.paypal_sub_id}')
-            except paypalrestsdk.ResourceNotFound:
-                logging.user(self.user, f"~FRCouldn't find paypal payments: {self.paypal_sub_id}")
-                paypal_subscription = None                       
+            for paypal_id_model in self.user.paypal_ids.all():
+                paypal_id = paypal_id_model.paypal_sub_id            
+                try:
+                    paypal_subscription = paypal_api.get(f'/v1/billing/subscriptions/{paypal_id}')
+                except paypalrestsdk.ResourceNotFound:
+                    logging.user(self.user, f"~FRCouldn't find paypal payments: {paypal_id}")
+                    paypal_subscription = None                       
 
-            if paypal_subscription:
-                from pprint import pprint
-                pprint(paypal_subscription)
-                if paypal_subscription['status'] in ["APPROVAL_PENDING", "APPROVED", "ACTIVE"]:
-                    active_plan = paypal_subscription['plan_id']
-                    premium_renewal = True
+                if paypal_subscription:
+                    if paypal_subscription['status'] in ["APPROVAL_PENDING", "APPROVED", "ACTIVE"]:
+                        active_plan = paypal_subscription['plan_id']
+                        premium_renewal = True
 
-                start_date = datetime.datetime(2009, 1, 1).strftime("%Y-%m-%dT%H:%M:%SZ")
-                end_date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-                transactions = paypal_api.get(f"/v1/billing/subscriptions/{self.paypal_sub_id}/transactions?start_time={start_date}&end_time={end_date}")
-                for transaction in transactions['transactions']:
-                    created = dateutil.parser.parse(transaction['time'])
-                    if transaction['status'] != 'COMPLETED': continue
-                    if created in seen_payments: continue
-                    seen_payments.add(created)
-                    total_paypal_payments += 1
-                    PaymentHistory.objects.get_or_create(user=self.user,
-                                                            payment_date=created,
-                                                            payment_amount=int(float(transaction['amount_with_breakdown']['gross_amount']['value'])),
-                                                            payment_provider='paypal')
+                    start_date = datetime.datetime(2009, 1, 1).strftime("%Y-%m-%dT%H:%M:%SZ")
+                    end_date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+                    transactions = paypal_api.get(f"/v1/billing/subscriptions/{paypal_id}/transactions?start_time={start_date}&end_time={end_date}")
+                    for transaction in transactions['transactions']:
+                        created = dateutil.parser.parse(transaction['time'])
+                        if transaction['status'] != 'COMPLETED': continue
+                        if created in seen_payments: continue
+                        seen_payments.add(created)
+                        total_paypal_payments += 1
+                        PaymentHistory.objects.get_or_create(user=self.user,
+                                                                payment_date=created,
+                                                                payment_amount=int(float(transaction['amount_with_breakdown']['gross_amount']['value'])),
+                                                                payment_provider='paypal')
         else:
             logging.user(self.user, "~FBNo Paypal payments")
         
