@@ -1,6 +1,7 @@
 import stripe
 import requests
 import datetime
+import dateutil
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
@@ -261,7 +262,8 @@ def set_collapsed_folders(request):
 
 def paypal_webhooks(request):
     data = json.decode(request.body)
-    logging.user(request, f" ---> {data['event_type']}: {data}")
+    logging.user(request, f" ---> {data['event_type']}:")
+    from pprint import pprint; pprint(data)
     
     if data['event_type'] == "BILLING.SUBSCRIPTION.ACTIVATED":
         user = User.objects.get(pk=int(data['resource']['custom_id']))
@@ -275,7 +277,10 @@ def paypal_webhooks(request):
     elif data['event_type'] == "PAYMENT.SALE.COMPLETED":
         user = User.objects.get(pk=int(data['resource']['custom']))
         user.profile.setup_premium_history()
-    
+    elif data['event_type'] == "BILLING.SUBSCRIPTION.CANCELLED":
+        user = User.objects.get(pk=int(data['resource']['custom_id']))
+        user.profile.setup_premium_history()
+
     return HttpResponse("OK")
 
 def paypal_form(request):
@@ -595,6 +600,7 @@ def payment_history(request):
     
     next_invoice = None
     stripe_customer = user.profile.stripe_customer()
+    paypal_api = user.profile.paypal_api()
     if stripe_customer:
         try:
             invoice = stripe.Invoice.upcoming(customer=stripe_customer.id)
@@ -606,6 +612,12 @@ def payment_history(request):
                 break
         except stripe.error.InvalidRequestError:
             pass
+    
+    if paypal_api and not next_invoice and user.profile.premium_renewal:
+        next_invoice = dict(payment_date=history[0].payment_date+dateutil.relativedelta.relativedelta(years=1), 
+                            payment_amount=history[0].payment_amount,
+                            payment_provider="(scheduled)",
+                            scheduled=True)
     
     return {
         'is_premium': user.profile.is_premium,
