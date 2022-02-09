@@ -565,7 +565,13 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         window.location.href = "/profile/stripe_form?plan=" + this.plan + renew;
     },
     
-    open_stripe_checkout: function(plan) {
+    open_stripe_checkout: function (plan, $button) {
+        if ($button.hasClass('NB-disabled')) return;
+        $button.attr('disabled', 'disabled');
+        $button.removeClass('NB-modal-submit-red');
+        $button.text("Loading checkout...");
+        $button.addClass('NB-disabled').addClass('NB-modal-submit-grey').attr('disabled', true);
+
         $.redirectPost("/profile/switch_subscription", { "plan": plan });
     },
     
@@ -588,22 +594,22 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         
         $.targetIs(e, { tagSelector: '.NB-stripe-button-change' }, _.bind(function($t, $p) {
             e.preventDefault();
-            this.open_stripe_checkout('change');
+            this.open_stripe_checkout('change', $(".NB-stripe-button-change"));
         }, this));
         
         $.targetIs(e, { tagSelector: '.NB-stripe-button-premium' }, _.bind(function($t, $p) {
             e.preventDefault();
-            this.open_stripe_checkout('premium');
+            this.open_stripe_checkout('premium', $(".NB-stripe-button-premium"));
         }, this));
         
         $.targetIs(e, { tagSelector: '.NB-stripe-button-archive' }, _.bind(function($t, $p) {
             e.preventDefault();
-            this.open_stripe_checkout('archive');
+            this.open_stripe_checkout('archive', $(".NB-stripe-button-archive"));
         }, this));
         
         $.targetIs(e, { tagSelector: '.NB-stripe-button-pro' }, _.bind(function($t, $p) {
             e.preventDefault();
-            this.open_stripe_checkout('pro');
+            this.open_stripe_checkout('pro', $(".NB-stripe-button-pro"));
         }, this));
         
         $.targetIs(e, { tagSelector: '.NB-feedchooser-info-reset' }, _.bind(function($t, $p) {

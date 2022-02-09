@@ -435,18 +435,14 @@ class Profile(models.Model):
         self.retrieve_paypal_ids()
         if self.paypal_sub_id:
             seen_payments = set()
-            paypal_api = paypalrestsdk.Api({
-                "mode": "sandbox" if settings.DEBUG else "live",
-                "client_id": settings.PAYPAL_API_CLIENTID,
-                "client_secret": settings.PAYPAL_API_SECRET
-            })
+            paypal_api = self.paypal_api()
             for paypal_id_model in self.user.paypal_ids.all():
-                paypal_id = paypal_id_model.paypal_sub_id            
+                paypal_id = paypal_id_model.paypal_sub_id
                 try:
                     paypal_subscription = paypal_api.get(f'/v1/billing/subscriptions/{paypal_id}')
                 except paypalrestsdk.ResourceNotFound:
                     logging.user(self.user, f"~FRCouldn't find paypal payments: {paypal_id}")
-                    paypal_subscription = None                       
+                    paypal_subscription = None
 
                 if paypal_subscription:
                     if paypal_subscription['status'] in ["APPROVAL_PENDING", "APPROVED", "ACTIVE"]:
@@ -658,43 +654,37 @@ class Profile(models.Model):
         self.setup_premium_history()
         return stripe_cancel or paypal_cancel
     
-    def cancel_premium_paypal(self, second_most_recent_only=False):
-        transactions = PayPalIPN.objects.filter(custom=self.user.username,
-                                                txn_type='subscr_signup').order_by('-subscr_date')
-        
-        if not transactions:
+    def cancel_premium_paypal(self):
+        self.retrieve_paypal_ids()
+        if not self.paypal_sub_id:
+            logging.user(self.user, "~FRUser doesn't have a Paypal subscription, how did we get here?")
             return
-        
-        paypal_opts = {
-            'API_ENVIRONMENT': 'PRODUCTION',
-            'API_USERNAME': settings.PAYPAL_API_USERNAME,
-            'API_PASSWORD': settings.PAYPAL_API_PASSWORD,
-            'API_SIGNATURE': settings.PAYPAL_API_SIGNATURE,
-            'API_CA_CERTS': False,
-        }
-        paypal = PayPalInterface(**paypal_opts)
-        if second_most_recent_only:
-            # Check if user has an active subscription. If so, cancel it because a new one came in.
-            active_subscr_id = transactions[0].subscr_id
-            for t in transactions:
-                if t.subscr_id != active_subscr_id:
-                    transaction = t
-                    break
-            else:
-                return False
-        else:
-            transaction = transactions[0]
-        profileid = transaction.subscr_id
-        try:
-            paypal.manage_recurring_payments_profile_status(profileid=profileid, action='Cancel')
-        except PayPalAPIResponseError:
-            logging.user(self.user, "~FRUser ~SBalready~SN canceled Paypal subscription: %s" % profileid)
-        else:
-            if second_most_recent_only:
-                logging.user(self.user, "~FRCanceling ~BR~FWsecond-oldest~SB~FR Paypal subscription: %s" % profileid)
-            else:
-                logging.user(self.user, "~FRCanceling Paypal subscription: %s" % profileid)
-        
+        if not self.premium_renewal:
+            logging.user(self.user, "~FRUser ~SBalready~SN canceled Paypal subscription: %s" % self.paypal_sub_id)
+            return
+
+        paypal_api = self.paypal_api()
+        today = datetime.datetime.now().strftime('%B %d, %Y')
+        for paypal_id_model in self.user.paypal_ids.all():
+            paypal_id = paypal_id_model.paypal_sub_id
+            try:
+                paypal_subscription = paypal_api.get(f'/v1/billing/subscriptions/{paypal_id}')
+            except paypalrestsdk.ResourceNotFound:
+                logging.user(self.user, f"~FRCouldn't find paypal payments: {paypal_id}")
+                continue
+            if paypal_subscription['status'] not in ['ACTIVE', 'APPROVED', 'APPROVAL_PENDING']:
+                logging.user(self.user, "~FRUser ~SBalready~SN canceled Paypal subscription: %s" % paypal_id)
+                continue
+
+            url = f"/v1/billing/subscriptions/{paypal_id}/suspend"
+            response = paypal_api.post(url, {
+                'reason': f"Cancelled on {today}"
+            })
+            logging.user(self.user, f"response: {response}")
+            
+            logging.user(self.user, "~FRCanceling Paypal subscription: %s" % paypal_id)
+            return True
+
         return True
         
     def cancel_premium_stripe(self):
@@ -789,6 +779,15 @@ class Profile(models.Model):
             stripe.api_key = settings.STRIPE_SECRET
             stripe_customer = stripe.Customer.retrieve(self.stripe_id)
             return stripe_customer
+    
+    def paypal_api(self):
+        if self.paypal_sub_id:
+            api = paypalrestsdk.Api({
+                "mode": "sandbox" if settings.DEBUG else "live",
+                "client_id": settings.PAYPAL_API_CLIENTID,
+                "client_secret": settings.PAYPAL_API_SECRET
+            })
+            return api
     
     def activate_ios_premium(self, transaction_identifier=None, amount=36):
         payments = PaymentHistory.objects.filter(user=self.user,
@@ -1514,7 +1513,10 @@ def paypal_signup(sender, **kwargs):
         pass
     user.profile.activate_premium()
     user.profile.cancel_premium_stripe()
-    user.profile.cancel_premium_paypal(second_most_recent_only=True)
+    # user.profile.cancel_premium_paypal(second_most_recent_only=True)
+
+    # Shouldn't be here anymore as the new Paypal REST API uses webhooks
+    assert False
 valid_ipn_received.connect(paypal_signup)
 
 def paypal_payment_history_sync(sender, **kwargs):
