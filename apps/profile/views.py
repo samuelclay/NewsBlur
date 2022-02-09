@@ -263,7 +263,7 @@ def paypal_webhooks(request):
     data = json.decode(request.body)
     logging.user(request, f" ---> {data['event_type']}: {data}")
     
-    if data['event_type'] == "BILLING.SUBSCRIPTION.CREATED":
+    if data['event_type'] == "BILLING.SUBSCRIPTION.ACTIVATED":
         user = User.objects.get(pk=int(data['resource']['custom_id']))
         user.profile.store_paypal_sub_id(data['resource']['id'])
         plan = Profile.paypal_plan_id_to_plan(data['resource']['plan_id'])
@@ -272,8 +272,9 @@ def paypal_webhooks(request):
         elif plan == "archive":
             user.profile.activate_archive()
         user.profile.cancel_premium_stripe()
-    elif data['event_type'] == "":
-        pass
+    elif data['event_type'] == "PAYMENT.SALE.COMPLETED":
+        user = User.objects.get(pk=int(data['resource']['custom']))
+        user.profile.setup_premium_history()
     
     return HttpResponse("OK")
 

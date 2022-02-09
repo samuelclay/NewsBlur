@@ -456,6 +456,9 @@ class Profile(models.Model):
                     start_date = datetime.datetime(2009, 1, 1).strftime("%Y-%m-%dT%H:%M:%SZ")
                     end_date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
                     transactions = paypal_api.get(f"/v1/billing/subscriptions/{paypal_id}/transactions?start_time={start_date}&end_time={end_date}")
+                    if not 'transactions' in transactions:
+                        logging.user(self.user, f"~FRCouldn't find paypal transactions: {paypal_id}")
+                        continue
                     for transaction in transactions['transactions']:
                         created = dateutil.parser.parse(transaction['time'])
                         if transaction['status'] != 'COMPLETED': continue
