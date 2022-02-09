@@ -265,8 +265,7 @@ def paypal_webhooks(request):
     
     if data['event_type'] == "BILLING.SUBSCRIPTION.CREATED":
         user = User.objects.get(pk=int(data['resource']['custom_id']))
-        user.profile.paypal_sub_id = data['resource']['id']
-        user.profile.save()
+        user.profile.store_paypal_sub_id(data['resource']['id'])
         plan = Profile.paypal_plan_id_to_plan(data['resource']['plan_id'])
         if plan == "premium":
             user.profile.activate_premium()
