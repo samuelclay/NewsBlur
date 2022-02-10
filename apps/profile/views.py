@@ -645,15 +645,16 @@ def cancel_premium(request):
 def refund_premium(request):
     user_id = request.POST.get('user_id')
     partial = request.POST.get('partial', False)
+    provider = request.POST.get('provider', None)
     user = User.objects.get(pk=user_id)
     try:
-        refunded = user.profile.refund_premium(partial=partial)
+        refunded = user.profile.refund_premium(partial=partial, provider=provider)
     except stripe.error.InvalidRequestError as e:
         refunded = e
     except PayPalAPIResponseError as e:
         refunded = e
 
-    return {'code': 1 if refunded else -1, 'refunded': refunded}
+    return {'code': 1 if type(refunded) == int else -1, 'refunded': refunded}
 
 @staff_member_required
 @ajax_login_required

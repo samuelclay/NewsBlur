@@ -7099,6 +7099,7 @@ form.opml_import_form input {
 .NB-module-account-subscription .NB-module-stats-count-description {
     color: #0D003C;
     margin-bottom: 4px;
+    padding: 0 8px;
 }
 
 .NB-module-stats-count-graph {
