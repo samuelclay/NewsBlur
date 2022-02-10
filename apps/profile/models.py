@@ -600,52 +600,85 @@ class Profile(models.Model):
 
         return ','.join(failed)
         
-    def refund_premium(self, partial=False):
+    def refund_premium(self, partial=False, provider=None):
         refunded = False
-        
-        if self.stripe_id:
-            stripe.api_key = settings.STRIPE_SECRET
-            stripe_customer = stripe.Customer.retrieve(self.stripe_id)
-            stripe_payments = stripe.Charge.list(customer=stripe_customer.id).data
-            if partial:
-                stripe_payments[0].refund(amount=1200)
-                refunded = 12
-            else:
-                stripe_payments[0].refund()
-                self.cancel_premium()
-                refunded = stripe_payments[0].amount/100
-            logging.user(self.user, "~FRRefunding stripe payment: $%s" % refunded)
+        if provider == "paypal":
+            refunded = self.refund_latest_paypal_payment(partial=partial)
+        elif provider == "stripe":
+            refunded = self.refund_latest_stripe_payment(partial=partial)
         else:
-            self.cancel_premium()
-
-            paypal_opts = {
-                'API_ENVIRONMENT': 'SANDBOX',
-                'API_USERNAME': settings.PAYPAL_API_USERNAME,
-                'API_PASSWORD': settings.PAYPAL_API_PASSWORD,
-                'API_SIGNATURE': settings.PAYPAL_API_SIGNATURE,
-                'API_CA_CERTS': False,
-            }
-            paypal = PayPalInterface(**paypal_opts)
-            transactions = PayPalIPN.objects.filter(custom=self.user.username,
-                                                    txn_type='subscr_payment'
-                                                    ).order_by('-payment_date')
-            if not transactions:
-                transactions = PayPalIPN.objects.filter(payer_email=self.user.email,
-                                                        txn_type='subscr_payment'
-                                                        ).order_by('-payment_date')
-            if transactions:
-                transaction = transactions[0]
-                refund = paypal.refund_transaction(transaction.txn_id)
-                try:
-                    refunded = int(float(refund.raw['TOTALREFUNDEDAMOUNT'][0]))
-                except KeyError:
-                    refunded = int(transaction.payment_gross)
-                logging.user(self.user, "~FRRefunding paypal payment: $%s" % refunded)
-            else:
-                logging.user(self.user, "~FRCouldn't refund paypal payment: not found by username or email")
-                refunded = 0
+            # Find last payment, refund that
+            payment_history = PaymentHistory.objects.filter(user=self.user, 
+                                                            payment_provider__in=['paypal', 'stripe'])
+            if payment_history.count():
+                provider = payment_history[0].payment_provider
+                if provider == "stripe":
+                    refunded = self.refund_latest_stripe_payment(partial=partial)
+                elif provider == "paypal":
+                    refunded = self.refund_latest_paypal_payment(partial=partial)
                     
+        return refunded
+    
+    def refund_latest_stripe_payment(self, partial=False):
+        refunded = False
+        if not self.stripe_id:
+            return
         
+        stripe.api_key = settings.STRIPE_SECRET
+        stripe_customer = stripe.Customer.retrieve(self.stripe_id)
+        stripe_payments = stripe.Charge.list(customer=stripe_customer.id).data
+        if partial:
+            stripe_payments[0].refund(amount=1200)
+            refunded = 12
+        else:
+            stripe_payments[0].refund()
+            self.cancel_premium_stripe()
+            refunded = stripe_payments[0].amount/100
+        
+        logging.user(self.user, "~FRRefunding stripe payment: $%s" % refunded)
+        return refunded
+    
+    def refund_latest_paypal_payment(self, partial=False):
+        if not self.paypal_sub_id: 
+            return
+        
+        paypal_api = self.paypal_api()
+        refunded = False
+
+        # Find transaction from subscription
+        now = datetime.datetime.now()
+        # 200 days captures Paypal's 180 day limit on refunds
+        start_date = (now-datetime.timedelta(days=200)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        end_date = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+        try:
+            transactions = paypal_api.get(f"/v1/billing/subscriptions/{self.paypal_sub_id}/transactions?start_time={start_date}&end_time={end_date}")
+        except paypalrestsdk.ResourceNotFound:
+            transactions = {}
+        if 'transactions' not in transactions or not len(transactions['transactions']):
+            logging.user(self.user, f"~FRCouldn't find paypal transactions: {self.paypal_sub_id} {transactions}")
+            return
+        
+        # Refund the latest transaction
+        transaction = transactions['transactions'][0]
+        today = datetime.datetime.now().strftime('%B %d, %Y')
+        url = f"/v2/payments/captures/{transaction['id']}/refund"
+        try:
+            response = paypal_api.post(url, {
+                'reason': f"Refunded on {today}"
+            })
+        except paypalrestsdk.exceptions.ResourceInvalid as e:
+            response = e.response.json()
+            if len(response.get('details', [])):
+                response = response['details'][0]['description']
+        if 'status' in response and response['status'] == "COMPLETED":
+            refunded = int(float(transaction['amount_with_breakdown']['gross_amount']['value']))
+            logging.user(self.user, "~FRRefunding paypal payment: $%s" % refunded)
+        else:
+            logging.user(self.user, "~FRCouldn't refund paypal payment: %s" % response)
+            refunded = response
+
+        self.cancel_premium_paypal()
+                    
         return refunded
             
     def cancel_premium(self):
@@ -680,7 +713,7 @@ class Profile(models.Model):
             response = paypal_api.post(url, {
                 'reason': f"Cancelled on {today}"
             })
-            logging.user(self.user, f"response: {response}")
+            # logging.user(self.user, f"response: {response}")
             
             logging.user(self.user, "~FRCanceling Paypal subscription: %s" % paypal_id)
             return True

@@ -84,10 +84,20 @@ keys:
 	- openssl dhparam -out config/certificates/dhparam-2048.pem 2048
 	- openssl req -x509 -nodes -new -sha256 -days 1024 -newkey rsa:2048 -keyout config/certificates/RootCA.key -out config/certificates/RootCA.pem -subj "/C=US/CN=Example-Root-CA"
 	- openssl x509 -outform pem -in config/certificates/RootCA.pem -out config/certificates/RootCA.crt
-	- openssl req -new -nodes -newkey rsa:2048 -keyout config/certificates/localhost.key -out config/certificates/localhost.csr -subj "/C=US/ST=YourState/L=YourCity/O=Example-Certificates/CN=localhost.local"
+	- openssl req -new -nodes -newkey rsa:2048 -keyout config/certificates/localhost.key -out config/certificates/localhost.csr -subj "/C=US/ST=YourState/L=YourCity/O=Example-Certificates/CN=localhost"
 	- openssl x509 -req -sha256 -days 1024 -in config/certificates/localhost.csr -CA config/certificates/RootCA.pem -CAkey config/certificates/RootCA.key -CAcreateserial -out config/certificates/localhost.crt
 	- cat config/certificates/localhost.crt config/certificates/localhost.key > config/certificates/localhost.pem
-	- /usr/bin/security add-trusted-cert -d -r trustAsRoot -k /Library/Keychains/System.keychain ./config/certificates/RootCA.crt
+	- sudo /usr/bin/security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./config/certificates/RootCA.crt
+
+# Doesn't work yet
+mkcert:
+	- mkdir config/mkcert
+	- docker run -v $(shell pwd)/config/mkcert:/root/.local/share/mkcert brunopadz/mkcert-docker:latest \
+		/bin/sh -c "mkcert -install && \
+		mkcert -cert-file /root/.local/share/mkcert/mkcert.pem \
+		-key-file /root/.local/share/mkcert/mkcert.key localhost"
+	- cat config/mkcert/rootCA.pem config/mkcert/rootCA-key.pem > config/certificates/localhost.pem
+	- sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./config/mkcert/rootCA.pem
 
 # Digital Ocean / Terraform
 list:
