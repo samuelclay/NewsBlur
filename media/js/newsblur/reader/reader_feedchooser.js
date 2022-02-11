@@ -196,7 +196,9 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         $.make('div', {
                             className: "NB-stripe-button NB-stripe-button-archive NB-modal-submit-button NB-modal-submit-green"
                         }, [
-                            "Upgrade to Premium Archive"
+                            "Upgrade to ",
+                            $.make('br'),
+                            " Premium Archive"
                         ]),
                         $.make("div", { className: "NB-paypal-option" }, [
                             "or use ",
