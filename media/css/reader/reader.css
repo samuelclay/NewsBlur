@@ -10113,9 +10113,6 @@ form.opml_import_form input {
     padding-top: 12px;
     padding-bottom: 12px;
 }
-.NB-modal-feedchooser .NB-stripe-button-archive {
-    width: 240px;
-}
 .NB-modal-feedchooser .NB-paypal-option {
     float: left;
     margin: 12px 0 0 0;
