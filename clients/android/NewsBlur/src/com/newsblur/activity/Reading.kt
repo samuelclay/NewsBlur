@@ -59,6 +59,14 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
     private var overlayRangeBotPx = 0f
     private var lastVScrollPos = 0
 
+    // enabling multi window mode from recent apps on the device
+    // creates a different activity lifecycle compared to a device rotation
+    // resulting in onPause being called when the app is actually on the screen.
+    // calling onPause sets stopLoading as true and content wouldn't be loaded.
+    // track the multi window mode config change and skip stopLoading in first onPause call.
+    // refactor stopLoading mechanism as a cancellation signal tied to the view lifecycle.
+    private var isMultiWindowModeHack = false
+
     private val pageHistory = mutableListOf<Story>()
 
     private lateinit var volumeKeyNavigation: VolumeKeyNavigation
@@ -143,8 +151,17 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
     }
 
     override fun onPause() {
-        stopLoading = true
         super.onPause()
+        if (isMultiWindowModeHack) {
+            isMultiWindowModeHack = false
+        } else {
+            stopLoading = true
+        }
+    }
+
+    override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration?) {
+        super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig)
+        isMultiWindowModeHack = isInMultiWindowMode
     }
 
     private fun setupViews() {

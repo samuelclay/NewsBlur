@@ -18,7 +18,7 @@ class InitActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen().also {
-            it.setKeepVisibleCondition {
+            it.setKeepOnScreenCondition() {
                 // keep showing the splash screen until FeedUtils.offerInitContext(...)
                 // finishes and UI ready to display
                 FeedUtils.dbHelper != null || FeedUtils.thumbnailLoader != null
