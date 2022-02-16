@@ -409,7 +409,7 @@ class Profile(models.Model):
         
         self.setup_premium_history()
         
-        return True            
+        return True
     
     def switch_paypal_subscription(self, plan):
         paypal_api = self.paypal_api()
@@ -1682,15 +1682,19 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
     plan_id = full_json['data']['object']['plan']['id']
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
-        logging.user(profile.user, "~BC~SB~FBStripe subscription updated")
-        if plan_id == Profile.plan_to_stripe_price('premium'):
-            profile.activate_premium()
-        elif plan_id == Profile.plan_to_stripe_price('archive'):
-            profile.activate_premium(archive=True)
-        elif plan_id == Profile.plan_to_stripe_price('pro'):
-            profile.activate_premium(archive=True, pro=True)
-        profile.cancel_premium_paypal()
-        profile.retrieve_stripe_ids()
+        active = not full_json['data']['object']['cancel_at'] and full_json['data']['object']['plan']['active']
+        logging.user(profile.user, "~BC~SB~FBStripe subscription updated: %s" % "active" if active else "cancelled")
+        if active:
+            if plan_id == Profile.plan_to_stripe_price('premium'):
+                profile.activate_premium()
+            elif plan_id == Profile.plan_to_stripe_price('archive'):
+                profile.activate_premium(archive=True)
+            elif plan_id == Profile.plan_to_stripe_price('pro'):
+                profile.activate_premium(archive=True, pro=True)
+            profile.cancel_premium_paypal()
+            profile.retrieve_stripe_ids()
+        else:
+            profile.setup_premium_history()
     except Profile.DoesNotExist:
         return {"code": -1, "message": "User doesn't exist."}
 zebra_webhook_customer_subscription_updated.connect(stripe_subscription_updated)
