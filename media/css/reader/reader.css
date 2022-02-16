@@ -9685,7 +9685,7 @@ form.opml_import_form input {
 
 .NB-modal-feedchooser.NB-feedchooser-premium .NB-feedchooser-type {
     float: none;
-    width: 440px;
+    width: 96%;
     margin: 0 auto;
     padding: 0;
     border-left: none;
@@ -10105,26 +10105,29 @@ form.opml_import_form input {
     width: 128px;
     height: 96px;
 }
-.NB-modal-feedchooser .NB-stripe-button {
-    margin: 0 12px 24px 12px;
-    width: 180px;
+.NB-modal-feedchooser .NB-payment-providers {
+    margin: 0 24px 24px;
+}
+.NB-modal-feedchooser .NB-provider-button {
     text-align: center;
-    float: left;
+    flex-grow: 1;
     padding-top: 12px;
     padding-bottom: 12px;
 }
-.NB-modal-feedchooser .NB-paypal-option {
-    float: left;
-    margin: 12px 0 0 0;
-    font-size: 0.8em;
+.NB-modal-feedchooser .NB-alternate-provider {
+    font-size: 0.7em;
+    flex-grow: 1;
+    text-transform: uppercase;
+    text-align: center;
+    color: #838b82;
 }
 .NB-modal-feedchooser .NB-paypal-button {
-    display: inline-block;
-    vertical-align: middle;
-    max-width: 80px;
+    margin-top: 6px;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-upgrade {
     overflow: hidden;
+    display: flex;
+    align-items: center;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-already {
     margin: 0 24px 24px;
@@ -10135,14 +10138,26 @@ form.opml_import_form input {
     text-align: center;
     font-size: 0.8em;
     color: #354e35;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+.NB-modal-feedchooser .NB-feedchooser-or-bar {
+    flex-grow: 0;
+    width: 1px;
+    background-color:rgba(0, 0, 0, .1);
+    height: 64px;
+    margin: 0 24px;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-already-icon {
     background: transparent url('/media/embed/icons/circular/newuser_icn_setup.png') no-repeat center center;
     background-size: 28px;
     width: 36px; 
     height: 36px;
-    margin: -12px 8px;
-    display: inline-block;
+    margin: 0 8px;
+}
+.NB-modal-feedchooser .NB-feedchooser-premium-already-message {
+    flex-grow: 1;
 }
 /* ===================== */
 /* = Newsletters Modal = */

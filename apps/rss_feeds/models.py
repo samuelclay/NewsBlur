@@ -138,7 +138,7 @@ class Feed(models.Model):
     def favicon_url_fqdn(self):
         if settings.BACKED_BY_AWS['icons_on_s3'] and self.s3_icon:
             return self.favicon_url
-        return "http://%s%s" % (
+        return "https://%s%s" % (
             Site.objects.get_current().domain,
             self.favicon_url
         )

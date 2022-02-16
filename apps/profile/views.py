@@ -265,14 +265,16 @@ def paypal_webhooks(request):
     logging.user(request, f" ---> {data['event_type']}:")
     from pprint import pprint; pprint(data)
     
-    if data['event_type'] == "BILLING.SUBSCRIPTION.ACTIVATED":
+    if data['event_type'] in ["BILLING.SUBSCRIPTION.ACTIVATED", "BILLING.SUBSCRIPTION.UPDATED"]:
         user = User.objects.get(pk=int(data['resource']['custom_id']))
         user.profile.store_paypal_sub_id(data['resource']['id'])
-        plan = Profile.paypal_plan_id_to_plan(data['resource']['plan_id'])
-        if plan == "premium":
+        plan_id = data['resource']['plan_id']
+        if plan_id == Profile.plan_to_paypal_plan_id('premium'):
             user.profile.activate_premium()
-        elif plan == "archive":
+        elif plan_id == Profile.plan_to_paypal_plan_id('archive'):
             user.profile.activate_archive()
+        elif plan_id == Profile.plan_to_paypal_plan_id('pro'):
+            user.profile.activate_pro()
         user.profile.cancel_premium_stripe()
     elif data['event_type'] == "PAYMENT.SALE.COMPLETED":
         user = User.objects.get(pk=int(data['resource']['custom']))
@@ -499,15 +501,21 @@ def stripe_form(request):
 def switch_subscription(request):
     stripe.api_key = settings.STRIPE_SECRET
     plan = request.POST['plan']
-    if plan == "change":
+    if plan == "change_stripe":
         return stripe_checkout(request)
+    elif plan == "change_paypal":
+        paypal_url = request.user.profile.paypal_change_billing_details_url()
+        return HttpResponseRedirect(paypal_url)
     
-    switch_successful = request.user.profile.switch_subscription(plan)
+    switch_successful, approve_url = request.user.profile.switch_subscription(plan)
     
     logging.user(request, "~FCSwitching subscription to ~SB%s~SN~FC (%s)" %(
         plan,
         '~FGsucceeded~FC' if switch_successful else '~FRfailed~FC'
     ))
+    
+    if approve_url:
+        return HttpResponseRedirect(approve_url)
     
     if switch_successful:
         return HttpResponseRedirect(reverse('stripe-return'))
@@ -625,6 +633,7 @@ def payment_history(request):
         'is_pro': user.profile.is_pro,
         'premium_expire': user.profile.premium_expire,
         'premium_renewal': user.profile.premium_renewal,
+        'active_provider': user.profile.active_provider,
         'payments': history,
         'statistics': statistics,
         'next_invoice': next_invoice,
