@@ -380,13 +380,16 @@
             [self performSelector:@selector(delayedAddSite) withObject:nil afterDelay:0.0];
         } else if ([type isEqualToString:@"AllStories"]) {
             [self showFeedsListAnimated:NO];
-            [self.feedsViewController didSelectSectionHeaderWithTag:2];
+            [self.feedsViewController didSelectSectionHeaderWithTag:NewsBlurTopSectionAllStories];
         } else if ([type isEqualToString:@"Search"]) {
             [self showFeedsListAnimated:NO];
-            [self.feedsViewController didSelectSectionHeaderWithTag:2];
+            [self.feedsViewController didSelectSectionHeaderWithTag:NewsBlurTopSectionAllStories];
             self.feedDetailViewController.storiesCollection.searchQuery = @"";
             self.feedDetailViewController.storiesCollection.savedSearchQuery = nil;
             self.feedDetailViewController.storiesCollection.inSearch = YES;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                [self.feedDetailViewController.searchBar becomeFirstResponder];
+            });
         } else {
             handled = NO;
         }
