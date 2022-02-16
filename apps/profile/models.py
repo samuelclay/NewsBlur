@@ -52,7 +52,7 @@ class Profile(models.Model):
     view_settings     = models.TextField(default="{}")
     collapsed_folders = models.TextField(default="[]")
     feed_pane_size    = models.IntegerField(default=242)
-    days_of_unread    = models.IntegerField(default=settings.DAYS_OF_UNREAD)
+    days_of_unread    = models.IntegerField(default=settings.DAYS_OF_UNREAD, blank=True, null=True)
     tutorial_finished = models.BooleanField(default=False)
     hide_getting_started = models.BooleanField(default=False, null=True, blank=True)
     has_setup_feeds   = models.BooleanField(default=False, null=True, blank=True)
@@ -114,7 +114,8 @@ class Profile(models.Model):
     @property
     def unread_cutoff(self, force_premium=False, force_archive=False):
         if self.is_archive or force_archive:
-            return datetime.datetime.utcnow() - datetime.timedelta(days=self.days_of_unread)
+            days_of_unread = self.days_of_unread or settings.DAYS_OF_UNREAD
+            return datetime.datetime.utcnow() - datetime.timedelta(days=days_of_unread)
         if self.is_premium or force_premium:
             return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         
