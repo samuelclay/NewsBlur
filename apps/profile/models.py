@@ -150,8 +150,8 @@ class Profile(models.Model):
             self.secret_token = generate_secret_token(self.user.username, 12)
         try:
             super(Profile, self).save(*args, **kwargs)
-        except DatabaseError:
-            print(" ---> Profile not saved. Table isn't there yet.")
+        except DatabaseError as e:
+            print(f" ---> Profile not saved: {e}")
     
     def delete_user(self, confirm=False, fast=False):
         if not confirm:
