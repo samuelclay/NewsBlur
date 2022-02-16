@@ -312,6 +312,7 @@ def paypal_form(request):
     # Output the button.
     return HttpResponse(form.render(), content_type='text/html')
 
+@login_required
 def paypal_return(request):
 
     return render(request, 'reader/paypal_return.xhtml', {
@@ -526,20 +527,17 @@ def switch_paypal_subscription(request):
         paypal_url = request.user.profile.paypal_change_billing_details_url()
         return HttpResponseRedirect(paypal_url)
     
-    switch_successful, approve_url = request.user.profile.switch_paypal_subscription(plan)
+    approve_url = request.user.profile.switch_paypal_subscription_approval_url(plan)
     
     logging.user(request, "~FCSwitching subscription to ~SB%s~SN~FC (%s)" %(
         plan,
-        '~FGsucceeded~FC' if switch_successful else '~FRfailed~FC'
+        '~FGsucceeded~FC' if approve_url else '~FRfailed~FC'
     ))
     
     if approve_url:
         return HttpResponseRedirect(approve_url)
-    
-    if switch_successful:
-        return HttpResponseRedirect(reverse('paypal-return'))
-    
-    return stripe_checkout(request)
+
+    return HttpResponseRedirect(reverse('paypal-return'))
 
 @login_required
 def stripe_checkout(request):
@@ -640,7 +638,7 @@ def payment_history(request):
         except stripe.error.InvalidRequestError:
             pass
     
-    if paypal_api and not next_invoice and user.profile.premium_renewal:
+    if paypal_api and not next_invoice and user.profile.premium_renewal and len(history):
         next_invoice = dict(payment_date=history[0].payment_date+dateutil.relativedelta.relativedelta(years=1), 
                             payment_amount=history[0].payment_amount,
                             payment_provider="(scheduled)",
