@@ -1700,6 +1700,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         FolderTitleView *title = self.folderTitleViews[@(self.currentSection)];
         
         title.invisibleHeaderButton.backgroundColor = UIColorFromRGB(0x214607);
+        [title.invisibleHeaderButton setNeedsDisplay];
     }
 }
 
