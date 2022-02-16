@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='profile',
             name='days_of_unread',
-            field=models.IntegerField(default=30),
+            field=models.IntegerField(default=30, blank=True, null=True),
         ),
     ]
