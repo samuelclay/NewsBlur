@@ -29,7 +29,7 @@
       'is_staff'                : {{ user.is_staff|yesno:"true,false" }},
       'premium_expire'          : {% if user_profile.premium_expire %}new Date('{{ user_profile.premium_expire|date:"Y-m-d" }}'){% else %}null{% endif %},
       'premium_renewal'         : {{ user_profile.premium_renewal|yesno:"true,false" }},
-      'active_provider'         : "{{ user_profile.active_provider }}",
+      'active_provider'         : {% if user_profile.active_provider %}"{{ user_profile.active_provider }}"{% else %}null{% endif %},
       'secret_token'            : "{{ user_profile.secret_token }}",
       'username'                : "{{ user.username|safe }}",
       {% if user.pk %}'user_id'                 : {{ user.pk }},{% endif %}

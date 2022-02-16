@@ -10125,12 +10125,16 @@ form.opml_import_form input {
     margin-top: 6px;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-upgrade {
+    margin-top: 24px;
     overflow: hidden;
     display: flex;
     align-items: center;
 }
+.NB-modal-feedchooser .NB-feedchooser-premium-upgrade:first-child {
+    margin-top: 0;
+}
 .NB-modal-feedchooser .NB-feedchooser-premium-already {
-    margin: 0 24px 24px;
+    margin: 0 24px 0;
     padding: 16px 16px;
     border: 1px solid rgba(0, 0, 0, 0.1);
     background-color: rgb(244 251 232);
@@ -10141,6 +10145,12 @@ form.opml_import_form input {
     width: 100%;
     display: flex;
     align-items: center;
+}
+.NB-modal-feedchooser .NB-provider-note {
+    width: 100%;
+    font-size: 0.75em;
+    color: darkgray;
+    margin-top: 12px;
 }
 .NB-modal-feedchooser .NB-feedchooser-or-bar {
     flex-grow: 0;

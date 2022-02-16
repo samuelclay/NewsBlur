@@ -383,12 +383,6 @@ class Profile(models.Model):
     def paypal_change_billing_details_url(self):
         return "https://paypal.com"
         
-    def switch_subscription(self, plan):
-        if self.active_provider == "stripe":
-            return self.switch_stripe_subscription(plan)
-        elif self.active_provider == "paypal":
-            return self.switch_paypal_subscription(plan)
-    
     def switch_stripe_subscription(self, plan):
         stripe_customer = self.stripe_customer()
         if not stripe_customer:
@@ -574,7 +568,7 @@ class Profile(models.Model):
                 self.save()
 
         if self.premium_renewal != premium_renewal or self.active_provider != active_provider:
-            logging.user(self.user, "~FCTurning ~SB~%s~SN~FC premium renewal" % ("FRoff" if not premium_renewal else "FBon"))
+            logging.user(self.user, "~FCTurning ~SB~%s~SN~FC premium renewal (%s)" % ("FRoff" if not premium_renewal else "FBon", active_provider))
             self.premium_renewal = premium_renewal
             self.active_provider = active_provider
             self.save()
@@ -730,7 +724,7 @@ class Profile(models.Model):
     def cancel_premium(self):
         paypal_cancel = self.cancel_premium_paypal()
         stripe_cancel = self.cancel_premium_stripe()
-        self.setup_premium_history()
+        # self.setup_premium_history() # Don't bother, webhooks will force new history
         return stripe_cancel or paypal_cancel
     
     def cancel_premium_paypal(self):
@@ -771,15 +765,17 @@ class Profile(models.Model):
             return
             
         stripe.api_key = settings.STRIPE_SECRET
-        stripe_customer = stripe.Customer.retrieve(self.stripe_id)
-        try:
-            subscriptions = stripe.Subscription.list(customer=stripe_customer)
-            for subscription in subscriptions.data:
-                stripe.Subscription.modify(subscription['id'], cancel_at_period_end=True)
-                logging.user(self.user, "~FRCanceling Stripe subscription: %s" % subscription['id'])
-        except stripe.error.InvalidRequestError:
-            logging.user(self.user, "~FRFailed to cancel Stripe subscription")
-            return
+        for stripe_id_model in self.user.stripe_ids.all():
+            stripe_id = stripe_id_model.stripe_id
+            stripe_customer = stripe.Customer.retrieve(stripe_id)
+            try:
+                subscriptions = stripe.Subscription.list(customer=stripe_customer)
+                for subscription in subscriptions.data:
+                    stripe.Subscription.modify(subscription['id'], cancel_at_period_end=True)
+                    logging.user(self.user, "~FRCanceling Stripe subscription: %s" % subscription['id'])
+            except stripe.error.InvalidRequestError:
+                logging.user(self.user, "~FRFailed to cancel Stripe subscription: %s" % stripe_id)
+                continue
         
         return True
     
