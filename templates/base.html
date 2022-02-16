@@ -86,7 +86,7 @@
       'story_line_spacing'      : 'm',
       'hide_public_comments'    : false,
       'story_button_placement'  : "right",
-      'days_of_unread'          : {{ user_profile.days_of_unread }},
+      'days_of_unread'          : {% firstof user_profile.days_of_unread 30 %},
       'timezone'                : "{{ user_profile.timezone }}",
       'title_counts'            : true,
       'show_global_shared_stories': true,

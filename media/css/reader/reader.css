@@ -9833,9 +9833,12 @@ form.opml_import_form input {
 /*     -moz-box-shadow:0 2px 0 #1a5e0e;*/
 /*    box-shadow:0 2px 0 #1a5e0e;*/
 }
+.NB-modal-feedchooser .NB-creditcards {
+    width: 100%;
+}
 .NB-modal-feedchooser .NB-creditcards img {
-    width: 32px;
-    height: 20px;
+    width: 24px;
+    height: 18px;
     margin: 0 2px 0 0;
 }
 .NB-modal-feedchooser .NB-feedchooser-dollar {
@@ -10108,18 +10111,19 @@ form.opml_import_form input {
 .NB-modal-feedchooser .NB-payment-providers {
     margin: 0 24px 24px;
 }
-.NB-modal-feedchooser .NB-provider-button {
+.NB-modal-feedchooser .NB-provider-main,
+.NB-modal-feedchooser .NB-provider-alternate {
     text-align: center;
     flex-grow: 1;
+    width: 50%;
+    font-size: 0.7em;
+    text-transform: uppercase;
+    color: #838b82;
+}
+.NB-modal-feedchooser .NB-provider-main .NB-modal-submit-button,
+.NB-modal-feedchooser .NB-provider-alternate .NB-modal-submit-button {
     padding-top: 12px;
     padding-bottom: 12px;
-}
-.NB-modal-feedchooser .NB-alternate-provider {
-    font-size: 0.7em;
-    flex-grow: 1;
-    text-transform: uppercase;
-    text-align: center;
-    color: #838b82;
 }
 .NB-modal-feedchooser .NB-paypal-button {
     margin-top: 6px;

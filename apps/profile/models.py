@@ -254,7 +254,7 @@ class Profile(models.Model):
     
         UserSubscription.queue_new_feeds(self.user)
         
-        self.setup_premium_history()
+        # self.setup_premium_history() # Let's not call this unnecessarily
         
         if never_expire:
             self.premium_expire = None
@@ -412,7 +412,7 @@ class Profile(models.Model):
         
         return True
     
-    def switch_paypal_subscription(self, plan):
+    def switch_paypal_subscription_approval_url(self, plan):
         paypal_api = self.paypal_api()
         if not paypal_api:
             return
@@ -434,9 +434,9 @@ class Profile(models.Model):
             return
         logging.user(self.user, paypal_subscription)
         
-        for link in paypal_subscription['links']:
+        for link in paypal_subscription.get('links', []):
             if link['rel'] == 'approve':
-                return False, link['href']
+                return link['href']
         
         logging.user(self.user, f"~FRFailed to switch paypal subscription: ~FC{paypal_subscription}")
 
