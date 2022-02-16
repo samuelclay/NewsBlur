@@ -17,6 +17,7 @@ from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
 from django.urls import reverse
 from django.template.loader import render_to_string
@@ -67,6 +68,7 @@ class Profile(models.Model):
     paypal_sub_id     = models.CharField(max_length=24, blank=True, null=True)
     # paypal_payer_id   = models.CharField(max_length=24, blank=True, null=True)
     premium_renewal   = models.BooleanField(default=False, blank=True, null=True)
+    active_provider   = models.CharField(max_length=24, blank=True, null=True)
     
     def __str__(self):
         return "%s <%s>%s%s%s" % (
@@ -93,17 +95,21 @@ class Profile(models.Model):
         return price
     
     @classmethod
-    def paypal_plan_id_to_plan(cls, plan_id):
-        if settings.DEBUG:
-            if plan_id == "P-4RV31836YD8080909MHZROJY":
-                return "premium"
-            elif plan_id == "P-2EG40290653242115MHZROQQ":
-                return "archive"
-        else:
-            if plan_id == "P-48R22630SD810553FMHZONIY":
-                return "premium"
-            elif plan_id == "P-5JM46230U31841226MHZOMZY":
-                return "archive"
+    def plan_to_paypal_plan_id(cls, plan):
+        price = None
+        if plan == "premium":
+            price = "P-48R22630SD810553FMHZONIY"
+            if settings.DEBUG:
+                price = "P-4RV31836YD8080909MHZROJY"
+        elif plan == "archive":
+            price = "P-5JM46230U31841226MHZOMZY"
+            if settings.DEBUG:
+                price = "P-2EG40290653242115MHZROQQ"
+        # elif plan == "pro":
+        #     price = "price_0KK5cvwdsmP8XBlaZDq068bA"
+        #     if settings.DEBUG:
+        #         price = "price_0KK5twwdsmP8XBlasifbX56Z"
+        return price
 
     @property
     def unread_cutoff(self, force_premium=False, force_archive=False):
@@ -374,7 +380,16 @@ class Profile(models.Model):
         self.user.save()
         self.send_new_user_queue_email()
     
+    def paypal_change_billing_details_url(self):
+        return "https://paypal.com"
+        
     def switch_subscription(self, plan):
+        if self.active_provider == "stripe":
+            return self.switch_stripe_subscription(plan)
+        elif self.active_provider == "paypal":
+            return self.switch_paypal_subscription(plan)
+    
+    def switch_stripe_subscription(self, plan):
         stripe_customer = self.stripe_customer()
         if not stripe_customer:
             return
@@ -402,6 +417,34 @@ class Profile(models.Model):
         
         return True            
     
+    def switch_paypal_subscription(self, plan):
+        paypal_api = self.paypal_api()
+        if not paypal_api:
+            return
+        
+        try:
+            paypal_subscription = paypal_api.post(f'/v1/billing/subscriptions/{self.paypal_sub_id}/revise', {
+                'plan_id': Profile.plan_to_paypal_plan_id(plan),
+                'application_context': {
+                    'shipping_preference': 'NO_SHIPPING',
+                    'return_url': f"https://{Site.objects.get_current().domain}{reverse('paypal-return')}"
+                    # 'return_url': f"https://bb4a-71-233-245-159.ngrok.io{reverse('paypal-return')}"
+                },
+            })
+        except paypalrestsdk.ResourceNotFound:
+            logging.user(self.user, f"~FRCouldn't find paypal payments: {self.paypal_sub_id} {plan}")
+            paypal_subscription = None
+
+        if not paypal_subscription:
+            return
+        logging.user(self.user, paypal_subscription)
+        
+        for link in paypal_subscription['links']:
+            if link['rel'] == 'approve':
+                return False, link['href']
+        
+        logging.user(self.user, f"~FRFailed to switch paypal subscription: ~FC{paypal_subscription}")
+
     def store_paypal_sub_id(self, paypal_sub_id):
         if not paypal_sub_id:
             logging.user(self.user, "~FBPaypal sub id not found, ignoring")
@@ -419,12 +462,12 @@ class Profile(models.Model):
         logging.user(self.user, f"~FBPaypal sub ~SBadded~SN: ~SB{paypal_sub_id}")
 
     def setup_premium_history(self, alt_email=None, set_premium_expire=True, force_expiration=False):
-        paypal_payments = []
         stripe_payments = []
         total_stripe_payments = 0
         total_paypal_payments = 0
         active_plan = None
         premium_renewal = False
+        active_provider = None
         existing_history = PaymentHistory.objects.filter(user=self.user, 
                                                          payment_provider__in=['paypal', 'stripe'])
         if existing_history.count():
@@ -447,12 +490,13 @@ class Profile(models.Model):
                 if paypal_subscription:
                     if paypal_subscription['status'] in ["APPROVAL_PENDING", "APPROVED", "ACTIVE"]:
                         active_plan = paypal_subscription['plan_id']
+                        active_provider = "paypal"
                         premium_renewal = True
 
                     start_date = datetime.datetime(2009, 1, 1).strftime("%Y-%m-%dT%H:%M:%SZ")
                     end_date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
                     transactions = paypal_api.get(f"/v1/billing/subscriptions/{paypal_id}/transactions?start_time={start_date}&end_time={end_date}")
-                    if not 'transactions' in transactions:
+                    if 'transactions' not in transactions:
                         logging.user(self.user, f"~FRCouldn't find paypal transactions: {paypal_id}")
                         continue
                     for transaction in transactions['transactions']:
@@ -483,6 +527,7 @@ class Profile(models.Model):
                 for subscription in stripe_subscriptions:
                     if subscription.plan.active and not subscription.cancel_at:
                         active_plan = subscription.plan.id
+                        active_provider = "stripe"
                         premium_renewal = True
                         break
                             
@@ -528,9 +573,10 @@ class Profile(models.Model):
                 self.premium_expire = new_premium_expire
                 self.save()
 
-        if self.premium_renewal != premium_renewal:
+        if self.premium_renewal != premium_renewal or self.active_provider != active_provider:
             logging.user(self.user, "~FCTurning ~SB~%s~SN~FC premium renewal" % ("FRoff" if not premium_renewal else "FBon"))
             self.premium_renewal = premium_renewal
+            self.active_provider = active_provider
             self.save()
         
         logging.user(self.user, "~BY~SN~FWFound ~SB~FB%s paypal~FW~SN and ~SB~FC%s stripe~FW~SN payments (~SB%s payments expire: ~SN~FB%s~FW)" % (
@@ -545,9 +591,9 @@ class Profile(models.Model):
             self.activate_pro()
         elif (active_plan == Profile.plan_to_stripe_price('archive') and not self.is_archive):
             self.activate_archive()
-        elif (Profile.paypal_plan_id_to_plan(active_plan) == 'premium' and not self.is_premium):
+        elif (Profile.plan_to_paypal_plan_id('pro') == active_plan and not self.is_pro):
             self.activate_premium()
-        elif (Profile.paypal_plan_id_to_plan(active_plan) == 'archive' and not self.is_archive):
+        elif (Profile.plan_to_paypal_plan_id('archive') == active_plan and not self.is_archive):
             self.activate_archive()
         
     def preference_value(self, key, default=None):
