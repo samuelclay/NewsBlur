@@ -279,7 +279,7 @@ def paypal_webhooks(request):
     elif data['event_type'] == "PAYMENT.SALE.COMPLETED":
         user = User.objects.get(pk=int(data['resource']['custom']))
         user.profile.setup_premium_history()
-    elif data['event_type'] == "BILLING.SUBSCRIPTION.CANCELLED":
+    elif data['event_type'] in ["BILLING.SUBSCRIPTION.CANCELLED", "BILLING.SUBSCRIPTION.SUSPENDED"]:
         user = User.objects.get(pk=int(data['resource']['custom_id']))
         user.profile.setup_premium_history()
 
@@ -498,8 +498,7 @@ def stripe_form(request):
     )
 
 @login_required
-def switch_subscription(request):
-    stripe.api_key = settings.STRIPE_SECRET
+def switch_stripe_subscription(request):
     plan = request.POST['plan']
     if plan == "change_stripe":
         return stripe_checkout(request)
@@ -507,7 +506,27 @@ def switch_subscription(request):
         paypal_url = request.user.profile.paypal_change_billing_details_url()
         return HttpResponseRedirect(paypal_url)
     
-    switch_successful, approve_url = request.user.profile.switch_subscription(plan)
+    switch_successful = request.user.profile.switch_stripe_subscription(plan)
+    
+    logging.user(request, "~FCSwitching subscription to ~SB%s~SN~FC (%s)" %(
+        plan,
+        '~FGsucceeded~FC' if switch_successful else '~FRfailed~FC'
+    ))
+    
+    if switch_successful:
+        return HttpResponseRedirect(reverse('stripe-return'))
+    
+    return stripe_checkout(request)
+
+def switch_paypal_subscription(request):
+    plan = request.POST['plan']
+    if plan == "change_stripe":
+        return stripe_checkout(request)
+    elif plan == "change_paypal":
+        paypal_url = request.user.profile.paypal_change_billing_details_url()
+        return HttpResponseRedirect(paypal_url)
+    
+    switch_successful, approve_url = request.user.profile.switch_paypal_subscription(plan)
     
     logging.user(request, "~FCSwitching subscription to ~SB%s~SN~FC (%s)" %(
         plan,
@@ -518,7 +537,7 @@ def switch_subscription(request):
         return HttpResponseRedirect(approve_url)
     
     if switch_successful:
-        return HttpResponseRedirect(reverse('stripe-return'))
+        return HttpResponseRedirect(reverse('paypal-return'))
     
     return stripe_checkout(request)
 
@@ -528,7 +547,7 @@ def stripe_checkout(request):
     domain = Site.objects.get_current().domain
     plan = request.POST['plan']
     
-    if plan == "change":
+    if plan == "change_stripe":
         checkout_session = stripe.billing_portal.Session.create(
             customer=request.user.profile.stripe_id,
             return_url="http://%s%s?next=payments" % (domain, reverse('index')),

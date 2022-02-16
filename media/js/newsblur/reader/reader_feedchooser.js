@@ -202,7 +202,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         // ])
                     ]),
                     $.make('div', { className: 'NB-payment-providers' }, [
-                            (!NEWSBLUR.Globals.is_archive && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
+                        (!NEWSBLUR.Globals.is_archive && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
                             $.make('div', {
                                 className: "NB-provider-button NB-provider-button-archive NB-modal-submit-button NB-modal-submit-green"
                             }, [
@@ -216,6 +216,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                                 (NEWSBLUR.Globals.active_provider != "paypal" && $.make("div", { className: "NB-splash-link NB-paypal-button", "data-plan": "archive" }, "")),
                                 (NEWSBLUR.Globals.active_provider == "paypal" && $.make("div", { className: "NB-stripe-button-switch-archive NB-provider-button NB-modal-submit-button NB-modal-submit-green" }, "Switch to Credit Card"))
                             ])
+                            // $.make('div', { className: "NB-provider-note" }, "Note: Due to the intricacies of PayPal integration, you will be charged the full amount. If you switch to credit card, you will only be charged a prorated amount.")
                         ])),
                         (NEWSBLUR.Globals.is_archive && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
                             $.make('div', {
@@ -593,7 +594,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         $button.text("Loading checkout...");
         $button.addClass('NB-disabled').addClass('NB-modal-submit-grey').attr('disabled', true);
 
-        $.redirectPost("/profile/switch_subscription", { "plan": plan });
+        $.redirectPost("/profile/switch_stripe_subscription", { "plan": plan });
     },
     
     open_paypal_checkout: function (plan, $button) {
@@ -603,7 +604,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         $button.text("Loading PayPal...");
         $button.addClass('NB-disabled').addClass('NB-modal-submit-grey').attr('disabled', true);
 
-        $.redirectPost("/profile/switch_subscription", { "plan": plan });
+        $.redirectPost("/profile/switch_paypal_subscription", { "plan": plan });
     },
 
     // ===========
@@ -626,6 +627,11 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         $.targetIs(e, { tagSelector: '.NB-stripe-button-switch-premium' }, _.bind(function($t, $p) {
             e.preventDefault();
             this.open_stripe_checkout('premium', $t);
+        }, this));
+        
+        $.targetIs(e, { tagSelector: '.NB-stripe-button-switch-archive' }, _.bind(function($t, $p) {
+            e.preventDefault();
+            this.open_stripe_checkout('archive', $t);
         }, this));
         
         $.targetIs(e, { tagSelector: '.NB-paypal-button-archive' }, _.bind(function($t, $p) {
