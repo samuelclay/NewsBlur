@@ -196,21 +196,32 @@ public class FeedChooserAdapter extends BaseExpandableListAdapter {
 
     private Comparator<Feed> getListComparator() {
         return (o1, o2) -> {
+            // some feeds have missing data
+            if (o1.title == null) o1.title = "";
+            if (o2.title == null) o2.title = "";
             if (feedOrderFilter == FeedOrderFilter.NAME && listOrderFilter == ListOrderFilter.ASCENDING) {
                 return o1.title.compareTo(o2.title);
             } else if (feedOrderFilter == FeedOrderFilter.NAME && listOrderFilter == ListOrderFilter.DESCENDING) {
                 return o2.title.compareTo(o1.title);
-            } else if (feedOrderFilter == FeedOrderFilter.SUBSCRIBERS && listOrderFilter == ListOrderFilter.ASCENDING) {
+            } else if (o1.subscribers != null && o2.subscribers != null &&
+                    feedOrderFilter == FeedOrderFilter.SUBSCRIBERS &&
+                    listOrderFilter == ListOrderFilter.ASCENDING) {
                 return Integer.valueOf(o1.subscribers).compareTo(Integer.valueOf(o2.subscribers));
-            } else if (feedOrderFilter == FeedOrderFilter.SUBSCRIBERS && listOrderFilter == ListOrderFilter.DESCENDING) {
+            } else if (o1.subscribers != null && o2.subscribers != null &&
+                    feedOrderFilter == FeedOrderFilter.SUBSCRIBERS &&
+                    listOrderFilter == ListOrderFilter.DESCENDING) {
                 return Integer.valueOf(o2.subscribers).compareTo(Integer.valueOf(o1.subscribers));
             } else if (feedOrderFilter == FeedOrderFilter.OPENS && listOrderFilter == ListOrderFilter.ASCENDING) {
                 return Integer.compare(o1.feedOpens, o2.feedOpens);
             } else if (feedOrderFilter == FeedOrderFilter.OPENS && listOrderFilter == ListOrderFilter.DESCENDING) {
                 return Integer.compare(o2.feedOpens, o1.feedOpens);
-            } else if (feedOrderFilter == FeedOrderFilter.RECENT_STORY && listOrderFilter == ListOrderFilter.ASCENDING) {
+            } else if (o1.lastStoryDate != null && o2.lastStoryDate != null &&
+                    feedOrderFilter == FeedOrderFilter.RECENT_STORY &&
+                    listOrderFilter == ListOrderFilter.ASCENDING) {
                 return compareLastStoryDateTimes(o1.lastStoryDate, o2.lastStoryDate, listOrderFilter);
-            } else if (feedOrderFilter == FeedOrderFilter.RECENT_STORY && listOrderFilter == ListOrderFilter.DESCENDING) {
+            } else if (o1.lastStoryDate != null && o2.lastStoryDate != null &&
+                    feedOrderFilter == FeedOrderFilter.RECENT_STORY &&
+                    listOrderFilter == ListOrderFilter.DESCENDING) {
                 return compareLastStoryDateTimes(o1.lastStoryDate, o2.lastStoryDate, listOrderFilter);
             } else if (feedOrderFilter == FeedOrderFilter.STORIES_MONTH && listOrderFilter == ListOrderFilter.ASCENDING) {
                 return Integer.compare(o1.storiesPerMonth, o2.storiesPerMonth);
