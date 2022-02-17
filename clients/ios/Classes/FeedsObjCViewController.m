@@ -47,6 +47,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictSocialFeeds_;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictFeeds_;
 @property (readwrite) BOOL inPullToRefresh_;
+@property (nonatomic) NSDate *leftAppDate;
 @property (nonatomic, strong) NSMutableDictionary<NSIndexPath *, NSNumber *> *rowHeights;
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, FolderTitleView *> *folderTitleViews;
 
@@ -64,7 +65,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 @synthesize stillVisibleFeeds;
 @synthesize visibleFolders;
 @synthesize viewShowingAllFeeds;
-@synthesize lastUpdate;
 @synthesize imageCache;
 @synthesize currentRowAtIndexPath;
 @synthesize currentSection;
@@ -140,6 +140,12 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
      addObserver:self
      selector:@selector(returnToApp)
      name:UIApplicationWillEnterForegroundNotification
+     object:nil];
+    
+    [[NSNotificationCenter defaultCenter]
+     addObserver:self
+     selector:@selector(leavingApp)
+     name:UIApplicationWillResignActiveNotification
      object:nil];
     
     [[NSNotificationCenter defaultCenter]
@@ -491,13 +497,16 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 #pragma mark -
 #pragma mark Initialization
 
+- (void)leavingApp {
+    self.leftAppDate = [NSDate date];
+}
+
 - (void)returnToApp {
     NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(-1 * BACKGROUND_REFRESH_SECONDS)];
-    NSLog(@"Last Update: %@ - %f", self.lastUpdate, [self.lastUpdate timeIntervalSinceDate:decayDate]);
-    if ([self.lastUpdate timeIntervalSinceDate:decayDate] < 0) {
+    NSLog(@"Left app: %@ - %f", self.leftAppDate, [self.leftAppDate timeIntervalSinceDate:decayDate]);
+    if ([self.leftAppDate timeIntervalSinceDate:decayDate] < 0) {
         [appDelegate reloadFeedsView:YES];
     }
-    
 }
 
 -(void)fetchFeedList:(BOOL)showLoader {
@@ -524,7 +533,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self finishedWithError:error statusCode:httpResponse.statusCode];
     }];
 
-    self.lastUpdate = [NSDate date];
     if (showLoader) {
 //        [self.notifier hide];
     }
