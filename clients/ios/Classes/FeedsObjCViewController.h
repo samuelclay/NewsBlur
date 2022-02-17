@@ -42,7 +42,6 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
     BOOL isOffline;
     BOOL viewShowingAllFeeds;
     BOOL interactiveFeedDetailTransition;
-    NSDate *lastUpdate;
     NSCache *imageCache;
     
 	UITableView * feedTitlesTable;
@@ -80,7 +79,6 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 @property (nonatomic) UIRefreshControl *refreshControl;
 @property (nonatomic) UISearchBar *searchBar;
 @property (nonatomic, strong) NSArray<NSString *> *searchFeedIds;
-@property (nonatomic) NSDate *lastUpdate;
 @property (nonatomic) NSCache *imageCache;
 @property (nonatomic) IBOutlet UISegmentedControl * intelligenceControl;
 @property (nonatomic) NSIndexPath *currentRowAtIndexPath;
