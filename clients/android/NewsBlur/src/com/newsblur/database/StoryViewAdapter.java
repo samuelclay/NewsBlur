@@ -570,13 +570,6 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             vh.intelDot.setImageResource(android.R.color.transparent);
         }
 
-        // M text size equals to 1.0
-        if (textSize > 1.0) {
-            vh.storyTitleView.setMaxLines(3);
-        } else {
-            vh.storyTitleView.setMaxLines(2);
-        }
-
         vh.storyTitleView.setText(UIUtils.fromHtml(story.title));
         vh.storyDate.setText(StoryUtils.formatShortDate(context, story.timestamp));
 
@@ -659,6 +652,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private void bindRow(StoryRowViewHolder vh, int position, Story story) {
         StoryContentPreviewStyle storyContentPreviewStyle = PrefsUtils.getStoryContentPreviewStyle(context);
         if (storyContentPreviewStyle != StoryContentPreviewStyle.NONE) {
+            vh.storyTitleView.setMaxLines(3);
             if (storyContentPreviewStyle == StoryContentPreviewStyle.LARGE) {
                 vh.storySnippet.setMaxLines(6);
             } else if (storyContentPreviewStyle == StoryContentPreviewStyle.MEDIUM) {
@@ -669,6 +663,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             vh.storySnippet.setVisibility(View.VISIBLE);
             vh.storySnippet.setText(story.shortContent);
         } else {
+            vh.storyTitleView.setMaxLines(6);
             vh.storySnippet.setVisibility(View.GONE);
         }
 
