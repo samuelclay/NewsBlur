@@ -220,15 +220,15 @@ class Profile(models.Model):
         logging.user(self.user, "Deleting user: %s" % self.user)
         self.user.delete()
     
-    def activate_premium(self, never_expire=False, archive=False, pro=False):
+    def activate_premium(self, never_expire=False):
         from apps.profile.tasks import EmailNewPremium
         
         EmailNewPremium.delay(user_id=self.user.pk)
         
         was_premium = self.is_premium
         self.is_premium = True
-        self.is_archive = archive
-        self.is_pro = pro
+        self.is_archive = False
+        self.is_pro = False
         self.save()
         self.user.is_active = True
         self.user.save()
@@ -1669,9 +1669,9 @@ def stripe_signup(sender, full_json, **kwargs):
         if plan_id == Profile.plan_to_stripe_price('premium'):
             profile.activate_premium()
         elif plan_id == Profile.plan_to_stripe_price('archive'):
-            profile.activate_premium(archive=True)
+            profile.activate_archive()
         elif plan_id == Profile.plan_to_stripe_price('pro'):
-            profile.activate_premium(archive=True, pro=True)
+            profile.activate_pro()
         profile.cancel_premium_paypal()
         profile.retrieve_stripe_ids()
     except Profile.DoesNotExist:
@@ -1689,9 +1689,9 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
             if plan_id == Profile.plan_to_stripe_price('premium'):
                 profile.activate_premium()
             elif plan_id == Profile.plan_to_stripe_price('archive'):
-                profile.activate_premium(archive=True)
+                profile.activate_archive()
             elif plan_id == Profile.plan_to_stripe_price('pro'):
-                profile.activate_premium(archive=True, pro=True)
+                profile.activate_pro()
             profile.cancel_premium_paypal()
             profile.retrieve_stripe_ids()
         else:
