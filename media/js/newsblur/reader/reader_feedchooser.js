@@ -111,13 +111,13 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         $.make('li', { className: 'NB-8' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
                             'Text view conveniently extracts the story'
+                        ]),
+                        $.make('li', { className: 'NB-9' }, [
+                          $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                          'You feed Lyric, NewsBlur\'s resident hound dog, for ',
+                          $.make('span', { className: 'NB-feedchooser-hungry-dog' }, '6 days'),
+                          $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/lyric.jpg' })
                         ])
-                        // $.make('li', { className: 'NB-9' }, [
-                        //   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                        //   'You feed Lyric, my poor, hungry dog, for ',
-                        //   $.make('span', { className: 'NB-feedchooser-hungry-dog' }, '6 days'),
-                        //   $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/lyric.jpg' })
-                        // ])
                     ]),
                     $.make('div', { className: 'NB-payment-providers' }, [
                         (!NEWSBLUR.Globals.is_premium && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
@@ -191,30 +191,28 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                     $.make('ul', { className: 'NB-feedchooser-premium-bullets' }, [
                         $.make('li', { className: 'NB-1' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                            'Everything in the premium subscription'
-                        ]),
-                        $.make('li', { className: 'NB-1' }, [
-                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                            'Stories can stay unread forever'
+                            'Everything in the premium subscription, of course'
                         ]),
                         $.make('li', { className: 'NB-2' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                            'All stories are stored forever'
-                        ]),
-                        $.make('li', { className: 'NB-1' }, [
-                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                            'Choose when stories are automatically marked as read'
+                            'Stories can stay unread for however long you choose'
                         ]),
                         $.make('li', { className: 'NB-3' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                            'Export stories from any folder as RSS feeds'
+                            'Every story from every site is archived forever'
+                        ]),
+                        $.make('li', { className: 'NB-4' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'Feeds that support paging are back-filled in for a complete archive'
+                        ]),
+                        $.make('li', { className: 'NB-6' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'Export trained stories from folders as RSS feeds'
+                        ]),
+                        $.make('li', { className: 'NB-5' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'Choose when stories are automatically marked as read'
                         ])
-                        // $.make('li', { className: 'NB-9' }, [
-                        //   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                        //   'You feed Lyric, my poor, hungry dog, for ',
-                        //   $.make('span', { className: 'NB-feedchooser-hungry-dog' }, '6 days'),
-                        //   $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/lyric.jpg' })
-                        // ])
                     ]),
                     $.make('div', { className: 'NB-payment-providers' }, [
                         (!NEWSBLUR.Globals.is_archive && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
