@@ -3019,7 +3019,7 @@ body {
         rgb(76,76,76) 36%,
         rgb(55,55,55) 84%
     );
-    padding: 2px 200px 2px 28px;
+    padding: 2px 236px 2px 28px;
     position: sticky;
     top: -1px;
     border-bottom: 1px solid #000;
@@ -3042,15 +3042,25 @@ body {
     padding: 2px 0;
     color: white;
     font-size: 13px;
+    position: relative;
 }
 .NB-inverse .NB-feed-story-feed {
     color: black;
 }
 
+.NB-pref-story-position-center .NB-feed-story-feed {
+    margin: 0 auto;
+    width: 700px;
+}
+.NB-pref-story-position-right .NB-feed-story-feed {
+    margin: 0 0 0 auto;
+    width: 700px;
+}
+
 .NB-feed-story-feed .feed_favicon {
     position: absolute;
-    left: 6px;
-    top: 5px;
+    left: -22px;
+    top: 3px;
     width: 16px;
     height: 16px;
 }
