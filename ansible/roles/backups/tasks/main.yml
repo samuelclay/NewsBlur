@@ -17,14 +17,14 @@
   - name: Set backup vars
     set_fact:
       redis_story_filename: backup_redis_story_2021-04-13-04-00.rdb.gz
-      postgres_filename: backup_postgresql_2022-01-06-19-46.sql.gz
+      postgres_filename: backup_postgresql_2022-02-03-04-00.sql.gz
       mongo_filename: backup_mongo_2021-03-15-04-00.tgz
       redis_filename: backup_redis_2021-03-15-04-00.rdb.gz
     tags: never, restore_postgres, restore_mongo, restore_redis, restore_redis_story
 
   - name: Download archives
     amazon.aws.aws_s3:
-      bucket: newsblur_backups
+      bucket: "newsblur-backups"
       object: "{{ item.dir }}{{ item.file }}"
       dest: "/srv/newsblur/backups/{{ item.file }}"
       mode: get

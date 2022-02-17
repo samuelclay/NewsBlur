@@ -36,22 +36,6 @@ NEWSBLUR.log = function(msg) {
 (function($) {
 
     $.fn.extend({
-        
-        textNodes: function() {
-            var ret = [];
-
-            (function(el){
-                if (!el) return;
-                if ((el.nodeType == 3)) {
-                    ret.push(el);
-                } else {
-                    for (var i=0; i < el.childNodes.length; ++i) {
-                        arguments.callee(el.childNodes[i]);
-                    }
-                }
-            })(this[0]);
-            return $(ret);
-        },
     
         isScrollVisible: function($elem, partial) {
             var docViewTop = 0; // $(this).scrollTop();

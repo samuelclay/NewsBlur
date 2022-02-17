@@ -7,6 +7,7 @@ import re
 
 from django.conf import settings
 from django.db import models
+from django.urls import reverse
 import hashlib
 
 from apps.push import signals
@@ -42,13 +43,9 @@ class PushSubscriptionManager(models.Manager):
         subscription.save()
         
         if callback is None:
-            # try:
-            #     callback_path = reverse('push-callback', args=(subscription.pk,))
-            # except Resolver404:
-            #     raise TypeError('callback cannot be None if there is not a reverable URL')
-            # else:
-            #     # callback = 'http://' + Site.objects.get_current() + callback_path
-            callback = "https://push.newsblur.com/push/%s" % subscription.pk # + callback_path
+            callback_path = reverse('push-callback', args=(subscription.pk,))
+            callback = 'https://' + settings.PUSH_DOMAIN + callback_path
+            # callback = "https://push.newsblur.com/push/%s" % subscription.pk # + callback_path
 
         try:
             response = self._send_request(hub, {

@@ -329,7 +329,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         
         var $feed_scroll = NEWSBLUR.reader.$s.$feed_scroll;
         this.$('.NB-end-line').remove();
-        var $endline = $.make('div', { className: "NB-end-line NB-short" });
+        var $endline = $.make('div', { className: "NB-end-line NB-load-line NB-short" });
         $endline.css({'background': '#FFF'});
         $feed_scroll.append($endline);
     },

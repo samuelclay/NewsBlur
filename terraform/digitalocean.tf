@@ -46,10 +46,11 @@ resource "digitalocean_droplet" "db-consul" {
 }
 
 resource "digitalocean_droplet" "www" {
+  count    = 2
   image    = var.droplet_os
-  name     = "www"
+  name     = "www${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -67,7 +68,7 @@ resource "digitalocean_droplet" "app-django" {
   image    = var.droplet_os
   name     = "app-django${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.droplet_size_10
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -121,7 +122,7 @@ resource "digitalocean_droplet" "app-refresh" {
   image    = var.droplet_os
   name     = "app-refresh${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.droplet_size_10
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -419,16 +420,16 @@ resource "digitalocean_droplet" "db-postgres" {
 # servers=$(for i in {1..9}; do echo -n "-target=\"digitalocean_droplet.db-mongo-primary[$i]\" " ; done); tf plan -refresh=false `eval echo $servers`
 # 
 resource "digitalocean_droplet" "db-mongo-primary" {
-  count    = 1
+  count    = 2
   backups  = true
   image    = var.droplet_os
   name     = "db-mongo-primary${count.index+2}"
   region   = var.droplet_region
-  size     = var.mongo_primary_droplet_size
+  size     = contains([0], count.index) ? "so1_5-2vcpu-16gb" : var.mongo_primary_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
-    # command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
-    command = "sleep 120"
+    command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
+    # command = "sleep 120"
   }
   provisioner "local-exec" {
     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
@@ -467,18 +468,18 @@ resource "digitalocean_droplet" "db-mongo-secondary" {
 }
 
 resource "digitalocean_volume" "mongo_analytics_volume" {
-  count                   = 2
+  count                   = 1
   region                  = "nyc1"
-  name                    = "mongoanalytics${count.index==0 ? "" : count.index+1}"
+  name                    = "mongoanalytics${count.index+2}"
   size                    = 100
   initial_filesystem_type = "xfs"
   description             = "Storage for NewsBlur MongoDB Analytics"
 }
 
 resource "digitalocean_droplet" "db-mongo-analytics" {
-  count    = 2
+  count    = 1
   image    = var.droplet_os
-  name     = "db-mongo-analytics${count.index==0 ? "" : count.index+1}"
+  name     = "db-mongo-analytics${count.index+2}"
   region   = var.droplet_region
   size     = var.mongo_analytics_droplet_size
   volume_ids = [element(digitalocean_volume.mongo_analytics_volume.*.id, count.index)]

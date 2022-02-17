@@ -4,7 +4,13 @@ import redis
 import requests
 import random
 import zlib
+import concurrent
 import re
+import ssl
+import socket
+import base64
+import urllib.parse
+import urllib.request
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -846,10 +852,9 @@ def load_single_feed(request, feed_id):
     # if not usersub and feed.num_subscribers <= 1:
     #     data = dict(code=-1, message="You must be subscribed to this feed.")
     
+    # time.sleep(random.randint(1, 3))
     if delay and user.is_staff:
-        # import random
         # time.sleep(random.randint(2, 7) / 10.0)
-        # time.sleep(random.randint(1, 10))
         time.sleep(delay)
     # if page == 1:
     #     time.sleep(1)
@@ -1454,7 +1459,7 @@ def load_river_stories__redis(request):
             story_hashes = []
             unread_feed_story_hashes = []
 
-        mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
+        mstories = MStory.objects(story_hash__in=story_hashes[:limit]).order_by(story_date_order)
         stories = Feed.format_stories(mstories)
     
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
@@ -1595,6 +1600,57 @@ def load_river_stories__redis(request):
 
 
     return data
+
+@json.json_view
+def load_river_stories_widget(request):
+    logging.user(request, "Widget load")
+    river_stories_data = json.decode(load_river_stories__redis(request).content)
+    timeout = 3
+    start = time.time()
+    
+    def load_url(url):
+        original_url = url
+        url = urllib.parse.urljoin(settings.NEWSBLUR_URL, url)
+        scontext = ssl.SSLContext(ssl.PROTOCOL_TLS)
+        scontext.verify_mode = ssl.VerifyMode.CERT_NONE
+        try:
+            conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
+        except urllib.request.URLError:
+            url = url.replace('localhost', 'haproxy')
+            conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
+        except urllib.request.URLError as e:
+            logging.user(request.user, '"%s" not fetched in %ss: %s' % (url, (time.time() - start), e))
+            return None
+        except socket.timeout:
+            logging.user(request.user, '"%s" not fetched in %ss' % (url, (time.time() - start)))
+            return None
+        data = conn.read()
+        logging.user(request.user, '"%s" fetched in %ss' % (url, (time.time() - start)))
+        return dict(url=original_url, data=data)
+    
+    # Find the image thumbnails and download in parallel
+    thumbnail_urls = []
+    for story in river_stories_data['stories']:
+        thumbnail_values = list(story['secure_image_thumbnails'].values())
+        if thumbnail_values:
+            thumbnail_urls.append(thumbnail_values[0])
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
+        pages = executor.map(load_url, thumbnail_urls)
+    
+    # Reassemble thumbnails back into stories
+    thumbnail_data = dict()
+    for page in pages:
+        if not page: continue
+        thumbnail_data[page['url']] = base64.b64encode(page['data']).decode('utf-8')
+    for story in river_stories_data['stories']:
+        thumbnail_values = list(story['secure_image_thumbnails'].values())
+        if thumbnail_values and thumbnail_values[0] in thumbnail_data:
+            story['select_thumbnail_data'] = thumbnail_data[thumbnail_values[0]]
+        
+    logging.user(request, ("Elapsed Time: %ss" % (time.time() - start)))
+    
+    return river_stories_data
     
 @json.json_view
 def complete_river(request):
@@ -2199,7 +2255,11 @@ def delete_feeds_by_folder(request):
 @json.json_view
 def rename_feed(request):
     feed = get_object_or_404(Feed, pk=int(request.POST['feed_id']))
-    user_sub = UserSubscription.objects.get(user=request.user, feed=feed)
+    try:
+        user_sub = UserSubscription.objects.get(user=request.user, feed=feed)
+    except UserSubscription.DoesNotExist:
+        return dict(code=-1, message=f"You are not subscribed to {feed.feed_title}")
+    
     feed_title = request.POST['feed_title']
     
     logging.user(request, "~FRRenaming feed '~SB%s~SN' to: ~SB%s" % (

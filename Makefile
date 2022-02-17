@@ -7,25 +7,31 @@ newsblur := $(shell docker ps -qf "name=newsblur_web")
 
 #creates newsblur, but does not rebuild images or create keys
 start:
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose up -d
 
 metrics:
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose -f docker-compose.yml -f docker-compose.metrics.yml up -d
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose -f docker-compose.yml -f docker-compose.metrics.yml up -d
 
 metrics-ps:
-	- RUNWITHMAKEBUILD=True docker-compose -f docker-compose.yml -f docker-compose.metrics.yml ps
+	- RUNWITHMAKEBUILD=True docker compose -f docker-compose.yml -f docker-compose.metrics.yml ps
 
 rebuild:
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose down
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose up -d
+
+collectstatic: 
+	- rm -fr static
+	- docker run --rm -v $(shell pwd):/srv/newsblur newsblur/newsblur_deploy
 
 #creates newsblur, builds new images, and creates/refreshes SSL keys
 nb: pull
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose down
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose down
 	- [[ -d config/certificates ]] && echo "keys exist" || make keys
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose up -d --build --remove-orphans
-	- RUNWITHMAKEBUILD=True docker-compose exec newsblur_web ./manage.py migrate
-	- RUNWITHMAKEBUILD=True docker-compose exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose up -d --build --remove-orphans
+	- docker exec newsblur_web ./manage.py migrate
+	- docker exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
+nbup:
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose up -d --build --remove-orphans
 coffee:
 	- coffee -c -w **/*.coffee
 
@@ -37,19 +43,19 @@ bash:
 debug:
 	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker attach ${newsblur}
 log:
-	- RUNWITHMAKEBUILD=True docker-compose logs -f --tail 20 newsblur_web newsblur_node
+	- RUNWITHMAKEBUILD=True docker compose logs -f --tail 20 newsblur_web newsblur_node
 logweb: log
 logcelery:
-	- RUNWITHMAKEBUILD=True docker-compose logs -f --tail 20 task_celery
+	- RUNWITHMAKEBUILD=True docker compose logs -f --tail 20 task_celery
 logtask: logcelery
 logmongo:
-	- RUNWITHMAKEBUILD=True docker-compose logs -f db_mongo
+	- RUNWITHMAKEBUILD=True docker compose logs -f db_mongo
 alllogs: 
-	- RUNWITHMAKEBUILD=True docker-compose logs -f --tail 20
+	- RUNWITHMAKEBUILD=True docker compose logs -f --tail 20
 logall: alllogs
 # brings down containers
 down:
-	- RUNWITHMAKEBUILD=True docker-compose -f docker-compose.yml -f docker-compose.metrics.yml down
+	- RUNWITHMAKEBUILD=True docker compose -f docker-compose.yml -f docker-compose.metrics.yml down
 nbdown: down
 jekyll:
 	- cd blog && bundle exec jekyll serve
@@ -58,8 +64,8 @@ jekyll_drafts:
 
 # runs tests
 test:
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} TEST=True docker-compose -f docker-compose.yml up -d newsblur_web
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker-compose exec newsblur_web bash -c "NOSE_EXCLUDE_DIRS=./vendor DJANGO_SETTINGS_MODULE=newsblur_web.test_settings python3 manage.py test -v 3 --failfast"
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} TEST=True docker compose -f docker-compose.yml up -d newsblur_web
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose exec newsblur_web bash -c "NOSE_EXCLUDE_DIRS=./vendor DJANGO_SETTINGS_MODULE=newsblur_web.test_settings python3 manage.py test -v 3 --failfast"
 
 keys:
 	- mkdir config/certificates
@@ -98,20 +104,27 @@ pull:
 	- docker pull newsblur/newsblur_node
 	- docker pull newsblur/newsblur_monitor
 
+local_build_web:
+	# - docker buildx build --load . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
+	- docker build . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
 build_web:
-	- docker image build . --platform linux/amd64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
+	- docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
 build_node: 
-	- docker image build . --platform linux/amd64 --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
+	- docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
 build_monitor: 
-	- docker image build . --platform linux/amd64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
-build: build_web build_node build_monitor
-push_web: build_web
-	- docker push newsblur/newsblur_python3
-push_node: build_node
-	- docker push newsblur/newsblur_node
-push_monitor: build_monitor
-	- docker push newsblur/newsblur_monitor
-push_images: push_web push_node push_monitor
+	- docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
+build_deploy: 
+	- docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
+build: build_web build_node build_monitor build_deploy
+push_web:
+	- docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
+push_node:
+	- docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
+push_monitor:
+	- docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
+push_deploy:
+	- docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
+push_images: push_web push_node push_monitor push_deploy
 push: build push_images
 
 # Tasks
