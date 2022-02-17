@@ -529,8 +529,16 @@
         add_body_classes: function() {
             this.$s.$body.toggleClass('NB-is-premium',        NEWSBLUR.Globals.is_premium);
             this.$s.$body.toggleClass('NB-is-anonymous',      NEWSBLUR.Globals.is_anonymous);
-            this.$s.$body.toggleClass('NB-is-authenticated',  NEWSBLUR.Globals.is_authenticated);
-            this.$s.$body.toggleClass('NB-pref-full-width-story', !!this.model.preference('full_width_story'));
+            this.$s.$body.toggleClass('NB-is-authenticated', NEWSBLUR.Globals.is_authenticated);
+            if (!!this.model.preference('full_width_story')) {
+                this.model.preference('story_position', 'stretch');
+                this.model.preference('full_width_story', false); // Turn off to ignore and deprecate
+            }
+            this.$s.$body.removeClass('NB-pref-story-position-stretch')
+                         .removeClass('NB-pref-story-position-left')
+                         .removeClass('NB-pref-story-position-center')
+                         .removeClass('NB-pref-story-position-right')
+                         .toggleClass('NB-pref-story-position-' + this.model.preference('story_position'));
             this.$s.$body.toggleClass('NB-dashboard-columns-single', this.model.preference('dashboard_columns') == 1);
             this.$s.$body.removeClass('NB-story-layout-full')
                          .removeClass('NB-story-layout-split')

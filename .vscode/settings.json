@@ -16,7 +16,7 @@
         "ansible/playbooks/*/*": true,
         // "archive/*": true,
         "logs/*": true,
-        // "static/*": true,
+        "static/*": true,
         "media/fonts": true,
         "static/*.css": true,
         "static/js/*.*.js": true,
