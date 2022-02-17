@@ -25,6 +25,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.DateFormat
@@ -57,7 +58,7 @@ interface SubscriptionManager {
     /**
      * Sync subscription state between NewsBlur and Play Store.
      */
-    suspend fun syncActiveSubscription()
+    suspend fun syncActiveSubscription(): Job
 
     /**
      * Notify backend of active Play Store subscription.
@@ -175,7 +176,7 @@ class SubscriptionManagerImpl(
         billingClient.launchBillingFlow(activity, billingFlowParams)
     }
 
-    override suspend fun syncActiveSubscription() {
+    override suspend fun syncActiveSubscription() = scope.launch(Dispatchers.Default) {
         val hasNewsBlurSubscription = PrefsUtils.getIsPremium(context)
         val activePlayStoreSubscription = getActiveSubscriptionAsync().await()
 

@@ -1,12 +1,13 @@
 import sys
 import os
+import yaml 
 
 # ===========================
 # = Directory Declaractions =
 # ===========================
 
-ROOT_DIR   = os.path.dirname(__file__)
-NEWSBLUR_DIR  = os.path.join(ROOT_DIR, "../")
+SETTINGS_DIR  = os.path.dirname(__file__)
+NEWSBLUR_DIR  = os.path.join(SETTINGS_DIR, "../")
 MEDIA_ROOT    = os.path.join(NEWSBLUR_DIR, 'media')
 STATIC_ROOT   = os.path.join(NEWSBLUR_DIR, 'static')
 UTILS_ROOT    = os.path.join(NEWSBLUR_DIR, 'utils')
@@ -35,7 +36,6 @@ import django.http
 import re
 from mongoengine import connect
 import boto3
-from utils import jammit
 
 # ===================
 # = Server Settings =
@@ -48,8 +48,9 @@ ADMINS       = (
 SERVER_NAME  = 'newsblur'
 SERVER_EMAIL = 'server@newsblur.com'
 HELLO_EMAIL  = 'hello@newsblur.com'
-NEWSBLUR_URL = 'http://www.newsblur.com'
+NEWSBLUR_URL = 'https://www.newsblur.com'
 IMAGES_URL   = 'https://imageproxy.newsblur.com'
+PUSH_DOMAIN  = 'push.newsblur.com'
 SECRET_KEY            = 'YOUR_SECRET_KEY'
 IMAGES_SECRET_KEY = "YOUR_SECRET_IMAGE_KEY"
 DNSIMPLE_TOKEN = "YOUR_DNSIMPLE_TOKEN"
@@ -78,24 +79,17 @@ LOGIN_REDIRECT_URL    = '/'
 LOGIN_URL             = '/account/login'
 MEDIA_URL             = '/media/'
 
-if DEBUG:
-    STATIC_URL        = '/static/'
-    STATIC_ROOT       = '/static/static_root/'
-else:
-    STATIC_URL        = '/media/'
-    STATIC_ROOT       = '/media/'
-
-
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
 CIPHER_USERNAMES      = False
-DEBUG_ASSETS          = DEBUG
+DEBUG_ASSETS          = True
 HOMEPAGE_USERNAME     = 'popular'
 ALLOWED_HOSTS         = ['*']
 AUTO_PREMIUM_NEW_USERS = True
 AUTO_ENABLE_NEW_USERS = True
 ENFORCE_SIGNUP_CAPTCHA = False
+ENABLE_PUSH           = True
 PAYPAL_TEST           = False
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880 # 5 MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880 # 5 MB
@@ -223,6 +217,12 @@ LOGGING = {
             # 'level': 'DEBUG',
             'propagate': False,
         },
+        'zebra': {
+            'handlers': ['console', 'log_file'],
+            # 'level': 'ERROR',
+            'level': 'DEBUG',
+            'propagate': False,
+        },
         'newsblur': {
             'handlers': ['console', 'log_file'],
             'level': 'DEBUG',
@@ -312,6 +312,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.messages',
+    'django.contrib.staticfiles',
     'django_extensions',
     'paypal.standard.ipn',
     'apps.rss_feeds',
@@ -336,6 +337,7 @@ INSTALLED_APPS = (
     'anymail',
     'oauth2_provider',
     'corsheaders',
+    'pipeline',
 )
 
 # ==========
@@ -559,7 +561,7 @@ BACKED_BY_AWS = {
 }
 
 PROXY_S3_PAGES = True
-S3_BACKUP_BUCKET = 'newsblur_backups'
+S3_BACKUP_BUCKET = 'newsblur-backups'
 S3_PAGES_BUCKET_NAME = 'pages.newsblur.com'
 S3_ICONS_BUCKET_NAME = 'icons.newsblur.com'
 S3_AVATARS_BUCKET_NAME = 'avatars.newsblur.com'
@@ -781,7 +783,77 @@ accept_content = ['pickle', 'json', 'msgpack', 'yaml']
 # = Assets =
 # ==========
 
-JAMMIT = jammit.JammitAssets(ROOT_DIR)
+STATIC_URL        = '/static/'
+
+# STATICFILES_STORAGE = 'pipeline.storage.PipelineManifestStorage'
+STATICFILES_STORAGE = 'utils.pipeline_utils.PipelineStorage'
+# STATICFILES_STORAGE = 'utils.pipeline_utils.GzipPipelineStorage'
+STATICFILES_FINDERS = (
+    # 'pipeline.finders.FileSystemFinder',
+    # 'django.contrib.staticfiles.finders.FileSystemFinder',
+    # 'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # 'pipeline.finders.AppDirectoriesFinder',
+    'utils.pipeline_utils.AppDirectoriesFinder',
+    'utils.pipeline_utils.FileSystemFinder',
+    # 'pipeline.finders.PipelineFinder',
+)
+STATICFILES_DIRS = [
+    # '/usr/local/lib/python3.9/site-packages/django/contrib/admin/static/',
+    MEDIA_ROOT,
+]
+with open(os.path.join(SETTINGS_DIR, 'assets.yml')) as stream:
+    assets = yaml.safe_load(stream)
+
+PIPELINE = {
+    'PIPELINE_ENABLED': not DEBUG_ASSETS,
+    'PIPELINE_COLLECTOR_ENABLED': not DEBUG_ASSETS,
+    'SHOW_ERRORS_INLINE': DEBUG_ASSETS,
+    'CSS_COMPRESSOR': 'pipeline.compressors.yuglify.YuglifyCompressor',
+    'JS_COMPRESSOR': 'pipeline.compressors.closure.ClosureCompressor',
+    # 'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
+    # 'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
+    'CLOSURE_BINARY': '/usr/bin/java -jar node_modules/google-closure-compiler-java/compiler.jar',
+    'CLOSURE_ARGUMENTS': '--language_in ECMASCRIPT_2016 --language_out ECMASCRIPT_2016 --warning_level DEFAULT',
+    'JAVASCRIPT': {
+        'common': {
+            'source_filenames': assets['javascripts']['common'],
+            'output_filename': 'js/common.js',
+        },
+        'statistics': {
+            'source_filenames': assets['javascripts']['statistics'],
+            'output_filename': 'js/statistics.js',
+        },
+        'payments': {
+            'source_filenames': assets['javascripts']['payments'],
+            'output_filename': 'js/payments.js',
+        },
+        'bookmarklet': {
+            'source_filenames': assets['javascripts']['bookmarklet'],
+            'output_filename': 'js/bookmarklet.js',
+        },
+        'blurblog': {
+            'source_filenames': assets['javascripts']['blurblog'],
+            'output_filename': 'js/blurblog.js',
+        },
+    },
+    'STYLESHEETS': {
+        'common': {
+            'source_filenames': assets['stylesheets']['common'],
+            'output_filename': 'css/common.css',
+            # 'variant': 'datauri',
+        },
+        'bookmarklet': {
+            'source_filenames': assets['stylesheets']['bookmarklet'],
+            'output_filename': 'css/bookmarklet.css',
+            # 'variant': 'datauri',
+        },
+        'blurblog': {
+            'source_filenames': assets['stylesheets']['blurblog'],
+            'output_filename': 'css/blurblog.css',
+            # 'variant': 'datauri',
+        },
+    }
+}
 
 # =======
 # = AWS =

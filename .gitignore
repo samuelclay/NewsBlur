@@ -43,7 +43,8 @@ templates/maintenance_on.html
 vendor/mms-agent/settings.py
 apps/social/spam.py
 venv*
-/backups
+backup
+backups
 config/mongodb_keyfile.key
 
 # Docker Jinja templates
