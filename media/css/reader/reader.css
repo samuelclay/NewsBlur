@@ -3699,15 +3699,20 @@ body {
 /* ============ */
 
 .NB-feed-story-comments {
-    margin: 0 236px 32px 28px;
+    padding: 0 236px 32px 28px;
     max-width: 700px;
-/*    border-bottom: 1px solid #EAECE8;*/
     clear: both;
     background-color: white;
     position: relative;
 }
 .NB-narrow-content .NB-feed-story-comments {
-    margin-right: 28px;
+    padding-right: 28px;
+}
+.NB-pref-story-position-center .NB-feed-story-comments {
+    margin: 0 auto;
+}
+.NB-pref-story-position-right .NB-feed-story-comments {
+    margin: 0 0 0 auto;
 }
 .NB-story-comment {
     border-bottom: 1px solid #EAECE8;
