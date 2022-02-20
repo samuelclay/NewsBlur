@@ -253,10 +253,13 @@ class MUserFeedNotification(mongo.Document):
         # 1. Create certificate signing requeswt in Keychain Access
         # 2. Upload to https://developer.apple.com/account/resources/certificates/list
         # 3. Download to secrets/certificates/ios/aps.cer
-        # 4. Open in Keychain Access and export (with private key) as aps.p12
-        # 5. openssl pkcs12 -in aps.p12 -out aps.p12.pem -nodes
-        # 6. Verify: openssl s_client -connect gateway.push.apple.com:2195 -cert aps.p12.pem
-        # 7. Deploy: aps -l work -t apns,repo,celery
+        # 4. Open in Keychain Access and export as aps.p12
+        # 4. Export private key as aps_key.p12 WITH A PASSPHRASE (removed later)
+        # 5. openssl pkcs12 -in aps.p12 -out aps.pem -nodes -clcerts -nokeys
+        # 6. openssl pkcs12 -clcerts -nokeys -out aps.pem -in aps.p12  
+        # 7. cat aps.pem aps_key.noenc.pem > aps.p12.pem
+        # 8. Verify: openssl s_client -connect gateway.push.apple.com:2195 -cert aps.p12.pem
+        # 9. Deploy: aps -l work -t apns,repo,celery
         apns = APNsClient('/srv/newsblur/config/certificates/aps.p12.pem', use_sandbox=tokens.use_sandbox)
         
         notification_title_only = is_true(user.profile.preference_value('notification_title_only'))
