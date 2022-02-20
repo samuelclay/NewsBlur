@@ -257,7 +257,7 @@ class MUserFeedNotification(mongo.Document):
         # 5. openssl pkcs12 -in aps.p12 -out aps.p12.pem -nodes
         # 6. Verify: openssl s_client -connect gateway.push.apple.com:2195 -cert aps.p12.pem
         # 7. Deploy: aps -l work -t apns,repo,celery
-        apns = APNsClient('/srv/newsblur/config/certificates/aps.pem', use_sandbox=tokens.use_sandbox)
+        apns = APNsClient('/srv/newsblur/config/certificates/aps.p12.pem', use_sandbox=tokens.use_sandbox)
         
         notification_title_only = is_true(user.profile.preference_value('notification_title_only'))
         title, subtitle, body = self.title_and_body(story, usersub, notification_title_only)
