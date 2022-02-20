@@ -249,7 +249,7 @@ class MUserFeedNotification(mongo.Document):
         if not self.is_ios: return
 
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
-        apns = APNsClient('/srv/newsblur/config/certificates/aps.pem', use_sandbox=tokens.use_sandbox)
+        apns = APNsClient('/srv/newsblur/config/certificates/aps.p12.pem', use_sandbox=tokens.use_sandbox)
         
         notification_title_only = is_true(user.profile.preference_value('notification_title_only'))
         title, subtitle, body = self.title_and_body(story, usersub, notification_title_only)
