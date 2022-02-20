@@ -249,7 +249,15 @@ class MUserFeedNotification(mongo.Document):
         if not self.is_ios: return
 
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
-        apns = APNsClient('/srv/newsblur/config/certificates/aps.p12.pem', use_sandbox=tokens.use_sandbox)
+        # To update APNS:
+        # 1. Create certificate signing requeswt in Keychain Access
+        # 2. Upload to https://developer.apple.com/account/resources/certificates/list
+        # 3. Download to secrets/certificates/ios/aps.cer
+        # 4. Open in Keychain Access and export (with private key) as aps.p12
+        # 5. openssl pkcs12 -in aps.p12 -out aps.p12.pem -nodes
+        # 6. Verify: openssl s_client -connect gateway.push.apple.com:2195 -cert aps.p12.pem
+        # 7. Deploy: aps -l work -t apns,repo,celery
+        apns = APNsClient('/srv/newsblur/config/certificates/aps.pem', use_sandbox=tokens.use_sandbox)
         
         notification_title_only = is_true(user.profile.preference_value('notification_title_only'))
         title, subtitle, body = self.title_and_body(story, usersub, notification_title_only)
