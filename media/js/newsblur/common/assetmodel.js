@@ -1418,7 +1418,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 default_setting = 'unread';
             }
             var view_setting = feed && feed[s] || default_setting;
-            if (view_setting == "magazine") view_setting = "list";
+            // if (view_setting == "magazine") view_setting = "list";
             return view_setting;
         }
         
