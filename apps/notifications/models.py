@@ -196,19 +196,19 @@ class MUserFeedNotification(mongo.Document):
         # title = "%s: %s" % (feed_title, story['story_title'])
         title = feed_title
         soup = BeautifulSoup(story['story_content'].strip(), features="lxml")
-        if notification_title_only:
-            subtitle = None
-            body_title = html.unescape(story['story_title']).strip()
-            body_content = replace_with_newlines(soup)
-            if body_content:
-                if body_title == body_content[:len(body_title)] or body_content[:100] == body_title[:100]:
-                    body_content = ""
-                else:
-                    body_content = f"\n※ {body_content}" 
-            body = f"{body_title}{body_content}"
-        else:
-            subtitle = html.unescape(story['story_title'])
-            body = replace_with_newlines(soup)
+        # if notification_title_only:
+        subtitle = None
+        body_title = html.unescape(story['story_title']).strip()
+        body_content = replace_with_newlines(soup)
+        if body_content:
+            if body_title == body_content[:len(body_title)] or body_content[:100] == body_title[:100]:
+                body_content = ""
+            else:
+                body_content = f"\n※ {body_content}" 
+        body = f"{body_title}{body_content}"
+        # else:
+        #     subtitle = html.unescape(story['story_title'])
+        #     body = replace_with_newlines(soup)
         body = truncate_chars(body.strip(), 600)
         if not body:
             body = " "
@@ -249,6 +249,17 @@ class MUserFeedNotification(mongo.Document):
         if not self.is_ios: return
 
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
+        # To update APNS:
+        # 1. Create certificate signing requeswt in Keychain Access
+        # 2. Upload to https://developer.apple.com/account/resources/certificates/list
+        # 3. Download to secrets/certificates/ios/aps.cer
+        # 4. Open in Keychain Access and export as aps.p12
+        # 4. Export private key as aps_key.p12 WITH A PASSPHRASE (removed later)
+        # 5. openssl pkcs12 -in aps.p12 -out aps.pem -nodes -clcerts -nokeys
+        # 6. openssl pkcs12 -clcerts -nokeys -out aps.pem -in aps.p12  
+        # 7. cat aps.pem aps_key.noenc.pem > aps.p12.pem
+        # 8. Verify: openssl s_client -connect gateway.push.apple.com:2195 -cert aps.p12.pem
+        # 9. Deploy: aps -l work -t apns,repo,celery
         apns = APNsClient('/srv/newsblur/config/certificates/aps.p12.pem', use_sandbox=tokens.use_sandbox)
         
         notification_title_only = is_true(user.profile.preference_value('notification_title_only'))

@@ -25,7 +25,6 @@ from django.contrib.auth import logout as logout_user
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, UnreadablePostError
 from django.conf import settings
-from django.core.mail import mail_admins
 from django.core.mail import EmailMultiAlternatives
 from django.core.validators import validate_email
 from django.contrib.sites.models import Site
@@ -2494,9 +2493,7 @@ def activate_premium_account(request):
                 sub.feed.count_subscribers()
                 sub.feed.schedule_feed_fetch_immediately()
     except Exception as e:
-        subject = "Premium activation failed"
-        message = "%s -- %s\n\n%s" % (request.user, usersubs, e)
-        mail_admins(subject, message, fail_silently=True)
+        logging.user(request, "~BR~FWPremium activation failed: {e} {usersubs}")
         
     request.user.profile.is_premium = True
     request.user.profile.save()

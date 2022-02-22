@@ -126,6 +126,7 @@
       # when: pulled.changed
       tags:
         - static
+        - never
     
     - name: Start Consul
       become: yes
