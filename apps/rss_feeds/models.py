@@ -2825,15 +2825,20 @@ class MStory(mongo.Document):
         
         # Add youtube thumbnail and insert appropriately before/after images. 
         # Give the Youtube a bit of an edge.
-        video_thumbnails = soup.findAll('iframe', src=lambda x: x and 'youtube.com' in x)
+        video_thumbnails = soup.findAll('iframe', src=lambda x: x and any(y in x for y in ['youtube.com', 'ytimg.com']))
         for video_thumbnail in video_thumbnails:
             video_src = video_thumbnail.get('src')
-            video_id = re.search('.*?youtube.com/embed/(.*)(\?.*)?$', video_src)
-            if video_id:
-                video_img_url = f"https://img.youtube.com/vi/{video_id}/0.jpg"
-            else:
+            video_id = re.search('.*?youtube.com/embed/([A-Za-z0-9\-_]+)', video_src)
+            if not video_id:
+                video_id = re.search('.*?youtube.com/v/([A-Za-z0-9\-_]+)', video_src)
+            if not video_id:
+                video_id = re.search('.*?ytimg.com/vi/([A-Za-z0-9\-_]+)', video_src)
+            if not video_id:
+                video_id = re.search('.*?youtube.com/watch\?v=([A-Za-z0-9\-_]+)', video_src)
+            if not video_id:
                 logging.debug(f" ***> Couldn't find youtube url in {video_thumbnail}: {video_src}")
                 continue
+            video_img_url = f"https://img.youtube.com/vi/{video_id.groups()[0]}/0.jpg"
             iframe_index = story_content.index('<iframe')
             try:
                 img_index = story_content.index('<img')*3
