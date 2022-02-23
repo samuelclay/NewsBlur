@@ -2583,6 +2583,7 @@ hr {
     height: 186px;
     background-size: 64px 64px, cover;
     background-position: 50% 60%, 50% 30%;
+    border-radius: 0;
     background-repeat: no-repeat;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
