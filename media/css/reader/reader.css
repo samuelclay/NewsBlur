@@ -2574,7 +2574,9 @@ hr {
     margin-left: 8px;
 }
 .NB-image-preview-small-left .NB-story-grid .NB-storytitles-story-image,
-.NB-image-preview-large-left .NB-story-grid .NB-storytitles-story-image {
+.NB-image-preview-large-left .NB-story-grid .NB-storytitles-story-image,
+.NB-image-preview-small-right .NB-story-grid .NB-storytitles-story-image,
+.NB-image-preview-large-right .NB-story-grid .NB-storytitles-story-image {
     display: none;
     position: inherit;
     width: 100%;
