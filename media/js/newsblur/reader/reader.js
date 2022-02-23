@@ -1724,7 +1724,8 @@
             this.set_correct_story_view_for_feed();
             this.apply_resizable_layout({right_side: true});
             
-            if (original_layout == 'grid' || story_layout == 'grid') {
+            if (_.contains(['grid', 'magazine'], original_layout) ||
+                _.contains(['grid', 'magazine'], story_layout)) {
                 NEWSBLUR.app.story_titles.render();
             }
             if (story_layout == 'list') {
