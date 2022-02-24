@@ -1398,7 +1398,7 @@ hr {
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;  
-    overflow: hidden;>>>
+    overflow: hidden;
 }
 .NB-feedbar .NB-feedbar-options-container {
     float: right;
@@ -2551,7 +2551,6 @@ hr {
     line-height: 1.3em;
     padding: 0;
     word-break: break-word;
-    word-break: anywhere;
 }
 .NB-theme-feed-size-xs .NB-story-grid .NB-storytitles-title {
     font-size: 14px;
@@ -8175,7 +8174,6 @@ form.opml_import_form input {
     margin: 0 4px 0 0;
 }
 
-}
 .NB-menu-manage .NB-menu-manage-story-share-confirm .NB-sideoption-share {
     overflow: hidden;
     border: none;
