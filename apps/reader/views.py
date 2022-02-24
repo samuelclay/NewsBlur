@@ -2670,6 +2670,7 @@ def _mark_story_as_unstarred(request):
     if story_id:
         starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
         if starred_story:
+            starred_story = starred_story[0]
             story_hashes = [starred_story.story_hash]
         else:
             story_hashes = [story_id]
