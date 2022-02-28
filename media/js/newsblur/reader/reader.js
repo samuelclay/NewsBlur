@@ -2799,7 +2799,7 @@
                 'fade': true
             };
             var $content_pane = this.$s.$content_pane;
-            feed_id = this.active_feed;
+            var feed_id = this.active_feed;
             if (!feed_id) return;
             if (this.flags['river_view']) {
                 var folder = this.active_folder;
