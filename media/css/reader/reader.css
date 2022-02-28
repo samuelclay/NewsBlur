@@ -3661,14 +3661,20 @@ body {
 
 .NB-feed-story .NB-feed-story-header .NB-feed-story-starred-date {
     font-size: 12px;
-    background: transparent url('/media/embed/icons/circular/clock.png') no-repeat 0 center;
-    background-size: 16px;
-    padding-left: 20px;
-/*    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);*/
+    /*    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);*/
     color: #808080;
     display: block;
     clear: both;
-    margin: 6px 0;
+    margin: 6px 0 0;
+}
+.NB-feed-story .NB-feed-story-header .NB-feed-story-starred-date .NB-icon {
+    background: transparent url('/media/embed/icons/circular/clock.png') no-repeat 0 center;
+    background-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-top: 6px;
+    display: inline-block;
+    vertical-align: text-bottom;
 }
 .NB-theme-size-xs .NB-feed-story-header .NB-feed-story-starred-date {
     font-size: 10px;
@@ -3681,6 +3687,14 @@ body {
 }
 .NB-theme-size-xl .NB-feed-story-header .NB-feed-story-starred-date {
     font-size: 14px;
+}
+.NB-pref-story-position-center .NB-feed-story-header .NB-feed-story-starred-date {
+    margin: 6px auto 0;
+    max-width: 700px;
+}
+.NB-pref-story-position-right .NB-feed-story-header .NB-feed-story-starred-date {
+    margin: 6px 0 0 auto;
+    max-width: 700px;
 }
 
 .NB-feed-story .NB-feed-story-content {
