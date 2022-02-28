@@ -3670,11 +3670,12 @@ body {
 .NB-feed-story .NB-feed-story-header .NB-feed-story-starred-date .NB-icon {
     background: transparent url('/media/embed/icons/circular/clock.png') no-repeat 0 center;
     background-size: 16px;
-    width: 16px;
     height: 16px;
     margin-top: 6px;
     display: inline-block;
     vertical-align: text-bottom;
+    color: #9B9D97;
+    padding-left: 20px;
 }
 .NB-theme-size-xs .NB-feed-story-header .NB-feed-story-starred-date {
     font-size: 10px;
