@@ -813,7 +813,7 @@ PIPELINE = {
     # 'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
     # 'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
     'CLOSURE_BINARY': '/usr/bin/java -jar /usr/local/bin/compiler.jar',
-    'CLOSURE_ARGUMENTS': '--language_in ECMASCRIPT_2016 --language_out ECMASCRIPT_2016 --warning_level DEFAULT',
+    'CLOSURE_ARGUMENTS': '--language_in ECMASCRIPT_2016 --language_out ECMASCRIPT_2016 --warning_level DEFAULT --emit_use_strict=false',
     'JAVASCRIPT': {
         'common': {
             'source_filenames': assets['javascripts']['common'],
