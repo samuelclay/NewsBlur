@@ -205,6 +205,13 @@
         <item name="iconSize">16dp</item>
     </style>
 
+    <style name="storyButtonsDimmed" parent="storyButtons">
+        <item name="android:textColor">@color/gray85</item>
+    </style>
+    <style name="storyButtonsDimmed.dark" parent="storyButtons.dark">
+        <item name="android:textColor">@color/gray30</item>
+    </style>
+
     <style name="shareBarBackground">
         <item name="android:background">@color/share_bar_background</item>
     </style>

@@ -64,6 +64,8 @@
 	<string name="save_this">Save</string>
 	<string name="unsave_this">Unsave</string>
     <string name="train_this">Train</string>
+    <string name="story_mark_unread_state">Read</string>
+    <string name="story_mark_read_state">Mark story read</string>
 
     <string name="overlay_next">Next</string>
     <string name="overlay_done">Done</string>
@@ -422,8 +424,41 @@
     <string name="settings_auto_open_first_unread">Auto-Open First Story</string>
     <string name="settings_auto_open_first_unread_sum">Automatically open first unread story from story list</string>
 
-    <string name="settings_mark_read_on_scroll">Mark Stories Read On Scroll</string>
-    <string name="settings_mark_read_on_scroll_sum">Automatically mark stories as read when scrolled past</string>
+    <string name="settings_mark_read_on_feed_scroll">Mark Stories Read On Feed Scroll</string>
+    <string name="settings_mark_read_on_feed_scroll_sum">Automatically mark stories as read when scrolled past</string>
+
+    <string name="settings_mark_story_read">Marking A Story As Read</string>
+    <string name="mark_story_read_immediately">Immediately</string>
+    <string name="mark_story_read_5_seconds">After 5 seconds</string>
+    <string name="mark_story_read_10_seconds">After 10 seconds</string>
+    <string name="mark_story_read_20_seconds">After 20 seconds</string>
+    <string name="mark_story_read_30_seconds">After 30 seconds</string>
+    <string name="mark_story_read_45_seconds">After 45 seconds</string>
+    <string name="mark_story_read_60_seconds">After 60 seconds</string>
+    <string name="mark_story_read_manually">Manually</string>
+    <string-array name="mark_story_read_entries">
+        <item>@string/mark_story_read_immediately</item>
+        <item>@string/mark_story_read_5_seconds</item>
+        <item>@string/mark_story_read_10_seconds</item>
+        <item>@string/mark_story_read_20_seconds</item>
+        <item>@string/mark_story_read_30_seconds</item>
+        <item>@string/mark_story_read_45_seconds</item>
+        <item>@string/mark_story_read_60_seconds</item>
+        <item>@string/mark_story_read_manually</item>
+    </string-array>
+
+    <string-array name="mark_story_read_values">
+        <item>IMMEDIATELY</item>
+        <item>SECONDS_5</item>
+        <item>SECONDS_10</item>
+        <item>SECONDS_20</item>
+        <item>SECONDS_30</item>
+        <item>SECONDS_45</item>
+        <item>SECONDS_60</item>
+        <item>MANUALLY</item>
+    </string-array>
+
+    <string name="mark_story_read_default_value">IMMEDIATELY</string>
 
     <string name="settings_social">Social</string>
     <string name="settings_show_public_comments">Show Public Comments</string>
