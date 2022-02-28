@@ -352,7 +352,7 @@ NEWSBLUR.log = function(msg) {
                     if(opts.cancelBubbling){
                         fails = true;
                     }else{
-                        $tp = $t.closest(ts);
+                        var $tp = $t.closest(ts);
                         if(!$tp.length){
                             fails = true;
                         }else{
