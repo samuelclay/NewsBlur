@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
@@ -16,12 +17,13 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
 import com.newsblur.activity.Reading
 import com.newsblur.databinding.FragmentReadingitemBinding
-import com.newsblur.databinding.IncludeReadingItemCommentBinding
+import com.newsblur.databinding.ReadingItemActionsBinding
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
 import com.newsblur.domain.UserDetails
@@ -33,7 +35,6 @@ import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_TEXT
 import com.newsblur.service.OriginalTextService
 import com.newsblur.util.*
 import com.newsblur.util.PrefConstants.ThemeValue
-import java.util.*
 import java.util.regex.Pattern
 import kotlin.math.roundToInt
 
@@ -81,7 +82,9 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     private val webViewContentMutex = Any()
 
     private lateinit var binding: FragmentReadingitemBinding
-    private lateinit var itemCommentBinding: IncludeReadingItemCommentBinding
+    private lateinit var readingItemActionsBinding: ReadingItemActionsBinding
+
+    private lateinit var markStoryReadBehavior: MarkStoryReadBehavior
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,7 +100,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         classifier = requireArguments().getSerializable("classifier") as Classifier?
         sourceUserId = requireArguments().getString("sourceUserId")
 
-        user = PrefsUtils.getUserDetails(requireActivity())
+        user = PrefsUtils.getUserDetails(requireContext())
+        markStoryReadBehavior = PrefsUtils.getMarkStoryReadBehavior(requireContext())
         textSizeReceiver = TextSizeReceiver()
 
         requireActivity().registerReceiver(textSizeReceiver, IntentFilter(TEXT_SIZE_CHANGED))
@@ -142,7 +146,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_readingitem, container, false)
         binding = FragmentReadingitemBinding.bind(view)
-        itemCommentBinding = IncludeReadingItemCommentBinding.bind(binding.root)
+        readingItemActionsBinding = ReadingItemActionsBinding.bind(binding.root)
 
         val readingActivity = requireActivity() as Reading
         fs = readingActivity.fs
@@ -160,6 +164,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         updateTrainButton()
         updateShareButton()
         updateSaveButton()
+        updateMarkReadButton()
         setupItemCommentsAndShares()
 
         binding.readingScrollview.registerScrollChangeListener(readingActivity)
@@ -170,9 +175,10 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.storyContextMenuButton.setOnClickListener { onClickMenuButton() }
-        itemCommentBinding.trainStoryButton.setOnClickListener { clickTrain() }
-        itemCommentBinding.saveStoryButton.setOnClickListener { clickSave() }
-        itemCommentBinding.shareStoryButton.setOnClickListener { clickShare() }
+        binding.markReadStoryButton.setOnClickListener { clickMarkStoryRead() }
+        readingItemActionsBinding.trainStoryButton.setOnClickListener { clickTrain() }
+        readingItemActionsBinding.saveStoryButton.setOnClickListener { clickSave() }
+        readingItemActionsBinding.shareStoryButton.setOnClickListener { clickShare() }
     }
 
     override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
@@ -330,13 +336,27 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         }
     }
 
+    private fun clickMarkStoryRead() {
+        if (story!!.read) FeedUtils.markStoryUnread(story!!, requireContext())
+        else FeedUtils.markStoryAsRead(story!!, requireContext())
+    }
+
+    private fun updateMarkReadButton() {
+        if (markStoryReadBehavior == MarkStoryReadBehavior.MANUALLY) {
+            binding.markReadStoryButton.visibility = View.VISIBLE
+            binding.markReadStoryButton.setStoryReadState(requireContext(), story!!.read)
+        } else {
+            binding.markReadStoryButton.visibility = View.GONE
+        }
+    }
+
     private fun clickTrain() {
         val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs)
         intelFrag.show(requireActivity().supportFragmentManager, StoryIntelTrainerFragment::class.java.name)
     }
 
     private fun updateTrainButton() {
-        itemCommentBinding.trainStoryButton.visibility = if (story!!.feedId == "0") View.GONE else View.VISIBLE
+        readingItemActionsBinding.trainStoryButton.visibility = if (story!!.feedId == "0") View.GONE else View.VISIBLE
     }
 
     private fun clickSave() {
@@ -348,7 +368,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     }
 
     private fun updateSaveButton() {
-        itemCommentBinding.saveStoryButton.setText(if (story!!.starred) R.string.unsave_this else R.string.save_this)
+        readingItemActionsBinding.saveStoryButton.setText(if (story!!.starred) R.string.unsave_this else R.string.save_this)
     }
 
     private fun clickShare() {
@@ -359,11 +379,11 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     private fun updateShareButton() {
         for (userId in story!!.sharedUserIds) {
             if (TextUtils.equals(userId, user!!.id)) {
-                itemCommentBinding.shareStoryButton.setText(R.string.already_shared)
+                readingItemActionsBinding.shareStoryButton.setText(R.string.already_shared)
                 return
             }
         }
-        itemCommentBinding.shareStoryButton.setText(R.string.share_this)
+        readingItemActionsBinding.shareStoryButton.setText(R.string.share_this)
     }
 
     private fun setupItemCommentsAndShares() {
@@ -603,6 +623,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         if (updateType and UPDATE_STORY != 0) {
             updateSaveButton()
             updateShareButton()
+            updateMarkReadButton()
             setupItemCommentsAndShares()
         }
         if (updateType and UPDATE_TEXT != 0) {
@@ -907,5 +928,28 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         private val altSniff3 = Pattern.compile("<img[^>]*src=(['\"])((?:(?!\\1).)*)\\1[^>]*title=(['\"])((?:(?!\\3).)*)\\3[^>]*>", Pattern.CASE_INSENSITIVE)
         private val altSniff4 = Pattern.compile("<img[^>]*title=(['\"])((?:(?!\\1).)*)\\1[^>]*src=(['\"])((?:(?!\\3).)*)\\3[^>]*>", Pattern.CASE_INSENSITIVE)
         private val imgSniff = Pattern.compile("<img[^>]*(src\\s*=\\s*)\"([^\"]*)\"[^>]*>", Pattern.CASE_INSENSITIVE)
+    }
+}
+
+private fun MaterialButton.setStoryReadState(context: Context, isRead: Boolean) {
+    var selectedTheme = PrefsUtils.getSelectedTheme(context)
+    if (selectedTheme == ThemeValue.AUTO) {
+        selectedTheme = when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> ThemeValue.DARK
+            else -> ThemeValue.LIGHT
+        }
+    }
+    val styleResId: Int = when (selectedTheme) {
+        ThemeValue.LIGHT -> if (isRead) R.style.storyButtonsDimmed else R.style.storyButtons
+        else -> if (isRead) R.style.storyButtonsDimmed_dark else R.style.storyButtons_dark
+    }
+    val stringResId: Int = if (isRead) R.string.story_mark_unread_state else R.string.story_mark_read_state
+    this.text = context.getString(stringResId)
+
+    @Suppress("DEPRECATION")
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        this.setTextAppearance(styleResId)
+    } else {
+        this.setTextAppearance(context, styleResId)
     }
 }

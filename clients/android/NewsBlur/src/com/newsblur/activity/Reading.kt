@@ -33,7 +33,6 @@ import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.view.ReadingScrollView.ScrollChangeListener
 import com.newsblur.viewModel.StoriesViewModel
 import java.lang.Runnable
-import java.util.*
 import kotlin.math.abs
 
 abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeListener,
@@ -52,6 +51,8 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
     private var readingAdapter: ReadingAdapter? = null
     private var stopLoading = false
     private var unreadSearchActive = false
+    // marking a story as read immediately on reading page scroll
+    private var isMarkStoryReadImmediately = false
 
     // unread count for the circular progress overlay. set to nonzero to activate the progress indicator overlay
     private var startingUnreadCount = 0
@@ -115,6 +116,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
 
         intelState = PrefsUtils.getStateFilter(this)
         volumeKeyNavigation = PrefsUtils.getVolumeKeyNavigation(this)
+        isMarkStoryReadImmediately = PrefsUtils.isMarkStoryReadImmediately(this)
 
         setupViews()
         setupListeners()
@@ -386,12 +388,14 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
                     readingAdapter?.let { readingAdapter ->
                         val story = readingAdapter.getStory(position)
                         if (story != null) {
-                            FeedUtils.markStoryAsRead(story, this@Reading)
                             synchronized(pageHistory) {
                                 // if the history is just starting out or the last entry in it isn't this page, add this page
                                 if (pageHistory.size < 1 || story != pageHistory[pageHistory.size - 1]) {
                                     pageHistory.add(story)
                                 }
+                            }
+                            if (isMarkStoryReadImmediately) {
+                                FeedUtils.markStoryAsRead(story, this@Reading)
                             }
                         }
                         checkStoryCount(position)

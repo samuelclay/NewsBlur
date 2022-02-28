@@ -100,6 +100,11 @@
             android:key="pref_auto_open_first_unread"
             android:title="@string/settings_auto_open_first_unread"
             android:summary="@string/settings_auto_open_first_unread_sum" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_mark_read_on_scroll"
+            android:title="@string/settings_mark_read_on_feed_scroll"
+            android:summary="@string/settings_mark_read_on_feed_scroll_sum" />
         <ListPreference
             android:key="pref_show_content_preview_style"
             android:title="@string/settings_content_preview"
@@ -114,11 +119,13 @@
             android:entries="@array/thumbnail_style_entries"
             android:entryValues="@array/thumbnail_style_values"
             android:defaultValue="@string/thumbnail_style_default_value" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="pref_mark_read_on_scroll"
-            android:title="@string/settings_mark_read_on_scroll"
-            android:summary="@string/settings_mark_read_on_scroll_sum" />
+        <ListPreference
+            android:key="pref_story_mark_read_behavior"
+            android:title="@string/settings_mark_story_read"
+            android:dialogTitle="@string/settings_mark_story_read"
+            android:entries="@array/mark_story_read_entries"
+            android:entryValues="@array/mark_story_read_values"
+            android:defaultValue="@string/mark_story_read_default_value" />
     </PreferenceCategory>
 
     <PreferenceCategory

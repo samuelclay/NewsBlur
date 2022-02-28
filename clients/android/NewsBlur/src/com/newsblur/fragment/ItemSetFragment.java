@@ -441,7 +441,7 @@ public class ItemSetFragment extends NbFragment {
             indexOfLastUnread = -1;
         }
 
-        if (PrefsUtils.isMarkReadOnScroll(getActivity())) {
+        if (PrefsUtils.isMarkReadOnFeedScroll(requireContext())) {
             // we want the top row of stories that is partially obscured. go back one from the first fully visible
             int markEnd = layoutManager.findFirstCompletelyVisibleItemPosition() - 1;
             if (markEnd > lastAutoMarkIndex) {
@@ -451,7 +451,7 @@ public class ItemSetFragment extends NbFragment {
                     int index = markEnd - i;
                     Story story = adapter.getStory(index);
                     if (story != null) {
-                        FeedUtils.markStoryAsRead(story, getActivity());
+                        FeedUtils.markStoryAsRead(story, requireContext());
                     }
                 }
             }
