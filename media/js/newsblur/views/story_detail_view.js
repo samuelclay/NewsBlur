@@ -250,7 +250,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <% } %>\
                 </div>\
                 <% if (story.get("starred_date")) { %>\
-                    <span class="NB-feed-story-starred-date"><%= story.get("starred_date") %></span>\
+                    <div class="NB-feed-story-starred-date">\
+                        <span class="NB-icon"></span>\
+                        <%= story.get("starred_date") %>\
+                    </div >\
                 <% } %>\
             </div>\
         </div>\
