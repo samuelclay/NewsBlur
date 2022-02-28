@@ -2556,13 +2556,19 @@ def _mark_story_as_starred(request):
     datas = []
     if not len(story_hashes):
         story, _   = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
-        story_hashes = [story.story_hash]
+        if story:
+            story_hashes = [story.story_hash]
     
     if not len(story_hashes):
         return {'code': -1, 'message': "Could not find story to save."}
     
     for story_hash in story_hashes:
         story, _   = MStory.find_story(story_hash=story_hash)
+        if not story:
+            logging.user(request, "~FCStarring ~FRfailed~FC: %s not found" % (story_hash))
+            datas.append({'code': -1, 'message': "Could not save story, not found", 'story_hash': story_hash})
+            continue
+
         feed_id = story and story.story_feed_id
         
         story_db = dict([(k, v) for k, v in list(story._data.items()) 
@@ -2678,6 +2684,11 @@ def _mark_story_as_unstarred(request):
     datas = []
     for story_hash in story_hashes:
         starred_story = MStarredStory.objects(user_id=request.user.pk, story_hash=story_hash)
+        if not starred_story:
+            logging.user(request, "~FCUnstarring ~FRfailed~FC: %s not found" % (story_hash))
+            datas.append({'code': -1, 'message': "Could not unsave story, not found", 'story_hash': story_hash})
+            continue
+        
         starred_story = starred_story[0]
         logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story.story_title[:50]))
         user_tags = starred_story.user_tags
