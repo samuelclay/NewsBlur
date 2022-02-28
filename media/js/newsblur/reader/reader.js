@@ -599,7 +599,7 @@
             var self = this;
             percentage = percentage || 0;
             seconds = parseFloat(Math.max(1, parseInt(seconds, 10)), 10);
-            
+            var time;
             if (percentage > 90) {
                 time = seconds;
             } else if (percentage > 80) {
@@ -5161,6 +5161,7 @@
             var self = this;
             feed_id = feed_id || this.active_feed;
             var feed = this.model.get_feed(feed_id);
+            if (!feed) return;
             feed.set({
                 fetched_once: false,
                 has_exception: false
