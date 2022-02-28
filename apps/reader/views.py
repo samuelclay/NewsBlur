@@ -1973,42 +1973,57 @@ def mark_story_as_unread(request):
 @required_params('story_hash')
 def mark_story_hash_as_unread(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-    story_hash = request.POST.get('story_hash')
-    feed_id, _ = MStory.split_story_hash(story_hash)
-    story, _ = MStory.find_story(feed_id, story_hash)
-    if not story:
-        data = dict(code=-1, message="That story has been removed from the feed, no need to mark it unread.")
-        return data        
-    message = RUserStory.story_can_be_marked_read_by_user(story, request.user)
-    if message:
-        data = dict(code=-1, message=message)
-        return data
-    
-    # Also count on original subscription
-    usersubs = UserSubscription.objects.filter(user=request.user.pk, feed=feed_id)
-    if usersubs:
-        usersub = usersubs[0]
-        if not usersub.needs_unread_recalc:
-            usersub.needs_unread_recalc = True
-            usersub.save(update_fields=['needs_unread_recalc'])
-        data = usersub.invert_read_stories_after_unread_story(story, request)
-        r.publish(request.user.username, 'feed:%s' % feed_id)
+    story_hashes = request.POST.getlist('story_hash') or request.POST.getlist('story_hash[]')
+    is_list = len(story_hashes) > 1
+    datas = []
+    for story_hash in story_hashes:
+        feed_id, _ = MStory.split_story_hash(story_hash)
+        story, _ = MStory.find_story(feed_id, story_hash)
+        if not story:
+            data = dict(code=-1, message="That story has been removed from the feed, no need to mark it unread.", story_hash=story_hash)
+            if not is_list:
+                return data
+            else:
+                datas.append(data)
+        message = RUserStory.story_can_be_marked_read_by_user(story, request.user)
+        if message:
+            data = dict(code=-1, message=message, story_hash=story_hash)
+            if not is_list:
+                return data
+            else:
+                datas.append(data)
+        
+        # Also count on original subscription
+        usersubs = UserSubscription.objects.filter(user=request.user.pk, feed=feed_id)
+        if usersubs:
+            usersub = usersubs[0]
+            if not usersub.needs_unread_recalc:
+                usersub.needs_unread_recalc = True
+                usersub.save(update_fields=['needs_unread_recalc'])
+            data = usersub.invert_read_stories_after_unread_story(story, request)
+            r.publish(request.user.username, 'feed:%s' % feed_id)
 
-    feed_id, friend_ids = RUserStory.mark_story_hash_unread(request.user, story_hash)
+        feed_id, friend_ids = RUserStory.mark_story_hash_unread(request.user, story_hash)
 
-    if friend_ids:
-        socialsubs = MSocialSubscription.objects.filter(
-                        user_id=request.user.pk,
-                        subscription_user_id__in=friend_ids)
-        for socialsub in socialsubs:
-            if not socialsub.needs_unread_recalc:
-                socialsub.needs_unread_recalc = True
-                socialsub.save()
-            r.publish(request.user.username, 'social:%s' % socialsub.subscription_user_id)
+        if friend_ids:
+            socialsubs = MSocialSubscription.objects.filter(
+                            user_id=request.user.pk,
+                            subscription_user_id__in=friend_ids)
+            for socialsub in socialsubs:
+                if not socialsub.needs_unread_recalc:
+                    socialsub.needs_unread_recalc = True
+                    socialsub.save()
+                r.publish(request.user.username, 'social:%s' % socialsub.subscription_user_id)
 
-    logging.user(request, "~FYUnread story in feed/socialsubs: %s/%s" % (feed_id, friend_ids))
+        logging.user(request, "~FYUnread story in feed/socialsubs: %s/%s" % (feed_id, friend_ids))
 
-    return dict(code=1, story_hash=story_hash, feed_id=feed_id, friend_user_ids=friend_ids)
+        data = dict(code=1, story_hash=story_hash, feed_id=feed_id, friend_user_ids=friend_ids)
+        if not is_list:
+            return data
+        else:
+            datas.append(data)
+
+    return datas
 
 @ajax_login_required
 @json.json_view
@@ -2532,97 +2547,107 @@ def _mark_story_as_starred(request):
     code       = 1
     feed_id    = int(request.POST.get('feed_id', 0))
     story_id   = request.POST.get('story_id', None)
-    story_hash = request.POST.get('story_hash', None)
     user_tags  = request.POST.getlist('user_tags') or request.POST.getlist('user_tags[]')
     user_notes = request.POST.get('user_notes', None)
     highlights = request.POST.getlist('highlights') or request.POST.getlist('highlights[]') or []
     message    = ""
-    if story_hash:
+    story_hashes = request.POST.getlist('story_hash') or request.POST.getlist('story_hash[]')
+    is_list = len(story_hashes) > 1
+    datas = []
+    if not len(story_hashes):
+        story, _   = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
+        story_hashes = [story.story_hash]
+    
+    if not len(story_hashes):
+        return {'code': -1, 'message': "Could not find story to save."}
+    
+    for story_hash in story_hashes:
         story, _   = MStory.find_story(story_hash=story_hash)
         feed_id = story and story.story_feed_id
-    else:
-        story, _   = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
-    
-    if not story:
-        return {'code': -1, 'message': "Could not find story to save."}
         
-    story_db = dict([(k, v) for k, v in list(story._data.items()) 
-                            if k is not None and v is not None])
-    # Pop all existing user-specific fields because we don't want to reuse them from the found story
-    # in case MStory.find_story uses somebody else's saved/shared story (because the original is deleted)
-    story_db.pop('user_id', None)
-    story_db.pop('starred_date', None)
-    story_db.pop('id', None)
-    story_db.pop('user_tags', None)
-    story_db.pop('highlights', None)
-    story_db.pop('user_notes', None)
-    
-    now = datetime.datetime.now()
-    story_values = dict(starred_date=now, user_tags=user_tags, highlights=highlights, user_notes=user_notes, **story_db)
-    params = dict(story_guid=story.story_guid, user_id=request.user.pk)
-    starred_story = MStarredStory.objects(**params).limit(1)
-    created = False
-    changed_user_notes = False
-    removed_user_tags = []
-    removed_highlights = []
-    if not starred_story:
-        params.update(story_values)
-        if 'story_latest_content_z' in params:
-            params.pop('story_latest_content_z')
-        try:
-            starred_story = MStarredStory.objects.create(**params)
-        except OperationError as e:
-            logging.user(request, "~FCStarring ~FRfailed~FC: ~SB%s (~FM~SB%s~FC~SN)" % (story.story_title[:32], e))        
-            return {'code': -1, 'message': "Could not save story due to: %s" % e}
+        story_db = dict([(k, v) for k, v in list(story._data.items()) 
+                                if k is not None and v is not None])
+        # Pop all existing user-specific fields because we don't want to reuse them from the found story
+        # in case MStory.find_story uses somebody else's saved/shared story (because the original is deleted)
+        story_db.pop('user_id', None)
+        story_db.pop('starred_date', None)
+        story_db.pop('id', None)
+        story_db.pop('user_tags', None)
+        story_db.pop('highlights', None)
+        story_db.pop('user_notes', None)
+        
+        now = datetime.datetime.now()
+        story_values = dict(starred_date=now, user_tags=user_tags, highlights=highlights, user_notes=user_notes, **story_db)
+        params = dict(story_guid=story.story_guid, user_id=request.user.pk)
+        starred_story = MStarredStory.objects(**params).limit(1)
+        created = False
+        changed_user_notes = False
+        removed_user_tags = []
+        removed_highlights = []
+        if not starred_story:
+            params.update(story_values)
+            if 'story_latest_content_z' in params:
+                params.pop('story_latest_content_z')
+            try:
+                starred_story = MStarredStory.objects.create(**params)
+            except OperationError as e:
+                logging.user(request, "~FCStarring ~FRfailed~FC: ~SB%s (~FM~SB%s~FC~SN)" % (story.story_title[:32], e))
+                datas.append({'code': -1, 'message': "Could not save story due to: %s" % e, 'story_hash': story_hash})
+                
+            created = True
+            MActivity.new_starred_story(user_id=request.user.pk, 
+                                        story_title=story.story_title, 
+                                        story_feed_id=feed_id,
+                                        story_id=starred_story.story_guid)
+            new_user_tags = user_tags
+            new_highlights = highlights
+            changed_user_notes = bool(user_notes)
+            MStarredStoryCounts.adjust_count(request.user.pk, feed_id=feed_id, amount=1)
+        else:
+            starred_story = starred_story[0]
+            new_user_tags = list(set(user_tags) - set(starred_story.user_tags or []))
+            removed_user_tags = list(set(starred_story.user_tags or []) - set(user_tags))
+            new_highlights = list(set(highlights) - set(starred_story.highlights or []))
+            removed_highlights = list(set(starred_story.highlights or []) - set(highlights))
+            changed_user_notes = bool(user_notes != starred_story.user_notes)
+            starred_story.user_tags = user_tags
+            starred_story.highlights = highlights
+            starred_story.user_notes = user_notes
+            starred_story.save()
+        
+        if len(highlights) == 1 and len(new_highlights) == 1:
+            MStarredStoryCounts.adjust_count(request.user.pk, highlights=True, amount=1)
+        elif len(highlights) == 0 and len(removed_highlights):
+            MStarredStoryCounts.adjust_count(request.user.pk, highlights=True, amount=-1)
             
-        created = True
-        MActivity.new_starred_story(user_id=request.user.pk, 
-                                    story_title=story.story_title, 
-                                    story_feed_id=feed_id,
-                                    story_id=starred_story.story_guid)
-        new_user_tags = user_tags
-        new_highlights = highlights
-        changed_user_notes = bool(user_notes)
-        MStarredStoryCounts.adjust_count(request.user.pk, feed_id=feed_id, amount=1)
-    else:
-        starred_story = starred_story[0]
-        new_user_tags = list(set(user_tags) - set(starred_story.user_tags or []))
-        removed_user_tags = list(set(starred_story.user_tags or []) - set(user_tags))
-        new_highlights = list(set(highlights) - set(starred_story.highlights or []))
-        removed_highlights = list(set(starred_story.highlights or []) - set(highlights))
-        changed_user_notes = bool(user_notes != starred_story.user_notes)
-        starred_story.user_tags = user_tags
-        starred_story.highlights = highlights
-        starred_story.user_notes = user_notes
-        starred_story.save()
-    
-    if len(highlights) == 1 and len(new_highlights) == 1:
-        MStarredStoryCounts.adjust_count(request.user.pk, highlights=True, amount=1)
-    elif len(highlights) == 0 and len(removed_highlights):
-        MStarredStoryCounts.adjust_count(request.user.pk, highlights=True, amount=-1)
+        for tag in new_user_tags:
+            MStarredStoryCounts.adjust_count(request.user.pk, tag=tag, amount=1)
+        for tag in removed_user_tags:
+            MStarredStoryCounts.adjust_count(request.user.pk, tag=tag, amount=-1)
         
-    for tag in new_user_tags:
-        MStarredStoryCounts.adjust_count(request.user.pk, tag=tag, amount=1)
-    for tag in removed_user_tags:
-        MStarredStoryCounts.adjust_count(request.user.pk, tag=tag, amount=-1)
+        if random.random() < 0.01:
+            MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
+        MStarredStoryCounts.count_for_user(request.user.pk, total_only=True)
+        starred_counts, starred_count = MStarredStoryCounts.user_counts(request.user.pk, include_total=True)
+        if not starred_count and len(starred_counts):
+            starred_count = MStarredStory.objects(user_id=request.user.pk).count()    
+        
+        if not changed_user_notes:
+            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+            r.publish(request.user.username, 'story:starred:%s' % story.story_hash)
+        
+        if created:
+            logging.user(request, "~FCStarring: ~SB%s (~FM~SB%s~FC~SN)" % (story.story_title[:32], starred_story.user_tags))        
+        else:
+            logging.user(request, "~FCUpdating starred:~SN~FC ~SB%s~SN (~FM~SB%s~FC~SN/~FM%s~FC)" % (story.story_title[:32], starred_story.user_tags, starred_story.user_notes))
+        
+        datas.append({'code': code, 'message': message, 'starred_count': starred_count, 'starred_counts': starred_counts})
     
-    if random.random() < 0.01:
-        MStarredStoryCounts.schedule_count_tags_for_user(request.user.pk)
-    MStarredStoryCounts.count_for_user(request.user.pk, total_only=True)
-    starred_counts, starred_count = MStarredStoryCounts.user_counts(request.user.pk, include_total=True)
-    if not starred_count and len(starred_counts):
-        starred_count = MStarredStory.objects(user_id=request.user.pk).count()    
-    
-    if not changed_user_notes:
-        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-        r.publish(request.user.username, 'story:starred:%s' % story.story_hash)
-    
-    if created:
-        logging.user(request, "~FCStarring: ~SB%s (~FM~SB%s~FC~SN)" % (story.story_title[:32], starred_story.user_tags))        
-    else:
-        logging.user(request, "~FCUpdating starred:~SN~FC ~SB%s~SN (~FM~SB%s~FC~SN/~FM%s~FC)" % (story.story_title[:32], starred_story.user_tags, starred_story.user_notes))
-    
-    return {'code': code, 'message': message, 'starred_count': starred_count, 'starred_counts': starred_counts}
+    if len(datas) >= 2:
+        return datas
+    elif len(datas) == 1:
+        return datas[0]
+    return datas
     
 @required_params('story_id')
 @ajax_login_required
@@ -2639,15 +2664,20 @@ def mark_story_hash_as_unstarred(request):
 def _mark_story_as_unstarred(request):
     code     = 1
     story_id = request.POST.get('story_id', None)
-    story_hash = request.POST.get('story_hash', None)
+    story_hashes = request.POST.getlist('story_hash') or request.POST.getlist('story_hash[]')
     starred_counts = None
     starred_story = None
-    
     if story_id:
         starred_story = MStarredStory.objects(user_id=request.user.pk, story_guid=story_id)
-    if not story_id or not starred_story:
-        starred_story = MStarredStory.objects(user_id=request.user.pk, story_hash=story_hash or story_id)
-    if starred_story:
+        if starred_story:
+            starred_story = starred_story[0]
+            story_hashes = [starred_story.story_hash]
+        else:
+            story_hashes = [story_id]
+    
+    datas = []
+    for story_hash in story_hashes:
+        starred_story = MStarredStory.objects(user_id=request.user.pk, story_hash=story_hash)
         starred_story = starred_story[0]
         logging.user(request, "~FCUnstarring: ~SB%s" % (starred_story.story_title[:50]))
         user_tags = starred_story.user_tags
@@ -2674,12 +2704,12 @@ def _mark_story_as_unstarred(request):
         
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
         r.publish(request.user.username, 'story:unstarred:%s' % starred_story.story_hash)
-    else:
-        code = -1
     
-    return {'code': code, 'starred_counts': starred_counts}
-
+    if not story_hashes:
+        datas.append(dict(code=-1, message=f"Failed to find {story_hashes}"))
     
+    return {'code': code, 'starred_counts': starred_counts, 'messages': datas}
+        
 @ajax_login_required
 @json.json_view
 def starred_counts(request):
