@@ -80,15 +80,6 @@
       tags:
         - never
         - static
-
-    - name: Pull newsblur_web github
-      git:
-        repo: https://github.com/samuelclay/NewsBlur.git
-        dest: /srv/newsblur/
-        version: master
-      register: pulled
-      tags:
-        - static
     
     - name: Downloading JS/CSS assets from S3
       vars:
@@ -114,19 +105,28 @@
       tags:
         - never
         - static
-    
-    - name: Reload gunicorn
-      become: yes
-      block:
-        - name: Find gunicorn master process
-          shell: "ps -C gunicorn fch -o pid | head -n 1"
-          register: psaux
-        - name: Reload gunicorn
-          command: "kill -HUP {{ psaux.stdout }}"
-      # when: pulled.changed
+
+    - name: Pull newsblur_web github
+      git:
+        repo: https://github.com/samuelclay/NewsBlur.git
+        dest: /srv/newsblur/
+        version: master
+      register: pulled
       tags:
         - static
-        - never
+    
+    # - name: Reload gunicorn
+    #   become: yes
+    #   block:
+    #     - name: Find gunicorn master process
+    #       shell: "ps -C gunicorn fch -o pid | head -n 1"
+    #       register: psaux
+    #     - name: Reload gunicorn
+    #       command: "kill -HUP {{ psaux.stdout }}"
+    #   # when: pulled.changed
+    #   tags:
+    #     - static
+    #     - never
     
     - name: Start Consul
       become: yes
