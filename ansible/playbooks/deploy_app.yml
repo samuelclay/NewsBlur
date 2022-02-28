@@ -115,18 +115,17 @@
       tags:
         - static
     
-    # - name: Reload gunicorn
-    #   become: yes
-    #   block:
-    #     - name: Find gunicorn master process
-    #       shell: "ps -C gunicorn fch -o pid | head -n 1"
-    #       register: psaux
-    #     - name: Reload gunicorn
-    #       command: "kill -HUP {{ psaux.stdout }}"
-    #   # when: pulled.changed
-    #   tags:
-    #     - static
-    #     - never
+    - name: Reload gunicorn due to no git upstream changes
+      become: yes
+      block:
+        - name: Find gunicorn master process
+          shell: "ps -C gunicorn fch -o pid | head -n 1"
+          register: psaux
+        - name: Reload gunicorn
+          command: "kill -HUP {{ psaux.stdout }}"
+      when: not pulled.changed
+      tags:
+        - static
     
     - name: Start Consul
       become: yes
