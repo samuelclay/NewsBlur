@@ -110,7 +110,7 @@
       git:
         repo: https://github.com/samuelclay/NewsBlur.git
         dest: /srv/newsblur/
-        version: magazine
+        version: master
       register: pulled
       tags:
         - static
