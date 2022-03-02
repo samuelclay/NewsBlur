@@ -27,6 +27,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     render: function() {
         var template_name = !this.model.get('selected') && this.options.is_grid ? 
                             'grid_template' : 'template';
+        if (this.options.is_magazine) template_name = "magazine_template";
         // console.log(['render story title', template_name, this.$el[0], this.options.is_grid, this.show_image_preview(), this.options.override_layout, NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'))]);
         this.$el.html(this[template_name]({
             story    : this.model,
@@ -133,6 +134,48 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         <div class="NB-story-detail"></div>\
     '),
     
+    magazine_template: _.template('\
+        <div class="NB-story-title <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %>">\
+            <div class="NB-storytitles-feed-border-inner"></div>\
+            <div class="NB-storytitles-feed-border-outer"></div>\
+            <% if (story.image_url()) { %>\
+                <div class="NB-storytitles-story-image-container">\
+                    <div class="NB-storytitles-story-image" <% if (story.image_url()) { %>style="background-image: none, url(\'<%= story.image_url() %>\');"<% } %>></div>\
+                </div>\
+            <% } %>\
+            <div class="NB-storytitles-content">\
+                <% if (feed) { %>\
+                    <div class="NB-story-feed">\
+                        <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                        <span class="feed_title"><%= feed.get("feed_title") %></span>\
+                    </div>\
+                <% } %>\
+                <a href="<%= story.get("story_permalink") %>" class="story_title NB-hidden-fade">\
+                    <div class="NB-storytitles-star"></div>\
+                    <div class="NB-storytitles-share"></div>\
+                    <div class="NB-storytitles-sentiment"></div>\
+                    <div class="NB-story-manage-icon" role="button"></div>\
+                    <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
+                    <% if (show_content_preview) { %>\
+                        <div class="NB-storytitles-content-preview"><%= show_content_preview %></div>\
+                    <% } %>\
+                </a>\
+            </div>\
+            <div class="NB-storytitles-magazine-bottom">\
+                <span class="NB-storytitles-author"><%= story.story_authors() %></span>\
+                <span class="story_date NB-hidden-fade"><%= story.formatted_short_date() %></span>\
+            </div>\
+            <% if (story.get("comment_count_friends")) { %>\
+                <div class="NB-storytitles-shares">\
+                    <% _.each(story.get("commented_by_friends"), function(user_id) { %>\
+                        <img class="NB-user-avatar" src="<%= NEWSBLUR.assets.user_profiles.find(user_id).get("photo_url") %>">\
+                    <% }) %>\
+                </div>\
+            <% } %>\
+        </div>\
+        <div class="NB-story-detail"></div>\
+    '),
+    
     render_inline_story_detail: function(temporary_text) {
         // console.log(['render_inline_story_detail', this.model.get('story_title')]);
         if (NEWSBLUR.reader.story_view == 'text' || temporary_text) {
@@ -157,6 +200,10 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             this.story_detail.attach_handlers();
             this.story_detail.setElement(this.story_detail.$el);
         }
+    },
+    
+    render_magazine_story_detail: function () {
+        this.render_inline_story_detail();
     },
     
     destroy: function() {
@@ -232,7 +279,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         var story_layout = this.options.override_layout || 
                            NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
         var pane_anchor = this.options.override_layout ? "west" : NEWSBLUR.assets.preference('story_pane_anchor');
-        if (_.contains(['list', 'grid'], story_layout)) return true;
+        if (_.contains(['list', 'grid', 'magazine'], story_layout)) return true;
         if (story_layout == 'split' && _.contains(['north', 'south'], pane_anchor)) return true;
 
         return !!this.model.image_url();
@@ -315,10 +362,10 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 this.select_regex(e, text) || 
                 this.select_regex(d, text);
         if (i) {
-            this.$(".NB-storytitles-story-image").css({
-                'display': 'block',
-                'background-image': "url("+NEWSBLUR.Globals.MEDIA_URL+"img/reader/youtube_play.png), url(" + "https://img.youtube.com/vi/" + i + "/0.jpg" + ")"
-            });
+            // this.$(".NB-storytitles-story-image").css({
+            //     'display': 'block',
+            //     'background-image': "url("+NEWSBLUR.Globals.MEDIA_URL+"img/reader/youtube_play.png), url(" + "https://img.youtube.com/vi/" + i + "/0.jpg" + ")"
+            // });
             return true;
         }
     },
@@ -381,16 +428,19 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         }
     },
     
-    toggle_selected: function(model, selected, options) {
+    toggle_selected: function (model, selected, options) {
+        var story_layout = this.options.override_layout ||
+                           NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
         if (this.options.is_grid) this.render();
         
         this.$st.toggleClass('NB-selected', !!this.model.get('selected'));
         this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
         
         if (!!this.model.get('selected')) {
-            if (_.contains(['list', 'grid'], this.options.override_layout || 
-                                             NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
+            if (_.contains(['list', 'grid'], story_layout)) {
                 this.render_inline_story_detail();
+            } else if (_.contains(['magazine'], story_layout)) {
+                this.render_magazine_story_detail();
             } else {
                 this.destroy_inline_story_detail();
             }
@@ -479,7 +529,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             return;
         }
         
-        if (_.contains(['list', 'grid'], this.options.override_layout || 
+        if (_.contains(['list', 'grid', 'magazine'], this.options.override_layout || 
                                          NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')) &&
             this.model.get('selected')) {
             this.collapse_story();

@@ -388,7 +388,7 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         }
         
         var remove_articles = function(str) {
-            words = str.split(" ");
+            var words = str.split(" ");
             if (words.length <= 1) return str;
             if (words[0] == 'the') return words.splice(1).join(" ");
             return str;
