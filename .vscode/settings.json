@@ -30,4 +30,7 @@
         "--line-length=110",
         "--skip-string-normalization"
     ],
+    "files.associations": {
+        "*.yml": "ansible"
+    },
 }
