@@ -25,4 +25,5 @@
         "docker/volumes": true,
         "requirements.txt": true, // It's just a symlink to config/requirements.txt, which has git history
     },
+    "python.formatting.provider": "black",
 }
