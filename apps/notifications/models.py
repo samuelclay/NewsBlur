@@ -176,7 +176,7 @@ class MUserFeedNotification(mongo.Document):
                 continue
             classifiers = user_feed_notification.classifiers(usersub)
 
-            if classifiers == None:
+            if classifiers is None:
                 if settings.DEBUG:
                     logging.debug("Has no usersubs")
                 continue
