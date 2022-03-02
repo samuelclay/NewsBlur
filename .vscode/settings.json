@@ -4,7 +4,7 @@
     "python.linting.flake8Enabled": true,
     "python.linting.pylamaEnabled": false,
     "python.linting.flake8Args": [
-        "--ignore=E501,W293,W503,W504,E302,E722,E226,E221"
+        "--ignore=E501,W293,W503,W504,E302,E722,E226,E221,E402,E401"
     ],
     "python.pythonPath": "~/.virtualenvs/newsblur3/bin/python",
     "git.ignoreLimitWarning": true,
@@ -26,4 +26,8 @@
         "requirements.txt": true, // It's just a symlink to config/requirements.txt, which has git history
     },
     "python.formatting.provider": "black",
+    "python.formatting.blackArgs": [
+        "--line-length=110",
+        "--skip-string-normalization"
+    ],
 }
