@@ -7,7 +7,9 @@ import django
 django.setup()
 
 import urllib.request, urllib.error, urllib.parse
-import http
+import http, http.client
+http.client._MAXHEADERS = 10000
+
 import xml.sax
 import redis
 import random
