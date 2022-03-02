@@ -8,7 +8,7 @@
     #import <CoreServices/CoreServices.h>
 
 //#define DEBUG 1
-#define PROD_DEBUG 1
+//#define PROD_DEBUG 1
 //#define PROD_BETA 1
 
 #ifdef DEBUG
