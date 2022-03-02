@@ -159,6 +159,14 @@ class MUserFeedNotification(mongo.Document):
 
         for user_feed_notification in notifications:
             sent_count = 0
+            try:
+                user = User.objects.get(pk=user_feed_notification.user_id)
+            except User.DoesNotExist:
+                continue
+            months_ago = datetime.datetime.now() - datetime.timedelta(days=90)
+            if user.profile.last_seen_on < months_ago:
+                logging.user(user, f"~FBSkipping notifications, last seen: ~SB{user.profile.last_seen_on}")
+                continue
             last_notification_date = user_feed_notification.last_notification_date
             try:
                 usersub = UserSubscription.objects.get(
