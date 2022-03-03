@@ -2501,7 +2501,9 @@ class MStory(mongo.Document):
         story_content = self.story_content
         if not story_content and self.story_content_z:
             story_content = smart_str(zlib.decompress(self.story_content_z))
-        
+        else:
+            story_content = smart_str(story_content)
+            
         return story_content
 
         
