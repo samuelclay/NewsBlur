@@ -63,8 +63,8 @@ class DumpRequestMiddleware:
             color = '~SB~FR'
         elif seconds > .1:
             color = '~FW'
-        elif seconds == 0:
-            color = '~FK'
+        # elif seconds == 0:
+        #     color = '~FK~SB'
         return color
 
     def __init__(self, get_response=None):
