@@ -46,7 +46,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.load_youtube_embeds();
         var story_layout = this.options.override_layout || NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
         if (this.options.is_grid) this.watch_grid_image();
-        if (_.contains(['list'], story_layout) && this.show_image_preview()) this.watch_grid_image();
+        if (_.contains(['list', 'magazine'], story_layout) && this.show_image_preview()) this.watch_grid_image();
         if (_.contains(['split'], story_layout) && this.show_image_preview() && NEWSBLUR.assets.preference('feed_view_single_story')) this.watch_grid_image();
         
         return this;
@@ -98,7 +98,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             <div class="NB-storytitles-feed-border-outer"></div>\
             <% if (story.image_url()) { %>\
                 <div class="NB-storytitles-story-image-container">\
-                    <div class="NB-storytitles-story-image"></div>\
+                    <div class="NB-storytitles-story-image" <% if (story.image_url()) { %>style="background-image: none, url(\'<%= story.image_url() %>\');"<% } %>></div>\
                 </div>\
             <% } %>\
             <div class="NB-storytitles-content">\
