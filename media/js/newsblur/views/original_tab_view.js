@@ -308,8 +308,9 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         });
         
         NEWSBLUR.assets.stories.any(_.bind(function(story, i) {
-            if (story.get('story_feed_id') == NEWSBLUR.reader.active_feed || 
-                "social:" + story.get('social_user_id') == NEWSBLUR.reader.active_feed) {
+            if ($iframe &&
+                (story.get('story_feed_id') == NEWSBLUR.reader.active_feed || 
+                "social:" + story.get('social_user_id') == NEWSBLUR.reader.active_feed)) {
                 var $story = this.find_story_in_feed_iframe(story, $iframe);
                 // NEWSBLUR.log(['Fetching story', i, story.get('story_title'), $story]);
             
