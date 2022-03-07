@@ -68,7 +68,7 @@ class DBProfilerMiddleware:
         setattr(request, 'activated_segments', [])
         if (
             # request.path.startswith('/reader/feed') or 
-            request.path in ['/reader/feed']
+            request.path.startswith('/reader/feed/')
         ) and random.random() < 0.01:
             request.activated_segments.append('db_profiler')
             connection.use_debug_cursor = True
