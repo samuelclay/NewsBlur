@@ -12,5 +12,6 @@ urlpatterns = [
     url(r'^share_story/(?P<token>\w+)', views.share_story, name='api-share-story'),
     url(r'^save_story/(?P<token>\w+)', views.save_story, name='api-save-story'),
     url(r'^share_story/?$', views.share_story),
+    url(r'^save_story/?$', views.save_story),
     url(r'^ip_addresses/?$', views.ip_addresses),
 ]

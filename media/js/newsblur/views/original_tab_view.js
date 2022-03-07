@@ -43,7 +43,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
     find_story_in_feed_iframe: function(story) {
         if (!story) return $([]);
         
-        $iframe = this.$el.contents();
+        var $iframe = this.$el.contents();
         var $stories = $([]);
         
         if (this.flags['iframe_story_locations_fetched'] || story.id in this.cache.iframe_stories) {
@@ -240,7 +240,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
             var last_story = this.cache.iframe_story_positions[last_story_position];
             var $last_story;
             if (last_story) {
-                $last_story = this.find_story_in_feed_iframe(last_story, $iframe);
+                $last_story = this.find_story_in_feed_iframe(last_story);
             }
             // NEWSBLUR.log(['last_story', last_story_index, last_story_position, last_story, $last_story]);
             var last_story_same_position;
@@ -258,7 +258,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
             NEWSBLUR.assets.stories.any(_.bind(function(story, i) {
                 if (last_story_same_position && i < last_story_index) return true; 
                 
-                var $story = this.find_story_in_feed_iframe(story, $iframe);
+                var $story = this.find_story_in_feed_iframe(story);
                 // NEWSBLUR.log(['Pre-fetching', i, last_story_index, last_story_same_position, $story, story.get('story_title')]);
                 if (!$story || 
                     !$story.length || 
@@ -308,9 +308,9 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         });
         
         NEWSBLUR.assets.stories.any(_.bind(function(story, i) {
-            if (story.get('story_feed_id') == NEWSBLUR.reader.active_feed || 
-                "social:" + story.get('social_user_id') == NEWSBLUR.reader.active_feed) {
-                var $story = this.find_story_in_feed_iframe(story, $iframe);
+            if ((story.get('story_feed_id') == NEWSBLUR.reader.active_feed || 
+                "social:" + story.get('social_user_id') == NEWSBLUR.reader.active_feed)) {
+                var $story = this.find_story_in_feed_iframe(story);
                 // NEWSBLUR.log(['Fetching story', i, story.get('story_title'), $story]);
             
                 if (self.cache['story_misses'] > 5) {

@@ -470,7 +470,7 @@ var classifier_prototype = {
         // NEWSBLUR.log(['Make Story', story, feed]);
         
         // HTML entities decoding.
-        story_title = _.string.trim($('<div/>').html(story.get('story_title')).text());
+        var story_title = _.string.trim($('<div/>').html(story.get('story_title')).text());
         
         this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal' }, [
             $.make('div', { className: 'NB-modal-loading' }),

@@ -62,6 +62,10 @@ server {
 
     location /static/  {
         gzip_static on;
+        gzip on;
+        gzip_comp_level 6;
+        gzip_vary on;
+        gzip_types text/plain text/css application/json application/x-javascript application/javascript text/xml application/xml application/rss+xml text/javascript image/svg+xml application/vnd.ms-fontobject application/x-font-ttf font/opentype;
         expires max;
         keepalive_timeout 1;
         root /srv/newsblur;

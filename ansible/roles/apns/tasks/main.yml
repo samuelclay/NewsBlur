@@ -10,5 +10,4 @@
     dest: "/srv/newsblur/config/certificates/{{ item }}"
     mode: 0400
   with_items:
-    - aps.pem
     - aps.p12.pem
