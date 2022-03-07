@@ -4,6 +4,7 @@
     repo: https://github.com/getsentry/self-hosted.git
     dest: /srv/sentry/
     version: master
+  notify: reload sentry
 
 - name: Register sentry in consul
   tags: consul
