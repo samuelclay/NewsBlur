@@ -19,6 +19,7 @@ class RedisDumpMiddleware(object):
         if not getattr(Connection, '_logging', False):
             # save old methods
             setattr(Connection, '_logging', True)
+            connection.queriesx = []
             Connection.pack_command = \
                     self._instrument(Connection.pack_command)
 
