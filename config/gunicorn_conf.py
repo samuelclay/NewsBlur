@@ -21,16 +21,10 @@ limit_request_fields = 1000
 worker_tmp_dir = "/dev/shm"
 reload = True
 
-if GIGS_OF_MEMORY > NUM_CPUS:
-    workers = NUM_CPUS
-else:
-    workers = int(NUM_CPUS / 2)
+workers = max(int(math.floor(GIGS_OF_MEMORY * 2)), 3)
 
-if workers <= 4:
-    workers = max(int(math.floor(GIGS_OF_MEMORY * 1000 / 512)), 3)
-
-if workers > 8:
-    workers = 8
+if workers > 4:
+    workers = 4
 
 if os.environ.get('DOCKERBUILD', False):
     workers = 2

@@ -21,6 +21,7 @@ rebuild:
 
 collectstatic: 
 	- rm -fr static
+	- docker pull newsblur/newsblur_deploy
 	- docker run --rm -v $(shell pwd):/srv/newsblur newsblur/newsblur_deploy
 
 #creates newsblur, builds new images, and creates/refreshes SSL keys

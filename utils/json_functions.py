@@ -7,11 +7,11 @@ from decimal import Decimal
 from django.core import serializers
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden, Http404
-from django.core.mail import mail_admins
 from django.db.models.query import QuerySet
 # from django.utils.deprecation import CallableBool
 from mongoengine.queryset.queryset import QuerySet as MongoQuerySet
 from bson.objectid import ObjectId
+from utils import log as logging
 import sys
 import datetime
 
@@ -161,7 +161,8 @@ def json_response(request, response=None):
                     'text': str(e)}
         code = 500
         if not settings.DEBUG:
-            mail_admins(subject, message, fail_silently=True)
+            logging.debug(f" ***> JSON exception {subject}: {message}")
+            logging.debug('\n'.join(traceback.format_exception(*exc_info)))
         else:
             print('\n'.join(traceback.format_exception(*exc_info)))
 
