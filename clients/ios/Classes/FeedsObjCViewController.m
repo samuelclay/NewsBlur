@@ -295,7 +295,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     if (self.appDelegate.isCompactWidth) {
         [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.2];
-        [self performSelector:@selector(clearSelectedHeader) withObject:nil afterDelay:0.2];
+        [self performSelector:@selector(fadeSelectedHeader) withObject:nil afterDelay:0.2];
         self.currentRowAtIndexPath = nil;
     }
     
@@ -1691,6 +1691,18 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     button.backgroundColor = [UIColor clearColor];
     
     [self highlightSelectedHeader];
+}
+
+- (void)fadeSelectedHeader {
+    if (self.currentSection >= 0) {
+        FolderTitleView *title = self.folderTitleViews[@(self.currentSection)];
+        
+        [UIView animateWithDuration:0.2 animations:^{
+            title.invisibleHeaderButton.layer.backgroundColor = [UIColor clearColor].CGColor;
+        } completion:NULL];
+        
+        self.currentSection = -1;
+    }
 }
 
 - (void)clearSelectedHeader {
