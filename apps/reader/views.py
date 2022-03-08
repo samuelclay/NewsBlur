@@ -1634,8 +1634,11 @@ def load_river_stories_widget(request):
     thumbnail_urls = []
     for story in river_stories_data['stories']:
         thumbnail_values = list(story['secure_image_thumbnails'].values())
-        if thumbnail_values:
-            thumbnail_urls.append(thumbnail_values[0])
+        for thumbnail_value in thumbnail_values:
+            if 'data:' in thumbnail_value:
+                continue
+            thumbnail_urls.append(thumbnail_value)
+            break
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
         pages = executor.map(load_url, thumbnail_urls)
