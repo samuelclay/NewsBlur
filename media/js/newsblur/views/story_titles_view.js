@@ -40,6 +40,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 model: story,
                 collection: collection,
                 is_grid: story_layout == 'grid',
+                is_magazine: story_layout == 'magazine',
                 override_layout: override_layout,
                 on_dashboard: on_dashboard
             }).render();
@@ -71,6 +72,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                     model: story,
                     collection: collection,
                     is_grid: story_layout == 'grid',
+                    is_magazine: story_layout == 'magazine',
                     override_layout: override_layout,
                     on_dashboard: on_dashboard
                 }).render();
@@ -256,7 +258,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         ]);
         var story_layout = this.options.override_layout ||
                            NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
-        if (_.contains(['list', 'grid'], story_layout) || NEWSBLUR.assets.preference('mark_read_on_scroll_titles')) {
+        if (_.contains(['list', 'grid', 'magazine'], story_layout) || NEWSBLUR.assets.preference('mark_read_on_scroll_titles')) {
             var pane_height = this.$story_titles.height();
             var endbar_height = 20;
             var last_story_height = 80;
@@ -308,7 +310,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         // console.log(["scroll_to_selected_story 1", story, options]);
         var story_title_visisble = this.$story_titles.isScrollVisible(story_title_view.$el);
         if (!story_title_visisble || options.force || 
-            _.contains(['list', 'grid'], story_layout)) {
+            _.contains(['list', 'grid', 'magazine'], story_layout)) {
             var container_offset = this.$story_titles.position().top;
             var scroll = story_title_view.$el.find('.NB-story-title').position().top;
             if (options.scroll_to_comments) {
@@ -318,7 +320,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             var height = this.$story_titles.outerHeight();
             var position = scroll+container-height/5;
             // console.log(["scroll_to_selected_story 2", container_offset, scroll, container, height, position]);
-            if (_.contains(['list', 'grid'], story_layout)) {
+            if (_.contains(['list', 'grid', 'magazine'], story_layout)) {
                 position = scroll+container;
             }
             if (story_layout == 'grid') {

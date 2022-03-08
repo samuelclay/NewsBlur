@@ -198,6 +198,13 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                                     $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_grid_active.png' }),
                                     $.make("div", { className: "NB-layout-title" }, "Grid")
                                 ])
+                            ]),
+                            $.make('div', [
+                                $.make('label', { 'for': 'NB-preference-layout-5' }, [
+                                    $.make('input', { id: 'NB-preference-layout-5', type: 'radio', name: 'story_layout', value: 'magazine' }),
+                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_magazine_active.png' }),
+                                    $.make("div", { className: "NB-layout-title" }, "Magazine")
+                                ])
                             ])
                         ])                                                  
                     ])

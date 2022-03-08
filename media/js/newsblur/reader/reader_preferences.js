@@ -382,6 +382,13 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                     $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_grid_active.png' }),
                                     $.make("div", { className: "NB-layout-title" }, "Grid")
                                 ])
+                            ]),
+                            $.make('div', [
+                                $.make('label', { 'for': 'NB-preference-layout-5' }, [
+                                    $.make('input', { id: 'NB-preference-layout-5', type: 'radio', name: 'story_layout', value: 'magazine' }),
+                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL+'/img/icons/circular/nav_story_magazine_active.png' }),
+                                    $.make("div", { className: "NB-layout-title" }, "Magazine")
+                                ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
@@ -759,25 +766,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Open links'
                         ])
                     ]),
-                    $.make('div', { className: 'NB-preference NB-preference-fullwidthdstory' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-fullwidthdstory-1', type: 'radio', name: 'full_width_story', value: "false" }),
-                                $.make('label', { 'for': 'NB-preference-fullwidthdstory-1' }, [
-                                    'Wrap story content at 700px to ease reading'
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-fullwidthdstory-2', type: 'radio', name: 'full_width_story', value: "true" }),
-                                $.make('label', { 'for': 'NB-preference-fullwidthdstory-2' }, [
-                                    'Wrap story content at the edge of the screen'
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label'}, [
-                            'Story width'
-                        ])
-                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-truncatestory' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -1127,12 +1115,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=read_story_delay]', $modal).each(function() {
             if ($(this).val() == ""+NEWSBLUR.Preferences.read_story_delay) {
-                $(this).prop('checked', true);
-                return false;
-            }
-        });
-        $('input[name=full_width_story]', $modal).each(function() {
-            if ($(this).val() == ""+NEWSBLUR.Preferences.full_width_story) {
                 $(this).prop('checked', true);
                 return false;
             }
