@@ -17,7 +17,7 @@
     #define DEFAULT_ICONS_HOST [NSString stringWithFormat:@"http://nb.local.com/rss_feeds/icon"]
 #elif PROD_DEBUG
     #define BACKGROUND_REFRESH_SECONDS 5
-    #define DEFAULT_NEWSBLUR_URL [NSString stringWithFormat:@"http://debug.newsblur.com"]
+    #define DEFAULT_NEWSBLUR_URL [NSString stringWithFormat:@"http://staging.newsblur.com"]
     #define DEFAULT_ICONS_HOST [NSString stringWithFormat:@"https://s3.amazonaws.com/icons.newsblur.com"]
 #elif PROD_BETA
     #define BACKGROUND_REFRESH_SECONDS 60*60
