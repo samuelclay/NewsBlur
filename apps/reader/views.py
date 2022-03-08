@@ -1624,6 +1624,8 @@ def load_river_stories_widget(request):
             logging.user(request.user, '"%s" not fetched in %ss' % (url, (time.time() - start)))
             return None
         data = conn.read()
+        if not url.startswith("data:"):
+            data = base64.b64encode(page['data']).decode('utf-8')
         logging.user(request.user, '"%s" fetched in %ss' % (url, (time.time() - start)))
         return dict(url=original_url, data=data)
     
@@ -1641,11 +1643,12 @@ def load_river_stories_widget(request):
     thumbnail_data = dict()
     for page in pages:
         if not page: continue
-        thumbnail_data[page['url']] = base64.b64encode(page['data']).decode('utf-8')
+        thumbnail_data[page['url']] = page['data']
     for story in river_stories_data['stories']:
         thumbnail_values = list(story['secure_image_thumbnails'].values())
         if thumbnail_values and thumbnail_values[0] in thumbnail_data:
-            story['select_thumbnail_data'] = thumbnail_data[thumbnail_values[0]]
+            page_url = thumbnail_values[0]
+            story['select_thumbnail_data'] = thumbnail_data[page_url]
         
     logging.user(request, ("Elapsed Time: %ss" % (time.time() - start)))
     
