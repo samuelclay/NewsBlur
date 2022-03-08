@@ -308,9 +308,6 @@
     cell.imageView.tintColor = UIColorFromRGB(0x303030);
 
     if (indexPath.row == 0) {
-        cell.textLabel.text = @"Delete this site";
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_delete.png"];
-    } else if (indexPath.row == 1) {
         bool isSaved = [[self.appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isSaved) {
             cell.textLabel.text = @"Unsave this story";
@@ -318,7 +315,7 @@
             cell.textLabel.text = @"Save this story";
         }
         cell.imageView.image = [UIImage imageNamed:@"clock.png"];
-    } else if (indexPath.row == 2) {
+    } else if (indexPath.row == 1) {
         bool isRead = [[self.appDelegate.activeStory objectForKey:@"read_status"] boolValue];
         if (isRead) {
             cell.textLabel.text = @"Mark as unread";
@@ -326,15 +323,18 @@
             cell.textLabel.text = @"Mark as read";
         }
         cell.imageView.image = [UIImage imageNamed:@"g_icn_unread.png"];
-    } else if (indexPath.row == 3) {
+    } else if (indexPath.row == 2) {
         cell.textLabel.text = @"Send to...";
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_mail.png"];
-    } else if (indexPath.row == 4) {
+    } else if (indexPath.row == 3) {
         cell.textLabel.text = @"Train this story";
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_train.png"];
-    } else if (indexPath.row == 5) {
+    } else if (indexPath.row == 4) {
         cell.textLabel.text = @"Share this story";
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_share.png"];
+    } else if (indexPath.row == 5) {
+        cell.textLabel.text = @"Delete this site";
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_delete.png"];
     } else if (indexPath.row == 6) {
         NSString *fontStyle = [[NSUserDefaults standardUserDefaults] stringForKey:@"fontStyle"];
         if (!fontStyle) {
@@ -368,26 +368,26 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row != 0 && indexPath.row != 6) {
+    if (indexPath.row != 5 && indexPath.row != 6) {
         [self dismissViewControllerAnimated:indexPath.row != 3 && indexPath.row != 4 completion:nil];
     }
     
     if (indexPath.row == 0) {
-        [self confirmDeleteSite:self.navigationController];
-    } else if (indexPath.row == 1) {
         [self.appDelegate.storiesCollection toggleStorySaved];
         [self.appDelegate.feedDetailViewController reloadData];
         [self.appDelegate.storyPagesViewController refreshHeaders];
-    } else if (indexPath.row == 2) {
+    } else if (indexPath.row == 1) {
         [self.appDelegate.storiesCollection toggleStoryUnread];
         [self.appDelegate.feedDetailViewController reloadData];
         [self.appDelegate.storyPagesViewController refreshHeaders];
-    } else if (indexPath.row == 3) {
+    } else if (indexPath.row == 2) {
         [self.appDelegate.storyPagesViewController openSendToDialog:self.appDelegate.storyPagesViewController.fontSettingsButton];
-    } else if (indexPath.row == 4) {
+    } else if (indexPath.row == 3) {
         [self.appDelegate openTrainStory:self.appDelegate.storyPagesViewController.fontSettingsButton];
-    } else if (indexPath.row == 5) {
+    } else if (indexPath.row == 4) {
         [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
+    } else if (indexPath.row == 5) {
+        [self confirmDeleteSite:self.navigationController];
     } else if (indexPath.row == 6) {
         [self showFontList];
     }
