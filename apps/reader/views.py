@@ -1614,7 +1614,8 @@ def load_river_stories_widget(request):
         scontext.verify_mode = ssl.VerifyMode.CERT_NONE
         try:
             conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
-        except urllib.request.URLError:
+        except urllib.request.URLError as e:
+            # logging.user(request.user, '"%s" wasn\'t fetched, trying again: %s' % (url, e))
             url = url.replace('localhost', 'haproxy')
             conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
         except urllib.request.URLError as e:
@@ -1625,7 +1626,7 @@ def load_river_stories_widget(request):
             return None
         data = conn.read()
         if not url.startswith("data:"):
-            data = base64.b64encode(page['data']).decode('utf-8')
+            data = base64.b64encode(data).decode('utf-8')
         logging.user(request.user, '"%s" fetched in %ss' % (url, (time.time() - start)))
         return dict(url=original_url, data=data)
     
