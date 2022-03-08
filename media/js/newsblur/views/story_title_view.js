@@ -36,7 +36,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                         NEWSBLUR.reader.flags.social_view) &&
                          NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')),
             options  : this.options,
-            show_content_preview : this.show_content_preview(),
+            show_content_preview : this.show_content_preview(template_name),
             show_image_preview : this.show_image_preview()
         }));
         this.$st = this.$(".NB-story-title");
@@ -251,15 +251,15 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         }
     },
     
-    show_content_preview: function() {
+    show_content_preview: function(template_name) {
         var preference = NEWSBLUR.assets.preference('show_content_preview');
         if (!preference) return preference;
         var max_length = preference == 'small' ? 300 : preference == 'medium' ? 600 : 1000;
 
-        if (this.options.override_layout == 'grid' || 
-            NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'grid') {
+        if (_.contains(['grid_template', 'magazine_template'], template_name)) {
             max_length = preference == 'small' ? 500 : preference == 'medium' ? 1000 : 1500;
-            return this.model.content_preview('story_content', max_length) || " ";
+            var preserve_paragraphs = true;
+            return this.model.content_preview('story_content', max_length, preserve_paragraphs) || " ";
         }
         var pruned_description = this.model.content_preview('story_content', max_length) || " ";
         var pruned_title = this.model.content_preview('story_title');

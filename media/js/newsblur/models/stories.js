@@ -45,12 +45,14 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         return score_name;
     },
     
-    content_preview: function(attribute, length) {
+    content_preview: function(attribute, length, preserve_paragraphs) {
         var content = this.get(attribute);
         if (!attribute || !content) content = this.story_content(); 
         // First do a naive strip, which is faster than rendering which makes network calls
-        content = content && content.replace(/<(?:.|\n)*?>/gm, ' ');
-        content = content && Inflector.stripTags(content);
+        content = content && content.replace(/<p(>| [^>]+>)/ig, '\n\n').replace(/(<([^>]+)>)/ig, ' ')
+        if (preserve_paragraphs) {
+            content = content && _.string.trim(content).replace(/\n{2,}/gm, '<br><br>').replace(/(<br\s*\/?>\s*){3,}/igm, '<br><br>');
+        }
         content = content && content.replace(/[\u00a0\u200c]/g, ' '); // Invisible space, boo
         content = content && content.replace(/\s+/gm, ' ');
 
