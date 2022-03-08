@@ -57,15 +57,11 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="enable_row_global_shared"
-            android:title="@string/settings_enable_row_global_shared" 
-            android:summary="@string/settings_enable_row_global_shared_sum"
-            />
+            android:title="@string/settings_enable_row_global_shared" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="enable_row_infrequent_stories"
-            android:title="@string/settings_enable_row_infrequent_stories" 
-            android:summary="@string/settings_enable_row_infrequent_stories_sum"
-            />
+            android:title="@string/settings_enable_row_infrequent_stories" />
     </PreferenceCategory>
 
     <PreferenceCategory 
