@@ -711,9 +711,20 @@ class UserSubscription(models.Model):
     
     def invert_read_stories_after_unread_story(self, story, request=None):
         data = dict(code=1)
-        if story.story_date > self.mark_read_date: 
+        if story.story_date > self.mark_read_date:
             return data
-            
+
+        # Check if user is archive and story is outside unread cutoff
+        if self.user.profile.is_archive and story.story_date < self.user.profile.unread_cutoff:
+            user_unread_story = MUserUnreadStory.mark_unread(
+                user_id=self.user_id,
+                feed_id=story.story_feed_id,
+                story_hash=story.story_hash,
+                story_date=story.story_date,
+            )
+            data['story_hashes'] = [story.story_hash]
+            return data
+        
         # Story is outside the mark as read range, so invert all stories before.
         newer_stories = MStory.objects(story_feed_id=story.story_feed_id,
                                        story_date__gte=story.story_date,
@@ -1160,18 +1171,18 @@ class RUserStory:
     @staticmethod
     def story_can_be_marked_read_by_user(story, user):
         message = None
-        if story.story_date < user.profile.unread_cutoff:
-            if user.profile.is_archive:
-                message = "Story is more than %s days old, change your days of unreads under Preferences." % (
-                          user.profile.days_of_unread)
-            elif user.profile.is_premium:
+        if story.story_date < user.profile.unread_cutoff and not user.profile.is_archive:
+            # if user.profile.is_archive:
+            #     message = "Story is more than %s days old, change your days of unreads under Preferences." % (
+            #               user.profile.days_of_unread)
+            if user.profile.is_premium:
                 message = "Story is more than %s days old. Premium Archive accounts can mark any story as unread." % (
                           settings.DAYS_OF_UNREAD)
             elif story.story_date > user.profile.unread_cutoff_premium:
                 message = "Story is older than %s days. Premium has %s days, and Premium Archive can mark anything unread." % (
                           settings.DAYS_OF_UNREAD_FREE, settings.DAYS_OF_UNREAD)
             else:
-                message = "Story is more than %s days old, cannot mark as unread." % (
+                message = "Story is more than %s days old, only Premium Archive can mark older stories unread." % (
                           settings.DAYS_OF_UNREAD_FREE)
         return message
         
@@ -1718,3 +1729,40 @@ class Feature(models.Model):
     
     class Meta:
         ordering = ["-date"]
+
+class MUserUnreadStory(mongo.Document):
+    """Model to store manually unread stories that are older than a user's unread_cutoff 
+    (same as days_of_unread). This is built for Premium Archive purposes.
+
+    If a story is marked as unread but is within the unread_cutoff, no need to add a 
+    UserUnreadStory instance as it will be automatically marked as read according to
+    the user's days_of_unread preference.
+    """
+    user_id = mongo.IntField()
+    feed_id = mongo.IntField()
+    story_hash = mongo.StringField(max_length=12)
+    story_date = mongo.DateTimeField()
+    unread_date = mongo.DateTimeField(default=datetime.datetime.now)
+    
+    meta = {
+        'collection': 'user_unread_story',
+        'allow_inheritance': False,
+        'indexes': ['user_id', 'feed_id', ('user_id', 'story_hash')],
+    }
+    
+    def __str__(self):
+        return "%s unread %s on %s" % (self.user_id, self.story_hash, self.unread_date)
+
+    @classmethod
+    def mark_unread(cls, user_id, feed_id, story_hash, story_date):
+        user_unread_story = cls.objects.create(
+            user_id=user_id, feed_id=feed_id, story_hash=story_hash, story_date=story_date
+        )
+        return user_unread_story
+
+    @classmethod
+    def unreads(cls, user_id, story_hash):
+        if not isinstance(story_hash, list):
+            story_hash = [story_hash]
+        user_unread_stories = cls.objects.filter(user_id=user_id, story_hash__in=story_hash)
+        return user_unread_stories
