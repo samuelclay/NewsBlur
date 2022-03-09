@@ -172,8 +172,6 @@ static const CGFloat kFolderTitleHeight = 36.0;
             
             if (!self.flat) {
                 section = folder;
-                [sections addObject:section];
-                [indexTitles addObject:section.title.length ? [section.title substringToIndex:1] : @"-"];
             }
             
             for (id feedId in self.dictFolders[folderName]) {
@@ -185,9 +183,20 @@ static const CGFloat kFolderTitleHeight = 36.0;
                     info = self.inactiveFeeds[feedIdStr];
                 }
                 
-                if (![appDelegate isSocialFeed:feedIdStr] && ![appDelegate isSavedFeed:feedIdStr]) {
+                BOOL wantFeed = ![appDelegate isSocialFeed:feedIdStr] && ![appDelegate isSavedFeed:feedIdStr];
+                
+                if (wantFeed && self.operation == FeedChooserOperationWidgetSites && ![info[@"active"] boolValue]) {
+                    wantFeed = NO;
+                }
+                
+                if (wantFeed) {
                     [section addItemWithInfo:info];
                 }
+            }
+            
+            if (!self.flat && section.contents.count) {
+                [sections addObject:section];
+                [indexTitles addObject:section.title.length ? [section.title substringToIndex:1] : @"-"];
             }
         }
     }
