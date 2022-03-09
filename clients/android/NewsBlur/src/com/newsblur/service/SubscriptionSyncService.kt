@@ -7,11 +7,11 @@ import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
 import com.newsblur.subscription.SubscriptionManagerImpl
+import com.newsblur.subscription.SubscriptionsListener
 import com.newsblur.util.AppConstants
 import com.newsblur.util.Log
 import com.newsblur.util.NBScope
 import com.newsblur.util.PrefsUtils
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
@@ -24,6 +24,8 @@ import kotlinx.coroutines.launch
  */
 class SubscriptionSyncService : JobService() {
 
+    private val scope = NBScope
+
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.d(this, "onStartJob")
         if (!PrefsUtils.hasCookie(this)) {
@@ -31,15 +33,22 @@ class SubscriptionSyncService : JobService() {
             return false
         }
 
-        NBScope.launch(Dispatchers.Default) {
-            val subscriptionManager = SubscriptionManagerImpl(this@SubscriptionSyncService, this)
-            val job = subscriptionManager.syncActiveSubscription()
-            job.invokeOnCompletion {
-                Log.d(this, "sync active subscription completed.")
-                // manually trigger jobFinished after work is done
+        val subscriptionManager = SubscriptionManagerImpl(this@SubscriptionSyncService, scope)
+        subscriptionManager.startBillingConnection(object : SubscriptionsListener {
+            override fun onBillingConnectionReady() {
+                scope.launch {
+                    subscriptionManager.syncActiveSubscription()
+                    Log.d(this, "sync active subscription completed.")
+                    // manually call jobFinished after work is done
+                    jobFinished(params, false)
+                }
+            }
+
+            override fun onBillingConnectionError(message: String?) {
+                // manually call jobFinished on error
                 jobFinished(params, false)
             }
-        }
+        })
 
         return true // returning true due to background thread work
     }

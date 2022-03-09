@@ -33,7 +33,6 @@ import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.view.ReadingScrollView.ScrollChangeListener
 import com.newsblur.viewModel.StoriesViewModel
 import java.lang.Runnable
-import java.util.*
 import kotlin.math.abs
 
 abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeListener,
@@ -52,12 +51,22 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
     private var readingAdapter: ReadingAdapter? = null
     private var stopLoading = false
     private var unreadSearchActive = false
+    // marking a story as read immediately on reading page scroll
+    private var isMarkStoryReadImmediately = false
 
     // unread count for the circular progress overlay. set to nonzero to activate the progress indicator overlay
     private var startingUnreadCount = 0
     private var overlayRangeTopPx = 0f
     private var overlayRangeBotPx = 0f
     private var lastVScrollPos = 0
+
+    // enabling multi window mode from recent apps on the device
+    // creates a different activity lifecycle compared to a device rotation
+    // resulting in onPause being called when the app is actually on the screen.
+    // calling onPause sets stopLoading as true and content wouldn't be loaded.
+    // track the multi window mode config change and skip stopLoading in first onPause call.
+    // refactor stopLoading mechanism as a cancellation signal tied to the view lifecycle.
+    private var isMultiWindowModeHack = false
 
     private val pageHistory = mutableListOf<Story>()
 
@@ -107,6 +116,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
 
         intelState = PrefsUtils.getStateFilter(this)
         volumeKeyNavigation = PrefsUtils.getVolumeKeyNavigation(this)
+        isMarkStoryReadImmediately = PrefsUtils.isMarkStoryReadImmediately(this)
 
         setupViews()
         setupListeners()
@@ -143,8 +153,17 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
     }
 
     override fun onPause() {
-        stopLoading = true
         super.onPause()
+        if (isMultiWindowModeHack) {
+            isMultiWindowModeHack = false
+        } else {
+            stopLoading = true
+        }
+    }
+
+    override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration?) {
+        super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig)
+        isMultiWindowModeHack = isInMultiWindowMode
     }
 
     private fun setupViews() {
@@ -164,12 +183,10 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
         enableProgressCircle(binding.readingOverlayProgressLeft, false)
         enableProgressCircle(binding.readingOverlayProgressRight, false)
 
-        supportFragmentManager.commit {
-            val fragment =
-                    supportFragmentManager.findFragmentByTag(ReadingPagerFragment::class.java.name) as ReadingPagerFragment?
-                            ?: ReadingPagerFragment.newInstance()
-            add(R.id.activity_reading_container, fragment, ReadingPagerFragment::class.java.name)
-        }
+        supportFragmentManager.findFragmentByTag(ReadingPagerFragment::class.java.name)
+                ?: supportFragmentManager.commit {
+                    add(R.id.activity_reading_container, ReadingPagerFragment.newInstance(), ReadingPagerFragment::class.java.name)
+                }
     }
 
     private fun setupListeners() {
@@ -371,12 +388,14 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
                     readingAdapter?.let { readingAdapter ->
                         val story = readingAdapter.getStory(position)
                         if (story != null) {
-                            FeedUtils.markStoryAsRead(story, this@Reading)
                             synchronized(pageHistory) {
                                 // if the history is just starting out or the last entry in it isn't this page, add this page
                                 if (pageHistory.size < 1 || story != pageHistory[pageHistory.size - 1]) {
                                     pageHistory.add(story)
                                 }
+                            }
+                            if (isMarkStoryReadImmediately) {
+                                FeedUtils.markStoryAsRead(story, this@Reading)
                             }
                         }
                         checkStoryCount(position)

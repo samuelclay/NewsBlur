@@ -734,7 +734,7 @@ public class PrefsUtils {
         return prefs.getBoolean(PrefConstants.STORIES_AUTO_OPEN_FIRST, false);
     }
 
-    public static boolean isMarkReadOnScroll(Context context) {
+    public static boolean isMarkReadOnFeedScroll(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, false);
     }
@@ -1039,5 +1039,14 @@ public class PrefsUtils {
     public static boolean hasCookie(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE);
         return preferences.getString(PrefConstants.PREF_COOKIE, null) != null;
+    }
+
+    public static MarkStoryReadBehavior getMarkStoryReadBehavior(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return MarkStoryReadBehavior.valueOf(preferences.getString(PrefConstants.STORY_MARK_READ_BEHAVIOR, MarkStoryReadBehavior.IMMEDIATELY.name()));
+    }
+
+    public static boolean isMarkStoryReadImmediately(Context context) {
+        return getMarkStoryReadBehavior(context).equals(MarkStoryReadBehavior.IMMEDIATELY);
     }
 }
