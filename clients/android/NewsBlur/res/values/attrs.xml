@@ -18,6 +18,7 @@
     <attr name="chip" format="string" />
     <attr name="actionButtons" format="string" />
     <attr name="storyButtons" format="string" />
+    <attr name="storyButtonsDimmed" format="string" />
     <attr name="shareBarBackground" format="string" />
     <attr name="shareBarText" format="string" />
     <attr name="commentsHeader" format="string" />

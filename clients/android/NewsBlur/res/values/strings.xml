@@ -5,26 +5,26 @@
     <string name="login_username_hint">username</string>
     <string name="login_password_hint">password</string>
     <string name="login_registration_email_hint">email address</string>
-    <string name="login_button_login">Log In</string>
-    <string name="login_forgot_password"><u>I forgot my password</u></string>
-    <string name="login_custom_server"><u>I have a custom server</u></string>
+    <string name="login_button_login">Login</string>
+    <string name="login_forgot_password"><u>Forgot password</u></string>
+    <string name="login_custom_server"><u>Self-hosted custom server</u></string>
     <string name="login_custom_server_hint">https://www.newsblur.com</string>
     <string name="login_message_error">There was problem logging in to NewsBlur.</string>
     <string name="login_logging_in">Logging in…</string>
-    <string name="login_logged_in">Logged in!</string>
+    <string name="login_logged_in">Reticulating splines…</string>
     <string name="login_retrieving_feeds">Retrieving feeds…</string>
     <string name="login_next">Next</string>
-    <string name="login_custom_server_scheme_error">Expected \'https://\' custom server URL</string>
+    <string name="login_custom_server_scheme_error">Expected \'https://\' in custom server URL</string>
 
     <string name="search_for_feed">Search for feeds</string>
 
     <string name="loading">Loading…</string>
     <string name="orig_text_loading">Fetching story text…</string>
     
-    <string name="follow_error">There was a problem following the user. Check your internet connection and try again.</string>
-    <string name="unfollow_error">There was a problem unfollowing the user. Check your internet connection and try again.</string>
+    <string name="follow_error">There was a problem following the user.</string>
+    <string name="unfollow_error">There was a problem unfollowing the user.</string>
     
-    <string name="description_login_button">Press to log in.</string>
+    <string name="description_login_button">Press to log in</string>
     <string name="description_login_logo">NewsBlur Logo</string>
 	<string name="description_profile_picture">The user\'s profile picture</string>
 	<string name="description_row_folder_icon">folder icon</string>
@@ -36,9 +36,9 @@
     <string name="description_empty_list_image">Empty list placeholder</string>
     <string name="description_menu">Menu</string>
 
-    <string name="title_choose_folders">Choose Folders for Feed %s</string>
-    <string name="title_rename_feed">Rename Feed %s</string>
-    <string name="title_rename_folder">Rename Folder %s</string>
+    <string name="title_choose_folders">Choose folders for feed %s</string>
+    <string name="title_rename_feed">Rename feed %s</string>
+    <string name="title_rename_folder">Rename folder %s</string>
 
 	<string name="all_stories_title">All Stories</string>
 	<string name="infrequent_title">Infrequent Site Stories</string>
@@ -50,7 +50,7 @@
 
     <string name="top_level">TOP LEVEL</string>
 	
-	<string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nShared with NewsBlur.com</string>
+	<string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nShared with NewsBlur</string>
 	<string name="share_comment_hint">Comment (Optional)</string>
 	<string name="share_newsblur">Share \"%s\" to your Blurblog?</string>
     <string name="share_this">Share</string>
@@ -64,6 +64,8 @@
 	<string name="save_this">Save</string>
 	<string name="unsave_this">Unsave</string>
     <string name="train_this">Train</string>
+    <string name="story_mark_unread_state">Read</string>
+    <string name="story_mark_read_state">Mark story read</string>
 
     <string name="overlay_next">Next</string>
     <string name="overlay_done">Done</string>
@@ -223,8 +225,8 @@
     <string name="menu_feedback">Send app feedback</string>
     <string name="menu_feedback_post">Create a feedback post</string>
     <string name="menu_feedback_email">Email a bug report</string>
-    <string name="menu_theme_choose">Theme…</string>
-    <string name="menu_premium_account">Premium Account</string>
+    <string name="menu_theme_choose">Theme</string>
+    <string name="menu_premium_account">Premium subscription…</string>
 
     <string name="description_add_new_folder_icon">Add new folder icon</string>
 
@@ -237,7 +239,7 @@
     <string name="empty_list_view_no_stories_unread">No unread stories</string>
 
     <string name="empty_list_view_no_unread_stories">You have no unread stories.</string>
-    <string name="empty_list_view_no_focus_stories">You have no unread stories in Focus mode.\n\nSwitch to All or Unread.</string>
+    <string name="empty_list_view_no_focus_stories">You have no unread stories in Focus.\n\nSwitch to All or Unread.</string>
     <string name="empty_list_view_no_saved_stories">You have no saved stories.\n\nSwitch to All or Unread.</string>
     
     <string name="login_registration_custom_server">Custom server</string>
@@ -267,9 +269,9 @@
     <string name="feed_opens">%d opens</string>
     <string name="feed_stories_per_month">%d stories/month</string>
     
-    <string name="settings">Preferences</string>
-    <string name="mute_sites">Mute Sites</string>
-    <string name="widget">Widget</string>
+    <string name="settings">Preferences…</string>
+    <string name="mute_sites">Mute Sites…</string>
+    <string name="widget">Widget…</string>
     <string name="title_widget_setup">Tap to setup in NewsBlur</string>
     <string name="title_no_subscriptions">No active subscriptions detected</string>
     <string name="title_widget_loading">Loading…</string>
@@ -297,14 +299,14 @@
     <string name="premium_text_view">Text view conveniently extracts the story</string>
     <string name="premium_shiloh">You feed Shiloh, my poor, hungry dog, for a month</string>
 
-    <string name="settings_cat_offline">Offline</string>
-    <string name="settings_enable_offline">Download Stories</string>
+    <string name="settings_cat_offline">Offline reading</string>
+    <string name="settings_enable_offline">Download stories</string>
     <string name="settings_enable_offline_sum">Periodically fetch stories in background</string>
-    <string name="settings_enable_image_prefetch">Download Images</string>
+    <string name="settings_enable_image_prefetch">Download images</string>
     <string name="settings_enable_image_prefetch_sum">Pre-fetch images for offline reading</string>
-    <string name="settings_enable_text_prefetch">Download Text</string>
-    <string name="settings_enable_text_prefetch_sum">Pre-fetch text for offline reading</string>
-    <string name="settings_keep_old_stories">Keep Stories after Reading</string>
+    <string name="settings_enable_text_prefetch">Download full text</string>
+    <string name="settings_enable_text_prefetch_sum">Pre-fetch full text for offline reading</string>
+    <string name="settings_keep_old_stories">Keep stories after reading</string>
     <string name="settings_keep_old_stories_sum">Disable to reduce storage usage</string>
 
     <string name="mute_config_title">You can follow up to 64 sites with a free standard account</string>
@@ -313,7 +315,7 @@
     <string name="mute_config_upgrade">UPGRADE</string>
     <string name="mute_config_sites">%1$s/%2$s</string>
 
-    <string name="menu_network_select">Download Using</string>
+    <string name="menu_network_select">Download using…</string>
     <string name="menu_network_select_sum">Restrict background data to chosen networks</string>
     <string name="menu_network_select_opt_any">Any Network</string>
     <string name="menu_network_select_opt_nomo">Any Wifi or Ethernet</string>
@@ -330,13 +332,13 @@
     </string-array>
     <string name="default_network_select_value">NOMONONME</string>
 
-    <string name="menu_delete_offline_stories">Delete offline stories …</string>
+    <string name="menu_delete_offline_stories">Delete offline stories…</string>
     <string name="menu_delete_offline_stories_key">delete_offline_stories</string>
-    <string name="menu_delete_offline_stories_sum">Clear all offline stories and images</string>
+    <string name="menu_delete_offline_stories_sum">Free up space by clearing stored stories and images</string>
     <string name="menu_delete_offline_stories_confirmation">Cleared all stories and images!</string>
 
-    <string name="menu_cache_age_select">Maximum Cache Age</string>
-    <string name="menu_cache_age_select_sum">Clean up cached story content after…</string>
+    <string name="menu_cache_age_select">How long to keep stories…</string>
+    <string name="menu_cache_age_select_sum">Clear stored stories for offline reading</string>
     <string name="menu_cache_age_select_opt_2d">2 days (reduce storage use)</string>
     <string name="menu_cache_age_select_opt_7d">7 days</string>
     <string name="menu_cache_age_select_opt_14d">14 days</string>
@@ -355,9 +357,9 @@
     </string-array>
     <string name="default_cache_age_select_value">CACHE_AGE_30D</string>
 
-    <string name="settings_cat_feed_list">Feed List</string>
+    <string name="settings_cat_feed_list">Feed list</string>
 
-    <string name="setting_feed_list_order">Feed list order</string>
+    <string name="setting_feed_list_order">Feed list order…</string>
     <string name="settings_enable_row_global_shared">Show Global Shared Stories</string>
     <string name="settings_enable_row_global_shared_sum">Show the Global Shared Stories folder</string>
     <string name="settings_enable_row_infrequent_stories">Show Infrequent Stories</string>
@@ -366,8 +368,8 @@
     <string name="settings_cat_story_list">Story List</string>
 
     <string name="oldest">Oldest</string>
-    <string name="newest">Newest First</string>
-    <string name="menu_story_order">Story Order</string>
+    <string name="newest">Newest first</string>
+    <string name="menu_story_order">Story order…</string>
     <string-array name="default_story_order_entries">
         <item>@string/newest</item>
         <item>@string/oldest</item>
@@ -390,12 +392,12 @@
     </string-array>
     <string name="default_feed_list_order_value">ALPHABETICAL</string>
 
-    <string name="all_stories">All Stories</string>
-    <string name="unread_only">Unread Only</string>
-    <string name="menu_story_content_preview">Content Preview</string>
-    <string name="menu_story_thumbnail_preview">Thumbnail Preview</string>
-    <string name="menu_mark_read_on_scroll">Mark Read On Scroll</string>
-    <string name="menu_read_filter">Read Filter</string>
+    <string name="all_stories">All stories</string>
+    <string name="unread_only">Unread only</string>
+    <string name="menu_story_content_preview">Story content preview</string>
+    <string name="menu_story_thumbnail_preview">Thumbnail preview</string>
+    <string name="menu_mark_read_on_scroll">Mark read on scroll</string>
+    <string name="menu_read_filter">Read story filter…</string>
     <string-array name="default_read_filter_entries">
         <item>@string/all_stories</item>
         <item>@string/unread_only</item>
@@ -419,19 +421,52 @@
         <item>Cancel</item>
     </string-array>
 
-    <string name="settings_auto_open_first_unread">Auto-Open First Story</string>
-    <string name="settings_auto_open_first_unread_sum">Automatically open first unread story from story list</string>
+    <string name="settings_auto_open_first_unread">Auto-open first story</string>
+    <string name="settings_auto_open_first_unread_sum">Automatically open first unread story in the story list</string>
 
-    <string name="settings_mark_read_on_scroll">Mark Stories Read On Scroll</string>
-    <string name="settings_mark_read_on_scroll_sum">Automatically mark stories as read when scrolled past</string>
+    <string name="settings_mark_read_on_feed_scroll">Mark story titles read on scroll</string>
+    <string name="settings_mark_read_on_feed_scroll_sum">Automatically mark stories as read when scrolled past</string>
 
-    <string name="settings_social">Social</string>
-    <string name="settings_show_public_comments">Show Public Comments</string>
+    <string name="settings_mark_story_read">Mark a story as read…</string>
+    <string name="mark_story_read_immediately">Immediately</string>
+<!--    <string name="mark_story_read_5_seconds">After 5 seconds</string>-->
+<!--    <string name="mark_story_read_10_seconds">After 10 seconds</string>-->
+<!--    <string name="mark_story_read_20_seconds">After 20 seconds</string>-->
+<!--    <string name="mark_story_read_30_seconds">After 30 seconds</string>-->
+<!--    <string name="mark_story_read_45_seconds">After 45 seconds</string>-->
+<!--    <string name="mark_story_read_60_seconds">After 60 seconds</string>-->
+    <string name="mark_story_read_manually">Manually</string>
+    <string-array name="mark_story_read_entries">
+        <item>@string/mark_story_read_immediately</item>
+<!--        <item>@string/mark_story_read_5_seconds</item>-->
+<!--        <item>@string/mark_story_read_10_seconds</item>-->
+<!--        <item>@string/mark_story_read_20_seconds</item>-->
+<!--        <item>@string/mark_story_read_30_seconds</item>-->
+<!--        <item>@string/mark_story_read_45_seconds</item>-->
+<!--        <item>@string/mark_story_read_60_seconds</item>-->
+        <item>@string/mark_story_read_manually</item>
+    </string-array>
+
+    <string-array name="mark_story_read_values">
+        <item>IMMEDIATELY</item>
+<!--        <item>SECONDS_5</item>-->
+<!--        <item>SECONDS_10</item>-->
+<!--        <item>SECONDS_20</item>-->
+<!--        <item>SECONDS_30</item>-->
+<!--        <item>SECONDS_45</item>-->
+<!--        <item>SECONDS_60</item>-->
+        <item>MANUALLY</item>
+    </string-array>
+
+    <string name="mark_story_read_default_value">IMMEDIATELY</string>
+
+    <string name="settings_social">Sharing stories</string>
+    <string name="settings_show_public_comments">Show public comments</string>
     <string name="settings_reading">Reading</string>
-    <string name="settings_content_preview">Content Preview Text</string>
-    <string name="settings_thumbnails_style">Image Preview Thumbnails</string>
+    <string name="settings_content_preview">Content preview text…</string>
+    <string name="settings_thumbnails_style">Image preview thumbnails…</string>
     <string name="settings_notifications">Notifications</string>
-    <string name="settings_enable_notifications">Enable Notifications</string>
+    <string name="settings_enable_notifications">Enable notifications</string>
 
     <string-array name="show_content_preview_entries">
         <item>@string/story_content_preview_none</item>
@@ -509,10 +544,10 @@
     <string name="sync_status_offline">Offline</string>
     <string name="sync_status_feed_add">Adding feed …</string>
 
-    <string name="volume_key_navigation">Volume Key Navigation</string>
+    <string name="volume_key_navigation">Volume key navigation…</string>
     <string name="off">Off</string>
-    <string name="volume_up_next">Up = Next Story</string>
-    <string name="volume_down_next">Down = Next Story</string>
+    <string name="volume_up_next">Up = next story</string>
+    <string name="volume_down_next">Down = next story</string>
     <string-array name="volume_key_navigation_entries">
         <item>@string/off</item>
         <item>@string/volume_up_next</item>
@@ -525,10 +560,10 @@
     </string-array>
     <string name="default_volume_key_navigation_value">OFF</string>
 
-    <string name="settings_confirm_mark_all_read">Confirm Mark All Read</string>
-    <string name="none">None</string>
-    <string name="feed_and_folder">Feeds and Folders</string>
-    <string name="folder_only">Folders Only</string>
+    <string name="settings_confirm_mark_all_read">Confirm mark all read on…</string>
+    <string name="none">Neither</string>
+    <string name="feed_and_folder">Feeds and folders</string>
+    <string name="folder_only">Folders only</string>
     <string-array name="confirm_mark_all_read_entries">
         <item>@string/feed_and_folder</item>
         <item>@string/folder_only</item>
@@ -541,15 +576,15 @@
     </string-array>
     <string name="confirm_mark_all_read_value">FOLDER_ONLY</string>
 
-    <string name="settings_confirm_mark_range_read">Confirm Mark Older/Newer Read</string>
+    <string name="settings_confirm_mark_range_read">Confirm mark older/newer read</string>
 
-    <string name="settings_ltr_gesture_action">Rightward Swipe on Story Title</string>
-    <string name="gest_action_none">No Action</string>
-    <string name="gest_action_markread">Mark Story Read</string>
-    <string name="gest_action_markunread">Mark Story Unread</string>
-    <string name="gest_action_save">Save Story</string>
-    <string name="gest_action_unsave">Unsave Story</string>
-    <string name="gest_action_statistics">Statistics</string>
+    <string name="settings_ltr_gesture_action">Rightward swipe on story title…</string>
+    <string name="gest_action_none">No action</string>
+    <string name="gest_action_markread">Mark story as read</string>
+    <string name="gest_action_markunread">Mark story as unread</string>
+    <string name="gest_action_save">Save story</string>
+    <string name="gest_action_unsave">Unsave story</string>
+    <string name="gest_action_statistics">Site statistics</string>
     <string-array name="ltr_gesture_action_entries">
         <item>@string/gest_action_none</item>
         <item>@string/gest_action_markread</item>
@@ -568,7 +603,7 @@
     </string-array>
     <string name="ltr_gesture_action_value">GEST_ACTION_MARKREAD</string>
 
-    <string name="settings_rtl_gesture_action">Leftward Swipe on Story Title</string>
+    <string name="settings_rtl_gesture_action">Leftward swipe on story title…</string>
     <string-array name="rtl_gesture_action_entries">
         <item>@string/gest_action_none</item>
         <item>@string/gest_action_markread</item>
@@ -587,8 +622,8 @@
     </string-array>
     <string name="rtl_gesture_action_value">GEST_ACTION_MARKUNREAD</string>
 
-    <string name="default_browser">Default browser</string>
-    <string name="font">Font</string>
+    <string name="default_browser">Default browser…</string>
+    <string name="font">Font…</string>
     <string name="default_font">Default</string>
     <string name="gotham_narrow_font">Gotham Narrow</string>
     <string name="chronicle_font">Chronicle</string>
@@ -649,7 +684,7 @@
     <string name="default_default_browser">@string/system_default_prefvalue</string>
 
     <string name="story_notification_channel_id">story_notification_channel</string>
-    <string name="story_notification_channel_name">New Stories</string>
+    <string name="story_notification_channel_name">New stories</string>
     <string name="go_to_feed">Go to feed</string>
 
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
