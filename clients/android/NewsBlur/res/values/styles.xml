@@ -184,8 +184,6 @@
 
     <style name="storyButtons" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:textSize">14sp</item>
-        <item name="android:layout_marginLeft">8dp</item>
-        <item name="android:layout_marginRight">8dp</item>
         <item name="android:textColor">@color/gray75</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
@@ -195,8 +193,6 @@
     </style>
     <style name="storyButtons.dark" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:textSize">14sp</item>
-        <item name="android:layout_marginLeft">8dp</item>
-        <item name="android:layout_marginRight">8dp</item>
         <item name="android:textColor">@color/gray46</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
