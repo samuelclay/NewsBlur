@@ -175,7 +175,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.storyContextMenuButton.setOnClickListener { onClickMenuButton() }
-        binding.markReadStoryButton.setOnClickListener { clickMarkStoryRead() }
+        readingItemActionsBinding.markReadStoryButton.setOnClickListener { clickMarkStoryRead() }
         readingItemActionsBinding.trainStoryButton.setOnClickListener { clickTrain() }
         readingItemActionsBinding.saveStoryButton.setOnClickListener { clickSave() }
         readingItemActionsBinding.shareStoryButton.setOnClickListener { clickShare() }
@@ -343,10 +343,10 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     private fun updateMarkReadButton() {
         if (markStoryReadBehavior == MarkStoryReadBehavior.MANUALLY) {
-            binding.markReadStoryButton.visibility = View.VISIBLE
-            binding.markReadStoryButton.setStoryReadState(requireContext(), story!!.read)
+            readingItemActionsBinding.markReadStoryButton.visibility = View.VISIBLE
+            readingItemActionsBinding.markReadStoryButton.setStoryReadState(requireContext(), story!!.read)
         } else {
-            binding.markReadStoryButton.visibility = View.GONE
+            readingItemActionsBinding.markReadStoryButton.visibility = View.GONE
         }
     }
 
