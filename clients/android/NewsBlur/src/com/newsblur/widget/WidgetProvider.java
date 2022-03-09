@@ -15,6 +15,7 @@ import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.WidgetConfig;
 import com.newsblur.util.FeedSet;
+import com.newsblur.util.PendingIntentUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.WidgetBackground;
 
@@ -88,8 +89,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
             Intent configIntent = new Intent(context, WidgetProvider.class);
             configIntent.setAction(WidgetUtils.ACTION_OPEN_CONFIG);
-            PendingIntent configIntentTemplate = PendingIntent.getBroadcast(context, WidgetUtils.RC_WIDGET_CONFIG, configIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent configIntentTemplate = PendingIntentUtils.getImmutableBroadcast(context, WidgetUtils.RC_WIDGET_CONFIG, configIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             rv.setOnClickPendingIntent(R.id.widget_empty_view, configIntentTemplate);
 
             // This section makes it possible for items to have individualized behavior.
@@ -104,7 +104,7 @@ public class WidgetProvider extends AppWidgetProvider {
             touchIntent.setAction(WidgetUtils.ACTION_OPEN_STORY);
             touchIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-            PendingIntent touchIntentTemplate = PendingIntent.getBroadcast(context, WidgetUtils.RC_WIDGET_STORY, touchIntent,
+            PendingIntent touchIntentTemplate = PendingIntentUtils.getImmutableBroadcast(context, WidgetUtils.RC_WIDGET_STORY, touchIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
             rv.setPendingIntentTemplate(R.id.widget_list, touchIntentTemplate);
 

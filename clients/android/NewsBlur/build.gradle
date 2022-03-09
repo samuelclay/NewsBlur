@@ -27,7 +27,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 dependencies {
-    implementation 'androidx.fragment:fragment-ktx:1.4.0'
+    implementation 'androidx.fragment:fragment-ktx:1.4.1'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'com.squareup.okhttp3:okhttp:4.9.2'
@@ -40,7 +40,7 @@ dependencies {
     implementation "androidx.browser:browser:1.4.0"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0"
     implementation 'androidx.lifecycle:lifecycle-process:2.4.0'
-    implementation 'androidx.core:core-splashscreen:1.0.0-alpha02'
+    implementation 'androidx.core:core-splashscreen:1.0.0-beta01'
 }
 
 android {
@@ -49,8 +49,8 @@ android {
         applicationId "com.newsblur"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 199
-        versionName "11.2"
+        versionCode 202
+        versionName "11.3.0"
     }
     compileOptions.with {
         sourceCompatibility = JavaVersion.VERSION_1_8

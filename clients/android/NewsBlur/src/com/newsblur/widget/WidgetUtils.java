@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 
+import com.newsblur.util.PendingIntentUtils;
 import com.newsblur.util.Log;
 import com.newsblur.util.PrefsUtils;
 
@@ -28,7 +29,7 @@ public class WidgetUtils {
         Log.d(TAG, "enableWidgetUpdate");
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = getUpdateIntent(context);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, RC_WIDGET_UPDATE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntentUtils.getImmutableBroadcast(context, RC_WIDGET_UPDATE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         int widgetUpdateInterval = 1000 * 60 * 5;
         long startAlarmAt = SystemClock.currentThreadTimeMillis() + widgetUpdateInterval;
@@ -38,7 +39,7 @@ public class WidgetUtils {
     public static void disableWidgetUpdate(Context context) {
         Log.d(TAG, "disableWidgetUpdate");
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, RC_WIDGET_UPDATE, getUpdateIntent(context), PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntentUtils.getImmutableBroadcast(context, RC_WIDGET_UPDATE, getUpdateIntent(context), PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.cancel(pendingIntent);
     }
 
@@ -68,7 +69,7 @@ public class WidgetUtils {
     }
 
     public static void checkWidgetUpdateAlarm(Context context) {
-        boolean hasActiveUpdates = PendingIntent.getBroadcast(context, RC_WIDGET_UPDATE, getUpdateIntent(context), PendingIntent.FLAG_NO_CREATE) != null;
+        boolean hasActiveUpdates = PendingIntentUtils.getImmutableBroadcast(context, RC_WIDGET_UPDATE, getUpdateIntent(context), PendingIntent.FLAG_NO_CREATE) != null;
         if (!hasActiveUpdates) {
             enableWidgetUpdate(context);
         }
