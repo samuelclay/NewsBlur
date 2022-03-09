@@ -243,7 +243,7 @@ resource "digitalocean_droplet" "node-images" {
   image    = var.droplet_os
   name     = "node-images"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
