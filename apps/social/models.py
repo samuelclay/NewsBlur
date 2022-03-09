@@ -1542,7 +1542,17 @@ class MSharedStory(mongo.DynamicDocument):
     @property
     def decoded_story_title(self):
         return pyhtml.unescape(self.story_title)
-        
+
+    @property
+    def story_content_str(self):
+        story_content = self.story_content
+        if not story_content and self.story_content_z:
+            story_content = smart_str(zlib.decompress(self.story_content_z))
+        else:
+            story_content = smart_str(story_content)
+            
+        return story_content
+
     def canonical(self):
         return {
             "user_id": self.user_id,
