@@ -13,6 +13,7 @@
 
     - name: Update Sentry release
       connection: local
+      run_once: yes
       shell: >
         curl {{ sentry_web_release_webhook }}/ \
         -X POST \
@@ -80,15 +81,6 @@
       tags:
         - never
         - static
-
-    - name: Pull newsblur_web github
-      git:
-        repo: https://github.com/samuelclay/NewsBlur.git
-        dest: /srv/newsblur/
-        version: pro
-      register: pulled
-      tags:
-        - static
     
     - name: Downloading JS/CSS assets from S3
       vars:
@@ -114,8 +106,17 @@
       tags:
         - never
         - static
+
+    - name: Pull newsblur_web github
+      git:
+        repo: https://github.com/samuelclay/NewsBlur.git
+        dest: /srv/newsblur/
+        version: pro
+      register: pulled
+      tags:
+        - static
     
-    - name: Reload gunicorn
+    - name: Reload gunicorn due to no git upstream changes
       become: yes
       block:
         - name: Find gunicorn master process
@@ -123,7 +124,7 @@
           register: psaux
         - name: Reload gunicorn
           command: "kill -HUP {{ psaux.stdout }}"
-      # when: pulled.changed
+      when: not pulled.changed
       tags:
         - static
     

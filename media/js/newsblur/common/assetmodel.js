@@ -1026,6 +1026,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     
     refresh_feed: function(feed_id, callback) {
         var self = this;
+        var feed = this.feeds.get(feed_id);
+        if (!feed) return;
         
         var pre_callback = function(data) {
             // NEWSBLUR.log(['refresh_feed pre_callback', data]);
@@ -1037,7 +1039,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             this.make_request('/reader/feed/'+feed_id,
                 {
                     page: 0,
-                    feed_address: this.feeds.get(feed_id).get('feed_address')
+                    feed_address: feed.get('feed_address')
                 }, pre_callback,
                 null,
                 {
@@ -1417,7 +1419,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             if (setting == 'read_filter' && _.string.contains(feed_id, 'river:')) {
                 default_setting = 'unread';
             }
-            return feed && feed[s] || default_setting;
+            var view_setting = feed && feed[s] || default_setting;
+            // if (view_setting == "magazine") view_setting = "list";
+            return view_setting;
         }
         
         var view_settings = _.clone(NEWSBLUR.Preferences.view_settings[feed_id+'']) || {};
@@ -1640,7 +1644,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     
     save_exception_retry: function(feed_id, callback, error_callback) {
         var self = this;
-        
+        var feed = this.feeds.get(feed_id);
+        if (!feed) return;
+
         var pre_callback = function(data) {
             // NEWSBLUR.log(['refresh_feed pre_callback', data]);
             self.post_refresh_feeds(data, callback);
@@ -1648,8 +1654,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         this.make_request('/rss_feeds/exception_retry', {
           'feed_id': feed_id, 
-          'reset_fetch': !!(this.feeds.get(feed_id).get('has_feed_exception') ||
-                            this.feeds.get(feed_id).get('has_page_exception'))
+          'reset_fetch': !!(feed.get('has_feed_exception') ||
+                            feed.get('has_page_exception'))
         }, pre_callback, error_callback);
     },
         

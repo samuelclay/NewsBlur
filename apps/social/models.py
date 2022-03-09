@@ -23,7 +23,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.core.mail import EmailMultiAlternatives
-from django.utils.encoding import smart_bytes
+from django.utils.encoding import smart_bytes, smart_str
 from apps.reader.models import UserSubscription, RUserStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
@@ -1542,7 +1542,17 @@ class MSharedStory(mongo.DynamicDocument):
     @property
     def decoded_story_title(self):
         return pyhtml.unescape(self.story_title)
-        
+
+    @property
+    def story_content_str(self):
+        story_content = self.story_content
+        if not story_content and self.story_content_z:
+            story_content = smart_str(zlib.decompress(self.story_content_z))
+        else:
+            story_content = smart_str(story_content)
+            
+        return story_content
+
     def canonical(self):
         return {
             "user_id": self.user_id,

@@ -49,6 +49,15 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
             this.$popover.addClass("in");
             this.$overlay.addClass("in");
         }
+
+        // Need time to let animation begin so height registers as non-zero
+        _.defer(_.bind(function () {
+            if ($(window).height() < (this.$popover.height() + 100)) {
+                this.$popover.addClass('NB-popover-scroll');
+                $(".popover-content", this.$popover).css('max-height', $(window).height() - 100);
+                this.$popover.width(this.options.width + 18);
+            }
+        }, this));
         
         return this;
     },

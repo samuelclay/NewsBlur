@@ -23,7 +23,9 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         "click .NB-view-setting-option": "change_view_setting",
         "click .NB-line-spacing-option": "change_line_spacing",
         "click .NB-story-titles-pane-option": "change_story_titles_pane",
+        "click .NB-story-position-option": "change_story_position",
         "click .NB-single-story-option": "change_single_story",
+        "click .NB-story-": "change_story_position",
         "click .NB-grid-columns-option": "change_grid_columns",
         "click .NB-grid-height-option": "change_grid_height",
         "click .NB-premium-link": "open_premium_modal"
@@ -74,8 +76,21 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         $.make('div', { className: 'NB-icon' }),
                         'Single Story'
                     ])
+                ]),
+                $.make('ul', { className: 'segmented-control NB-options-story-position' }, [
+                    $.make('li', { className: 'NB-story-position-option NB-options-story-position-stretch', role: "button" }, [
+                        'Full width'
+                    ]),
+                    $.make('li', { className: 'NB-story-position-option NB-options-story-position-left', role: "button" }, [
+                        $.make('div', { className: 'NB-icon' })
+                    ]),
+                    $.make('li', { className: 'NB-story-position-option NB-options-story-position-center NB-active', role: "button" }, [
+                        $.make('div', { className: 'NB-icon' })
+                    ]),
+                    $.make('li', { className: 'NB-story-position-option NB-options-story-position-right NB-active', role: "button" }, [
+                        $.make('div', { className: 'NB-icon' })
+                    ])
                 ])
-
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, 'Story Layout - Grid Columns'),
@@ -138,8 +153,8 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     ])
                 ]),
                 (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-premium-explainer' }, [
-                    'Premium fonts require a ',
-                    $.make('spam', { className: 'NB-splash-link NB-premium-link' }, 'premium account')
+                    'Premium fonts require a ',
+                    $.make('span', { className: 'NB-splash-link NB-premium-link' }, 'premium account')
                 ]))
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
@@ -204,6 +219,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var grid_height = NEWSBLUR.assets.preference('grid_height');
         var image_preview = NEWSBLUR.assets.preference('image_preview');
         var content_preview = NEWSBLUR.assets.preference('show_content_preview');
+        var story_position = NEWSBLUR.assets.preference('story_position');
         
         this.$('.NB-font-family-option').removeClass('NB-active');
         this.$('.NB-options-font-family-'+font_family).addClass('NB-active');
@@ -216,6 +232,8 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.$('.NB-line-spacing-option').removeClass('NB-active');
         this.$('.NB-options-line-spacing-'+line_spacing).addClass('NB-active');
 
+        this.$('.NB-story-position-option').removeClass('NB-active');
+        this.$('.NB-options-story-position-'+story_position).addClass('NB-active');
         this.$('.NB-story-titles-pane-option').removeClass('NB-active');
         this.$('.NB-options-story-titles-pane-'+titles_layout_pane).addClass('NB-active');
         this.$('.NB-single-story-option').removeClass('NB-active');
@@ -372,6 +390,27 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         NEWSBLUR.assets.preference('story_pane_anchor', setting);
         NEWSBLUR.assets.preference('story_titles_pane_size', pane_size);
         NEWSBLUR.reader.apply_resizable_layout({right_side: true});
+    },
+
+    change_story_position: function(e) {
+        var $target = $(e.currentTarget);
+        
+        if ($target.hasClass("NB-options-story-position-stretch")) {
+            this.update_story_position('stretch');
+        } else if ($target.hasClass("NB-options-story-position-left")) {
+            this.update_story_position('left');
+        } else if ($target.hasClass("NB-options-story-position-center")) {
+            this.update_story_position('center');
+        } else if ($target.hasClass("NB-options-story-position-right")) {
+            this.update_story_position('right');
+        }
+        
+        this.show_correct_options();
+    },
+    
+    update_story_position: function(setting) {
+        NEWSBLUR.assets.preference('story_position', setting);
+        NEWSBLUR.reader.add_body_classes();
     },
     
     change_single_story: function(e) {

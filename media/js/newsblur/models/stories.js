@@ -45,16 +45,32 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         return score_name;
     },
     
-    content_preview: function(attribute, length) {
+    content_preview: function(attribute, length, preserve_paragraphs) {
         var content = this.get(attribute);
         if (!attribute || !content) content = this.story_content(); 
         // First do a naive strip, which is faster than rendering which makes network calls
-        content = content && content.replace(/<(?:.|\n)*?>/gm, ' ');
-        content = content && Inflector.stripTags(content);
-        content = content && content.replace(/[\u00a0\u200c]/g, ' '); // Invisible space, boo
-        content = content && content.replace(/\s+/gm, ' ');
+        content = content && content
+            .replace(/<p(>| [^>]+>)/ig, '\n\n')
+            .replace(/(<br(\s*\/)?>\s*){3,}/igm, '\n\n')
+            .replace(/<(\/)?h[1-6].*?>/igm, '\n\n')
+            .replace(/<(div).*?>/igm, '\n\n')
+            .replace(/<blockquote.*?>/igm, '\n\n&gt; ')
+            .replace(/<[^>]+>/ig, ' ')
+            .replace(/&nbsp;/ig, ' ')
+            .replace(/[\u00a0\u200c]/g, ' ') // Invisible space, boo
+            .replace(/(\n\s*\n){1,}/gm, '\n\n')
+            .replace(/\n\n&gt;\s+/gm, '\n\n&gt; ')
+            .replace(/([^\n])\n([^\n])/gm, '$1 $2');
+        
+        if (!preserve_paragraphs) {
+            content = content && content.replace(/\s+/gm, ' ');
+        }
 
-        return _.string.prune(_.string.trim(content), length || 150, "...");
+        content = _.string.prune(_.string.trim(content), length || 150, "...");
+        if (preserve_paragraphs) {
+            content = content.replace(/\n/gm, '<br>')
+        }
+        return content
     },
     
     image_url: function(index) {
@@ -62,7 +78,6 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         if (this.get('image_urls').length >= index+1) {
             var url = this.get('image_urls')[index];
             if (window.location.protocol == 'https:' && 
-                NEWSBLUR.Globals.is_staff &&
                 _.str.startsWith(url, "http://")) {
                 var secure_url = this.get('secure_image_urls')[url];
                 if (secure_url) url = secure_url;

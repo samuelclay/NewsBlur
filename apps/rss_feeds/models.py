@@ -2559,6 +2559,17 @@ class MStory(mongo.Document):
     def decoded_story_title(self):
         return html.unescape(self.story_title)
 
+    @property
+    def story_content_str(self):
+        story_content = self.story_content
+        if not story_content and self.story_content_z:
+            story_content = smart_str(zlib.decompress(self.story_content_z))
+        else:
+            story_content = smart_str(story_content)
+            
+        return story_content
+
+        
     def save(self, *args, **kwargs):
         story_title_max = MStory._fields['story_title'].max_length
         story_content_type_max = MStory._fields['story_content_type'].max_length
@@ -2841,12 +2852,10 @@ class MStory(mongo.Document):
         
         story_content = None
         if not text:
-            story_content = self.story_content
-            if not story_content and self.story_content_z:
-                story_content = zlib.decompress(self.story_content_z)
+            story_content = self.story_content_str
         elif text:
             if self.original_text_z:
-                story_content = zlib.decompress(self.original_text_z)
+                story_content = smart_str(zlib.decompress(self.original_text_z))
         if not story_content:
             return
         
@@ -2862,6 +2871,33 @@ class MStory(mongo.Document):
                 return
 
         images = soup.findAll('img')
+        
+        # Add youtube thumbnail and insert appropriately before/after images. 
+        # Give the Youtube a bit of an edge.
+        video_thumbnails = soup.findAll('iframe', src=lambda x: x and any(y in x for y in ['youtube.com', 'ytimg.com']))
+        for video_thumbnail in video_thumbnails:
+            video_src = video_thumbnail.get('src')
+            video_id = re.search('.*?youtube.com/embed/([A-Za-z0-9\-_]+)', video_src)
+            if not video_id:
+                video_id = re.search('.*?youtube.com/v/([A-Za-z0-9\-_]+)', video_src)
+            if not video_id:
+                video_id = re.search('.*?ytimg.com/vi/([A-Za-z0-9\-_]+)', video_src)
+            if not video_id:
+                video_id = re.search('.*?youtube.com/watch\?v=([A-Za-z0-9\-_]+)', video_src)
+            if not video_id:
+                logging.debug(f" ***> Couldn't find youtube url in {video_thumbnail}: {video_src}")
+                continue
+            video_img_url = f"https://img.youtube.com/vi/{video_id.groups()[0]}/0.jpg"
+            iframe_index = story_content.index('<iframe')
+            try:
+                img_index = story_content.index('<img')*3
+            except ValueError:
+                img_index = None
+            if not img_index or iframe_index < img_index:
+                images.insert(0, video_img_url)
+            else:
+                images.append(video_img_url)
+
         if not images:
             if not text:
                 return self.extract_image_urls(force=force, text=True)
@@ -2873,7 +2909,10 @@ class MStory(mongo.Document):
             image_urls = []
             
         for image in images:
-            image_url = image.get('src')
+            if isinstance(image, str):
+                image_url = image
+            else:
+                image_url = image.get('src')
             if not image_url:
                 continue
             if image_url and len(image_url) >= 1024:
