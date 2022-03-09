@@ -7,7 +7,6 @@ import urllib.request, urllib.parse, urllib.error
 import urllib.parse
 import random
 import warnings
-from django.core.mail import mail_admins
 from django.utils.translation import ungettext
 from django.utils.encoding import smart_str
 from utils import log as logging
@@ -41,8 +40,8 @@ def timelimit(timeout):
                 raise TimeoutError('took too long')
             if c.error:
                 tb = ''.join(traceback.format_exception(c.exc_info[0], c.exc_info[1], c.exc_info[2]))
-                logging.debug(tb)
-                mail_admins('Error in timeout: %s' % c.exc_info[0], tb)
+                logging.debug(f" ***> Traceback timeout error: {tb}")
+                # mail_admins('Error in timeout: %s' % c.exc_info[0], tb)
                 raise c.error
             return c.result
         return _2
@@ -221,8 +220,7 @@ def mail_feed_error_to_admin(feed, e, local_vars=None, subject=None):
         pprint.pformat(feed.__dict__),
         pprint.pformat(local_vars)
         )
-    # print message
-    mail_admins(subject, message)
+    logging.debug(f" ***> Feed error, {subject}: {message}")
     
 ## {{{ http://code.activestate.com/recipes/576611/ (r11)
 from operator import itemgetter

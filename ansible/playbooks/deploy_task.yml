@@ -31,7 +31,7 @@
             - service_name: task-celery
             - service_name: task-work
       rescue:
-        - name: Restart celery
+        - name: Start celery
           become: yes
           command: "docker start {{ item.service_name }}"
           when: item.service_name in inventory_hostname

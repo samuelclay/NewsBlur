@@ -463,27 +463,13 @@
           desc: "JSON serialized dictionary of user_ids to feed_ids to an array of story_ids."
           required: true
           example: "{<br>user_id: <br>{feed_id: ['story_id_1', 'story_id_2'],<br>24: ['story_id_3']<br>}<br>}"
-    
-    - url: /reader/mark_story_as_unread
-      method: POST
-      short_desc: "Mark a story as unread."
-      long_desc: 
-        - "Mark a story as unread."
-      params:
-        - key: story_id
-          desc: "Story id to mark unread."
-          required: true
-          example: "http://www.ofbrooklyn.com/story-title"
-        - key: feed_id
-          desc: "Feed id that the story is from."
-          required: true
-          example: "42"
 
     - url: /reader/mark_story_hash_as_unread
       method: POST
       short_desc: "Mark a story as unread."
       long_desc: 
-        - "Mark a single story as unread using its unique story_hash."
+        - "Mark a single story or multiple stories as unread using its unique story_hash."
+        - "Multiple story hashes can be sent at once."
         - "Premium users can mark up to 30 days as unread. Free users only have 15 days."
         - >
             If a story is too old to mark as read, look for (and display to the user) the 
@@ -498,21 +484,6 @@
           required: true
           example: >
             story_hash=123:a1d62b
-
-    - url: /reader/mark_story_as_starred
-      method: POST
-      short_desc: "Mark a story as starred (saved)."
-      long_desc: 
-        - "Mark a story as starred (saved)."
-      params:
-        - key: story_id
-          desc: "Story id to save."
-          required: true
-          example: "64"
-        - key: feed_id
-          desc: "Feed id that the story is from."
-          required: true
-          example: "42"
 
     - url: /reader/mark_story_hash_as_starred
       method: POST
@@ -535,26 +506,12 @@
       tips:
         - "You can send a list for user_tags and highlights. <code>user_tags[]=blog&user_tags[]=cooking</code>"
 
-    - url: /reader/mark_story_as_unstarred
-      method: POST
-      short_desc: "Mark a story as unstarred (unsaved)."
-      long_desc: 
-        - "Mark a story as unstarred (unsaved)."
-      params:
-        - key: story_id
-          desc: "Story id to unsave."
-          required: true
-          example: "64"
-        - key: feed_id
-          desc: "Feed id that the story is from."
-          required: true
-          example: "42"
-  
     - url: /reader/mark_story_hash_as_unstarred
       method: POST
       short_desc: "Mark a story as unstarred (unsaved)."
       long_desc: 
         - "Mark a story as unstarred (unsaved)."
+        - "Multiple story hashes can be sent at once."
       params:
         - key: story_hash
           desc: "Story to unsave, specified by hash."
