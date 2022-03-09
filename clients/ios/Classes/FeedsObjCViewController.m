@@ -1090,8 +1090,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
             [MBProgressHUD hideHUDForView:self.appDelegate.feedsViewController.view animated:YES];
             [self.appDelegate reloadFeedsView:YES];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            NSLog(@"Login as %@ gave error, but probably worked: %@", username, error);
             [MBProgressHUD hideHUDForView:self.appDelegate.feedsViewController.view animated:YES];
-            [self informError:error];
+            [self.appDelegate reloadFeedsView:YES];
         }];
         
         [MBProgressHUD hideHUDForView:self.view animated:YES];
