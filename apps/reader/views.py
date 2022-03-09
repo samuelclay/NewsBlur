@@ -9,8 +9,7 @@ import re
 import ssl
 import socket
 import base64
-import urllib.parse
-import urllib.request
+import urllib.request, urllib.error, urllib.parse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -1612,22 +1611,24 @@ def load_river_stories_widget(request):
         url = urllib.parse.urljoin(settings.NEWSBLUR_URL, url)
         scontext = ssl.SSLContext(ssl.PROTOCOL_TLS)
         scontext.verify_mode = ssl.VerifyMode.CERT_NONE
+        conn = None
         try:
             conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
-        except urllib.request.URLError as e:
+        except (urllib.error.URLError, socket.timeout):
+            pass
+        if not conn:
             # logging.user(request.user, '"%s" wasn\'t fetched, trying again: %s' % (url, e))
             url = url.replace('localhost', 'haproxy')
-            conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
-        except urllib.request.URLError as e:
-            logging.user(request.user, '"%s" not fetched in %ss: %s' % (url, (time.time() - start), e))
-            return None
-        except socket.timeout:
-            logging.user(request.user, '"%s" not fetched in %ss' % (url, (time.time() - start)))
-            return None
+            try:
+                conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
+            except (urllib.error.HTTPError, urllib.error.URLError, socket.timeout) as e:
+                logging.user(request.user, '~FB"%s" ~FRnot fetched~FB in %ss: ~SB%s' % (url, (time.time() - start), e))
+                return None
+
         data = conn.read()
         if not url.startswith("data:"):
             data = base64.b64encode(data).decode('utf-8')
-        logging.user(request.user, '"%s" fetched in %ss' % (url, (time.time() - start)))
+        logging.user(request.user, '~FB"%s" ~SBfetched~SN in ~SB%ss' % (url, (time.time() - start)))
         return dict(url=original_url, data=data)
     
     # Find the image thumbnails and download in parallel
