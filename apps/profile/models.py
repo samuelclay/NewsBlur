@@ -33,8 +33,6 @@ from utils.feed_functions import chunks
 from vendor.timezones.fields import TimeZoneField
 from paypal.standard.ipn.signals import valid_ipn_received, invalid_ipn_received
 from paypal.standard.ipn.models import PayPalIPN
-from vendor.paypalapi.interface import PayPalInterface
-from vendor.paypalapi.exceptions import PayPalAPIResponseError
 from zebra.signals import zebra_webhook_customer_subscription_created
 from zebra.signals import zebra_webhook_customer_subscription_updated
 from zebra.signals import zebra_webhook_charge_succeeded
