@@ -1699,24 +1699,12 @@
 
 - (void)backgroundLoadNotificationStory {
     if (self.inFindingStoryMode) {
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            [self loadFeedDetailView];
-        } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && [storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
+            [self.feedsViewController selectWidgetStories];
+        } else {
             [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
-//            [self showFeedsListAnimated:NO];
-//            [self hidePopoverAnimated:NO completion:^{
-//                if (self.feedsNavigationController.presentedViewController) {
-//                    [self.feedsNavigationController dismissViewControllerAnimated:NO completion:^{
-//                        [self loadFeedDetailView];
-//                    }];
-//                } else {
-//                    [self loadFeedDetailView];
-//                }
-//            }];
         }
-    }
-    
-    if (self.tryFeedFeedId && !self.isTryFeedView) {
+    } else if (self.tryFeedFeedId && !self.isTryFeedView) {
         [self loadFeed:self.tryFeedFeedId withStory:self.tryFeedStoryId animated:NO];
     } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !self.isCompactWidth && self.storiesCollection == nil) {
         [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];

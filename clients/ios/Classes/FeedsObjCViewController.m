@@ -1798,6 +1798,14 @@ heightForHeaderInSection:(NSInteger)section {
     [self didSelectSectionHeaderWithTag:NewsBlurTopSectionAllStories];
 }
 
+- (void)selectWidgetStories {
+    NSInteger tag = [appDelegate.dictFoldersArray indexOfObject:@"widget_stories"];
+    
+    if (tag != NSNotFound) {
+        [self didSelectSectionHeaderWithTag:tag];
+    }
+}
+
 #pragma mark - MCSwipeTableViewCellDelegate
 
 // When the user starts swiping the cell this method is called

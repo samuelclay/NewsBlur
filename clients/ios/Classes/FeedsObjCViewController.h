@@ -123,6 +123,8 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)fadeFeed:(NSString *)feedId;
 - (IBAction)tapAddSite:(id)sender;
 
+- (void)selectWidgetStories;
+
 - (void)resetToolbar;
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation;
 - (void)refreshHeaderCounts;
