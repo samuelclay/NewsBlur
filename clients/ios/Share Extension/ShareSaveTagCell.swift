@@ -11,6 +11,8 @@ import UIKit
 class ShareSaveTagCell: UITableViewCell {
     @IBOutlet weak var tagLabel: UILabel!
     
+    @IBOutlet weak var countLabel: UILabel!
+    
     /// The reuse identifier for this table view cell.
     static let reuseIdentifier = "ShareSaveTagCell"
 }

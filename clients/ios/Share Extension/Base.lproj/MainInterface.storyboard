@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Jka-P1-QHB">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Jka-P1-QHB">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -61,19 +61,28 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ktE-By-i99">
-                                                    <rect key="frame" x="20" y="11.5" width="335" height="21"/>
+                                                    <rect key="frame" x="20" y="11.5" width="41.5" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="right" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hF3-Ur-WXh">
+                                                    <rect key="frame" x="313" y="11.5" width="42" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" systemColor="secondaryLabelColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="trailing" secondItem="ktE-By-i99" secondAttribute="trailing" constant="20" symbolic="YES" id="CvC-Ow-amb"/>
+                                                <constraint firstItem="hF3-Ur-WXh" firstAttribute="firstBaseline" secondItem="ktE-By-i99" secondAttribute="firstBaseline" id="O8A-Zs-gXi"/>
+                                                <constraint firstAttribute="trailing" secondItem="hF3-Ur-WXh" secondAttribute="trailing" constant="20" symbolic="YES" id="PGR-HT-dzs"/>
+                                                <constraint firstItem="hF3-Ur-WXh" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="ktE-By-i99" secondAttribute="trailing" constant="8" symbolic="YES" id="Y0O-0u-MGN"/>
                                                 <constraint firstItem="ktE-By-i99" firstAttribute="centerY" secondItem="FUw-X2-Tgd" secondAttribute="centerY" id="aC7-yF-U4g"/>
                                                 <constraint firstItem="ktE-By-i99" firstAttribute="leading" secondItem="FUw-X2-Tgd" secondAttribute="leading" constant="20" symbolic="YES" id="ict-bT-edm"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
+                                            <outlet property="countLabel" destination="hF3-Ur-WXh" id="hbw-sv-Lrb"/>
                                             <outlet property="tagLabel" destination="ktE-By-i99" id="MY1-Uc-N38"/>
                                         </connections>
                                     </tableViewCell>
@@ -85,7 +94,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="new tag" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="qAx-nx-hOD">
-                                                    <rect key="frame" x="20" y="11.5" width="335" height="21"/>
+                                                    <rect key="frame" x="20" y="11" width="335" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" autocapitalizationType="words"/>
                                                     <connections>
@@ -193,6 +202,9 @@
     <resources>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="secondaryLabelColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
