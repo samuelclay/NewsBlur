@@ -1344,6 +1344,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [ImportExportPreferences importFromController:sender];
     } else if ([specifier.key isEqualToString:@"export_prefs"]) {
         [ImportExportPreferences exportFromController:sender];
+    } else if ([specifier.key isEqualToString:@"delete_account"]) {
+        [sender dismiss:nil];
+        
+        NSString *urlString = [NSString stringWithFormat:@"%@/profile/delete_account",
+                               self.appDelegate.url];
+        
+        [self.appDelegate showInAppBrowser:[NSURL URLWithString:urlString] withCustomTitle:@"Delete Account" fromSender:nil];
     }
 }
 
