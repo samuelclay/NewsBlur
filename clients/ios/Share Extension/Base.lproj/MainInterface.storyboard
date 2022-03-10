@@ -154,6 +154,41 @@
                                             <outlet property="commentTextView" destination="mfP-7f-Dq0" id="AoJ-DT-f8q"/>
                                         </connections>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="ShareAddSiteCell" id="Sdh-Hi-VKN" customClass="ShareAddSiteCell" customModule="Share_Extension" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="383.5" width="375" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Sdh-Hi-VKN" id="gap-sb-A4d">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="87l-vo-Aqu">
+                                                    <rect key="frame" x="20" y="9.5" width="25" height="25"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="25" id="PdC-PQ-ClF"/>
+                                                        <constraint firstAttribute="height" constant="25" id="VdN-R3-r0z"/>
+                                                    </constraints>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="enG-2W-uUc">
+                                                    <rect key="frame" x="53" y="11.5" width="41.5" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="enG-2W-uUc" secondAttribute="trailing" constant="20" symbolic="YES" id="6iv-Qq-MBb"/>
+                                                <constraint firstItem="87l-vo-Aqu" firstAttribute="centerY" secondItem="gap-sb-A4d" secondAttribute="centerY" id="PxG-wV-eFZ"/>
+                                                <constraint firstItem="enG-2W-uUc" firstAttribute="leading" secondItem="87l-vo-Aqu" secondAttribute="trailing" constant="8" symbolic="YES" id="ZId-aw-V6W"/>
+                                                <constraint firstItem="87l-vo-Aqu" firstAttribute="leading" secondItem="gap-sb-A4d" secondAttribute="leading" constant="20" symbolic="YES" id="emx-Ou-ppO"/>
+                                                <constraint firstItem="enG-2W-uUc" firstAttribute="centerY" secondItem="gap-sb-A4d" secondAttribute="centerY" id="vq0-II-4Lp"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="folderImageLeadingConstraint" destination="emx-Ou-ppO" id="1cu-W4-kwz"/>
+                                            <outlet property="folderImageView" destination="87l-vo-Aqu" id="fg6-9H-E5C"/>
+                                            <outlet property="folderLabel" destination="enG-2W-uUc" id="O4Y-ka-c1D"/>
+                                        </connections>
+                                    </tableViewCell>
                                 </prototypes>
                                 <connections>
                                     <outlet property="dataSource" destination="96H-cS-CLZ" id="puZ-kH-xg9"/>

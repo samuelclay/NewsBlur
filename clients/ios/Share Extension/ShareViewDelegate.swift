@@ -62,69 +62,82 @@ extension ShareViewDelegate: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if viewController.mode == .save {
             if indexPath.item < viewController.tags.count {
-                guard let cell = tableView.dequeueReusableCell(withIdentifier: ShareSaveTagCell.reuseIdentifier, for: indexPath) as? ShareSaveTagCell else {
-                    preconditionFailure("Expected to dequeue a ShareSaveTagCell")
-                }
-                
-                let tag = viewController.tags[indexPath.item]
-                
-                cell.tagLabel.text = tag.name
-                cell.countLabel.text = "\(tag.count)"
-                
-                return cell
+                return makeSaveTagCell(for: tableView, indexPath: indexPath)
             } else {
-                guard let cell = tableView.dequeueReusableCell(withIdentifier: ShareSaveNewCell.reuseIdentifier, for: indexPath) as? ShareSaveNewCell else {
-                    preconditionFailure("Expected to dequeue a ShareSaveNewCell")
-                }
-                
-                cell.tagField.text = ""
-                cell.tagField.placeholder = "new tag"
-                
-                return cell
+                return makeSaveNewCell(for: tableView, indexPath: indexPath, name: "", placeholder: "new tag")
             }
         } else if viewController.mode == .add {
             if indexPath.section == 0 {
-                guard let cell = tableView.dequeueReusableCell(withIdentifier: ShareSaveTagCell.reuseIdentifier, for: indexPath) as? ShareSaveTagCell else {
-                    preconditionFailure("Expected to dequeue a ShareSaveTagCell")
-                }
-                
-                let components = viewController.folders[indexPath.item].components(separatedBy: " ▸ ")
-                
-                cell.countLabel.text = ""
-                
-                if components.first == "everything" {
-                    cell.tagLabel.text = "🗃 Top Level"
-                } else {
-                    cell.tagLabel.text = "\(String(repeating: "      ", count: components.count))📁 \(components.last ?? "?")"
-                }
-                
-                cell.accessoryType = indexPath == viewController.selectedFolderIndexPath ? .checkmark : .none
-                
-                return cell
+                return makeAddSiteCell(for: tableView, indexPath: indexPath)
             } else {
-                guard let cell = tableView.dequeueReusableCell(withIdentifier: ShareSaveNewCell.reuseIdentifier, for: indexPath) as? ShareSaveNewCell else {
-                    preconditionFailure("Expected to dequeue a ShareSaveNewCell")
-                }
-                
-                cell.tagField.text = viewController.newFolder
-                cell.tagField.placeholder = "new folder title"
-                
-                return cell
+                return makeSaveNewCell(for: tableView, indexPath: indexPath, name: viewController.newFolder, placeholder: "new tag")
             }
         } else {
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ShareCommentCell.reuseIdentifier, for: indexPath) as? ShareCommentCell else {
-                preconditionFailure("Expected to dequeue a ShareCommentCell")
-            }
-            
-            cell.commentTextView.text = ""
-            cell.commentTextView.delegate = self
-            
-            DispatchQueue.main.async {
-                cell.commentTextView.becomeFirstResponder()
-            }
-            
-            return cell
+            return makeShareCommentCell(for: tableView, indexPath: indexPath)
         }
+    }
+}
+
+private extension ShareViewDelegate {
+    func makeSaveTagCell(for tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ShareSaveTagCell.reuseIdentifier, for: indexPath) as? ShareSaveTagCell else {
+            preconditionFailure("Expected to dequeue a ShareSaveTagCell")
+        }
+        
+        let tag = viewController.tags[indexPath.item]
+        
+        cell.tagLabel.text = tag.name
+        cell.countLabel.text = "\(tag.count)"
+        
+        return cell
+    }
+    
+    func makeSaveNewCell(for tableView: UITableView, indexPath: IndexPath, name: String, placeholder: String) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ShareSaveNewCell.reuseIdentifier, for: indexPath) as? ShareSaveNewCell else {
+            preconditionFailure("Expected to dequeue a ShareSaveNewCell")
+        }
+        
+        cell.tagField.text = name
+        cell.tagField.placeholder = placeholder
+        
+        return cell
+    }
+    
+    func makeAddSiteCell(for tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ShareAddSiteCell.reuseIdentifier, for: indexPath) as? ShareAddSiteCell else {
+            preconditionFailure("Expected to dequeue a ShareAddSiteCell")
+        }
+        
+        let components = viewController.folders[indexPath.item].components(separatedBy: " ▸ ")
+        
+        if components.first == "everything" {
+            cell.folderImageView.image = UIImage(named: "ak-icon-allstories.png")
+            cell.folderLabel.text = "Top Level"
+            cell.folderImageLeadingConstraint.constant = 20
+        } else {
+            cell.folderImageView.image = UIImage(named: "g_icn_folder.png")
+            cell.folderLabel.text = components.last ?? "?"
+            cell.folderImageLeadingConstraint.constant = 20 + CGFloat(components.count * 35)
+        }
+        
+        cell.accessoryType = indexPath == viewController.selectedFolderIndexPath ? .checkmark : .none
+        
+        return cell
+    }
+    
+    func makeShareCommentCell(for tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ShareCommentCell.reuseIdentifier, for: indexPath) as? ShareCommentCell else {
+            preconditionFailure("Expected to dequeue a ShareCommentCell")
+        }
+        
+        cell.commentTextView.text = ""
+        cell.commentTextView.delegate = self
+        
+        DispatchQueue.main.async {
+            cell.commentTextView.becomeFirstResponder()
+        }
+        
+        return cell
     }
 }
 
