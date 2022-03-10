@@ -178,6 +178,10 @@
 		17F39EBA26478538004B46D1 /* content_preview_small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17F39EB726478538004B46D1 /* content_preview_small@2x.png */; };
 		17F39EBB26478538004B46D1 /* content_preview_large@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17F39EB826478538004B46D1 /* content_preview_large@2x.png */; };
 		17FB51D723AC81C500F5D5BF /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 17FB51D923AC81C500F5D5BF /* InfoPlist.strings */; };
+		17FF4F7D27DA9645000526E6 /* ShareAddSiteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FF4F7C27DA9645000526E6 /* ShareAddSiteCell.swift */; };
+		17FF4F7E27DAAA6E000526E6 /* ak-icon-allstories.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7216D6A972002D334D /* ak-icon-allstories.png */; };
+		17FF4F7F27DAAA78000526E6 /* g_icn_folder.png in Resources */ = {isa = PBXBuildFile; fileRef = FFDD847216E887D3000AA0A2 /* g_icn_folder.png */; };
+		17FF4F8027DAAA78000526E6 /* g_icn_folder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFDD847316E887D3000AA0A2 /* g_icn_folder@2x.png */; };
 		1D3623260D0F684500981E51 /* NewsBlurAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -902,6 +906,7 @@
 		17F39EB726478538004B46D1 /* content_preview_small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "content_preview_small@2x.png"; sourceTree = "<group>"; };
 		17F39EB826478538004B46D1 /* content_preview_large@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "content_preview_large@2x.png"; sourceTree = "<group>"; };
 		17FB51D823AC81C500F5D5BF /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		17FF4F7C27DA9645000526E6 /* ShareAddSiteCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareAddSiteCell.swift; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = NewsBlurAppDelegate.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = NewsBlurAppDelegate.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1694,6 +1699,7 @@
 				17DC7CCD26A5212000B0E747 /* ShareSaveTagCell.swift */,
 				17DC7CCF26A5218000B0E747 /* ShareSaveNewCell.swift */,
 				17DC7CD126A521A300B0E747 /* ShareCommentCell.swift */,
+				17FF4F7C27DA9645000526E6 /* ShareAddSiteCell.swift */,
 				174939151C251BFE003D98AA /* MainInterface.storyboard */,
 				174939211C251E43003D98AA /* Share Extension.entitlements */,
 				174939181C251BFE003D98AA /* Info.plist */,
@@ -3080,7 +3086,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17FF4F7F27DAAA78000526E6 /* g_icn_folder.png in Resources */,
+				17FF4F7E27DAAA6E000526E6 /* ak-icon-allstories.png in Resources */,
 				174939171C251BFE003D98AA /* MainInterface.storyboard in Resources */,
+				17FF4F8027DAAA78000526E6 /* g_icn_folder@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3563,6 +3572,7 @@
 			files = (
 				17DC7CD026A5218000B0E747 /* ShareSaveNewCell.swift in Sources */,
 				17DC7CCA26A51BB600B0E747 /* ShareViewController.swift in Sources */,
+				17FF4F7D27DA9645000526E6 /* ShareAddSiteCell.swift in Sources */,
 				17DC7CCE26A5212000B0E747 /* ShareSaveTagCell.swift in Sources */,
 				17DC7CCC26A51E6300B0E747 /* ShareViewDelegate.swift in Sources */,
 				17DC7CD226A521A300B0E747 /* ShareCommentCell.swift in Sources */,

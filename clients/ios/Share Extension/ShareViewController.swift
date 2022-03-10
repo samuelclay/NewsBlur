@@ -8,6 +8,7 @@
 
 import UIKit
 import MobileCoreServices
+import UserNotifications
 
 class ShareViewController: UIViewController {
     @IBOutlet var delegate: ShareViewDelegate!
@@ -98,7 +99,7 @@ class ShareViewController: UIViewController {
         if let foldersArray = prefs.object(forKey: "share:folders") as? [String] {
             folders = foldersArray
             
-            folders.removeAll { ["river_global", "river_blurblogs", "infrequent", "read_stories", "saved_searches", "saved_stories"].contains($0) }
+            folders.removeAll { ["river_global", "river_blurblogs", "infrequent", "widget_stories", "read_stories", "saved_searches", "saved_stories"].contains($0) }
         }
         
         updateSaveButtonState()
@@ -351,10 +352,46 @@ private extension ShareViewController {
 
 extension ShareViewController: URLSessionTaskDelegate {
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        let content = UNMutableNotificationContent()
+        
+        content.title = "NewsBlur"
+        
         if let error = error {
             print("task completed with error: \(error)")
+            
+            switch mode {
+            case .save:
+                content.body = "Unable to save this story"
+            case .share:
+                content.body = "Unable to share this story"
+            case .add:
+                content.body = "Unable to add this site"
+            }
         } else {
-            print("task completed successfully")
+            print("task completed successfully: \(String(describing: task.response))")
+            
+            NSLog("⚾️ share: \(String(describing: task.response))")
+            
+            switch mode {
+            case .save:
+                content.body = "Saved this story"
+            case .share:
+                content.body = "Shared this story"
+            case .add:
+                content.body = "Added this site"
+            }
+        }
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        let uuidString = UUID().uuidString
+        let request = UNNotificationRequest(identifier: uuidString,
+                                            content: content, trigger: trigger)
+        let notificationCenter = UNUserNotificationCenter.current()
+        
+        notificationCenter.add(request) { (error) in
+            if let error = error {
+                print("notification error: \(error)")
+            }
         }
     }
 }
