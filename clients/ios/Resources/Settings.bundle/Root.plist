@@ -952,6 +952,22 @@
 			<key>IASKTextAlignment</key>
 			<string>IASKUITextAlignmentCenter</string>
 		</dict>
+		<dict>
+			<key>Title</key>
+			<string></string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>IsCritical</key>
+			<true/>
+			<key>Title</key>
+			<string>Delete Account</string>
+			<key>Key</key>
+			<string>delete_account</string>
+		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>

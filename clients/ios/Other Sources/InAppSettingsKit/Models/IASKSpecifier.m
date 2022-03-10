@@ -172,6 +172,10 @@
     return [self localizedObjectForKey:kIASKFooterText];
 }
 
+- (BOOL)isCritical {
+    return [[_specifierDict objectForKey:kIASKIsCritical] boolValue];
+}
+
 - (Class)viewControllerClass {
     // DJS: Commented out this to avoid UIWebView.  Not used by NewsBlur.
     // [IASKAppSettingsWebViewController class]; // make sure this is linked into the binary/library
