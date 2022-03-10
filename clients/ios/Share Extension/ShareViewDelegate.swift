@@ -66,7 +66,10 @@ extension ShareViewDelegate: UITableViewDataSource {
                     preconditionFailure("Expected to dequeue a ShareSaveTagCell")
                 }
                 
-                cell.tagLabel.text = viewController.tags[indexPath.item].name
+                let tag = viewController.tags[indexPath.item]
+                
+                cell.tagLabel.text = tag.name
+                cell.countLabel.text = "\(tag.count)"
                 
                 return cell
             } else {
@@ -86,6 +89,8 @@ extension ShareViewDelegate: UITableViewDataSource {
                 }
                 
                 let components = viewController.folders[indexPath.item].components(separatedBy: " ▸ ")
+                
+                cell.countLabel.text = ""
                 
                 if components.first == "everything" {
                     cell.tagLabel.text = "🗃 Top Level"
