@@ -341,6 +341,7 @@
                      @[@"saved_searches",
                        @"saved_stories",
                        @"read_stories",
+                       @"widget_stories",
                        @"river_blurblogs",
                        @"river_global",
                        @"infrequent",

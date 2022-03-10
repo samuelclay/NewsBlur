@@ -603,7 +603,7 @@
         [self.storiesCollection reset];
         
         storiesCollection.isSocialView = YES;
-        storiesCollection.activeFolder = @"everything";
+        storiesCollection.activeFolder = @"widget_stories";
         
         [self reloadFeedsView:NO];
         
@@ -1533,6 +1533,7 @@
     feedIdStr = [self feedIdWithoutSearchQuery:feedIdStr];
     NSDictionary *feed;
     storiesCollection.isReadView = NO;
+    storiesCollection.isWidgetView = NO;
     if ([self isSocialFeed:feedIdStr]) {
         feed = [dictSocialFeeds objectForKey:feedIdStr];
         storiesCollection.isSocialView = YES;
@@ -1701,7 +1702,7 @@
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             [self loadFeedDetailView];
         } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-            [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"everything"];
+            [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
 //            [self showFeedsListAnimated:NO];
 //            [self hidePopoverAnimated:NO completion:^{
 //                if (self.feedsNavigationController.presentedViewController) {
@@ -1718,7 +1719,7 @@
     if (self.tryFeedFeedId && !self.isTryFeedView) {
         [self loadFeed:self.tryFeedFeedId withStory:self.tryFeedStoryId animated:NO];
     } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !self.isCompactWidth && self.storiesCollection == nil) {
-        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"everything"];
+        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
     }
 }
 
@@ -1794,6 +1795,16 @@
 - (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle {
     if ([folderTitle isEqualToString:@"everything"] || [folderTitle isEqualToString:@"infrequent"]) {
         return @[folderTitle];
+    } else if ([folderTitle isEqualToString:@"widget_stories"]) {
+        NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
+        NSArray *feedInfo = [groupDefaults objectForKey:@"widget:feeds_array"];
+        NSMutableArray *feedIDs = [NSMutableArray array];
+        
+        for (NSDictionary *info in feedInfo) {
+            [feedIDs addObject:info[@"id"]];
+        }
+        
+        return feedIDs;
     } else {
         return self.dictFolders[folderTitle];
     }
@@ -1939,6 +1950,17 @@
         } else if ([folder isEqualToString:@"read_stories"] || [folderName isEqualToString:@"read_stories"]) {
             feedDetailView.storiesCollection.isReadView = YES;
             [feedDetailView.storiesCollection setActiveFolder:@"read_stories"];
+        } else if ([folder isEqualToString:@"widget_stories"] || [folderName isEqualToString:@"widget_stories"]) {
+            feedDetailView.storiesCollection.isWidgetView = YES;
+            feedDetailView.storiesCollection.isRiverView = YES;
+            [feedDetailView.storiesCollection setActiveFolder:@"widget_stories"];
+            
+            NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
+            NSArray *feedInfo = [groupDefaults objectForKey:@"widget:feeds_array"];
+            
+            for (NSDictionary *info in feedInfo) {
+                [feeds addObject:info[@"id"]];
+            }
         } else {
             [feedDetailView.storiesCollection setActiveFolder:folderName];
         }
@@ -2416,6 +2438,8 @@
         activity.title = @"Read Infrequent Site Stories";
     } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
         activity.title = [NSString stringWithFormat:@"Read %@", storiesCollection.activeSavedStoryTag];
+    } else if ([folder isEqualToString:@"widget_stories"]) {
+        activity.title = @"Read Widget Site Stories";
     } else if ([folder isEqualToString:@"read_stories"]) {
         activity.title = @"Re-read Stories";
     } else if ([folder isEqualToString:@"saved_searches"]) {
@@ -3477,7 +3501,8 @@
         storiesCollection.isSocialView ||
         storiesCollection.isSocialRiverView ||
         storiesCollection.isSavedView ||
-        storiesCollection.isReadView) {
+        storiesCollection.isReadView ||
+        storiesCollection.isWidgetView) {
         gradientView = [NewsBlurAppDelegate 
                         makeGradientView:rect
                         startColor:[feed objectForKey:@"favicon_fade"] 
@@ -3550,6 +3575,8 @@
         } else {
             titleLabel.text = [NSString stringWithFormat:@"     Saved Stories - %@", storiesCollection.activeSavedStoryTag];
         }
+    } else if ([storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
+        titleLabel.text = [NSString stringWithFormat:@"     Widget Site Stories"];
     } else if ([storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
         titleLabel.text = [NSString stringWithFormat:@"     Read Stories"];
     } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
@@ -3588,6 +3615,8 @@
             titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
         } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
             titleImage = [UIImage imageNamed:@"tag.png"];
+        } else if ([storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
+            titleImage = [UIImage imageNamed:@"g_icn_folder_widget.png"];
         } else if ([storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
             titleImage = [UIImage imageNamed:@"g_icn_folder_read.png"];
         } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
@@ -3615,6 +3644,8 @@
         return @"All Stories";
     } else if ([folder isEqualToString:@"infrequent"]) {
         return @"Infrequent Site Stories";
+    } else if ([folder isEqualToString:@"widget_stories"]) {
+        return @"Widget Site Stories";
     } else if ([folder isEqualToString:@"read_stories"]) {
         return @"Read Stories";
     } else if ([folder isEqualToString:@"saved_searches"]) {
@@ -3635,6 +3666,8 @@
         return [UIImage imageNamed:@"ak-icon-allstories.png"];
     } else if ([folder isEqualToString:@"infrequent"]) {
         return [UIImage imageNamed:@"ak-icon-infrequent.png"];
+    } else if ([folder isEqualToString:@"widget_stories"]) {
+        return [UIImage imageNamed:@"g_icn_folder_widget.png"];
     } else if ([folder isEqualToString:@"read_stories"]) {
         return [UIImage imageNamed:@"g_icn_folder_read.png"];
     } else if ([folder isEqualToString:@"saved_searches"]) {

@@ -105,6 +105,8 @@
 		17AACFEA22279A3C00DE6EA4 /* autoscroll_resume.png in Resources */ = {isa = PBXBuildFile; fileRef = 17AACFE022279A3C00DE6EA4 /* autoscroll_resume.png */; };
 		17B14BDC23E24B4E00CF8D2C /* menu_icn_statistics.png in Resources */ = {isa = PBXBuildFile; fileRef = 17B14BDA23E24B4D00CF8D2C /* menu_icn_statistics.png */; };
 		17B14BDD23E24B4E00CF8D2C /* menu_icn_statistics@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17B14BDB23E24B4E00CF8D2C /* menu_icn_statistics@2x.png */; };
+		17B33D1827D97282009108AD /* g_icn_folder_widget.png in Resources */ = {isa = PBXBuildFile; fileRef = 17B33D1627D97281009108AD /* g_icn_folder_widget.png */; };
+		17B33D1927D97282009108AD /* g_icn_folder_widget@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17B33D1727D97282009108AD /* g_icn_folder_widget@2x.png */; };
 		17BD3BA52271102500F615EC /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BD3BA42271102500F615EC /* Intents.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		17BD3BA72271122800F615EC /* CoreSpotlight.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BD3BA62271122800F615EC /* CoreSpotlight.framework */; };
 		17BD3BA92271125400F615EC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BD3BA82271125400F615EC /* CoreServices.framework */; };
@@ -822,6 +824,8 @@
 		17AACFE022279A3C00DE6EA4 /* autoscroll_resume.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = autoscroll_resume.png; sourceTree = "<group>"; };
 		17B14BDA23E24B4D00CF8D2C /* menu_icn_statistics.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_icn_statistics.png; sourceTree = "<group>"; };
 		17B14BDB23E24B4E00CF8D2C /* menu_icn_statistics@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_statistics@2x.png"; sourceTree = "<group>"; };
+		17B33D1627D97281009108AD /* g_icn_folder_widget.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_folder_widget.png; sourceTree = "<group>"; };
+		17B33D1727D97282009108AD /* g_icn_folder_widget@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "g_icn_folder_widget@2x.png"; sourceTree = "<group>"; };
 		17B96BE624304F72009A8EED /* Story Notification Service Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Story Notification Service Extension.entitlements"; sourceTree = "<group>"; };
 		17BD3BA42271102500F615EC /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		17BD3BA62271122800F615EC /* CoreSpotlight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreSpotlight.framework; path = System/Library/Frameworks/CoreSpotlight.framework; sourceTree = SDKROOT; };
@@ -2239,6 +2243,8 @@
 				FFDD847316E887D3000AA0A2 /* g_icn_folder@2x.png */,
 				17876B9C1C9911D40055DD15 /* g_icn_folder_sm.png */,
 				17876B9D1C9911D40055DD15 /* g_icn_folder_sm@2x.png */,
+				17B33D1627D97281009108AD /* g_icn_folder_widget.png */,
+				17B33D1727D97282009108AD /* g_icn_folder_widget@2x.png */,
 				FFDD847416E887D3000AA0A2 /* g_icn_hidden.png */,
 				FFDD847516E887D3000AA0A2 /* g_icn_hidden@2x.png */,
 				FFDD847616E887D3000AA0A2 /* g_icn_unread.png */,
@@ -3132,6 +3138,7 @@
 				17CBD3BC1BF66B07003FCCAE /* MarkReadMenuViewController.xib in Resources */,
 				433D24841582EEC500AE9E72 /* MoveSiteViewController~ipad.xib in Resources */,
 				433D24871582EECD00AE9E72 /* StoryDetailViewController~ipad.xib in Resources */,
+				17B33D1827D97282009108AD /* g_icn_folder_widget.png in Resources */,
 				FFEA5AE819D33FB400ED87A0 /* LaunchScreen.xib in Resources */,
 				433323B8158901A40025064D /* fountain_pen.png in Resources */,
 				433323B9158901A40025064D /* fountain_pen@2x.png in Resources */,
@@ -3165,6 +3172,7 @@
 				43A4C46615B00A26008787B5 /* disclosure.png in Resources */,
 				FFEA5AEC19D340BC00ED87A0 /* logo_newsblur_512.png in Resources */,
 				43A4C46C15B00A26008787B5 /* fleuron.png in Resources */,
+				17B33D1927D97282009108AD /* g_icn_folder_widget@2x.png in Resources */,
 				43A4C47E15B00A26008787B5 /* logo_512.png in Resources */,
 				43A4C47F15B00A26008787B5 /* logo_background.png in Resources */,
 				FFB9BE4717F4B65B00FE0A36 /* logo_120.png in Resources */,
