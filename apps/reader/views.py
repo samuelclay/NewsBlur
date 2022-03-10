@@ -1956,7 +1956,7 @@ def mark_story_as_unread(request):
     if usersub:
         data = usersub.invert_read_stories_after_unread_story(story, request)
 
-    message = RUserStory.story_can_be_marked_read_by_user(story, request.user)
+    message = RUserStory.story_can_be_marked_unread_by_user(story, request.user)
     if message:
         data['code'] = -1
         data['message'] = message
@@ -1993,7 +1993,7 @@ def mark_story_hash_as_unread(request):
                 return data
             else:
                 datas.append(data)
-        message = RUserStory.story_can_be_marked_read_by_user(story, request.user)
+        message = RUserStory.story_can_be_marked_unread_by_user(story, request.user)
         if message:
             data = dict(code=-1, message=message, story_hash=story_hash)
             if not is_list:

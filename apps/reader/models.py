@@ -1170,7 +1170,7 @@ class RUserStory:
             r.expire(key, Feed.days_of_story_hashes_for_feed(story_feed_id)*24*60*60)
     
     @staticmethod
-    def story_can_be_marked_read_by_user(story, user):
+    def story_can_be_marked_unread_by_user(story, user):
         message = None
         if story.story_date < user.profile.unread_cutoff and not user.profile.is_archive:
             # if user.profile.is_archive:
