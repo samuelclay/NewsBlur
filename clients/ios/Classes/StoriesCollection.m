@@ -76,6 +76,7 @@
     self.isSocialRiverView = NO;
     self.isSavedView = NO;
     self.isReadView = NO;
+    self.isWidgetView = NO;
 }
 
 - (void)transferStoriesFromCollection:(StoriesCollection *)fromCollection {
@@ -321,6 +322,8 @@
             return @"Infrequent Site Stories";
         } else if (isSavedView && activeSavedStoryTag) {
             return activeSavedStoryTag;
+        } else if ([activeFolder isEqualToString:@"widget_stories"]) {
+            return @"Widget Site Stories";
         } else if ([activeFolder isEqualToString:@"read_stories"]) {
             return @"Read Stories";
         } else if ([activeFolder isEqualToString:@"saved_searches"]) {

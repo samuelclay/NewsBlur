@@ -98,7 +98,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 + (void)initialize {
-    // keep in sync with NewsBlurTopSections
+    // keep in sync with NewsBlurTopSection
     NewsBlurTopSectionNames = @[/* 0 */ @"river_global",
                                 /* 1 */ @"river_blurblogs",
                                 /* 2 */ @"infrequent",
@@ -812,7 +812,15 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [appDelegate.dictFoldersArray removeObject:sectionName];
         [appDelegate.dictFoldersArray insertObject:sectionName atIndex:sectionIndex];
     }];
-
+    
+    // Add Widget Site Stories folder to bottom
+    [appDelegate.dictFoldersArray removeObject:@"widget_stories"];
+    NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
+    NSMutableArray *feeds = [groupDefaults objectForKey:@"widget:feeds_array"];
+    if (feeds.count) {
+        [appDelegate.dictFoldersArray insertObject:@"widget_stories" atIndex:appDelegate.dictFoldersArray.count];
+    }
+    
     // Add Read Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"read_stories"];
     [appDelegate.dictFoldersArray insertObject:@"read_stories" atIndex:appDelegate.dictFoldersArray.count];
@@ -1454,7 +1462,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     cell.searchQuery   = searchQuery;
     
     NSArray *folderComponents = [folderName componentsSeparatedByString:@" ▸ "];
-    BOOL isTopLevel = [folderName isEqualToString:@"everything"] || [folderName isEqualToString:@"saved_searches"] || [folderName isEqualToString:@"saved_stories"];
+    BOOL isTopLevel = [folderName isEqualToString:@"everything"] || [folderName isEqualToString:@"widget_stories"] || [folderName isEqualToString:@"saved_searches"] || [folderName isEqualToString:@"saved_stories"];
     
     cell.indentationLevel = isTopLevel ? 0 : folderComponents.count;
     cell.indentationWidth = 28;
@@ -1737,7 +1745,8 @@ heightForHeaderInSection:(NSInteger)section {
     if (!visibleFeeds && section != NewsBlurTopSectionInfrequentSiteStories && section != NewsBlurTopSectionAllStories && section != NewsBlurTopSectionGlobalSharedStories &&
         ![folderName isEqualToString:@"saved_searches"] &&
         ![folderName isEqualToString:@"saved_stories"] &&
-        ![folderName isEqualToString:@"read_stories"]) {
+        ![folderName isEqualToString:@"read_stories"] &&
+        ![folderName isEqualToString:@"widget_stories"]) {
         return 0;
     }
     
@@ -1961,6 +1970,8 @@ heightForHeaderInSection:(NSInteger)section {
     } else if ([params objectForKey:@"feed_id"]) {
         [appDelegate markFeedReadInCache:[params objectForKey:@"feed_id"]];
     }
+    
+    [appDelegate.storyPagesViewController reloadWidget];
 }
 
 #pragma mark - Table Actions

@@ -1106,6 +1106,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     if (!(storiesCollection.isRiverView ||
           storiesCollection.isSavedView ||
           storiesCollection.isReadView ||
+          storiesCollection.isWidgetView ||
           storiesCollection.isSocialView ||
           storiesCollection.isSocialRiverView)
         && ![receivedFeedId isEqualToString:sentFeedId]) {
@@ -1114,6 +1115,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     if (storiesCollection.isSocialView ||
         storiesCollection.isSocialRiverView ||
         storiesCollection.isSavedView ||
+        storiesCollection.isWidgetView ||
         storiesCollection.isReadView) {
         NSArray *newFeeds = [results objectForKey:@"feeds"];
         for (int i = 0; i < newFeeds.count; i++){
@@ -1128,6 +1130,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     if (storiesCollection.isRiverView ||
         storiesCollection.isSavedView ||
         storiesCollection.isReadView ||
+        storiesCollection.isWidgetView ||
         storiesCollection.isSocialView ||
         storiesCollection.isSocialRiverView) {
         for (id key in [newClassifiers allKeys]) {
@@ -1281,6 +1284,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     BOOL premiumRestriction = !appDelegate.isPremium &&
                                 storiesCollection.isRiverView &&
                                 !storiesCollection.isReadView &&
+                                !storiesCollection.isWidgetView &&
                                 !storiesCollection.isSocialView &&
                                 !storiesCollection.isSavedView;
     
@@ -1425,6 +1429,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
         BOOL premiumRestriction = !appDelegate.isPremium &&
         storiesCollection.isRiverView &&
         !storiesCollection.isReadView &&
+        !storiesCollection.isWidgetView &&
         !storiesCollection.isSocialView &&
         !storiesCollection.isSavedView;
         
@@ -1541,6 +1546,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     if (storiesCollection.isRiverView ||
         storiesCollection.isSocialView ||
         storiesCollection.isSavedView ||
+        storiesCollection.isReadView ||
         storiesCollection.isReadView) {
         cellIdentifier = @"FeedRiverDetailCellIdentifier";
     } else {
@@ -1654,6 +1660,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     if (storiesCollection.isRiverView ||
         storiesCollection.isSavedView ||
         storiesCollection.isReadView ||
+        storiesCollection.isWidgetView ||
         storiesCollection.isSocialView ||
         storiesCollection.isSocialRiverView) {
         cell.isRiverOrSocial = YES;
@@ -1699,6 +1706,8 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
                 feedTitle = @"Infrequent Site Stories";
             } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
                 feedTitle = storiesCollection.activeSavedStoryTag;
+            } else if ([storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
+                feedTitle = @"Widget Site Stories";
             } else if ([storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
                 feedTitle = @"Read Stories";
             } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
@@ -1818,6 +1827,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         if (storiesCollection.isRiverView ||
             storiesCollection.isSavedView ||
             storiesCollection.isReadView ||
+            storiesCollection.isWidgetView ||
             storiesCollection.isSocialView ||
             storiesCollection.isSocialRiverView) {
             height = kTableViewRiverRowHeight;
@@ -2193,6 +2203,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     return appDelegate.storiesCollection.isSocialRiverView ||
     appDelegate.storiesCollection.isSocialView ||
     appDelegate.storiesCollection.isSavedView ||
+    appDelegate.storiesCollection.isWidgetView ||
     appDelegate.storiesCollection.isReadView;
 }
 
@@ -2216,6 +2227,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     BOOL infrequent = [self isInfrequent];
     BOOL river = [self isRiver];
     BOOL read = appDelegate.storiesCollection.isReadView;
+    BOOL widget = appDelegate.storiesCollection.isWidgetView;
     BOOL saved = appDelegate.storiesCollection.isSavedView;
     
     if (storiesCollection.inSearch) {
@@ -2230,7 +2242,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
     }
     
-    if (!infrequent && !saved && !read) {
+    if (!infrequent && !saved && !read && !widget) {
         NSString *manageText = [NSString stringWithFormat:@"Manage this %@", appDelegate.storiesCollection.isRiverView ? @"folder" : @"site"];
         
         [viewController addTitle:manageText iconName:@"menu_icn_move.png" selectionShouldDismiss:NO handler:^{
@@ -2238,7 +2250,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
     
-    if (!appDelegate.storiesCollection.isRiverView && !infrequent && !saved && !read) {
+    if (!appDelegate.storiesCollection.isRiverView && !infrequent && !saved && !read && !widget) {
         [viewController addTitle:@"Train this site" iconName:@"menu_icn_train.png" selectionShouldDismiss:YES handler:^{
             [self openTrainSite];
         }];
@@ -2888,9 +2900,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     BOOL river = appDelegate.storiesCollection.isRiverView;
     BOOL infrequent = [self isInfrequent];
     BOOL read = appDelegate.storiesCollection.isReadView;
+    BOOL widget = appDelegate.storiesCollection.isWidgetView;
     BOOL saved = appDelegate.storiesCollection.isSavedView;
     
-    return appDelegate.storiesCollection.activeFeed != nil && !river && !infrequent && !saved && !read;
+    return appDelegate.storiesCollection.activeFeed != nil && !river && !infrequent && !saved && !read && !widget;
 }
 
 - (void)refresh:(UIRefreshControl *)refreshControl {

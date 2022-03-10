@@ -284,6 +284,8 @@
             } else if (appDelegate.storiesCollection.isSavedView &&
                        appDelegate.storiesCollection.activeSavedStoryTag) {
                 titleImage = [UIImage imageNamed:@"tag.png"];
+            } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
+                titleImage = [UIImage imageNamed:@"g_icn_folder_widget.png"];
             } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
                 titleImage = [UIImage imageNamed:@"g_icn_folder_read.png"];
             } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_searches"]) {

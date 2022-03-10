@@ -517,6 +517,7 @@
     NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
                             appDelegate.storiesCollection.isSocialView ||
                             appDelegate.storiesCollection.isSavedView ||
+                            appDelegate.storiesCollection.isWidgetView ||
                             appDelegate.storiesCollection.isReadView) ?
                             @"NB-river" : @"NB-non-river";
     
@@ -643,6 +644,7 @@
     if (appDelegate.storiesCollection.isRiverView ||
         appDelegate.storiesCollection.isSocialView ||
         appDelegate.storiesCollection.isSavedView ||
+        appDelegate.storiesCollection.isWidgetView ||
         appDelegate.storiesCollection.isReadView) {
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(24, 0, 0, 0);
     } else {
@@ -1767,6 +1769,7 @@
         if (appDelegate.storiesCollection.isRiverView ||
             appDelegate.storiesCollection.isSocialView ||
             appDelegate.storiesCollection.isSavedView ||
+            appDelegate.storiesCollection.isWidgetView ||
             appDelegate.storiesCollection.isReadView) {
             if (self.webView.scrollView.contentOffset.y == -20) {
                 y = y + 20;
@@ -2023,6 +2026,7 @@
         if (appDelegate.storiesCollection.isRiverView ||
             appDelegate.storiesCollection.isSocialView ||
             appDelegate.storiesCollection.isSavedView ||
+            appDelegate.storiesCollection.isWidgetView ||
             appDelegate.storiesCollection.isReadView) {
             if (self.webView.scrollView.contentOffset.y == -20) {
                 y = y + 20;
@@ -2397,6 +2401,7 @@
     NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
                             appDelegate.storiesCollection.isSocialView ||
                             appDelegate.storiesCollection.isSavedView ||
+                            appDelegate.storiesCollection.isWidgetView ||
                             appDelegate.storiesCollection.isReadView) ?
                             @"NB-river" : @"NB-non-river";
     
