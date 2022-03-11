@@ -9,8 +9,7 @@ import re
 import ssl
 import socket
 import base64
-import urllib.parse
-import urllib.request
+import urllib.request, urllib.error, urllib.parse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -1612,27 +1611,35 @@ def load_river_stories_widget(request):
         url = urllib.parse.urljoin(settings.NEWSBLUR_URL, url)
         scontext = ssl.SSLContext(ssl.PROTOCOL_TLS)
         scontext.verify_mode = ssl.VerifyMode.CERT_NONE
+        conn = None
         try:
             conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
-        except urllib.request.URLError:
+        except (urllib.error.URLError, socket.timeout):
+            pass
+        if not conn:
+            # logging.user(request.user, '"%s" wasn\'t fetched, trying again: %s' % (url, e))
             url = url.replace('localhost', 'haproxy')
-            conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
-        except urllib.request.URLError as e:
-            logging.user(request.user, '"%s" not fetched in %ss: %s' % (url, (time.time() - start), e))
-            return None
-        except socket.timeout:
-            logging.user(request.user, '"%s" not fetched in %ss' % (url, (time.time() - start)))
-            return None
+            try:
+                conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
+            except (urllib.error.HTTPError, urllib.error.URLError, socket.timeout) as e:
+                logging.user(request.user, '~FB"%s" ~FRnot fetched~FB in %ss: ~SB%s' % (url, (time.time() - start), e))
+                return None
+
         data = conn.read()
-        logging.user(request.user, '"%s" fetched in %ss' % (url, (time.time() - start)))
+        if not url.startswith("data:"):
+            data = base64.b64encode(data).decode('utf-8')
+        logging.user(request.user, '~FB"%s" ~SBfetched~SN in ~SB%ss' % (url, (time.time() - start)))
         return dict(url=original_url, data=data)
     
     # Find the image thumbnails and download in parallel
     thumbnail_urls = []
     for story in river_stories_data['stories']:
         thumbnail_values = list(story['secure_image_thumbnails'].values())
-        if thumbnail_values:
-            thumbnail_urls.append(thumbnail_values[0])
+        for thumbnail_value in thumbnail_values:
+            if 'data:' in thumbnail_value:
+                continue
+            thumbnail_urls.append(thumbnail_value)
+            break
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
         pages = executor.map(load_url, thumbnail_urls)
@@ -1641,11 +1648,12 @@ def load_river_stories_widget(request):
     thumbnail_data = dict()
     for page in pages:
         if not page: continue
-        thumbnail_data[page['url']] = base64.b64encode(page['data']).decode('utf-8')
+        thumbnail_data[page['url']] = page['data']
     for story in river_stories_data['stories']:
         thumbnail_values = list(story['secure_image_thumbnails'].values())
         if thumbnail_values and thumbnail_values[0] in thumbnail_data:
-            story['select_thumbnail_data'] = thumbnail_data[thumbnail_values[0]]
+            page_url = thumbnail_values[0]
+            story['select_thumbnail_data'] = thumbnail_data[page_url]
         
     logging.user(request, ("Elapsed Time: %ss" % (time.time() - start)))
     

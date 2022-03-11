@@ -28,6 +28,7 @@
         <item name="chip">@style/chip</item>
         <item name="actionButtons">@style/actionButtons</item>
         <item name="storyButtons">@style/storyButtons</item>
+        <item name="storyButtonsDimmed">@style/storyButtonsDimmed</item>
         <item name="shareBarBackground">@style/shareBarBackground</item>
         <item name="shareBarText">@style/shareBarText</item>
         <item name="commentsHeader">@style/commentsHeader</item>
@@ -81,6 +82,7 @@
         <item name="chip">@style/chip.dark</item>
         <item name="actionButtons">@style/actionButtons.dark</item>
         <item name="storyButtons">@style/storyButtons.dark</item>
+        <item name="storyButtonsDimmed">@style/storyButtonsDimmed.dark</item>
         <item name="shareBarBackground">@style/shareBarBackground.dark</item>
         <item name="shareBarText">@style/shareBarText.dark</item>
         <item name="commentsHeader">@style/commentsHeader.dark</item>
@@ -135,6 +137,7 @@
         <item name="chip">@style/chip.dark</item>
         <item name="actionButtons">@style/actionButtons.dark</item>
         <item name="storyButtons">@style/storyButtons.dark</item>
+        <item name="storyButtonsDimmed">@style/storyButtonsDimmed.dark</item>
         <item name="shareBarBackground">@style/shareBarBackground.black</item>
         <item name="shareBarText">@style/shareBarText.dark</item>
         <item name="commentsHeader">@style/commentsHeader.black</item>

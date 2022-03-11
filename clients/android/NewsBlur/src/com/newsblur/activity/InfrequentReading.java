@@ -11,7 +11,7 @@ public class InfrequentReading extends Reading {
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
 
-        UIUtils.setupToolbar(this, R.drawable.ak_icon_allstories, getResources().getString(R.string.infrequent_title), false);
+        UIUtils.setupToolbar(this, R.drawable.ak_icon_infrequent, getResources().getString(R.string.infrequent_title), false);
     }
 
 }

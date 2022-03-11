@@ -2,26 +2,39 @@
 <merge xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center_horizontal"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="15dp"
-        android:baselineAligned="false" >
+        android:gravity="center_horizontal"
+        android:layout_gravity="center_horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/mark_read_story_button"
+            style="?storyButtons"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_alignStart="@+id/train_story_button"
+            android:layout_alignEnd="@+id/save_story_button"
+            android:text="@string/story_mark_read_state"
+            android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/train_story_button"
             style="?storyButtons"
             android:layout_width="wrap_content"
             android:layout_height="44dp"
+            android:layout_below="@+id/mark_read_story_button"
             android:text="@string/train_this"
-            app:icon="@drawable/ic_train"/>
+            app:icon="@drawable/ic_train" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/share_story_button"
             style="?storyButtons"
+            android:layout_marginHorizontal="12dp"
+            android:layout_toEndOf="@+id/train_story_button"
+            android:layout_below="@+id/mark_read_story_button"
             android:layout_width="wrap_content"
             android:layout_height="44dp"
             android:text="@string/share_this"
@@ -30,12 +43,14 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/save_story_button"
             style="?storyButtons"
+            android:layout_toEndOf="@+id/share_story_button"
+            android:layout_below="@+id/mark_read_story_button"
             android:layout_width="wrap_content"
             android:layout_height="44dp"
             android:text="@string/save_this"
             app:icon="@drawable/ic_clock" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"

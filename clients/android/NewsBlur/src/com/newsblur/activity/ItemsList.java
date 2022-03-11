@@ -266,7 +266,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             menu.findItem(R.id.menu_story_thumbnail_no_preview).setChecked(true);
         }
 
-        boolean isMarkReadOnScroll = PrefsUtils.isMarkReadOnScroll(this);
+        boolean isMarkReadOnScroll = PrefsUtils.isMarkReadOnFeedScroll(this);
         if (isMarkReadOnScroll) {
             menu.findItem(R.id.menu_mark_read_on_scroll_enabled).setChecked(true);
         } else {

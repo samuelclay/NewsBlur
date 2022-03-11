@@ -109,7 +109,7 @@
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
         android:paddingRight="4dp"
-        android:maxLines="2"
+        android:maxLines="3"
         android:ellipsize="end" />
 
     <TextView

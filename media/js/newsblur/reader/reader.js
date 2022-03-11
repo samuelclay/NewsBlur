@@ -5870,7 +5870,7 @@
         
         load_feed_in_tryfeed_view: function(feed_id, options) {
             options = options || {};
-            feed = _.extend({
+            var feed = _.extend({
                 id           : feed_id,
                 feed_id      : feed_id,
                 feed_title   : options.feed && options.feed.feed_title,
