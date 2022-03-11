@@ -269,7 +269,7 @@ private extension ShareViewController {
         case .save:
             return "api/save_story"
         case .add:
-            return "reader/add_url"
+            return "api/add_url"
         }
     }
     
