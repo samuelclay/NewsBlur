@@ -45,19 +45,19 @@ class Profile : NbActivity() {
             savedInstanceState.getString(USER_ID)
         }
 
+
         if (supportFragmentManager.findFragmentByTag(detailsTag) == null) {
             val detailsTransaction = supportFragmentManager.beginTransaction()
             detailsFragment = ProfileDetailsFragment()
-            detailsFragment!!.retainInstance = true
             detailsTransaction.add(R.id.profile_details, detailsFragment!!, detailsTag)
             detailsTransaction.commit()
 
             activityDetailsPagerAdapter = ActivityDetailsPagerAdapter(supportFragmentManager, this)
             binding.activityDetailsPager.adapter = activityDetailsPagerAdapter
-            loadUserDetails()
         } else {
             detailsFragment = supportFragmentManager.findFragmentByTag(detailsTag) as ProfileDetailsFragment
         }
+        loadUserDetails()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
