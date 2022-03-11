@@ -1,6 +1,5 @@
 import time
 import datetime
-import zlib
 import random
 import re
 from bson.objectid import ObjectId
@@ -1392,8 +1391,7 @@ def shared_stories_rss_feed(request, user_id, username=None):
             'user': user,
             'social_profile': social_profile,
             'shared_story': shared_story,
-            'content': (shared_story.story_content_z and
-                        zlib.decompress(shared_story.story_content_z))
+            'content': shared_story.story_content_str,
         })
         story_data = {
             'title': shared_story.story_title,

@@ -211,7 +211,7 @@
                     android:layout_marginTop="12dp"
                     android:scrollbars="none" />
 
-                <include layout="@layout/include_reading_item_comment" />
+                <include layout="@layout/reading_item_actions" />
 
             </LinearLayout>
 

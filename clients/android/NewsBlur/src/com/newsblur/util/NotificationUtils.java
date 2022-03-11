@@ -114,19 +114,19 @@ public class NotificationUtils {
         // UI on some devices.
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         // set the requestCode to the story hashcode to prevent the PI re-using the wrong Intent
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, story.hashCode(), i, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntentUtils.getImmutableActivity(context, story.hashCode(), i, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent dismissIntent = new Intent(context, NotifyDismissReceiver.class);
         dismissIntent.putExtra(Reading.EXTRA_STORY_HASH, story.storyHash);
-        PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), story.hashCode(), dismissIntent, 0);
+        PendingIntent dismissPendingIntent = PendingIntentUtils.getImmutableBroadcast(context.getApplicationContext(), story.hashCode(), dismissIntent, 0);
 
         Intent saveIntent = new Intent(context, NotifySaveReceiver.class);
         saveIntent.putExtra(Reading.EXTRA_STORY_HASH, story.storyHash);
-        PendingIntent savePendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), story.hashCode(), saveIntent, 0);
+        PendingIntent savePendingIntent = PendingIntentUtils.getImmutableBroadcast(context.getApplicationContext(), story.hashCode(), saveIntent, 0);
 
         Intent markreadIntent = new Intent(context, NotifyMarkreadReceiver.class);
         markreadIntent.putExtra(Reading.EXTRA_STORY_HASH, story.storyHash);
-        PendingIntent markreadPendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), story.hashCode(), markreadIntent, 0);
+        PendingIntent markreadPendingIntent = PendingIntentUtils.getImmutableBroadcast(context.getApplicationContext(), story.hashCode(), markreadIntent, 0);
 
         String feedTitle = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
         StringBuilder title = new StringBuilder();
