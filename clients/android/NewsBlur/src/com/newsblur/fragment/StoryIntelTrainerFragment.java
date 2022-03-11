@@ -18,6 +18,7 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import com.newsblur.R;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.DialogTrainstoryBinding;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
@@ -25,7 +26,18 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.UIUtils;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class StoryIntelTrainerFragment extends DialogFragment {
+
+    @Inject
+    FeedUtils feedUtils;
+
+    @Inject
+    BlurDatabaseHelper dbHelper;
 
     private Story story;
     private FeedSet fs;
@@ -50,7 +62,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
         story = (Story) getArguments().getSerializable("story");
         fs = (FeedSet) getArguments().getSerializable("feedset");
-        classifier = FeedUtils.dbHelper.getClassifierForFeed(story.feedId);
+        classifier = dbHelper.getClassifierForFeed(story.feedId);
 
         final Activity activity = getActivity();
         LayoutInflater inflater = LayoutInflater.from(activity);
@@ -132,7 +144,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
         // the intel identifier is the feed ID
         View rowFeed = inflater.inflate(R.layout.include_intel_row, null);
         TextView labelFeed = (TextView) rowFeed.findViewById(R.id.intel_row_label);
-        labelFeed.setText(FeedUtils.getFeedTitle(story.feedId));
+        labelFeed.setText(feedUtils.getFeedTitle(story.feedId));
         UIUtils.setupIntelDialogRow(rowFeed, classifier.feeds, story.feedId);
         binding.existingFeedIntelContainer.addView(rowFeed);
 
@@ -152,7 +164,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
                 if ((newTitleTraining != null) && (!TextUtils.isEmpty(binding.intelTitleSelection.getSelection()))) {
                     classifier.title.put(binding.intelTitleSelection.getSelection(), newTitleTraining);
                 }
-                FeedUtils.updateClassifier(story.feedId, classifier, fs, activity);
+                feedUtils.updateClassifier(story.feedId, classifier, fs, activity);
                 StoryIntelTrainerFragment.this.dismiss();
             }
         });

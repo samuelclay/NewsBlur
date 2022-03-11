@@ -18,7 +18,9 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.newsblur.R;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.ActivityItemslistBinding;
+import com.newsblur.di.IconLoader;
 import com.newsblur.fragment.ItemSetFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.SaveSearchFragment;
@@ -28,6 +30,7 @@ import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
@@ -40,7 +43,22 @@ import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, OnSeekBarChangeListener {
+
+    @Inject
+    BlurDatabaseHelper dbHelper;
+
+    @Inject
+    FeedUtils feedUtils;
+
+    @Inject
+    @IconLoader
+    ImageLoader iconLoader;
 
     public static final String EXTRA_FEED_SET = "feed_set";
     public static final String EXTRA_STORY_HASH = "story_hash";
@@ -68,13 +86,13 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         // this is not strictly necessary, since our first refresh with the fs will swap in
         // the correct session, but that can be delayed by sync backup, so we try here to
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
-        FeedUtils.prepareReadingSession(fs, false);
+        feedUtils.prepareReadingSession(fs, false);
 
         if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false)) {
             String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
             UIUtils.startReadingActivity(fs, hash, this);
         } else if (PrefsUtils.isAutoOpenFirstUnread(this)) {
-            if (FeedUtils.dbHelper.getUnreadCount(fs, intelState) > 0) {
+            if (dbHelper.getUnreadCount(fs, intelState) > 0) {
                 UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this);
             }
         }
@@ -282,7 +300,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 			finish();
 			return true;
 		} else if (item.getItemId() == R.id.menu_mark_all_as_read) {
-            FeedUtils.markRead(this, fs, null, null, R.array.mark_all_read_options, true);
+            feedUtils.markRead(this, fs, null, null, R.array.mark_all_read_options, true);
 			return true;
 		} else if (item.getItemId() == R.id.menu_story_order) {
             StoryOrder currentValue = getStoryOrder();
@@ -432,7 +450,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         String oldQuery = fs.getSearchQuery();
         fs.setSearchQuery(q);
         if (!TextUtils.equals(q, oldQuery)) {
-            FeedUtils.prepareReadingSession(fs, true);
+            feedUtils.prepareReadingSession(fs, true);
             triggerSync();
             itemSetFragment.resetEmptyState();
             itemSetFragment.hasUpdated();
@@ -474,7 +492,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 
     protected void restartReadingSession() {
         NBSyncService.resetFetchState(fs);
-        FeedUtils.prepareReadingSession(fs, true);
+        feedUtils.prepareReadingSession(fs, true);
         triggerSync();
         itemSetFragment.resetEmptyState();
         itemSetFragment.hasUpdated();

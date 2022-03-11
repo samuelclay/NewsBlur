@@ -12,6 +12,9 @@ import com.newsblur.R;
 import com.newsblur.fragment.AddSocialFragment;
 import com.newsblur.util.UIUtils;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class AddSocial extends NbActivity {
 
 	private FragmentManager fragmentManager;

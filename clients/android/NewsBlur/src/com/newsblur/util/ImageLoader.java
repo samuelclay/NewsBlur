@@ -19,6 +19,8 @@ import android.widget.RemoteViews;
 import com.newsblur.R;
 import com.newsblur.network.APIConstants;
 
+import dagger.hilt.android.internal.managers.FragmentComponentManager;
+
 public class ImageLoader {
 
 	private final MemoryCache memoryCache;
@@ -194,7 +196,8 @@ public class ImageLoader {
 
     private void setViewImage(Bitmap bitmap, PhotoToLoad photoToLoad) {
         BitmapDisplayer bitmapDisplayer = new BitmapDisplayer(bitmap, photoToLoad);
-        Activity a = (Activity) photoToLoad.imageView.getContext();
+        FragmentComponentManager.findActivity(photoToLoad.imageView.getContext());
+        Activity a = (Activity) FragmentComponentManager.findActivity(photoToLoad.imageView.getContext());
         a.runOnUiThread(bitmapDisplayer);
     }
 

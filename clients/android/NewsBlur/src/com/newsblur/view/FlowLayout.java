@@ -17,7 +17,7 @@ import com.newsblur.util.UIUtils;
  * children as special case that should all be squares of the same size, for forming
  * icon grids. Many iterations ago inspired by the code referenced below.
  *  
- * @see http://stackoverflow.com/questions/549451/line-breaking-widget-layout-for-android
+ * @see https://stackoverflow.com/questions/549451/line-breaking-widget-layout-for-android
  */
 public class FlowLayout extends ViewGroup {
 

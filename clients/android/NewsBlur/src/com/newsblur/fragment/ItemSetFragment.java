@@ -23,13 +23,17 @@ import android.widget.FrameLayout;
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.NbActivity;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.StoryViewAdapter;
 import com.newsblur.databinding.FragmentItemgridBinding;
 import com.newsblur.databinding.RowFleuronBinding;
+import com.newsblur.di.IconLoader;
+import com.newsblur.di.ThumbnailLoader;
 import com.newsblur.domain.Story;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryListStyle;
@@ -39,7 +43,26 @@ import com.newsblur.util.ViewUtils;
 import com.newsblur.view.ProgressThrobber;
 import com.newsblur.viewModel.StoriesViewModel;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class ItemSetFragment extends NbFragment {
+
+    @Inject
+    FeedUtils feedUtils;
+
+    @Inject
+    BlurDatabaseHelper dbHelper;
+
+    @Inject
+    @IconLoader
+    ImageLoader iconLoader;
+
+    @Inject
+    @ThumbnailLoader
+    ImageLoader thumbnailLoader;
 
     private static final String BUNDLE_GRIDSTATE = "gridstate";
 
@@ -164,7 +187,7 @@ public class ItemSetFragment extends NbFragment {
             }
         });
 
-        adapter = new StoryViewAdapter(((NbActivity) getActivity()), this, getFeedSet(), listStyle);
+        adapter = new StoryViewAdapter(((NbActivity) getActivity()), this, getFeedSet(), listStyle, iconLoader, thumbnailLoader, feedUtils);
         adapter.addFooterView(footerView);
         adapter.addFooterView(fleuronBinding.getRoot());
         binding.itemgridfragmentGrid.setAdapter(adapter);
@@ -267,7 +290,7 @@ public class ItemSetFragment extends NbFragment {
 
     private void setCursor(Cursor cursor) {
         if (cursor != null) {
-            if (!FeedUtils.dbHelper.isFeedSetReady(getFeedSet())) {
+            if (!dbHelper.isFeedSetReady(getFeedSet())) {
                 // the DB hasn't caught up yet from the last story list; don't display stale stories.
                 com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
                 updateAdapter(null);
@@ -451,7 +474,7 @@ public class ItemSetFragment extends NbFragment {
                     int index = markEnd - i;
                     Story story = adapter.getStory(index);
                     if (story != null) {
-                        FeedUtils.markStoryAsRead(story, requireContext());
+                        feedUtils.markStoryAsRead(story, requireContext());
                     }
                 }
             }

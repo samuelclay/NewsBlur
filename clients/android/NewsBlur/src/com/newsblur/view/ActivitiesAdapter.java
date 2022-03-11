@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import com.newsblur.R;
 import com.newsblur.domain.ActivityDetails;
 import com.newsblur.domain.UserDetails;
+import com.newsblur.util.ImageLoader;
 
 /**
  * Created by mark on 17/06/15.
@@ -17,8 +18,8 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
 
     private final String startedFollowing, repliedTo, favorited, subscribedTo, saved, signup, commentsOn, sharedStory, you;
 
-    public ActivitiesAdapter(final Context context, UserDetails user) {
-        super(context, user);
+    public ActivitiesAdapter(final Context context, UserDetails user, ImageLoader iconLoader) {
+        super(context, user, iconLoader);
 
         Resources resources = context.getResources();
         startedFollowing = resources.getString(R.string.profile_started_following);

@@ -28,6 +28,7 @@ import android.util.Log;
 
 import com.newsblur.R;
 import com.newsblur.activity.Login;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIConstants;
 import com.newsblur.service.SubscriptionSyncService;
@@ -87,10 +88,10 @@ public class PrefsUtils {
 
     }
 
-    public static void updateVersion(Context context) {
+    public static void updateVersion(Context context, String appVersion) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         // store the current version
-        prefs.edit().putString(AppConstants.LAST_APP_VERSION, getVersion(context)).commit();
+        prefs.edit().putString(AppConstants.LAST_APP_VERSION, appVersion).commit();
         // also make sure we auto-trigger an update, since all data are now gone
         prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, 0L).commit();
     }
@@ -104,18 +105,18 @@ public class PrefsUtils {
         }
     }
 
-    public static String createFeedbackLink(Context context) {
+    public static String createFeedbackLink(Context context, BlurDatabaseHelper dbHelper) {
         StringBuilder s = new StringBuilder(AppConstants.FEEDBACK_URL);
         s.append("<give us some feedback!>%0A%0A%0A");
-        String info = getDebugInfo(context);
+        String info = getDebugInfo(context, dbHelper);
         s.append(info.replace("\n", "%0A"));
         return s.toString();
     }
 
-    public static void sendLogEmail(Context context) {
+    public static void sendLogEmail(Context context, BlurDatabaseHelper dbHelper) {
         File f = com.newsblur.util.Log.getLogfile();
         if (f == null) return;
-        String debugInfo = "Tell us a bit about your problem:\n\n\n\n" + getDebugInfo(context);
+        String debugInfo = "Tell us a bit about your problem:\n\n\n\n" + getDebugInfo(context, dbHelper);
         android.net.Uri localPath = FileProvider.getUriForFile(context, "com.newsblur.fileprovider", f);
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("*/*");
@@ -128,7 +129,7 @@ public class PrefsUtils {
         }
     }
 
-    private static String getDebugInfo(Context context) {
+    private static String getDebugInfo(Context context, BlurDatabaseHelper dbHelper) {
         StringBuilder s = new StringBuilder();
         s.append("app version: ").append(getVersion(context));
         s.append("\n");
@@ -136,7 +137,7 @@ public class PrefsUtils {
         s.append("\n");
         s.append("device: ").append(Build.MANUFACTURER).append(" ").append(Build.MODEL).append(" (").append(Build.BOARD).append(")");
         s.append("\n");
-        s.append("sqlite version: ").append(FeedUtils.dbHelper.getEngineVersion());
+        s.append("sqlite version: ").append(dbHelper.getEngineVersion());
         s.append("\n");
         s.append("username: ").append(getUserDetails(context).username);
         s.append("\n");
@@ -166,7 +167,7 @@ public class PrefsUtils {
         return s.toString();
     }
 
-    public static void logout(Context context) {
+    public static void logout(Context context, BlurDatabaseHelper dbHelper) {
         NBSyncService.softInterrupt();
         NBSyncService.clearState();
 
@@ -179,7 +180,7 @@ public class PrefsUtils {
         context.getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().clear().commit();
 
         // wipe the local DB
-        FeedUtils.dropAndRecreateTables();
+        dbHelper.dropAndRecreateTables();
 
         // disable widget
         WidgetUtils.disableWidgetUpdate(context);
@@ -193,7 +194,7 @@ public class PrefsUtils {
         context.startActivity(i);
     }
 
-    public static void clearPrefsAndDbForLoginAs(Context context) {
+    public static void clearPrefsAndDbForLoginAs(Context context, BlurDatabaseHelper dbHelper) {
         NBSyncService.softInterrupt();
         NBSyncService.clearState();
 
@@ -211,7 +212,7 @@ public class PrefsUtils {
         editor.commit();
 
         // wipe the local DB
-        FeedUtils.dropAndRecreateTables();
+        dbHelper.dropAndRecreateTables();
     }
 
 	/**

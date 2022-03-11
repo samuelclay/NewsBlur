@@ -16,11 +16,13 @@ import androidx.core.content.ContextCompat;
 
 import com.newsblur.R;
 import com.newsblur.databinding.ActivityMuteConfigBinding;
+import com.newsblur.di.IconLoader;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
@@ -29,7 +31,16 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 public class MuteConfig extends FeedChooser implements MuteConfigAdapter.FeedStateChangedListener {
+
+    @Inject
+    FeedUtils feedUtils;
+
+    @Inject
+    @IconLoader
+    ImageLoader iconLoader;
 
     private ActivityMuteConfigBinding binding;
     private boolean checkedInitFeedsLimit = false;
@@ -66,7 +77,7 @@ public class MuteConfig extends FeedChooser implements MuteConfigAdapter.FeedSta
 
     @Override
     void setupList() {
-        adapter = new MuteConfigAdapter(this, this);
+        adapter = new MuteConfigAdapter(this, feedUtils, iconLoader, this);
         binding.listView.setAdapter(adapter);
     }
 
@@ -162,8 +173,8 @@ public class MuteConfig extends FeedChooser implements MuteConfigAdapter.FeedSta
         }
         adapter.notifyDataSetChanged();
 
-        if (isMute) FeedUtils.muteFeeds(this, adapter.feedIds);
-        else FeedUtils.unmuteFeeds(this, adapter.feedIds);
+        if (isMute) feedUtils.muteFeeds(this, adapter.feedIds);
+        else feedUtils.unmuteFeeds(this, adapter.feedIds);
     }
 
     private void showAccountFeedsLimitDialog(int exceededLimitCount) {
@@ -211,8 +222,8 @@ public class MuteConfig extends FeedChooser implements MuteConfigAdapter.FeedSta
                 inactiveFeedIds.add(feed.feedId);
             }
         }
-        FeedUtils.unmuteFeeds(this, activeFeedIds);
-        FeedUtils.muteFeeds(this, inactiveFeedIds);
+        feedUtils.unmuteFeeds(this, activeFeedIds);
+        feedUtils.muteFeeds(this, inactiveFeedIds);
         finish();
     }
 

@@ -15,7 +15,7 @@ public class ViewUtils {
 
     private ViewUtils() {} // util class - no instances
 
-	public static ImageView createSharebarImage(final Context context, final String photoUrl, final String userId) {
+	public static ImageView createSharebarImage(final Context context, final String photoUrl, final String userId, ImageLoader iconLoader) {
 		RoundedImageView image = new RoundedImageView(context);
 		int imageLength = UIUtils.dp2px(context, 15);
 		image.setMaxHeight(imageLength);
@@ -30,7 +30,7 @@ public class ViewUtils {
 		image.setMaxWidth(imageLength);
 		
 		image.setLayoutParams(imageParameters);
-		FeedUtils.iconLoader.displayImage(photoUrl, image);
+		iconLoader.displayImage(photoUrl, image);
 		image.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {

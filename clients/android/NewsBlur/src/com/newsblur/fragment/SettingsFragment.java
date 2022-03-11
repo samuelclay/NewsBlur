@@ -7,10 +7,17 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
 import com.newsblur.R;
+import com.newsblur.database.BlurDatabaseHelper;
+import com.newsblur.service.NBSyncService;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants;
 
+import javax.inject.Inject;
+
 public class SettingsFragment extends PreferenceFragmentCompat {
+
+    @Inject
+    BlurDatabaseHelper dbHelper;
 
     private Preference deleteOfflineStoriesPref;
 
@@ -32,9 +39,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private void deleteOfflineStories() {
         if (deleteOfflineStoriesPref != null) {
             deleteOfflineStoriesPref.setOnPreferenceClickListener(null);
-            FeedUtils.syncOfflineStories(requireContext());
             deleteOfflineStoriesPref.setSummary("");
             deleteOfflineStoriesPref.setTitle(R.string.menu_delete_offline_stories_confirmation);
+
+            dbHelper.deleteStories();
+            NBSyncService.forceFeedsFolders();
+            FeedUtils.triggerSync(requireContext());
         }
     }
 }

@@ -15,20 +15,22 @@ import com.newsblur.domain.ActivityDetails;
 import com.newsblur.domain.ActivityDetails.Category;
 import com.newsblur.network.APIConstants;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.util.UIUtils;
 
 public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetails> {
 
-    private LayoutInflater inflater;
+    private final ImageLoader iconLoader;
+    private final LayoutInflater inflater;
     protected final String ago;
     protected ForegroundColorSpan linkColor, contentColor, quoteColor;
-    protected UserDetails currentUserDetails;
+    protected final UserDetails currentUserDetails;
     protected final boolean userIsYou;
 
-    public ActivityDetailsAdapter(final Context context, UserDetails user) {
+    public ActivityDetailsAdapter(final Context context, UserDetails user, ImageLoader iconLoader) {
         super(context, R.layout.row_activity); // final argument seems unused since we override getView()
         inflater = LayoutInflater.from(context);
-
+        this.iconLoader = iconLoader;
         currentUserDetails = user;
 
         Resources resources = context.getResources();
@@ -57,13 +59,13 @@ public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetail
 
         activityTime.setText(activity.timeSince.toUpperCase() + " " + ago);
         if (activity.category == Category.FEED_SUBSCRIPTION) {
-            FeedUtils.iconLoader.displayImage(APIConstants.S3_URL_FEED_ICONS + activity.feedId + ".png", imageView);
+            iconLoader.displayImage(APIConstants.S3_URL_FEED_ICONS + activity.feedId + ".png", imageView);
         } else if (activity.category == Category.SHARED_STORY) {
-            FeedUtils.iconLoader.displayImage(currentUserDetails.photoUrl, imageView);
+            iconLoader.displayImage(currentUserDetails.photoUrl, imageView);
         } else if (activity.category == Category.STAR) {
             imageView.setImageResource(R.drawable.ic_clock);
         } else if (activity.user != null) {
-            FeedUtils.iconLoader.displayImage(activity.user.photoUrl, imageView);
+            iconLoader.displayImage(activity.user.photoUrl, imageView);
         } else {
             imageView.setImageResource(R.drawable.logo);
         }

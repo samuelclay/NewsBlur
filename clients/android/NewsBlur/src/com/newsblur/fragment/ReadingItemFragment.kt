@@ -22,8 +22,11 @@ import com.google.android.material.chip.Chip
 import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
 import com.newsblur.activity.Reading
+import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.databinding.FragmentReadingitemBinding
 import com.newsblur.databinding.ReadingItemActionsBinding
+import com.newsblur.di.IconLoader
+import com.newsblur.di.StoryFileCache
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
 import com.newsblur.domain.UserDetails
@@ -35,10 +38,31 @@ import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_TEXT
 import com.newsblur.service.OriginalTextService
 import com.newsblur.util.*
 import com.newsblur.util.PrefConstants.ThemeValue
+import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 import java.util.regex.Pattern
+import javax.inject.Inject
 import kotlin.math.roundToInt
 
+@AndroidEntryPoint
 class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
+
+    @Inject
+    lateinit var apiManager: APIManager
+
+    @Inject
+    lateinit var dbHelper: BlurDatabaseHelper
+
+    @Inject
+    lateinit var feedUtils: FeedUtils
+
+    @Inject
+    @IconLoader
+    lateinit var iconLoader: ImageLoader
+
+    @Inject
+    @StoryFileCache
+    lateinit var storyImageCache: FileCache
 
     @JvmField
     var story: Story? = null
@@ -271,11 +295,11 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             true
         }
         R.id.menu_send_story -> {
-            FeedUtils.sendStoryUrl(story, requireContext())
+            feedUtils.sendStoryUrl(story, requireContext())
             true
         }
         R.id.menu_send_story_full -> {
-            FeedUtils.sendStoryFull(story, requireContext())
+            feedUtils.sendStoryFull(story, requireContext())
             true
         }
         R.id.menu_textsize -> {
@@ -290,14 +314,14 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         }
         R.id.menu_reading_save -> {
             if (story!!.starred) {
-                FeedUtils.setStorySaved(story!!, false, requireContext(), null)
+                feedUtils.setStorySaved(story!!, false, requireContext(), null)
             } else {
-                FeedUtils.setStorySaved(story!!.storyHash, true, requireContext())
+                feedUtils.setStorySaved(story!!.storyHash, true, requireContext())
             }
             true
         }
         R.id.menu_reading_markunread -> {
-            FeedUtils.markStoryUnread(story!!, requireContext())
+            feedUtils.markStoryUnread(story!!, requireContext())
             true
         }
         R.id.menu_theme_auto -> {
@@ -328,7 +352,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             true
         }
         R.id.menu_go_to_feed -> {
-            FeedItemsList.startActivity(context, fs, FeedUtils.getFeed(story!!.feedId), null)
+            FeedItemsList.startActivity(context, fs, dbHelper.getFeed(story!!.feedId), null)
             true
         }
         else -> {
@@ -337,8 +361,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     }
 
     private fun clickMarkStoryRead() {
-        if (story!!.read) FeedUtils.markStoryUnread(story!!, requireContext())
-        else FeedUtils.markStoryAsRead(story!!, requireContext())
+        if (story!!.read) feedUtils.markStoryUnread(story!!, requireContext())
+        else feedUtils.markStoryAsRead(story!!, requireContext())
     }
 
     private fun updateMarkReadButton() {
@@ -361,9 +385,9 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     private fun clickSave() {
         if (story!!.starred) {
-            FeedUtils.setStorySaved(story!!.storyHash, false, requireContext())
+            feedUtils.setStorySaved(story!!.storyHash, false, requireContext())
         } else {
-            FeedUtils.setStorySaved(story!!.storyHash, true, requireContext())
+            feedUtils.setStorySaved(story!!.storyHash, true, requireContext())
         }
     }
 
@@ -387,7 +411,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     }
 
     private fun setupItemCommentsAndShares() {
-        SetupCommentSectionTask(this, binding.root, layoutInflater, story).execute()
+        SetupCommentSectionTask(this, binding.root, layoutInflater, story, iconLoader).execute()
     }
 
     private fun setupItemMetadata() {
@@ -412,7 +436,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             binding.readingFeedTitle.visibility = View.GONE
             binding.readingFeedIcon.visibility = View.GONE
         } else {
-            FeedUtils.iconLoader!!.displayImage(feedIconUrl, binding.readingFeedIcon)
+            iconLoader.displayImage(feedIconUrl, binding.readingFeedIcon)
             binding.readingFeedTitle.text = feedTitle
         }
 
@@ -634,7 +658,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             setupItemCommentsAndShares()
         }
         if (updateType and UPDATE_INTEL != 0) {
-            classifier = FeedUtils.dbHelper!!.getClassifierForFeed(story!!.feedId)
+            classifier = dbHelper.getClassifierForFeed(story!!.feedId)
             setupTagsAndIntel()
         }
     }
@@ -643,7 +667,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         story?.let { story ->
             lifecycleScope.executeAsyncTask(
                     doInBackground = {
-                        FeedUtils.getStoryText(story.storyHash)
+                        feedUtils.getStoryText(story.storyHash)
                     },
                     onPostExecute = { result ->
                         if (result != null) {
@@ -669,7 +693,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         story?.let { story ->
             lifecycleScope.executeAsyncTask(
                     doInBackground = {
-                        FeedUtils.getStoryContent(story.storyHash)
+                        feedUtils.getStoryContent(story.storyHash)
                     },
                     onPostExecute = { result ->
                         if (result != null) {
@@ -692,7 +716,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                         binding.readingStoryChanges.setText(R.string.story_changes_loading)
                     },
                     doInBackground = {
-                        val apiManager = APIManager(requireContext())
                         apiManager.getStoryChanges(story.storyHash, showChanges)
                     },
                     onPostExecute = { response ->
@@ -813,7 +836,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         val imageTagMatcher = imgSniff.matcher(html)
         while (imageTagMatcher.find()) {
             val url = imageTagMatcher.group(2)
-            val localPath = FeedUtils.storyImageCache!!.getCachedLocation(url) ?: continue
+            val localPath = storyImageCache.getCachedLocation(url) ?: continue
             html = html.replace(imageTagMatcher.group(1) + "\"" + url + "\"", "src=\"$localPath\"")
             imageUrlRemaps!![localPath] = url
         }

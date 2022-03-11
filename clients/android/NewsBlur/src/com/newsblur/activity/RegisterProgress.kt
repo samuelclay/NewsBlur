@@ -11,15 +11,20 @@ import com.newsblur.databinding.ActivityRegisterProgressBinding
 import com.newsblur.network.APIManager
 import com.newsblur.util.PrefsUtils
 import com.newsblur.util.executeAsyncTask
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
  * Show progress screen while registering request is being processed. This
  * Activity doesn't extend NbActivity because it is one of the few
  * Activities that will be shown while the user is still logged out.
  */
+@AndroidEntryPoint
 class RegisterProgress : FragmentActivity() {
 
-    private lateinit var apiManager: APIManager
+    @Inject
+    lateinit var apiManager: APIManager
+
     private lateinit var binding: ActivityRegisterProgressBinding
 
     override fun onCreate(bundle: Bundle?) {
@@ -27,8 +32,6 @@ class RegisterProgress : FragmentActivity() {
         super.onCreate(bundle)
         binding = ActivityRegisterProgressBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        apiManager = APIManager(this)
 
         val username = intent.getStringExtra("username")
         val password = intent.getStringExtra("password")

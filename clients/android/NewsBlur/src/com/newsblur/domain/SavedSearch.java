@@ -4,9 +4,9 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.google.gson.annotations.SerializedName;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.FeedUtils;
 
 import java.util.Comparator;
 
@@ -24,11 +24,11 @@ public class SavedSearch {
     public String feedTitle;
     public String faviconUrl;
 
-    public ContentValues getValues() {
+    public ContentValues getValues(BlurDatabaseHelper dbHelper) {
         ContentValues values = new ContentValues();
-        String feedTitle = "\"<b>" + query + "</b>\" in <b>" + getFeedTitle() + "</b>";
+        String feedTitle = "\"<b>" + query + "</b>\" in <b>" + getFeedTitle(dbHelper) + "</b>";
         values.put(DatabaseConstants.SAVED_SEARCH_FEED_TITLE, feedTitle);
-        values.put(DatabaseConstants.SAVED_SEARCH_FAVICON, getFaviconUrl());
+        values.put(DatabaseConstants.SAVED_SEARCH_FAVICON, getFaviconUrl(dbHelper));
         values.put(DatabaseConstants.SAVED_SEARCH_ADDRESS, feedAddress);
         values.put(DatabaseConstants.SAVED_SEARCH_QUERY, query);
         values.put(DatabaseConstants.SAVED_SEARCH_FEED_ID, feedId);
@@ -48,7 +48,7 @@ public class SavedSearch {
         return savedSearch;
     }
 
-    private String getFeedTitle() {
+    private String getFeedTitle(BlurDatabaseHelper dbHelper) {
         String feedTitle = null;
 
         if (feedId.equals("river:")) {
@@ -57,14 +57,14 @@ public class SavedSearch {
             feedTitle = "Infrequent Site Stories";
         } else if (feedId.startsWith("river:")) {
             String folderName = feedId.replace("river:", "");
-            FeedSet fs = FeedUtils.feedSetFromFolderName(folderName);
+            FeedSet fs = dbHelper.feedSetFromFolderName(folderName);
             feedTitle = fs.getFolderName();
         } else if (feedId.equals("read")) {
             feedTitle = "Read Stories";
         } else if (feedId.startsWith("starred")) {
             feedTitle = "Saved Stories";
             String tag = feedId.replace("starred:", "");
-            StarredCount starredFeed = FeedUtils.getStarredFeedByTag(tag);
+            StarredCount starredFeed = dbHelper.getStarredFeedByTag(tag);
             if (starredFeed != null) {
                 String tagSlug = tag.replace(" ", "-");
                 if (starredFeed.tag.equals(tag) || starredFeed.tag.equals(tagSlug)) {
@@ -72,11 +72,11 @@ public class SavedSearch {
                 }
             }
         } else if (feedId.startsWith("feed:")) {
-            Feed feed = FeedUtils.getFeed(feedId.replace("feed:", ""));
+            Feed feed = dbHelper.getFeed(feedId.replace("feed:", ""));
             if (feed == null) return null;
             feedTitle = feed.title;
         } else if (feedId.startsWith("social:")) {
-            Feed feed = FeedUtils.getFeed(feedId.replace("social:", ""));
+            Feed feed = dbHelper.getFeed(feedId.replace("social:", ""));
             if (feed == null) return null;
             feedTitle = feed.title;
         }
@@ -84,7 +84,7 @@ public class SavedSearch {
         return feedTitle;
     }
 
-    private String getFaviconUrl() {
+    private String getFaviconUrl(BlurDatabaseHelper dbHelper) {
         String url = null;
         if (feedId.equals("river:") || feedId.equals("river:infrequent")) {
             url = "https://newsblur.com/media/img/icons/circular/ak-icon-allstories.png";
@@ -97,12 +97,12 @@ public class SavedSearch {
         } else if (feedId.startsWith("starred:")) {
             url = "https://newsblur.com/media/img/reader/tag.png";
         } else if (feedId.startsWith("feed:")) {
-            Feed feed = FeedUtils.getFeed(feedId.replace("feed:", ""));
+            Feed feed = dbHelper.getFeed(feedId.replace("feed:", ""));
             if (feed != null) {
                 url = feed.faviconUrl;
             }
         } else if (feedId.startsWith("social:")) {
-            Feed feed = FeedUtils.getFeed(feedId.replace("social:", ""));
+            Feed feed = dbHelper.getFeed(feedId.replace("social:", ""));
             if (feed != null) {
                 url = feed.faviconUrl;
             }

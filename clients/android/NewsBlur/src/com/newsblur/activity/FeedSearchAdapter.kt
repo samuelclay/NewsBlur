@@ -9,9 +9,11 @@ import com.newsblur.R
 import com.newsblur.databinding.ViewFeedSearchRowBinding
 import com.newsblur.domain.FeedResult
 import com.newsblur.util.FeedUtils
+import com.newsblur.util.ImageLoader
 
 class FeedSearchAdapter(
-        private val onClickListener: OnFeedSearchResultClickListener
+        private val onClickListener: OnFeedSearchResultClickListener,
+        private val iconLoader: ImageLoader
 ) : RecyclerView.Adapter<FeedSearchAdapter.ViewHolder>() {
 
     private val resultsList: MutableList<FeedResult> = mutableListOf()
@@ -44,7 +46,7 @@ class FeedSearchAdapter(
         fun bind(result: FeedResult) {
             val resultFaviconUrl = result.faviconUrl
             if (resultFaviconUrl.isNotEmpty()) {
-                FeedUtils.iconLoader?.displayImage(resultFaviconUrl, binding.imgFeedIcon)
+               iconLoader.displayImage(resultFaviconUrl, binding.imgFeedIcon)
             }
 
             binding.textTitle.text = result.label

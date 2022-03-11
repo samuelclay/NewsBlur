@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,8 +19,8 @@ public class MuteConfigAdapter extends FeedChooserAdapter {
 
     private FeedStateChangedListener listener;
 
-    MuteConfigAdapter(Context context, FeedStateChangedListener listener) {
-        super(context);
+    MuteConfigAdapter(Context context, FeedUtils feedUtils, ImageLoader imageLoader, FeedStateChangedListener listener) {
+        super(context, feedUtils, imageLoader);
         this.listener = listener;
     }
 
@@ -45,8 +46,8 @@ public class MuteConfigAdapter extends FeedChooserAdapter {
             }
 
             // if allAreMute initially, we need to unMute feeds
-            if (allAreMute) FeedUtils.unmuteFeeds(groupView.getContext(), feedIds);
-            else FeedUtils.muteFeeds(groupView.getContext(), feedIds);
+            if (allAreMute) feedUtils.unmuteFeeds(groupView.getContext(), feedIds);
+            else feedUtils.muteFeeds(groupView.getContext(), feedIds);
 
             listener.onFeedStateChanged();
             notifyDataChanged();
@@ -70,8 +71,8 @@ public class MuteConfigAdapter extends FeedChooserAdapter {
             feed.active = !feed.active;
             Set<String> feedIds = new HashSet<>(1);
             feedIds.add(feed.feedId);
-            if (feed.active) FeedUtils.unmuteFeeds(childView.getContext(), feedIds);
-            else FeedUtils.muteFeeds(childView.getContext(), feedIds);
+            if (feed.active) feedUtils.unmuteFeeds(childView.getContext(), feedIds);
+            else feedUtils.muteFeeds(childView.getContext(), feedIds);
 
             listener.onFeedStateChanged();
             notifyDataChanged();
