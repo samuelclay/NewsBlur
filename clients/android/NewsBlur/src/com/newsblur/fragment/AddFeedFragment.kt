@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.newsblur.R
 import com.newsblur.activity.Main
+import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.databinding.DialogAddFeedBinding
 import com.newsblur.databinding.RowAddFeedFolderBinding
 import com.newsblur.domain.Folder
@@ -23,17 +24,24 @@ import com.newsblur.fragment.AddFeedFragment.AddFeedAdapter.FolderViewHolder
 import com.newsblur.network.APIManager
 import com.newsblur.service.NBSyncService
 import com.newsblur.util.AppConstants
-import com.newsblur.util.FeedUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AddFeedFragment : DialogFragment() {
+
+    @Inject
+    lateinit var apiManager: APIManager
+
+    @Inject
+    lateinit var dbHelper: BlurDatabaseHelper
 
     private lateinit var binding: DialogAddFeedBinding
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val apiManager = APIManager(requireContext())
         val v = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_feed, null)
         binding = DialogAddFeedBinding.bind(v)
 
@@ -61,7 +69,7 @@ class AddFeedFragment : DialogFragment() {
         }
         binding.recyclerViewFolders.addItemDecoration(DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL))
         binding.recyclerViewFolders.adapter = adapter
-        adapter.setFolders(FeedUtils.dbHelper!!.folders)
+        adapter.setFolders(dbHelper.folders)
         return builder.create()
     }
 

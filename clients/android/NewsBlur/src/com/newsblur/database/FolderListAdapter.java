@@ -37,6 +37,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedListOrder;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
@@ -124,6 +125,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     private Context context;
 	private LayoutInflater inflater;
 	private StateFilter currentState;
+	private final ImageLoader iconLoader;
+	private final BlurDatabaseHelper dbHelper;
     
     // since we want to implement a custom expando that does group collapse/expand, we need
     // a way to call back to those functions on the listview from the onclick listener of
@@ -139,10 +142,12 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     public String activeSearchQuery;
 
-	public FolderListAdapter(Context context, StateFilter currentState) {
+	public FolderListAdapter(Context context, StateFilter currentState, ImageLoader iconLoader, BlurDatabaseHelper dbHelper) {
         this.currentState = currentState;
         this.context = context;
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.iconLoader = iconLoader;
+		this.dbHelper = dbHelper;
 
         textSize = PrefsUtils.getListTextSize(context);
 	}
@@ -253,7 +258,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             nameView.setText(f.feedTitle);
             nameView.setTextSize(textSize * defaultTextSize_childName);
             ImageView iconView = (ImageView) v.findViewById(R.id.row_socialfeed_icon);
-            FeedUtils.iconLoader.displayImage(f.photoUrl, iconView);
+            iconLoader.displayImage(f.photoUrl, iconView);
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_socialsumneu));
             if (f.neutralCount > 0 && currentState != StateFilter.BEST) {
                 neutCounter.setVisibility(View.VISIBLE);
@@ -293,8 +298,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             TextView nameView = v.findViewById(R.id.row_saved_search_title);
             nameView.setText(UIUtils.fromHtml(ss.feedTitle));
             ImageView iconView = v.findViewById(R.id.row_saved_search_icon);
-            FeedUtils.iconLoader.preCheck(ss.faviconUrl, iconView);
-            FeedUtils.iconLoader.displayImage(ss.faviconUrl, iconView);
+            iconLoader.preCheck(ss.faviconUrl, iconView);
+            iconLoader.displayImage(ss.faviconUrl, iconView);
         } else {
             if (v == null) v = inflater.inflate(R.layout.row_feed, parent, false);
             Feed f = activeFolderChildren.get(groupPosition).get(childPosition);
@@ -307,8 +312,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             nameView.setText(f.title);
             nameView.setTextSize(textSize * defaultTextSize_childName);
             ImageView iconView = (ImageView) v.findViewById(R.id.row_feedfavicon);
-            FeedUtils.iconLoader.preCheck(f.faviconUrl, iconView);
-            FeedUtils.iconLoader.displayImage(f.faviconUrl, iconView);
+            iconLoader.preCheck(f.faviconUrl, iconView);
+            iconLoader.displayImage(f.faviconUrl, iconView);
             TextView neutCounter = ((TextView) v.findViewById(R.id.row_feedneutral));
             TextView posCounter = ((TextView) v.findViewById(R.id.row_feedpositive));
             TextView savedCounter = ((TextView) v.findViewById(R.id.row_feedsaved));
@@ -407,7 +412,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             return FeedSet.allSaved();
         } else {
             String folderName = getGroupFolderName(groupPosition);
-            FeedSet fs = FeedUtils.feedSetFromFolderName(folderName);
+            FeedSet fs = dbHelper.feedSetFromFolderName(folderName);
             if (currentState == StateFilter.SAVED) fs.setFilterSaved(true);
             return fs;
         }

@@ -8,10 +8,17 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.newsblur.R;
-import com.newsblur.network.APIManager;
 import com.newsblur.util.FeedUtils;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class SaveSearchFragment extends DialogFragment {
+
+    @Inject
+    FeedUtils feedUtils;
 
     private static final String FEED_ID = "feed_id";
     private static final String QUERY = "query";
@@ -33,7 +40,7 @@ public class SaveSearchFragment extends DialogFragment {
         builder.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                FeedUtils.saveSearch(getArguments().getString(FEED_ID), getArguments().getString(QUERY), getActivity(), new APIManager(getActivity()));
+                feedUtils.saveSearch(getArguments().getString(FEED_ID), getArguments().getString(QUERY), getActivity());
                 SaveSearchFragment.this.dismiss();
             }
         });

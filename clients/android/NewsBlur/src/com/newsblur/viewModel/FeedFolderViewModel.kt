@@ -6,11 +6,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.newsblur.util.FeedUtils
+import com.newsblur.database.BlurDatabaseHelper
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class FeedFolderViewModel : ViewModel() {
+@HiltViewModel
+class FeedFolderViewModel
+@Inject constructor(private val dbHelper: BlurDatabaseHelper) : ViewModel() {
 
     private val cancellationSignal = CancellationSignal()
 
@@ -22,12 +26,12 @@ class FeedFolderViewModel : ViewModel() {
     fun getData() {
         viewModelScope.launch(Dispatchers.IO) {
             launch {
-                FeedUtils.dbHelper!!.getFoldersCursor(cancellationSignal).let {
+                dbHelper.getFoldersCursor(cancellationSignal).let {
                     _folders.postValue(it)
                 }
             }
             launch {
-                FeedUtils.dbHelper!!.getFeedsCursor(cancellationSignal).let {
+                dbHelper.getFeedsCursor(cancellationSignal).let {
                     _feeds.postValue(it)
                 }
             }
@@ -36,7 +40,7 @@ class FeedFolderViewModel : ViewModel() {
 
     fun getFeeds() {
         viewModelScope.launch(Dispatchers.IO) {
-            FeedUtils.dbHelper!!.getFeedsCursor(cancellationSignal).let {
+            dbHelper.getFeedsCursor(cancellationSignal).let {
                 _feeds.postValue(it)
             }
         }

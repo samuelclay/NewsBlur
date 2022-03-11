@@ -31,7 +31,6 @@ import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,10 +44,12 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.color.MaterialColors;
+import com.newsblur.NbApplication;
 import com.newsblur.R;
 import com.newsblur.activity.*;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
+import com.newsblur.service.NBSyncReceiver;
 
 public class UIUtils {
 
@@ -178,9 +179,9 @@ public class UIUtils {
      * Set up our customised ActionBar view that features the specified icon and title, sized
      * away from system standard to meet the NewsBlur visual style.
      */
-    public static void setupToolbar(AppCompatActivity activity, String imageUrl, String title, boolean showHomeEnabled) {
+    public static void setupToolbar(AppCompatActivity activity, String imageUrl, String title, ImageLoader iconLoader, boolean showHomeEnabled) {
         ImageView iconView = setupCustomToolbar(activity, title, showHomeEnabled);
-        FeedUtils.iconLoader.displayImage(imageUrl, iconView);
+        iconLoader.displayImage(imageUrl, iconView);
     }
 
     public static void setupToolbar(AppCompatActivity activity, int imageId, String title, boolean showHomeEnabled) {
@@ -588,6 +589,14 @@ public class UIUtils {
             return CustomTabsIntent.COLOR_SCHEME_LIGHT;
         } else {
             return CustomTabsIntent.COLOR_SCHEME_SYSTEM;
+        }
+    }
+
+    public static void syncUpdateStatus(Context context, int updateType) {
+        if (NbApplication.isAppForeground()) {
+            Intent intent = new Intent(NBSyncReceiver.NB_SYNC_ACTION);
+            intent.putExtra(NBSyncReceiver.NB_SYNC_UPDATE_TYPE, updateType);
+            context.sendBroadcast(intent);
         }
     }
 }

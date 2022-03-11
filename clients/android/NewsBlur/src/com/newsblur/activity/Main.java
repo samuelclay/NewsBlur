@@ -28,6 +28,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.newsblur.R;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.ActivityMainBinding;
 import com.newsblur.fragment.FeedIntelligenceSelectorFragment;
 import com.newsblur.fragment.FolderListFragment;
@@ -45,7 +46,18 @@ import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 import com.newsblur.widget.WidgetUtils;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, PopupMenu.OnMenuItemClickListener, OnSeekBarChangeListener {
+
+    @Inject
+    FeedUtils feedUtils;
+
+    @Inject
+    BlurDatabaseHelper dbHelper;
 
     public static final String EXTRA_FORCE_SHOW_FEED_ID = "force_show_feed_id";
 
@@ -110,7 +122,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
         });
 
-        FeedUtils.currentFolderName = null;
+        feedUtils.currentFolderName = null;
 
         binding.mainMenuButton.setOnClickListener(v -> onClickMenuButton());
         binding.mainAddButton.setOnClickListener(v -> onClickAddButton());
@@ -151,7 +163,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         // will be required, however inefficient
         folderFeedList.hasUpdated();
 
-        NBSyncService.resetReadingSession(FeedUtils.dbHelper);
+        NBSyncService.resetReadingSession(dbHelper);
         NBSyncService.flushRecounts();
 
         updateStatusIndicators();
@@ -296,12 +308,12 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             startActivity(widgetIntent);
             return true;
 		} else if (item.getItemId() == R.id.menu_feedback_email) {
-            PrefsUtils.sendLogEmail(this);
+            PrefsUtils.sendLogEmail(this, dbHelper);
             return true;
         } else if (item.getItemId() == R.id.menu_feedback_post) {
             try {
                 Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(PrefsUtils.createFeedbackLink(this)));
+                i.setData(Uri.parse(PrefsUtils.createFeedbackLink(this, dbHelper)));
                 startActivity(i);
             } catch (Exception e) {
                 Log.wtf(this.getClass().getName(), "device cannot even open URLs to report feedback");

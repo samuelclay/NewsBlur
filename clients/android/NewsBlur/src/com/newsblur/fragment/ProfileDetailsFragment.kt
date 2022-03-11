@@ -10,25 +10,31 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.databinding.FragmentProfiledetailsBinding
+import com.newsblur.di.IconLoader
 import com.newsblur.domain.UserDetails
 import com.newsblur.network.APIManager
 import com.newsblur.util.FeedUtils
+import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ProfileDetailsFragment : Fragment() {
+
+    @Inject
+    lateinit var apiManager: APIManager
+
+    @IconLoader
+    @Inject
+    lateinit var iconLoader: ImageLoader
 
     private var user: UserDetails? = null
     private var viewingSelf = false
 
-    private lateinit var apiManager: APIManager
     private lateinit var binding: FragmentProfiledetailsBinding
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        apiManager = APIManager(requireContext())
-    }
 
     fun setUser(context: Context, user: UserDetails?, viewingSelf: Boolean) {
         this.user = user
@@ -69,7 +75,7 @@ class ProfileDetailsFragment : Fragment() {
         binding.profileUserStatistics.profileFollowercount.text = user!!.followerCount.toString()
         binding.profileUserStatistics.profileFollowingcount.text = user!!.followingCount.toString()
         if (!viewingSelf) {
-            FeedUtils.iconLoader!!.displayImage(user!!.photoUrl, binding.profilePicture)
+            iconLoader.displayImage(user!!.photoUrl, binding.profilePicture)
             if (user!!.followedByYou) {
                 binding.profileUnfollowButton.visibility = View.VISIBLE
                 binding.profileFollowButton.visibility = View.GONE

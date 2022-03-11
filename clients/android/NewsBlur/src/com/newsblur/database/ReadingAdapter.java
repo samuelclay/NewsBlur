@@ -1,7 +1,5 @@
 package com.newsblur.database;
 
-import static com.newsblur.service.NBSyncReceiver.UPDATE_STORY;
-
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -17,7 +15,7 @@ import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.LoadingFragment;
 import com.newsblur.fragment.ReadingItemFragment;
-import com.newsblur.util.FeedUtils;
+import com.newsblur.service.NBSyncReceiver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,12 +51,14 @@ public class ReadingAdapter extends PagerAdapter {
     private Map<String,Classifier> classifiers = new HashMap<String,Classifier>(0);
 
     private final ExecutorService executorService;
+    private final BlurDatabaseHelper dbHelper;
 
-	public ReadingAdapter(FragmentManager fm, String sourceUserId, boolean showFeedMetadata, Reading activity) {
+	public ReadingAdapter(FragmentManager fm, String sourceUserId, boolean showFeedMetadata, Reading activity, BlurDatabaseHelper dbHelper) {
         this.sourceUserId = sourceUserId;
         this.showFeedMetadata = showFeedMetadata;
 		this.fm = fm;
         this.activity = activity;
+        this.dbHelper = dbHelper;
 
         this.fragments = new HashMap<String,ReadingItemFragment>();
         this.states = new HashMap<String,Fragment.SavedState>();
@@ -109,7 +109,7 @@ public class ReadingAdapter extends PagerAdapter {
                     feedIdsSeen.add(s.feedId);
                 }
                 for (String feedId : feedIdsSeen) {
-                    classifiers.put(feedId, FeedUtils.dbHelper.getClassifierForFeed(feedId));
+                    classifiers.put(feedId, dbHelper.getClassifierForFeed(feedId));
                 }
             }
         } catch (Exception e) {
@@ -284,7 +284,7 @@ public class ReadingAdapter extends PagerAdapter {
             ReadingItemFragment rif = fragments.get(s.storyHash);
             if (rif != null ) {
                 rif.offerStoryUpdate(s);
-                rif.handleUpdate(UPDATE_STORY);
+                rif.handleUpdate(NBSyncReceiver.UPDATE_STORY);
             }
         }
     }

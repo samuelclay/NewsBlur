@@ -8,8 +8,11 @@ import android.view.View;
 
 import com.newsblur.R;
 import com.newsblur.databinding.ActivityWidgetConfigBinding;
+import com.newsblur.di.IconLoader;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
+import com.newsblur.util.FeedUtils;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.widget.WidgetUtils;
@@ -19,7 +22,16 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 public class WidgetConfig extends FeedChooser {
+
+    @Inject
+    FeedUtils feedUtils;
+
+    @Inject
+    @IconLoader
+    ImageLoader iconLoader;
 
     private ActivityWidgetConfigBinding binding;
 
@@ -68,7 +80,7 @@ public class WidgetConfig extends FeedChooser {
 
     @Override
     void setupList() {
-        adapter = new WidgetConfigAdapter(this);
+        adapter = new WidgetConfigAdapter(this, feedUtils, iconLoader);
         binding.listView.setAdapter(adapter);
     }
 

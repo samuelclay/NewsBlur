@@ -11,17 +11,25 @@ import androidx.lifecycle.lifecycleScope
 import com.android.billingclient.api.*
 import com.newsblur.R
 import com.newsblur.databinding.ActivityPremiumBinding
+import com.newsblur.di.IconLoader
 import com.newsblur.subscription.SubscriptionManager
 import com.newsblur.subscription.SubscriptionManagerImpl
 import com.newsblur.subscription.SubscriptionsListener
 import com.newsblur.util.*
+import dagger.hilt.android.AndroidEntryPoint
 import nl.dionsegijn.konfetti.emitters.StreamEmitter
 import nl.dionsegijn.konfetti.models.Shape.Circle
 import nl.dionsegijn.konfetti.models.Shape.Square
 import nl.dionsegijn.konfetti.models.Size
 import java.util.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class Premium : NbActivity() {
+
+    @IconLoader
+    @Inject
+    lateinit var iconLoader: ImageLoader
 
     private lateinit var binding: ActivityPremiumBinding
     private lateinit var subscriptionManager: SubscriptionManager
@@ -64,7 +72,7 @@ class Premium : NbActivity() {
                 }
         binding.textPolicies.text = UIUtils.fromHtml(getString(R.string.premium_policies))
         binding.textSubTitle.paintFlags = binding.textSubTitle.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-        FeedUtils.iconLoader!!.displayImage(AppConstants.SHILOH_PHOTO_URL, binding.imgShiloh)
+        iconLoader.displayImage(AppConstants.SHILOH_PHOTO_URL, binding.imgShiloh)
     }
 
     private fun setupBilling() {

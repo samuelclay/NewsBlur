@@ -10,13 +10,23 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.activity.Main
+import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.databinding.LoginasDialogBinding
 import com.newsblur.network.APIManager
 import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginAsDialogFragment : DialogFragment() {
+
+    @Inject
+    lateinit var apiManager: APIManager
+
+    @Inject
+    lateinit var dbHelper: BlurDatabaseHelper
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireActivity())
@@ -27,13 +37,12 @@ class LoginAsDialogFragment : DialogFragment() {
 
         builder.setView(binding.root)
         builder.setPositiveButton(R.string.alert_dialog_ok) { _, _ ->
-            val apiManager = APIManager(requireActivity())
             val username = binding.usernameField.text.toString()
             lifecycleScope.executeAsyncTask(
                     doInBackground = {
                         val result = apiManager.loginAs(username)
                         if (result) {
-                            PrefsUtils.clearPrefsAndDbForLoginAs(requireActivity())
+                            PrefsUtils.clearPrefsAndDbForLoginAs(requireActivity(), dbHelper)
                             apiManager.updateUserProfile()
                         }
                         result

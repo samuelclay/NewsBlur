@@ -13,10 +13,15 @@ import com.newsblur.activity.AddTwitter
 import com.newsblur.databinding.FragmentAddsocialBinding
 import com.newsblur.network.APIManager
 import com.newsblur.util.executeAsyncTask
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AddSocialFragment : Fragment() {
 
-    private lateinit var apiManager: APIManager
+    @Inject
+    lateinit var apiManager: APIManager
+
     private lateinit var binding: FragmentAddsocialBinding
 
     private var twitterAuthed = false
@@ -25,7 +30,6 @@ class AddSocialFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
-        apiManager = APIManager(requireActivity())
     }
 
     fun setTwitterAuthed() {

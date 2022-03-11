@@ -43,8 +43,10 @@ import com.newsblur.activity.NbActivity;
 import com.newsblur.activity.ReadStoriesItemsList;
 import com.newsblur.activity.SavedStoriesItemsList;
 import com.newsblur.activity.SocialFeedItemsList;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.FolderListAdapter;
 import com.newsblur.databinding.FragmentFolderfeedlistBinding;
+import com.newsblur.di.IconLoader;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.SavedSearch;
@@ -52,17 +54,32 @@ import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
-import com.newsblur.util.UIUtils;
 import com.newsblur.viewModel.AllFoldersViewModel;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class FolderListFragment extends NbFragment implements OnCreateContextMenuListener, 
                                                               OnChildClickListener,
                                                               OnGroupClickListener,
                                                               OnGroupCollapseListener,
                                                               OnGroupExpandListener {
+
+    @Inject
+    FeedUtils feedUtils;
+
+    @Inject
+    BlurDatabaseHelper dbHelper;
+
+    @Inject
+    @IconLoader
+    ImageLoader iconLoader;
 
     private AllFoldersViewModel allFoldersViewModel;
 	private FolderListAdapter adapter;
@@ -80,9 +97,9 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		super.onCreate(savedInstanceState);
 		allFoldersViewModel = new ViewModelProvider(this).get(AllFoldersViewModel.class);
         currentState = PrefsUtils.getStateFilter(getActivity());
-		adapter = new FolderListAdapter(getActivity(), currentState);
+		adapter = new FolderListAdapter(getActivity(), currentState, iconLoader, dbHelper);
         sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        FeedUtils.currentFolderName = null;
+        feedUtils.currentFolderName = null;
         // NB: it is by design that loaders are not started until we get a
         // ping from the sync service indicating that it has initialised
     }
@@ -291,15 +308,15 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             return true;
         }
         if (item.getItemId() == R.id.menu_notifications_disable) {
-            FeedUtils.disableNotifications(getActivity(), lastMenuFeed);
+            feedUtils.disableNotifications(getActivity(), lastMenuFeed);
             return true;
         }
         if (item.getItemId() == R.id.menu_notifications_focus) {
-            FeedUtils.enableFocusNotifications(getActivity(), lastMenuFeed);
+            feedUtils.enableFocusNotifications(getActivity(), lastMenuFeed);
             return true;
         }
         if (item.getItemId() == R.id.menu_notifications_unread) {
-            FeedUtils.enableUnreadNotifications(getActivity(), lastMenuFeed);
+            feedUtils.enableUnreadNotifications(getActivity(), lastMenuFeed);
             return true;
         }
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
@@ -339,17 +356,17 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         } else if (item.getItemId() == R.id.menu_mute_feed) {
             Set<String> feedIds = new HashSet<String>();
             feedIds.add(adapter.getFeed(groupPosition, childPosition).feedId);
-            FeedUtils.muteFeeds(getActivity(), feedIds);
+            feedUtils.muteFeeds(getActivity(), feedIds);
         } else if (item.getItemId() == R.id.menu_unmute_feed) {
             Set<String> feedIds = new HashSet<String>();
             feedIds.add(adapter.getFeed(groupPosition, childPosition).feedId);
-            FeedUtils.unmuteFeeds(getActivity(), feedIds);
+            feedUtils.unmuteFeeds(getActivity(), feedIds);
         } else if (item.getItemId() == R.id.menu_mute_folder) {
-            FeedUtils.muteFeeds(getActivity(), adapter.getAllFeedsForFolder(groupPosition));
+            feedUtils.muteFeeds(getActivity(), adapter.getAllFeedsForFolder(groupPosition));
         } else if (item.getItemId() == R.id.menu_unmute_folder) {
-            FeedUtils.unmuteFeeds(getActivity(), adapter.getAllFeedsForFolder(groupPosition));
+            feedUtils.unmuteFeeds(getActivity(), adapter.getAllFeedsForFolder(groupPosition));
         } else if (item.getItemId() == R.id.menu_instafetch_feed) {
-            FeedUtils.instaFetchFeed(getActivity(), adapter.getFeed(groupPosition, childPosition).feedId);
+            feedUtils.instaFetchFeed(getActivity(), adapter.getFeed(groupPosition, childPosition).feedId);
         } else if (item.getItemId() == R.id.menu_intel) {
             FeedIntelTrainerFragment intelFrag = FeedIntelTrainerFragment.newInstance(adapter.getFeed(groupPosition, childPosition), adapter.getChild(groupPosition, childPosition));
             intelFrag.show(getParentFragmentManager(), FeedIntelTrainerFragment.class.getName());
@@ -375,7 +392,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	}
 
     private void markFeedsAsRead(FeedSet fs) {
-        FeedUtils.markRead(((NbActivity) getActivity()), fs, null, null, R.array.mark_all_read_options, false);
+        feedUtils.markRead(((NbActivity) getActivity()), fs, null, null, R.array.mark_all_read_options, false);
         adapter.lastFeedViewedId = fs.getSingleFeed();
         adapter.lastFolderViewed = fs.getFolderName();
     }
@@ -498,7 +515,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 	@Override
     public boolean onChildClick(ExpandableListView list, View childView, int groupPosition, int childPosition, long id) {
-        FeedUtils.currentFolderName = null;
+        feedUtils.currentFolderName = null;
         FeedSet fs = adapter.getChild(groupPosition, childPosition);
 		if (adapter.isRowAllSharedStories(groupPosition)) {
             SocialFeed socialFeed = adapter.getSocialFeed(groupPosition, childPosition);
@@ -519,10 +536,10 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             // and the folder name is a bit of metadata needed by the UI/API
 			String folderName = adapter.getGroupFolderName(groupPosition);
 			if(folderName == null || folderName.equals(AppConstants.ROOT_FOLDER)){
-                FeedUtils.currentFolderName = null;
+                feedUtils.currentFolderName = null;
             }else{
 
-                FeedUtils.currentFolderName = folderName;
+                feedUtils.currentFolderName = folderName;
             }
 			FeedItemsList.startActivity(getActivity(), fs, feed, folderName);
             adapter.lastFeedViewedId = feed.feedId;
@@ -555,7 +572,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         } else if (feedId.startsWith("river:")) {
             intent = new Intent(getActivity(), FolderItemsList.class);
             String folderName = feedId.replace("river:", "");
-            fs = FeedUtils.feedSetFromFolderName(folderName);
+            fs = dbHelper.feedSetFromFolderName(folderName);
             intent.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, folderName);
         } else if (feedId.equals("read")) {
             intent = new Intent(getActivity(), ReadStoriesItemsList.class);
@@ -569,14 +586,14 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         } else if (feedId.startsWith("feed:")) {
             intent = new Intent(getActivity(), FeedItemsList.class);
             String cleanFeedId = feedId.replace("feed:", "");
-            Feed feed = FeedUtils.getFeed(cleanFeedId);
+            Feed feed = feedUtils.getFeed(cleanFeedId);
             fs = FeedSet.singleFeed(cleanFeedId);
             intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
         } else if (feedId.startsWith("social:")) {
             intent = new Intent(getActivity(), SocialFeedItemsList.class);
             String cleanFeedId = feedId.replace("social:", "");
             fs = FeedSet.singleFeed(cleanFeedId);
-            Feed feed = FeedUtils.getFeed(cleanFeedId);
+            Feed feed = feedUtils.getFeed(cleanFeedId);
             intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
         }
 

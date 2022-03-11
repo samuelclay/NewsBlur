@@ -3,6 +3,7 @@ package com.newsblur.util;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,6 +54,7 @@ public class NetworkUtils {
                 }
             }
         } catch (Throwable t) {
+            Log.d("NetworkUtils.loadURL", t.getMessage());
             // a huge number of things could go wrong fetching and storing an image. don't spam logs with them
         }
         return bytesRead;
@@ -65,6 +67,18 @@ public class NetworkUtils {
             android.util.Log.wtf("device does not support UTF-8", ueex);
             return null;
         }
+    }
+
+    public static String getCustomUserAgent(String appVersion) {
+        return "NewsBlur Android app (" +
+                Build.MANUFACTURER +
+                " " +
+                Build.MODEL +
+                " " +
+                Build.VERSION.RELEASE +
+                " " +
+                appVersion +
+                ")";
     }
 
 }

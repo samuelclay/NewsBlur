@@ -46,7 +46,7 @@ public class FeedItemsList extends ItemsList {
 
 		super.onCreate(bundle);
 
-        UIUtils.setupToolbar(this, feed.faviconUrl, feed.title, false);
+        UIUtils.setupToolbar(this, feed.faviconUrl, feed.title, iconLoader, false);
         checkInAppReview();
     }
 
@@ -79,19 +79,19 @@ public class FeedItemsList extends ItemsList {
             return true;
         }
         if (item.getItemId() == R.id.menu_notifications_disable) {
-            FeedUtils.disableNotifications(this, feed);
+            feedUtils.disableNotifications(this, feed);
             return true;
         }
         if (item.getItemId() == R.id.menu_notifications_focus) {
-            FeedUtils.enableFocusNotifications(this, feed);
+            feedUtils.enableFocusNotifications(this, feed);
             return true;
         }
         if (item.getItemId() == R.id.menu_notifications_unread) {
-            FeedUtils.enableUnreadNotifications(this, feed);
+            feedUtils.enableUnreadNotifications(this, feed);
             return true;
         }
         if (item.getItemId() == R.id.menu_instafetch_feed) {
-            FeedUtils.instaFetchFeed(this, feed.feedId);
+            feedUtils.instaFetchFeed(this, feed.feedId);
             this.finish();
             return true;
         }
@@ -108,7 +108,7 @@ public class FeedItemsList extends ItemsList {
             // the name change won't be reflected until the activity finishes.
         }
         if (item.getItemId() == R.id.menu_statistics) {
-            FeedUtils.openStatistics(this, feed.feedId);
+            feedUtils.openStatistics(this, feed.feedId);
             return true;
         }
         return false;

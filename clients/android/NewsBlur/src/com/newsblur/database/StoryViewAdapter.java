@@ -32,6 +32,8 @@ import java.util.concurrent.Executors;
 import com.newsblur.R;
 import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.NbActivity;
+import com.newsblur.di.IconLoader;
+import com.newsblur.di.ThumbnailLoader;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.fragment.ItemSetFragment;
@@ -75,24 +77,35 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private Parcelable oldScrollState;
 
+    private final ImageLoader iconLoader;
+    private final ImageLoader thumbnailLoader;
+    private final FeedUtils feedUtils;
     private final ExecutorService executorService;
-
-    private NbActivity context;
-    private ItemSetFragment fragment;
+    private final NbActivity context;
+    private final ItemSetFragment fragment;
     private FeedSet fs;
     private StoryListStyle listStyle;
     private boolean ignoreReadStatus;
     private boolean ignoreIntel;
     private boolean singleFeed;
     private float textSize;
-    private UserDetails user;
+    private final UserDetails user;
     private ThumbnailStyle thumbnailStyle;
 
-    public StoryViewAdapter(NbActivity context, ItemSetFragment fragment, FeedSet fs, StoryListStyle listStyle) {
+    public StoryViewAdapter(NbActivity context,
+                            ItemSetFragment fragment,
+                            FeedSet fs,
+                            StoryListStyle listStyle,
+                            ImageLoader iconLoader,
+                            ImageLoader thumbnailLoader,
+                            FeedUtils feedUtils) {
         this.context = context;
         this.fragment = fragment;
         this.fs = fs;
         this.listStyle = listStyle;
+        this.iconLoader = iconLoader;
+        this.thumbnailLoader = thumbnailLoader;
+        this.feedUtils = feedUtils;
         
         if (fs.isGlobalShared())   {ignoreReadStatus = false; ignoreIntel = true; singleFeed = false;}
         if (fs.isAllSocial())      {ignoreReadStatus = false; ignoreIntel = false; singleFeed = false;}
@@ -401,36 +414,36 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
             case R.id.menu_mark_story_as_read:
-                FeedUtils.markStoryAsRead(story, context);
+                feedUtils.markStoryAsRead(story, context);
                 return true;
 
             case R.id.menu_mark_story_as_unread:
-                FeedUtils.markStoryUnread(story, context);
+                feedUtils.markStoryUnread(story, context);
                 return true;
 
             case R.id.menu_mark_older_stories_as_read:
-                FeedUtils.markRead(context, fs, story.timestamp, null, R.array.mark_older_read_options, false);
+                feedUtils.markRead(context, fs, story.timestamp, null, R.array.mark_older_read_options, false);
                 return true;
 
             case R.id.menu_mark_newer_stories_as_read:
-                FeedUtils.markRead(context, fs, null, story.timestamp, R.array.mark_newer_read_options, false);
+                feedUtils.markRead(context, fs, null, story.timestamp, R.array.mark_newer_read_options, false);
                 return true;
 
             case R.id.menu_send_story:
-                FeedUtils.sendStoryUrl(story, context);
+                feedUtils.sendStoryUrl(story, context);
                 return true;
 
             case R.id.menu_send_story_full:
-                FeedUtils.sendStoryFull(story, context);
+                feedUtils.sendStoryFull(story, context);
                 return true;
 
             case R.id.menu_save_story:
                 //TODO get folder name
-                FeedUtils.setStorySaved(story, true, context, null);
+                feedUtils.setStorySaved(story, true, context, null);
                 return true;
 
             case R.id.menu_unsave_story:
-                FeedUtils.setStorySaved(story, false, context, null);
+                feedUtils.setStorySaved(story, false, context, null);
                 return true;
 
             case R.id.menu_intel:
@@ -442,7 +455,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             case R.id.menu_go_to_feed:
                 FeedSet fs = FeedSet.singleFeed(story.feedId);
                 FeedItemsList.startActivity(context, fs,
-                        FeedUtils.getFeed(story.feedId), null);
+                        feedUtils.getFeed(story.feedId), null);
                 return true;
             default:
                 return false;
@@ -477,19 +490,19 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
             switch (action) {
                 case GEST_ACTION_MARKREAD:
-                    FeedUtils.markStoryAsRead(story, context);
+                    feedUtils.markStoryAsRead(story, context);
                     break;
                 case GEST_ACTION_MARKUNREAD:
-                    FeedUtils.markStoryUnread(story, context);
+                    feedUtils.markStoryUnread(story, context);
                     break;
                 case GEST_ACTION_SAVE:
-                    FeedUtils.setStorySaved(story, true, context, null);
+                    feedUtils.setStorySaved(story, true, context, null);
                     break;
                 case GEST_ACTION_UNSAVE:
-                    FeedUtils.setStorySaved(story, false, context, null);
+                    feedUtils.setStorySaved(story, false, context, null);
                     break;
                 case GEST_ACTION_STATISTICS:
-                    FeedUtils.openStatistics(context, story.feedId);
+                    feedUtils.openStatistics(context, story.feedId);
                     break;
                 case GEST_ACTION_NONE:
                 default:
@@ -575,7 +588,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         // lists with mixed feeds get added info, but single feeds do not
         if (!singleFeed) {
-            FeedUtils.iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView);
+            iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView);
             vh.feedTitleView.setText(story.extern_feedTitle);
             vh.feedIconView.setVisibility(View.VISIBLE);
             vh.feedTitleView.setVisibility(View.VISIBLE);
@@ -644,7 +657,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             // the view will display a stale, recycled thumb before the new one loads if the old is not cleared
             int thumbSizeGuess = vh.thumbTileView.getMeasuredHeight();
             vh.thumbTileView.setImageBitmap(null);
-            vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbTileView, thumbSizeGuess, true);
+            vh.thumbLoader = thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbTileView, thumbSizeGuess, true);
             vh.lastThumbUrl = story.thumbnailUrl;
         }
     }
@@ -681,13 +694,13 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             if (thumbnailStyle == ThumbnailStyle.LEFT_LARGE || thumbnailStyle == ThumbnailStyle.LEFT_SMALL) {
                 int thumbSizeGuess = vh.thumbViewLeft.getMeasuredHeight();
                 vh.thumbViewLeft.setImageBitmap(null);
-                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewLeft, thumbSizeGuess, true);
+                vh.thumbLoader = thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewLeft, thumbSizeGuess, true);
                 vh.thumbViewRight.setVisibility(View.GONE);
                 vh.thumbViewLeft.setVisibility(View.VISIBLE);
             } else if (thumbnailStyle == ThumbnailStyle.RIGHT_LARGE || thumbnailStyle == ThumbnailStyle.RIGHT_SMALL) {
                 int thumbSizeGuess = vh.thumbViewRight.getMeasuredHeight();
                 vh.thumbViewRight.setImageBitmap(null);
-                vh.thumbLoader = FeedUtils.thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight, thumbSizeGuess, true);
+                vh.thumbLoader = thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight, thumbSizeGuess, true);
                 vh.thumbViewLeft.setVisibility(View.GONE);
                 vh.thumbViewRight.setVisibility(View.VISIBLE);
             }
