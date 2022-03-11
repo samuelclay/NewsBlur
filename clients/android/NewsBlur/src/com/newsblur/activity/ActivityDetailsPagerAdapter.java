@@ -27,9 +27,7 @@ public class ActivityDetailsPagerAdapter extends FragmentPagerAdapter {
         this.profile = profile;
 
         interactionsFragment = new ProfileInteractionsFragment();
-        interactionsFragment.setRetainInstance(true);
         activitiesFragment = new ProfileActivitiesFragment();
-        activitiesFragment.setRetainInstance(true);
     }
 
     @Override

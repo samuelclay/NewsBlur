@@ -106,7 +106,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 		itemSetFragment = (ItemSetFragment) fragmentManager.findFragmentByTag(ItemSetFragment.class.getName());
 		if (itemSetFragment == null) {
             itemSetFragment = ItemSetFragment.newInstance();
-			itemSetFragment.setRetainInstance(true);
 			FragmentTransaction transaction = fragmentManager.beginTransaction();
 			transaction.add(R.id.activity_itemlist_container, itemSetFragment, ItemSetFragment.class.getName());
 			transaction.commit();
