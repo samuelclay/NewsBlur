@@ -23,8 +23,11 @@ class InitActivity : AppCompatActivity() {
     lateinit var dbHelper: BlurDatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-        installSplashScreen()
+
+        // Keep the splash screen visible for this Activity
+        splashScreen.setKeepOnScreenCondition { true }
 
         lifecycleScope.executeAsyncTask(doInBackground = { start() })
         Log.i(this, "cold launching version " + PrefsUtils.getVersion(this))
