@@ -269,6 +269,8 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) NSMutableArray *dictFoldersArray;
 @property (nonatomic) NSArray *notificationFeedIds;
 
+@property (nonatomic, readonly) NSString *widgetFolder;
+
 @property (nonatomic) NSArray *categories;
 @property (nonatomic) NSDictionary *categoryFeeds;
 @property (readwrite) FMDatabaseQueue *database;
