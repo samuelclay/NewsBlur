@@ -337,7 +337,19 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [self updateControls];
 }
 
-- (void)select:(BOOL)select section:(NSUInteger)section {
+- (void)deselectRowsOutsideSection:(NSUInteger)section {
+    [self enumerateSectionsUsingBlock:^(NSUInteger thisSection, FeedChooserItem *folder) {
+        if (thisSection != section) {
+            [self select:NO section:thisSection isSelectAll:NO];
+        }
+    }];
+}
+
+- (void)select:(BOOL)select section:(NSUInteger)section isSelectAll:(BOOL)isSelectAll {
+    if (select && !isSelectAll && self.operation == FeedChooserOperationWidgetSites) {
+        [self deselectRowsOutsideSection:section];
+    }
+    
     [self enumerateRowsInSection:section usingBlock:^(NSUInteger row, FeedChooserItem *item) {
         if (select) {
             [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section] animated:YES scrollPosition:UITableViewScrollPositionNone];
@@ -455,8 +467,14 @@ static const CGFloat kFolderTitleHeight = 36.0;
     BOOL select = ![self isSelectionInSection:section];
     
     [self enumerateRowsInSection:section usingBlock:^(NSUInteger row, FeedChooserItem *item) {
-        [self select:select section:section];
+        [self select:select section:section isSelectAll:NO];
     }];
+    
+    if (self.operation == FeedChooserOperationWidgetSites) {
+        FeedChooserItem *folderItem = self.sections[section];
+        
+        [self.groupDefaults setObject:folderItem.identifierString forKey:@"widget:show_folder"];
+    }
 }
 
 #pragma mark - Target/action methods
@@ -522,12 +540,20 @@ static const CGFloat kFolderTitleHeight = 36.0;
     
     MenuItemHandler selectAllHandler = ^{
         [self enumerateSectionsUsingBlock:^(NSUInteger section, FeedChooserItem *folder) {
-            [self select:YES section:section];
+            [self select:YES section:section isSelectAll:YES];
         }];
+        
+        if (self.operation == FeedChooserOperationWidgetSites) {
+            [self.groupDefaults setObject:@"everything" forKey:@"widget:show_folder"];
+        }
     }, selectNoneHandler = ^{
         [self enumerateSectionsUsingBlock:^(NSUInteger section, FeedChooserItem *folder) {
-            [self select:NO section:section];
+            [self select:NO section:section isSelectAll:NO];
         }];
+        
+        if (self.operation == FeedChooserOperationWidgetSites) {
+            [self.groupDefaults setObject:@"everything" forKey:@"widget:show_folder"];
+        }
     };
     
     if (isMute) {
@@ -806,7 +832,12 @@ static const CGFloat kFolderTitleHeight = 36.0;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (self.operation == FeedChooserOperationWidgetSites) {
+        [self deselectRowsOutsideSection:indexPath.section];
         [self setWidgetIncludes:YES itemForIndexPath:indexPath];
+        
+        FeedChooserItem *folderItem = self.sections[indexPath.section];
+        
+        [self.groupDefaults setObject:folderItem.identifierString forKey:@"widget:show_folder"];
     }
     
     UIImageView *imageView = (UIImageView *)[tableView cellForRowAtIndexPath:indexPath].accessoryView;

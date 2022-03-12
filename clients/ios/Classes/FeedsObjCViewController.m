@@ -814,12 +814,12 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     }];
     
     // Add Widget Site Stories folder to bottom
-    [appDelegate.dictFoldersArray removeObject:@"widget_stories"];
-    NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
-    NSMutableArray *feeds = [groupDefaults objectForKey:@"widget:feeds_array"];
-    if (feeds.count) {
-        [appDelegate.dictFoldersArray insertObject:@"widget_stories" atIndex:appDelegate.dictFoldersArray.count];
-    }
+//    [appDelegate.dictFoldersArray removeObject:@"widget_stories"];
+//    NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
+//    NSMutableArray *feeds = [groupDefaults objectForKey:@"widget:feeds_array"];
+//    if (feeds.count) {
+//        [appDelegate.dictFoldersArray insertObject:@"widget_stories" atIndex:appDelegate.dictFoldersArray.count];
+//    }
     
     // Add Read Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"read_stories"];
@@ -1806,7 +1806,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)selectWidgetStories {
-    NSInteger tag = [appDelegate.dictFoldersArray indexOfObject:@"widget_stories"];
+    NSInteger tag = [appDelegate.dictFoldersArray indexOfObject:self.appDelegate.widgetFolder];
     
     if (tag != NSNotFound) {
         [self didSelectSectionHeaderWithTag:tag];

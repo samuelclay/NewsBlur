@@ -1699,8 +1699,12 @@
 
 - (void)backgroundLoadNotificationStory {
     if (self.inFindingStoryMode) {
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && [storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
-            [self.feedsViewController selectWidgetStories];
+        if ([storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
+            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+                [self.feedsViewController selectWidgetStories];
+            } else {
+                [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:self.widgetFolder];
+            }
         } else {
             [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
         }
@@ -1709,6 +1713,17 @@
     } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !self.isCompactWidth && self.storiesCollection == nil) {
         [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
     }
+}
+
+- (NSString *)widgetFolder {
+    NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
+    NSString *folder = [groupDefaults objectForKey:@"widget:show_folder"];
+    
+    if (folder == nil) {
+        folder = @"everything";
+    }
+    
+    return folder;
 }
 
 - (void)loadStarredDetailViewWithStory:(NSString *)contentId
@@ -1928,6 +1943,10 @@
     } else {
         feedDetailView.storiesCollection.isRiverView = YES;
         NSString *folderName = [self.dictFoldersArray objectAtIndex:[folder intValue]];
+        
+        if ([folder integerValue] == 0) {
+            folderName = folder;
+        }
         
         if ([folder isEqualToString:@"saved_stories"] || [folderName isEqualToString:@"saved_stories"]) {
             feedDetailView.storiesCollection.isSavedView = YES;
