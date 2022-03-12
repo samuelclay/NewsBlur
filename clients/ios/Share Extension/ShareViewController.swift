@@ -350,6 +350,12 @@ private extension ShareViewController {
     }
 }
 
+//extension ShareViewController: URLSessionDataDelegate {
+//    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+//        NSLog("⚾️ received \(String(describing: String(data: data, encoding: .utf8)))")
+//    }
+//}
+
 extension ShareViewController: URLSessionTaskDelegate {
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         let content = UNMutableNotificationContent()
