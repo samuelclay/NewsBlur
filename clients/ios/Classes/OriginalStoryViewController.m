@@ -6,7 +6,7 @@
 //  Copyright 2010 NewsBlur. All rights reserved.
 //
 
-#import "NBContainerViewController.h"
+#import "NewsBlurAppDelegate.h"
 #import "OriginalStoryViewController.h"
 #import "NSString+HTML.h"
 #import "TransparentToolbar.h"
@@ -25,14 +25,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
 
     self.view.layer.masksToBounds = NO;
     self.view.layer.shadowRadius = 5;
     self.view.layer.shadowOpacity = 0.5;
     self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         closeButton = [UIBarButtonItem barItemWithImage:[UIImage imageNamed:@"ios7_back_button"]
                                                  target:self
                                                  action:@selector(closeOriginalView)];
@@ -41,7 +41,7 @@
     
     titleView = [[UILabel alloc] init];
     titleView.textColor = UIColorFromRGB(0x303030);
-    titleView.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
+    titleView.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:15.0];
     titleView.text = @"Loading...";
     [titleView sizeToFit];
     titleView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -70,7 +70,7 @@
 //    UIGestureRecognizer *themeGesture = [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
 //    [self.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:themeGesture];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         UIPanGestureRecognizer *gesture = [[UIPanGestureRecognizer alloc]
                                            initWithTarget:self action:@selector(handlePanGesture:)];
         gesture.delegate = self;
@@ -109,7 +109,7 @@
     }
     activeUrl = nil;
     titleView.alpha = 1.0;
-    if (![appDelegate.navigationController.viewControllers containsObject:self]) {
+    if (![appDelegate.feedsNavigationController.viewControllers containsObject:self]) {
         [self.webView loadHTMLString:@"" baseURL:nil];
     }
     
@@ -215,11 +215,11 @@
                              center.y);
         self.view.center = center;
         [recognizer setTranslation:CGPointZero inView:self.view];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [appDelegate.masterContainerViewController interactiveTransitionFromOriginalView:percentage];
-        } else {
-            
-        }
+//        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//            [appDelegate.masterContainerViewController interactiveTransitionFromOriginalView:percentage];
+//        } else {
+//
+//        }
     }
     
     if ([recognizer state] == UIGestureRecognizerStateEnded ||
@@ -231,21 +231,21 @@
             [self transitionToFeedDetail:recognizer];
         } else {
 //            NSLog(@"Original velocity: %f (at %.2f%%)", velocity, percentage*100);
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                [appDelegate.masterContainerViewController transitionToOriginalView:NO];
-            } else {
-                
-            }
+//            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//                [appDelegate.masterContainerViewController transitionToOriginalView:NO];
+//            } else {
+//
+//            }
         }
     }
 }
 
 - (void)transitionToFeedDetail:(UIGestureRecognizer *)recognizer {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController transitionFromOriginalView];
-    } else {
-        
-    }
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        [appDelegate.masterContainerViewController transitionFromOriginalView];
+//    } else {
+//        
+//    }
 }
 
 - (void)updateBarItems {
@@ -324,12 +324,12 @@
     activeUrl = [[webView URL] absoluteString];
     finishedLoading = NO;
 
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+//    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+//    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     [self updateTitle:self.webView];
     finishedLoading = YES;
     [self resetProgressBar];
@@ -337,7 +337,7 @@
 
 - (void)webView:(WKWebView *)webView didFailLoadWithError:(NSError *)error
 {
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+//    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     
 //    if (error.code == 102 && [error.domain isEqual:@"WebKitErrorDomain"]) {    }
 

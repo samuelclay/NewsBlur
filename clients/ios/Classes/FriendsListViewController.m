@@ -45,6 +45,8 @@
 {
     [super viewDidLoad];
     
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    
     self.navigationItem.title = @"Find Friends";
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Done" 
                                                                      style: UIBarButtonItemStylePlain 
@@ -59,15 +61,6 @@
     self.preferredContentSize = self.view.frame.size;
 }
 
-- (void)viewDidUnload
-{
-    [self setFriendSearchBar:nil];
-    [self setSuggestedUserProfiles:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
@@ -77,13 +70,13 @@
     [self.friendSearchBar becomeFirstResponder];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    [self.friendsTable reloadData];
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//	return YES;
+//}
+//
+//- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+//    [self.friendsTable reloadData];
+//}
 
 - (void)doCancelButton {
     [appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
@@ -287,7 +280,7 @@ viewForHeaderInSection:(NSInteger)section {
             
             // add a NO FRIENDS TO SUGGEST message on either the first or second row depending on iphone/ipad
             int row = 0;
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
                 row = 1;
             }
             
@@ -297,9 +290,9 @@ viewForHeaderInSection:(NSInteger)section {
                 msg.text = @"No results.";
                 msg.textColor = UIColorFromRGB(0x7a7a7a);
                 if (vb.size.width > 320) {
-                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
+                    msg.font = [UIFont fontWithName:@"WhitneySSm-Medium" size: 21.0];
                 } else {
-                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
+                    msg.font = [UIFont fontWithName:@"WhitneySSm-Medium" size: 15.0];
                 }
                 msg.textAlignment = NSTextAlignmentCenter;
             }
@@ -307,34 +300,6 @@ viewForHeaderInSection:(NSInteger)section {
         }
         
     } 
-//    else {
-//        
-//        int userCount = [self.suggestedUserProfiles count];
-//        if (!userCount) {
-//            // add a NO FRIENDS TO SUGGEST message on either the first or second row depending on iphone/ipad
-//            int row = 0;
-//            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//                row = 1;
-//            }
-//            
-//            if (indexPath.row == row) {
-//                UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 140)];
-//                [cell.contentView addSubview:msg];
-//                msg.text = @"Nobody left to recommend.  Good job!";
-//                msg.textColor = UIColorFromRGB(0x7a7a7a);
-//                if (vb.size.width > 320) {
-//                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
-//                } else {
-//                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
-//                }
-//                msg.textAlignment = NSTextAlignmentCenter;
-//            }
-//        } else {
-//            cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
-//            [badge refreshWithProfile:[self.suggestedUserProfiles objectAtIndex:indexPath.row] showStats:NO withWidth:vb.size.width - 35 - 10];
-//            [cell.contentView addSubview:badge];
-//        }
-//    }
     
     cell.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -369,7 +334,7 @@ viewForHeaderInSection:(NSInteger)section {
     newUserProfile.navigationItem.rightBarButtonItem = donebutton;
     newUserProfile.navigationItem.title = appDelegate.activeUserProfileName;
     appDelegate.userProfileViewController = newUserProfile; 
-    [appDelegate.modalNavigationController pushViewController:newUserProfile animated:YES];
+    [appDelegate.modalNavigationController showViewController:newUserProfile sender:self];
     [appDelegate.userProfileViewController getUserProfile];
 }
 

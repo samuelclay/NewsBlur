@@ -43,29 +43,27 @@
     
     }
 
-- (void)viewDidLoad {        
+- (void)viewDidLoad {
+    self.appDelegate = NewsBlurAppDelegate.sharedAppDelegate;
+    
     self.usernameInput.borderStyle = UITextBorderStyleRoundedRect;
     self.passwordInput.borderStyle = UITextBorderStyleRoundedRect;
     self.emailInput.borderStyle = UITextBorderStyleRoundedRect;
     self.signUpPasswordInput.borderStyle = UITextBorderStyleRoundedRect;
     self.signUpUsernameInput.borderStyle = UITextBorderStyleRoundedRect;
     
-    if (@available(iOS 11.0, *)) {
-        self.usernameInput.textContentType = UITextContentTypeUsername;
-        self.passwordInput.textContentType = UITextContentTypePassword;
-        self.emailInput.textContentType = UITextContentTypeEmailAddress;
-    } else {
-        // Fallback on earlier versions
-    }
+    self.usernameInput.textContentType = UITextContentTypeUsername;
+    self.passwordInput.textContentType = UITextContentTypePassword;
+    self.emailInput.textContentType = UITextContentTypeEmailAddress;
     
     [self.loginControl
      setTitleTextAttributes:@{NSFontAttributeName:
-                                  [UIFont fontWithName:@"Helvetica-Bold" size:11.0f]}
+                                  [UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]}
      forState:UIControlStateNormal];
 
     //[self.onePasswordButton setHidden:![[OnePasswordExtension sharedExtension] isAppExtensionAvailable]];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self updateControls];
         [self rearrangeViews];
     }
@@ -78,13 +76,13 @@
 }
 
 - (void)rearrangeViews {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         CGSize viewSize = self.view.bounds.size;
         CGFloat viewWidth = viewSize.width;
         CGFloat yOffset = 0;
         CGFloat xOffset = isOnSignUpScreen ? -viewWidth : 0;
         
-        if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
+        if (UIInterfaceOrientationIsPortrait(self.view.window.windowScene.interfaceOrientation)) {
             yOffset = viewSize.height / 6;
         }
         
@@ -95,35 +93,24 @@
     }
 }
 
-- (void)viewDidUnload {
-    [self setSignUpView:nil];
-    [self setLogInView:nil];
-    [self setSignUpUsernameInput:nil];
-    [self setSignUpPasswordInput:nil];
-    [self setSelectSignUpButton:nil];
-    [self setSelectLoginButton:nil];
-    [super viewDidUnload];
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [self showError:nil];
     [super viewWillAppear:animated];
     [usernameInput becomeFirstResponder];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        return YES;
-    }
-    return NO;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    // Return YES for supported orientations
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        return YES;
+//    }
+//    return NO;
+//}
 
 - (void)viewDidAppear:(BOOL)animated {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [super viewDidAppear:animated];
 }
-
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -132,9 +119,9 @@
 	// Release any cached data, images, etc that aren't in use.
 }
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    [self rearrangeViews];
-}
+//- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+//    [self rearrangeViews];
+//}
 
 - (void)showError:(NSString *)error {
     BOOL hasError = error.length > 0;
@@ -146,7 +133,7 @@
     self.errorLabel.hidden = !hasError;
     self.forgotPasswordButton.hidden = !hasError;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         self.loginOptionalLabel.hidden = hasError;
     }
 }
@@ -161,7 +148,7 @@
         }
         
         self.usernameInput.text = loginDictionary[AppExtensionUsernameKey];
-        [passwordInput becomeFirstResponder];
+        [self.passwordInput becomeFirstResponder];
         self.passwordInput.text = loginDictionary[AppExtensionPasswordKey];
     }];
 }
@@ -171,7 +158,7 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
-    if  (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if  ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         if(textField == usernameInput) {
             [passwordInput becomeFirstResponder];
         } else if (textField == passwordInput) {
@@ -229,7 +216,7 @@
         } else {
             [self.passwordInput setText:@""];
             [self.signUpPasswordInput setText:@""];
-            [appDelegate reloadFeedsView:YES];
+            [self.appDelegate reloadFeedsView:YES];
             [self dismissViewControllerAnimated:YES completion:nil];
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -249,7 +236,7 @@
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
 
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [params setObject:[signUpUsernameInput text] forKey:@"username"];
         [params setObject:[signUpPasswordInput text] forKey:@"password"];
     } else {
@@ -277,7 +264,7 @@
             [self.passwordInput setText:@""];
             [self.signUpPasswordInput setText:@""];
             //        [appDelegate showFirstTimeUser];
-            [appDelegate reloadFeedsView:YES];
+            [self.appDelegate reloadFeedsView:YES];
             [self dismissViewControllerAnimated:YES completion:nil];
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -364,46 +351,46 @@
     if ([self.loginControl selectedSegmentIndex] == 0) {
         [UIView animateWithDuration:0.5 animations:^{
             // Login
-            usernameInput.frame = CGRectMake(20, 67, width-margin*2, 31);
-            usernameOrEmailLabel.alpha = 1.0;
-            usernameLabel.alpha = 0.0;
+            self.usernameInput.frame = CGRectMake(20, 67, width-margin*2, 31);
+            self.usernameOrEmailLabel.alpha = 1.0;
+            self.usernameLabel.alpha = 0.0;
             
-            passwordInput.frame = CGRectMake(20, 129, width-margin*2, 31);
-            passwordLabel.frame = CGRectMake(21, 106, 212, 22);
-            passwordOptionalLabel.frame = CGRectMake(width-margin-101, 112, 101, 16);
+            self.passwordInput.frame = CGRectMake(20, 129, width-margin*2, 31);
+            self.passwordLabel.frame = CGRectMake(21, 106, 212, 22);
+            self.passwordOptionalLabel.frame = CGRectMake(width-margin-101, 112, 101, 16);
             
-            emailInput.alpha = 0.0;
-            emailLabel.alpha = 0.0;
+            self.emailInput.alpha = 0.0;
+            self.emailLabel.alpha = 0.0;
             
-            onePasswordButton.frame = CGRectMake(20+ passwordInput.frame.size.width - 31, 129, 31, 31);
-            onePasswordButton.alpha = 1.0;
+            self.onePasswordButton.frame = CGRectMake(20+ self.passwordInput.frame.size.width - 31, 129, 31, 31);
+            self.onePasswordButton.alpha = 1.0;
         }];
         
-        passwordInput.returnKeyType = UIReturnKeyGo;
-        usernameInput.keyboardType = UIKeyboardTypeEmailAddress;
-        [usernameInput resignFirstResponder];
-        [usernameInput becomeFirstResponder];
+        self.passwordInput.returnKeyType = UIReturnKeyGo;
+        self.usernameInput.keyboardType = UIKeyboardTypeEmailAddress;
+        [self.usernameInput resignFirstResponder];
+        [self.usernameInput becomeFirstResponder];
     } else {
         [UIView animateWithDuration:0.5 animations:^{
             // Signup
-            usernameInput.frame = CGRectMake(20, 67, width/2-margin*2, 31);
-            usernameOrEmailLabel.alpha = 0.0;
-            usernameLabel.alpha = 1.0;
+            self.usernameInput.frame = CGRectMake(20, 67, width/2-margin*2, 31);
+            self.usernameOrEmailLabel.alpha = 0.0;
+            self.usernameLabel.alpha = 1.0;
             
-            passwordInput.frame = CGRectMake(width/2+margin, 67, width/2-margin*2, 31);
-            passwordLabel.frame = CGRectMake(width/2+margin, 44, 212, 22);
-            passwordOptionalLabel.frame = CGRectMake(width-margin-101, 50, 101, 16);
+            self.passwordInput.frame = CGRectMake(width/2+margin, 67, width/2-margin*2, 31);
+            self.passwordLabel.frame = CGRectMake(width/2+margin, 44, 212, 22);
+            self.passwordOptionalLabel.frame = CGRectMake(width-margin-101, 50, 101, 16);
             
-            emailInput.alpha = 1.0;
-            emailLabel.alpha = 1.0;
+            self.emailInput.alpha = 1.0;
+            self.emailLabel.alpha = 1.0;
             
-            onePasswordButton.frame = CGRectMake(width/2+margin + passwordInput.frame.size.width - 31, 67, 31, 31);
-            onePasswordButton.alpha = 0.0; // Don't want to deal with registration yet.
+            self.onePasswordButton.frame = CGRectMake(width/2+margin + self.passwordInput.frame.size.width - 31, 67, 31, 31);
+            self.onePasswordButton.alpha = 0.0; // Don't want to deal with registration yet.
         }];        
-        passwordInput.returnKeyType = UIReturnKeyNext;
-        usernameInput.keyboardType = UIKeyboardTypeAlphabet;
-        [usernameInput resignFirstResponder];
-        [usernameInput becomeFirstResponder];
+        self.passwordInput.returnKeyType = UIReturnKeyNext;
+        self.usernameInput.keyboardType = UIKeyboardTypeAlphabet;
+        [self.usernameInput resignFirstResponder];
+        [self.usernameInput becomeFirstResponder];
     }
     
     self.forgotPasswordButton.hidden = YES;

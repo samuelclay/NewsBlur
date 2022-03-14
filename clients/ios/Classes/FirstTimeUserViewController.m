@@ -47,14 +47,14 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
-
-//
+    
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    
     UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Get Started" style:UIBarButtonItemStylePlain target:self action:@selector(tapNextButton)];
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
         
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         header.font = [UIFont systemFontOfSize:22];
         footer.font = [UIFont systemFontOfSize:22];
     }
@@ -66,17 +66,6 @@
 
 }
 
-- (void)viewDidUnload
-{
-    [self setNextButton:nil];
-    [self setLogo:nil];
-    [self setHeader:nil];
-    [self setFooter:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
@@ -86,7 +75,7 @@
     UIImageView *logoView = [[UIImageView alloc] initWithImage:logoImg];
     CGFloat width = CGRectGetWidth(self.view.frame);
     CGFloat height = CGRectGetHeight(self.view.frame);
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         logoView.frame = CGRectMake((width-220)/2, (height-220)/2-50, 220, 220);
     } else {
         logoView.frame = CGRectMake((width-240)/2, (height-240)/2-50, 240, 240);
@@ -107,33 +96,29 @@
     self.logo = nil;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        return YES;
-    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-        return YES;
-    }
-    
-    return NO;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    // Return YES for supported orientations
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        return YES;
+//    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+//        return YES;
+//    }
+//
+//    return NO;
+//}
 
 
 - (IBAction)tapNextButton {
-    [appDelegate.ftuxNavigationController pushViewController:appDelegate.firstTimeUserAddSitesViewController animated:YES];
+    [appDelegate.ftuxNavigationController showViewController:appDelegate.firstTimeUserAddSitesViewController sender:self];
 }
 
 - (void)rotateLogo {
     angle_ = 0;
     timerInterval_ = 0.01;
     
-    [UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDelegate:self];
-	[UIView setAnimationDuration:1];
-	[UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
-	
-	timer_ = [NSTimer scheduledTimerWithTimeInterval: timerInterval_ target: self selector:@selector(handleTimer:) userInfo: nil repeats: YES];
-	[UIView commitAnimations];
+    [UIView animateWithDuration:1 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+        self.timer_ = [NSTimer scheduledTimerWithTimeInterval: self.timerInterval_ target: self selector:@selector(handleTimer:) userInfo: nil repeats: YES];
+    } completion:nil];
 }
 
 -(void)handleTimer:(NSTimer *)timer

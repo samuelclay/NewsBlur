@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
+#import "NewsBlur-Swift.h"
 
 @class NewsBlurAppDelegate;
 

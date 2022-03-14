@@ -3157,7 +3157,7 @@ class MActivity(mongo.Document):
         if categories:
             activities_db = activities_db.filter(category__in=categories)
         if public:
-            activities_db = activities_db.filter(category__nin=['star', 'feedsub'])
+            activities_db = activities_db.filter(category__nin=['star', 'feedsub', 'opml_import', 'opml_export'])
         activities_db = activities_db[offset:offset+limit+1]
         
         has_next_page = len(activities_db) > limit
@@ -3219,6 +3219,28 @@ class MActivity(mongo.Document):
             for dupe in dupes[1:]:
                 dupe.delete()
 
+    @classmethod
+    def new_opml_import(cls, user_id, count):
+        if count <= 0:
+            return
+        
+        params = {
+            "user_id": user_id,
+            "category": 'opml_import',
+            'content': f"You imported an OPML file with {count} sites"
+        }
+        cls.objects.create(**params)
+
+    @classmethod
+    def new_opml_export(cls, user_id, count, automated=False):
+        params = {
+            "user_id": user_id,
+            "category": 'opml_export',
+            'content': f"You exported an OPML backup of {count} subscriptions"
+        }
+        if automated:
+            params['content'] = f"An automatic OPML backup of {count} subscriptions was emailed to you"
+        cls.objects.create(**params)
                            
     @classmethod
     def new_follow(cls, follower_user_id, followee_user_id):
