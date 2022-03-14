@@ -7,7 +7,6 @@
 //
 
 #import "TrainerViewController.h"
-#import "NBContainerViewController.h"
 #import "StringHelper.h"
 #import "Utilities.h"
 #import "AFNetworking.h"
@@ -35,6 +34,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     UIBarButtonItem *done = [[UIBarButtonItem alloc]
@@ -88,10 +88,10 @@
             if (resultsArray.count) {
                 NSDictionary *results = resultsArray[0];
                 NSMutableDictionary *newClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
-                [appDelegate.storiesCollection.activeClassifiers setObject:newClassifiers
+                [self.appDelegate.storiesCollection.activeClassifiers setObject:newClassifiers
                                                                     forKey:feedId];
-                appDelegate.storiesCollection.activePopularAuthors = [results objectForKey:@"feed_authors"];
-                appDelegate.storiesCollection.activePopularTags = [results objectForKey:@"feed_tags"];
+                self.appDelegate.storiesCollection.activePopularAuthors = [results objectForKey:@"feed_authors"];
+                self.appDelegate.storiesCollection.activePopularTags = [results objectForKey:@"feed_tags"];
             }
             [self renderTrainer];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -99,10 +99,10 @@
             [self informError:@"Could not load trainer"];
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^() {
-                               if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                                   [appDelegate hidePopover];
+                               if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+                                   [self.appDelegate hidePopover];
                                } else {
-                                   [appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
+                                   [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
                                }
                            });
         }];

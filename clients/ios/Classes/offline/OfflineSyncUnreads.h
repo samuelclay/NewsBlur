@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "NewsBlurAppDelegate.h"
 #import "FMDatabaseQueue.h"
+#import "NewsBlur-Swift.h"
 
 @interface OfflineSyncUnreads : NSOperation
 

@@ -11,6 +11,7 @@
 #import "ABTableViewCell.h"
 #import "UIView+TKCategory.h"
 #import "Utilities.h"
+#import "NewsBlur-Swift.h"
 
 static UIFont *textFont = nil;
 static UIFont *indicatorFont = nil;
@@ -58,7 +59,7 @@ static UIFont *indicatorFont = nil;
     UIColor *textColor;
     UIFont *font;
     
-    font = [UIFont fontWithName:@"Helvetica-Bold" size:14];
+    font = [UIFont fontWithName:@"WhitneySSm-Medium" size:15];
     textColor = UIColorFromRGB(0x606060);
     
     if (highlighted) {
@@ -87,7 +88,7 @@ static UIFont *indicatorFont = nil;
     // site subscribers
     
     textColor = UIColorFromRGB(0x262c6c);
-    font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
+    font = [UIFont fontWithName:@"WhitneySSm-Medium" size:11];
     
     if (highlighted) {
         textColor = UIColorFromRGB(0x686868);

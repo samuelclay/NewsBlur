@@ -1,5 +1,6 @@
 #import "BaseViewController.h"
 #import "NewsBlurAppDelegate.h"
+#import "NewsBlur-Swift.h"
 
 @implementation BaseViewController
 
@@ -121,14 +122,7 @@
 	[super viewDidLoad];
     
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.view];
-    
-    if (@available(iOS 13.0, *)) {
-        [[ThemeManager themeManager] systemAppearanceDidChange:self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark];
-    }
-}
-
-- (void) viewDidUnload {
-	[super viewDidUnload];
+    [[ThemeManager themeManager] systemAppearanceDidChange:self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -143,18 +137,14 @@
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
     [super traitCollectionDidChange:previousTraitCollection];
     
-    if (@available(iOS 13.0, *)) {
-        if ([previousTraitCollection hasDifferentColorAppearanceComparedToTraitCollection:self.traitCollection]) {
-            [[ThemeManager themeManager] systemAppearanceDidChange:self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark];
-        }
+    if ([previousTraitCollection hasDifferentColorAppearanceComparedToTraitCollection:self.traitCollection]) {
+        [[ThemeManager themeManager] systemAppearanceDidChange:self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark];
     }
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
     if (!ThemeManager.themeManager.isDarkTheme) {
-        if (@available(iOS 13.0, *)) {
-            return UIStatusBarStyleDarkContent;
-        }
+        return UIStatusBarStyleDarkContent;
     }
     
     return UIStatusBarStyleLightContent;

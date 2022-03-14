@@ -192,21 +192,25 @@
 			<key>Titles</key>
 			<array>
 				<string>None</string>
-				<string>Small</string>
-				<string>Large</string>
+				<string>Small Left</string>
+				<string>Large Left</string>
+				<string>Large Right</string>
+				<string>Small Right</string>
 			</array>
 			<key>Values</key>
 			<array>
 				<string>none</string>
-				<string>small</string>
-				<string>large</string>
+				<string>small_left</string>
+				<string>large_left</string>
+				<string>large_right</string>
+				<string>small_right</string>
 			</array>
 			<key>Title</key>
 			<string>Preview images</string>
 			<key>Key</key>
 			<string>story_list_preview_images_size</string>
 			<key>DefaultValue</key>
-			<string>large</string>
+			<string>large_right</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -856,7 +860,7 @@
 			<key>Title</key>
 			<string>Custom Domain</string>
 			<key>FooterText</key>
-			<string>Leave blank to use the NewsBlur site, or enter the URL of your self-hosted NewsBlur installation, e.g. &quot;https://www.domain.com&quot;.</string>
+			<string>Leave blank to use the NewsBlur site, or enter the URL of your self-hosted NewsBlur installation, e.g. &quot;https://www.domain.com&quot;. Takes effect next time app is opened.</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -947,6 +951,22 @@
 			<string>IASKOpenURLSpecifier</string>
 			<key>IASKTextAlignment</key>
 			<string>IASKUITextAlignmentCenter</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string></string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>IsCritical</key>
+			<true/>
+			<key>Title</key>
+			<string>Delete Account</string>
+			<key>Key</key>
+			<string>delete_account</string>
 		</dict>
 	</array>
 	<key>StringsTable</key>

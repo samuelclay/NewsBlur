@@ -10,8 +10,8 @@
 #import "FirstTimeUserAddSitesViewController.h"
 #import "FirstTimeUserAddFriendsViewController.h"
 #import "AuthorizeServicesViewController.h"
-#import "NewsBlurViewController.h"
 #import "SiteCell.h"
+#import "NewsBlur-Swift.h"
 
 @interface FirstTimeUserAddSitesViewController()
 
@@ -49,8 +49,8 @@
     self.selectedCategories_ = [[NSMutableSet alloc] init];
     
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
     
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Next step" style:UIBarButtonItemStyleDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
@@ -67,13 +67,13 @@
     self.categoriesTable.opaque = NO;
     self.categoriesTable.backgroundView = nil;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         self.instructionLabel.font = [UIFont systemFontOfSize:20];
     }
     
     
     UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] 
-                                             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+                                             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
     activityView.frame = CGRectMake(68, 7, 20, 20.0);
     self.activityIndicator = activityView;
 }
@@ -87,28 +87,19 @@
     NSLog(@"%f height", self.tableViewHeight);
 }
 
-- (void)viewDidUnload {
-    [super viewDidUnload];
-    [self setActivityIndicator:nil];
-    [self setInstructionLabel:nil];
-    [self setCategoriesTable:nil];
-    [self setGoogleReaderButton:nil];
-    [self setNextButton:nil];
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        return YES;
-    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-        return YES;
-    }
-    return NO;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    // Return YES for supported orientations
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        return YES;
+//    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+//        return YES;
+//    }
+//    return NO;
+//}
 
 
 - (IBAction)tapNextButton {
-    [appDelegate.ftuxNavigationController pushViewController:appDelegate.firstTimeUserAddFriendsViewController animated:YES];
+    [appDelegate.ftuxNavigationController showViewController:appDelegate.firstTimeUserAddFriendsViewController sender:self];
     
     if (self.selectedCategories_.count) {
         NSString *urlString = [NSString stringWithFormat:@"%@/categories/subscribe",
@@ -136,7 +127,7 @@
     AuthorizeServicesViewController *service = [[AuthorizeServicesViewController alloc] init];
     service.url = @"/import/authorize";
     service.type = @"google";
-    [appDelegate.ftuxNavigationController pushViewController:service animated:YES];
+    [appDelegate.ftuxNavigationController showViewController:service sender:self];
 }
 
 - (void)importFromGoogleReader {    
@@ -280,7 +271,7 @@
         UILabel *categoryTitleLabel = [UILabel new];
         categoryTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
         categoryTitleLabel.text = @"You can always add your own individual sites.";
-        categoryTitleLabel.font = [UIFont fontWithName:@"Helvetica" size:14];
+        categoryTitleLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:15];
         [categoryTitleView addSubview:categoryTitleLabel];
         categoryTitleLabel.textColor = [UIColor darkGrayColor];
         categoryTitleLabel.backgroundColor = [UIColor clearColor];
@@ -303,7 +294,7 @@
     headerBtn.translatesAutoresizingMaskIntoConstraints = NO;
     headerBtn.tag = section + 1000;
     [headerBtn setBackgroundImage:buttonImage forState:UIControlStateNormal];
-    headerBtn.titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14];
+    headerBtn.titleLabel.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:15];
     
     headerBtn.titleLabel.shadowColor = UIColorFromRGB(0x1E5BDB);
     headerBtn.titleLabel.shadowOffset = CGSizeMake(0, 1);
