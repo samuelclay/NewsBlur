@@ -6932,6 +6932,23 @@
                 self.close_social_profile();
                 self.open_feed(feed_id);
             }); 
+            $.targetIs(e, { tagSelector: '.NB-activity-opml_import' }, function($t, $p){
+                e.preventDefault();
+                self.close_interactions_popover();
+                self.close_social_profile();
+
+                NEWSBLUR.reader.open_intro_modal({
+                    'page_number': 2,
+                    'force_import': true
+                });
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-activity-opml_export' }, function($t, $p){
+                e.preventDefault();
+                self.close_interactions_popover();
+                self.close_social_profile();
+
+                self.open_account_modal();
+            }); 
             
             // = One-offs =====================================================
             

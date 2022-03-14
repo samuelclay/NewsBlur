@@ -758,6 +758,9 @@ class Profile(models.Model):
         msg.attach(filename, opml, 'text/xml')
         msg.send(fail_silently=True)
         
+        from apps.social.models import MActivity
+        MActivity.new_opml_export(user_id=self.user.pk, automated=True)
+        
         logging.user(self.user, "~BB~FM~SBSending OPML backup email to: %s" % self.user.email)
     
     def send_first_share_to_blurblog_email(self, force=False):
