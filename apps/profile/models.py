@@ -759,7 +759,7 @@ class Profile(models.Model):
         msg.send(fail_silently=True)
         
         from apps.social.models import MActivity
-        MActivity.new_opml_export(user_id=self.user.pk, automated=True)
+        MActivity.new_opml_export(user_id=self.user.pk, count=exporter.feed_count, automated=True)
         
         logging.user(self.user, "~BB~FM~SBSending OPML backup email to: %s" % self.user.email)
     

@@ -83,7 +83,7 @@ def opml_export(request):
     opml     = exporter.process()
 
     from apps.social.models import MActivity
-    MActivity.new_opml_export(user_id=user.pk)
+    MActivity.new_opml_export(user_id=user.pk, count=exporter.feed_count)
 
     response = HttpResponse(opml, content_type='text/xml; charset=utf-8')
     response['Content-Disposition'] = 'attachment; filename=NewsBlur-%s-%s.opml' % (

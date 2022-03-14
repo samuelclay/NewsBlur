@@ -3232,14 +3232,14 @@ class MActivity(mongo.Document):
         cls.objects.create(**params)
 
     @classmethod
-    def new_opml_export(cls, user_id, automated=False):
+    def new_opml_export(cls, user_id, count, automated=False):
         params = {
             "user_id": user_id,
             "category": 'opml_export',
-            'content': "You exported an OPML backup of your subscriptions"
+            'content': f"You exported an OPML backup of {count} subscriptions"
         }
         if automated:
-            params['content'] = "An automatic OPML backup was emailed to you"
+            params['content'] = f"An automatic OPML backup of {count} subscriptions was emailed to you"
         cls.objects.create(**params)
                            
     @classmethod
