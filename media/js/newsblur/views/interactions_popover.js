@@ -113,7 +113,7 @@ NEWSBLUR.InteractionsPopover = NEWSBLUR.ReaderPopover.extend({
         
         // load_interactions_page or load_activities_page
         this.model['load_'+this.options.tab+'_page'](this.page, _.bind(function(resp, type) {
-            console.log(["type", type, this.options.tab]);
+            // console.log(["type", type, this.options.tab]);
             if (type != this.options.tab) return;
             this.fetching = false;
             this.hide_loading();
