@@ -33,7 +33,9 @@
     return self;
 }
 
-- (void)viewDidLoad {    
+- (void)viewDidLoad {
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    
     UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_folder.png"]];
     folderImage.frame = CGRectMake(0, 0, 24, 16);
     [folderImage setContentMode:UIViewContentModeRight];
@@ -57,16 +59,16 @@
     [super viewDidLoad];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        return YES;
-    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-        return YES;
-    }
-    
-    return NO;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    // Return YES for supported orientations
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        return YES;
+//    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+//        return YES;
+//    }
+//    
+//    return NO;
+//}
 
 - (void)viewWillAppear:(BOOL)animated {
     [self.errorLabel setHidden:YES];
@@ -217,8 +219,10 @@
     
     for (NSString *folder in appDelegate.dictFoldersArray) {
         if ([folder isEqualToString:@"everything"]) continue;
+        if ([folder isEqualToString:@"infrequent"]) continue;
         if ([folder isEqualToString:@"river_blurblogs"]) continue;
         if ([folder isEqualToString:@"river_global"]) continue;
+        if ([folder isEqualToString:@"widget_stories"]) continue;
         if ([folder isEqualToString:@"read_stories"]) continue;
         if ([folder isEqualToString:@"saved_searches"]) continue;
         if ([folder isEqualToString:@"saved_stories"]) continue;

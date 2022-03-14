@@ -56,17 +56,6 @@
     self.profileBadge = badge;
 }
 
-- (void)viewDidUnload {
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    self.appDelegate = nil;
-    self.profileBadge = nil;
-    self.profileTable = nil;
-    self.activitiesArray = nil;
-    self.activitiesUsername = nil;
-    self.userProfile = nil;
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     CGRect vb = self.view.bounds;
@@ -79,13 +68,13 @@
     self.profileTable.backgroundColor = UIColorFromRGB(0xd7dadf);
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    [self.profileTable reloadData];
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//	return YES;
+//}
+//
+//- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+//    [self.profileTable reloadData];
+//}
 
 // allow keyboard comands
 - (BOOL)canBecomeFirstResponder {

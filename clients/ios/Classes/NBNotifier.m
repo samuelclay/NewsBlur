@@ -80,7 +80,7 @@
 //        _txtLabel = [[UILabel alloc] initWithFrame:CGRectMake(32, 12, self.frame.size.width - 32, 20)];
         _txtLabel = [[UILabel alloc] init];
         _txtLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        [_txtLabel setFont:[UIFont fontWithName: @"Helvetica" size: 16]];
+        [_txtLabel setFont:[UIFont fontWithName: @"WhitneySSm-Book" size: 17]];
         [_txtLabel setBackgroundColor:[UIColor clearColor]];
         
         _txtLabel.textColor = [UIColor whiteColor];
@@ -188,7 +188,8 @@
     self.progressBar.hidden = YES;
 
     if (style == NBLoadingStyle) {
-        UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+        activityIndicator.color = UIColor.whiteColor;
         [activityIndicator startAnimating];
         self.accessoryView = activityIndicator;
     } else if (style == NBOfflineStyle) {
@@ -203,7 +204,8 @@
         self.accessoryView = imageView;
         self.progressBar.hidden = NO;
     } else if (style == NBSyncingStyle) {
-        UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+        UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+        activityIndicator.color = UIColor.whiteColor;
         [activityIndicator startAnimating];
         self.accessoryView = activityIndicator;        
     } else if (style == NBDoneStyle) {

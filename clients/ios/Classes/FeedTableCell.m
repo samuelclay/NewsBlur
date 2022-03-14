@@ -11,6 +11,7 @@
 #import "UnreadCountView.h"
 #import "ABTableViewCell.h"
 #import "MCSwipeTableViewCell.h"
+#import "NewsBlur-Swift.h"
 
 static UIFont *textFont = nil;
 
@@ -57,8 +58,19 @@ static UIFont *textFont = nil;
 
 - (void)drawRect:(CGRect)rect {
     ((FeedTableCellView *)cellContent).cell = self;
+    
+    CGFloat indentationOffset = self.indentationLevel * self.indentationWidth;
+    rect.origin.x += indentationOffset;
+    rect.size.width -= indentationOffset;
+    
     cellContent.frame = rect;
     [cellContent setNeedsDisplay];
+}
+
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
+    [super setHighlighted:highlighted animated:animated];
+    
+    [self setNeedsDisplay];
 }
 
 - (void) setPositiveCount:(int)ps {
@@ -103,7 +115,7 @@ static UIFont *textFont = nil;
         iconName = @"train.png";
     }
     
-    [self setDelegate:(NewsBlurViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
+    [self setDelegate:(FeedsViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
     [self setFirstStateIconName:(iconName)
                      firstColor:UIColorFromRGB(0xA4D97B)
             secondStateIconName:nil
@@ -130,15 +142,15 @@ static UIFont *textFont = nil;
     fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
     if (![userPreferences boolForKey:@"use_system_font_size"]) {
         if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:11.0f];
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:10.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
             fontDescriptor = [fontDescriptor fontDescriptorWithSize:12.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
             fontDescriptor = [fontDescriptor fontDescriptorWithSize:13.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:15.0f];
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:16.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:17.0f];
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:18.0f];
         }
     }
     
@@ -209,9 +221,9 @@ static UIFont *textFont = nil;
     UIFontDescriptor *fontDescriptor = [cell fontDescriptorUsingPreferredSize:UIFontTextStyleFootnote];
     if (cell.negativeCount || cell.neutralCount || cell.positiveCount) {
         UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-        font = [UIFont fontWithDescriptor:boldFontDescriptor size:fontDescriptor.pointSize];
+        font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
     } else {
-        font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+        font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize];
     }
     NSInteger titleOffsetY = ((r.size.height - font.pointSize) / 2) - 1;
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -219,7 +231,7 @@ static UIFont *textFont = nil;
     paragraphStyle.alignment = NSTextAlignmentLeft;
     NSInteger faviconSize;
     if (cell.isSocial) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             faviconSize = 28;
             [cell.feedFavicon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize/2, faviconSize, faviconSize)];
             [cell.feedTitle drawInRect:CGRectMake(46, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 16, font.pointSize*1.4)
@@ -236,7 +248,7 @@ static UIFont *textFont = nil;
         }
     } else {
         faviconSize = 16;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             [cell.feedFavicon drawInRect:CGRectMake(12.0, CGRectGetMidY(r)-faviconSize/2, faviconSize, faviconSize)];
             [cell.feedTitle drawInRect:CGRectMake(36.0, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
