@@ -78,7 +78,7 @@ function setImage(img) {
             $img.parent().addClass('NB-contains-image')
         }
     } else if (width > 30 && height > 30) {
-        $img.attr('class', 'NB-medium-image');
+        $img.attr('class', 'NB-large-image');
         if ($img.parent().attr('href')) {
             $img.parent().addClass('NB-contains-image')
         }

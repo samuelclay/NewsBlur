@@ -13,6 +13,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "ActivityCell.h"
 #import "SmallActivityCell.h"
+#import "NewsBlur-Swift.h"
 
 @implementation ActivityModule
 
@@ -98,7 +99,7 @@
         [appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [self finishLoadActivities:responseObject];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            [appDelegate informError:error];
+            [self.appDelegate informError:error];
         }];
     }
 }
@@ -153,7 +154,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {    
     NSInteger activitiesCount = [appDelegate.userActivitiesArray count];
     int minimumHeight;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         minimumHeight = MINIMUM_ACTIVITY_HEIGHT_IPAD;
     } else {
         minimumHeight = MINIMUM_ACTIVITY_HEIGHT_IPHONE;
@@ -164,7 +165,7 @@
     }
     
     id activityCell;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         activityCell = [[ActivityCell alloc] init];
     } else {
         activityCell = [[SmallActivityCell alloc] init];
@@ -184,7 +185,7 @@
     ActivityCell *cell = [tableView
                           dequeueReusableCellWithIdentifier:@"ActivityCell"];
     if (cell == nil) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             cell = [[ActivityCell alloc]
                      initWithStyle:UITableViewCellStyleDefault 
                      reuseIdentifier:@"ActivityCell"];
@@ -303,7 +304,7 @@
         UIImage *img = [UIImage imageNamed:@"fleuron.png"];
         UIImageView *fleuron = [[UIImageView alloc] initWithImage:img];
         int height;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             height = MINIMUM_ACTIVITY_HEIGHT_IPAD;
         } else {
             height = MINIMUM_ACTIVITY_HEIGHT_IPHONE;
@@ -317,7 +318,7 @@
         cell.textLabel.text = @"Loading...";
         
         UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] 
-                                            initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                                            initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
         UIImage *spacer = [UIImage imageNamed:@"spacer"];
         UIGraphicsBeginImageContext(spinner.frame.size);        
         [spacer drawInRect:CGRectMake(0, 0, spinner.frame.size.width,spinner.frame.size.height)];

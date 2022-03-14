@@ -8,10 +8,9 @@
 
 #import "MarkReadMenuViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "NewsBlurViewController.h"
-#import "FeedDetailViewController.h"
 #import "StoriesCollection.h"
 #import "MenuTableViewCell.h"
+#import "NewsBlur-Swift.h"
 
 NSString * const MarkReadMenuTitle = @"title";
 NSString * const MarkReadMenuIcon = @"icon";
@@ -123,15 +122,15 @@ typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
 }
 
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName olderNewerMode:(MarkReadMenuOlderNewerMode)mode {
-    [self.menuOptions addObject:@{MarkReadMenuTitle : title.uppercaseString, MarkReadMenuIcon : [UIImage imageNamed:iconName], MarkReadMenuOlderNewer : @(mode)}];
+    [self.menuOptions addObject:@{MarkReadMenuTitle : title, MarkReadMenuIcon : [UIImage imageNamed:iconName], MarkReadMenuOlderNewer : @(mode)}];
 }
 
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName days:(NSInteger)days {
-    [self.menuOptions addObject:@{MarkReadMenuTitle : title.uppercaseString, MarkReadMenuIcon : [UIImage imageNamed:iconName], MarkReadMenuDays : @(days)}];
+    [self.menuOptions addObject:@{MarkReadMenuTitle : title, MarkReadMenuIcon : [UIImage imageNamed:iconName], MarkReadMenuDays : @(days)}];
 }
 
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName handler:(void (^)(void))handler {
-    [self.menuOptions addObject:@{MarkReadMenuTitle : title.uppercaseString, MarkReadMenuIcon : [UIImage imageNamed:iconName], MarkReadMenuHandler : handler}];
+    [self.menuOptions addObject:@{MarkReadMenuTitle : title, MarkReadMenuIcon : [UIImage imageNamed:iconName], MarkReadMenuHandler : handler}];
 }
 
 #pragma mark -

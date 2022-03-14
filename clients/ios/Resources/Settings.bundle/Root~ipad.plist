@@ -95,6 +95,26 @@
 			<string>default_confirm_read_filter</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>When opening a site</string>
+			<key>Titles</key>
+			<array>
+				<string>Open first story</string>
+				<string>Show stories</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>story</string>
+			<key>Values</key>
+			<array>
+				<string>story</string>
+				<string>list</string>
+			</array>
+			<key>Key</key>
+			<string>feed_opening</string>
+		</dict>
+		<dict>
 			<key>FooterText</key>
 			<string>You can change this setting in the Infrequent Site Stories view.</string>
 			<key>Type</key>
@@ -166,10 +186,35 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
+			<string>Column layout</string>
+			<key>Titles</key>
+			<array>
+				<string>Automatic</string>
+				<string>Three columns</string>
+				<string>Two columns</string>
+				<string>Full screen</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>displace</string>
+			<key>Values</key>
+			<array>
+				<string>auto</string>
+				<string>tile</string>
+				<string>displace</string>
+				<string>overlay</string>
+			</array>
+			<key>Key</key>
+			<string>split_behavior</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
 			<string>Story titles layout</string>
 			<key>Titles</key>
 			<array>
 				<string>Titles on left</string>
+				<string>Titles on top</string>
 				<string>Titles on bottom</string>
 			</array>
 			<key>DefaultValue</key>
@@ -177,6 +222,7 @@
 			<key>Values</key>
 			<array>
 				<string>titles_on_left</string>
+				<string>titles_on_top</string>
 				<string>titles_on_bottom</string>
 			</array>
 			<key>Key</key>
@@ -214,19 +260,23 @@
 			<key>Titles</key>
 			<array>
 				<string>None</string>
-				<string>Small</string>
-				<string>Large</string>
+				<string>Small Left</string>
+				<string>Large Left</string>
+				<string>Large Right</string>
+				<string>Small Right</string>
 			</array>
 			<key>Values</key>
 			<array>
 				<string>none</string>
-				<string>small</string>
-				<string>large</string>
+				<string>small_left</string>
+				<string>large_left</string>
+				<string>large_right</string>
+				<string>small_right</string>
 			</array>
 			<key>Key</key>
 			<string>story_list_preview_images_size</string>
 			<key>DefaultValue</key>
-			<string>small</string>
+			<string>small_right</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -880,7 +930,7 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>FooterText</key>
-			<string>Leave blank to use the NewsBlur site, or enter the URL of your self-hosted NewsBlur installation, e.g. &quot;https://www.domain.com&quot;.</string>
+			<string>Leave blank to use the NewsBlur site, or enter the URL of your self-hosted NewsBlur installation, e.g. &quot;https://www.domain.com&quot;. Takes effect next time app is opened.</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -969,6 +1019,22 @@
 			<string>IASKOpenURLSpecifier</string>
 			<key>IASKTextAlignment</key>
 			<string>IASKUITextAlignmentCenter</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string></string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>IsCritical</key>
+			<true/>
+			<key>Title</key>
+			<string>Delete Account</string>
+			<key>Key</key>
+			<string>delete_account</string>
 		</dict>
 	</array>
 	<key>StringsTable</key>

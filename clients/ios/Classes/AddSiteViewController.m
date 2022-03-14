@@ -9,10 +9,9 @@
 #import "AddSiteViewController.h"
 #import "AddSiteAutocompleteCell.h"
 #import "NewsBlurAppDelegate.h"
-#import "NewsBlurViewController.h"
-#import "NBContainerViewController.h"
 #import "MenuViewController.h"
 #import "SBJson4.h"
+#import "NewsBlur-Swift.h"
 
 @interface AddSiteViewController()
 
@@ -37,11 +36,13 @@
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(doCancelButton)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Add Site" style:UIBarButtonItemStyleDone target:self action:@selector(addSite)];
     
+    UIView *folderPadding = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 24, 16)];
     UIImageView *folderImage = [[UIImageView alloc]
                                 initWithImage:[UIImage imageNamed:@"g_icn_folder_sm.png"]];
     folderImage.frame = CGRectMake(0, 0, 24, 16);
     [folderImage setContentMode:UIViewContentModeRight];
-    [self.inFolderInput setLeftView:folderImage];
+    [folderPadding addSubview:folderImage];
+    [self.inFolderInput setLeftView:folderPadding];
     [self.inFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     
     // If you want to show a disclosure arrow; don't really need it, though.
@@ -52,18 +53,22 @@
     //    [inFolderInput setRightView:disclosureImage];
     //    [inFolderInput setRightViewMode:UITextFieldViewModeAlways];
     
+    UIView *folderPadding2 = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 24, 16)];
     UIImageView *folderImage2 = [[UIImageView alloc]
                                  initWithImage:[UIImage imageNamed:@"g_icn_folder_rss_sm.png"]];
     folderImage2.frame = CGRectMake(0, 0, 24, 16);
     [folderImage2 setContentMode:UIViewContentModeRight];
-    [self.addFolderInput setLeftView:folderImage2];
+    [folderPadding2 addSubview:folderImage2];
+    [self.addFolderInput setLeftView:folderPadding2];
     [self.addFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     
+    UIView *urlPadding = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 24, 16)];
     UIImageView *urlImage = [[UIImageView alloc]
                              initWithImage:[UIImage imageNamed:@"world.png"]];
     urlImage.frame = CGRectMake(0, 0, 24, 16);
     [urlImage setContentMode:UIViewContentModeRight];
-    [self.siteAddressInput setLeftView:urlImage];
+    [urlPadding addSubview:urlImage];
+    [self.siteAddressInput setLeftView:urlPadding];
     [self.siteAddressInput setLeftViewMode:UITextFieldViewModeAlways];
     
     self.siteTable.hidden = YES;
@@ -86,16 +91,16 @@
     [super viewWillAppear:animated];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        return YES;
-    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-        return YES;
-    }
-    
-    return NO;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    // Return YES for supported orientations
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        return YES;
+//    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+//        return YES;
+//    }
+//
+//    return NO;
+//}
 
 - (void)viewDidAppear:(BOOL)animated {
     [self.activityIndicator stopAnimating];
@@ -125,7 +130,7 @@
 }
 
 - (IBAction)doCancelButton {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [appDelegate hidePopover];
     } else {
         [appDelegate hidePopoverAnimated:YES];
@@ -211,6 +216,8 @@
         if ([phrase isEqualToString:query]) {
             self.autocompleteResults = [responseObject objectForKey:@"feeds"];
             [self reloadSearchResults];
+        } else {
+            [self.siteActivityIndicator stopAnimating];
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self.siteActivityIndicator stopAnimating];
@@ -265,12 +272,12 @@
             [self.errorLabel setText:[responseObject valueForKey:@"message"]];
             [self.errorLabel setHidden:NO];
         } else {
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                [appDelegate hidePopover];
+            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+                [self->appDelegate hidePopover];
             } else {
-                [appDelegate hidePopoverAnimated:YES];
+                [self->appDelegate hidePopoverAnimated:YES];
             }
-            [appDelegate reloadFeedsView:NO];
+            [self->appDelegate reloadFeedsView:NO];
         }
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -288,7 +295,7 @@
 
 - (NSString *)extractParentFolder {
     NSString *parent_folder = [self.inFolderInput text];
-    NSInteger folder_loc = [parent_folder rangeOfString:@" - " options:NSBackwardsSearch].location;
+    NSInteger folder_loc = [parent_folder rangeOfString:@" ▸ " options:NSBackwardsSearch].location;
     if ([parent_folder length] && folder_loc != NSNotFound) {
         parent_folder = [parent_folder substringFromIndex:(folder_loc + 3)];
     }
@@ -334,8 +341,10 @@
                      @[@"saved_searches",
                        @"saved_stories",
                        @"read_stories",
+                       @"widget_stories",
                        @"river_blurblogs",
                        @"river_global",
+                       @"infrequent",
                        @"everything"]);
 }
 
@@ -356,7 +365,7 @@
         NSString *title = folder;
         NSString *iconName = @"menu_icn_move.png";
         
-        NSArray *components = [title componentsSeparatedByString:@" - "];
+        NSArray *components = [title componentsSeparatedByString:@" ▸ "];
         title = components.lastObject;
         for (NSUInteger idx = 0; idx < components.count; idx++) {
             title = [@"\t" stringByAppendingString:title];
@@ -374,7 +383,7 @@
         viewController.checkedRow = [folders indexOfObject:self.inFolderInput.text] + 1;
     }
     
-    [appDelegate.addSiteNavigationController pushViewController:viewController animated:YES];
+    [appDelegate.addSiteNavigationController showViewController:viewController sender:self];
 }
 
 #pragma mark -
@@ -422,9 +431,9 @@
     cell.feedTitle.text = [result objectForKey:@"label"];
     cell.feedTitle.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     cell.feedUrl.text = [result objectForKey:@"value"];
-    cell.feedUrl.textColor = UIColorFromFixedRGB(NEWSBLUR_LINK_COLOR);
-    cell.feedSubs.text = [[NSString stringWithFormat:@"%@ subscriber%@",
-                           [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:theScore]], subs == 1 ? @"" : @"s"] uppercaseString];
+    cell.feedUrl.textColor = UIColorFromLightDarkRGB(NEWSBLUR_LINK_COLOR, 0x3B7CC5);
+    cell.feedSubs.text = [NSString stringWithFormat:@"%@ subscriber%@",
+                           [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:theScore]], subs == 1 ? @"" : @"s"];
     cell.feedSubs.textColor = UIColorFromRGB(0x808080);
     cell.feedFavicon.image = faviconImage;
     cell.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);

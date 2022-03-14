@@ -7,6 +7,7 @@
 //
 
 #import "NewsBlurAppDelegate.h"
+#import "NewsBlur-Swift.h"
 
 @interface StoriesCollection : NSObject {
     NSDictionary * activeFeed;
@@ -55,6 +56,7 @@
 @property (nonatomic, readwrite) BOOL isSocialRiverView;
 @property (nonatomic, readwrite) BOOL isSavedView;
 @property (nonatomic, readwrite) BOOL isReadView;
+@property (nonatomic, readwrite) BOOL isWidgetView;
 @property (nonatomic, readwrite) BOOL transferredFromDashboard;
 @property (nonatomic, readwrite) BOOL showHiddenStories;
 @property (nonatomic, readwrite) BOOL inSearch;
