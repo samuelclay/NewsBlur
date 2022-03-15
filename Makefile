@@ -144,7 +144,7 @@ deploy_task:
 	- ansible-playbook ansible/deploy.yml -l task
 task: deploy_task
 deploy_www:
-	- ansible-playbook ansible/deploy.yml -l www
+	- ansible-playbook ansible/deploy.yml -l haproxy
 www: deploy_www
 deploy_work:
 	- ansible-playbook ansible/deploy.yml -l work
