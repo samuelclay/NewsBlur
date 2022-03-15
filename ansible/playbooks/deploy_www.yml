@@ -1,6 +1,6 @@
 ---
 - name: DEPLOY -> www
-  hosts: www,staging
+  hosts: haproxy,staging
   gather_facts: false
   vars_files:
     - ../env_vars/base.yml
