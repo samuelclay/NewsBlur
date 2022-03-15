@@ -676,6 +676,9 @@ hr {
 .NB-feedlist .feed.NB-feed-unfetched:not(.NB-highlighted) .feed_counts {
   display: none;
 }
+.NB-modal-feedchooser .NB-feedlist .feed.NB-feed-unfetched:not(.NB-highlighted) .feed_counts {
+    display: block;
+}  
 .NB-feedlist .feed.NB-feed-unfetched .feed_favicon {
   opacity: .5;
 }
