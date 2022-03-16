@@ -116,6 +116,15 @@ def render_account_module(context):
         'feed_count': context['feed_count'],
     }
     
+@register.inclusion_tag('reader/premium_archive_module.xhtml', takes_context=True)
+def render_premium_archive_module(context):
+    user    = get_user(context['user'])
+
+    return {
+        'user': user,
+        'user_profile': user.profile,
+    }
+    
 @register.inclusion_tag('reader/manage_module.xhtml', takes_context=True)
 def render_manage_module(context):
     user    = get_user(context['user'])
