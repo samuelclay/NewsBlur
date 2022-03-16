@@ -7283,23 +7283,7 @@ form.opml_import_form input {
 
 .NB-module-premium .NB-module-item-intro {
     border-radius: 3px;
-    border: 1px solid #ebc17c;
     padding: 0 8px 4px 0px;
-    background-color: #FFED68;
-    background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.16, #fff5cc),
-        color-stop(0.84, #fff7d4)
-    );
-    background-image: -moz-linear-gradient(
-        center bottom,
-        #fff5cc 16%,
-        #fff7d4 84%
-    );
-     -moz-box-shadow:0 2px 0px #ebc17c;
-    box-shadow:0 2px 0px #ebc17c;
     margin-bottom: 24px;
     padding: 12px;
     overflow: hidden;
@@ -7315,13 +7299,65 @@ form.opml_import_form input {
 	margin: 12px 0 0;
 	color: #ebc17c;
 }
-.NB-module-premium .NB-module-premium-button  {
+.NB-module.NB-module-premium .NB-module-premium-button  {
     padding-top: 12px;
     padding-bottom: 12px;
     margin-left: 20%;
     margin-right: 20%;
+    margin-top: 36px;
 }
-
+.NB-module-premium .NB-module-premium-icon {
+    width: 36px;
+    height: 36px;
+    display: block;
+    margin: 0 auto 12px;
+}
+.NB-module-premium-icon.NB-1 {
+    background: transparent url('/media/embed/icons/circular/g_icn_buffer.png') no-repeat 0 0;
+    background-size: 36px;
+}
+.NB-module-premium-icon.NB-2 {
+    background: transparent url('/media/embed/icons/circular/g_icn_lightning.png') no-repeat 0 0;
+    background-size: 36px;
+}
+.NB-module-premium-icon.NB-3 {
+    background: transparent url('/media/embed/icons/circular/g_icn_folder_black.png') no-repeat 0 0;
+    background-size: 36px;
+}
+.NB-module-premium-icon.NB-4 {
+    background: transparent url('/media/embed/icons/circular/g_icn_search_black.png') no-repeat 0 0;
+    background-size: 36px;
+}
+.NB-module-premium-icon.NB-5 {
+    background: transparent url('/media/embed/icons/circular/g_icn_tag_black.png') no-repeat 0 0;
+    background-size: 36px;
+}
+.NB-module-premium-icon.NB-6 {
+    background: transparent url('/media/embed/icons/circular/g_icn_privacy.png') no-repeat 0 0;
+    background-size: 36px;
+}
+.NB-module-premium-icon.NB-7 {
+    background: transparent url('/media/embed/icons/circular/g_icn_folder_black.png') no-repeat 0 0;
+    background-size: 36px;
+}
+.NB-module-premium-icon.NB-8 {
+    background: transparent url('/media/embed/icons/circular/g_icn_textview_black.png') no-repeat 0 0;
+    background-size: 36px;
+}
+.NB-module-premium-icon.NB-9 {
+    background: transparent url('/media/embed/icons/circular/g_icn_eating.png') no-repeat 0 0;
+    background-size: 36px;
+}
+.NB-module-premium-reason {
+    padding: 0 24px;
+}
+.NB-module-premium-reason .NB-feedchooser-premium-poor-hungry-dog {
+    display: block;
+    margin: 12px auto 4px;
+    border: 1px solid #303030;
+    width: 128px;
+    height: 96px;
+}
 /* ================= */
 /* = Manage Module = */
 /* ================= */

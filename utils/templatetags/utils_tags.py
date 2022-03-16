@@ -2,6 +2,7 @@ import os
 import re
 import struct
 import datetime
+import random
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django import template
@@ -108,21 +109,45 @@ def render_dashboard_river(context, dashboard_river):
 @register.inclusion_tag('reader/account_module.xhtml', takes_context=True)
 def render_account_module(context):
     user    = get_user(context['user'])
-
+    reasons = [
+        "Enable every site by going premium",
+        "Sites updated up to 5x more often",
+        "Read the River of News (reading by folder)",
+        "Search sites and folders",
+        "Save stories with searchable tags",
+        "Privacy options for your blurblog",
+        "Custom RSS feeds for saved stories",
+        "Text view conveniently extracts the story",
+        f"You feed Lyric, NewsBlur's hungry hound, for 6 days<img class='NB-feedchooser-premium-poor-hungry-dog' src='{settings.MEDIA_URL}img/reader/lyric.jpg'>",
+    ]
+    rand_int = (datetime.datetime.now().timetuple().tm_yday+5) % len(reasons)
     return {
         'user': user,
         'user_profile': user.profile,
         'social_profile': context['social_profile'],
         'feed_count': context['feed_count'],
+        'reason': reasons[rand_int],
+        'rand_int': rand_int+1
     }
     
 @register.inclusion_tag('reader/premium_archive_module.xhtml', takes_context=True)
 def render_premium_archive_module(context):
     user    = get_user(context['user'])
 
+    reasons = [
+        "Stories can stay unread for however long you choose",
+        "Every story from every site is archived and searchable forever",
+        "Feeds that support paging are back-filled in for a complete archive",
+        "Export trained stories from folders as RSS feeds",
+        "Choose when stories are automatically marked as read",
+    ]
+    rand_int = (datetime.datetime.now().timetuple().tm_yday) % len(reasons)
+    
     return {
         'user': user,
         'user_profile': user.profile,
+        'reason': reasons[rand_int],
+        'rand_int': rand_int+1+1
     }
     
 @register.inclusion_tag('reader/manage_module.xhtml', takes_context=True)
