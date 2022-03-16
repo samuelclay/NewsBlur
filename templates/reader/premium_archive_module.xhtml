@@ -1,23 +1,18 @@
 {% load utils_tags %}
 
-{% if not user_profile.is_archive %}
+{% if user_profile.is_premium and not user_profile.is_archive %}
 <div class="NB-module NB-module-premium">
     <h5 class="NB-module-header">
-        Upgrade to Premium Archive
+        Reason to upgrade
     </h5>
-
-
-    <div class="NB-module-stats-counts">
-      <div class="NB-module-stats-count">
-          <div class="NB-module-stats-count-number"></div>
-          <div class="NB-module-stats-count-description">
-            <div class="NB-modal-submit-green NB-modal-submit-button NB-module-premium-button NB-javascript">Upgrade your account</div>
-          </div>
-	
-          <div class="NB-module-stats-count-description">$99/year</div>
-      </div>
-      
-      
+    <div class="NB-module-item NB-module-item-intro">
+        <div class="NB-module-premium-icon NB-{{ rand_int }}"></div>
+	    <p class="NB-module-premium-reason">
+            {{ reason|safe }}
+        </p>
+		<div class="NB-modal-submit-green NB-modal-submit-button NB-module-premium-button NB-javascript">
+            Upgrade to premium archive
+        </div>		
     </div>
 </div>
 {% endif %}

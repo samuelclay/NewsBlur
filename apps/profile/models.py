@@ -49,7 +49,7 @@ class Profile(models.Model):
     preferences       = models.TextField(default="{}")
     view_settings     = models.TextField(default="{}")
     collapsed_folders = models.TextField(default="[]")
-    feed_pane_size    = models.IntegerField(default=242)
+    feed_pane_size    = models.IntegerField(default=282)
     days_of_unread    = models.IntegerField(default=settings.DAYS_OF_UNREAD, blank=True, null=True)
     tutorial_finished = models.BooleanField(default=False)
     hide_getting_started = models.BooleanField(default=False, null=True, blank=True)

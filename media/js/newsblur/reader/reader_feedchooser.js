@@ -199,7 +199,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         ]),
                         $.make('li', { className: 'NB-3' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                            'Every story from every site is archived forever'
+                            'Every story from every site is archived and searchable forever'
                         ]),
                         $.make('li', { className: 'NB-4' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
