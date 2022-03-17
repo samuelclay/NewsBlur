@@ -1088,7 +1088,7 @@ class Profile(models.Model):
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
-        msg.send(fail_silently=True)
+        msg.send()
         
         logging.user(self.user, "~BB~FM~SBSending email for new user: %s" % self.user.email)
     
@@ -1123,7 +1123,7 @@ class Profile(models.Model):
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.attach(filename, opml, 'text/xml')
-        msg.send(fail_silently=True)
+        msg.send()
         
         from apps.social.models import MActivity
         MActivity.new_opml_export(user_id=self.user.pk, count=exporter.feed_count, automated=True)
@@ -1159,21 +1159,11 @@ class Profile(models.Model):
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
-        msg.send(fail_silently=True)
+        msg.send()
         
         logging.user(self.user, "~BB~FM~SBSending first share to blurblog email to: %s" % self.user.email)
     
-    def send_new_premium_email(self, force=False):
-        # subs = UserSubscription.objects.filter(user=self.user)
-#         message = """Woohoo!
-#
-# User: %(user)s
-# Feeds: %(feeds)s
-#
-# Sincerely,
-# NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
-        # mail_admins('New premium account', message, fail_silently=True)
-        
+    def send_new_premium_email(self, force=False):        
         if not self.user.email or not self.send_emails:
             return
         
@@ -1189,26 +1179,16 @@ class Profile(models.Model):
         user    = self.user
         text    = render_to_string('mail/email_new_premium.txt', locals())
         html    = render_to_string('mail/email_new_premium.xhtml', locals())
-        subject = "Thanks for going premium on NewsBlur!"
+        subject = "Thank you for subscribing to NewsBlur Premium!"
         msg     = EmailMultiAlternatives(subject, text, 
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
-        msg.send(fail_silently=True)
+        msg.send()
         
         logging.user(self.user, "~BB~FM~SBSending email for new premium: %s" % self.user.email)
     
     def send_new_premium_archive_email(self, force=False):
-        # subs = UserSubscription.objects.filter(user=self.user)
-#         message = """Woohoo!
-#
-# User: %(user)s
-# Feeds: %(feeds)s
-#
-# Sincerely,
-# NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
-        # mail_admins('New premium account', message, fail_silently=True)
-        
         if not self.user.email or not self.send_emails:
             return
         
@@ -1224,26 +1204,16 @@ class Profile(models.Model):
         user    = self.user
         text    = render_to_string('mail/email_new_premium_archive.txt', locals())
         html    = render_to_string('mail/email_new_premium_archive.xhtml', locals())
-        subject = "Thanks for subscribing to NewsBlur Premium Archive!"
+        subject = "Thank you for subscribing to NewsBlur Premium Archive!"
         msg     = EmailMultiAlternatives(subject, text, 
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
-        msg.send(fail_silently=True)
+        msg.send()
         
         logging.user(self.user, "~BB~FM~SBSending email for new premium archive: %s" % self.user.email)
     
     def send_new_premium_pro_email(self, force=False):
-        # subs = UserSubscription.objects.filter(user=self.user)
-#         message = """Woohoo!
-#
-# User: %(user)s
-# Feeds: %(feeds)s
-#
-# Sincerely,
-# NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
-        # mail_admins('New premium account', message, fail_silently=True)
-        
         if not self.user.email or not self.send_emails:
             return
         
@@ -1264,7 +1234,7 @@ class Profile(models.Model):
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
-        msg.send(fail_silently=True)
+        msg.send()
         
         logging.user(self.user, "~BB~FM~SBSending email for new premium pro: %s" % self.user.email)
     
@@ -1285,7 +1255,7 @@ class Profile(models.Model):
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
-        msg.send(fail_silently=True)
+        msg.send()
         
         logging.user(self.user, "~BB~FM~SBSending email for forgotten password: %s" % self.user.email)
     
@@ -1311,7 +1281,7 @@ class Profile(models.Model):
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
-        msg.send(fail_silently=True)
+        msg.send()
         
         logging.user(self.user, "~BB~FM~SBSending email for new user queue: %s" % self.user.email)
     
@@ -1392,7 +1362,7 @@ class Profile(models.Model):
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
-        msg.send(fail_silently=True)
+        msg.send()
         
         logging.user(self.user, "~BB~FM~SBSending launch social email for user: %s months, %s" % (months_ago, self.user.email))
     
@@ -1422,7 +1392,7 @@ class Profile(models.Model):
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
-        msg.send(fail_silently=True)
+        msg.send()
         
         logging.user(self.user, "~BB~FM~SBSending launch TT email for user: %s months, %s" % (months_ago, self.user.email))
 
@@ -1452,7 +1422,7 @@ class Profile(models.Model):
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
-        msg.send(fail_silently=True)
+        msg.send()
         
         logging.user(self.user, "~BB~FM~SBSending launch TT end email for user: %s months, %s" % (months_ago, self.user.email))
     
@@ -1488,7 +1458,7 @@ class Profile(models.Model):
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
-        msg.send(fail_silently=True)
+        msg.send()
         
         MSentEmail.record(receiver_user_id=self.user.pk, email_type='premium_expire_grace')
         logging.user(self.user, "~BB~FM~SBSending premium expire grace email for user: %s months, %s" % (months_ago, self.user.email))
@@ -1517,7 +1487,7 @@ class Profile(models.Model):
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
-        msg.send(fail_silently=True)
+        msg.send()
         
         MSentEmail.record(receiver_user_id=self.user.pk, email_type='premium_expire')
         logging.user(self.user, "~BB~FM~SBSending premium expire email for user: %s months, %s" % (months_ago, self.user.email))

@@ -148,7 +148,7 @@ class EmailNewsletter:
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
-        msg.send(fail_silently=True)
+        msg.send()
         
         logging.user(user, "~BB~FM~SBSending first newsletter email to: %s" % user.email)
         

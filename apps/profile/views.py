@@ -340,7 +340,7 @@ def profile_is_premium(request):
         if not request.user.profile.is_premium:
             subject = "Premium activation failed: %s (%s/%s)" % (request.user, activated_subs, total_subs)
             message = """User: %s (%s) -- Email: %s""" % (request.user.username, request.user.pk, request.user.email)
-            mail_admins(subject, message, fail_silently=True)
+            mail_admins(subject, message)
             request.user.profile.is_premium = True
             request.user.profile.save()
         
@@ -365,7 +365,7 @@ def save_ios_receipt(request):
         logging.user(request, "~BM~FBSending iOS Receipt email: %s %s" % (product_identifier, transaction_identifier))
         subject = "iOS Premium: %s (%s)" % (request.user.profile, product_identifier)
         message = """User: %s (%s) -- Email: %s, product: %s, txn: %s, receipt: %s""" % (request.user.username, request.user.pk, request.user.email, product_identifier, transaction_identifier, receipt)
-        mail_admins(subject, message, fail_silently=True)
+        mail_admins(subject, message)
     else:
         logging.user(request, "~BM~FBNot sending iOS Receipt email, already paid: %s %s" % (product_identifier, transaction_identifier))
         
@@ -385,7 +385,7 @@ def save_android_receipt(request):
         logging.user(request, "~BM~FBSending Android Receipt email: %s %s" % (product_id, order_id))
         subject = "Android Premium: %s (%s)" % (request.user.profile, product_id)
         message = """User: %s (%s) -- Email: %s, product: %s, order: %s""" % (request.user.username, request.user.pk, request.user.email, product_id, order_id)
-        mail_admins(subject, message, fail_silently=True)
+        mail_admins(subject, message)
     else:
         logging.user(request, "~BM~FBNot sending Android Receipt email, already paid: %s %s" % (product_id, order_id))
         
