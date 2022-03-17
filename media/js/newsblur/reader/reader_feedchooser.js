@@ -188,14 +188,14 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                             $.make('span', { className: 'NB-feedchooser-subtitle-type-price' }, '$99/year'),
                         ])
                     ]),
-                    $.make('ul', { className: 'NB-feedchooser-premium-bullets' }, [
+                    $.make('ul', { className: 'NB-feedchooser-premium-bullets NB-feedchooser-premium-archive-bullets' }, [
                         $.make('li', { className: 'NB-1' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
                             'Everything in the premium subscription, of course'
                         ]),
                         $.make('li', { className: 'NB-2' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                            'Stories can stay unread for however long you choose'
+                            'Stories can stay unread forever'
                         ]),
                         $.make('li', { className: 'NB-3' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
@@ -205,11 +205,11 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
                             'Feeds that support paging are back-filled in for a complete archive'
                         ]),
-                        $.make('li', { className: 'NB-6' }, [
+                        $.make('li', { className: 'NB-5' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
                             'Export trained stories from folders as RSS feeds'
                         ]),
-                        $.make('li', { className: 'NB-5' }, [
+                        $.make('li', { className: 'NB-6' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
                             'Choose when stories are automatically marked as read'
                         ])
