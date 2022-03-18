@@ -1066,8 +1066,4 @@ public class PrefsUtils {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return MarkStoryReadBehavior.valueOf(preferences.getString(PrefConstants.STORY_MARK_READ_BEHAVIOR, MarkStoryReadBehavior.IMMEDIATELY.name()));
     }
-
-    public static boolean isMarkStoryReadImmediately(Context context) {
-        return getMarkStoryReadBehavior(context).equals(MarkStoryReadBehavior.IMMEDIATELY);
-    }
 }

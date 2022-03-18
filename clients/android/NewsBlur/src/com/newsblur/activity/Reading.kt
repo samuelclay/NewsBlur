@@ -34,6 +34,11 @@ import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.view.ReadingScrollView.ScrollChangeListener
 import com.newsblur.viewModel.StoriesViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import java.lang.Runnable
 import javax.inject.Inject
 import kotlin.math.abs
@@ -62,8 +67,10 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
     private var readingAdapter: ReadingAdapter? = null
     private var stopLoading = false
     private var unreadSearchActive = false
-    // marking a story as read immediately on reading page scroll
-    private var isMarkStoryReadImmediately = false
+
+    // mark story as read behavior
+    private var markStoryReadJob: Job? = null
+    private lateinit var markStoryReadBehavior: MarkStoryReadBehavior
 
     // unread count for the circular progress overlay. set to nonzero to activate the progress indicator overlay
     private var startingUnreadCount = 0
@@ -127,7 +134,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
 
         intelState = PrefsUtils.getStateFilter(this)
         volumeKeyNavigation = PrefsUtils.getVolumeKeyNavigation(this)
-        isMarkStoryReadImmediately = PrefsUtils.isMarkStoryReadImmediately(this)
+        markStoryReadBehavior = PrefsUtils.getMarkStoryReadBehavior(this)
 
         setupViews()
         setupListeners()
@@ -405,9 +412,8 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
                                     pageHistory.add(story)
                                 }
                             }
-                            if (isMarkStoryReadImmediately) {
-                                feedUtils.markStoryAsRead(story, this@Reading)
-                            }
+
+                            triggerMarkStoryReadBehavior(story)
                         }
                         checkStoryCount(position)
                         updateOverlayText()
@@ -793,6 +799,27 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
             super.onKeyUp(keyCode, event)
         }
     }
+
+    private fun triggerMarkStoryReadBehavior(story: Story) {
+        markStoryReadJob?.cancel()
+        if (story.read) return
+
+        val delayMillis = markStoryReadBehavior.getDelayMillis()
+        if (delayMillis >= 0) {
+            markStoryReadJob = createMarkStoryReadJob(story, delayMillis).also {
+                it.start()
+            }
+        }
+    }
+
+    private fun createMarkStoryReadJob(story: Story, delayMillis: Long): Job =
+            lifecycleScope.launch(Dispatchers.Default) {
+                Log.d("sictiru", "launch for ${story.title} with delay $delayMillis")
+                if (isActive) delay(delayMillis)
+                Log.d("sictiru", "delayed for ${story.title}")
+                if (isActive) feedUtils.markStoryAsRead(story, this@Reading)
+                Log.d("sictiru", "marked read for ${story.title}")
+            }
 
     companion object {
         const val EXTRA_FEEDSET = "feed_set"
