@@ -192,29 +192,7 @@ class UserSubscription(models.Model):
 
         unread_ranked_stories_key  = 'z%sU:%s:%s' % ('h' if hashes_only else '', 
                                                      self.user_id, self.feed_id)
-        if withscores or not offset or not rt.exists(unread_ranked_stories_key):
-            rt.delete(unread_ranked_stories_key)
-            if not r.exists(stories_key):
-                # print " ---> No stories on feed: %s" % self
-                return []
-            elif read_filter == 'all' or not r.exists(read_stories_key):
-                ignore_user_stories = True
-                unread_stories_key = stories_key
-            else:
-                r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
-            sorted_stories_key          = 'zF:%s' % (self.feed_id)
-            r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
-            if not ignore_user_stories:
-                r.delete(unread_stories_key)
-            
-            dump = renc.dump(unread_ranked_stories_key)
-            if dump:
-                pipeline = rt.pipeline()
-                pipeline.delete(unread_ranked_stories_key)
-                pipeline.restore(unread_ranked_stories_key, 1*60*60*1000, dump)
-                pipeline.execute()
-                r.delete(unread_ranked_stories_key)
-        
+
         if not cutoff_date:
             if read_filter == "unread":
                 cutoff_date = datetime.datetime.now() - datetime.timedelta(days=self.user.profile.days_of_unread)
@@ -240,7 +218,49 @@ class UserSubscription(models.Model):
                 max_score = int(time.mktime(cutoff_date.timetuple())) + 1
             else:
                 max_score = 0
+
+        if withscores or not offset or not rt.exists(unread_ranked_stories_key):
+            rt.delete(unread_ranked_stories_key)
+            if not r.exists(stories_key):
+                # No stories on feed
+                return []
+            elif read_filter == 'all' or not r.exists(read_stories_key):
+                ignore_user_stories = True
+                unread_stories_key = stories_key
+            else:
+                r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+            sorted_stories_key          = 'zF:%s' % (self.feed_id)
+            r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
+            if not ignore_user_stories:
+                r.delete(unread_stories_key)
                 
+            if self.user.profile.is_archive:
+                user_unread_stories_feed_key = f"uU:{self.user_id}:{self.feed_id}"
+                oldest_unread = r.zrevrange(user_unread_stories_feed_key, -1, -1, withscores=True)
+                if oldest_unread:
+                    # cutoff_date = datetime.datetime.fromtimestamp(int(oldest_unread[0][1]))
+                    if order == 'oldest':
+                        removed_min = r.zremrangebyscore(unread_ranked_stories_key, 0, min_score-1)
+                        removed_max = r.zremrangebyscore(unread_ranked_stories_key, max_score+1, 2*max_score)
+                        min_score = int(oldest_unread[0][1])
+                    else:
+                        removed_min = r.zremrangebyscore(unread_ranked_stories_key, 0, max_score-1)
+                        removed_max = r.zremrangebyscore(unread_ranked_stories_key, min_score+1, 2*min_score)
+                        max_score = int(oldest_unread[0][1])
+                    # logging.debug(f"Oldest unread: {oldest_unread}, removed {removed_min} below and {removed_max} above")
+                        
+                    r.zunionstore(unread_ranked_stories_key, [unread_ranked_stories_key, user_unread_stories_feed_key], aggregate="MAX")
+            
+            # Weird encoding error on redis' part, where a DUMP causes an encoding 
+            # error due to decode_responses=True. Seems easy enough to work around.
+            dump = renc.dump(unread_ranked_stories_key)
+            if dump:
+                pipeline = rt.pipeline()
+                pipeline.delete(unread_ranked_stories_key)
+                pipeline.restore(unread_ranked_stories_key, 1*60*60*1000, dump)
+                pipeline.execute()
+                r.delete(unread_ranked_stories_key)
+        
         if settings.DEBUG and False:
             debug_stories = rt.zrevrange(unread_ranked_stories_key, 0, -1, withscores=True)
             print((" ---> Unread all stories (%s - %s) %s stories: %s" % (
@@ -248,6 +268,7 @@ class UserSubscription(models.Model):
                 max_score,
                 len(debug_stories),
                 debug_stories)))
+        
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
                                   max_score, start=offset, num=500,
                                   withscores=withscores)[:limit]
@@ -717,7 +738,7 @@ class UserSubscription(models.Model):
 
         # Check if user is archive and story is outside unread cutoff
         if self.user.profile.is_archive and story.story_date < self.user.profile.unread_cutoff:
-            user_unread_story = MUserUnreadStory.mark_unread(
+            user_unread_story = RUserUnreadStory.mark_unread(
                 user_id=self.user_id,
                 feed_id=story.story_feed_id,
                 story_hash=story.story_hash,
@@ -1731,7 +1752,7 @@ class Feature(models.Model):
     class Meta:
         ordering = ["-date"]
 
-class MUserUnreadStory(mongo.Document):
+class RUserUnreadStory:
     """Model to store manually unread stories that are older than a user's unread_cutoff 
     (same as days_of_unread). This is built for Premium Archive purposes.
 
@@ -1739,27 +1760,14 @@ class MUserUnreadStory(mongo.Document):
     UserUnreadStory instance as it will be automatically marked as read according to
     the user's days_of_unread preference.
     """
-    user_id = mongo.IntField()
-    feed_id = mongo.IntField()
-    story_hash = mongo.StringField(max_length=12)
-    story_date = mongo.DateTimeField()
-    unread_date = mongo.DateTimeField(default=datetime.datetime.now)
-    
-    meta = {
-        'collection': 'user_unread_story',
-        'allow_inheritance': False,
-        'indexes': ['user_id', 'feed_id', ('user_id', 'story_hash')],
-    }
-    
-    def __str__(self):
-        return "%s unread %s on %s" % (self.user_id, self.story_hash, self.unread_date)
 
     @classmethod
     def mark_unread(cls, user_id, feed_id, story_hash, story_date):
-        user_unread_story = cls.objects.create(
-            user_id=user_id, feed_id=feed_id, story_hash=story_hash, story_date=story_date
-        )
-        return user_unread_story
+        user_unread_stories_key = f"uU:{user_id}"
+        user_unread_stories_feed_key = f"uU:{user_id}:{feed_id}"
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        r.zadd(user_unread_stories_key, {story_hash: time.mktime(story_date.timetuple())})
+        r.zadd(user_unread_stories_feed_key, {story_hash: time.mktime(story_date.timetuple())})
 
     @classmethod
     def unreads(cls, user_id, story_hash):
