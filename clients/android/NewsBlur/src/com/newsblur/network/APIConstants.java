@@ -43,6 +43,8 @@ public class APIConstants {
 	public static final String PATH_FEED_UNREAD_COUNT = "/reader/feed_unread_count";
 	public static final String PATH_SOCIALFEED_STORIES = "/social/stories";
 	public static final String PATH_SIGNUP = "/api/signup";
+	public static final String PATH_SHARE_EXTERNAL_STORY = "/api/share_story/";
+	public static final String PATH_SAVE_EXTERNAL_STORY = "/api/save_story/";
 	public static final String PATH_MARK_FEED_AS_READ = "/reader/mark_feed_as_read/";
 	public static final String PATH_MARK_ALL_AS_READ = "/reader/mark_all_as_read/";
 	public static final String PATH_MARK_STORIES_READ = "/reader/mark_story_hashes_as_read/";
@@ -87,6 +89,7 @@ public class APIConstants {
         return CurrentUrlBase + path;
     }
 
+    public static final String PARAMETER_TITLE = "title";
 	public static final String PARAMETER_FEEDS = "f";
 	public static final String PARAMETER_H = "h";
 	public static final String PARAMETER_PASSWORD = "password";
@@ -96,6 +99,7 @@ public class APIConstants {
 	public static final String PARAMETER_EMAIL = "email";
 	public static final String PARAMETER_USERID = "user_id";
 	public static final String PARAMETER_STORYID = "story_id";
+	public static final String PARAMETER_STORY_URL = "story_url";
 	public static final String PARAMETER_STORY_HASH = "story_hash";
 	public static final String PARAMETER_FEEDS_STORIES = "feeds_stories";
 	public static final String PARAMETER_FEED_SEARCH_TERM = "term";

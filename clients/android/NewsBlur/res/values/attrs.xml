@@ -6,6 +6,7 @@
     <attr name="actionbarBackground" format="string" />
     <attr name="listBackground" format="string" />
     <attr name="layoutBackground" format="string" />
+    <attr name="layoutRoundedBackground" format="string" />
     <attr name="readingBackground" format="string" />
     <attr name="defaultText" format="string" />
     <attr name="linkText" format="string" />

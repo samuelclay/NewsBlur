@@ -834,6 +834,26 @@ public class PrefsUtils {
         }
     }
 
+    public static void applyTranslucentThemePreference(Activity activity) {
+        ThemeValue value = getSelectedTheme(activity);
+        if (value == ThemeValue.LIGHT) {
+            activity.setTheme(R.style.NewsBlurTheme_Translucent);
+        } else if (value == ThemeValue.DARK) {
+            activity.setTheme(R.style.NewsBlurDarkTheme_Translucent);
+        } else if (value == ThemeValue.BLACK) {
+            activity.setTheme(R.style.NewsBlurBlackTheme_Translucent);
+        } else if (value == ThemeValue.AUTO) {
+            int nightModeFlags = activity.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                activity.setTheme(R.style.NewsBlurDarkTheme_Translucent);
+            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
+                activity.setTheme(R.style.NewsBlurTheme_Translucent);
+            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_UNDEFINED) {
+                activity.setTheme(R.style.NewsBlurTheme_Translucent);
+            }
+        }
+    }
+
     public static ThemeValue getSelectedTheme(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         String value = prefs.getString(PrefConstants.THEME, ThemeValue.AUTO.name());

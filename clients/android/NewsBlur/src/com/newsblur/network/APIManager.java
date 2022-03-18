@@ -12,6 +12,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -360,6 +362,23 @@ public class APIManager {
 			return false;
 		}
 	}
+
+	public APIResponse saveExternalStory(@NonNull String storyTitle, @NonNull String storyUrl) {
+        ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_TITLE, storyTitle);
+        values.put(APIConstants.PARAMETER_STORY_URL, storyUrl);
+
+        return post(buildUrl(APIConstants.PATH_SAVE_EXTERNAL_STORY), values);
+    }
+
+	public APIResponse shareExternalStory(@NonNull String storyTitle, @NonNull String storyUrl, @NonNull String shareComments) {
+        ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_TITLE, storyTitle);
+        values.put(APIConstants.PARAMETER_STORY_URL, storyUrl);
+        values.put(APIConstants.PARAMETER_SHARE_COMMENT, shareComments);
+
+        return post(buildUrl(APIConstants.PATH_SHARE_EXTERNAL_STORY), values);
+    }
 
     public StoriesResponse shareStory(String storyId, String feedId, String comment, String sourceUserId) {
         ContentValues values = new ContentValues();
