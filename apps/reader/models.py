@@ -149,7 +149,6 @@ class UserSubscription(models.Model):
                     # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
                     min_score = read_dates[feed_id] + 1
                     pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
-                    
                     expire_unread_stories_key = True
                 else:
                     min_score = 0
@@ -162,6 +161,26 @@ class UserSubscription(models.Model):
                     min_score, max_score = max_score, min_score
             
                 pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
+                if order == 'oldest':
+                    removed_min = pipeline.zremrangebyscore(unread_ranked_stories_key, 0, min_score-1)
+                    removed_max = pipeline.zremrangebyscore(unread_ranked_stories_key, max_score+1, 2*max_score)
+                else:
+                    removed_min = pipeline.zremrangebyscore(unread_ranked_stories_key, 0, max_score-1)
+                    removed_max = pipeline.zremrangebyscore(unread_ranked_stories_key, min_score+1, 2*min_score)
+
+                if User.objects.get(pk=user_id).profile.is_archive:
+                    user_unread_stories_feed_key = f"uU:{user_id}:{feed_id}"
+                    oldest_unread = r.zrevrange(user_unread_stories_feed_key, -1, -1, withscores=True)
+                    if oldest_unread:
+                        if order == 'oldest':
+                            min_score = int(oldest_unread[0][1])
+                        else:
+                            max_score = int(oldest_unread[0][1])
+                        if settings.DEBUG:
+                            logging.debug(f"Oldest unread: {oldest_unread}, removed {removed_min} below and {removed_max} above")
+                            
+                        pipeline.zunionstore(unread_ranked_stories_key, [unread_ranked_stories_key, user_unread_stories_feed_key], aggregate="MAX")
+                
                 byscorefunc(unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps)
                 pipeline.delete(unread_ranked_stories_key)
                 if expire_unread_stories_key:
