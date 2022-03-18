@@ -814,11 +814,8 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
 
     private fun createMarkStoryReadJob(story: Story, delayMillis: Long): Job =
             lifecycleScope.launch(Dispatchers.Default) {
-                Log.d("sictiru", "launch for ${story.title} with delay $delayMillis")
                 if (isActive) delay(delayMillis)
-                Log.d("sictiru", "delayed for ${story.title}")
                 if (isActive) feedUtils.markStoryAsRead(story, this@Reading)
-                Log.d("sictiru", "marked read for ${story.title}")
             }
 
     companion object {
