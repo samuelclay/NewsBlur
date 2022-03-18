@@ -149,6 +149,7 @@ class UserSubscription(models.Model):
                     # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
                     min_score = read_dates[feed_id] + 1
                     pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+                    
                     expire_unread_stories_key = True
                 else:
                     min_score = 0
@@ -231,6 +232,13 @@ class UserSubscription(models.Model):
                 r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
             sorted_stories_key          = 'zF:%s' % (self.feed_id)
             r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
+            if order == 'oldest':
+                removed_min = r.zremrangebyscore(unread_ranked_stories_key, 0, min_score-1)
+                removed_max = r.zremrangebyscore(unread_ranked_stories_key, max_score+1, 2*max_score)
+            else:
+                removed_min = r.zremrangebyscore(unread_ranked_stories_key, 0, max_score-1)
+                removed_max = r.zremrangebyscore(unread_ranked_stories_key, min_score+1, 2*min_score)
+
             if not ignore_user_stories:
                 r.delete(unread_stories_key)
                 
@@ -238,16 +246,12 @@ class UserSubscription(models.Model):
                 user_unread_stories_feed_key = f"uU:{self.user_id}:{self.feed_id}"
                 oldest_unread = r.zrevrange(user_unread_stories_feed_key, -1, -1, withscores=True)
                 if oldest_unread:
-                    # cutoff_date = datetime.datetime.fromtimestamp(int(oldest_unread[0][1]))
                     if order == 'oldest':
-                        removed_min = r.zremrangebyscore(unread_ranked_stories_key, 0, min_score-1)
-                        removed_max = r.zremrangebyscore(unread_ranked_stories_key, max_score+1, 2*max_score)
                         min_score = int(oldest_unread[0][1])
                     else:
-                        removed_min = r.zremrangebyscore(unread_ranked_stories_key, 0, max_score-1)
-                        removed_max = r.zremrangebyscore(unread_ranked_stories_key, min_score+1, 2*min_score)
                         max_score = int(oldest_unread[0][1])
-                    # logging.debug(f"Oldest unread: {oldest_unread}, removed {removed_min} below and {removed_max} above")
+                    if settings.DEBUG:
+                        logging.debug(f"Oldest unread: {oldest_unread}, removed {removed_min} below and {removed_max} above")
                         
                     r.zunionstore(unread_ranked_stories_key, [unread_ranked_stories_key, user_unread_stories_feed_key], aggregate="MAX")
             
