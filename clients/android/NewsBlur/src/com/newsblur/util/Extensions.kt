@@ -2,6 +2,12 @@ package com.newsblur.util
 
 import kotlinx.coroutines.*
 
+import android.view.View
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 private const val TAG = "NBScope"
 
 fun <R> CoroutineScope.executeAsyncTask(
@@ -21,3 +27,11 @@ val NBScope = CoroutineScope(
                 CoroutineExceptionHandler { context, throwable ->
                     Log.e(TAG, "Coroutine exception on context $context with $throwable")
                 })
+
+fun View.setViewGone() {
+    this.visibility = View.GONE
+}
+
+fun View.setViewVisible() {
+    this.visibility = View.VISIBLE
+}

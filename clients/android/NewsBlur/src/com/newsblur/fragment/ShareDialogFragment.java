@@ -71,7 +71,7 @@ public class ShareDialogFragment extends DialogFragment {
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle(String.format(getResources().getString(R.string.share_newsblur), UIUtils.fromHtml(story.title)));
+        builder.setTitle(String.format(getResources().getString(R.string.share_save_newsblur), UIUtils.fromHtml(story.title)));
 
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
         View replyView = layoutInflater.inflate(R.layout.share_dialog, null);

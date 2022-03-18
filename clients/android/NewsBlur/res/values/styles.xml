@@ -83,6 +83,16 @@
         <item name="android:background">@color/black</item>
     </style>
 
+    <style name="layoutRoundedBackground">
+        <item name="android:background">@drawable/shape_rounded_corners_6dp_light</item>
+    </style>
+    <style name="layoutRoundedBackground.dark">
+        <item name="android:background">@drawable/shape_rounded_corners_6dp_dark</item>
+    </style>
+    <style name="layoutRoundedBackground.black">
+        <item name="android:background">@drawable/shape_rounded_corners_6dp_black</item>
+    </style>
+
     <style name="readingBackground">
         <item name="android:background">@color/white</item>
     </style>

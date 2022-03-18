@@ -51,8 +51,8 @@
     <string name="top_level">TOP LEVEL</string>
 	
 	<string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nShared with NewsBlur</string>
-	<string name="share_comment_hint">Comment (Optional)</string>
-	<string name="share_newsblur">Share \"%s\" to your Blurblog?</string>
+	<string name="share_comment_hint">Share comment (Optional)</string>
+	<string name="share_save_newsblur">Share/Save \"%s\" to your Blurblog?</string>
     <string name="share_this">Share</string>
     <string name="already_shared">Shared</string>
     <string name="share_this_story">Share</string>
