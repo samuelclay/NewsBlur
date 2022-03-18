@@ -682,7 +682,7 @@ def load_single_feed(request, feed_id):
             story_feed_id=feed_id
         ).order_by('%sstarred_date' % ('-' if order == 'newest' else ''))[offset:offset+limit]
         stories = Feed.format_stories(mstories) 
-    elif usersub and (read_filter == 'unread' or order == 'oldest'):
+    elif usersub:
         stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit,
                                       default_cutoff_date=user.profile.unread_cutoff)
     else:
