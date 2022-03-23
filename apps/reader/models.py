@@ -162,12 +162,12 @@ class UserSubscription(models.Model):
             
                 pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
                 if order == 'oldest':
-                    removed_min = pipeline.zremrangebyscore(unread_ranked_stories_key, 0, min_score-1)
-                    removed_max = pipeline.zremrangebyscore(unread_ranked_stories_key, max_score+1, 2*max_score)
+                    pipeline.zremrangebyscore(unread_ranked_stories_key, 0, min_score-1)
+                    pipeline.zremrangebyscore(unread_ranked_stories_key, max_score+1, 2*max_score)
                 else:
-                    removed_min = pipeline.zremrangebyscore(unread_ranked_stories_key, 0, max_score-1)
-                    removed_max = pipeline.zremrangebyscore(unread_ranked_stories_key, min_score+1, 2*min_score)
-
+                    pipeline.zremrangebyscore(unread_ranked_stories_key, 0, max_score-1)
+                    pipeline.zremrangebyscore(unread_ranked_stories_key, min_score+1, 2*min_score)
+                
                 if User.objects.get(pk=user_id).profile.is_archive:
                     user_unread_stories_feed_key = f"uU:{user_id}:{feed_id}"
                     oldest_unread = r.zrevrange(user_unread_stories_feed_key, -1, -1, withscores=True)
@@ -176,8 +176,6 @@ class UserSubscription(models.Model):
                             min_score = int(oldest_unread[0][1])
                         else:
                             max_score = int(oldest_unread[0][1])
-                        if settings.DEBUG:
-                            logging.debug(f"Oldest unread: {oldest_unread}, removed {removed_min} below and {removed_max} above")
                             
                         pipeline.zunionstore(unread_ranked_stories_key, [unread_ranked_stories_key, user_unread_stories_feed_key], aggregate="MAX")
                 
@@ -262,16 +260,13 @@ class UserSubscription(models.Model):
                 r.delete(unread_stories_key)
                 
             if self.user.profile.is_archive:
-                user_unread_stories_feed_key = f"uU:{self.user_id}:{self.feed_id}"
-                oldest_unread = r.zrevrange(user_unread_stories_feed_key, -1, -1, withscores=True)
+                oldest_unread = self.oldest_unread_story_date()
                 if oldest_unread:
                     if order == 'oldest':
                         min_score = int(oldest_unread[0][1])
                     else:
                         max_score = int(oldest_unread[0][1])
-                    if settings.DEBUG:
-                        logging.debug(f"Oldest unread: {oldest_unread}, removed {removed_min} below and {removed_max} above")
-                        
+                    user_unread_stories_feed_key = f"uU:{self.user_id}:{self.feed_id}"                        
                     r.zunionstore(unread_ranked_stories_key, [unread_ranked_stories_key, user_unread_stories_feed_key], aggregate="MAX")
             
             # Weird encoding error on redis' part, where a DUMP causes an encoding 
@@ -283,8 +278,16 @@ class UserSubscription(models.Model):
                 pipeline.restore(unread_ranked_stories_key, 1*60*60*1000, dump)
                 pipeline.execute()
                 r.delete(unread_ranked_stories_key)
-        
-        if settings.DEBUG and False:
+        else:
+            if self.user.profile.is_archive:
+                oldest_unread = self.oldest_unread_story_date()
+                if oldest_unread:
+                    if order == 'oldest':
+                        min_score = int(oldest_unread[0][1])
+                    else:
+                        max_score = int(oldest_unread[0][1])
+
+        if settings.DEBUG:
             debug_stories = rt.zrevrange(unread_ranked_stories_key, 0, -1, withscores=True)
             print((" ---> Unread all stories (%s - %s) %s stories: %s" % (
                 min_score,
@@ -385,7 +388,16 @@ class UserSubscription(models.Model):
     def days_of_story_hashes_for_user(cls, user_id):
         user = User.objects.get(pk=user_id)
         return user.profile.days_of_story_hashes
-    
+
+    def oldest_unread_story_date(self, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        
+        user_unread_stories_feed_key = f"uU:{self.user_id}:{self.feed_id}"
+        oldest_unread = r.zrevrange(user_unread_stories_feed_key, -1, -1, withscores=True)
+        
+        return oldest_unread
+        
     @classmethod
     def truncate_river(cls, user_id, feed_ids, read_filter, cache_prefix=""):
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
@@ -747,6 +759,9 @@ class UserSubscription(models.Model):
             RUserStory.mark_read(self.user_id, self.feed_id, story_hash, aggregated=aggregated)
             r.publish(self.user.username, 'story:read:%s' % story_hash)
 
+            if self.user.profile.is_archive:
+                RUserUnreadStory.mark_read(self.user_id, self.feed_id, story_hash)
+
         r.publish(self.user.username, 'feed:%s' % self.feed_id)
         
         self.last_read_date = datetime.datetime.now()
@@ -763,7 +778,6 @@ class UserSubscription(models.Model):
         if self.user.profile.is_archive and story.story_date < self.user.profile.unread_cutoff:
             user_unread_story = RUserUnreadStory.mark_unread(
                 user_id=self.user_id,
-                feed_id=story.story_feed_id,
                 story_hash=story.story_hash,
                 story_date=story.story_date,
             )
@@ -958,6 +972,8 @@ class UserSubscription(models.Model):
         # Switch read stories
         RUserStory.switch_feed(user_id=self.user_id, old_feed_id=old_feed.pk,
                                new_feed_id=new_feed.pk)
+        RUserUnreadStory.switch_feed(user_id=self.user_id, old_feed_id=old_feed.pk,
+                                     new_feed_id=new_feed.pk)
 
         def switch_feed_for_classifier(model):
             duplicates = model.objects(feed_id=old_feed.pk, user_id=self.user_id)
@@ -1785,16 +1801,73 @@ class RUserUnreadStory:
     """
 
     @classmethod
-    def mark_unread(cls, user_id, feed_id, story_hash, story_date):
+    def mark_unread(cls, user_id, story_hash, story_date, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        if isinstance(story_date, float):
+            story_date = int(story_date)
+        if not isinstance(story_date, int):
+            story_date = int(time.mktime(story_date.timetuple()))
+
+        feed_id, _ = MStory.split_story_hash(story_hash)
         user_unread_stories_key = f"uU:{user_id}"
         user_unread_stories_feed_key = f"uU:{user_id}:{feed_id}"
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        r.zadd(user_unread_stories_key, {story_hash: time.mktime(story_date.timetuple())})
-        r.zadd(user_unread_stories_feed_key, {story_hash: time.mktime(story_date.timetuple())})
 
+        r.zadd(user_unread_stories_key, {story_hash: story_date})
+        r.zadd(user_unread_stories_feed_key, {story_hash: story_date})
+
+    @classmethod
+    def mark_read(cls, user_id, story_hashes, r=None):
+        if not isinstance(story_hashes, list):
+            story_hashes = [story_hashes]
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        
+        pipeline = r.pipeline()
+        for story_hash in story_hashes:
+            feed_id, _ = MStory.split_story_hash(story_hash)
+
+            user_unread_stories_key = f"uU:{user_id}"
+            user_unread_stories_feed_key = f"uU:{user_id}:{feed_id}"
+
+            pipeline.zrem(user_unread_stories_key, story_hash)
+            pipeline.zrem(user_unread_stories_feed_key, story_hash)
+        pipeline.execute()
+        
     @classmethod
     def unreads(cls, user_id, story_hash):
         if not isinstance(story_hash, list):
             story_hash = [story_hash]
+
         user_unread_stories = cls.objects.filter(user_id=user_id, story_hash__in=story_hash)
+
         return user_unread_stories
+
+    @staticmethod
+    def get_stories_and_dates(user_id, feed_id, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+
+        user_unread_stories_feed_key = f"uU:{user_id}:{feed_id}"
+        story_hashes = r.zrange(user_unread_stories_feed_key, 0, -1, withscores=True)
+
+        return story_hashes
+
+    @classmethod
+    def switch_feed(cls, user_id, old_feed_id, new_feed_id):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        p = r.pipeline()
+        story_hashes = cls.get_stories_and_dates(user_id, old_feed_id, r=r)
+        
+        for (story_hash, story_timestamp) in story_hashes:
+            _, hash_story = MStory.split_story_hash(story_hash)
+            new_story_hash = "%s:%s" % (new_feed_id, hash_story)
+            read_feed_key = "RS:%s:%s" % (user_id, new_feed_id)
+            user_unread_stories_feed_key = f"uU:{user_id}:{new_feed_id}"
+            cls.mark_unread(user_id, new_story_hash, story_timestamp, r=p)
+        
+        p.execute()
+        
+        if len(story_hashes) > 0:
+            logging.info(" ---> %s archived unread stories" % len(story_hashes))
+        

@@ -37,7 +37,7 @@ from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.models import apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
 from apps.profile.models import Profile, MCustomStyling, MDashboardRiver
-from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, Feature
+from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, RUserUnreadStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts, MSavedSearch
 from apps.notifications.models import MUserFeedNotification
@@ -666,7 +666,7 @@ def load_single_feed(request, feed_id):
     
     if page > 200:
         logging.user(request, "~BR~FK~SBOver page 200 on single feed: %s" % page)
-        raise Http404
+        assert False
     
     if query:
         if user.profile.is_premium:
@@ -753,7 +753,7 @@ def load_single_feed(request, feed_id):
         story['long_parsed_date'] = format_story_link_date__long(story_date, nowtz)
         if usersub:
             story['read_status'] = 1
-            if story['story_date'] < user.profile.unread_cutoff:
+            if not user.profile.is_archive and story['story_date'] < user.profile.unread_cutoff:
                 story['read_status'] = 1
             elif (read_filter == 'all' or query) and usersub:
                 story['read_status'] = 1 if story['story_hash'] not in unread_story_hashes else 0
@@ -1817,6 +1817,9 @@ def mark_story_hashes_as_read(request):
         return dict(code=-1, message="Missing `story_hash` list parameter.")
     
     feed_ids, friend_ids = RUserStory.mark_story_hashes_read(request.user.pk, story_hashes, username=request.user.username)
+
+    if request.user.profile.is_archive:
+        RUserUnreadStory.mark_read(request.user.pk, story_hashes)
     
     if friend_ids:
         socialsubs = MSocialSubscription.objects.filter(
