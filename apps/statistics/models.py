@@ -287,6 +287,8 @@ class MFeedback(mongo.Document):
         6: 'problem',
         7: 'praise',
         8: 'question',
+        9: 'admin',
+        10: 'updates',
     }
     
     def __str__(self):
