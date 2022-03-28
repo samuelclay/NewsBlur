@@ -63,7 +63,45 @@
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
         <div class="home">
-    <ul class="post-list"><li><span class="post-meta">Mar 10, 2022</span>
+    <ul class="post-list"><li><span class="post-meta">Mar 28, 2022</span>
+        <h3>
+          <a class="post-link" href="/2022/03/28/redesigned-ios-layout/">
+            New gesture-based layout for the NewsBlur iPad App
+          </a>
+        </h3>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>We have a big update for you on iOS, complete with a redesigned layout engine. You’ll see this mostly on iPad, where you can now interactively swipe between panes, customize how many panes you see, and even customize where the story titles are on the screen relative to the story content.</p>
+
+<p>Let’s take a look at all of the new features, starting with the improved gesture-based layout engine for navigating between stories and feeds.</p>
+
+<p>
+    <video autoplay="autoplay" loop="true" muted="" playsinline="" width="650" style="width: 650px;border: 2px solid rgba(0,0,0,0.1);margin: 0 auto;display: block;">
+        <source src="/assets/ipad-redesigned-layout-2.mp4" type="video/mp4" />
+    </video>
+</p>
+
+<p>A whole bunch of new controls and customizations have been added to the settings menu in the story titles menu, which is where you can find these new options for 2-column/3-column/full screen view panes.</p>
+
+<p><img src="/assets/ipad-story-title-customizations.png" /></p>
+
+<p>There’s also a new homescreen widget for showing 3-6 stories on your dashboard.</p>
+
+<p><img src="/assets/ipad-widget.png" /></p>
+
+<p>You can also expect to find feature parity with Android and the web when it comes to the new image preview and content preview options for story titles.</p>
+
+<p><img src="/assets/ipad-image-preview.png" /></p>
+
+<p>You can now save stories and subscribe to feeds from other apps using the NewsBlur Share extension. This includes your saved story tags and associated counts.</p>
+
+<p><img src="/assets/iphone-share-extension.png" style="margin: 0 auto; display: block; width: 450px;" /></p>
+
+<p>This release also contains numerous improvements, subtle refinements, and assorted fixed bugs.</p>
+
+<p>If you have any ideas for how you would like to see the iPad and iPhone app improved, please post ideas to the <a href="https://forum.newsblur.com">NewsBlur Forum</a>. I’m all ears and would love to prioritize improvements or changes that create a better mobile reading experience.</p>
+
+        </div>
+      </li><li><span class="post-meta">Mar 10, 2022</span>
         <h3>
           <a class="post-link" href="/2022/03/10/magazine-view/">
             Magazine view offers a new perspective
@@ -493,35 +531,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
 </ul>
 
 <p>And if you’re an Android user, I just want you to know that we intended to ship this feature first on Android (and in fact, it is 90% built) but then our Android developer bailed. I’ll be hiring for another Android devleoper soon, but if that interests you, <a href="mailto:samuel@newsblur.com">please reach out</a>!</p>
-
-
-        </div>
-      </li><li><span class="post-meta">Aug 15, 2019</span>
-        <h3>
-          <a class="post-link" href="/2019/08/15/secure-images-for-everybody/">
-            Secure images for everybody
-          </a>
-        </h3>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>There are two ways to connect to the NewsBlur website. The first is <em>http</em>://www.newsblur.com. The second is <em>https</em>://www.newsblur.com. The first is plain text and the second is encrypted. You get to choose which one you want to use.</p>
-
-<p>Part of the draw of using an encrypted https connection instead of a plain text http connection is that you can protect your privacy. As far as I can tell, there are two reasons for preferring https over http.</p>
-
-<p>One is that using an encrypted https connection to NewsBlur protects what you read from hackers or a man-in-the-middle changing your data as it comes to you. This could be your internet service provider (ISP) inserting ads or it could be snooping wifi router that you are connected to that injects malware into your content. Some companies have been known to do this and https protects you.</p>
-
-<p>But the second reason is that your privacy is also protected from more benign, aggregate collections by ISPs and middlemen that sees what you read and sells that data. NewsBlur doesn’t sell any of your data and beginning this week NewsBlur can ensure that nobody other than you and the site you read can either.</p>
-
-<p>The feature that is launching this week (it actually launched Monday in order for me to ensure that it works well) is a secure image proxy for all images served on NewsBlur. That means that NewsBlur will take any images that isn’t behind an encrypted https connection and proxies it behind NewsBlur’s own secure, encrypted connection.</p>
-
-<figure class="tmblr-full" data-orig-height="1021" data-orig-width="1110" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/https-proxy.png"><img width="650" style="margin: 0 auto; width: 650px;" data-orig-height="1021" data-orig-width="1110" src="https://s3.amazonaws.com/static.newsblur.com/blog/https-proxy.png" /></figure>
-
-<p>You should notice next to no difference. The only difference you may notice is that some images may load <em>faster</em>, since NewsBlur has a thicker pipe to the Internet and can download data faster than your client browser can, which means that your persistent connection to NewsBlur’s servers takes over instead of having to make new connections with the associated overhead to various servers around the net.</p>
-
-<figure class="tmblr-full" data-orig-height="488" data-orig-width="1392" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/https-preference.png"><img style="margin: 0 auto; border: 1px solid #A0A0A0;" data-orig-height="488" data-orig-width="1392" src="https://s3.amazonaws.com/static.newsblur.com/blog/https-preference.png" /></figure>
-
-<p>Now you can turn on the SSL setting on the NewsBlur Web and ensure your data stays private.</p>
-
-<p>And to answer the question of why you wouldn’t wan t to use https — it used to mean serving and loading pages over https gave a slight performance hit, but that’s no longer true. But some people use http because it will load images from both http and https websites, whereas loading NewsBlur via https means that you can only load images via https, as loading an image via http will throw up a Mixed Content Warning. This update addresses that issue and it is my hope that http-only will be phased out.</p>
 
 
         </div>
