@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://blog.newsblur.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2022-03-28T13:08:07-04:00</updated><id>https://blog.newsblur.com/feed.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://blog.newsblur.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2022-03-28T13:18:50-04:00</updated><id>https://blog.newsblur.com/feed.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
 A new sound of an old instrument.
 </subtitle><entry><title type="html">New gesture-based layout for the NewsBlur iPad App</title><link href="https://blog.newsblur.com/2022/03/28/redesigned-ios-layout/" rel="alternate" type="text/html" title="New gesture-based layout for the NewsBlur iPad App" /><published>2022-03-28T00:00:00-04:00</published><updated>2022-03-28T00:00:00-04:00</updated><id>https://blog.newsblur.com/2022/03/28/redesigned-ios-layout</id><content type="html" xml:base="https://blog.newsblur.com/2022/03/28/redesigned-ios-layout/">&lt;p&gt;We have a big update for you on iOS, complete with a redesigned layout engine. You’ll see this mostly on iPad, where you can now interactively swipe between panes, customize how many panes you see, and even customize where the story titles are on the screen relative to the story content.&lt;/p&gt;
 
@@ -9,6 +9,10 @@ A new sound of an old instrument.
         &lt;source src=&quot;/assets/ipad-redesigned-layout-2.mp4&quot; type=&quot;video/mp4&quot; /&gt;
     &lt;/video&gt;
 &lt;/p&gt;
+
+&lt;p&gt;A whole bunch of new controls and customizations have been added to the settings menu in the story titles menu, which is where you can find these new options for 2-column/3-column/full screen view panes.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/ipad-story-title-customizations.png&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;There’s also a new homescreen widget for showing 3-6 stories on your dashboard.&lt;/p&gt;
 

@@ -13,6 +13,10 @@ Let's take a look at all of the new features, starting with the improved gesture
     </video>
 </p>
 
+A whole bunch of new controls and customizations have been added to the settings menu in the story titles menu, which is where you can find these new options for 2-column/3-column/full screen view panes.
+
+<img src="/assets/ipad-story-title-customizations.png">
+
 There's also a new homescreen widget for showing 3-6 stories on your dashboard.
 
 <img src="/assets/ipad-widget.png">
