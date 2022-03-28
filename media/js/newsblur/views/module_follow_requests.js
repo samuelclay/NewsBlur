@@ -50,7 +50,7 @@ NEWSBLUR.Views.FollowRequestsModule = Backbone.View.extend({
         
         _.each(this.request_profiles, function(profile) {
             var profile_model = new NEWSBLUR.Models.User(profile);
-            $profile_badge = new NEWSBLUR.Views.SocialProfileBadge({
+            var $profile_badge = new NEWSBLUR.Views.SocialProfileBadge({
                 model: profile_model,
                 request_approval: true
             });
