@@ -64,7 +64,36 @@
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
         <div class="home">
-    <ul class="post-list"><li><span class="post-meta">Jul 1, 2019</span>
+    <ul class="post-list"><li><span class="post-meta">Aug 15, 2019</span>
+        <h3>
+          <a class="post-link" href="/2019/08/15/secure-images-for-everybody/">
+            Secure images for everybody
+          </a>
+        </h3>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>There are two ways to connect to the NewsBlur website. The first is <em>http</em>://www.newsblur.com. The second is <em>https</em>://www.newsblur.com. The first is plain text and the second is encrypted. You get to choose which one you want to use.</p>
+
+<p>Part of the draw of using an encrypted https connection instead of a plain text http connection is that you can protect your privacy. As far as I can tell, there are two reasons for preferring https over http.</p>
+
+<p>One is that using an encrypted https connection to NewsBlur protects what you read from hackers or a man-in-the-middle changing your data as it comes to you. This could be your internet service provider (ISP) inserting ads or it could be snooping wifi router that you are connected to that injects malware into your content. Some companies have been known to do this and https protects you.</p>
+
+<p>But the second reason is that your privacy is also protected from more benign, aggregate collections by ISPs and middlemen that sees what you read and sells that data. NewsBlur doesn’t sell any of your data and beginning this week NewsBlur can ensure that nobody other than you and the site you read can either.</p>
+
+<p>The feature that is launching this week (it actually launched Monday in order for me to ensure that it works well) is a secure image proxy for all images served on NewsBlur. That means that NewsBlur will take any images that isn’t behind an encrypted https connection and proxies it behind NewsBlur’s own secure, encrypted connection.</p>
+
+<figure class="tmblr-full" data-orig-height="1021" data-orig-width="1110" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/https-proxy.png"><img width="650" style="margin: 0 auto; width: 650px;" data-orig-height="1021" data-orig-width="1110" src="https://s3.amazonaws.com/static.newsblur.com/blog/https-proxy.png" /></figure>
+
+<p>You should notice next to no difference. The only difference you may notice is that some images may load <em>faster</em>, since NewsBlur has a thicker pipe to the Internet and can download data faster than your client browser can, which means that your persistent connection to NewsBlur’s servers takes over instead of having to make new connections with the associated overhead to various servers around the net.</p>
+
+<figure class="tmblr-full" data-orig-height="488" data-orig-width="1392" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/https-preference.png"><img style="margin: 0 auto; border: 1px solid #A0A0A0;" data-orig-height="488" data-orig-width="1392" src="https://s3.amazonaws.com/static.newsblur.com/blog/https-preference.png" /></figure>
+
+<p>Now you can turn on the SSL setting on the NewsBlur Web and ensure your data stays private.</p>
+
+<p>And to answer the question of why you wouldn’t wan t to use https — it used to mean serving and loading pages over https gave a slight performance hit, but that’s no longer true. But some people use http because it will load images from both http and https websites, whereas loading NewsBlur via https means that you can only load images via https, as loading an image via http will throw up a Mixed Content Warning. This update addresses that issue and it is my hope that http-only will be phased out.</p>
+
+
+        </div>
+      </li><li><span class="post-meta">Jul 1, 2019</span>
         <h3>
           <a class="post-link" href="/2019/07/01/newsblur-ios-v9-full-screen-autoscroll/">
             NewsBlur iOS v9: full screen, autoscroll, customizable story titles, story change highlighter, and return to last read story
@@ -340,84 +369,6 @@
 <p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/text_view_images.png" alt="" /></p>
 
 <p>A welcome improvement. This new text extractor and parser also does a better job of handling Unicode and Chinese characters. And when it doesn’t extract text as well as the old text extractor, NewsBlur will automatically fallback on the old method.</p>
-
-
-        </div>
-      </li><li><span class="post-meta">Jun 14, 2017</span>
-        <h3>
-          <a class="post-link" href="/2017/06/14/launching-real-time-filterable-push-notifications/">
-            Launching real-time filterable push notifications for iOS, Android, web, and email
-          </a>
-        </h3>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>For some sites, you want to know when they publish as soon as they publish. Maybe you want to immediately be notified of everything a site publishes, like a monthly meetup that posts an event only once a month. Or perhaps you want to be immediately notified of everything the NYTimes publishes about the companies in your stock portfolio. Or you just really enjoy reading your daily comics and want them emailed to you so you never miss a beat.</p>
-
-<p><img src="http://www.newsblur.com/media/blog/notifications-announcement.png" alt="" /></p>
-
-<p>Today I’m proud to launch push notifications simultaneously across all three native platforms on NewsBlur (that’s web, iOS, and Android). That means that you can setup notifications for all Unread stories or only Focus stories that you’ve trained to be pushed to you over email, iOS, Android, or through browser notifications on the web.</p>
-
-<p>You can setup all four types of notifications on both web and mobile. And you can employ your intelligence training to only surface the stories that have use certain tags, have specific keywords in the titles, or are written by specific authors. Additionally, it’s easy to hide stories using that same training so that you don’t receive notifications that you want to ignore.</p>
-
-<h2 id="push-notifications-on-ios">Push notifications on iOS</h2>
-
-<p>To start with notifications on iOS, you can use the new swipe-to-the right gesture on the feed list (replacing the trainer on the swipe gesture). It’s very easy to turn notifications on and off or to even step up the filtering on a site so that you only get Focus stories instead.</p>
-
-<p>This way you can overprovision notifications for yourself and easily dial them back to where you get just the right number of notifications.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-ios.png" alt="" /></p>
-
-<p>Today version 7.0 of the NewsBlur iOS app is being released and here’s a list of what’s new and fixed on iOS:</p>
-
-<ul>
-  <li>Push notifications: real-time push notifications on a per-feed basis.</li>
-  <li>Swipe-to-the-right on a feed to change its notifications.</li>
-  <li>A new optional app badge for unread counts. Enable under Preferences.</li>
-  <li>Stories now automatically are marked as read on scroll. Disable under Preferences.</li>
-  <li>Better image support on iPad and fixes for drag-and-dropping the story titles bar (at bottom of the story detail).</li>
-  <li>A note on that: you can move story titles to the bottom on iPad. Just drag the bottom bar up.</li>
-  <li>Fixed issue with sharing stories not working or disappearing on iPad.</li>
-  <li>Fixed theme issues in the activity share sheet.</li>
-  <li>Fixed a crash from opening stories with no permalink.</li>
-  <li>Fixed size of intelligence control on bottom of feed list on iPhone SE.</li>
-  <li>Fixed issues when story titles are set to the bottom layout on iPad.</li>
-  <li>Fixed issues with the interactions dialog.</li>
-</ul>
-
-<h1 id="notifications-on-android">Notifications on Android</h1>
-
-<p>Android also gets a new version today. Version 6.0 gets notifications and new custom reading fonts as well as the mark read on scroll behavior that iOS and web have enjoyed.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-android.png" alt="" /></p>
-
-<p>Here’s a list of what’s new and fixed on Android:</p>
-
-<ul>
-  <li>Mark as read on scroll is a new preference to automatically mark stories as read as you scroll past them.</li>
-  <li>New fonts for reading: Whitney, Chronicle, Gotham Narrow make their way to Android from the web.</li>
-  <li>Also supporting native Android fonts Noto Sans, Noto Serif, Open Sans Condensed, and Anonymous Pro.</li>
-  <li>Switching between Text and Story view is now sticky per-feed (similar to iOS and web).</li>
-  <li>Fixed issues where feed list would not update.</li>
-</ul>
-
-<h1 id="notifications-on-web">Notifications on Web</h1>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-options.png" alt="" /></p>
-
-<p>Browser notifications are handy for those sites that you only want to read on your desktop. For example, you could setup web notifications for an RSS feed for a status feed, letting you know when migrations and downtime will have some effect on you.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-sites.png" alt="" /></p>
-
-<p>Setting up and tuning notifications is also just as easy to do on the web. You’ll find it under Manage &gt; Notifications as well as in the Read Filter Popover (top right of the app) when reading an individual feed.</p>
-
-<h1 id="notifications-over-email">Notifications over Email</h1>
-
-<p>Finally, for those use cases not covered under web or mobile, you can now have websites automatically email you when they publish new stories.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-email.png" alt="" /></p>
-
-<p>This is for those stories that you don’t want to miss and want to ensure that you read. For instance, I use email notifications for <a href="http://www.newsblur.com/site/5586842/quotes-worrydream.com">worrydream’s quote blog that serves me a single paragraph of insight once a week</a> because I loved having quotes emailed to me.</p>
-
-<p>There you have it, four new ways to consume the news. If you love using NewsBlur and want to see it continue to launch new features like these, please tell friends and followers about your news reader. People often ask for ways to stay on top of the game and NewsBlur is the most powerful way to do it.</p>
 
 
         </div>

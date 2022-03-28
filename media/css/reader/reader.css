@@ -7673,6 +7673,9 @@ form.opml_import_form input {
 .NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-question {
     background-color: #6DAEDC;
 }
+.NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-updates {
+    background-color: #12A89D;
+}
 
 #add-feature-form {
     display: none;
