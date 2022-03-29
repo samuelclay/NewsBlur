@@ -167,17 +167,25 @@ class UserSubscription(models.Model):
                 else:
                     pipeline.zremrangebyscore(unread_ranked_stories_key, 0, max_score-1)
                     pipeline.zremrangebyscore(unread_ranked_stories_key, min_score+1, 2*min_score)
-                
+
                 if User.objects.get(pk=user_id).profile.is_archive:
                     user_unread_stories_feed_key = f"uU:{user_id}:{feed_id}"
-                    oldest_unread = r.zrevrange(user_unread_stories_feed_key, -1, -1, withscores=True)
-                    if oldest_unread:
+                    oldest_manual_unread = r.zrevrange(user_unread_stories_feed_key, -1, -1, withscores=True)
+                    if oldest_manual_unread:
                         if order == 'oldest':
-                            min_score = int(oldest_unread[0][1])
+                            min_score = int(oldest_manual_unread[0][1])
                         else:
-                            max_score = int(oldest_unread[0][1])
+                            max_score = int(oldest_manual_unread[0][1])
                             
                         pipeline.zunionstore(unread_ranked_stories_key, [unread_ranked_stories_key, user_unread_stories_feed_key], aggregate="MAX")
+                
+                if settings.DEBUG and False:
+                    debug_stories = r.zrevrange(unread_ranked_stories_key, 0, -1, withscores=True)
+                    print((" ---> Story hashes (%s/%s - %s/%s) %s stories: %s" % (
+                        min_score, datetime.datetime.fromtimestamp(min_score).strftime('%Y-%m-%d %T'),
+                        max_score, datetime.datetime.fromtimestamp(max_score).strftime('%Y-%m-%d %T'),
+                        len(debug_stories),
+                        debug_stories)))
                 
                 byscorefunc(unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps)
                 pipeline.delete(unread_ranked_stories_key)
@@ -260,12 +268,12 @@ class UserSubscription(models.Model):
                 r.delete(unread_stories_key)
                 
             if self.user.profile.is_archive:
-                oldest_unread = self.oldest_unread_story_date()
-                if oldest_unread:
+                oldest_manual_unread = self.oldest_manual_unread_story_date()
+                if oldest_manual_unread:
                     if order == 'oldest':
-                        min_score = int(oldest_unread[0][1])
+                        min_score = int(oldest_manual_unread[0][1])
                     else:
-                        max_score = int(oldest_unread[0][1])
+                        max_score = int(oldest_manual_unread[0][1])
                     user_unread_stories_feed_key = f"uU:{self.user_id}:{self.feed_id}"                        
                     r.zunionstore(unread_ranked_stories_key, [unread_ranked_stories_key, user_unread_stories_feed_key], aggregate="MAX")
             
@@ -280,18 +288,18 @@ class UserSubscription(models.Model):
                 r.delete(unread_ranked_stories_key)
         else:
             if self.user.profile.is_archive:
-                oldest_unread = self.oldest_unread_story_date()
-                if oldest_unread:
+                oldest_manual_unread = self.oldest_manual_unread_story_date()
+                if oldest_manual_unread:
                     if order == 'oldest':
-                        min_score = int(oldest_unread[0][1])
+                        min_score = int(oldest_manual_unread[0][1])
                     else:
-                        max_score = int(oldest_unread[0][1])
+                        max_score = int(oldest_manual_unread[0][1])
 
-        if settings.DEBUG:
+        if settings.DEBUG and False:
             debug_stories = rt.zrevrange(unread_ranked_stories_key, 0, -1, withscores=True)
-            print((" ---> Unread all stories (%s - %s) %s stories: %s" % (
-                min_score,
-                max_score,
+            print((" ---> Unread all stories (%s/%s - %s/%s) %s stories: %s" % (
+                min_score, datetime.datetime.fromtimestamp(min_score).strftime('%Y-%m-%d %T'),
+                max_score, datetime.datetime.fromtimestamp(max_score).strftime('%Y-%m-%d %T'),
                 len(debug_stories),
                 debug_stories)))
         
@@ -389,14 +397,14 @@ class UserSubscription(models.Model):
         user = User.objects.get(pk=user_id)
         return user.profile.days_of_story_hashes
 
-    def oldest_unread_story_date(self, r=None):
+    def oldest_manual_unread_story_date(self, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
         user_unread_stories_feed_key = f"uU:{self.user_id}:{self.feed_id}"
-        oldest_unread = r.zrevrange(user_unread_stories_feed_key, -1, -1, withscores=True)
+        oldest_manual_unread = r.zrevrange(user_unread_stories_feed_key, -1, -1, withscores=True)
         
-        return oldest_unread
+        return oldest_manual_unread
         
     @classmethod
     def truncate_river(cls, user_id, feed_ids, read_filter, cache_prefix=""):
@@ -760,7 +768,7 @@ class UserSubscription(models.Model):
             r.publish(self.user.username, 'story:read:%s' % story_hash)
 
             if self.user.profile.is_archive:
-                RUserUnreadStory.mark_read(self.user_id, self.feed_id, story_hash)
+                RUserUnreadStory.mark_read(self.user_id, story_hash)
 
         r.publish(self.user.username, 'feed:%s' % self.feed_id)
         
