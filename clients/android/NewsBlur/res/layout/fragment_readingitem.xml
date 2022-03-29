@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -76,6 +77,17 @@
                         android:layout_margin="5dp"
                         android:contentDescription="@string/description_menu" />
 
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/reading_item_unread_icon"
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:layout_marginTop="7dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_alignTop="@id/reading_item_title"
+                        android:src="@drawable/g_icn_unread"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+
                     <TextView
                         android:id="@+id/reading_item_title"
                         android:layout_width="match_parent"
@@ -84,7 +96,7 @@
                         android:layout_marginTop="10dp"
                         android:layout_marginRight="16dp"
                         android:layout_toLeftOf="@id/story_context_menu_button"
-                        android:textSize="17sp" />
+                        android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/reading_item_date"
