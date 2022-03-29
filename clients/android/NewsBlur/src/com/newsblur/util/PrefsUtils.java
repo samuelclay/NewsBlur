@@ -141,7 +141,7 @@ public class PrefsUtils {
         s.append("\n");
         s.append("username: ").append(getUserDetails(context).username);
         s.append("\n");
-        s.append("server: ").append(APIConstants.isCustomServer() ? "default" : "custom");
+        s.append("server: ").append(APIConstants.isCustomServer() ? "custom" : "default");
         s.append("\n");
         s.append("speed: ").append(NBSyncService.getSpeedInfo());
         s.append("\n");
