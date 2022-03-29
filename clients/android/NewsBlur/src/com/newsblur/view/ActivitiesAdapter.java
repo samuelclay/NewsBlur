@@ -154,13 +154,17 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
     }
 
     private CharSequence getSharedStoryContent(ActivityDetails activity, String userString) {
+        int activityTitleLength = 0;
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
         stringBuilder.append(userString);
         stringBuilder.append(" ");
         stringBuilder.append(sharedStory);
         stringBuilder.append(" ");
-        stringBuilder.append(activity.title);
-        stringBuilder.append(" ");
+        if (!TextUtils.isEmpty(activity.title)) {
+            activityTitleLength = activity.title.length();
+            stringBuilder.append(activity.title);
+            stringBuilder.append(" ");
+        }
         if (!TextUtils.isEmpty(activity.content)) {
             stringBuilder.append("\n\n\"");
             stringBuilder.append(activity.content);
@@ -168,9 +172,9 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
         }
 
         stringBuilder.setSpan(contentColor, 0, userString.length() + sharedStory.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        stringBuilder.setSpan(linkColor, userString.length() + sharedStory.length() + 2, userString.length() + sharedStory.length() + 2 + activity.title.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        stringBuilder.setSpan(linkColor, userString.length() + sharedStory.length() + 2, userString.length() + sharedStory.length() + 2 + activityTitleLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         if (!TextUtils.isEmpty(activity.content)) {
-            stringBuilder.setSpan(quoteColor, userString.length() + sharedStory.length() + 3 + activity.title.length(), stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            stringBuilder.setSpan(quoteColor, userString.length() + sharedStory.length() + 3 + activityTitleLength, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         return stringBuilder;
     }
