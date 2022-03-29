@@ -620,7 +620,7 @@
                             objectForKey:@"story_feed_id"]];
     NSDictionary *feed = [appDelegate getFeed:feedIdStr];
     
-    if (appDelegate.storyPagesViewController.currentlyTogglingNavigationBar && !appDelegate.storyPagesViewController.isNavigationBarHidden) {
+    if (appDelegate.storyPagesViewController.view.safeAreaInsets.top > 0.0 && appDelegate.storyPagesViewController.currentlyTogglingNavigationBar && !appDelegate.storyPagesViewController.isNavigationBarHidden) {
         yOffset -= 25;
     }
     
