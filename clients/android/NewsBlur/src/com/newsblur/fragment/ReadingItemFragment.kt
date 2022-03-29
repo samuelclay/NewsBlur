@@ -3,6 +3,7 @@ package com.newsblur.fragment
 import android.content.*
 import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
@@ -188,7 +189,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         updateTrainButton()
         updateShareButton()
         updateSaveButton()
-        updateMarkReadButton()
+        updatStoryReadUI()
         setupItemCommentsAndShares()
 
         binding.readingScrollview.registerScrollChangeListener(readingActivity)
@@ -365,12 +366,20 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         else feedUtils.markStoryAsRead(story!!, requireContext())
     }
 
-    private fun updateMarkReadButton() {
+    private fun updatStoryReadUI() {
         if (markStoryReadBehavior == MarkStoryReadBehavior.MANUALLY) {
             readingItemActionsBinding.markReadStoryButton.visibility = View.VISIBLE
             readingItemActionsBinding.markReadStoryButton.setStoryReadState(requireContext(), story!!.read)
         } else {
             readingItemActionsBinding.markReadStoryButton.visibility = View.GONE
+        }
+
+        story?.let {
+            val (typeFace, iconVisibility) =
+                    if (it.read) Typeface.create(binding.readingItemTitle.typeface, Typeface.NORMAL) to View.GONE
+                    else Typeface.create(binding.readingItemTitle.typeface, Typeface.BOLD) to View.VISIBLE
+            binding.readingItemTitle.typeface = typeFace
+            binding.readingItemUnreadIcon.visibility = iconVisibility
         }
     }
 
@@ -647,7 +656,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         if (updateType and UPDATE_STORY != 0) {
             updateSaveButton()
             updateShareButton()
-            updateMarkReadButton()
+            updatStoryReadUI()
             setupItemCommentsAndShares()
         }
         if (updateType and UPDATE_TEXT != 0) {
