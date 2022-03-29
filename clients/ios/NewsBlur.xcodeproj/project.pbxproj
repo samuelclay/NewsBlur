@@ -2980,7 +2980,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1120;
-				LastUpgradeCheck = 1320;
+				LastUpgradeCheck = 1330;
 				ORGANIZATIONNAME = NewsBlur;
 				TargetAttributes = {
 					173CB30C26BCE94700BA872A = {
