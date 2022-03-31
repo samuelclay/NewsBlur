@@ -75,7 +75,8 @@ urlpatterns = [
                             {'next_page': '/'}, name='logout'),
     url(r'^account/ifttt/v1/', include('apps.oauth.urls')),
     url(r'^account/',       include('oauth2_provider.urls', namespace='oauth2_provider')),
-    url(r'^monitor/', include('apps.monitor.urls'), name="monitor")
+    url(r'^monitor/', include('apps.monitor.urls'), name="monitor"),
+    url('', include('django_prometheus.urls')),
 ]
 
 if settings.DEBUG:
