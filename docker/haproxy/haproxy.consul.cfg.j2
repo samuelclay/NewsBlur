@@ -75,6 +75,7 @@ frontend public
     use_backend nginx if { path_beg /favicon }
     use_backend nginx if { path_beg /crossdomain/ }
     use_backend nginx if { path_beg /robots }
+    use_backend metrics if { path_beg /metrics }
     #use_backend self if { path_beg /munin/ }
     use_backend db_metrics if { hdr_end(host) -i metrics.newsblur.com }
     use_backend consul_manager if { hdr_end(host) -i consul.newsblur.com }
@@ -149,6 +150,11 @@ backend node_images
     option httpchk HEAD /sc,sN1megONJiGNy-CCvqzVPTv-TWRhgSKhFlf61XAYESl4=/http:/samuelclay.com/static/images/2019%20-%20Cuba.jpg
     http-check expect rstatus 200|301
     server-template node-images 1 _node-images._tcp.service.nyc1.consul:8088 check inter 2000ms resolvers consul resolve-opts allow-dup-ip
+
+backend metrics
+    option httpchk GET /_haproxychk
+    http-check expect rstatus 200|301
+    server app-django1 app-django1.node.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 backend node_socket
     balance roundrobin
