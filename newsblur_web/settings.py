@@ -93,6 +93,7 @@ ENABLE_PUSH           = True
 PAYPAL_TEST           = False
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880 # 5 MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880 # 5 MB
+PROMETHEUS_EXPORT_MIGRATIONS = False
 
 # Uncomment below to force all feeds to store this many stories. Default is to cut 
 # off at 25 stories for single subscriber non-premium feeds and 500 for popular feeds.
