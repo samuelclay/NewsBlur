@@ -49,7 +49,7 @@ public class StoryTypeAdapter implements JsonDeserializer<Story> {
                 if (httpSniff.matcher(url).find()) {
                     String secureUrl = story.secureImageUrls.get(url);
                     if (APIConstants.isCustomServer() && secureUrl != null && !secureUrl.startsWith("http")) {
-                        secureUrl = APIConstants.getCurrentServerImageProxyBaseUrl() + secureUrl;
+                        secureUrl = APIConstants.buildUrl(APIConstants.PATH_IMAGE_PROXY + secureUrl);
                     }
                     story.content = story.content.replace(url, secureUrl);
                 }
