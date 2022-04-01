@@ -148,7 +148,7 @@ push_monitor:
 push_deploy:
 	- docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
 push_images: push_web push_node push_monitor push_deploy
-push: build push_images
+push: push_images
 
 # Tasks
 deploy_web:

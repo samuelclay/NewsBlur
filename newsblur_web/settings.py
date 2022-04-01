@@ -94,6 +94,7 @@ ENABLE_PUSH           = True
 PAYPAL_TEST           = False
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880 # 5 MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880 # 5 MB
+PROMETHEUS_EXPORT_MIGRATIONS = False
 
 # Uncomment below to force all feeds to store this many stories. Default is to cut 
 # off at 25 stories for single subscriber non-premium feeds and 500 for popular feeds.
@@ -105,6 +106,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880 # 5 MB
 
 
 MIDDLEWARE = (
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'subdomains.middleware.SubdomainMiddleware',
@@ -124,6 +126,7 @@ MIDDLEWARE = (
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
     'utils.mongo_raw_log_middleware.MongoDumpMiddleware',
     'utils.redis_raw_log_middleware.RedisDumpMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -325,6 +328,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'django_prometheus',
     'paypal.standard.ipn',
     'apps.rss_feeds',
     'apps.reader',

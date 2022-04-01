@@ -46,9 +46,9 @@ resource "digitalocean_droplet" "db-consul" {
 }
 
 resource "digitalocean_droplet" "www" {
-  count    = 2
+  count    = 1
   image    = var.droplet_os
-  name     = "www${count.index+1}"
+  name     = "www${count.index+2}"
   region   = var.droplet_region
   size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
