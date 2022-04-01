@@ -196,6 +196,13 @@ public class APIManager {
         return response.getResponse(gson, NewsBlurResponse.class);
     }
 
+    public NewsBlurResponse importOpmlData(String data) {
+	    final ValueMultimap values = new ValueMultimap();
+	    values.put(APIConstants.PARAMETER_DATA, data);
+	    APIResponse response = post(buildUrl(APIConstants.PATH_EXPORT_OPML), values);
+	    return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
 	public RegisterResponse signup(final String username, final String password, final String email) {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USERNAME, username);

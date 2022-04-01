@@ -85,6 +85,7 @@ public class APIConstants {
     public static final String PATH_SAVE_RECEIPT = "/profile/save_android_receipt";
     public static final String PATH_FEED_STATISTICS = "/rss_feeds/statistics_embedded/";
     public static final String PATH_FEED_FAVICON_URL = "/rss_feeds/icon/";
+    public static final String PATH_EXPORT_OPML = "/import/opml_export";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;
@@ -116,6 +117,7 @@ public class APIConstants {
 	public static final String PARAMETER_MARKSOCIAL_JSON = "users_feeds_stories";
 	public static final String PARAMETER_URL = "url";
 	public static final String PARAMETER_DAYS = "days";
+	public static final String PARAMETER_DATA = "data";
 	public static final String PARAMETER_UPDATE_COUNTS = "update_counts";
     public static final String PARAMETER_CUTOFF_TIME = "cutoff_timestamp";
 	public static final String PARAMETER_DIRECTION = "direction";

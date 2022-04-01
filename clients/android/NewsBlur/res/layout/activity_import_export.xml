@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar_newsblur" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_upload"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="64dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_cloud_upload" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:text="Import OPML"
+        android:textSize="18sp" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_download"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="128dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_cloud_download" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:text="Export OPML"
+        android:textSize="18sp" />
+
+</LinearLayout>

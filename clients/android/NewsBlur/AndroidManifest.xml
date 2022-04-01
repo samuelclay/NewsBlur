@@ -70,6 +70,7 @@
             android:name=".activity.Settings"
             android:label="@string/settings"/>
 
+        <activity android:name=".activity.ImportExportActivity" />
         <activity
             android:name=".activity.WidgetConfig"
             android:launchMode="singleTask"
