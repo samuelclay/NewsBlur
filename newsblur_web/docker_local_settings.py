@@ -103,7 +103,7 @@ YOUTUBE_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 DATABASES = {
     'default': {
         'NAME': 'newsblur',
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django_prometheus.db.backends.postgresql',
         #'ENGINE': 'django.db.backends.mysql',
         'USER': 'newsblur',
         'PASSWORD': 'newsblur',

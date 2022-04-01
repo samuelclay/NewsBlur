@@ -33,6 +33,7 @@ services:
     container_name: grafana
     image: grafana/grafana:8.2.6
     environment:
+      - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=pass
     depends_on:
       - prometheus
