@@ -347,6 +347,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		    Intent intent = new Intent(this, MuteConfig.class);
 		    startActivity(intent);
 		    return true;
+        } else if (item.getItemId() == R.id.menu_import_export) {
+		    Intent intent = new Intent(this, ImportExportActivity.class);
+		    startActivity(intent);
+            return true;
         }
 		return false;
     }

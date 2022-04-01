@@ -268,13 +268,16 @@
     <string name="feed_subscribers">%s subscribers</string>
     <string name="feed_opens">%d opens</string>
     <string name="feed_stories_per_month">%d stories/month</string>
-    
+
+    <string name="import_export">Import/Export…</string>
     <string name="settings">Preferences…</string>
     <string name="mute_sites">Mute Sites…</string>
     <string name="widget">Widget…</string>
     <string name="title_widget_setup">Tap to setup in NewsBlur</string>
     <string name="title_no_subscriptions">No active subscriptions detected</string>
     <string name="title_widget_loading">Loading…</string>
+
+    <string name="import_export_title">Import/Export OPML</string>
     
     <string name="premium_subscribers_folder">Reading by folder is only available to</string>
     <string name="premium_subscribers_search">Search is only available to</string>
