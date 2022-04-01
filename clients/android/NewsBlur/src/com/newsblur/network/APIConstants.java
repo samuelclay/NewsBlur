@@ -24,18 +24,10 @@ public class APIConstants {
         return !DEFAULT_NEWSBLUR_URL_BASE.equals(CurrentUrlBase);
     }
 
-    /**
-     * Generates the image proxy base url to be used for loading images
-     * on custom domain configurations when the images have relative urls.
-     * @return custom domain image proxy base url.
-     */
-    public static String getCurrentServerImageProxyBaseUrl() {
-        return CurrentUrlBase + "/imageproxy";
-    }
-
     // TODO: make use of trailing slashes on URLs consistent or document why
     // they are not.
 
+    public static final String PATH_IMAGE_PROXY = "/imageproxy";
 	public static final String PATH_LOGIN = "/api/login";
     public static final String PATH_LOGINAS = "/reader/login_as";
 	public static final String PATH_FEEDS = "/reader/feeds/";
