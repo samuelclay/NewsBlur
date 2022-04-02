@@ -4246,6 +4246,11 @@
 
 - (void)markScrollPosition:(NSInteger)position inStory:(NSDictionary *)story {
     if (position < 0) return;
+    
+    if (position == 0) {
+        position = 1;
+    }
+    
     __block NSNumber *positionNum = @(position);
     __block NSDictionary *storyDict = story;
     
