@@ -1495,6 +1495,11 @@
     }
 }
 
+- (void)realignScroll {
+    hasScrolled = NO;
+    [self scrollToLastPosition:YES];
+}
+
 - (void)scrollToLastPosition:(BOOL)animated {
     if (hasScrolled) return;
     hasScrolled = YES;

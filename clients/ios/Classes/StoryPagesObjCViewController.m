@@ -638,18 +638,15 @@
 }
 
 - (void)reorientPages {
-    [self applyNewIndex:currentPage.pageIndex-1 pageController:previousPage supressRedraw:YES];
-    [self applyNewIndex:currentPage.pageIndex+1 pageController:nextPage supressRedraw:YES];
-    [self applyNewIndex:currentPage.pageIndex pageController:currentPage supressRedraw:YES];
-
     NSInteger currentIndex = currentPage.pageIndex;
     [self resizeScrollView]; // Will change currentIndex, so preserve
     
+    [self applyNewIndex:currentPage.pageIndex-1 pageController:previousPage supressRedraw:YES];
+    [self applyNewIndex:currentPage.pageIndex+1 pageController:nextPage supressRedraw:YES];
+    [self applyNewIndex:currentPage.pageIndex pageController:currentPage supressRedraw:YES];
+    
     // Scroll back to preserved index
     CGRect frame = self.scrollView.bounds;
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        frame = self.scrollView.bounds;
-    }
     
     if (self.isHorizontal) {
         frame.origin.x = frame.size.width * currentIndex;
@@ -663,6 +660,8 @@
 //    NSLog(@"---> Scrolling to story at: %@ %d-%d", NSStringFromCGRect(frame), currentPage.pageIndex, currentIndex);
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [self hideNotifier];
+    
+    [currentPage realignScroll];
 }
 
 - (void)refreshHeaders {
