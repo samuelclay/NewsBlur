@@ -42,6 +42,7 @@
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, strong) IBOutlet UITableView *storyTitlesTable;
 @property (nonatomic) IBOutlet UIBarButtonItem * feedMarkReadButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * feedsBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * settingsBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * spacer2BarButton;
