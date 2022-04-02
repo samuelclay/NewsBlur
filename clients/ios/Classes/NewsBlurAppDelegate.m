@@ -814,18 +814,28 @@
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *behavior = [preferences stringForKey:@"split_behavior"];
     
-    if ([behavior isEqualToString:@"tile"]) {
-        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
-        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
-    } else if ([behavior isEqualToString:@"displace"]) {
-        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
-        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoDisplaceSecondary;
-    } else if ([behavior isEqualToString:@"overlay"]) {
-        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
-        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoOverSecondary;
+    if (self.detailViewController.storyTitlesOnLeft) {
+        if ([behavior isEqualToString:@"tile"]) {
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
+        } else if ([behavior isEqualToString:@"displace"]) {
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoDisplaceSecondary;
+        } else if ([behavior isEqualToString:@"overlay"]) {
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoOverSecondary;
+        } else {
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorAutomatic;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAutomatic;
+        }
     } else {
-        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorAutomatic;
-        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAutomatic;
+        if ([behavior isEqualToString:@"overlay"]) {
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
+        } else {
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoDisplaceSecondary;
+        }
     }
     
     [storyPagesViewController refreshPages];
@@ -840,6 +850,7 @@
         [UIView animateWithDuration:0.5 animations:^{
             [self updateSplitBehavior];
         }];
+        [self.detailViewController updateLayoutWithReload:NO];
     }];
 }
 
@@ -1591,7 +1602,9 @@
         [self adjustStoryDetailWebView];
         [self.feedDetailViewController.storyTitlesTable reloadData];
         
-        [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadFeedDetailView"];
+        if (detailViewController.storyTitlesOnLeft) {
+            [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadFeedDetailView"];
+        }
     }
     
     [self flushQueuedReadStories:NO withCallback:^{
