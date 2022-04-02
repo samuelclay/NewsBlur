@@ -139,6 +139,9 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     [separatorBarButton setEnabled:NO];
     separatorBarButton.isAccessibilityElement = NO;
     
+    self.feedsBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Sites" style:UIBarButtonItemStylePlain target:self action:@selector(doShowFeeds:)];
+    self.feedsBarButton.accessibilityLabel = @"Show Sites";
+    
     UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
     settingsBarButton = [UIBarButtonItem barItemWithImage:settingsImage target:self action:@selector(doOpenSettingsMenu:)];
     settingsBarButton.accessibilityLabel = @"Settings";
@@ -2205,6 +2208,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (BOOL)isInfrequent {
     return appDelegate.storiesCollection.isRiverView &&
     [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"];
+}
+
+- (IBAction)doShowFeeds:(id)sender {
+    [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"showFeeds"];
 }
 
 - (IBAction)doOpenSettingsMenu:(id)sender {
