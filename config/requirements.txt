@@ -46,7 +46,7 @@ future==0.18.2
 gevent==21.1.2
 geventhttpclient==1.4.4
 greenlet==1.1.0
-gunicorn==20.0.4
+gunicorn==20.1.0
 h2==2.6.2
 hiredis==1.1.0
 hpack==3.0.0
