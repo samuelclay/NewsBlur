@@ -428,7 +428,7 @@ class Profile(models.Model):
             return
         
         paypal_opts = {
-            'API_ENVIRONMENT': 'PRODUCTION',
+            'API_ENVIRONMENT': 'PRODUCTION' if not settings.DEBUG else 'SANDBOX',
             'API_USERNAME': settings.PAYPAL_API_USERNAME,
             'API_PASSWORD': settings.PAYPAL_API_PASSWORD,
             'API_SIGNATURE': settings.PAYPAL_API_SIGNATURE,
