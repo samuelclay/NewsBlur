@@ -287,6 +287,8 @@ def paypal_webhooks(request):
 
 def paypal_form(request):
     domain = Site.objects.get_current().domain
+    if settings.DEBUG:
+        domain = "73ee-71-233-245-159.ngrok.io"
     
     paypal_dict = {
         "cmd": "_xclick-subscriptions",
@@ -298,9 +300,9 @@ def paypal_form(request):
         "sra": "1",                        # reattempt payment on payment error
         "no_note": "1",                    # remove extra notes (optional)
         "item_name": "NewsBlur Premium Account",
-        "notify_url": "http://%s%s" % (domain, reverse('paypal-ipn')),
-        "return_url": "http://%s%s" % (domain, reverse('paypal-return')),
-        "cancel_return": "http://%s%s" % (domain, reverse('index')),
+        "notify_url": "https://%s%s" % (domain, reverse('paypal-ipn')),
+        "return_url": "https://%s%s" % (domain, reverse('paypal-return')),
+        "cancel_return": "https://%s%s" % (domain, reverse('index')),
         "custom": request.user.username,
     }
 
