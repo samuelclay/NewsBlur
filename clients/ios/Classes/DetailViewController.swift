@@ -240,12 +240,7 @@ class DetailViewController: BaseViewController {
     
     /// Adjusts the container when autoscrolling. Only applies to iPhone.
     @objc func adjustForAutoscroll() {
-        if UIDevice.current.userInterfaceIdiom == .phone, let controller = storyPagesViewController, !controller.isNavigationBarHidden {
-            topContainerTopConstraint.constant = -44
-        } else {
-            topContainerTopConstraint.constant = 0
-        }
-        
+        adjustTopConstraint()
         updateTheme()
     }
     
@@ -295,6 +290,12 @@ class DetailViewController: BaseViewController {
         updateLayout(reload: false)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        adjustTopConstraint()
+    }
+    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
@@ -302,6 +303,22 @@ class DetailViewController: BaseViewController {
             coordinator.animate { context in
                 self.dividerViewBottomConstraint.constant = self.dividerPosition
             }
+        }
+        
+        adjustTopConstraint()
+    }
+    
+    private func adjustTopConstraint() {
+        if UIDevice.current.userInterfaceIdiom != .phone {
+            if view.window?.windowScene?.traitCollection.horizontalSizeClass == .compact {
+                topContainerTopConstraint.constant = -50
+            } else {
+                topContainerTopConstraint.constant = 0
+            }
+        } else if let controller = storyPagesViewController, !controller.isNavigationBarHidden {
+            topContainerTopConstraint.constant = -44
+        } else {
+            topContainerTopConstraint.constant = 0
         }
     }
     
