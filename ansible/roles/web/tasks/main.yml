@@ -54,6 +54,12 @@
   tags:
     - static
 
+- name: Update to latest NewsBlur Web Docker image
+  become: yes
+  docker_image:
+    name: newsblur/newsblur_python3
+    source: pull
+
 - name: Start NewsBlur Web Docker container
   become: yes
   throttle: 3
