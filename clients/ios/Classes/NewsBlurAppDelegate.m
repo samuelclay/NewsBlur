@@ -1635,8 +1635,12 @@
     
     self.isTryFeedView = YES;
     self.inFindingStoryMode = YES;
+    self.findingStoryStartDate = [NSDate date];
     self.tryFeedStoryId = contentId;
-    self.tryFeedFeedId = nil;
+    self.tryFeedFeedId = feedId;
+    
+    [self.storiesCollection reset];
+    
     storiesCollection.isSocialView = NO;
     storiesCollection.activeFeed = feed;
     storiesCollection.activeFolder = nil;
@@ -1718,8 +1722,11 @@
             } else {
                 [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:self.widgetFolder];
             }
-        } else {
+        } else if (storiesCollection.activeFolder) {
             [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
+        } else {
+            NSString *folder = [self parentFoldersForFeed:self.tryFeedFeedId].firstObject;
+            [self loadFolder:folder feedID:self.tryFeedFeedId];
         }
     } else if (self.tryFeedFeedId && !self.isTryFeedView) {
         [self loadFeed:self.tryFeedFeedId withStory:self.tryFeedStoryId animated:NO];
@@ -3341,7 +3348,7 @@
     
     for (NSString *folderName in self.dictFoldersArray) {
         NSArray *folder = [self.dictFolders objectForKey:folderName];
-        if ([folder containsObject:feedId]) {
+        if ([folder containsObject:feedId] || [folder containsObject:@(feedId.integerValue)]) {
             [folderNames addObject:[self extractFolderName:folderName]];
             [folderNames addObject:[self extractParentFolderName:folderName]];
         }
