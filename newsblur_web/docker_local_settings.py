@@ -21,7 +21,7 @@ SESSION_COOKIE_DOMAIN = 'localhost'
 
 DOCKERBUILD = True
 DEBUG = False
-DEBUG = True
+# DEBUG = True
 
 # DEBUG_ASSETS controls JS/CSS asset packaging. Turning this off requires you to run 
 # `./manage.py collectstatic` first. Turn this on for development so you can see

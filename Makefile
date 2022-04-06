@@ -179,6 +179,8 @@ deploy_staging:
 staging: deploy_staging
 celery_stop:
 	- ansible-playbook ansible/deploy.yml -l task --tags stop
+sentry:
+	- ansible-playbook ansible/setup.yml -l sentry -t sentry
 maintenance_on:
 	- ansible-playbook ansible/deploy.yml -l web --tags maintenance_on
 maintenance_off:

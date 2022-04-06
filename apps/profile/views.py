@@ -322,6 +322,13 @@ def paypal_return(request):
     })
 
 @login_required
+def paypal_archive_return(request):
+
+    return render(request, 'reader/paypal_archive_return.xhtml', {
+        'user_profile': request.user.profile,
+    })
+
+@login_required
 def activate_premium(request):
     return HttpResponseRedirect(reverse('index'))
     
@@ -348,6 +355,36 @@ def profile_is_premium(request):
         
     return {
         'is_premium': profile.is_premium,
+        'is_premium_archive': profile.is_archive,
+        'code': code,
+        'activated_subs': activated_subs,
+        'total_subs': total_subs,
+    }
+
+@ajax_login_required
+@json.json_view
+def profile_is_premium_archive(request):
+    # Check tries
+    code = 0
+    retries = int(request.GET['retries'])
+    profile = Profile.objects.get(user=request.user)
+
+    subs = UserSubscription.objects.filter(user=request.user)
+    total_subs = subs.count()
+    activated_subs = subs.filter(active=True).count()
+    
+    if retries >= 30:
+        code = -1
+        if not request.user.profile.is_premium:
+            subject = "Premium activation failed: %s (%s/%s)" % (request.user, activated_subs, total_subs)
+            message = """User: %s (%s) -- Email: %s""" % (request.user.username, request.user.pk, request.user.email)
+            mail_admins(subject, message)
+            request.user.profile.is_premium = True
+            request.user.profile.save()
+        
+    return {
+        'is_premium': profile.is_premium,
+        'is_premium_archive': profile.is_archive,
         'code': code,
         'activated_subs': activated_subs,
         'total_subs': total_subs,
@@ -539,7 +576,10 @@ def switch_paypal_subscription(request):
     if approve_url:
         return HttpResponseRedirect(approve_url)
 
-    return HttpResponseRedirect(reverse('paypal-return'))
+    paypal_return = reverse('paypal-return')
+    if plan == "archive":
+        paypal_return = reverse('paypal-archive-return')
+    return HttpResponseRedirect(paypal_return)
 
 @login_required
 def stripe_checkout(request):
