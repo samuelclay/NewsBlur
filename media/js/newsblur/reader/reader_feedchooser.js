@@ -364,7 +364,11 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                     onApprove: function (data, actions) {
                         // Full available details
                         console.log('Paypal approve result', data.subscriptionID, JSON.stringify(data, null, 2));
-                        actions.redirect(NEWSBLUR.URLs.paypal_return);
+                        if (plan == "archive") {
+                            actions.redirect(NEWSBLUR.URLs.paypal_archive_return);
+                        } else {
+                            actions.redirect(NEWSBLUR.URLs.paypal_return);
+                        }
                     },
             
                     onError: function (err) {

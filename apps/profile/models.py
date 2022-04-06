@@ -1,5 +1,6 @@
 import time
 import datetime
+from wsgiref.util import application_uri
 import dateutil
 import stripe
 import hashlib
@@ -414,15 +415,21 @@ class Profile(models.Model):
         paypal_api = self.paypal_api()
         if not paypal_api:
             return
-        
+        paypal_return = reverse('paypal-return')
+        if plan == "archive":
+            paypal_return = reverse('paypal-archive-return')
+
         try:
+            application_context = {
+                'shipping_preference': 'NO_SHIPPING',
+            }
+            if settings.DEBUG:
+                application_context['return_url'] = f"https://73ee-71-233-245-159.ngrok.io{paypal_return}"
+            else:
+                application_context['return_url'] = f"https://{Site.objects.get_current().domain}{paypal_return}"
             paypal_subscription = paypal_api.post(f'/v1/billing/subscriptions/{self.paypal_sub_id}/revise', {
                 'plan_id': Profile.plan_to_paypal_plan_id(plan),
-                'application_context': {
-                    'shipping_preference': 'NO_SHIPPING',
-                    'return_url': f"https://{Site.objects.get_current().domain}{reverse('paypal-return')}"
-                    # 'return_url': f"https://bb4a-71-233-245-159.ngrok.io{reverse('paypal-return')}"
-                },
+                'application_context': application_context,
             })
         except paypalrestsdk.ResourceNotFound:
             logging.user(self.user, f"~FRCouldn't find paypal payments: {self.paypal_sub_id} {plan}")
@@ -488,9 +495,12 @@ class Profile(models.Model):
 
                     start_date = datetime.datetime(2009, 1, 1).strftime("%Y-%m-%dT%H:%M:%SZ")
                     end_date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-                    transactions = paypal_api.get(f"/v1/billing/subscriptions/{paypal_id}/transactions?start_time={start_date}&end_time={end_date}")
-                    if 'transactions' not in transactions:
-                        logging.user(self.user, f"~FRCouldn't find paypal transactions: {paypal_id}")
+                    try:
+                        transactions = paypal_api.get(f"/v1/billing/subscriptions/{paypal_id}/transactions?start_time={start_date}&end_time={end_date}")
+                    except paypalrestsdk.exceptions.ResourceNotFound:
+                        transactions = None
+                    if not transactions or 'transactions' not in transactions:
+                        logging.user(self.user, f"~FRCouldn't find paypal transactions: ~SB{paypal_id}")
                         continue
                     for transaction in transactions['transactions']:
                         created = dateutil.parser.parse(transaction['time'])
@@ -567,7 +577,10 @@ class Profile(models.Model):
                 self.save()
 
         if self.premium_renewal != premium_renewal or self.active_provider != active_provider:
-            logging.user(self.user, "~FCTurning ~SB~%s~SN~FC premium renewal (%s)" % ("FRoff" if not premium_renewal else "FBon", active_provider))
+            active_sub_id = self.stripe_id
+            if active_provider == "paypal":
+                active_sub_id = self.paypal_sub_id
+            logging.user(self.user, "~FCTurning ~SB~%s~SN~FC premium renewal (%s: %s)" % ("FRoff" if not premium_renewal else "FBon", active_provider, active_sub_id))
             self.premium_renewal = premium_renewal
             self.active_provider = active_provider
             self.save()
@@ -1562,8 +1575,7 @@ def paypal_signup(sender, **kwargs):
     user.profile.cancel_premium_stripe()
     # user.profile.cancel_premium_paypal(second_most_recent_only=True)
 
-    # Shouldn't be here anymore as the new Paypal REST API uses webhooks
-    assert False
+    assert False, "Shouldn't be here anymore as the new Paypal REST API uses webhooks"
 valid_ipn_received.connect(paypal_signup)
 
 def paypal_payment_history_sync(sender, **kwargs):

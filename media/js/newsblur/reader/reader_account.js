@@ -164,14 +164,8 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     ]),
                     (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-preference NB-preference-premium-renew' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
-                            (NEWSBLUR.Globals.premium_renewal && $.make('div', { className: 'NB-block' }, 'Your premium account is paid until:')),
-                            (!NEWSBLUR.Globals.premium_renewal && $.make('div', { className: 'NB-block' }, 'Your premium account will downgrade on:')),
-                            $.make('div', { className: 'NB-block' }, [
-                                $.make('span', { className: 'NB-raquo' }, '&raquo;'),
-                                ' ',
-                                (NEWSBLUR.Globals.premium_expire && NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire)),
-                                (!NEWSBLUR.Globals.premium_expire && $.make('b', "Never gonna expire. Congrats!"))
-                            ]),
+                            $.make('div', { className: "NB-premium-renewal-details-container" }, this.make_premium_renewal_details()),
+                            $.make('div', { className: 'NB-block NB-premium-expire-container' }, this.make_premium_expire()),
                             $.make('a', { href: '#', className: 'NB-block NB-account-premium-renew NB-modal-submit-button NB-modal-submit-green' }, 'Change your credit card')
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
@@ -189,11 +183,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         ])
                     ]),
                     (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-preference NB-preference-premium-cancel' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            (NEWSBLUR.Globals.premium_renewal && $.make('a', { href: '#', className: 'NB-block NB-account-premium-cancel NB-modal-submit-button NB-modal-submit-red' }, 'Cancel subscription renewal')),
-                            (!NEWSBLUR.Globals.premium_renewal && "Your subscription is no longer active."),
-                            (!NEWSBLUR.Globals.premium_renewal && $.make('a', { href: '#', className: 'NB-block NB-account-premium-renew NB-modal-submit-button NB-modal-submit-green' }, 'Restart your subscription'))
-                        ]),
+                        $.make('div', { className: 'NB-preference-options NB-premium-renewal-container' }, this.make_premium_renewal()),
                         $.make('div', { className: 'NB-preference-label'}, [
                             'Premium renewal'
                         ])
@@ -462,9 +452,47 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         });
     },
     
-    fetch_payment_history: function() {
+    make_premium_expire: function () {
+        return $.make('div', [
+            $.make('span', { className: 'NB-raquo' }, '&raquo;'),
+            ' ',
+            (NEWSBLUR.Globals.premium_expire && NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire)),
+            (!NEWSBLUR.Globals.premium_expire && $.make('b', "Never gonna expire. Congrats!"))
+        ]);
+    },
+
+    make_premium_renewal: function () {
+        return $.make('div', [
+            (NEWSBLUR.Globals.premium_renewal && $.make('a', { href: '#', className: 'NB-block NB-account-premium-cancel NB-modal-submit-button NB-modal-submit-red' }, 'Cancel subscription renewal')),
+            (!NEWSBLUR.Globals.premium_renewal && "Your subscription is no longer active."),
+            (!NEWSBLUR.Globals.premium_renewal && $.make('a', { href: '#', className: 'NB-block NB-account-premium-renew NB-modal-submit-button NB-modal-submit-green' }, 'Restart your subscription'))
+        ]);
+    },
+
+    make_premium_renewal_details: function () {
+        return $.make('div', [
+            (NEWSBLUR.Globals.premium_renewal && $.make('div', { className: 'NB-block' }, 'Your premium account is paid until:')),
+            (!NEWSBLUR.Globals.premium_renewal && $.make('div', { className: 'NB-block' }, 'Your premium account will downgrade on:'))
+        ]);
+    },
+
+    fetch_payment_history: function () {
         this.model.fetch_payment_history(NEWSBLUR.Globals.user_id, _.bind(function(data) {
             var $history = $('.NB-account-payments', this.$modal).empty();
+            
+            if (NEWSBLUR.Globals.premium_renewal != data.premium_renewal) {
+                NEWSBLUR.Globals.premium_renewal = data.premium_renewal;
+                $(".NB-premium-renewal-container", this.$modal).html(this.make_premium_renewal());
+                $(".NB-premium-renewal-details-container", this.$modal).html(this.make_premium_renewal_details());
+            }
+
+            if (NEWSBLUR.Globals.premium_expire != data.premium_expire) {
+                if (data.premium_expire) {
+                    NEWSBLUR.Globals.premium_expire = new Date(data.premium_expire);
+                    $(".NB-premium-expire-container", this.$modal).html(this.make_premium_expire());
+                }
+            }
+
             if (!data.payments || !data.payments.length) {
                 $history.append($.make('li',  { className: 'NB-account-payment' }, [
                     $.make('i', 'No payments found.')
