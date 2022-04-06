@@ -1164,7 +1164,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     feed_ids, folder_title = user_sub_folders.feed_ids_under_folder_slug(folder_slug)
     
     usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids)
-    if feed_ids and user.profile.is_premium:
+    if feed_ids and user.profile.is_archive:
         params = {
             "user_id": user.pk, 
             "feed_ids": feed_ids,
@@ -1262,11 +1262,11 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
             story_data['author_name'] = story['story_authors']
         rss.add_item(**story_data)
     
-    if not user.profile.is_premium:
+    if not user.profile.is_archive:
         story_data = {
-            'title': "You must have a premium account on NewsBlur to have RSS feeds for folders.",
+            'title': "You must have a premium archive subscription on NewsBlur to have RSS feeds for folders.",
             'link': "https://%s" % domain,
-            'description': "You must have a premium account on NewsBlur to have RSS feeds for folders.",
+            'description': "You must have a premium archive subscription on NewsBlur to have RSS feeds for folders.",
             'unique_id': "https://%s/premium_only" % domain,
             'pubdate': localtime_for_timezone(datetime.datetime.now(), user.profile.timezone),
         }
