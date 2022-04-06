@@ -10387,7 +10387,7 @@ form.opml_import_form input {
     height: 16px;
     vertical-align: bottom;
     margin: 0 6px 0 0;
-    float: left;
+    display: inline-block;
 }
 
 .NB-feedchooser-premium-bullets li.NB-1 .NB-feedchooser-premium-bullet-image,
