@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
 #import "NewsBlurAppDelegate.h"
+#import "NewsBlur-Swift.h"
+
 @import WebKit;
 
 @interface TrainerWebView : WKWebView {}

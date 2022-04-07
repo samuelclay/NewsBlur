@@ -95,7 +95,7 @@
     NSString *content = [interaction objectForKey:@"content"];
     NSString *title = [self stripFormatting:[NSString stringWithFormat:@"%@", [interaction objectForKey:@"title"]]];
     NSString *username = [[interaction objectForKey:@"with_user"] objectForKey:@"username"];
-    NSString *time = [[NSString stringWithFormat:@"%@ ago", [interaction objectForKey:@"time_since"]] uppercaseString];
+    NSString *time = [NSString stringWithFormat:@"%@ ago", [interaction objectForKey:@"time_since"]];
     NSString *comment = [NSString stringWithFormat:@"\"%@\"", content];
     NSString *txt;
     
@@ -125,7 +125,7 @@
     [attrStr setAttributes:@{NSParagraphStyleAttributeName: paragraphStyle}
                      range:NSMakeRange(0, [txtWithTime length])];
     
-    [attrStr addAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:13]} range:NSMakeRange(0, [txtWithTime length])];
+    [attrStr addAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Book" size:14]} range:NSMakeRange(0, [txtWithTime length])];
     if (self.highlighted) {
         [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)} range:NSMakeRange(0, [txtWithTime length])];
     } else {
@@ -141,7 +141,7 @@
     [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x666666)} range:[txtWithTime rangeOfString:comment]];
     [attrStr addAttributes:@{NSForegroundColorAttributeName:UIColorFromRGB(0x999999)} range:[txtWithTime rangeOfString:time]];
 
-    [attrStr addAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica" size:11]} range:[txtWithTime rangeOfString:time]];
+    [attrStr addAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Book" size:12]} range:[txtWithTime rangeOfString:time]];
     
     NSRange commentRange = [txtWithTime rangeOfString:comment];
     if (commentRange.location != NSNotFound) {

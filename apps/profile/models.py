@@ -428,7 +428,7 @@ class Profile(models.Model):
             return
         
         paypal_opts = {
-            'API_ENVIRONMENT': 'PRODUCTION',
+            'API_ENVIRONMENT': 'PRODUCTION' if not settings.DEBUG else 'SANDBOX',
             'API_USERNAME': settings.PAYPAL_API_USERNAME,
             'API_PASSWORD': settings.PAYPAL_API_PASSWORD,
             'API_SIGNATURE': settings.PAYPAL_API_SIGNATURE,
@@ -757,6 +757,9 @@ class Profile(models.Model):
         msg.attach_alternative(html, "text/html")
         msg.attach(filename, opml, 'text/xml')
         msg.send(fail_silently=True)
+        
+        from apps.social.models import MActivity
+        MActivity.new_opml_export(user_id=self.user.pk, count=exporter.feed_count, automated=True)
         
         logging.user(self.user, "~BB~FM~SBSending OPML backup email to: %s" % self.user.email)
     

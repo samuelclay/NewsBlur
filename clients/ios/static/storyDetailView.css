@@ -92,39 +92,39 @@
  */
 
 .NB-ipad-wide .NB-header {
-    padding: 1.2em 0;
+    padding: 1em 30px;
 }
 
 .NB-ipad-wide .NB-header .NB-header-inner {
-    margin: 0px 90px;
+    margin: 0px 0px;
 }
 
 .NB-ipad-wide .NB-story {
-    padding: 30px 90px;
+    padding: 20px 30px;
 }
 
 .NB-ipad-wide .NB-share-inner-wrapper {
-    margin: 0 90px;
+    margin: 0 30px;
 }
 
 .NB-ipad-wide#story_pane .NB-story-comments-public-teaser,
 .NB-ipad-wide#story_pane .NB-story-comments-public-header,
 .NB-ipad-wide#story_pane .NB-story-comments-friends-header,
 .NB-ipad-wide#story_pane .NB-story-comments-shares-teaser {
-    padding-left: 90px;
-    padding-right: 90px;
+    padding-left: 30px;
+    padding-right: 30px;
 }
 
 .NB-ipad-wide#story_pane .NB-story-comment {
-    padding: 0 90px 2px 150px;
+    padding: 0 30px 2px 110px;
 }
 
 .NB-ipad-wide#story_pane .NB-story-comment .NB-user-avatar,
 .NB-ipad-wide#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
-    left: 88px;
+    left: 26px;
 }
 .NB-ipad-wide#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
-    left: 108px;
+    left: 45px;
 }
 
 .NB-ipad-wide#story_pane .NB-story-comment .NB-button-wrapper {
@@ -546,9 +546,6 @@ div + p {
 .NB-story img,
 .NB-story video {
     margin: 20px auto;
-    height: auto !important;
-    width: auto;
-    max-width: 100%;
     display: none;
     -webkit-touch-callout: none;
     -webkit-user-select: none; /* Disable selection/copy in the web view */
@@ -580,101 +577,83 @@ div + p {
 }
 
 .NB-story .NB-large-image {
-    max-width: 320px;
     margin-left: -12px !important;
-    width: 320px !important;
+    width: calc(100% + 24px) !important;
     height: auto !important;
 }
 
 .NB-width-375 .NB-story .NB-large-image {
-    max-width: 375px;
     margin-left: -12px !important;
-    width: 375px !important;
+    width: calc(100% + 24px) !important;
 }
 .NB-width-414 .NB-story .NB-large-image {
-    max-width: 414px;
     margin-left: -12px !important;
-    width: 414px !important;
+    width: calc(100% + 24px) !important;
 }
 
 .NB-ipad-narrow .NB-story .NB-large-image {
-    max-width: 500px;
     margin-left: -30px !important;
-    width: 500px !important;
+    width: calc(100% + 60px) !important;
 }
 
 .NB-ipad-narrow.NB-titles-bottom .NB-story .NB-large-image {
-    max-width: 600px;
-    width: 600px !important;
+    width: calc(100% + 24px) !important;
 }
 
 .NB-ipad-pro-12-narrow .NB-story .NB-large-image {
-    max-width: 755px;
     margin-left: -30px !important;
-    width: 755px !important;
+    width: calc(100% + 60px) !important;
 }
 .NB-ipad-pro-12-narrow.NB-width-1024 .NB-story .NB-large-image {
-    max-width: 1024px;
-    width: 1024px !important;
+    width: calc(100% + 60px) !important;
 }
 
 .NB-ipad-pro-10-narrow .NB-story .NB-large-image {
-    max-width: 565px;
     margin-left: -30px !important;
-    width: 565px !important;
+    width: calc(100% + 60px) !important;
 }
 .NB-ipad-pro-10-narrow.NB-width-834 .NB-story .NB-large-image {
-    max-width: 834px;
-    width: 834px !important;
+    width: calc(100% + 60px) !important;
 }
 
 .NB-ipad-wide .NB-story .NB-large-image {
-    max-width: 656px;
-    margin-left: -90px !important;
-    width: 656px !important;
+    margin-left: -30px !important;
+    width: calc(100% + 60px) !important;
 }
 
 .NB-ipad-pro-12-wide .NB-story .NB-large-image {
-    max-width: 997px;
-    margin-left: -90px !important;
-    width: 997px !important;
+    margin-left: -30px !important;
+    width: calc(100% + 60px) !important;
 }
 
 .NB-ipad-pro-10-wide .NB-story .NB-large-image {
-    max-width: 743px;
-    margin-left: -90px !important;
-    width: 743px !important;
+    margin-left: -30px !important;
+    width: calc(100% + 60px) !important;
 }
 
 .NB-iphone-wide .NB-story .NB-large-image {
-    max-width: 568px;
     margin-left: -30px !important;
-    width: 568px !important;
+    width: calc(100% + 60px) !important;
 }
 .NB-width-480 .NB-story .NB-large-image {
-    max-width: 480px;
     margin-left: -30px !important;
-    width: 480px !important;
+    width: calc(100% + 60px) !important;
 }
 .NB-width-667 .NB-story .NB-large-image {
-    max-width: 667px;
     margin-left: -30px !important;
-    width: 667px !important;
+    width: calc(100% + 60px) !important;
 }
 .NB-width-724 .NB-story .NB-large-image {
-    max-width: 724px;
     margin-left: -30px !important;
-    width: 724px !important;
+    width: calc(100% + 60px) !important;
 }
 .NB-width-736 .NB-story .NB-large-image {
-    max-width: 736px;
     margin-left: -30px !important;
-    width: 736px !important;
+    width: calc(100% + 60px) !important;
 }
 .NB-width-768 .NB-story .NB-large-image {
-    max-width: 768px;
     margin-left: -30px !important;
-    width: 768px !important;
+    width: calc(100% + 60px) !important;
 }
 
 .NB-story .NB-small-image {
@@ -832,7 +811,6 @@ a.NB-show-profile {
     font-weight: bold;
     color: rgba(255, 255, 255, .8);
     text-shadow: 0px 1px 0px rgba(0, 0, 0, .1);
-    text-transform: uppercase;
 }
 
 .NB-button.active a,
@@ -1082,7 +1060,6 @@ a.NB-show-profile {
 
 
 #story_pane .NB-story-comment .NB-story-comment-location {
-    text-transform: uppercase;
     font-size: 10px;
     color: rgba(0, 0, 0, .2);
     font-weight: bold;
@@ -1178,7 +1155,6 @@ a.NB-show-profile {
     color: white;
     text-shadow: 0 1px 0 #505050;
     font-weight: bold;
-    text-transform: uppercase;
     font-size: 10px;
     overflow: hidden;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#F5F6F2), to(#E5E6E0));

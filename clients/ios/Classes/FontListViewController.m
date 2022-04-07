@@ -9,7 +9,7 @@
 #import "FontListViewController.h"
 #import "MenuTableViewCell.h"
 #import "NewsBlurAppDelegate.h"
-#import "StoryPageControl.h"
+#import "NewsBlur-Swift.h"
 
 @interface FontListViewController ()
 
@@ -96,7 +96,7 @@
     
     self.selectedIndexPath = indexPath;
     
-    [appDelegate.storyPageControl setFontStyle:style];
+    [appDelegate.storyPagesViewController setFontStyle:style];
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }

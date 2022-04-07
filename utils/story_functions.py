@@ -327,6 +327,10 @@ def create_imageproxy_signed_url(base_url, hmac_key, url, options=None):
     if not isinstance(options, list): options = [options]
     if sys.getdefaultencoding() == 'ascii':
         url = url.encode('utf-8')
+    
+    if url.startswith("data:"):
+        return url
+
     base_url = base_url.rstrip('/')
     signature = base64.urlsafe_b64encode(hmac.new(hmac_key.encode(), msg=url.encode(), digestmod=hashlib.sha256).digest())
     options.append('sc')

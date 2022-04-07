@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
 #import "ABTableViewCell.h"
+#import "NewsBlur-Swift.h"
 
 @interface SiteCell : ABTableViewCell {
     NewsBlurAppDelegate *appDelegate;

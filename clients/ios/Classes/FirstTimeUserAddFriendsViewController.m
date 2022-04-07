@@ -35,8 +35,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
     
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Skip this step" style:UIBarButtonItemStyleDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
@@ -45,43 +45,32 @@
     self.navigationItem.title = @"Friends";
 }
 
-- (void)viewDidUnload {
-    [self setNextButton:nil];
-    [self setFacebookButton:nil];
-    [self setTwitterButton:nil];
-    [self setFacebookActivityIndicator:nil];
-    [self setTwitterActivityIndicator:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 //    [self selectTwitterButton];
     [self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStyleDone];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        return YES;
-    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-        return YES;
-    }
-    
-    return NO;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    // Return YES for supported orientations
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        return YES;
+//    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+//        return YES;
+//    }
+//    
+//    return NO;
+//}
 
 - (IBAction)tapNextButton {
-    [appDelegate.ftuxNavigationController pushViewController:appDelegate.firstTimeUserAddNewsBlurViewController animated:YES];
+    [appDelegate.ftuxNavigationController showViewController:appDelegate.firstTimeUserAddNewsBlurViewController sender:self];
 }
 
 - (IBAction)tapTwitterButton {
     AuthorizeServicesViewController *service = [[AuthorizeServicesViewController alloc] init];
     service.url = @"/oauth/twitter_connect";
     service.type = @"twitter";
-    [appDelegate.ftuxNavigationController pushViewController:service animated:YES];
+    [appDelegate.ftuxNavigationController showViewController:service sender:self];
 }
 
 
@@ -89,7 +78,7 @@
     AuthorizeServicesViewController *service = [[AuthorizeServicesViewController alloc] init];
     service.url = @"/oauth/facebook_connect";
     service.type = @"facebook";
-    [appDelegate.ftuxNavigationController pushViewController:service animated:YES];
+    [appDelegate.ftuxNavigationController showViewController:service sender:self];
 }
 
 

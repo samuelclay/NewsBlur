@@ -19,6 +19,7 @@ certbot.conf
 task_env.py
 app_env.py
 data/
+.prom_cache
 config/certificates
 **/*.xcuserstate
 UserInterfaceState.xcuserstate

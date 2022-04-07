@@ -23,7 +23,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.core.mail import EmailMultiAlternatives
-from django.utils.encoding import smart_bytes
+from django.utils.encoding import smart_bytes, smart_str
 from apps.reader.models import UserSubscription, RUserStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
@@ -1542,7 +1542,17 @@ class MSharedStory(mongo.DynamicDocument):
     @property
     def decoded_story_title(self):
         return pyhtml.unescape(self.story_title)
-        
+
+    @property
+    def story_content_str(self):
+        story_content = self.story_content
+        if not story_content and self.story_content_z:
+            story_content = smart_str(zlib.decompress(self.story_content_z))
+        else:
+            story_content = smart_str(story_content)
+            
+        return story_content
+
     def canonical(self):
         return {
             "user_id": self.user_id,
@@ -3147,7 +3157,7 @@ class MActivity(mongo.Document):
         if categories:
             activities_db = activities_db.filter(category__in=categories)
         if public:
-            activities_db = activities_db.filter(category__nin=['star', 'feedsub'])
+            activities_db = activities_db.filter(category__nin=['star', 'feedsub', 'opml_import', 'opml_export'])
         activities_db = activities_db[offset:offset+limit+1]
         
         has_next_page = len(activities_db) > limit
@@ -3209,6 +3219,28 @@ class MActivity(mongo.Document):
             for dupe in dupes[1:]:
                 dupe.delete()
 
+    @classmethod
+    def new_opml_import(cls, user_id, count):
+        if count <= 0:
+            return
+        
+        params = {
+            "user_id": user_id,
+            "category": 'opml_import',
+            'content': f"You imported an OPML file with {count} sites"
+        }
+        cls.objects.create(**params)
+
+    @classmethod
+    def new_opml_export(cls, user_id, count, automated=False):
+        params = {
+            "user_id": user_id,
+            "category": 'opml_export',
+            'content': f"You exported an OPML backup of {count} subscriptions"
+        }
+        if automated:
+            params['content'] = f"An automatic OPML backup of {count} subscriptions was emailed to you"
+        cls.objects.create(**params)
                            
     @classmethod
     def new_follow(cls, follower_user_id, followee_user_id):
