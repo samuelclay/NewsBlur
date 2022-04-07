@@ -90,6 +90,16 @@
             </div>
         {% endif %}
         
+        {% if activity.category == 'opml_import' or activity.category == 'opml_export' %}
+            <img class="NB-interaction-photo" src="{{ MEDIA_URL }}img/icons/circular/g_icn_folder_rss.png">
+            <div class="NB-interaction-title">
+                {{ activity.content }}
+            </div>
+            <div class="NB-interaction-date">
+                {{ activity.time_since }} ago
+            </div>
+        {% endif %}
+        
     </li>
     {% endfor %}
 </ul>

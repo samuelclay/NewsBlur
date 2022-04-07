@@ -8,14 +8,10 @@
 
 #import "ThemeManager.h"
 #import "NewsBlurAppDelegate.h"
-#import "NBContainerViewController.h"
-#import "NewsBlurViewController.h"
 #import "DashboardViewController.h"
-#import "FeedDetailViewController.h"
-#import "StoryDetailViewController.h"
-#import "StoryPageControl.h"
 #import "OriginalStoryViewController.h"
 #import <AudioToolbox/AudioToolbox.h>
+#import "NewsBlur-Swift.h"
 
 NSString * const ThemeStyleLight = @"light";
 NSString * const ThemeStyleSepia = @"sepia";
@@ -31,11 +27,13 @@ NSString * const ThemeStyleDark = @"dark";
 - (UIStatusBarStyle)preferredStatusBarStyle {
     if ([ThemeManager themeManager].isDarkTheme) {
         return UIStatusBarStyleLightContent;
-    } else if (@available(iOS 13.0, *)) {
-        return UIStatusBarStyleDarkContent;
     } else {
-        return UIStatusBarStyleDefault;
+        return UIStatusBarStyleDarkContent;
     }
+}
+
+- (UIViewController *)childViewControllerForStatusBarStyle {
+    return nil;
 }
 
 @end
@@ -48,6 +46,10 @@ NSString * const ThemeStyleDark = @"dark";
 @end
 
 @implementation ThemeManager
+
++ (instancetype)shared {
+    return [self themeManager];
+}
 
 + (instancetype)themeManager {
     static id themeManager = nil;
@@ -205,7 +207,7 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (UIImage *)themedImage:(UIImage *)image {
-    if ([self.theme isEqualToString:ThemeStyleDark]) {
+    if (self.isDarkTheme) {
         CIImage *coreImage = [CIImage imageWithCGImage:image.CGImage];
         CIFilter *filter = [CIFilter filterWithName:@"CIColorInvert"];
         [filter setValue:coreImage forKey:kCIInputImageKey];
@@ -223,6 +225,16 @@ NSString * const ThemeStyleDark = @"dark";
     }
 }
 
+- (void)updateNavigationController:(UINavigationController *)navigationController {
+    navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    navigationController.navigationBar.barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x222222, 0x111111);
+    navigationController.navigationBar.backgroundColor = [UINavigationBar appearance].backgroundColor;
+}
+
+- (void)updateBackgroundOfView:(UIView *)view {
+    view.backgroundColor = UIColorFromLightDarkRGB(0xe0e0e0, 0x111111);
+}
+
 - (void)updateTextAttributesForSegmentedControl:(UISegmentedControl *)segmentedControl forState:(UIControlState)state foregroundColor:(UIColor *)foregroundColor {
     NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
     NSDictionary *oldAttributes = [segmentedControl titleTextAttributesForState:state];
@@ -238,23 +250,17 @@ NSString * const ThemeStyleDark = @"dark";
 
 - (void)updateSegmentedControl:(UISegmentedControl *)segmentedControl {
     segmentedControl.tintColor = UIColorFromRGB(0x8F918B);
+    segmentedControl.backgroundColor = UIColorFromLightDarkRGB(0xe7e6e7, 0x303030);
+    segmentedControl.selectedSegmentTintColor = UIColorFromLightDarkRGB(0xffffff, 0x6f6f75);
     
-    if (@available(iOS 13.0, *)) {
-        segmentedControl.backgroundColor = UIColorFromLightDarkRGB(0xe7e6e7, 0x303030);
-        segmentedControl.selectedSegmentTintColor = UIColorFromLightDarkRGB(0xffffff, 0x6f6f75);
-        
-        [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateNormal foregroundColor:UIColorFromLightDarkRGB(0x909090, 0xaaaaaa)];
-        [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateSelected foregroundColor:UIColorFromLightDarkRGB(0x0, 0xffffff)];
-    }
+    [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateNormal foregroundColor:UIColorFromLightDarkRGB(0x909090, 0xaaaaaa)];
+    [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateSelected foregroundColor:UIColorFromLightDarkRGB(0x0, 0xffffff)];
 }
 
 - (void)updateThemeSegmentedControl:(UISegmentedControl *)segmentedControl {
     segmentedControl.tintColor = [UIColor clearColor];
-    
-    if (@available(iOS 13.0, *)) {
-        segmentedControl.backgroundColor = [UIColor clearColor];
-        segmentedControl.selectedSegmentTintColor = [UIColor clearColor];
-    }
+    segmentedControl.backgroundColor = [UIColor clearColor];
+    segmentedControl.selectedSegmentTintColor = [UIColor clearColor];
 }
 
 - (void)debugColor:(NSInteger)rgbValue {
@@ -289,9 +295,10 @@ NSString * const ThemeStyleDark = @"dark";
     
     [UINavigationBar appearance].barStyle = style;
     [UINavigationBar appearance].translucent = YES;
-    self.appDelegate.navigationController.navigationBar.barStyle = style;
+    self.appDelegate.feedsNavigationController.navigationBar.barStyle = style;
     
-    [self.appDelegate.navigationController setNeedsStatusBarAppearanceUpdate];
+    [self.appDelegate.feedsNavigationController setNeedsStatusBarAppearanceUpdate];
+    [self.appDelegate.splitViewController setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)updateTheme {
@@ -308,11 +315,12 @@ NSString * const ThemeStyleDark = @"dark";
     
     [self setupTheme];
     
-    [appDelegate.masterContainerViewController updateTheme];
+    [appDelegate.splitViewController updateTheme];
     [appDelegate.feedsViewController updateTheme];
     [appDelegate.dashboardViewController updateTheme];
     [appDelegate.feedDetailViewController updateTheme];
-    [appDelegate.storyPageControl updateTheme];
+    [appDelegate.detailViewController updateTheme];
+    [appDelegate.storyPagesViewController updateTheme];
     [appDelegate.originalStoryViewController updateTheme];
     
     [self updatePreferencesTheme];
@@ -416,11 +424,9 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (void)updateForSystemAppearance {
-    if (@available(iOS 12.0, *)) {
-        BOOL isDark = self.appDelegate.window.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
-        
-        [self systemAppearanceDidChange:isDark];
-    }
+    BOOL isDark = self.appDelegate.window.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+    
+    [self systemAppearanceDidChange:isDark];
 }
 
 - (void)systemAppearanceDidChange:(BOOL)isDark {

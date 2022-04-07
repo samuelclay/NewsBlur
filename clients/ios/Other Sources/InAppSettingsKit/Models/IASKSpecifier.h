@@ -57,6 +57,7 @@
 - (UITextAutocapitalizationType)autocapitalizationType;
 - (UITextAutocorrectionType)autoCorrectionType;
 - (NSString*)footerText;
+- (BOOL)isCritical;
 - (Class)viewControllerClass;
 - (SEL)viewControllerSelector;
 - (NSString*)viewControllerStoryBoardFile;
