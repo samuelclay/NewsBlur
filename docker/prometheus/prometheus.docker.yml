@@ -1,5 +1,5 @@
 global:
-    scrape_interval: 5s
+    scrape_interval: 30s
     external_labels:
         monitor: 'my-monitor'
 
@@ -119,6 +119,13 @@ scrape_configs:
       static_configs:
         - targets: ['haproxy']
       metrics_path: /monitor/users
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'django'
+      static_configs:
+        - targets: ['haproxy']
+      metrics_path: /metrics
       scheme: https
       tls_config:
         insecure_skip_verify: true
