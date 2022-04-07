@@ -28,8 +28,8 @@ urlpatterns = [
     url(r'^rss_feeds/',        include('apps.rss_feeds.urls')),
     url(r'^analyzer/',         include('apps.analyzer.urls')),
     url(r'^classifier/',       include('apps.analyzer.urls')),
-    url(r'^profile/',          include('apps.profile.urls')),
     url(r'^folder_rss/',       include('apps.profile.urls')),
+    url(r'^profile/',          include('apps.profile.urls')),
     url(r'^import/',           include('apps.feed_import.urls')),
     url(r'^api/',              include('apps.api.urls')),
     url(r'^recommendations/',  include('apps.recommendations.urls')),
@@ -75,7 +75,8 @@ urlpatterns = [
                             {'next_page': '/'}, name='logout'),
     url(r'^account/ifttt/v1/', include('apps.oauth.urls')),
     url(r'^account/',       include('oauth2_provider.urls', namespace='oauth2_provider')),
-    url(r'^monitor/', include('apps.monitor.urls'), name="monitor")
+    url(r'^monitor/', include('apps.monitor.urls'), name="monitor"),
+    url('', include('django_prometheus.urls')),
 ]
 
 if settings.DEBUG:

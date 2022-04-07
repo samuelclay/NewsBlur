@@ -4304,10 +4304,6 @@ body {
     display: block;
 }
 
-.audiojs audio {
-    display: none;
-}
-
 /* =============== */
 /* = User Avatar = */
 /* =============== */

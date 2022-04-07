@@ -55,7 +55,6 @@ javascripts:
         - js/vendor/date.format.js
         - js/vendor/tag-it.js
         - js/vendor/chart.js
-        - js/vendor/audio.js
         - js/vendor/push.js
         - js/vendor/socket.io-client.*.js
         - js/vendor/inflector.js
