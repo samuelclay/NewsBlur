@@ -422,6 +422,7 @@ class Profile(models.Model):
         try:
             application_context = {
                 'shipping_preference': 'NO_SHIPPING',
+                'user_action': 'SUBSCRIBE_NOW',
             }
             if settings.DEBUG:
                 application_context['return_url'] = f"https://73ee-71-233-245-159.ngrok.io{paypal_return}"
