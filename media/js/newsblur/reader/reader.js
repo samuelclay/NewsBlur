@@ -6625,11 +6625,11 @@
                 if (!$t.hasClass('NB-disabled')) {
                     self.logout();
                 }
-            });  
+            });
             $.targetIs(e, { tagSelector: '.NB-menu-manage-account' }, function($t, $p){
                 e.preventDefault();
                 
-                if (!$t.hasClass('NB-disabled') && !$($t.context).hasClass('NB-menu-manage-logout')) {
+                if (!$t.hasClass('NB-disabled') && !$($t.prevObject).hasClass('NB-menu-manage-logout')) {
                     $.modal.close(function() {
                         self.open_account_modal();
                     });
