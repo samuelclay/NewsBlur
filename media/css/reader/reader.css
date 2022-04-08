@@ -11220,7 +11220,8 @@ form.opml_import_form input {
 .NB-account-payments .NB-scheduled .NB-account-payment-provider {
     color: darkgrey;
 }
-.NB-account-payments .NB-scheduled.NB-canceled .NB-account-payment-provider {
+.NB-account-payments .NB-scheduled.NB-canceled .NB-account-payment-provider,
+.NB-account-payments .NB-refunded .NB-account-payment-amount {
     text-decoration: line-through;
     color: darkred;
 }
