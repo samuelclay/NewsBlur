@@ -410,7 +410,20 @@ class Profile(models.Model):
         self.setup_premium_history()
         
         return True
-    
+
+    def cancel_and_prorate_existing_paypal_subscriptions(self, data):
+        paypal_api = self.paypal_api()
+        if not paypal_api:
+            return
+        
+        canceled_paypal_sub_id = self.cancel_premium_paypal(cancel_older_subscriptions_only=True)
+        if not canceled_paypal_sub_id:
+            logging.user(self.user, f"~FRCould not cancel and prorate older paypal premium: {data}")
+            return
+
+        if isinstance(canceled_paypal_sub_id, str):
+            self.refund_paypal_payment_from_subscription(canceled_paypal_sub_id, prorate=True)
+
     def switch_paypal_subscription_approval_url(self, plan):
         paypal_api = self.paypal_api()
         if not paypal_api:
@@ -425,15 +438,16 @@ class Profile(models.Model):
                 'user_action': 'SUBSCRIBE_NOW',
             }
             if settings.DEBUG:
-                application_context['return_url'] = f"https://73ee-71-233-245-159.ngrok.io{paypal_return}"
+                application_context['return_url'] = f"https://a6d3-161-77-224-226.ngrok.io{paypal_return}"
             else:
                 application_context['return_url'] = f"https://{Site.objects.get_current().domain}{paypal_return}"
-            paypal_subscription = paypal_api.post(f'/v1/billing/subscriptions/{self.paypal_sub_id}/revise', {
+            paypal_subscription = paypal_api.post(f'/v1/billing/subscriptions', {
                 'plan_id': Profile.plan_to_paypal_plan_id(plan),
+                'custom_id': self.user.pk,
                 'application_context': application_context,
             })
-        except paypalrestsdk.ResourceNotFound:
-            logging.user(self.user, f"~FRCouldn't find paypal payments: {self.paypal_sub_id} {plan}")
+        except paypalrestsdk.ResourceNotFound as e:
+            logging.user(self.user, f"~FRCouldn't create paypal subscription: {self.paypal_sub_id} {plan}: {e}")
             paypal_subscription = None
 
         if not paypal_subscription:
@@ -446,13 +460,14 @@ class Profile(models.Model):
         
         logging.user(self.user, f"~FRFailed to switch paypal subscription: ~FC{paypal_subscription}")
 
-    def store_paypal_sub_id(self, paypal_sub_id):
+    def store_paypal_sub_id(self, paypal_sub_id, skip_save_primary=False):
         if not paypal_sub_id:
             logging.user(self.user, "~FBPaypal sub id not found, ignoring")
             return
-        
-        self.paypal_sub_id = paypal_sub_id
-        self.save()
+
+        if not skip_save_primary or not self.paypal_sub_id:
+            self.paypal_sub_id = paypal_sub_id
+            self.save()
         
         seen_paypal_ids = set(p.paypal_sub_id for p in self.user.paypal_ids.all())
         if paypal_sub_id in seen_paypal_ids:
@@ -504,15 +519,20 @@ class Profile(models.Model):
                         logging.user(self.user, f"~FRCouldn't find paypal transactions: ~SB{paypal_id}")
                         continue
                     for transaction in transactions['transactions']:
+                        import pdb; pdb.set_trace()
                         created = dateutil.parser.parse(transaction['time'])
-                        if transaction['status'] != 'COMPLETED': continue
+                        if transaction['status'] not in ['COMPLETED', 'PARTIALLY_REFUNDED']: continue
                         if created in seen_payments: continue
                         seen_payments.add(created)
                         total_paypal_payments += 1
+                        refunded = None
+                        if transaction['status'] in ['PARTIALLY_REFUNDED', 'REFUNDED']:
+                            refunded = True
                         PaymentHistory.objects.get_or_create(user=self.user,
                                                                 payment_date=created,
                                                                 payment_amount=int(float(transaction['amount_with_breakdown']['gross_amount']['value'])),
-                                                                payment_provider='paypal')
+                                                                payment_provider='paypal',
+                                                                refunded=refunded)
         else:
             logging.user(self.user, "~FBNo Paypal payments")
         
@@ -656,9 +676,11 @@ class Profile(models.Model):
     def refund_premium(self, partial=False, provider=None):
         refunded = False
         if provider == "paypal":
-            refunded = self.refund_latest_paypal_payment(partial=partial)
+            refunded = self.refund_paypal_payment_from_subscription(self.paypal_sub_id, prorate=partial)
+            self.cancel_premium_paypal()
         elif provider == "stripe":
             refunded = self.refund_latest_stripe_payment(partial=partial)
+            # self.cancel_premium_stripe()
         else:
             # Find last payment, refund that
             payment_history = PaymentHistory.objects.filter(user=self.user, 
@@ -667,9 +689,11 @@ class Profile(models.Model):
                 provider = payment_history[0].payment_provider
                 if provider == "stripe":
                     refunded = self.refund_latest_stripe_payment(partial=partial)
+                    # self.cancel_premium_stripe()
                 elif provider == "paypal":
-                    refunded = self.refund_latest_paypal_payment(partial=partial)
-                    
+                    refunded = self.refund_paypal_payment_from_subscription(self.paypal_sub_id, prorate=partial)
+                    self.cancel_premium_paypal()
+
         return refunded
     
     def refund_latest_stripe_payment(self, partial=False):
@@ -691,46 +715,60 @@ class Profile(models.Model):
         logging.user(self.user, "~FRRefunding stripe payment: $%s" % refunded)
         return refunded
     
-    def refund_latest_paypal_payment(self, partial=False):
-        if not self.paypal_sub_id: 
+    def refund_paypal_payment_from_subscription(self, paypal_sub_id, prorate=False):
+        if not paypal_sub_id: 
             return
         
         paypal_api = self.paypal_api()
         refunded = False
 
         # Find transaction from subscription
-        now = datetime.datetime.now()
+        now = datetime.datetime.now() + datetime.timedelta(days=1)
         # 200 days captures Paypal's 180 day limit on refunds
         start_date = (now-datetime.timedelta(days=200)).strftime("%Y-%m-%dT%H:%M:%SZ")
         end_date = now.strftime("%Y-%m-%dT%H:%M:%SZ")
         try:
-            transactions = paypal_api.get(f"/v1/billing/subscriptions/{self.paypal_sub_id}/transactions?start_time={start_date}&end_time={end_date}")
+            transactions = paypal_api.get(f"/v1/billing/subscriptions/{paypal_sub_id}/transactions?start_time={start_date}&end_time={end_date}")
         except paypalrestsdk.ResourceNotFound:
             transactions = {}
         if 'transactions' not in transactions or not len(transactions['transactions']):
-            logging.user(self.user, f"~FRCouldn't find paypal transactions: {self.paypal_sub_id} {transactions}")
+            logging.user(self.user, f"~FRCouldn't find paypal transactions for refund: {paypal_sub_id} {transactions}")
             return
         
         # Refund the latest transaction
         transaction = transactions['transactions'][0]
         today = datetime.datetime.now().strftime('%B %d, %Y')
         url = f"/v2/payments/captures/{transaction['id']}/refund"
+        refund_amount = float(transaction['amount_with_breakdown']['gross_amount']['value'])
+        if prorate:
+            transaction_date = dateutil.parser.parse(transaction['time'])
+            days_since = (datetime.datetime.now() - transaction_date.replace(tzinfo=None)).days
+            if days_since < 365:
+                days_left = (365 - days_since)
+                pct_left = days_left/365
+                refund_amount = pct_left * refund_amount * 0.5
+            else:
+                logging.user(self.user, f"~FRCouldn't prorate paypal payment, too old: ~SB{transaction}")
         try:
             response = paypal_api.post(url, {
-                'reason': f"Refunded on {today}"
+                'reason': f"Refunded on {today}",
+                'amount': {
+                    'currency_code': 'USD',
+                    'value': f"{refund_amount:.2f}",
+                }
             })
         except paypalrestsdk.exceptions.ResourceInvalid as e:
             response = e.response.json()
             if len(response.get('details', [])):
                 response = response['details'][0]['description']
+        if settings.DEBUG:
+            logging.user(self.user, f"Paypal refund response: {response}")
         if 'status' in response and response['status'] == "COMPLETED":
             refunded = int(float(transaction['amount_with_breakdown']['gross_amount']['value']))
             logging.user(self.user, "~FRRefunding paypal payment: $%s" % refunded)
         else:
             logging.user(self.user, "~FRCouldn't refund paypal payment: %s" % response)
             refunded = response
-
-        self.cancel_premium_paypal()
                     
         return refunded
             
@@ -740,12 +778,12 @@ class Profile(models.Model):
         # self.setup_premium_history() # Don't bother, webhooks will force new history
         return stripe_cancel or paypal_cancel
     
-    def cancel_premium_paypal(self):
+    def cancel_premium_paypal(self, cancel_older_subscriptions_only=False):
         self.retrieve_paypal_ids()
         if not self.paypal_sub_id:
             logging.user(self.user, "~FRUser doesn't have a Paypal subscription, how did we get here?")
             return
-        if not self.premium_renewal:
+        if not self.premium_renewal and not cancel_older_subscriptions_only:
             logging.user(self.user, "~FRUser ~SBalready~SN canceled Paypal subscription: %s" % self.paypal_sub_id)
             return
 
@@ -753,6 +791,9 @@ class Profile(models.Model):
         today = datetime.datetime.now().strftime('%B %d, %Y')
         for paypal_id_model in self.user.paypal_ids.all():
             paypal_id = paypal_id_model.paypal_sub_id
+            if cancel_older_subscriptions_only and paypal_id == self.paypal_sub_id:
+                logging.user(self.user, "~FBNot canceling active Paypal subscription: %s" % self.paypal_sub_id)
+                continue
             try:
                 paypal_subscription = paypal_api.get(f'/v1/billing/subscriptions/{paypal_id}')
             except paypalrestsdk.ResourceNotFound:
@@ -769,7 +810,7 @@ class Profile(models.Model):
             # logging.user(self.user, f"response: {response}")
             
             logging.user(self.user, "~FRCanceling Paypal subscription: %s" % paypal_id)
-            return True
+            return paypal_id
 
         return True
         
@@ -1787,10 +1828,11 @@ class PaymentHistory(models.Model):
     payment_amount = models.IntegerField()
     payment_provider = models.CharField(max_length=20)
     payment_identifier = models.CharField(max_length=100, null=True)
+    refunded = models.BooleanField(blank=True, null=True)
     
     def __str__(self):
-        return "[%s] $%s/%s" % (self.payment_date.strftime("%Y-%m-%d"), self.payment_amount,
-                                self.payment_provider)
+        return "[%s] $%s/%s %s" % (self.payment_date.strftime("%Y-%m-%d"), self.payment_amount,
+                                self.payment_provider, "<REFUNDED>" if self.refunded else "")
     class Meta:
         ordering = ['-payment_date']
         

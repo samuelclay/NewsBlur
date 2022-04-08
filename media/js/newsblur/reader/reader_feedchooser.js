@@ -355,7 +355,8 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         return actions.subscription.create({
                             'plan_id': plan_id,
                             'application_context': {
-                                shipping_preference: 'NO_SHIPPING'
+                                'shipping_preference': 'NO_SHIPPING',
+                                'user_action': 'SUBSCRIBE_NOW'
                             },
                             'custom_id': NEWSBLUR.Globals.user_id
                         });

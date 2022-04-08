@@ -265,7 +265,11 @@ def paypal_webhooks(request):
     logging.user(request, f" ---> {data['event_type']}:")
     from pprint import pprint; pprint(data)
     
-    if data['event_type'] in ["BILLING.SUBSCRIPTION.ACTIVATED", "BILLING.SUBSCRIPTION.UPDATED"]:
+    if data['event_type'] == "BILLING.SUBSCRIPTION.CREATED":
+        # Don't start a subscription but save it in case the payment comes before the subscription activation
+        user = User.objects.get(pk=int(data['resource']['custom_id']))
+        user.profile.store_paypal_sub_id(data['resource']['id'], skip_save_primary=True)
+    elif data['event_type'] in ["BILLING.SUBSCRIPTION.ACTIVATED", "BILLING.SUBSCRIPTION.UPDATED"]:
         user = User.objects.get(pk=int(data['resource']['custom_id']))
         user.profile.store_paypal_sub_id(data['resource']['id'])
         plan_id = data['resource']['plan_id']
@@ -276,6 +280,8 @@ def paypal_webhooks(request):
         elif plan_id == Profile.plan_to_paypal_plan_id('pro'):
             user.profile.activate_pro()
         user.profile.cancel_premium_stripe()
+        if data['event_type'] == "BILLING.SUBSCRIPTION.ACTIVATED":
+            user.profile.cancel_and_prorate_existing_paypal_subscriptions(data)
     elif data['event_type'] == "PAYMENT.SALE.COMPLETED":
         user = User.objects.get(pk=int(data['resource']['custom']))
         user.profile.setup_premium_history()
