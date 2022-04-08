@@ -10166,8 +10166,15 @@ form.opml_import_form input {
 /*     -moz-box-shadow:0 2px 0 #1a5e0e;*/
 /*    box-shadow:0 2px 0 #1a5e0e;*/
 }
+.NB-modal-feedchooser .NB-premium-prorate-message {
+    font-size: 1em;
+    color: rgba(0,0,0,0.5);
+    text-transform: none;
+    padding: 6px 32px 0;
+}
 .NB-modal-feedchooser .NB-creditcards {
     width: 100%;
+    margin: 8px 0 0;
 }
 .NB-modal-feedchooser .NB-creditcards img {
     width: 24px;

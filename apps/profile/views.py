@@ -285,6 +285,9 @@ def paypal_webhooks(request):
     elif data['event_type'] == "PAYMENT.SALE.COMPLETED":
         user = User.objects.get(pk=int(data['resource']['custom']))
         user.profile.setup_premium_history()
+    elif data['event_type'] == "PAYMENT.CAPTURE.REFUNDED":
+        user = User.objects.get(pk=int(data['resource']['custom_id']))
+        user.profile.setup_premium_history()
     elif data['event_type'] in ["BILLING.SUBSCRIPTION.CANCELLED", "BILLING.SUBSCRIPTION.SUSPENDED"]:
         user = User.objects.get(pk=int(data['resource']['custom_id']))
         user.profile.setup_premium_history()
