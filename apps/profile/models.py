@@ -519,9 +519,8 @@ class Profile(models.Model):
                         logging.user(self.user, f"~FRCouldn't find paypal transactions: ~SB{paypal_id}")
                         continue
                     for transaction in transactions['transactions']:
-                        import pdb; pdb.set_trace()
                         created = dateutil.parser.parse(transaction['time'])
-                        if transaction['status'] not in ['COMPLETED', 'PARTIALLY_REFUNDED']: continue
+                        if transaction['status'] not in ['COMPLETED', 'PARTIALLY_REFUNDED', 'REFUNDED']: continue
                         if created in seen_payments: continue
                         seen_payments.add(created)
                         total_paypal_payments += 1
@@ -561,10 +560,14 @@ class Profile(models.Model):
                     if created in seen_payments: continue
                     seen_payments.add(created)
                     total_stripe_payments += 1
+                    refunded = None
+                    if payment.refunded:
+                        refunded = True
                     PaymentHistory.objects.get_or_create(user=self.user,
                                                          payment_date=created,
                                                          payment_amount=payment.amount / 100.0,
-                                                         payment_provider='stripe')
+                                                         payment_provider='stripe',
+                                                         refunded=refunded)
         else:
             logging.user(self.user, "~FBNo Stripe payments")
 
@@ -746,7 +749,7 @@ class Profile(models.Model):
             if days_since < 365:
                 days_left = (365 - days_since)
                 pct_left = days_left/365
-                refund_amount = pct_left * refund_amount * 0.5
+                refund_amount = pct_left * refund_amount
             else:
                 logging.user(self.user, f"~FRCouldn't prorate paypal payment, too old: ~SB{transaction}")
         try:
@@ -765,7 +768,7 @@ class Profile(models.Model):
             logging.user(self.user, f"Paypal refund response: {response}")
         if 'status' in response and response['status'] == "COMPLETED":
             refunded = int(float(transaction['amount_with_breakdown']['gross_amount']['value']))
-            logging.user(self.user, "~FRRefunding paypal payment: $%s" % refunded)
+            logging.user(self.user, "~FRRefunding paypal payment: $%s/%s" % (refund_amount, refunded))
         else:
             logging.user(self.user, "~FRCouldn't refund paypal payment: %s" % response)
             refunded = response
@@ -1841,6 +1844,7 @@ class PaymentHistory(models.Model):
             'payment_date': self.payment_date.strftime('%Y-%m-%d'),
             'payment_amount': self.payment_amount,
             'payment_provider': self.payment_provider,
+            'refunded': self.refunded,
         }
     
     @classmethod

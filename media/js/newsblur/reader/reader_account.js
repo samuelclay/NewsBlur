@@ -503,7 +503,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 }
                 _.each(data.payments, function (payment) {
                     var date = new Date(payment.payment_date);
-                    $history.append($.make('li', { className: 'NB-account-payment ' + (payment.scheduled ? 'NB-scheduled' : '') }, [
+                    $history.append($.make('li', { className: 'NB-account-payment ' + (payment.scheduled ? ' NB-scheduled' : '') + (payment.refunded ? ' NB-refunded' : '') }, [
                         $.make('div', { className: 'NB-account-payment-date' }, date.format("F d, Y")),
                         $.make('div', { className: 'NB-account-payment-amount' }, "$" + payment.payment_amount),
                         $.make('div', { className: 'NB-account-payment-provider' }, payment.payment_provider)
