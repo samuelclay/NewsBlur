@@ -258,8 +258,9 @@ class Profile(models.Model):
         if never_expire:
             self.premium_expire = None
             self.save()
-        
-        logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
+
+        if not was_premium:
+            logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
         
         return True
     
@@ -303,8 +304,9 @@ class Profile(models.Model):
         if never_expire:
             self.premium_expire = None
             self.save()
-        
-        logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ~BBARCHIVE~BY ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
+
+        if not was_archive:
+            logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ~BBARCHIVE~BY ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
         
         return True
     
@@ -349,8 +351,9 @@ class Profile(models.Model):
         if never_expire:
             self.premium_expire = None
             self.save()
-        
-        logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ~BGPRO~BY ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
+
+        if not was_pro:
+            logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ~BGPRO~BY ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
         
         return True
     
@@ -778,7 +781,7 @@ class Profile(models.Model):
     def cancel_premium(self):
         paypal_cancel = self.cancel_premium_paypal()
         stripe_cancel = self.cancel_premium_stripe()
-        # self.setup_premium_history() # Don't bother, webhooks will force new history
+        self.setup_premium_history() # Sure, webhooks will force new history, but they take forever
         return stripe_cancel or paypal_cancel
     
     def cancel_premium_paypal(self, cancel_older_subscriptions_only=False):

@@ -122,12 +122,12 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                     $.make('div', { className: 'NB-payment-providers' }, [
                         (!NEWSBLUR.Globals.is_premium && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
                             $.make('div', { className: 'NB-provider-main' }, [
-                                $creditcards.clone(),
                                 $.make('div', {
                                     className: "NB-provider-button-premium NB-modal-submit-button NB-modal-submit-green"
                                 }, [
                                     "Upgrade to Premium"
-                                ])
+                                ]),
+                                $creditcards.clone()
                             ]),
                             $.make('div', { className: 'NB-feedchooser-or-bar' }),
                             $.make("div", { className: "NB-provider-alternate" }, [
@@ -159,8 +159,8 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                             $.make("div", { className: "NB-provider-alternate" }, [
                                 (NEWSBLUR.Globals.active_provider != "paypal" && "subscribe with "),
                                 (NEWSBLUR.Globals.active_provider != "paypal" && $.make("div", { className: "NB-splash-link NB-paypal-button", "data-plan": "premium" }, "")),
-                                (NEWSBLUR.Globals.active_provider == "paypal" && $creditcards.clone()),
-                                (NEWSBLUR.Globals.active_provider == "paypal" && $.make("div", { className: "NB-stripe-button-switch-premium NB-modal-submit-button NB-modal-submit-green" }, "Switch to Credit Card"))
+                                (NEWSBLUR.Globals.active_provider == "paypal" && $.make("div", { className: "NB-stripe-button-switch-premium NB-modal-submit-button NB-modal-submit-green" }, "Switch to Credit Card")),
+                                (NEWSBLUR.Globals.active_provider == "paypal" && $creditcards.clone())
                             ])
                         ])),
                         (NEWSBLUR.Globals.is_premium && !NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro && NEWSBLUR.Globals.premium_renewal && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
@@ -175,8 +175,8 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                             $.make("div", { className: "NB-provider-alternate" }, [
                                 (NEWSBLUR.Globals.active_provider != "paypal" && "subscribe with "),
                                 (NEWSBLUR.Globals.active_provider != "paypal" && $.make("div", { className: "NB-splash-link NB-paypal-button", "data-plan": "premium" }, "")),
-                                (NEWSBLUR.Globals.active_provider == "paypal" && $creditcards.clone()),
-                                (NEWSBLUR.Globals.active_provider == "paypal" && $.make("div", { className: "NB-stripe-button-switch-premium NB-modal-submit-button NB-modal-submit-green" }, "Switch to Credit Card"))
+                                (NEWSBLUR.Globals.active_provider == "paypal" && $.make("div", { className: "NB-stripe-button-switch-premium NB-modal-submit-button NB-modal-submit-green" }, "Switch to Credit Card")),
+                                (NEWSBLUR.Globals.active_provider == "paypal" && $creditcards.clone())
                             ])
                         ]))
                     ])
@@ -224,14 +224,15 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                                 }, [
                                     "Upgrade to Premium Archive",
                                     (NEWSBLUR.Globals.active_provider == "paypal" && " with PayPal")
-                                ])
+                                ]),
+                                this.make_premium_archive_prorate_message(),
                             ]),
                             $.make('div', { className: 'NB-feedchooser-or-bar' }),
                             $.make("div", { className: "NB-provider-alternate" }, [
                                 (NEWSBLUR.Globals.active_provider != "paypal" && "subscribe with "),
                                 (NEWSBLUR.Globals.active_provider != "paypal" && $.make("div", { className: "NB-splash-link NB-paypal-button", "data-plan": "archive" }, "")),
-                                (NEWSBLUR.Globals.active_provider == "paypal" && $creditcards),
-                                (NEWSBLUR.Globals.active_provider == "paypal" && $.make("div", { className: "NB-stripe-button-switch-archive NB-modal-submit-button NB-modal-submit-green" }, "Switch to Credit Card"))
+                                (NEWSBLUR.Globals.active_provider == "paypal" && $.make("div", { className: "NB-stripe-button-switch-archive NB-modal-submit-button NB-modal-submit-green" }, "Switch to Credit Card")),
+                                (NEWSBLUR.Globals.active_provider == "paypal" && $creditcards)
                             ])
                             // $.make('div', { className: "NB-provider-note" }, "Note: Due to the intricacies of PayPal integration, you will be charged the full amount. If you switch to credit card, you will only be charged a prorated amount.")
                         ])),
@@ -258,8 +259,8 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                             $.make("div", { className: "NB-provider-alternate" }, [
                                 (NEWSBLUR.Globals.active_provider != "paypal" && "subscribe with "),
                                 (NEWSBLUR.Globals.active_provider != "paypal" && $.make("div", { className: "NB-splash-link NB-paypal-button", "data-plan": "archive" }, "")),
-                                (NEWSBLUR.Globals.active_provider == "paypal" && $creditcards.clone()),
-                                (NEWSBLUR.Globals.active_provider == "paypal" && $.make("div", { className: "NB-stripe-button-switch-archive NB-modal-submit-button NB-modal-submit-green" }, "Switch to Credit Card"))
+                                (NEWSBLUR.Globals.active_provider == "paypal" && $.make("div", { className: "NB-stripe-button-switch-archive NB-modal-submit-button NB-modal-submit-green" }, "Switch to Credit Card")),
+                                (NEWSBLUR.Globals.active_provider == "paypal" && $creditcards.clone())
                             ])
                         ])),
                         (NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro && NEWSBLUR.Globals.premium_renewal && $.make("div", { className: "NB-feedchooser-premium-upgrade" }, [
@@ -274,8 +275,8 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                             $.make("div", { className: "NB-provider-alternate" }, [
                                 (NEWSBLUR.Globals.active_provider != "paypal" && "subscribe with "),
                                 (NEWSBLUR.Globals.active_provider != "paypal" && $.make("div", { className: "NB-splash-link NB-paypal-button", "data-plan": "archive" }, "")),
-                                (NEWSBLUR.Globals.active_provider == "paypal" && $creditcards.clone()),
-                                (NEWSBLUR.Globals.active_provider == "paypal" && $.make("div", { className: "NB-stripe-button-switch-archive NB-modal-submit-button NB-modal-submit-green" }, "Switch to Credit Card"))
+                                (NEWSBLUR.Globals.active_provider == "paypal" && $.make("div", { className: "NB-stripe-button-switch-archive NB-modal-submit-button NB-modal-submit-green" }, "Switch to Credit Card")),
+                                (NEWSBLUR.Globals.active_provider == "paypal" && $creditcards.clone())
                             ])
                         ]))
                     ])
@@ -322,6 +323,12 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         ]);
     },
     
+    make_premium_archive_prorate_message: function () {
+        if (!_.contains(["paypal", "stripe"], NEWSBLUR.Globals.active_provider))
+            return;
+        return $.make('div', { className: "NB-premium-prorate-message" }, "Your existing subscription will be prorated");
+    },
+
     make_paypal_button: function() {
         jQuery.ajax({
             type: "GET",
