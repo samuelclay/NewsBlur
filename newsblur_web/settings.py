@@ -638,14 +638,22 @@ AWS_SECRET_ACCESS_KEY = S3_SECRET
 os.environ["AWS_ACCESS_KEY_ID"] = AWS_ACCESS_KEY_ID
 os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
 
-def custom_show_toolbar(request):
-    return DEBUG
+def clear_prometheus_aggregation_stats():
+    prom_folder = '/srv/newsblur/.prom_cache'
+    os.makedirs(prom_folder, exist_ok=True)
+    os.environ['PROMETHEUS_MULTIPROC_DIR'] = prom_folder
+    for filename in os.listdir(prom_folder):
+        file_path = os.path.join(prom_folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print('Failed to delete %s. Reason: %s' % (file_path, e))
 
-DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': True,
-    'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
-    'HIDE_DJANGO_SQL': False,
-}
+
+clear_prometheus_aggregation_stats()
 
 if DEBUG:
     template_loaders = [
