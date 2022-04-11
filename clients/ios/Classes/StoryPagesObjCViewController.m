@@ -661,7 +661,9 @@
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [self hideNotifier];
     
-    [currentPage realignScroll];
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        [currentPage realignScroll];
+    }
 }
 
 - (void)refreshHeaders {
