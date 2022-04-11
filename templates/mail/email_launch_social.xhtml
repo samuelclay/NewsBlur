@@ -16,7 +16,7 @@
 {% if user.profile.is_premium %}
             <li style="line-height:22px;"><img src="https://{% current_domain %}/media/img/reader/hamburger_l.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <b>Thank you, thank you, thank you</b> for going premium!</li>
 {% else %}
-            <li style="line-height:22px;"><img src="https://{% current_domain %}/media/img/reader/hamburger_l.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <a href="https://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser" style="text-decoration:none">Upgrade to a premium account for only $12/year</a>.</li>
+            <li style="line-height:22px;"><img src="https://{% current_domain %}/media/img/reader/hamburger_l.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <a href="https://{% current_domain %}{{ user.profile.autologin_url }}?next=premium" style="text-decoration:none">Upgrade to a premium account for only $12/year</a>.</li>
 {% endif %}
         </ul>
     </p>
