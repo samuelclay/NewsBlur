@@ -189,7 +189,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         updateTrainButton()
         updateShareButton()
         updateSaveButton()
-        updatStoryReadUI()
+        updateMarkStoryReadButton()
         setupItemCommentsAndShares()
 
         binding.readingScrollview.registerScrollChangeListener(readingActivity)
@@ -366,14 +366,16 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         else feedUtils.markStoryAsRead(story!!, requireContext())
     }
 
-    private fun updatStoryReadUI() {
+    private fun updateMarkStoryReadButton() {
         if (markStoryReadBehavior == MarkStoryReadBehavior.MANUALLY) {
             readingItemActionsBinding.markReadStoryButton.visibility = View.VISIBLE
             readingItemActionsBinding.markReadStoryButton.setStoryReadState(requireContext(), story!!.read)
         } else {
             readingItemActionsBinding.markReadStoryButton.visibility = View.GONE
         }
+    }
 
+    private fun updateStoryReadState() {
         story?.let {
             val (typeFace, iconVisibility) =
                     if (it.read) Typeface.create(binding.readingItemTitle.typeface, Typeface.NORMAL) to View.GONE
@@ -656,7 +658,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         if (updateType and UPDATE_STORY != 0) {
             updateSaveButton()
             updateShareButton()
-            updatStoryReadUI()
+            updateStoryReadState()
             setupItemCommentsAndShares()
         }
         if (updateType and UPDATE_TEXT != 0) {
