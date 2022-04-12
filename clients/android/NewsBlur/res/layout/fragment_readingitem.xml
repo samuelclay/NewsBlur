@@ -79,11 +79,11 @@
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/reading_item_unread_icon"
-                        android:layout_width="10dp"
-                        android:layout_height="10dp"
-                        android:layout_marginTop="7dp"
-                        android:layout_marginStart="4dp"
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
                         android:layout_alignTop="@id/reading_item_title"
+                        android:layout_alignBottom="@+id/reading_item_title"
+                        android:layout_marginStart="5dp"
                         android:src="@drawable/g_icn_unread"
                         android:visibility="gone"
                         tools:visibility="visible" />
