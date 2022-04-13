@@ -76,23 +76,33 @@ class FetchFeed:
         """
         start = time.time()
         identity = self.get_identity()
-        log_msg = '%2s ---> [%-30s] ~FYFetching feed (~FB%d~FY), last update: %s' % (
-            identity,
-            self.feed.log_title[:30],
-            self.feed.id,
-            datetime.datetime.now() - self.feed.last_update,
-        )
+        if self.options.get('archive_page', None):
+            log_msg = '%2s ---> [%-30s] ~FYFetching feed (~FB%d~FY) ~BG~FMarchive page~ST~FY: ~SB%s' % (
+                identity,
+                self.feed.log_title[:30],
+                self.feed.id,
+                self.options['archive_page'],
+            )
+        else:
+            log_msg = '%2s ---> [%-30s] ~FYFetching feed (~FB%d~FY), last update: %s' % (
+                identity,
+                self.feed.log_title[:30],
+                self.feed.id,
+                datetime.datetime.now() - self.feed.last_update,
+            )
         logging.debug(log_msg)
 
         etag = self.feed.etag
         modified = self.feed.last_modified.utctimetuple()[:7] if self.feed.last_modified else None
         address = self.feed.feed_address
 
-        if self.options.get('force') or random.random() <= 0.01:
+        if self.options.get('force') or self.options.get('archive_page', None) or random.random() <= 0.01:
             self.options['force'] = True
             modified = None
             etag = None
-            if address.startswith('http'):
+            if self.options.get('archive_page', None):
+                address = qurl(address, add={self.options['archive_page_key']: self.options['archive_page']})
+            elif address.startswith('http'):
                 address = qurl(address, add={"_": random.randint(0, 10000)})
             logging.debug('   ---> [%-30s] ~FBForcing fetch: %s' % (self.feed.log_title[:30], address))
         elif not self.feed.fetched_once or not self.feed.known_good:
@@ -447,6 +457,7 @@ class ProcessFeed:
         self.options = options
         self.fpf = fpf
         self.raw_feed = raw_feed
+        self.archive_seen_story_hashes = set()
 
     def refresh_feed(self):
         self.feed = Feed.get_by_id(self.feed_id)
@@ -459,6 +470,156 @@ class ProcessFeed:
         start = time.time()
         self.refresh_feed()
 
+        if not self.options.get('archive_page', None):
+            feed_status, ret_values = self.verify_feed_integrity()
+            if feed_status and ret_values:
+                return feed_status, ret_values
+        
+        self.fpf.entries = self.fpf.entries[:100]
+
+        if not self.options.get('archive_page', None):
+            self.compare_feed_attribute_changes()
+
+        # Determine if stories aren't valid and replace broken guids
+        guids_seen = set()
+        permalinks_seen = set()
+        for entry in self.fpf.entries:
+            guids_seen.add(entry.get('guid'))
+            permalinks_seen.add(Feed.get_permalink(entry))
+        guid_difference = len(guids_seen) != len(self.fpf.entries)
+        single_guid = len(guids_seen) == 1
+        replace_guids = single_guid and guid_difference
+        permalink_difference = len(permalinks_seen) != len(self.fpf.entries)
+        single_permalink = len(permalinks_seen) == 1
+        replace_permalinks = single_permalink and permalink_difference
+
+        # Compare new stories to existing stories, adding and updating
+        start_date = datetime.datetime.utcnow()
+        day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+        story_hashes = []
+        stories = []
+        for entry in self.fpf.entries:
+            story = pre_process_story(entry, self.fpf.encoding)
+            if not story['title'] and not story['story_content']:
+                continue
+            if self.options.get('archive_page', None) and story.get('published') > day_ago:
+                # Arbitrary but necessary to prevent broken feeds from creating an unlimited number of stories
+                # because they don't have a guid so it gets auto-generated based on the date, and if the story
+                # is missing a date, then the latest date gets used. So reject anything newer than 24 hours old
+                # when filling out the archive.
+                logging.debug(f"   ---> [%-30s] ~FBTossing story because it's too new for the archive: ~SB{story}")
+                continue
+            if story.get('published') < start_date:
+                start_date = story.get('published')
+            if replace_guids:
+                if replace_permalinks:
+                    new_story_guid = str(story.get('published'))
+                    if self.options['verbose']:
+                        logging.debug(
+                            '   ---> [%-30s] ~FBReplacing guid (%s) with timestamp: %s'
+                            % (self.feed.log_title[:30], story.get('guid'), new_story_guid)
+                        )
+                    story['guid'] = new_story_guid
+                else:
+                    new_story_guid = Feed.get_permalink(story)
+                    if self.options['verbose']:
+                        logging.debug(
+                            '   ---> [%-30s] ~FBReplacing guid (%s) with permalink: %s'
+                            % (self.feed.log_title[:30], story.get('guid'), new_story_guid)
+                        )
+                    story['guid'] = new_story_guid
+            story['story_hash'] = MStory.feed_guid_hash_unsaved(self.feed.pk, story.get('guid'))
+            stories.append(story)
+            story_hashes.append(story.get('story_hash'))
+
+        original_story_hash_count = len(story_hashes)
+        story_hashes_in_unread_cutoff = self.feed.story_hashes_in_unread_cutoff[:original_story_hash_count]
+        story_hashes.extend(story_hashes_in_unread_cutoff)
+        story_hashes = list(set(story_hashes))
+        if self.options['verbose'] or settings.DEBUG:
+            logging.debug(
+                '   ---> [%-30s] ~FBFound ~SB%s~SN guids, adding ~SB%s~SN/%s guids from db'
+                % (
+                    self.feed.log_title[:30],
+                    original_story_hash_count,
+                    len(story_hashes) - original_story_hash_count,
+                    len(story_hashes_in_unread_cutoff),
+                )
+            )
+
+        existing_stories = dict(
+            (s.story_hash, s)
+            for s in MStory.objects(
+                story_hash__in=story_hashes,
+                # story_date__gte=start_date,
+                # story_feed_id=self.feed.pk
+            )
+        )
+        # if len(existing_stories) == 0:
+        #     existing_stories = dict((s.story_hash, s) for s in MStory.objects(
+        #         story_date__gte=start_date,
+        #         story_feed_id=self.feed.pk
+        #     ))
+
+        ret_values = self.feed.add_update_stories(
+            stories,
+            existing_stories,
+            verbose=self.options['verbose'],
+            updates_off=self.options['updates_off'],
+        )
+
+        # PubSubHubbub
+        if not self.options.get('archive_page', None):
+            self.check_feed_for_push()
+
+        # Push notifications
+        if ret_values['new'] > 0 and MUserFeedNotification.feed_has_users(self.feed.pk) > 0:
+            QueueNotifications.delay(self.feed.pk, ret_values['new'])
+
+        # All Done
+        logging.debug(
+            '   ---> [%-30s] ~FYParsed Feed: %snew=%s~SN~FY %sup=%s~SN same=%s%s~SN %serr=%s~SN~FY total=~SB%s'
+            % (
+                self.feed.log_title[:30],
+                '~FG~SB' if ret_values['new'] else '',
+                ret_values['new'],
+                '~FY~SB' if ret_values['updated'] else '',
+                ret_values['updated'],
+                '~SB' if ret_values['same'] else '',
+                ret_values['same'],
+                '~FR~SB' if ret_values['error'] else '',
+                ret_values['error'],
+                len(self.fpf.entries),
+            )
+        )
+        self.feed.update_all_statistics(has_new_stories=bool(ret_values['new']), force=self.options['force'])
+        fetch_date = datetime.datetime.now()
+        if ret_values['new']:
+            if not getattr(settings, 'TEST_DEBUG', False):
+                self.feed.trim_feed()
+                self.feed.expire_redis()
+            if MStatistics.get('raw_feed', None) == self.feed.pk:
+                self.feed.save_raw_feed(self.raw_feed, fetch_date)
+        self.feed.save_feed_history(200, "OK", date=fetch_date)
+
+        if self.options['verbose']:
+            logging.debug(
+                '   ---> [%-30s] ~FBTIME: feed parse in ~FM%.4ss'
+                % (self.feed.log_title[:30], time.time() - start)
+            )
+
+        if self.options.get('archive_page', None):
+            self.archive_seen_story_hashes.update(story_hashes)
+        
+        return FEED_OK, ret_values
+
+    def verify_feed_integrity(self):
+        """Ensures stories come through and any abberant status codes get saved
+
+        Returns:
+            FEED_STATUS: enum
+            ret_values: dictionary of counts of new, updated, same, and error stories
+        """
         ret_values = dict(new=0, updated=0, same=0, error=0)
 
         if hasattr(self.fpf, 'status'):
@@ -551,9 +712,13 @@ class ProcessFeed:
                     self.feed = feed
                 self.feed = self.feed.save()
                 return FEED_ERRPARSE, ret_values
+        return None, None
 
-        # the feed has changed (or it is the first time we parse it)
-        # saving the etag and last_modified fields
+    def compare_feed_attribute_changes(self):
+        """
+        The feed has changed (or it is the first time we parse it)
+        saving the etag and last_modified fields
+        """
         original_etag = self.feed.etag
         self.feed.etag = self.fpf.get('etag')
         if self.feed.etag:
@@ -576,8 +741,6 @@ class ProcessFeed:
                 pass
         if self.feed.last_modified != original_last_modified:
             self.feed.save(update_fields=['last_modified'])
-
-        self.fpf.entries = self.fpf.entries[:100]
 
         original_title = self.feed.feed_title
         if self.fpf.feed.get('title'):
@@ -607,164 +770,48 @@ class ProcessFeed:
                     self.feed.feed_link = new_feed_link
                     self.feed.save(update_fields=['feed_link'])
 
-        # Determine if stories aren't valid and replace broken guids
-        guids_seen = set()
-        permalinks_seen = set()
-        for entry in self.fpf.entries:
-            guids_seen.add(entry.get('guid'))
-            permalinks_seen.add(Feed.get_permalink(entry))
-        guid_difference = len(guids_seen) != len(self.fpf.entries)
-        single_guid = len(guids_seen) == 1
-        replace_guids = single_guid and guid_difference
-        permalink_difference = len(permalinks_seen) != len(self.fpf.entries)
-        single_permalink = len(permalinks_seen) == 1
-        replace_permalinks = single_permalink and permalink_difference
-
-        # Compare new stories to existing stories, adding and updating
-        start_date = datetime.datetime.utcnow()
-        story_hashes = []
-        stories = []
-        for entry in self.fpf.entries:
-            story = pre_process_story(entry, self.fpf.encoding)
-            if not story['title'] and not story['story_content']:
-                continue
-            if story.get('published') < start_date:
-                start_date = story.get('published')
-            if replace_guids:
-                if replace_permalinks:
-                    new_story_guid = str(story.get('published'))
-                    if self.options['verbose']:
-                        logging.debug(
-                            '   ---> [%-30s] ~FBReplacing guid (%s) with timestamp: %s'
-                            % (self.feed.log_title[:30], story.get('guid'), new_story_guid)
-                        )
-                    story['guid'] = new_story_guid
-                else:
-                    new_story_guid = Feed.get_permalink(story)
-                    if self.options['verbose']:
-                        logging.debug(
-                            '   ---> [%-30s] ~FBReplacing guid (%s) with permalink: %s'
-                            % (self.feed.log_title[:30], story.get('guid'), new_story_guid)
-                        )
-                    story['guid'] = new_story_guid
-            story['story_hash'] = MStory.feed_guid_hash_unsaved(self.feed.pk, story.get('guid'))
-            stories.append(story)
-            story_hashes.append(story.get('story_hash'))
-
-        original_story_hash_count = len(story_hashes)
-        story_hashes_in_unread_cutoff = self.feed.story_hashes_in_unread_cutoff[:original_story_hash_count]
-        story_hashes.extend(story_hashes_in_unread_cutoff)
-        story_hashes = list(set(story_hashes))
-        if self.options['verbose'] or settings.DEBUG:
-            logging.debug(
-                '   ---> [%-30s] ~FBFound ~SB%s~SN guids, adding ~SB%s~SN/%s guids from db'
-                % (
-                    self.feed.log_title[:30],
-                    original_story_hash_count,
-                    len(story_hashes) - original_story_hash_count,
-                    len(story_hashes_in_unread_cutoff),
-                )
-            )
-
-        existing_stories = dict(
-            (s.story_hash, s)
-            for s in MStory.objects(
-                story_hash__in=story_hashes,
-                # story_date__gte=start_date,
-                # story_feed_id=self.feed.pk
-            )
-        )
-        # if len(existing_stories) == 0:
-        #     existing_stories = dict((s.story_hash, s) for s in MStory.objects(
-        #         story_date__gte=start_date,
-        #         story_feed_id=self.feed.pk
-        #     ))
-
-        ret_values = self.feed.add_update_stories(
-            stories,
-            existing_stories,
-            verbose=self.options['verbose'],
-            updates_off=self.options['updates_off'],
-        )
-
-        # PubSubHubbub
-        if hasattr(self.fpf, 'feed') and hasattr(self.fpf.feed, 'links') and self.fpf.feed.links:
-            hub_url = None
-            self_url = self.feed.feed_address
-            for link in self.fpf.feed.links:
-                if link['rel'] == 'hub' and not hub_url:
-                    hub_url = link['href']
-                elif link['rel'] == 'self':
-                    self_url = link['href']
-            push_expired = False
-            if self.feed.is_push:
-                try:
-                    push_expired = self.feed.push.lease_expires < datetime.datetime.now()
-                except PushSubscription.DoesNotExist:
-                    self.feed.is_push = False
-            if (
-                hub_url
-                and self_url
-                and not settings.DEBUG
-                and self.feed.active_subscribers > 0
-                and (push_expired or not self.feed.is_push or self.options.get('force'))
-            ):
-                logging.debug(
-                    '   ---> [%-30s] ~BB~FW%sSubscribing to PuSH hub: %s'
-                    % (self.feed.log_title[:30], "~SKRe-~SN" if push_expired else "", hub_url)
-                )
-                try:
-                    if settings.ENABLE_PUSH:
-                        PushSubscription.objects.subscribe(self_url, feed=self.feed, hub=hub_url)
-                except TimeoutError:
-                    logging.debug(
-                        '   ---> [%-30s] ~BB~FW~FRTimed out~FW subscribing to PuSH hub: %s'
-                        % (self.feed.log_title[:30], hub_url)
-                    )
-            elif self.feed.is_push and (self.feed.active_subscribers <= 0 or not hub_url):
-                logging.debug(
-                    '   ---> [%-30s] ~BB~FWTurning off PuSH, no hub found' % (self.feed.log_title[:30])
-                )
+    def check_feed_for_push(self):
+        if not (hasattr(self.fpf, 'feed') and hasattr(self.fpf.feed, 'links') and self.fpf.feed.links):
+            return
+        
+        hub_url = None
+        self_url = self.feed.feed_address
+        for link in self.fpf.feed.links:
+            if link['rel'] == 'hub' and not hub_url:
+                hub_url = link['href']
+            elif link['rel'] == 'self':
+                self_url = link['href']
+        push_expired = False
+        if self.feed.is_push:
+            try:
+                push_expired = self.feed.push.lease_expires < datetime.datetime.now()
+            except PushSubscription.DoesNotExist:
                 self.feed.is_push = False
-                self.feed = self.feed.save()
-
-        # Push notifications
-        if ret_values['new'] > 0 and MUserFeedNotification.feed_has_users(self.feed.pk) > 0:
-            QueueNotifications.delay(self.feed.pk, ret_values['new'])
-
-        # All Done
-        logging.debug(
-            '   ---> [%-30s] ~FYParsed Feed: %snew=%s~SN~FY %sup=%s~SN same=%s%s~SN %serr=%s~SN~FY total=~SB%s'
-            % (
-                self.feed.log_title[:30],
-                '~FG~SB' if ret_values['new'] else '',
-                ret_values['new'],
-                '~FY~SB' if ret_values['updated'] else '',
-                ret_values['updated'],
-                '~SB' if ret_values['same'] else '',
-                ret_values['same'],
-                '~FR~SB' if ret_values['error'] else '',
-                ret_values['error'],
-                len(self.fpf.entries),
-            )
-        )
-        self.feed.update_all_statistics(has_new_stories=bool(ret_values['new']), force=self.options['force'])
-        fetch_date = datetime.datetime.now()
-        if ret_values['new']:
-            if not getattr(settings, 'TEST_DEBUG', False):
-                self.feed.trim_feed()
-                self.feed.expire_redis()
-            if MStatistics.get('raw_feed', None) == self.feed.pk:
-                self.feed.save_raw_feed(self.raw_feed, fetch_date)
-        self.feed.save_feed_history(200, "OK", date=fetch_date)
-
-        if self.options['verbose']:
+        if (
+            hub_url
+            and self_url
+            and not settings.DEBUG
+            and self.feed.active_subscribers > 0
+            and (push_expired or not self.feed.is_push or self.options.get('force'))
+        ):
             logging.debug(
-                '   ---> [%-30s] ~FBTIME: feed parse in ~FM%.4ss'
-                % (self.feed.log_title[:30], time.time() - start)
+                '   ---> [%-30s] ~BB~FW%sSubscribing to PuSH hub: %s'
+                % (self.feed.log_title[:30], "~SKRe-~SN" if push_expired else "", hub_url)
             )
-
-        return FEED_OK, ret_values
+            try:
+                if settings.ENABLE_PUSH:
+                    PushSubscription.objects.subscribe(self_url, feed=self.feed, hub=hub_url)
+            except TimeoutError:
+                logging.debug(
+                    '   ---> [%-30s] ~BB~FW~FRTimed out~FW subscribing to PuSH hub: %s'
+                    % (self.feed.log_title[:30], hub_url)
+                )
+        elif self.feed.is_push and (self.feed.active_subscribers <= 0 or not hub_url):
+            logging.debug(
+                '   ---> [%-30s] ~BB~FWTurning off PuSH, no hub found' % (self.feed.log_title[:30])
+            )
+            self.feed.is_push = False
+            self.feed = self.feed.save()
 
 
 class FeedFetcherWorker:
@@ -819,6 +866,16 @@ class FeedFetcherWorker:
 
         if current_process._identity:
             identity = current_process._identity[0]
+
+        # If fetching archive pages, come back once the archive scaffolding is built
+        if self.options.get('archive_page', None):
+            for feed_id in feed_queue:
+                feed = self.refresh_feed(feed_id)
+                self.fetch_and_process_archive_pages(feed_id)
+            if len(feed_queue) == 1:
+                feed = self.refresh_feed(feed_queue[0])
+                return feed
+            return
 
         for feed_id in feed_queue:
             start_duration = time.time()
@@ -1083,6 +1140,40 @@ class FeedFetcherWorker:
             return feed
 
         # time_taken = datetime.datetime.utcnow() - self.time_start
+
+    def fetch_and_process_archive_pages(self, feed_id):
+        seen_story_hashes = set()
+        feed = Feed.get_by_id(feed_id)
+        
+        for archive_page_key in ["page", "paged"]:
+            failed_pages = 0
+            self.options['archive_page_key'] = archive_page_key
+
+            for page in range(100):
+                if failed_pages >= 3: 
+                    break
+                self.options['archive_page'] = page+1
+
+                ffeed = FetchFeed(feed_id, self.options)
+                ret_feed, fetched_feed = ffeed.fetch()
+                raw_feed = ffeed.raw_feed
+
+                if fetched_feed and ret_feed == FEED_OK:
+                    pfeed = ProcessFeed(feed_id, fetched_feed, self.options, raw_feed=raw_feed)
+                    if not pfeed.fpf or not pfeed.fpf.entries:
+                        failed_pages += 1
+                        continue
+                    
+                    before_story_hashes = len(seen_story_hashes)
+                    pfeed.process()
+                    seen_story_hashes.update(pfeed.archive_seen_story_hashes)
+                    after_story_hashes = len(seen_story_hashes)
+
+                    logging.debug(f"   ---> [{feed.log_title[:30]:<30}] ~FBStory hashes found: ~SB{len(seen_story_hashes)} stories, ~SN~FR{failed_pages}~FB failures")
+                    if before_story_hashes == after_story_hashes:
+                        failed_pages += 1
+                else:
+                    failed_pages += 1
 
     def publish_to_subscribers(self, feed, new_count):
         try:

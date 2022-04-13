@@ -1031,7 +1031,14 @@ class Feed(models.Model):
                 return 'white'
             else:
                 return 'black'
-    
+
+    def fill_out_archive_stories(self):
+        """
+        Starting from page 1 and iterating through N pages, determine whether
+        page(i) matches page(i-1) and if there are any new stories.
+        """
+        self.update(archive_page=1)
+        
     def save_feed_stories_last_month(self, verbose=False):
         month_ago = datetime.datetime.utcnow() - datetime.timedelta(days=30)
         stories_last_month = MStory.objects(story_feed_id=self.pk, 
@@ -1235,7 +1242,8 @@ class Feed(models.Model):
             'debug': kwargs.get('debug'),
             'fpf': kwargs.get('fpf'),
             'feed_xml': kwargs.get('feed_xml'),
-            'requesting_user_id': kwargs.get('requesting_user_id', None)
+            'requesting_user_id': kwargs.get('requesting_user_id', None),
+            'archive_page': kwargs.get('archive_page', None),
         }
         
         if getattr(settings, 'TEST_DEBUG', False) and "NEWSBLUR_DIR" in self.feed_address:
