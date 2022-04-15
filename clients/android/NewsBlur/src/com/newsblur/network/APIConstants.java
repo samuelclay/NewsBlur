@@ -86,6 +86,7 @@ public class APIConstants {
     public static final String PATH_FEED_STATISTICS = "/rss_feeds/statistics_embedded/";
     public static final String PATH_FEED_FAVICON_URL = "/rss_feeds/icon/";
     public static final String PATH_EXPORT_OPML = "/import/opml_export";
+    public static final String PATH_IMPORT_OPML = "/import/opml_upload";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;
