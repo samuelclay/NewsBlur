@@ -32,7 +32,6 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
     int storyScore;
     BOOL isSaved;
     BOOL isShared;
-    BOOL inDashboard;
     
     // River view    
     NSString *siteTitle;
@@ -69,7 +68,6 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 @property (readwrite) BOOL isShort;
 @property (readwrite) BOOL isRiverOrSocial;
 @property (readwrite) BOOL hasAlpha;
-@property (readwrite) BOOL inDashboard;
 
 @property (nonatomic) FeedDetailTextSize textSize;
 

@@ -8,9 +8,9 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import "NewsBlurAppDelegate.h"
-#import "NewsBlurViewController.h"
 #import "FolderTitleView.h"
 #import "UnreadCountView.h"
+#import "NewsBlur-Swift.h"
 
 @implementation FolderTitleView
 
@@ -42,6 +42,11 @@
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
     NSInteger countWidth = 0;
     NSString *accessibilityCount = @"";
+    NSArray *folderComponents = [folderName componentsSeparatedByString:@" ▸ "];
+    
+    CGFloat indentationOffset = (folderComponents.count - 1) * 28;
+    rect.origin.x += indentationOffset;
+    rect.size.width -= indentationOffset;
     
     if ([folderName isEqual:@"saved_stories"]) {
         unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
@@ -70,7 +75,7 @@
         accessibilityCount = [NSString stringWithFormat:@", %@ searches", @(count)];
     } else if (isFolderCollapsed) {
         UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
-        unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(rect), CGRectGetHeight(rect))];
+        unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectMake(rect.origin.x, 0, CGRectGetWidth(rect), CGRectGetHeight(rect))];
         unreadCount.appDelegate = appDelegate;
         unreadCount.opaque = NO;
         unreadCount.psCount = counts.ps;
@@ -91,7 +96,7 @@
     UIView* customView = [[UIView alloc] initWithFrame:rect];
 
     // Background
-    [NewsBlurAppDelegate fillGradient:self.bounds
+    [NewsBlurAppDelegate fillGradient:rect
                            startColor:UIColorFromLightSepiaMediumDarkRGB(0xEAECE5, 0xffffc6, 0x6A6A6A, 0x444444)
                              endColor:UIColorFromLightSepiaMediumDarkRGB(0xDCDFD6, 0xffffc0, 0x666666, 0x333333)];
 //    UIColor *backgroundColor = UIColorFromRGB(0xD7DDE6);
@@ -118,25 +123,27 @@
     // Folder title
     UIColor *textColor = UIColorFromRGB(0x4C4D4A);
     UIFontDescriptor *boldFontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
-    UIFont *font = [UIFont fontWithDescriptor: boldFontDescriptor size:0.0];
+    UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
     NSInteger titleOffsetY = ((rect.size.height - font.pointSize) / 2) - 1;
     NSString *folderTitle;
     if (section == NewsBlurTopSectionGlobalSharedStories) {
-        folderTitle = [@"Global Shared Stories" uppercaseString];
+        folderTitle = @"Global Shared Stories";
     } else if (section == NewsBlurTopSectionAllSharedStories) {
-        folderTitle = [@"All Shared Stories" uppercaseString];
+        folderTitle = @"All Shared Stories";
     } else if (section == NewsBlurTopSectionInfrequentSiteStories) {
-        folderTitle = [@"Infrequent Site Stories" uppercaseString];
+        folderTitle = @"Infrequent Site Stories";
     } else if (section == NewsBlurTopSectionAllStories) {
-        folderTitle = [@"All Stories" uppercaseString];
+        folderTitle = @"All Stories";
+    } else if ([folderName isEqual:@"widget_stories"]) {
+        folderTitle = @"Widget Site Stories";
     } else if ([folderName isEqual:@"read_stories"]) {
-        folderTitle = [@"Read Stories" uppercaseString];
+        folderTitle = @"Read Stories";
     } else if ([folderName isEqual:@"saved_stories"]) {
-        folderTitle = [@"Saved Stories" uppercaseString];
+        folderTitle = @"Saved Stories";
     } else if ([folderName isEqual:@"saved_searches"]) {
-        folderTitle = [@"Saved Searches" uppercaseString];
+        folderTitle = @"Saved Searches";
     } else {
-        folderTitle = [[appDelegate.dictFoldersArray objectAtIndex:section] uppercaseString];
+        folderTitle = [appDelegate.dictFoldersArray objectAtIndex:section];
     }
     UIColor *shadowColor = UIColorFromRGB(0xF0F2E9);
     CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 0, [shadowColor CGColor]);
@@ -145,13 +152,13 @@
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
     paragraphStyle.alignment = NSTextAlignmentLeft;
     [folderTitle
-     drawInRect:CGRectMake(36.0, titleOffsetY, rect.size.width - 36 - 36 - countWidth, font.pointSize)
+     drawInRect:CGRectMake(rect.origin.x + 36.0, titleOffsetY, rect.size.width - 36 - 36 - countWidth, font.pointSize + 5)
      withAttributes:@{NSFontAttributeName: font,
                       NSForegroundColorAttributeName: textColor,
                       NSParagraphStyleAttributeName: paragraphStyle}];
         
     invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
+    invisibleHeaderButton.frame = CGRectMake(rect.origin.x, 0, customView.frame.size.width, customView.frame.size.height);
     invisibleHeaderButton.alpha = .1;
     invisibleHeaderButton.tag = section;
     invisibleHeaderButton.accessibilityLabel = [NSString stringWithFormat:@"%@ folder%@", folderTitle, accessibilityCount];
@@ -181,10 +188,10 @@
         UIButton *disclosureButton = [UIButton buttonWithType:UIButtonTypeCustom];
         UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
         [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
-        disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, CGRectGetMidY(self.bounds)-disclosureHeight/2-1, disclosureHeight, disclosureHeight);
+        disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2-1, disclosureHeight, disclosureHeight);
 
         // Add collapse button to all folders except Everything
-        if (section != 0 && section != 2 && section != 3 && ![folderName isEqual:@"read_stories"]) {
+        if (section != NewsBlurTopSectionGlobalSharedStories && section != NewsBlurTopSectionInfrequentSiteStories && section != NewsBlurTopSectionAllStories && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"widget_stories"]) {
             if (!isFolderCollapsed) {
                 UIImage *disclosureImage = [UIImage imageNamed:@"disclosure_down.png"];
                 [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
@@ -202,7 +209,7 @@
             } else if ([[[ThemeManager themeManager] theme] isEqualToString:ThemeStyleDark]) {
                 disclosureBorder = [UIImage imageNamed:@"disclosure_border_dark"];
             }
-            [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, CGRectGetMidY(self.bounds)-disclosureHeight/2 - 1, disclosureHeight, disclosureHeight)];
+            [disclosureBorder drawInRect:CGRectMake(rect.origin.x + customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2 - 1, disclosureHeight, disclosureHeight)];
         } else {
             // Everything/Saved folder doesn't get a button
             [disclosureButton setUserInteractionEnabled:NO];
@@ -218,21 +225,21 @@
     
     if (section == 0) {
         folderImage = [UIImage imageNamed:@"ak-icon-global.png"];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 8;
         }
     } else if (section == 1) {
         folderImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 8;
         }
     } else if (section == 2) {
-        folderImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        folderImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;
@@ -240,7 +247,7 @@
         allowLongPress = YES;
     } else if (section == 3) {
         folderImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;
@@ -248,21 +255,28 @@
         allowLongPress = NO;
     } else if ([folderName isEqual:@"saved_searches"]) {
         folderImage = [UIImage imageNamed:@"g_icn_search.png"];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;
         }
     } else if ([folderName isEqual:@"saved_stories"]) {
         folderImage = [UIImage imageNamed:@"clock.png"];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;
         }
     } else if ([folderName isEqual:@"read_stories"]) {
         folderImage = [UIImage imageNamed:@"g_icn_folder_read.png"];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 7;
+        }
+    } else if ([folderName isEqual:@"widget_stories"]) {
+        folderImage = [UIImage imageNamed:@"g_icn_folder_widget.png"];
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;
@@ -273,13 +287,13 @@
         } else {
             folderImage = [UIImage imageNamed:@"g_icn_folder"];
         }
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         } else {
             folderImageViewX = 7;
         }
         allowLongPress = YES;
     }
-    [folderImage drawInRect:CGRectMake(folderImageViewX, CGRectGetMidY(self.bounds)-height/2, width, height)];
+    [folderImage drawInRect:CGRectMake(rect.origin.x + folderImageViewX, CGRectGetMidY(rect)-height/2, width, height)];
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     
@@ -307,15 +321,15 @@
 
     if (![userPreferences boolForKey:@"use_system_font_size"]) {
         if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
-            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:10.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
             fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:11.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:13.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
-            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:12.0f];
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:14.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
-            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:15.0f];
-        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
             fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:17.0f];
+        } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
+            fontDescriptorSize = [fontDescriptorSize fontDescriptorWithSize:19.0f];
         }
     }
     
@@ -334,14 +348,14 @@
     
     if ([longPressTitle isEqualToString:@"mark_read_choose_days"]) {
         [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle sourceView:self sourceRect:self.bounds completionHandler:^(BOOL marked){
-            [appDelegate.folderCountCache removeObjectForKey:folderTitle];
-            [appDelegate.feedsViewController sectionUntappedOutside:invisibleHeaderButton];
-            [appDelegate.feedsViewController.feedTitlesTable reloadData];
+            [self.appDelegate.folderCountCache removeObjectForKey:folderTitle];
+            [self.appDelegate.feedsViewController sectionUntappedOutside:self.invisibleHeaderButton];
+            [self.appDelegate.feedsViewController.feedTitlesTable reloadData];
         }];
     } else if ([longPressTitle isEqualToString:@"mark_read_immediate"]) {
-        [appDelegate.folderCountCache removeObjectForKey:folderTitle];
-        [appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:0];
-        [appDelegate.feedsViewController.feedTitlesTable reloadData];
+        [self.appDelegate.folderCountCache removeObjectForKey:folderTitle];
+        [self.appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:0];
+        [self.appDelegate.feedsViewController.feedTitlesTable reloadData];
     }
 }
 

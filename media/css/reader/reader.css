@@ -4304,10 +4304,6 @@ body {
     display: block;
 }
 
-.audiojs audio {
-    display: none;
-}
-
 /* =============== */
 /* = User Avatar = */
 /* =============== */
@@ -4345,8 +4341,14 @@ body {
     clear: both;
     overflow: hidden;
 }
-.NB-feed-story-sideoptions-container {
-    
+.NB-pref-story-position-center .NB-feed-story-sideoptions-container {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 700px;
+}
+.NB-pref-story-position-right .NB-feed-story-sideoptions-container {
+    margin-left: auto;
+    max-width: 700px;
 }
 .NB-sideoption {
     cursor: pointer;
@@ -7598,6 +7600,9 @@ form.opml_import_form input {
 }
 .NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-question {
     background-color: #6DAEDC;
+}
+.NB-module-features .NB-module-feature .NB-module-feature-tag.NB-tag-updates {
+    background-color: #12A89D;
 }
 
 #add-feature-form {
@@ -13151,7 +13156,9 @@ form.opml_import_form input {
     
     background-color: #FFF;
 }
-
+.NB-popover.NB-popover-scroll .popover-content {
+    overflow-y: scroll;
+}
 .NB-popover-section-title {
     color: #585A55;
     text-transform: uppercase;

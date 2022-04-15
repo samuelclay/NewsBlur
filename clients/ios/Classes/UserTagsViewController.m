@@ -29,11 +29,14 @@ const NSInteger kHeaderHeight = 24;
     tagsTableView = [[UITableView alloc] init];
     tagsTableView.delegate = self;
     tagsTableView.dataSource = self;
-    tagsTableView.frame = CGRectMake(0.0, 44.0, self.view.frame.size.width, self.view.frame.size.height - 44.0);
+    if (@available(iOS 15.0, *)) {
+        tagsTableView.sectionHeaderTopPadding = 0;
+    }
+    tagsTableView.frame = CGRectMake(0.0, 66.0, self.view.frame.size.width, self.view.frame.size.height - 56.0);
     tagsTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     [self.view addSubview:tagsTableView];
     
-    addTagBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, 44.0)];
+    addTagBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0, 13.0, self.view.frame.size.width, 44.0)];
     [addTagBar setDelegate:self];
     [addTagBar setImage:[UIImage imageNamed:@"add_tag.png"]
        forSearchBarIcon:UISearchBarIconSearch
@@ -47,12 +50,13 @@ const NSInteger kHeaderHeight = 24;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 
-    tagsTableView.frame = CGRectMake(0.0, 44.0, self.view.frame.size.width, self.view.frame.size.height - 44.0);
+    tagsTableView.frame = CGRectMake(0.0, 56.0, self.view.frame.size.width, self.view.frame.size.height - 56.0);
     addTagBar.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, 44.0);
     tagsTableView.backgroundColor = UIColorFromRGB(0xf4f4f4);
     [tagsTableView reloadData];
     [tagsTableView setContentOffset:CGPointZero];
     
+    addTagBar.frame = CGRectMake(0.0, 13.0, self.view.frame.size.width, 44.0);
     [addTagBar setBackgroundColor:UIColorFromRGB(0xDCDFD6)];
     [addTagBar setTintColor:UIColorFromRGB(NEWSBLUR_WHITE_COLOR)];
     addTagBar.nb_searchField.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
@@ -190,7 +194,7 @@ const NSInteger kHeaderHeight = 24;
                 reuseIdentifier:cellIdentifier];
         cell.appDelegate = appDelegate;
     }
-
+    
     NSString *title;
     int count = 0;
     if (indexPath.section == 0) {
@@ -231,6 +235,7 @@ const NSInteger kHeaderHeight = 24;
     cell.neutralCount  = 0;
     cell.negativeCount = 0;
     cell.isSaved       = YES;
+    cell.indentationLevel = 0;
     
     [cell setNeedsDisplay];
     

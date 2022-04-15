@@ -8,6 +8,7 @@
 
 #import "FeedChooserItem.h"
 #import "NewsBlurAppDelegate.h"
+#import "NewsBlur-Swift.h"
 
 @interface FeedChooserItem ()
 
@@ -123,7 +124,7 @@
             {
                 componentsFormatter = [NSDateComponentsFormatter new];
                 
-                componentsFormatter.unitsStyle = NSDateFormatterLongStyle;
+                componentsFormatter.unitsStyle = NSDateComponentsFormatterUnitsStyleFull;
                 componentsFormatter.maximumUnitCount = 1;
                 componentsFormatter.zeroFormattingBehavior = NSDateComponentsFormatterZeroFormattingBehaviorDropAll;
             }
