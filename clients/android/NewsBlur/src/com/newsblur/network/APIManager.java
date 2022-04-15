@@ -678,6 +678,13 @@ public class APIManager {
         return response.getResponse(gson, NewsBlurResponse.class);
     }
 
+    public NewsBlurResponse importOpml(String content) {
+        ContentValues values = new ContentValues();
+        values.put("payload", content);
+        APIResponse response = post(buildUrl(APIConstants.PATH_IMPORT_OPML), values);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
     public void updateCustomUserAgent(String customUserAgent) {
         this.customUserAgent = customUserAgent;
     }
