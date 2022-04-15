@@ -110,6 +110,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     private lateinit var readingItemActionsBinding: ReadingItemActionsBinding
 
     private lateinit var markStoryReadBehavior: MarkStoryReadBehavior
+    private var sampledQueue: SampledQueue? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -133,6 +134,9 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         readingFontReceiver = ReadingFontReceiver()
         requireActivity().registerReceiver(readingFontReceiver, IntentFilter(READING_FONT_CHANGED))
 
+        if (markStoryReadBehavior == MarkStoryReadBehavior.IMMEDIATELY) {
+            sampledQueue = SampledQueue(250, 5)
+        }
         if (savedInstanceState != null) {
             savedScrollPosRel = savedInstanceState.getFloat(BUNDLE_SCROLL_POS_REL)
             // we can't actually use the saved scroll position until the webview finishes loading
@@ -144,6 +148,11 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         val heightm = binding.readingScrollview.getChildAt(0).measuredHeight
         val pos = binding.readingScrollview.scrollY
         outState.putFloat(BUNDLE_SCROLL_POS_REL, pos.toFloat() / heightm)
+    }
+
+    override fun onDestroyView() {
+        sampledQueue?.close()
+        super.onDestroyView()
     }
 
     override fun onDestroy() {
@@ -189,7 +198,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         updateTrainButton()
         updateShareButton()
         updateSaveButton()
-        updateMarkStoryReadButton()
+        updateMarkStoryReadState()
         setupItemCommentsAndShares()
 
         binding.readingScrollview.registerScrollChangeListener(readingActivity)
@@ -366,23 +375,15 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         else feedUtils.markStoryAsRead(story!!, requireContext())
     }
 
-    private fun updateMarkStoryReadButton() {
+    private fun updateMarkStoryReadState() {
         if (markStoryReadBehavior == MarkStoryReadBehavior.MANUALLY) {
             readingItemActionsBinding.markReadStoryButton.visibility = View.VISIBLE
             readingItemActionsBinding.markReadStoryButton.setStoryReadState(requireContext(), story!!.read)
         } else {
             readingItemActionsBinding.markReadStoryButton.visibility = View.GONE
         }
-    }
 
-    private fun updateStoryReadState() {
-        story?.let {
-            val (typeFace, iconVisibility) =
-                    if (it.read) Typeface.create(binding.readingItemTitle.typeface, Typeface.NORMAL) to View.GONE
-                    else Typeface.create(binding.readingItemTitle.typeface, Typeface.BOLD) to View.VISIBLE
-            binding.readingItemTitle.typeface = typeFace
-            binding.readingItemUnreadIcon.visibility = iconVisibility
-        }
+        sampledQueue?.add { updateStoryReadTitleState.invoke() } ?: updateStoryReadTitleState.invoke()
     }
 
     private fun clickTrain() {
@@ -658,7 +659,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         if (updateType and UPDATE_STORY != 0) {
             updateSaveButton()
             updateShareButton()
-            updateStoryReadState()
+            updateMarkStoryReadState()
             setupItemCommentsAndShares()
         }
         if (updateType and UPDATE_TEXT != 0) {
@@ -914,6 +915,16 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     fun flagWebviewError() {
         // TODO: enable a selective reload mechanism on load failures?
+    }
+
+    private val updateStoryReadTitleState = {
+        story?.let {
+            val (typeFace, iconVisibility) =
+                    if (it.read) Typeface.create(binding.readingItemTitle.typeface, Typeface.NORMAL) to View.GONE
+                    else Typeface.create(binding.readingItemTitle.typeface, Typeface.BOLD) to View.VISIBLE
+            binding.readingItemTitle.typeface = typeFace
+            binding.readingItemUnreadIcon.visibility = iconVisibility
+        }
     }
 
     private inner class TextSizeReceiver : BroadcastReceiver() {
