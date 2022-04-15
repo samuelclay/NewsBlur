@@ -702,7 +702,8 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 vh.thumbViewRight.setImageBitmap(null);
                 vh.thumbLoader = thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight, thumbSizeGuess, true);
                 vh.thumbViewLeft.setVisibility(View.GONE);
-                vh.thumbViewRight.setVisibility(View.VISIBLE);
+                boolean hideThumbnail = TextUtils.isEmpty(story.thumbnailUrl) && storyContentPreviewStyle == StoryContentPreviewStyle.NONE;
+                vh.thumbViewRight.setVisibility(hideThumbnail ? View.GONE : View.VISIBLE);
             }
             vh.lastThumbUrl = story.thumbnailUrl;
         } else if (vh.thumbViewRight != null && vh.thumbViewLeft != null) {
