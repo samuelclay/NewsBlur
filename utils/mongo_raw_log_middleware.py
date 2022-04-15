@@ -27,6 +27,7 @@ class MongoDumpMiddleware(object):
             # save old methods
             setattr(MongoClient, '_logging', True)
             if hasattr(MongoClient, '_send_message_with_response'):
+                connection.queriesx = []
                 MongoClient._send_message_with_response = \
                         self._instrument(MongoClient._send_message_with_response)
                 MongoReplicaSetClient._send_message_with_response = \

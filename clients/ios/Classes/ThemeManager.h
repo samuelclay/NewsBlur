@@ -25,6 +25,8 @@ extern NSString * const ThemeStyleDark;
 
 @interface ThemeManager : NSObject
 
+@property (nonatomic, class, strong, readonly) ThemeManager *shared;
+
 @property (nonatomic, strong) NSString *theme;
 @property (nonatomic, readonly) NSString *themeDisplayName;
 @property (nonatomic, readonly) NSString *themeCSSSuffix;
@@ -41,6 +43,9 @@ extern NSString * const ThemeStyleDark;
 - (UIColor *)themedColorFromRGB:(NSInteger)rgbValue;
 
 - (UIImage *)themedImage:(UIImage *)image;
+
+- (void)updateNavigationController:(UINavigationController *)navigationController;
+- (void)updateBackgroundOfView:(UIView *)view;
 
 - (void)updateSegmentedControl:(UISegmentedControl *)segmentedControl;
 - (void)updateThemeSegmentedControl:(UISegmentedControl *)segmentedControl;

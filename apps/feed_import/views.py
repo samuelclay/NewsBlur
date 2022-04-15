@@ -63,6 +63,8 @@ def opml_upload(request):
                 feeds = UserSubscription.objects.filter(user=request.user).values()
                 payload = dict(folders=folders, feeds=feeds)
                 logging.user(request, "~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (len(feeds)))
+                from apps.social.models import MActivity
+                MActivity.new_opml_import(user_id=request.user.pk, count=len(feeds))
                 UserSubscription.queue_new_feeds(request.user)
                 UserSubscription.refresh_stale_feeds(request.user, exclude_new=True)
         else:
@@ -79,7 +81,10 @@ def opml_export(request):
         user = User.objects.get(pk=request.GET['user_id'])
     exporter = OPMLExporter(user)
     opml     = exporter.process()
-    
+
+    from apps.social.models import MActivity
+    MActivity.new_opml_export(user_id=user.pk, count=exporter.feed_count)
+
     response = HttpResponse(opml, content_type='text/xml; charset=utf-8')
     response['Content-Disposition'] = 'attachment; filename=NewsBlur-%s-%s.opml' % (
         user.username,

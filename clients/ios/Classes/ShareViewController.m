@@ -8,14 +8,12 @@
 
 #import "ShareViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "StoryDetailViewController.h"
-#import "FeedDetailViewController.h"
-#import "StoryPageControl.h"
 #import <QuartzCore/QuartzCore.h>
 #import "Utilities.h"
 #import "DataUtilities.h"
 #import "StoriesCollection.h"
 #import "NSString+HTML.h"
+#import "NewsBlur-Swift.h"
 
 @implementation ShareViewController
 
@@ -40,7 +38,7 @@
 }
 
 - (void)viewDidLoad {
-    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     [[NSNotificationCenter defaultCenter] 
      addObserver:self 
@@ -81,16 +79,6 @@
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)viewDidUnload {
-    [self setCommentField:nil];
-    [self setFacebookButton:nil];
-    [self setTwitterButton:nil];
-    [self setSubmitButton:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (bool)isHardwareKeyboardUsed:(NSNotification*)keyboardNotification {
@@ -139,13 +127,13 @@
     }];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    [self adjustCommentField:CGSizeZero];
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//	return YES;
+//}
+//
+//- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+//    [self adjustCommentField:CGSizeZero];
+//}
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
@@ -161,7 +149,7 @@
     self.storyTitle.textColor = UIColorFromRGB(0x404040);
     self.storyTitle.shadowColor = UIColorFromRGB(0xF0F0F0);
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         self.storyTitle.text = [[appDelegate.activeStory objectForKey:@"story_title"]
                                 stringByDecodingHTMLEntities];
         [self.commentField becomeFirstResponder];
@@ -210,11 +198,11 @@
     int stOffset = 6;
     int stHeight = 0;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         self.storyTitle.frame = CGRectMake(20, 8, v.width - 20*2, 24);
         stOffset = self.storyTitle.frame.origin.y + self.storyTitle.frame.size.height;
         stHeight = self.storyTitle.frame.size.height;
-    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         k = 0;
     }
     NSLog(@"Share type: %@", self.currentType);
@@ -348,7 +336,7 @@
 # pragma mark Share Story
 
 - (IBAction)doShareThisStory:(id)sender {
-    [appDelegate.storyPageControl showShareHUD:@"Sharing"];
+    [appDelegate.storyPagesViewController showShareHUD:@"Sharing"];
     NSString *urlString = [NSString stringWithFormat:@"%@/social/share_story",
                            self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -404,15 +392,15 @@
     [self replaceStory:[results objectForKey:@"story"] withReplyId:nil];
     [appDelegate.feedDetailViewController redrawUnreadStory];
 
-    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
-    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentPage.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.currentPage.view animated:NO];
 }
 
 # pragma mark
 # pragma mark Reply to Story
 
 - (IBAction)doReplyToComment:(id)sender {
-    [appDelegate.storyPageControl showShareHUD:@"Replying"];
+    [appDelegate.storyPagesViewController showShareHUD:@"Replying"];
     NSString *comments = commentField.text;
     if ([comments length] == 0) {
         return;
@@ -454,11 +442,11 @@
 }
 
 - (void)requestFailed:(NSError *)error statusCode:(NSInteger)statusCode {
-    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
-    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.currentPage.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPagesViewController.currentPage.view animated:NO];
 
     NSLog(@"Error: %@", error);
-    [appDelegate.storyPageControl.currentPage informError:error statusCode:statusCode];
+    [appDelegate.storyPagesViewController.currentPage informError:error statusCode:statusCode];
 }
 
 - (void)replaceStory:(NSDictionary *)newStory withReplyId:(NSString *)replyId {
@@ -467,7 +455,7 @@
 
     // update the current story and the activeFeedStories
     appDelegate.activeStory = newStoryParsed;
-    [appDelegate.storyPageControl.currentPage setActiveStoryAtIndex:-1];
+    [appDelegate.storyPagesViewController.currentPage setActiveStoryAtIndex:-1];
 
     NSMutableArray *newActiveFeedStories = [[NSMutableArray alloc] init];
     
@@ -485,7 +473,7 @@
     appDelegate.storiesCollection.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
     self.commentField.text = nil;
-    [appDelegate.storyPageControl.currentPage refreshComments:replyId];
+    [appDelegate.storyPagesViewController.currentPage refreshComments:replyId];
     [appDelegate changeActiveFeedDetailRow];
 }
 

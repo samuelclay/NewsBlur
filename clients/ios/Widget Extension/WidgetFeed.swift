@@ -3,10 +3,10 @@
 //  Widget Extension
 //
 //  Created by David Sinclair on 2019-12-23.
-//  Copyright © 2019 NewsBlur. All rights reserved.
+//  Copyright © 2021 NewsBlur. All rights reserved.
 //
 
-import UIKit
+import SwiftUI
 
 /// A feed to display in the widget.
 struct Feed: Identifiable {
@@ -17,10 +17,10 @@ struct Feed: Identifiable {
     let title: String
     
     /// The left bar color.
-    let leftColor: UIColor
+    let leftColor: Color
     
     /// The right bar color.
-    let rightColor: UIColor
+    let rightColor: Color
     
     /// Keys for the dictionary representation.
     struct DictionaryKeys {
@@ -37,6 +37,8 @@ struct Feed: Identifiable {
     ///
     /// - Parameter dictionary: Dictionary representation.
     init(from dictionary: Dictionary) {
+        let operation = WidgetDebugTimer.start("reading feed")
+        
         id = dictionary[DictionaryKeys.id] as? String ?? ""
         title = dictionary[DictionaryKeys.title] as? String ?? ""
         
@@ -51,13 +53,29 @@ struct Feed: Identifiable {
         } else {
             rightColor = Self.from(hexString: "505050")
         }
+        
+        WidgetDebugTimer.print(operation, step: "title: \(title)")
+    }
+    
+    /// Initializer for a sample.
+    ///
+    /// - Parameter id: The identifier of the sample.
+    /// - Parameter title: The title of the sample.
+    init(sample id: String, title: String) {
+        self.id = id
+        self.title = title
+        
+        let hue = Double.random(in: 0...1)
+        
+        leftColor = Color(hue: hue, saturation: 0.5, brightness: 0.5)
+        rightColor = Color(hue: hue, saturation: 0.4, brightness: 0.5)
     }
     
     /// Given a hex string, returns the corresponding color.
     ///
     /// - Parameter hexString: The hex string.
     /// - Returns: The color equivalent.
-    static func from(hexString: String) -> UIColor {
+    static func from(hexString: String) -> Color {
         var red: Double = 0
         var green: Double = 0
         var blue: Double = 0
@@ -79,9 +97,9 @@ struct Feed: Identifiable {
             blue = Double( hex & 0x0000FF) / 255
         }
         
-        print("Reading color from '\(hexString)': red: \(red), green: \(green), blue: \(blue), alpha: \(alpha)")
+        NSLog("Reading color from '\(hexString)': red: \(red), green: \(green), blue: \(blue), alpha: \(alpha)")
         
-        return UIColor(red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha: CGFloat(alpha))
+        return Color(.sRGB, red: red, green: green, blue: blue, opacity: alpha)
     }
 }
 

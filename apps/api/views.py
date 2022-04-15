@@ -125,10 +125,11 @@ def add_site_load_script(request, token):
 
 def add_site(request, token):
     code       = 0
-    url        = request.GET['url']
-    folder     = request.GET['folder']
-    new_folder = request.GET.get('new_folder')
-    callback   = request.GET.get('callback', '')
+    get_post   = getattr(request, request.method)
+    url        = get_post.get('url')
+    folder     = get_post.get('folder')
+    new_folder = get_post.get('new_folder')
+    callback   = get_post.get('callback', '')
     
     if not url:
         code = -1

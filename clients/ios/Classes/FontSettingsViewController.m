@@ -8,14 +8,11 @@
 
 #import "FontSettingsViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "StoryDetailViewController.h"
-#import "StoryPageControl.h"
-#import "FeedDetailViewController.h"
 #import "MenuTableViewCell.h"
-#import "NBContainerViewController.h"
 #import "StoriesCollection.h"
 #import "FontListViewController.h"
 #import "MenuViewController.h"
+#import "NewsBlur-Swift.h"
 
 @interface FontSettingsViewController ()
 
@@ -37,6 +34,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
     self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
@@ -134,14 +133,12 @@
     self.navigationController.navigationBarHidden = YES;
     self.navigationController.preferredContentSize = CGSizeMake(240.0, self.menuTableView.contentSize.height + (self.menuTableView.frame.origin.y * 2));
     
-    if (@available(iOS 13.0, *)) {
-        self.menuTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
-    }
+    self.menuTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//	return YES;
+//}
 
 // allow keyboard comands
 - (BOOL)canBecomeFirstResponder {
@@ -182,19 +179,19 @@
 - (IBAction)changeFontSize:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if ([sender selectedSegmentIndex] == 0) {
-        [self.appDelegate.storyPageControl changeFontSize:@"xs"];
+        [self.appDelegate.storyPagesViewController changeFontSize:@"xs"];
         [userPreferences setObject:@"xs" forKey:@"story_font_size"];
     } else if ([sender selectedSegmentIndex] == 1) {
-        [self.appDelegate.storyPageControl changeFontSize:@"small"];
+        [self.appDelegate.storyPagesViewController changeFontSize:@"small"];
         [userPreferences setObject:@"small" forKey:@"story_font_size"];
     } else if ([sender selectedSegmentIndex] == 2) {
-        [self.appDelegate.storyPageControl changeFontSize:@"medium"];
+        [self.appDelegate.storyPagesViewController changeFontSize:@"medium"];
         [userPreferences setObject:@"medium" forKey:@"story_font_size"];
     } else if ([sender selectedSegmentIndex] == 3) {
-        [self.appDelegate.storyPageControl changeFontSize:@"large"];
+        [self.appDelegate.storyPagesViewController changeFontSize:@"large"];
         [userPreferences setObject:@"large" forKey:@"story_font_size"];
     } else if ([sender selectedSegmentIndex] == 4) {
-        [self.appDelegate.storyPageControl changeFontSize:@"xl"];
+        [self.appDelegate.storyPagesViewController changeFontSize:@"xl"];
         [userPreferences setObject:@"xl" forKey:@"story_font_size"];
     }
     [userPreferences synchronize];
@@ -203,19 +200,19 @@
 - (IBAction)changeLineSpacing:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if ([sender selectedSegmentIndex] == 0) {
-        [self.appDelegate.storyPageControl changeLineSpacing:@"xs"];
+        [self.appDelegate.storyPagesViewController changeLineSpacing:@"xs"];
         [userPreferences setObject:@"xs" forKey:@"story_line_spacing"];
     } else if ([sender selectedSegmentIndex] == 1) {
-        [self.appDelegate.storyPageControl changeLineSpacing:@"small"];
+        [self.appDelegate.storyPagesViewController changeLineSpacing:@"small"];
         [userPreferences setObject:@"small" forKey:@"story_line_spacing"];
     } else if ([sender selectedSegmentIndex] == 2) {
-        [self.appDelegate.storyPageControl changeLineSpacing:@"medium"];
+        [self.appDelegate.storyPagesViewController changeLineSpacing:@"medium"];
         [userPreferences setObject:@"medium" forKey:@"story_line_spacing"];
     } else if ([sender selectedSegmentIndex] == 3) {
-        [self.appDelegate.storyPageControl changeLineSpacing:@"large"];
+        [self.appDelegate.storyPagesViewController changeLineSpacing:@"large"];
         [userPreferences setObject:@"large" forKey:@"story_line_spacing"];
     } else if ([sender selectedSegmentIndex] == 4) {
-        [self.appDelegate.storyPageControl changeLineSpacing:@"xl"];
+        [self.appDelegate.storyPagesViewController changeLineSpacing:@"xl"];
         [userPreferences setObject:@"xl" forKey:@"story_line_spacing"];
     }
     [userPreferences synchronize];
@@ -225,21 +222,21 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [userPreferences setBool:[sender selectedSegmentIndex] == 0 forKey:@"story_full_screen"];
     [userPreferences synchronize];
-    [self.appDelegate.storyPageControl changedFullscreen];
+    [self.appDelegate.storyPagesViewController changedFullscreen];
 }
 
 - (IBAction)changeAutoscroll:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [userPreferences setBool:[sender selectedSegmentIndex] == 1 forKey:@"story_autoscroll"];
     [userPreferences synchronize];
-    [self.appDelegate.storyPageControl changedAutoscroll];
+    [self.appDelegate.storyPagesViewController changedAutoscroll];
 }
 
 - (IBAction)changeScrollOrientation:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [userPreferences setBool:[sender selectedSegmentIndex] == 0 forKey:@"scroll_stories_horizontally"];
     [userPreferences synchronize];
-    [self.appDelegate.storyPageControl changedScrollOrientation];
+    [self.appDelegate.storyPagesViewController changedScrollOrientation];
 }
 
 - (IBAction)changeTheme:(id)sender {
@@ -270,7 +267,7 @@
 #pragma mark - Table view data source
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         return 13;
     } else {
         return 12;
@@ -281,7 +278,7 @@
     static NSString *CellIndentifier = @"Cell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
-    NSUInteger iPadOffset = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ? 0 : 1;
+    NSUInteger iPadOffset = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? 0 : 1;
     
     if (indexPath.row == 7) {
         return [self makeFontSizeTableCell];
@@ -311,33 +308,33 @@
     cell.imageView.tintColor = UIColorFromRGB(0x303030);
 
     if (indexPath.row == 0) {
-        cell.textLabel.text = [@"Delete This Site" uppercaseString];
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_delete.png"];
-    } else if (indexPath.row == 1) {
         bool isSaved = [[self.appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isSaved) {
-            cell.textLabel.text = [@"Unsave this story" uppercaseString];
+            cell.textLabel.text = @"Unsave this story";
         } else {
-            cell.textLabel.text = [@"Save this story" uppercaseString];
+            cell.textLabel.text = @"Save this story";
         }
         cell.imageView.image = [UIImage imageNamed:@"clock.png"];
-    } else if (indexPath.row == 2) {
+    } else if (indexPath.row == 1) {
         bool isRead = [[self.appDelegate.activeStory objectForKey:@"read_status"] boolValue];
         if (isRead) {
-            cell.textLabel.text = [@"Mark as unread" uppercaseString];
+            cell.textLabel.text = @"Mark as unread";
         } else {
-            cell.textLabel.text = [@"Mark as read" uppercaseString];
+            cell.textLabel.text = @"Mark as read";
         }
         cell.imageView.image = [UIImage imageNamed:@"g_icn_unread.png"];
-    } else if (indexPath.row == 3) {
-        cell.textLabel.text = [@"Send to..." uppercaseString];
+    } else if (indexPath.row == 2) {
+        cell.textLabel.text = @"Send to...";
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_mail.png"];
-    } else if (indexPath.row == 4) {
-        cell.textLabel.text = [@"Train this story" uppercaseString];
+    } else if (indexPath.row == 3) {
+        cell.textLabel.text = @"Train this story";
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_train.png"];
-    } else if (indexPath.row == 5) {
-        cell.textLabel.text = [@"Share this story" uppercaseString];
+    } else if (indexPath.row == 4) {
+        cell.textLabel.text = @"Share this story";
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_share.png"];
+    } else if (indexPath.row == 5) {
+        cell.textLabel.text = @"Delete this site";
+        cell.imageView.image = [UIImage imageNamed:@"menu_icn_delete.png"];
     } else if (indexPath.row == 6) {
         NSString *fontStyle = [[NSUserDefaults standardUserDefaults] stringForKey:@"fontStyle"];
         if (!fontStyle) {
@@ -371,39 +368,39 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row != 0 && indexPath.row != 6) {
+    if (indexPath.row != 5 && indexPath.row != 6) {
         [self dismissViewControllerAnimated:indexPath.row != 3 && indexPath.row != 4 completion:nil];
     }
     
     if (indexPath.row == 0) {
-        [self confirmDeleteSite:self.navigationController];
-    } else if (indexPath.row == 1) {
         [self.appDelegate.storiesCollection toggleStorySaved];
         [self.appDelegate.feedDetailViewController reloadData];
-        [self.appDelegate.storyPageControl refreshHeaders];
-    } else if (indexPath.row == 2) {
+        [self.appDelegate.storyPagesViewController refreshHeaders];
+    } else if (indexPath.row == 1) {
         [self.appDelegate.storiesCollection toggleStoryUnread];
         [self.appDelegate.feedDetailViewController reloadData];
-        [self.appDelegate.storyPageControl refreshHeaders];
+        [self.appDelegate.storyPagesViewController refreshHeaders];
+    } else if (indexPath.row == 2) {
+        [self.appDelegate.storyPagesViewController openSendToDialog:self.appDelegate.storyPagesViewController.fontSettingsButton];
     } else if (indexPath.row == 3) {
-        [self.appDelegate.storyPageControl openSendToDialog:self.appDelegate.storyPageControl.fontSettingsButton];
+        [self.appDelegate openTrainStory:self.appDelegate.storyPagesViewController.fontSettingsButton];
     } else if (indexPath.row == 4) {
-        [self.appDelegate openTrainStory:self.appDelegate.storyPageControl.fontSettingsButton];
+        [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
     } else if (indexPath.row == 5) {
-        [self.appDelegate.storyPageControl.currentPage openShareDialog];
+        [self confirmDeleteSite:self.navigationController];
     } else if (indexPath.row == 6) {
         [self showFontList];
     }
     
     
-//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
 //        if (indexPath.row != 2 && indexPath.row != 3) {
 //            // if we're opening another popover, then don't animate out - it looks strange
 //            [self.appDelegate.masterContainerViewController hidePopover];
 //        }
 //    } else {
-//        [self.appDelegate.storyPageControl.popoverController dismissPopoverAnimated:YES];
-//        self.appDelegate.storyPageControl.popoverController = nil;
+//        [self.appDelegate.storyPagesViewController.popoverController dismissPopoverAnimated:YES];
+//        self.appDelegate.storyPagesViewController.popoverController = nil;
 //    }
 //    
 //    [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -413,11 +410,11 @@
     MenuViewController *controller = [MenuViewController new];
     controller.title = @"Positive?";
     
-    [controller addTitle:@"Delete This Site" iconName:@"menu_icn_delete.png" destructive:YES selectionShouldDismiss:YES handler:^{
+    [controller addTitle:@"Delete this site" iconName:@"menu_icn_delete.png" destructive:YES selectionShouldDismiss:YES handler:^{
         [self deleteSite];
     }];
     
-    [self.navigationController pushViewController:controller animated:YES];
+    [self.navigationController showViewController:controller sender:self];
 }
 
 - (void)deleteSite {
@@ -433,8 +430,8 @@
     
     [self.appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
-        [self.appDelegate.navigationController
-         popToViewController:[self.appDelegate.navigationController.viewControllers
+        [self.appDelegate.feedsNavigationController
+         popToViewController:[self.appDelegate.feedsNavigationController.viewControllers
                               objectAtIndex:0]
          animated:YES];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -450,7 +447,7 @@
     
     controller.fonts = self.fonts;
     
-    [self.navigationController pushViewController:controller animated:YES];
+    [self.navigationController showViewController:controller sender:self];
 }
 
 - (UITableViewCell *)makeFontSizeTableCell {
@@ -467,7 +464,7 @@
     [self.fontSizeSegment setTitle:@"L" forSegmentAtIndex:3];
     [self.fontSizeSegment setTitle:@"XL" forSegmentAtIndex:4];
     self.fontSizeSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
-    [self.fontSizeSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.fontSizeSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:2];
@@ -511,10 +508,10 @@
     cell.backgroundColor = UIColorFromRGB(0xffffff);
     
     self.fullscreenSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
-    [self.fullscreenSegment setTitle:[@"Full Screen" uppercaseString] forSegmentAtIndex:0];
-    [self.fullscreenSegment setTitle:[@"Toolbar" uppercaseString] forSegmentAtIndex:1];
+    [self.fullscreenSegment setTitle:@"Full Screen" forSegmentAtIndex:0];
+    [self.fullscreenSegment setTitle:@"Toolbar" forSegmentAtIndex:1];
     self.fullscreenSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
-    [self.fullscreenSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.fullscreenSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
     [self.fullscreenSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.fullscreenSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     
@@ -533,10 +530,10 @@
     cell.backgroundColor = UIColorFromRGB(0xffffff);
     
     self.autoscrollSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
-    [self.autoscrollSegment setTitle:[@"Manual Scroll" uppercaseString] forSegmentAtIndex:0];
-    [self.autoscrollSegment setTitle:[@"Auto Scroll" uppercaseString] forSegmentAtIndex:1];
+    [self.autoscrollSegment setTitle:@"Manual scroll" forSegmentAtIndex:0];
+    [self.autoscrollSegment setTitle:@"Auto scroll" forSegmentAtIndex:1];
     self.autoscrollSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
-    [self.autoscrollSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.autoscrollSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
     [self.autoscrollSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.autoscrollSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     
@@ -555,10 +552,10 @@
     cell.backgroundColor = UIColorFromRGB(0xffffff);
     
     self.scrollOrientationSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
-    [self.scrollOrientationSegment setTitle:[@"⏩ Horizontal" uppercaseString] forSegmentAtIndex:0];
-    [self.scrollOrientationSegment setTitle:[@"⏬ Vertical" uppercaseString] forSegmentAtIndex:1];
+    [self.scrollOrientationSegment setTitle:@"⏩ Horizontal" forSegmentAtIndex:0];
+    [self.scrollOrientationSegment setTitle:@"⏬ Vertical" forSegmentAtIndex:1];
     self.scrollOrientationSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
-    [self.scrollOrientationSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:11.0f]} forState:UIControlStateNormal];
+    [self.scrollOrientationSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
     [self.scrollOrientationSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.scrollOrientationSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
     
