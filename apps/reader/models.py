@@ -257,7 +257,7 @@ class UserSubscription(models.Model):
             else:
                 r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
             sorted_stories_key          = 'zF:%s' % (self.feed_id)
-            r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
+            r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])            
             if order == 'oldest':
                 removed_min = r.zremrangebyscore(unread_ranked_stories_key, 0, min_score-1)
                 removed_max = r.zremrangebyscore(unread_ranked_stories_key, max_score+1, 2*max_score)
@@ -268,7 +268,7 @@ class UserSubscription(models.Model):
             if not ignore_user_stories:
                 r.delete(unread_stories_key)
                 
-            if self.user.profile.is_archive:
+            if self.user.profile.is_archive and read_filter == "unread":
                 oldest_manual_unread = self.oldest_manual_unread_story_date()
                 if oldest_manual_unread:
                     if order == 'oldest':
@@ -999,7 +999,6 @@ class UserSubscription(models.Model):
                     else:
                         feed_scores['neutral'] += 1
         else:
-            # print " ---> Cutoff date: %s" % date_delta
             unread_story_hashes = self.story_hashes(user_id=self.user_id, feed_ids=[self.feed_id],
                                                     usersubs=[self],
                                                     read_filter='unread', group_by_feed=False,

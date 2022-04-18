@@ -35,6 +35,7 @@ def FinishFetchArchiveFeeds(results, user_id, start_time, starting_story_count):
     ending_story_count, pre_archive_count = UserSubscription.finish_fetch_archive_feeds(user_id, start_time, starting_story_count)
     new_story_count = ending_story_count - starting_story_count
 
+    user_profile = Profile.objects.get(user__pk=user_id)
     user_profile.send_new_premium_archive_email(new_story_count, ending_story_count, pre_archive_count)
 
 @app.task(name="email-new-premium-pro")
