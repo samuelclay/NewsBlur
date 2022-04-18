@@ -503,11 +503,11 @@ class ProcessFeed:
             if not story['title'] and not story['story_content']:
                 continue
             if self.options.get('archive_page', None) and story.get('published') > day_ago:
-                # Arbitrary but necessary to prevent broken feeds from creating an unlimited number of stories
+                # Archive only: Arbitrary but necessary to prevent feeds from creating an unlimited number of stories
                 # because they don't have a guid so it gets auto-generated based on the date, and if the story
                 # is missing a date, then the latest date gets used. So reject anything newer than 24 hours old
                 # when filling out the archive.
-                logging.debug(f"   ---> [%-30s] ~FBTossing story because it's too new for the archive: ~SB{story}")
+                # logging.debug(f"   ---> [%-30s] ~FBTossing story because it's too new for the archive: ~SB{story}")
                 continue
             if story.get('published') < start_date:
                 start_date = story.get('published')
@@ -1142,10 +1142,10 @@ class FeedFetcherWorker:
         # time_taken = datetime.datetime.utcnow() - self.time_start
 
     def fetch_and_process_archive_pages(self, feed_id):
-        seen_story_hashes = set()
         feed = Feed.get_by_id(feed_id)
         
         for archive_page_key in ["page", "paged"]:
+            seen_story_hashes = set()
             failed_pages = 0
             self.options['archive_page_key'] = archive_page_key
 
@@ -1155,7 +1155,13 @@ class FeedFetcherWorker:
                 self.options['archive_page'] = page+1
 
                 ffeed = FetchFeed(feed_id, self.options)
-                ret_feed, fetched_feed = ffeed.fetch()
+                try:
+                    ret_feed, fetched_feed = ffeed.fetch()
+                except TimeoutError as e:
+                    logging.debug('   ---> [%-30s] ~FRFeed fetch timed out...' % (feed.log_title[:30]))
+                    failed_pages += 1
+                    continue
+
                 raw_feed = ffeed.raw_feed
 
                 if fetched_feed and ret_feed == FEED_OK:
@@ -1169,11 +1175,12 @@ class FeedFetcherWorker:
                     seen_story_hashes.update(pfeed.archive_seen_story_hashes)
                     after_story_hashes = len(seen_story_hashes)
 
-                    logging.debug(f"   ---> [{feed.log_title[:30]:<30}] ~FBStory hashes found: ~SB{len(seen_story_hashes)} stories, ~SN~FR{failed_pages}~FB failures")
                     if before_story_hashes == after_story_hashes:
                         failed_pages += 1
                 else:
                     failed_pages += 1
+
+                logging.debug(f"   ---> [{feed.log_title[:30]:<30}] ~FBStory hashes found: ~SB{len(seen_story_hashes)} stories, ~SN~FR{failed_pages}~FB failures")
 
     def publish_to_subscribers(self, feed, new_count):
         try:

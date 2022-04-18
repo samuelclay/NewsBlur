@@ -3,6 +3,7 @@ import time
 import re
 import redis
 import pymongo
+import celery
 import mongoengine as mongo
 from operator import itemgetter
 from pprint import pprint
@@ -573,7 +574,88 @@ class UserSubscription(models.Model):
         if stale_feeds:
             stale_feeds = list(set([f.feed_id for f in stale_feeds]))
             cls.queue_new_feeds(user, new_feeds=stale_feeds)
+
+    @classmethod
+    def schedule_fetch_archive_feeds_for_user(cls, user_id):
+        from apps.profile.tasks import FetchArchiveFeedsForUser
+        FetchArchiveFeedsForUser.apply_async(kwargs=dict(user_id=user_id), 
+                                             queue='search_indexer')
+        
+    # Should be run as a background task
+    @classmethod
+    def fetch_archive_feeds_for_user(cls, user_id):
+        from apps.profile.tasks import FetchArchiveFeedsChunk, FinishFetchArchiveFeeds
+
+        start_time = time.time()
+        user = User.objects.get(pk=user_id)
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        r.publish(user.username, 'fetch_archive:start')
+
+        subscriptions = UserSubscription.objects.filter(user=user).only('feed')
+        total = subscriptions.count()
+
+        
+        feed_ids = []
+        starting_story_count = 0
+        for sub in subscriptions:
+            try:
+                feed_ids.append(sub.feed.pk)
+            except Feed.DoesNotExist:
+                continue
+            starting_story_count += MStory.objects(story_feed_id=sub.feed.pk).count()
+        
+        feed_id_chunks = [c for c in chunks(feed_ids, 6)]
+        logging.user(user, "~FCFetching archive stories from ~SB%s feeds~SN in %s chunks..." %
+                     (total, len(feed_id_chunks)))
+        
+        search_chunks = [FetchArchiveFeedsChunk.s(feed_ids=feed_id_chunk,
+                                                  user_id=user_id
+                                                  ).set(queue='search_indexer')
+                         for feed_id_chunk in feed_id_chunks]
+        callback = FinishFetchArchiveFeeds.s(user_id=user_id,
+                                             start_time=start_time,
+                                             starting_story_count=starting_story_count).set(queue='search_indexer')
+        celery.chord(search_chunks)(callback)
+
+    @classmethod
+    def fetch_archive_feeds_chunk(cls, user_id, feed_ids):
+        from apps.rss_feeds.models import Feed
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        user = User.objects.get(pk=user_id)
+
+        logging.user(user, "~FCFetching archive stories from %s feeds..." % len(feed_ids))
+
+        for feed_id in feed_ids:
+            feed = Feed.get_by_id(feed_id)
+            if not feed: continue
             
+            feed.fill_out_archive_stories()
+        
+        r.publish(user.username, 'fetch_archive:feeds:%s' % 
+                  ','.join([str(f) for f in feed_ids]))
+
+    @classmethod
+    def finish_fetch_archive_feeds(cls, user_id, start_time):
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        user = User.objects.get(pk=user_id)
+        subscriptions = UserSubscription.objects.filter(user=user).only('feed')
+        total = subscriptions.count()
+        duration = time.time() - start_time
+
+        ending_story_count = 0
+        for sub in subscriptions:
+            try:
+                ending_story_count += MStory.objects(story_feed_id=sub.feed.pk).count()
+            except Feed.DoesNotExist:
+                continue
+
+        logging.user(user, "~FCFetched archive stories from ~SB%s feeds~SN in ~FM~SB%s~FC~SN sec." % 
+                     (total, round(duration, 2)))
+        r.publish(user.username, 'fetch_archive:done')
+
+        return ending_story_count
+        
+    
     @classmethod
     def identify_deleted_feed_users(cls, old_feed_id):
         users = UserSubscriptionFolders.objects.filter(folders__contains=old_feed_id).only('user')
@@ -1126,7 +1208,8 @@ class UserSubscription(models.Model):
         
         return table
         # return cofeeds
-        
+
+
 class RUserStory:
     
     @classmethod

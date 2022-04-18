@@ -380,15 +380,16 @@ def profile_is_premium_archive(request):
 
     subs = UserSubscription.objects.filter(user=request.user)
     total_subs = subs.count()
-    activated_subs = subs.filter(active=True).count()
+    activated_subs = subs.filter(feed__archive_subscribers__gte=1).count()
     
     if retries >= 30:
         code = -1
         if not request.user.profile.is_premium:
-            subject = "Premium activation failed: %s (%s/%s)" % (request.user, activated_subs, total_subs)
+            subject = "Premium archive activation failed: %s (%s/%s)" % (request.user, activated_subs, total_subs)
             message = """User: %s (%s) -- Email: %s""" % (request.user.username, request.user.pk, request.user.email)
             mail_admins(subject, message)
             request.user.profile.is_premium = True
+            request.user.profile.is_premium_archive = True
             request.user.profile.save()
         
     return {
