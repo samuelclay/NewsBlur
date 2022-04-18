@@ -265,9 +265,7 @@ class Profile(models.Model):
         return True
     
     def activate_archive(self, never_expire=False):
-        from apps.profile.tasks import EmailNewPremiumArchive
-        
-        EmailNewPremiumArchive.delay(user_id=self.user.pk)
+        UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
         
         was_premium = self.is_premium
         was_archive = self.is_archive
@@ -289,6 +287,8 @@ class Profile(models.Model):
                 except (IntegrityError, Feed.DoesNotExist):
                     pass
     
+        # Count subscribers to turn on archive_subscribers counts, then show that count to users
+        # on the paypal_archive_return page.
         try:
             scheduled_feeds = [sub.feed.pk for sub in subs]
         except Feed.DoesNotExist:
@@ -296,7 +296,7 @@ class Profile(models.Model):
         logging.user(self.user, "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..." % 
                      len(scheduled_feeds))
         SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
-    
+
         UserSubscription.queue_new_feeds(self.user)
         
         self.setup_premium_history()
@@ -1249,8 +1249,8 @@ class Profile(models.Model):
         
         logging.user(self.user, "~BB~FM~SBSending email for new premium: %s" % self.user.email)
     
-    def send_new_premium_archive_email(self, force=False):
-        if not self.user.email or not self.send_emails:
+    def send_new_premium_archive_email(self, new_story_count, total_story_count, force=False):
+        if not self.user.email:
             return
         
         params = dict(receiver_user_id=self.user.pk, email_type='new_premium_archive')
@@ -1265,7 +1265,7 @@ class Profile(models.Model):
         user    = self.user
         text    = render_to_string('mail/email_new_premium_archive.txt', locals())
         html    = render_to_string('mail/email_new_premium_archive.xhtml', locals())
-        subject = "Thank you for subscribing to NewsBlur Premium Archive!"
+        subject = f"Your NewsBlur Premium Archive subscription now holds {total_story_count:,} stories"
         msg     = EmailMultiAlternatives(subject, text, 
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])

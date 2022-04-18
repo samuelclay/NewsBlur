@@ -608,6 +608,7 @@ class Feed(models.Model):
             r.zremrangebyrank('error_feeds', 0, -1)
         else:
             logging.debug(" ---> No errored feeds to drain")
+
     def update_all_statistics(self, has_new_stories=False, force=False):
         recount = not self.counts_converted_to_redis        
         count_extra = False
@@ -1032,12 +1033,25 @@ class Feed(models.Model):
             else:
                 return 'black'
 
-    def fill_out_archive_stories(self):
+    def fill_out_archive_stories(self, force=False):
         """
         Starting from page 1 and iterating through N pages, determine whether
         page(i) matches page(i-1) and if there are any new stories.
         """
+        before_story_count = MStory.objects(story_feed_id=self.pk).count()
+
+        if not force and not self.archive_subscribers:
+            logging.debug("   ---> [%-30s] ~FBNot filling out archive stories, no archive subscribers" % (
+                          self.log_title[:30]))
+            return before_story_count, before_story_count
+
         self.update(archive_page=1)
+
+        after_story_count = MStory.objects(story_feed_id=self.pk).count()
+        logging.debug("   ---> [%-30s] ~FCFilled out archive, ~FM~SB%s~SN new stories~FC, total of ~SB%s~SN stories" % (
+                        self.log_title[:30],
+                        after_story_count - before_story_count,
+                        after_story_count))
         
     def save_feed_stories_last_month(self, verbose=False):
         month_ago = datetime.datetime.utcnow() - datetime.timedelta(days=30)
