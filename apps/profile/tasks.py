@@ -31,14 +31,11 @@ def FetchArchiveFeedsChunk(user_id, feed_ids):
 @app.task()
 def FinishFetchArchiveFeeds(results, user_id, start_time, starting_story_count):
     logging.debug(" ---> Fetching archive stories finished for %s" % (user_id))
-    ending_story_count = UserSubscription.finish_fetch_archive_feeds(user_id, start_time)
-    new_story_count = ending_story_count - starting_story_count
-    subs = UserSubscription.objects.filter(user=user_id)
-    
-    user_profile = Profile.objects.get(user__pk=user_id)
-    logging.user(user_profile.user, f"~FCFinished archive feed fetches for ~SB~FG{subs.count()} feeds~FC~SN: ~FG~SB{new_story_count} new~SB~FC, ~FG{ending_story_count} total")
 
-    user_profile.send_new_premium_archive_email(new_story_count, ending_story_count)
+    ending_story_count, pre_archive_count = UserSubscription.finish_fetch_archive_feeds(user_id, start_time, starting_story_count)
+    new_story_count = ending_story_count - starting_story_count
+
+    user_profile.send_new_premium_archive_email(new_story_count, ending_story_count, pre_archive_count)
 
 @app.task(name="email-new-premium-pro")
 def EmailNewPremiumPro(user_id):

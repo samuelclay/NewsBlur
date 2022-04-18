@@ -604,7 +604,7 @@ class UserSubscription(models.Model):
                 continue
             starting_story_count += MStory.objects(story_feed_id=sub.feed.pk).count()
         
-        feed_id_chunks = [c for c in chunks(feed_ids, 6)]
+        feed_id_chunks = [c for c in chunks(feed_ids, 1)]
         logging.user(user, "~FCFetching archive stories from ~SB%s feeds~SN in %s chunks..." %
                      (total, len(feed_id_chunks)))
         
@@ -635,7 +635,7 @@ class UserSubscription(models.Model):
                   ','.join([str(f) for f in feed_ids]))
 
     @classmethod
-    def finish_fetch_archive_feeds(cls, user_id, start_time):
+    def finish_fetch_archive_feeds(cls, user_id, start_time, starting_story_count):
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
         user = User.objects.get(pk=user_id)
         subscriptions = UserSubscription.objects.filter(user=user).only('feed')
@@ -643,17 +643,22 @@ class UserSubscription(models.Model):
         duration = time.time() - start_time
 
         ending_story_count = 0
+        pre_archive_count = 0
         for sub in subscriptions:
             try:
                 ending_story_count += MStory.objects(story_feed_id=sub.feed.pk).count()
+                pre_archive_count += Feed.get_by_id(sub.feed.pk).number_of_stories_to_store(pre_archive=True)
             except Feed.DoesNotExist:
                 continue
+
+        new_story_count = ending_story_count - starting_story_count
+        logging.user(user, f"~FCFinished archive feed fetches for ~SB~FG{subscriptions.count()} feeds~FC~SN: ~FG~SB{new_story_count:,} new~SB~FC, ~FG{ending_story_count:,} total (pre-archive: {pre_archive_count:,} stories)")
 
         logging.user(user, "~FCFetched archive stories from ~SB%s feeds~SN in ~FM~SB%s~FC~SN sec." % 
                      (total, round(duration, 2)))
         r.publish(user.username, 'fetch_archive:done')
 
-        return ending_story_count
+        return ending_story_count, pre_archive_count
         
     
     @classmethod

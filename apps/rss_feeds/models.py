@@ -1572,7 +1572,10 @@ class Feed(models.Model):
     
     @property
     def story_cutoff(self):
-        if self.archive_subscribers > 0:
+        return self.number_of_stories_to_store()
+    
+    def number_of_stories_to_store(self, pre_archive=False):
+        if self.archive_subscribers > 0 and not pre_archive:
             return 10000
         
         cutoff = 500
@@ -1607,7 +1610,7 @@ class Feed(models.Model):
             pipeline.get(feed_read_key)
         read_stories_per_week = pipeline.execute()
         read_stories_last_month = sum([int(rs) for rs in read_stories_per_week if rs])
-        if read_stories_last_month == 0:
+        if not pre_archive and read_stories_last_month == 0:
             original_cutoff = cutoff
             cutoff = min(cutoff, 10)
             try:
@@ -1619,7 +1622,7 @@ class Feed(models.Model):
         if getattr(settings, 'OVERRIDE_STORY_COUNT_MAX', None):
             cutoff = settings.OVERRIDE_STORY_COUNT_MAX
         
-        return cutoff
+        return int(cutoff)
                 
     def trim_feed(self, verbose=False, cutoff=None):
         if not cutoff:
