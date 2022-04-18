@@ -1179,8 +1179,8 @@ class FeedFetcherWorker:
                         failed_pages += 1
                 else:
                     failed_pages += 1
-
-                logging.debug(f"   ---> [{feed.log_title[:30]:<30}] ~FBStory hashes found: ~SB{len(seen_story_hashes)} stories, ~SN~FR{failed_pages}~FB failures")
+                failed_color = "~FR" if failed_pages > 0 else ""
+                logging.debug(f"   ---> [{feed.log_title[:30]:<30}] ~FBStory hashes found, ~FGarchive page ~SB{page+1}~SN: ~SB~FG{len(seen_story_hashes):,} stories~SN~FB, {failed_color}{failed_pages} failures")
 
     def publish_to_subscribers(self, feed, new_count):
         try:

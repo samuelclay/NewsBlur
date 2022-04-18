@@ -17,20 +17,20 @@ def EmailNewPremium(user_id):
 
 @app.task()
 def FetchArchiveFeedsForUser(user_id):
-    subs = UserSubscription.objects.filter(user=user_id)
-    user_profile = Profile.objects.get(user__pk=user_id)
-    logging.user(user_profile.user, f"~FCBeginning archive feed fetches for ~SB~FG{subs.count()} feeds~SN...")
+    # subs = UserSubscription.objects.filter(user=user_id)
+    # user_profile = Profile.objects.get(user__pk=user_id)
+    # logging.user(user_profile.user, f"~FCBeginning archive feed fetches for ~SB~FG{subs.count()} feeds~SN...")
 
     UserSubscription.fetch_archive_feeds_for_user(user_id)
 
 @app.task()
 def FetchArchiveFeedsChunk(user_id, feed_ids):
-    logging.debug(" ---> Fetching archive stories: %s for %s" % (feed_ids, user_id))
+    # logging.debug(" ---> Fetching archive stories: %s for %s" % (feed_ids, user_id))
     UserSubscription.fetch_archive_feeds_chunk(user_id, feed_ids)
 
 @app.task()
 def FinishFetchArchiveFeeds(results, user_id, start_time, starting_story_count):
-    logging.debug(" ---> Fetching archive stories finished for %s" % (user_id))
+    # logging.debug(" ---> Fetching archive stories finished for %s" % (user_id))
 
     ending_story_count, pre_archive_count = UserSubscription.finish_fetch_archive_feeds(user_id, start_time, starting_story_count)
     new_story_count = ending_story_count - starting_story_count
