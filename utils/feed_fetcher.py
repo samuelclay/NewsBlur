@@ -1159,8 +1159,8 @@ class FeedFetcherWorker:
                     ret_feed, fetched_feed = ffeed.fetch()
                 except TimeoutError as e:
                     logging.debug('   ---> [%-30s] ~FRFeed fetch timed out...' % (feed.log_title[:30]))
-                    failed_pages += 1
-                    continue
+                    # Timeout means don't bother to keep checking...
+                    break
 
                 raw_feed = ffeed.raw_feed
 
