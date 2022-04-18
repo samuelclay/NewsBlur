@@ -636,6 +636,8 @@ def clear_prometheus_aggregation_stats():
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path)
         except Exception as e:
+            if 'No such file' in str(e):
+                return
             print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 
