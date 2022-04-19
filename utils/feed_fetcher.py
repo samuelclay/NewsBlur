@@ -240,7 +240,6 @@ class FetchFeed:
         if not self.fpf or self.options.get('force_fp', False):
             try:
                 self.fpf = feedparser.parse(address, agent=self.feed.user_agent, etag=etag, modified=modified)
-                import pdb; pdb.set_trace()
             except (
                 TypeError,
                 ValueError,
