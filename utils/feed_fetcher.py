@@ -100,7 +100,10 @@ class FetchFeed:
             self.options['force'] = True
             modified = None
             etag = None
-            if self.options.get('archive_page', None):
+            if self.options.get('archive_page', None) == "rfc5005":
+                # address = self.options['archive_page_link']
+                pass
+            elif self.options.get('archive_page', None):
                 address = qurl(address, add={self.options['archive_page_key']: self.options['archive_page']})
             elif address.startswith('http'):
                 address = qurl(address, add={"_": random.randint(0, 10000)})
@@ -237,6 +240,7 @@ class FetchFeed:
         if not self.fpf or self.options.get('force_fp', False):
             try:
                 self.fpf = feedparser.parse(address, agent=self.feed.user_agent, etag=etag, modified=modified)
+                import pdb; pdb.set_trace()
             except (
                 TypeError,
                 ValueError,
@@ -254,7 +258,7 @@ class FetchFeed:
 
         if not self.fpf:
             try:
-                logging.debug('   ***> [%-30s] ~FRTurning off headers...' % (self.feed.log_title[:30]))
+                logging.debug('   ***> [%-30s] ~FRTurning off headers: %s' % (self.feed.log_title[:30], address))
                 self.fpf = feedparser.parse(address, agent=self.feed.user_agent)
             except (
                 TypeError,
@@ -1143,44 +1147,114 @@ class FeedFetcherWorker:
 
     def fetch_and_process_archive_pages(self, feed_id):
         feed = Feed.get_by_id(feed_id)
+        first_seen_feed = None
         
-        for archive_page_key in ["page", "paged"]:
+        for archive_page_key in ["page", "paged", "rfc5005"]:
             seen_story_hashes = set()
             failed_pages = 0
             self.options['archive_page_key'] = archive_page_key
 
-            for page in range(100):
-                if failed_pages >= 3: 
-                    break
-                self.options['archive_page'] = page+1
-
-                ffeed = FetchFeed(feed_id, self.options)
-                try:
-                    ret_feed, fetched_feed = ffeed.fetch()
-                except TimeoutError as e:
-                    logging.debug('   ---> [%-30s] ~FRFeed fetch timed out...' % (feed.log_title[:30]))
-                    # Timeout means don't bother to keep checking...
-                    break
-
-                raw_feed = ffeed.raw_feed
-
-                if fetched_feed and ret_feed == FEED_OK:
-                    pfeed = ProcessFeed(feed_id, fetched_feed, self.options, raw_feed=raw_feed)
-                    if not pfeed.fpf or not pfeed.fpf.entries:
-                        failed_pages += 1
-                        continue
-                    
-                    before_story_hashes = len(seen_story_hashes)
-                    pfeed.process()
-                    seen_story_hashes.update(pfeed.archive_seen_story_hashes)
-                    after_story_hashes = len(seen_story_hashes)
-
-                    if before_story_hashes == after_story_hashes:
-                        failed_pages += 1
+            if archive_page_key == "rfc5005":
+                self.options['archive_page'] = "rfc5005"
+                link_prev_archive = None
+                if first_seen_feed:
+                    for link in getattr(first_seen_feed, 'links', []):
+                        if link['rel'] == 'prev-archive' or link['rel'] == 'next':
+                            link_prev_archive = link['href']
                 else:
-                    failed_pages += 1
-                failed_color = "~FR" if failed_pages > 0 else ""
-                logging.debug(f"   ---> [{feed.log_title[:30]:<30}] ~FBStory hashes found, ~FGarchive page ~SB{page+1}~SN: ~SB~FG{len(seen_story_hashes):,} stories~SN~FB, {failed_color}{failed_pages} failures")
+                    ffeed = FetchFeed(feed_id, self.options)
+                    try:
+                        ret_feed, fetched_feed = ffeed.fetch()
+                    except TimeoutError:
+                        logging.debug('   ---> [%-30s] ~FRFeed fetch timed out...' % (feed.log_title[:30]))
+                        # Timeout means don't bother to keep checking...
+                        continue
+
+                    raw_feed = ffeed.raw_feed
+
+                    if fetched_feed and ret_feed == FEED_OK:
+                        pfeed = ProcessFeed(feed_id, fetched_feed, self.options, raw_feed=raw_feed)
+                        if not pfeed.fpf or not pfeed.fpf.entries:
+                            continue
+                        for link in getattr(pfeed.fpf, 'links', []):
+                            if link['rel'] == 'prev-archive' or link['rel'] == 'next':
+                                link_prev_archive = link['href']
+
+                if not link_prev_archive:
+                    continue
+
+                while True:
+                    if not link_prev_archive:
+                        break
+                    if link_prev_archive == self.options['archive_page_link']:
+                        logging.debug('   ---> [%-30s] ~FRNo change in archive page link: %s' % (feed.log_title[:30], link_prev_archive))
+                        break                        
+                    self.options['archive_page_link'] = link_prev_archive
+                    link_prev_archive = None
+                    ffeed = FetchFeed(feed_id, self.options)
+                    try:
+                        ret_feed, fetched_feed = ffeed.fetch()
+                    except TimeoutError as e:
+                        logging.debug('   ---> [%-30s] ~FRFeed fetch timed out...' % (feed.log_title[:30]))
+                        # Timeout means don't bother to keep checking...
+                        break
+
+                    raw_feed = ffeed.raw_feed
+
+                    if fetched_feed and ret_feed == FEED_OK:
+                        pfeed = ProcessFeed(feed_id, fetched_feed, self.options, raw_feed=raw_feed)
+                        if not pfeed.fpf or not pfeed.fpf.entries:
+                            continue
+                        for link in getattr(pfeed.fpf, 'links', []):
+                            if link['rel'] == 'prev-archive' or link['rel'] == 'next':
+                                link_prev_archive = link['href']
+
+                        before_story_hashes = len(seen_story_hashes)
+                        pfeed.process()
+                        seen_story_hashes.update(pfeed.archive_seen_story_hashes)
+                        after_story_hashes = len(seen_story_hashes)
+
+                        if before_story_hashes == after_story_hashes:
+                            logging.debug('   ---> [%-30s] ~FRNo change in story hashes, but has archive link: %s' % (feed.log_title[:30], link_prev_archive))
+                            break
+                            
+                failed_color = "~FR" if not link_prev_archive else ""
+                logging.debug(f"   ---> [{feed.log_title[:30]:<30}] ~FBStory hashes found, ~FGarchive RFC5005 ~SB{link_prev_archive}~SN: ~SB~FG{failed_color}{len(seen_story_hashes):,} stories~SN~FB")
+            else:
+                for page in range(100):
+                    if failed_pages >= 3: 
+                        break
+                    self.options['archive_page'] = page+1
+
+                    ffeed = FetchFeed(feed_id, self.options)
+                    try:
+                        ret_feed, fetched_feed = ffeed.fetch()
+                    except TimeoutError as e:
+                        logging.debug('   ---> [%-30s] ~FRFeed fetch timed out...' % (feed.log_title[:30]))
+                        # Timeout means don't bother to keep checking...
+                        break
+
+                    raw_feed = ffeed.raw_feed
+
+                    if fetched_feed and ret_feed == FEED_OK:
+                        pfeed = ProcessFeed(feed_id, fetched_feed, self.options, raw_feed=raw_feed)
+                        if not pfeed.fpf or not pfeed.fpf.entries:
+                            failed_pages += 1
+                            continue
+
+                        if not first_seen_feed:
+                            first_seen_feed = pfeed.fpf
+                        before_story_hashes = len(seen_story_hashes)
+                        pfeed.process()
+                        seen_story_hashes.update(pfeed.archive_seen_story_hashes)
+                        after_story_hashes = len(seen_story_hashes)
+
+                        if before_story_hashes == after_story_hashes:
+                            failed_pages += 1
+                    else:
+                        failed_pages += 1
+                    failed_color = "~FR" if failed_pages > 0 else ""
+                    logging.debug(f"   ---> [{feed.log_title[:30]:<30}] ~FBStory hashes found, ~FGarchive page ~SB{page+1}~SN: ~SB~FG{len(seen_story_hashes):,} stories~SN~FB, {failed_color}{failed_pages} failures")
 
     def publish_to_subscribers(self, feed, new_count):
         try:
