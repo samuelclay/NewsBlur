@@ -749,7 +749,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             page: page,
             read_filter: this.view_setting(feed_id, 'read_filter')
         }, callback, callback, {
-            'ajax_group': 'feed_page'
+            'ajax_group': 'dashboard'
         });
     },
     
