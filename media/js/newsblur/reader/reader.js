@@ -1724,10 +1724,8 @@
             this.set_correct_story_view_for_feed();
             this.apply_resizable_layout({right_side: true});
             
-            if (_.contains(['grid', 'magazine'], original_layout) ||
-                _.contains(['grid', 'magazine'], story_layout)) {
-                NEWSBLUR.app.story_titles.render();
-            }
+            NEWSBLUR.app.story_titles.render();
+
             if (story_layout == 'list') {
                 if (this.active_story) {
                     this.active_story.story_title_view.toggle_selected();
@@ -2854,7 +2852,7 @@
             var feed_id = this.active_feed;
             var feed = this.model.get_feed(feed_id);
             
-            // console.log(['load_page_of_feed_stories', this.flags['opening_feed'], this.counts['page']]);
+            console.log(['load_page_of_feed_stories', this.flags['opening_feed'], this.counts['page']]);
             if (this.flags['opening_feed']) return;
 
             this.flags['opening_feed'] = true;
