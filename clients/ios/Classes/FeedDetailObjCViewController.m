@@ -435,9 +435,6 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     
     [self.notifier setNeedsLayout];
     
-    if (!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
-        [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
-    }
     if (storiesCollection.inSearch && storiesCollection.searchQuery) {
         [self.searchBar setText:storiesCollection.searchQuery];
         [self.storyTitlesTable setContentOffset:CGPointMake(0, 0)];
