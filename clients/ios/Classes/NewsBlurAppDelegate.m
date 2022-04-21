@@ -302,7 +302,7 @@
 }
 
 - (BOOL)application:(UIApplication *)application shouldRestoreSecureApplicationState:(NSCoder *)coder {
-    #warning hack: state restoration temporarily disabled due to iPhone issues
+    // state restoration disabled; doesn't work with split layout; need alternative approach
     return NO;
     
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
@@ -335,12 +335,18 @@
 - (UIViewController *)application:(UIApplication *)application viewControllerWithRestorationIdentifierPath:(NSArray<NSString *> *)identifierComponents coder:(NSCoder *)coder {
     NSString *identifier = identifierComponents.lastObject;
     
+    NSLog(@"restoring: %@", identifierComponents);  // log
+    
     if ([identifier isEqualToString:@"FeedsNavigationController"]) {
         return self.feedsNavigationController;
     } else if ([identifier isEqualToString:@"FeedsViewController"]) {
         return self.feedsViewController;
+    } else if ([identifier isEqualToString:@"FeedDetailNavigationController"]) {
+        return self.feedDetailNavigationController;
     } else if ([identifier isEqualToString:@"FeedDetailViewController"]) {
         return self.feedDetailViewController;
+    } else if ([identifier isEqualToString:@"DetailNavigationController"]) {
+        return self.detailNavigationController;
     } else if ([identifier isEqualToString:@"DetailViewController"]) {
         return self.detailViewController;
     } else if ([identifier isEqualToString:@"StoryPagesViewController"]) {
