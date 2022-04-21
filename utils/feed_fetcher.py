@@ -101,8 +101,7 @@ class FetchFeed:
             modified = None
             etag = None
             if self.options.get('archive_page', None) == "rfc5005":
-                # address = self.options['archive_page_link']
-                pass
+                address = self.options['archive_page_link']
             elif self.options.get('archive_page', None):
                 address = qurl(address, add={self.options['archive_page_key']: self.options['archive_page']})
             elif address.startswith('http'):
@@ -1157,9 +1156,13 @@ class FeedFetcherWorker:
                 self.options['archive_page'] = "rfc5005"
                 link_prev_archive = None
                 if first_seen_feed:
-                    for link in getattr(first_seen_feed, 'links', []):
+                    for link in getattr(first_seen_feed.feed, 'links', []):
                         if link['rel'] == 'prev-archive' or link['rel'] == 'next':
                             link_prev_archive = link['href']
+                            logging.debug('   ---> [%-30s] ~FGFeed has ~SBRFC5005~SN links, filling out archive: %s' % (feed.log_title[:30], link_prev_archive))
+                            break
+                    else:
+                        logging.debug('   ---> [%-30s] ~FBFeed has no RFC5005 links...' % (feed.log_title[:30]))
                 else:
                     ffeed = FetchFeed(feed_id, self.options)
                     try:
@@ -1175,7 +1178,7 @@ class FeedFetcherWorker:
                         pfeed = ProcessFeed(feed_id, fetched_feed, self.options, raw_feed=raw_feed)
                         if not pfeed.fpf or not pfeed.fpf.entries:
                             continue
-                        for link in getattr(pfeed.fpf, 'links', []):
+                        for link in getattr(pfeed.fpf.feed, 'links', []):
                             if link['rel'] == 'prev-archive' or link['rel'] == 'next':
                                 link_prev_archive = link['href']
 
@@ -1185,7 +1188,7 @@ class FeedFetcherWorker:
                 while True:
                     if not link_prev_archive:
                         break
-                    if link_prev_archive == self.options['archive_page_link']:
+                    if link_prev_archive == self.options.get('archive_page_link', None):
                         logging.debug('   ---> [%-30s] ~FRNo change in archive page link: %s' % (feed.log_title[:30], link_prev_archive))
                         break                        
                     self.options['archive_page_link'] = link_prev_archive
@@ -1203,10 +1206,15 @@ class FeedFetcherWorker:
                     if fetched_feed and ret_feed == FEED_OK:
                         pfeed = ProcessFeed(feed_id, fetched_feed, self.options, raw_feed=raw_feed)
                         if not pfeed.fpf or not pfeed.fpf.entries:
+                            logging.debug('   ---> [%-30s] ~FRFeed parse failed, no entries' % (feed.log_title[:30]))
                             continue
-                        for link in getattr(pfeed.fpf, 'links', []):
+                        for link in getattr(pfeed.fpf.feed, 'links', []):
                             if link['rel'] == 'prev-archive' or link['rel'] == 'next':
                                 link_prev_archive = link['href']
+                                logging.debug('   ---> [%-30s] ~FGFeed still has ~SBRFC5005~SN links, continuing filling out archive: %s' % (feed.log_title[:30], link_prev_archive))
+                                break
+                        else:
+                            logging.debug('   ---> [%-30s] ~FBFeed has no more RFC5005 links...' % (feed.log_title[:30]))
 
                         before_story_hashes = len(seen_story_hashes)
                         pfeed.process()
@@ -1218,10 +1226,10 @@ class FeedFetcherWorker:
                             break
                             
                 failed_color = "~FR" if not link_prev_archive else ""
-                logging.debug(f"   ---> [{feed.log_title[:30]:<30}] ~FBStory hashes found, ~FGarchive RFC5005 ~SB{link_prev_archive}~SN: ~SB~FG{failed_color}{len(seen_story_hashes):,} stories~SN~FB")
+                logging.debug(f"   ---> [{feed.log_title[:30]:<30}] ~FGStory hashes found, archive RFC5005 ~SB{link_prev_archive}~SN: ~SB~FG{failed_color}{len(seen_story_hashes):,} stories~SN~FB")
             else:
-                for page in range(100):
-                    if failed_pages >= 3: 
+                for page in range(3 if settings.DEBUG else 100):
+                    if failed_pages >= 1: 
                         break
                     self.options['archive_page'] = page+1
 
@@ -1253,7 +1261,7 @@ class FeedFetcherWorker:
                     else:
                         failed_pages += 1
                     failed_color = "~FR" if failed_pages > 0 else ""
-                    logging.debug(f"   ---> [{feed.log_title[:30]:<30}] ~FBStory hashes found, ~FGarchive page ~SB{page+1}~SN: ~SB~FG{len(seen_story_hashes):,} stories~SN~FB, {failed_color}{failed_pages} failures")
+                    logging.debug(f"   ---> [{feed.log_title[:30]:<30}] ~FGStory hashes found, archive page ~SB{page+1}~SN: ~SB~FG{len(seen_story_hashes):,} stories~SN~FB, {failed_color}{failed_pages} failures")
 
     def publish_to_subscribers(self, feed, new_count):
         try:
