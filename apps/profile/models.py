@@ -1265,7 +1265,7 @@ class Profile(models.Model):
         user    = self.user
         text    = render_to_string('mail/email_new_premium_archive.txt', locals())
         html    = render_to_string('mail/email_new_premium_archive.xhtml', locals())
-        subject = f"Your NewsBlur Premium Archive subscription went from {pre_archive_count:,} to {total_story_count:,} stories"
+        subject = f"Your NewsBlur Premium Archive backfill is complete: from {pre_archive_count:,} to {total_story_count:,} stories"
         msg     = EmailMultiAlternatives(subject, text, 
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
