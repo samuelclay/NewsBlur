@@ -64,6 +64,7 @@
 @property (nonatomic) FeedDetailTextSize textSize;
 @property (nonatomic, readwrite) BOOL showImagePreview;
 @property (nonatomic, readwrite) BOOL invalidateFontCache;
+@property (nonatomic, readwrite) BOOL cameFromFeedsList;
 
 - (void)reloadData;
 - (void)resetFeedDetail;
