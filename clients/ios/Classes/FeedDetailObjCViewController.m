@@ -637,6 +637,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     self.pageFinished = NO;
     self.isOnline = YES;
     self.isShowingFetching = NO;
+    self.cameFromFeedsList = YES;
     self.scrollingMarkReadRow = NSNotFound;
     appDelegate.activeStory = nil;
     [storiesCollection setStories:nil];
@@ -1327,7 +1328,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 - (void)testForTryFeed {
     if (!appDelegate.inFindingStoryMode ||
         !appDelegate.tryFeedStoryId) {
-        if (appDelegate.activeStory == nil && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && appDelegate.splitViewController.splitBehavior != UISplitViewControllerSplitBehaviorOverlay) {
+        if (appDelegate.activeStory == nil && self.cameFromFeedsList && ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || appDelegate.splitViewController.splitBehavior != UISplitViewControllerSplitBehaviorOverlay)) {
             NSInteger storyIndex = [storiesCollection indexFromLocation:0];
             
             if (storyIndex == -1) {
@@ -1336,6 +1337,10 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
             
             NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
             NSString *feedOpening = [preferences stringForKey:@"feed_opening"];
+            
+            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && feedOpening == nil) {
+                feedOpening = @"story";
+            }
             
             if ([feedOpening isEqualToString:@"story"]) {
                 appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
