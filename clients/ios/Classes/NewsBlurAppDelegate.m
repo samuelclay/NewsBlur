@@ -2174,6 +2174,8 @@
         [self.storyPagesViewController.view setNeedsLayout];
         [self.storyPagesViewController.view layoutIfNeeded];
         
+        self.feedDetailViewController.cameFromFeedsList = NO;
+        
         NSDictionary *params = @{@"location" : @(activeStoryLocation), @"animated" : @(animated)};
         
         if (self.isCompactWidth) {
