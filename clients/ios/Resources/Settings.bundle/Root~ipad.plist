@@ -315,6 +315,28 @@
 			<false/>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>When opening app</string>
+			<key>WantUpdate</key>
+			<true/>
+			<key>Titles</key>
+			<array>
+				<string>Show feed list</string>
+				<string>Open All Stories</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>everything</string>
+			<key>Values</key>
+			<array>
+				<string>feeds</string>
+				<string>everything</string>
+			</array>
+			<key>Key</key>
+			<string>app_opening</string>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>Text Size</string>
 			<key>Type</key>
@@ -847,44 +869,6 @@
 			</array>
 			<key>Key</key>
 			<string>video_playback</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Restore position</string>
-			<key>Titles</key>
-			<array>
-				<string>Always</string>
-				<string>Within 1 hour</string>
-				<string>Within 2 hours</string>
-				<string>Within 4 hours</string>
-				<string>Within 6 hours</string>
-				<string>Within 8 hours</string>
-				<string>Within 12 hours</string>
-				<string>Within 1 day</string>
-				<string>Within 2 days</string>
-				<string>Within 1 week</string>
-				<string>Never</string>
-			</array>
-			<key>DefaultValue</key>
-			<string>24</string>
-			<key>Values</key>
-			<array>
-				<string>always</string>
-				<string>1</string>
-				<string>2</string>
-				<string>4</string>
-				<string>6</string>
-				<string>8</string>
-				<string>12</string>
-				<string>24</string>
-				<string>48</string>
-				<string>168</string>
-				<string>never</string>
-			</array>
-			<key>Key</key>
-			<string>restore_state</string>
 		</dict>
 		<dict>
 			<key>Type</key>
