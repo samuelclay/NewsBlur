@@ -16,6 +16,7 @@
 
 #import "IASKSettingsReader.h"
 #import "IASKSpecifier.h"
+#import "IASKAppSettingsViewController.h" // DJS
 
 #pragma mark -
 @interface IASKSettingsReader () {
@@ -138,7 +139,16 @@
 	}
 
     for (NSDictionary *specifierDictionary in preferenceSpecifiers) {
-        IASKSpecifier *newSpecifier = [[IASKSpecifier alloc] initWithSpecifier:specifierDictionary];
+        NSDictionary *localDictionary = specifierDictionary;
+        
+        // DJS: added support for updating a specifier
+        if (self.delegate != nil && [localDictionary[@"WantUpdate"] boolValue]) {
+            NSMutableDictionary *mutableDictionary = localDictionary.mutableCopy;
+            [self.delegate settingsUpdateSpecifierDictionary:mutableDictionary];
+            localDictionary = mutableDictionary;
+        }
+        
+        IASKSpecifier *newSpecifier = [[IASKSpecifier alloc] initWithSpecifier:localDictionary];
         newSpecifier.settingsReader = self;
         [newSpecifier sortIfNeeded];
 
@@ -156,7 +166,7 @@
             if ([type isEqualToString:kIASKPSRadioGroupSpecifier]) {
                 for (NSString *value in newSpecifier.multipleValues) {
                     IASKSpecifier *valueSpecifier =
-                        [[IASKSpecifier alloc] initWithSpecifier:specifierDictionary radioGroupValue:value];
+                        [[IASKSpecifier alloc] initWithSpecifier:localDictionary radioGroupValue:value];
                     valueSpecifier.settingsReader = self;
                     [valueSpecifier sortIfNeeded];
                     [newArray addObject:valueSpecifier];

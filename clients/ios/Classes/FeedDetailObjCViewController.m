@@ -377,7 +377,12 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     }
     
     if (storiesCollection == nil) {
-        [self.appDelegate loadRiverFeedDetailView:(FeedDetailViewController *)self withFolder:@"placeholder"];
+        NSString *appOpening = [userPreferences stringForKey:@"app_opening"];
+        
+        if ([appOpening isEqualToString:@"feeds"] && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            self.messageLabel.text = @"Select a feed to read";
+            self.messageView.hidden = NO;
+        }
     }
     
     if (storiesCollection.isSocialView) {
@@ -986,6 +991,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     self.pageFetching = YES;
     NSInteger storyCount = storiesCollection.storyCount;
     if (storyCount == 0) {
+        self.messageView.hidden = YES;
         [self.storyTitlesTable reloadData];
        [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, CGRectGetHeight(self.searchBar.frame), 1) animated:YES];
     }
@@ -1532,7 +1538,11 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section { 
     NSInteger storyCount = storiesCollection.storyLocationsCount;
-
+    
+    if (!self.messageView.hidden) {
+        return 0;
+    }
+    
     // The +1 is for the finished/loading bar.
     return storyCount + 1;
 }
