@@ -261,6 +261,14 @@
             withCompletionHandler:nil];
     }
     
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSString *appOpening = [userPreferences stringForKey:@"app_opening"];
+    
+    if (![appOpening isEqualToString:@"feeds"]) {
+        self.pendingFolder = appOpening;
+//        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:appOpening];
+    }
+    
 	return YES;
 }
 
@@ -444,7 +452,8 @@
         return;
     }
     
-    NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Root.plist"]];
+    NSString *name = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad ? @"Root~ipad.plist" : @"Root.plist";
+    NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:name]];
     NSArray *preferences = [settings objectForKey:@"PreferenceSpecifiers"];
     
     NSMutableDictionary *defaultsToRegister = [[NSMutableDictionary alloc] initWithCapacity:[preferences count]];
@@ -1738,6 +1747,9 @@
         [self loadFeed:self.tryFeedFeedId withStory:self.tryFeedStoryId animated:NO];
     } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !self.isCompactWidth && self.storiesCollection == nil) {
         [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
+    } else if (self.pendingFolder != nil) {
+        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:self.pendingFolder];
+        self.pendingFolder = nil;
     }
 }
 
@@ -1918,11 +1930,6 @@
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder {
     self.readStories = [NSMutableArray array];
     NSMutableArray *feeds = [NSMutableArray array];
-    BOOL isPlaceholder = [folder isEqualToString:@"placeholder"];
-    
-    if (isPlaceholder) {
-        folder = @"everything";
-    }
     
     self.inFeedDetail = YES;
     [feedDetailView resetFeedDetail];
@@ -2020,7 +2027,7 @@
     
     detailViewController.navigationItem.titleView = [self makeFeedTitle:storiesCollection.activeFeed];
     
-    if (self.isCompactWidth && !isPlaceholder && feedDetailView == feedDetailViewController && feedDetailView.view.window == nil) {
+    if (self.isCompactWidth && feedDetailView == feedDetailViewController && feedDetailView.view.window == nil) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All"
                                                                           style: UIBarButtonItemStylePlain
                                                                          target: nil

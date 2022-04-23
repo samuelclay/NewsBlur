@@ -270,6 +270,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) NSArray *notificationFeedIds;
 
 @property (nonatomic, readonly) NSString *widgetFolder;
+@property (nonatomic, strong) NSString *pendingFolder;
 
 @property (nonatomic) NSArray *categories;
 @property (nonatomic) NSDictionary *categoryFeeds;
