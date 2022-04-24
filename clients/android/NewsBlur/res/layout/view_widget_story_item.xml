@@ -45,7 +45,7 @@
             android:id="@+id/story_item_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/story_item_feedicon"
+            android:layout_below="@id/story_item_feedtitle"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="2dp"
             android:layout_marginRight="8dp"
