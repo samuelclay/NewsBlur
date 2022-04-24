@@ -272,11 +272,6 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
                     menu.removeItem(R.id.menu_unmute_feed);
                 } else {
                     menu.removeItem(R.id.menu_mute_feed);
-                    menu.removeItem(R.id.menu_mark_feed_as_read);
-                    menu.removeItem(R.id.menu_notifications);
-                    menu.removeItem(R.id.menu_instafetch_feed);
-                    menu.removeItem(R.id.menu_intel);
-                    break;
                 }
                 if (feed.isNotifyUnread()) {
                     menu.findItem(R.id.menu_notifications_disable).setChecked(false);

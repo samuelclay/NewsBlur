@@ -216,15 +216,7 @@ class FeedUtils(
             val newFeedSet = FeedSet.folder("all", dbHelper.allActiveFeeds)
             ReadingAction.markFeedRead(newFeedSet, olderThan, newerThan)
         } else {
-            if (fs.singleFeed != null) {
-                if (!fs.isMuted) {
-                    ReadingAction.markFeedRead(fs, olderThan, newerThan)
-                } else {
-                    // this should not be possible if appropriate menus have been altered. 
-                    Log.w(activity, "disregarding mark-read for muted feed.")
-                    return
-                }
-            } else if (fs.isFolder) {
+            if (fs.isFolder) {
                 val feedIds = fs.multipleFeeds
                 val allActiveFeedIds = dbHelper.allActiveFeeds
                 val activeFeedIds: MutableSet<String> = HashSet()
