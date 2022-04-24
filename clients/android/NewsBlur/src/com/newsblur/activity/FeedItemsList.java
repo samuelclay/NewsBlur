@@ -17,7 +17,6 @@ import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedIntelTrainerFragment;
 import com.newsblur.fragment.RenameDialogFragment;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
@@ -112,17 +111,6 @@ public class FeedItemsList extends ItemsList {
             return true;
         }
         return false;
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-        if (!feed.active) {
-            // there is currently no way for a feed to be un-muted while in this activity, so
-            // don't bother creating the menu, which contains no valid options for a muted feed
-            return false;
-        }
-		super.onCreateOptionsMenu(menu);
-		return true;
 	}
 
 	@Override
