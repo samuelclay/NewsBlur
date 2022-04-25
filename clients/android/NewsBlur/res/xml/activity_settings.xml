@@ -54,6 +54,13 @@
             android:entries="@array/default_feed_list_order_entries"
             android:entryValues="@array/default_feed_list_order_values"
             android:defaultValue="@string/default_feed_list_order_value" />
+        <ListPreference
+            android:key="pref_feed_list_style"
+            android:title="@string/setting_feed_list_style"
+            android:dialogTitle="@string/setting_feed_list_style"
+            android:entries="@array/default_feed_list_style_entries"
+            android:entryValues="@array/default_feed_list_style_values"
+            android:defaultValue="@string/default_feed_list_style_value" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="enable_row_global_shared"

@@ -28,7 +28,7 @@
             android:shadowDy="1"
             android:shadowRadius="1"
             style="?feedRowNeutCountText"
-            android:textSize="14sp"
+            android:textSize="13sp"
             android:textStyle="bold" />
 
         <TextView
@@ -44,7 +44,7 @@
             android:shadowDy="1"
             android:shadowRadius="1"
             android:textColor="@color/white"
-            android:textSize="14sp"
+            android:textSize="13sp"
             android:textStyle="bold" />
 
         <TextView
@@ -60,7 +60,7 @@
             android:shadowDy="1"
             android:shadowRadius="1"
             android:textColor="@color/white"
-            android:textSize="14sp"
+            android:textSize="13sp"
             android:textStyle="bold" />
 
         <ImageView
@@ -107,8 +107,6 @@
             android:layout_marginStart="45dp"
             android:layout_marginRight="5dp"
             android:ellipsize="end"
-            android:paddingTop="7dp"
-            android:paddingBottom="7dp"
             android:singleLine="true"
             android:textSize="14sp"
             android:textStyle="bold" />

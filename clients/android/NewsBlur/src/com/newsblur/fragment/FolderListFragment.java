@@ -52,6 +52,7 @@ import com.newsblur.domain.Folder;
 import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.FeedListStyle;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
@@ -114,8 +115,10 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     public void onResume() {
         super.onResume();
         if (adapter != null) {
-            float textSize = PrefsUtils.getListTextSize(getActivity());
+            float textSize = PrefsUtils.getListTextSize(requireContext());
             adapter.setTextSize(textSize);
+            FeedListStyle feedListStyle = PrefsUtils.getFeedListStyle(requireContext());
+            adapter.setFeedListStyle(feedListStyle);
             adapter.notifyDataSetChanged();
         }
     }
