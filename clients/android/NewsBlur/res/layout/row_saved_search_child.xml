@@ -23,9 +23,7 @@
         android:layout_toRightOf="@id/row_saved_search_icon"
         android:ellipsize="end"
         android:lines="1"
-        android:paddingTop="9dp"
         android:paddingEnd="9dp"
-        android:paddingBottom="9dp"
         android:textSize="14sp" />
 
 </RelativeLayout>

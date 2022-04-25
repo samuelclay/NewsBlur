@@ -46,7 +46,6 @@
             android:shadowDy="1"
             android:shadowRadius="1"
             style="?feedRowNeutCountText"
-            android:textSize="14sp"
             android:textStyle="bold" />
 
         <TextView
@@ -58,13 +57,10 @@
             android:gravity="center"
             android:paddingLeft="3dp"
             android:paddingRight="3dp"
-            android:paddingTop="1dp"
-            android:paddingBottom="2dp"
             android:shadowColor="@color/positive_drop_shadow"
             android:shadowDy="1"
             android:shadowRadius="1"
             android:textColor="@color/white"
-            android:textSize="14sp"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -75,8 +71,6 @@
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@id/row_foldersums"
         android:layout_toRightOf="@id/row_everything_icon"
-        android:paddingBottom="9dp"
-        android:paddingTop="9dp"
         android:text="@string/all_shared_stories_title"
         android:textStyle="bold" />
 

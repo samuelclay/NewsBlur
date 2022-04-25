@@ -1052,6 +1052,11 @@ public class PrefsUtils {
         editor.commit();
     }
 
+    public static FeedListStyle getFeedListStyle(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return FeedListStyle.valueOf(preferences.getString(PrefConstants.FEED_LIST_STYLE, FeedListStyle.COMFORTABLE.name()));
+    }
+
     /**
      * Check for logged in user.
      * @return whether a cookie is stored on disk
