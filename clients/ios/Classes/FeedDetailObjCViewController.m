@@ -139,6 +139,9 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     [separatorBarButton setEnabled:NO];
     separatorBarButton.isAccessibilityElement = NO;
     
+    self.feedsBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Sites" style:UIBarButtonItemStylePlain target:self action:@selector(doShowFeeds:)];
+    self.feedsBarButton.accessibilityLabel = @"Show Sites";
+    
     UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
     settingsBarButton = [UIBarButtonItem barItemWithImage:settingsImage target:self action:@selector(doOpenSettingsMenu:)];
     settingsBarButton.accessibilityLabel = @"Settings";
@@ -374,7 +377,12 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     }
     
     if (storiesCollection == nil) {
-        [self.appDelegate loadRiverFeedDetailView:(FeedDetailViewController *)self withFolder:@"placeholder"];
+        NSString *appOpening = [userPreferences stringForKey:@"app_opening"];
+        
+        if ([appOpening isEqualToString:@"feeds"] && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            self.messageLabel.text = @"Select a feed to read";
+            self.messageView.hidden = NO;
+        }
     }
     
     if (storiesCollection.isSocialView) {
@@ -432,9 +440,6 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     
     [self.notifier setNeedsLayout];
     
-    if (!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
-        [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
-    }
     if (storiesCollection.inSearch && storiesCollection.searchQuery) {
         [self.searchBar setText:storiesCollection.searchQuery];
         [self.storyTitlesTable setContentOffset:CGPointMake(0, 0)];
@@ -637,6 +642,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     self.pageFinished = NO;
     self.isOnline = YES;
     self.isShowingFetching = NO;
+    self.cameFromFeedsList = YES;
     self.scrollingMarkReadRow = NSNotFound;
     appDelegate.activeStory = nil;
     [storiesCollection setStories:nil];
@@ -985,6 +991,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     self.pageFetching = YES;
     NSInteger storyCount = storiesCollection.storyCount;
     if (storyCount == 0) {
+        self.messageView.hidden = YES;
         [self.storyTitlesTable reloadData];
        [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, CGRectGetHeight(self.searchBar.frame), 1) animated:YES];
     }
@@ -1327,7 +1334,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 - (void)testForTryFeed {
     if (!appDelegate.inFindingStoryMode ||
         !appDelegate.tryFeedStoryId) {
-        if (appDelegate.activeStory == nil && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && appDelegate.splitViewController.splitBehavior != UISplitViewControllerSplitBehaviorOverlay) {
+        if (appDelegate.activeStory == nil && self.cameFromFeedsList && ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || appDelegate.splitViewController.splitBehavior != UISplitViewControllerSplitBehaviorOverlay)) {
             NSInteger storyIndex = [storiesCollection indexFromLocation:0];
             
             if (storyIndex == -1) {
@@ -1336,6 +1343,10 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
             
             NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
             NSString *feedOpening = [preferences stringForKey:@"feed_opening"];
+            
+            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && feedOpening == nil) {
+                feedOpening = @"story";
+            }
             
             if ([feedOpening isEqualToString:@"story"]) {
                 appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
@@ -1527,7 +1538,11 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section { 
     NSInteger storyCount = storiesCollection.storyLocationsCount;
-
+    
+    if (!self.messageView.hidden) {
+        return 0;
+    }
+    
     // The +1 is for the finished/loading bar.
     return storyCount + 1;
 }
@@ -1862,11 +1877,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             return height + font.pointSize * 2;
         }
     }
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    // This will create a "invisible" footer
-    return 0.01f;
 }
 
 - (void)scrollViewDidScroll: (UIScrollView *)scroll {
@@ -2210,6 +2220,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (BOOL)isInfrequent {
     return appDelegate.storiesCollection.isRiverView &&
     [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"];
+}
+
+- (IBAction)doShowFeeds:(id)sender {
+    [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"showFeeds"];
 }
 
 - (IBAction)doOpenSettingsMenu:(id)sender {

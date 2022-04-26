@@ -71,6 +71,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 - (IASKSettingsReader*)settingsReader {
 	if (!_settingsReader) {
 		_settingsReader = [[IASKSettingsReader alloc] initWithFile:self.file];
+        _settingsReader.delegate = self.delegate; // DJS
 		if (self.neverShowPrivacySettings) {
 			_settingsReader.showPrivacySettings = NO;
 		}

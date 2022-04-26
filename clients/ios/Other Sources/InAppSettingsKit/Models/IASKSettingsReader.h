@@ -252,6 +252,7 @@ __VA_ARGS__ \
 @property (nonatomic, retain) NSSet         *hiddenKeys;
 @property (nonatomic) BOOL					showPrivacySettings;
 
+@property (nonatomic, assign) id delegate;  // DJS
 
 #pragma mark - internal use. public only for testing
 - (NSString *)file:(NSString *)file
