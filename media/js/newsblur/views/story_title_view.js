@@ -59,13 +59,14 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         <div class="NB-story-title <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %> <% if (show_image_preview) { %>NB-has-image<% } %> ">\
             <div class="NB-storytitles-feed-border-inner"></div>\
             <div class="NB-storytitles-feed-border-outer"></div>\
-            <div class="NB-storytitles-sentiment" role="button"></div>\
-            <% if (show_image_preview) { %>\
-                <div class="NB-storytitles-story-image-container">\
-                    <div class="NB-storytitles-story-image" <% if (story.image_url()) { %>style="background-image: none, url(\'<%= story.image_url() %>\');"<% } %>></div>\
-                </div>\
-            <% } %>\
             <a href="<%= story.get("story_permalink") %>" class="story_title NB-hidden-fade">\
+                <div class="NB-storytitles-sentiment" role="button"></div>\
+                <div class="NB-story-manage-icon" role="button"></div>\
+                <% if (show_image_preview) { %>\
+                    <div class="NB-storytitles-story-image-container">\
+                        <div class="NB-storytitles-story-image" <% if (story.image_url()) { %>style="background-image: none, url(\'<%= story.image_url() %>\');"<% } %>></div>\
+                    </div>\
+                <% } %>\
                 <% if (feed) { %>\
                     <div class="NB-story-feed">\
                         <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
@@ -93,7 +94,6 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                     <% }) %>\
                 </div>\
             <% } %>\
-            <div class="NB-story-manage-icon" role="button"></div>\
         </div>\
         <div class="NB-story-detail"></div>\
     '),
@@ -102,13 +102,14 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         <div class="NB-story-title <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %> <% if (show_image_preview) { %>NB-has-image<% } %> ">\
             <div class="NB-storytitles-feed-border-inner"></div>\
             <div class="NB-storytitles-feed-border-outer"></div>\
-            <div class="NB-storytitles-sentiment" role="button"></div>\
-            <% if (show_image_preview) { %>\
-                <div class="NB-storytitles-story-image-container">\
-                    <div class="NB-storytitles-story-image" <% if (story.image_url()) { %>style="background-image: none, url(\'<%= story.image_url() %>\');"<% } %>></div>\
-                </div>\
-            <% } %>\
             <a href="<%= story.get("story_permalink") %>" class="story_title NB-hidden-fade">\
+                <div class="NB-storytitles-sentiment" role="button"></div>\
+                <div class="NB-story-manage-icon" role="button"></div>\
+                <% if (show_image_preview) { %>\
+                    <div class="NB-storytitles-story-image-container">\
+                        <div class="NB-storytitles-story-image" <% if (story.image_url()) { %>style="background-image: none, url(\'<%= story.image_url() %>\');"<% } %>></div>\
+                    </div>\
+                <% } %>\
                 <% if (feed) { %>\
                     <div class="NB-story-feed">\
                         <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
@@ -134,7 +135,6 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                     <% }) %>\
                 </div>\
             <% } %>\
-            <div class="NB-story-manage-icon" role="button"></div>\
         </div>\
         <div class="NB-story-detail"></div>\
     '),
