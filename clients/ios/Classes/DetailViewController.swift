@@ -20,6 +20,9 @@ class DetailViewController: BaseViewController {
         /// Layout of the story titles and story pages.
         static let layout = "story_titles_position"
         
+        /// Behavior of the split controller.
+        static let behavior = "split_behavior"
+        
         /// Position of the divider between the views when in horizontal orientation. Only used for `.top` and `.bottom` layouts.
         static let horizontalPosition = "story_titles_divider_horizontal"
         
@@ -28,7 +31,7 @@ class DetailViewController: BaseViewController {
     }
     
     /// Preference values.
-    enum Value {
+    enum LayoutValue {
         static let left = "titles_on_left"
         static let top = "titles_on_top"
         static let bottom = "titles_on_bottom"
@@ -50,9 +53,9 @@ class DetailViewController: BaseViewController {
     var layout: Layout {
         get {
             switch UserDefaults.standard.string(forKey: Key.layout) {
-            case Value.top:
+            case LayoutValue.top:
                 return .top
-            case Value.bottom:
+            case LayoutValue.bottom:
                 return .bottom
             default:
                 return .left
@@ -65,11 +68,11 @@ class DetailViewController: BaseViewController {
             
             switch newValue {
             case .top:
-                UserDefaults.standard.set(Value.top, forKey: Key.layout)
+                UserDefaults.standard.set(LayoutValue.top, forKey: Key.layout)
             case .bottom:
-                UserDefaults.standard.set(Value.bottom, forKey: Key.layout)
+                UserDefaults.standard.set(LayoutValue.bottom, forKey: Key.layout)
             default:
-                UserDefaults.standard.set(Value.left, forKey: Key.layout)
+                UserDefaults.standard.set(LayoutValue.left, forKey: Key.layout)
             }
             
             updateLayout(reload: true)
@@ -84,6 +87,43 @@ class DetailViewController: BaseViewController {
     /// Whether or not the feed detail is on the top; see also the previous property.
     @objc var storyTitlesOnTop: Bool {
         return layout == .top
+    }
+    
+    /// Preference values.
+    enum BehaviorValue {
+        static let auto = "auto"
+        static let tile = "tile"
+        static let displace = "displace"
+        static let overlay = "overlay"
+    }
+    
+    /// How the split controller behaves.
+    enum Behavior {
+        /// The split controller figures out the best behavior.
+        case auto
+        
+        /// The split controller arranges the views side-by-side.
+        case tile
+        
+        /// The split controller pushes the detail view aside.
+        case displace
+        
+        /// The split controller puts the left columns over the detail view.
+        case overlay
+    }
+    
+    /// How the split controller behaves.
+    var behavior: Behavior {
+        switch UserDefaults.standard.string(forKey: Key.behavior) {
+        case BehaviorValue.tile:
+            return .tile
+        case BehaviorValue.displace:
+            return .displace
+        case BehaviorValue.overlay:
+            return .overlay
+        default:
+            return .auto
+        }
     }
     
     /// Returns `true` if the window is in portrait orientation, otherwise `false`.
@@ -166,7 +206,11 @@ class DetailViewController: BaseViewController {
         appDelegate.feedsViewController.loadOfflineFeeds(false)
         
         if layout != .left, let controller = feedDetailViewController {
-            navigationItem.leftBarButtonItems = [controller.settingsBarButton]
+            if behavior == .overlay {
+                navigationItem.leftBarButtonItems = [controller.feedsBarButton, controller.settingsBarButton]
+            } else {
+                navigationItem.leftBarButtonItems = [controller.settingsBarButton]
+            }
         } else {
             navigationItem.leftBarButtonItems = []
         }
@@ -196,12 +240,7 @@ class DetailViewController: BaseViewController {
     
     /// Adjusts the container when autoscrolling. Only applies to iPhone.
     @objc func adjustForAutoscroll() {
-        if UIDevice.current.userInterfaceIdiom == .phone, let controller = storyPagesViewController, !controller.isNavigationBarHidden {
-            topContainerTopConstraint.constant = -44
-        } else {
-            topContainerTopConstraint.constant = 0
-        }
-        
+        adjustTopConstraint()
         updateTheme()
     }
     
@@ -251,6 +290,12 @@ class DetailViewController: BaseViewController {
         updateLayout(reload: false)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        adjustTopConstraint()
+    }
+    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
@@ -258,6 +303,22 @@ class DetailViewController: BaseViewController {
             coordinator.animate { context in
                 self.dividerViewBottomConstraint.constant = self.dividerPosition
             }
+        }
+        
+        adjustTopConstraint()
+    }
+    
+    private func adjustTopConstraint() {
+        if UIDevice.current.userInterfaceIdiom != .phone {
+            if view.window?.windowScene?.traitCollection.horizontalSizeClass == .compact {
+                topContainerTopConstraint.constant = -50
+            } else {
+                topContainerTopConstraint.constant = 0
+            }
+        } else if let controller = storyPagesViewController, !controller.isNavigationBarHidden {
+            topContainerTopConstraint.constant = -44
+        } else {
+            topContainerTopConstraint.constant = 0
         }
     }
     
@@ -331,6 +392,8 @@ private extension DetailViewController {
             }
             
             dividerViewBottomConstraint.constant = dividerPosition
+            
+            appDelegate.updateSplitBehavior()
         }
         
         guard let storyPagesViewController = storyPagesViewController else {
