@@ -41,6 +41,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
@@ -287,6 +288,13 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         } else if (themeValue == ThemeValue.AUTO) {
             menu.findItem(R.id.menu_theme_auto).setChecked(true);
         }
+
+        SpacingStyle spacingStyle = PrefsUtils.getSpacingStyle(this);
+        if (spacingStyle == SpacingStyle.COMFORTABLE) {
+            menu.findItem(R.id.menu_spacing_comfortable).setChecked(true);
+        } else if (spacingStyle == SpacingStyle.COMPACT) {
+            menu.findItem(R.id.menu_spacing_compact).setChecked(true);
+        }
         
         menu.findItem(R.id.menu_widget).setVisible(WidgetUtils.hasActiveAppWidgets(this));
 
@@ -323,6 +331,12 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getListTextSize(this), TextSizeDialogFragment.TextSizeType.ListText);
 			textSize.show(getSupportFragmentManager(), TextSizeDialogFragment.class.getName());
 			return true;
+        } else if (item.getItemId() == R.id.menu_spacing_comfortable) {
+		    folderFeedList.setSpacingStyle(SpacingStyle.COMFORTABLE);
+		    return true;
+        } else if (item.getItemId() == R.id.menu_spacing_compact) {
+            folderFeedList.setSpacingStyle(SpacingStyle.COMPACT);
+            return true;
         } else if (item.getItemId() == R.id.menu_loginas) {
             DialogFragment newFragment = new LoginAsDialogFragment();
             newFragment.show(getSupportFragmentManager(), "dialog");

@@ -37,7 +37,7 @@ import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedListOrder;
-import com.newsblur.util.FeedListStyle;
+import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
@@ -136,7 +136,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     public WeakReference<ExpandableListView> listBackref;
 
     private float textSize;
-    private FeedListStyle feedListStyle;
+    private SpacingStyle spacingStyle;
 
     // in order to implement the laggy disappearance of marked-read feeds, preserve the ID of
     // the last feed or folder viewed and force the DB to include it in the selection
@@ -153,7 +153,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 		this.dbHelper = dbHelper;
 
         textSize = PrefsUtils.getListTextSize(context);
-        feedListStyle = PrefsUtils.getFeedListStyle(context);
+        spacingStyle = PrefsUtils.getSpacingStyle(context);
 	}
 
 	@Override
@@ -215,7 +215,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
         @NonNull TextView groupNameView = v.findViewById(R.id.row_foldername);
         groupNameView.setTextSize(textSize * defaultTextSize_groupName);
-        int titleVerticalPadding = feedListStyle.getGroupTitleVerticalPadding(context);
+        int titleVerticalPadding = spacingStyle.getGroupTitleVerticalPadding(context);
         groupNameView.setPadding(0, titleVerticalPadding, 0, titleVerticalPadding);
         @Nullable TextView sumNeutView = v.findViewById(R.id.row_foldersumneu);
         if (sumNeutView != null ) sumNeutView.setTextSize(textSize * defaultTextSize_count);
@@ -253,7 +253,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public synchronized View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 		View v = convertView;
-		int titleVerticalPadding = feedListStyle.getChildTitleVerticalPadding(context);
+		int titleVerticalPadding = spacingStyle.getChildTitleVerticalPadding(context);
 		if (isRowAllSharedStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_socialfeed, parent, false);
             SocialFeed f = socialFeedsActive.get(childPosition);
@@ -978,8 +978,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         this.textSize = textSize;
     }
 
-    public void setFeedListStyle(FeedListStyle feedListStyle) {
-        this.feedListStyle = feedListStyle;
+    public void setSpacingStyle(SpacingStyle spacingStyle) {
+        this.spacingStyle = spacingStyle;
     }
 
 }
