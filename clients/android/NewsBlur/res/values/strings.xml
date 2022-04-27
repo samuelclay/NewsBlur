@@ -362,7 +362,6 @@
 
     <string name="settings_cat_feed_list">Feed list</string>
 
-    <string name="setting_feed_list_style">Feed list style…</string>
     <string name="setting_feed_list_order">Feed list order…</string>
     <string name="settings_enable_row_global_shared">Show Global Shared Stories</string>
     <string name="settings_enable_row_global_shared_sum">Show the Global Shared Stories folder</string>
@@ -386,15 +385,7 @@
 
     <string name="comfortable">Comfortable</string>
     <string name="compact">Compact</string>
-    <string-array name="default_feed_list_style_entries">
-        <item>@string/comfortable</item>
-        <item>@string/compact</item>
-    </string-array>
-    <string-array name="default_feed_list_style_values">
-        <item>COMFORTABLE</item>
-        <item>COMPACT</item>
-    </string-array>
-    <string name="default_feed_list_style_value">COMFORTABLE</string>
+
     <string name="alphabetical">Alphabetical</string>
     <string name="most_used_at_top">Most used at top</string>
     <string-array name="default_feed_list_order_entries">
