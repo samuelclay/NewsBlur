@@ -52,7 +52,7 @@ import com.newsblur.domain.Folder;
 import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
-import com.newsblur.util.FeedListStyle;
+import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
@@ -116,9 +116,9 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         super.onResume();
         if (adapter != null) {
             float textSize = PrefsUtils.getListTextSize(requireContext());
+            SpacingStyle spacingStyle = PrefsUtils.getSpacingStyle(requireContext());
             adapter.setTextSize(textSize);
-            FeedListStyle feedListStyle = PrefsUtils.getFeedListStyle(requireContext());
-            adapter.setFeedListStyle(feedListStyle);
+            adapter.setSpacingStyle(spacingStyle);
             adapter.notifyDataSetChanged();
         }
     }
@@ -239,7 +239,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 			break;
 
-		case ExpandableListView.PACKED_POSITION_TYPE_CHILD: 
+		case ExpandableListView.PACKED_POSITION_TYPE_CHILD:
             if (adapter.isRowSavedStories(groupPosition)) break;
             if (currentState == StateFilter.SAVED) break;
 			inflater.inflate(R.menu.context_feed, menu);
@@ -607,7 +607,13 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             adapter.setTextSize(size);
             adapter.notifyDataSetChanged();
         }
-
     }
 
+    public void setSpacingStyle(SpacingStyle spacingStyle) {
+        PrefsUtils.setSpacingStyle(requireContext(), spacingStyle);
+        if (adapter != null) {
+            adapter.setSpacingStyle(spacingStyle);
+            adapter.notifyDataSetChanged();
+        }
+    }
 }

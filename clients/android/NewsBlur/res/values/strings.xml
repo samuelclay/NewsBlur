@@ -226,6 +226,7 @@
     <string name="menu_feedback_post">Create a feedback post</string>
     <string name="menu_feedback_email">Email a bug report</string>
     <string name="menu_theme_choose">Theme</string>
+    <string name="menu_spacing">Spacing</string>
     <string name="menu_premium_account">Premium subscription…</string>
 
     <string name="description_add_new_folder_icon">Add new folder icon</string>

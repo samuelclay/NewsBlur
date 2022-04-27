@@ -32,8 +32,6 @@ import java.util.concurrent.Executors;
 import com.newsblur.R;
 import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.NbActivity;
-import com.newsblur.di.IconLoader;
-import com.newsblur.di.ThumbnailLoader;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.fragment.ItemSetFragment;
@@ -43,6 +41,7 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.GestureAction;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StoryContentPreviewStyle;
 import com.newsblur.util.StoryListStyle;
 import com.newsblur.util.StoryUtils;
@@ -91,6 +90,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private float textSize;
     private final UserDetails user;
     private ThumbnailStyle thumbnailStyle;
+    private SpacingStyle spacingStyle;
 
     public StoryViewAdapter(NbActivity context,
                             ItemSetFragment fragment,
@@ -119,10 +119,9 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (fs.isSingleSavedTag()) {ignoreReadStatus = true; ignoreIntel = true; singleFeed = false;}
 
         textSize = PrefsUtils.getListTextSize(context);
-
         user = PrefsUtils.getUserDetails(context);
-
         thumbnailStyle = PrefsUtils.getThumbnailStyle(context);
+        spacingStyle = PrefsUtils.getSpacingStyle(context);
 
         executorService = Executors.newFixedThreadPool(1);
 
@@ -139,6 +138,10 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     public void setThumbnailStyle(ThumbnailStyle thumbnailStyle) {
         this.thumbnailStyle = thumbnailStyle;
+    }
+
+    public void setSpacingStyle(SpacingStyle spacingStyle) {
+        this.spacingStyle = spacingStyle;
     }
 
     public void addFooterView(View v) {
@@ -536,14 +539,14 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             Story story = stories.get(position);
             vh.story = story;
 
-            bindCommon(vh, position, story);
+            bindCommon(vh, story);
 
             if (vh instanceof StoryRowViewHolder) {
                 StoryRowViewHolder vhRow = (StoryRowViewHolder) vh;
-                bindRow(vhRow, position, story);
+                bindRow(vhRow, story);
             } else {
                 StoryTileViewHolder vhTile = (StoryTileViewHolder) vh;
-                bindTile(vhTile, position, story);
+                bindTile(vhTile, story);
             }
 
         } else {
@@ -566,7 +569,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     /**
      * Bind view elements that are common to tiles and rows.
      */
-    private void bindCommon(StoryViewHolder vh, int position, Story story) {
+    private void bindCommon(StoryViewHolder vh, Story story) {
         vh.leftBarOne.setBackgroundColor(UIUtils.decodeColourValue(story.extern_feedColor, Color.GRAY));
         vh.leftBarTwo.setBackgroundColor(UIUtils.decodeColourValue(story.extern_feedFade, Color.LTGRAY));
 
@@ -620,6 +623,11 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         vh.feedTitleView.setTextSize(textSize * defaultTextSize_story_item_feedtitle);
         vh.storyTitleView.setTextSize(textSize * defaultTextSize_story_item_title);
         vh.storyDate.setTextSize(textSize * defaultTextSize_story_item_date);
+
+        // dynamic spacing
+        int verticalTitlePadding = spacingStyle.getStoryTitleVerticalPadding(context);
+        vh.storyTitleView.setPadding(vh.storyTitleView.getPaddingLeft(), verticalTitlePadding,
+                vh.storyTitleView.getPaddingRight(), verticalTitlePadding);
         
         // read/unread fading
         if (this.ignoreReadStatus || (! story.read)) {
@@ -647,7 +655,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    private void bindTile(StoryTileViewHolder vh, int position, Story story) {
+    private void bindTile(StoryTileViewHolder vh, Story story) {
         // when first created, tiles' views tend to not yet have their dimensions calculated, but
         // upon being recycled they will often have a known size, which lets us give a max size to
         // the image loader, which in turn can massively optimise loading.  the image loader will
@@ -662,7 +670,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    private void bindRow(StoryRowViewHolder vh, int position, Story story) {
+    private void bindRow(StoryRowViewHolder vh, Story story) {
         StoryContentPreviewStyle storyContentPreviewStyle = PrefsUtils.getStoryContentPreviewStyle(context);
         if (storyContentPreviewStyle != StoryContentPreviewStyle.NONE) {
             vh.storyTitleView.setMaxLines(3);
@@ -688,6 +696,10 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         vh.storyAuthor.setTextSize(textSize * defaultTextSize_story_item_author);
         vh.storySnippet.setTextSize(textSize * defaultTextSize_story_item_snip);
+
+        int contentVerticalPadding = spacingStyle.getStoryContentVerticalPadding(context);
+        vh.storySnippet.setPadding(vh.storySnippet.getPaddingLeft(), vh.storySnippet.getPaddingTop(),
+                vh.storySnippet.getPaddingRight(), contentVerticalPadding);
 
         if (PrefsUtils.getThumbnailStyle(context)  != ThumbnailStyle.OFF && vh.thumbViewRight != null && vh.thumbViewLeft != null) {
             // the view will display a stale, recycled thumb before the new one loads if the old is not cleared

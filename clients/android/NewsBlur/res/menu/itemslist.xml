@@ -77,6 +77,17 @@
     <item android:id="@+id/menu_textsize"
           app:showAsAction="never"
           android:title="@string/menu_textsize"/>
+    <item android:id="@+id/menu_spacing"
+        android:title="@string/menu_spacing" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_spacing_comfortable"
+                    android:title="@string/comfortable" />
+                <item android:id="@+id/menu_spacing_compact"
+                    android:title="@string/compact" />
+            </group>
+        </menu>
+    </item>
     <item android:id="@+id/menu_theme"
           android:title="@string/menu_theme_choose" >
         <menu>

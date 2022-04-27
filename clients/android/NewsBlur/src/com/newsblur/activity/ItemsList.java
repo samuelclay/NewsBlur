@@ -35,6 +35,7 @@ import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadFilterChangedListener;
+import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryContentPreviewStyle;
 import com.newsblur.util.StoryListStyle;
@@ -283,6 +284,13 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             menu.findItem(R.id.menu_story_thumbnail_no_preview).setChecked(true);
         }
 
+        SpacingStyle spacingStyle = PrefsUtils.getSpacingStyle(this);
+        if (spacingStyle == SpacingStyle.COMFORTABLE) {
+            menu.findItem(R.id.menu_spacing_comfortable).setChecked(true);
+        } else if (spacingStyle == SpacingStyle.COMPACT) {
+            menu.findItem(R.id.menu_spacing_compact).setChecked(true);
+        }
+
         boolean isMarkReadOnScroll = PrefsUtils.isMarkReadOnFeedScroll(this);
         if (isMarkReadOnScroll) {
             menu.findItem(R.id.menu_mark_read_on_scroll_enabled).setChecked(true);
@@ -335,18 +343,24 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         } else if (item.getItemId() == R.id.menu_theme_black) {
             PrefsUtils.setSelectedTheme(this, ThemeValue.BLACK);
             UIUtils.restartActivity(this);
+        } else if (item.getItemId() == R.id.menu_spacing_comfortable) {
+		    PrefsUtils.setSpacingStyle(this, SpacingStyle.COMFORTABLE);
+		    itemSetFragment.updateSpacingStyle();
+        } else if (item.getItemId() == R.id.menu_spacing_compact) {
+		    PrefsUtils.setSpacingStyle(this, SpacingStyle.COMPACT);
+		    itemSetFragment.updateSpacingStyle();
         } else if (item.getItemId() == R.id.menu_list_style_list) {
             PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.LIST);
-            itemSetFragment.updateStyle();
+            itemSetFragment.updateListStyle();
         } else if (item.getItemId() == R.id.menu_list_style_grid_f) {
             PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.GRID_F);
-            itemSetFragment.updateStyle();
+            itemSetFragment.updateListStyle();
         } else if (item.getItemId() == R.id.menu_list_style_grid_m) {
             PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.GRID_M);
-            itemSetFragment.updateStyle();
+            itemSetFragment.updateListStyle();
         } else if (item.getItemId() == R.id.menu_list_style_grid_c) {
             PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.GRID_C);
-            itemSetFragment.updateStyle();
+            itemSetFragment.updateListStyle();
         } else if (item.getItemId() == R.id.menu_save_search) {
             String feedId = getSaveSearchFeedId();
             if (feedId != null) {

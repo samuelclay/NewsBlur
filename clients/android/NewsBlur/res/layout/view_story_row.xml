@@ -106,8 +106,6 @@
         android:layout_toLeftOf="@id/story_item_shared_icon"
         android:layout_toRightOf="@id/story_item_inteldot_container"
         android:layout_below="@id/story_item_feedicon"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
         android:paddingRight="4dp"
         android:maxLines="3"
         android:ellipsize="end" />
@@ -119,7 +117,6 @@
         android:layout_toLeftOf="@id/story_item_thumbnail_right"
         android:layout_toRightOf="@id/story_item_inteldot_container"
         android:layout_below="@id/story_item_title"
-        android:paddingBottom="6dp"
         android:paddingRight="4dp"
         android:maxLines="2"
         android:ellipsize="end"

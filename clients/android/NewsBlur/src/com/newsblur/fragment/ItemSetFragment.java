@@ -36,6 +36,7 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
+import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StoryListStyle;
 import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
@@ -168,7 +169,7 @@ public class ItemSetFragment extends NbFragment {
             public void onGlobalLayout() {
                 itemGridWidthPx = binding.itemgridfragmentGrid.getMeasuredWidth();
                 binding.itemgridfragmentGrid.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                updateStyle();
+                updateListStyle();
             }
         });
 
@@ -361,12 +362,18 @@ public class ItemSetFragment extends NbFragment {
         adapter.notifyAllItemsChanged();
     }
 
-    public void updateStyle() {
+    public void updateListStyle() {
         StoryListStyle listStyle = PrefsUtils.getStoryListStyle(getActivity(), getFeedSet());
         calcColumnCount(listStyle);
         calcGridSpacing(listStyle);
         layoutManager.setSpanCount(columnCount);
         adapter.setStyle(listStyle);
+        adapter.notifyAllItemsChanged();
+    }
+
+    public void updateSpacingStyle() {
+        SpacingStyle spacingStyle = PrefsUtils.getSpacingStyle(requireContext());
+        adapter.setSpacingStyle(spacingStyle);
         adapter.notifyAllItemsChanged();
     }
 

@@ -1052,9 +1052,16 @@ public class PrefsUtils {
         editor.commit();
     }
 
-    public static FeedListStyle getFeedListStyle(Context context) {
+    public static SpacingStyle getSpacingStyle(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return FeedListStyle.valueOf(preferences.getString(PrefConstants.FEED_LIST_STYLE, FeedListStyle.COMFORTABLE.name()));
+        return SpacingStyle.valueOf(preferences.getString(PrefConstants.SPACING_STYLE, SpacingStyle.COMFORTABLE.name()));
+    }
+
+    public static void setSpacingStyle(Context context, SpacingStyle spacingStyle) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = preferences.edit();
+        editor.putString(PrefConstants.SPACING_STYLE, spacingStyle.toString());
+        editor.commit();
     }
 
     /**
