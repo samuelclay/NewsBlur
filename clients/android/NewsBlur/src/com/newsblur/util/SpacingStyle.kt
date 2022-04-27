@@ -2,7 +2,7 @@ package com.newsblur.util
 
 import android.content.Context
 
-enum class FeedListStyle {
+enum class SpacingStyle {
     COMFORTABLE, // default
     COMPACT,
     ;
