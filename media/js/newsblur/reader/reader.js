@@ -3112,7 +3112,7 @@
                 this.show_story_titles_above_intelligence_level({ 'animate': true, 'follow': true });
                 NEWSBLUR.app.dashboard_rivers.left.redraw();
                 NEWSBLUR.app.dashboard_rivers.right.redraw();
-                NEWSBLUR.app.story_titles.render();
+                NEWSBLUR.app.story_titles.render({"maintain_scroll": true});
             }
 
             this.load_theme();
