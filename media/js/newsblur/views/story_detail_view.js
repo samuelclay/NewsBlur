@@ -152,8 +152,17 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     largest = this.width;
                     $largest = $(this);
                 }
-                $(this).removeClass('NB-large-image').removeClass('NB-medium-image').removeClass('NB-small-image');
-                if (pane_width >= 900) return;
+                $(this)
+                    .removeClass('NB-large-image')
+                    .removeClass('NB-large-image-widen')
+                    .removeClass('NB-medium-image')
+                    .removeClass('NB-medium-image-widen')
+                    .removeClass('NB-small-image')
+                    .removeClass('NB-small-image-widen');
+                var auto_widen = true;
+                if (pane_width >= 900) {
+                    auto_widen = false;
+                }
 
                 if (has_tables) {
                     // Can't even calculate widths because with tables, nothing fits
@@ -161,10 +170,19 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 }
                 if (this.naturalWidth >= pane_width && this.naturalHeight >= 50) {
                     $(this).addClass('NB-large-image');
+                    if (auto_widen) {
+                        $(this).addClass('NB-large-image-widen');
+                    }
                 } else if (this.naturalWidth >= 100 && this.naturalHeight >= 50) {
                     $(this).addClass('NB-medium-image');
+                    if (auto_widen) {
+                        $(this).addClass('NB-medium-image-widen');
+                    }
                 } else {
                     $(this).addClass('NB-small-image');
+                    if (auto_widen) {
+                        $(this).addClass('NB-small-image-widen');
+                    }
                 }
             });
             if ($largest) {

@@ -1863,6 +1863,13 @@ background-color: #E6ECE8;}
     left: -31px;
     top: 12px;
 }
+
+.NB-theme-feed-size-xs .NB-storytitles-sentiment {
+    top: 9px;
+}
+.NB-theme-feed-size-s .NB-storytitles-sentiment {
+    top: 10px;
+}
 .NB-density-compact .NB-story-title .NB-storytitles-sentiment {
     top: 3px;
 }
@@ -3306,7 +3313,7 @@ body {
 
 .NB-pref-story-position-center .NB-feed-story-feed {
     margin: 0 auto;
-    width: 700px;
+    max-width: 700px;
 }
 .NB-pref-story-position-right .NB-feed-story-feed {
     margin: 0 0 0 auto;
@@ -3349,7 +3356,8 @@ body {
     border-left: 2px solid #ECEFE9;
     padding: .5em 1.5em;
     margin: 0px;
-    background-color: #F4F6F2;
+    background-color: #f7faf6;
+    border-radius: 4px;
 }
 
 .NB-feed-story .NB-feed-story-content iframe,
@@ -3368,21 +3376,26 @@ body {
     max-width: 100% !important;    
     width: auto !important;
     height: auto;
-    
     /* See http://www.newsblur.com/site/1031643/le-21me for width: auto, height: auto */
 }
 .NB-feed-story .NB-feed-story-content img.NB-medium-image {
+    border-radius: 4px;    
 }
 .NB-feed-story .NB-feed-story-content img.NB-small-image {
 }
 .NB-feed-story .NB-feed-story-content img.NB-large-image {
+    border-radius: 4px;    
+}
+.NB-feed-story .NB-feed-story-content img.NB-large-image.NB-large-image-widen {
     max-width: max-content !important;    
     margin-left: -28px !important;
     width: calc(100% - 56px * -1) !important;
+    /* border-radius: 0; */
 }
 .NB-feed-story .NB-feed-story-content img.NB-table-image.NB-large-image {
     margin: 0;
     width: 100% !important;
+    border-radius: 0;
 }
 
 .NB-feed-story .NB-feed-story-content figure {
@@ -3777,7 +3790,7 @@ body {
 }
 
 .NB-feed-story .NB-feed-story-content {
-    padding: 12px 0 0;
+    padding: 24px 0 0;
     max-width: 700px;
     min-height: 12px;
 }
