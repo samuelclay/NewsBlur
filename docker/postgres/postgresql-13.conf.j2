@@ -246,7 +246,7 @@ archive_command = 'test ! -f /var/lib/postgresql/archive/%f && cp -f %p /var/lib
 
 # These are only used in recovery mode.
 
-#restore_command = ''		# command to use to restore an archived logfile segment
+restore_command = 'cp /var/lib/postgresql/archive/%f %p'		# command to use to restore an archived logfile segment
 				# placeholders: %p = path of file to restore
 				#               %f = file name only
 				# e.g. 'cp /mnt/server/archivedir/%f %p'
