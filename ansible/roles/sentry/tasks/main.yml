@@ -4,7 +4,16 @@
     repo: https://github.com/getsentry/self-hosted.git
     dest: /srv/sentry/
     version: master
-  notify: reload sentry
+
+- name: Updating Sentry
+  command:
+    chdir: /srv/sentry/
+    cmd: ./install.sh
+
+- name: docker-compuse up -d
+  command:
+    chdir: /srv/sentry/
+    cmd: docker-compose up -d
 
 - name: Register sentry in consul
   tags: consul
