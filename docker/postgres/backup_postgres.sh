@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
 now=$(date '+%Y-%m-%d-%H-%M')
-
-BACKUP_FILE="/var/lib/postgresql/backup/backup_postgresql_${now}.sql"
+BACKUP_PATH="/var/lib/postgresql/backup/"
+BACKUP_FILE="${BACKUP_PATH}backup_postgresql_${now}.sql"
 echo "---> PG dumping - ${now}: ${BACKUP_FILE}"
-sudo docker exec -it postgres sh -c '/usr/lib/postgresql/13/bin/pg_dump -U newsblur -h 127.0.0.1 -Fc newsblur > ${BACKUP_FILE}'
+sudo docker exec -it postgres sh -c "mkdir -p $BACKUP_PATH"
+sudo docker exec -it postgres sh -c "/usr/lib/postgresql/13/bin/pg_dump -U newsblur -h 127.0.0.1 -Fc newsblur > $BACKUP_FILE"
+
 
 echo " ---> Uploading postgres backup to S3"
 sudo docker run --user 1000:1001 --rm \
