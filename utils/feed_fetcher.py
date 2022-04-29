@@ -1215,6 +1215,7 @@ class FeedFetcherWorker:
                                 break
                         else:
                             logging.debug('   ---> [%-30s] ~FBFeed has no more RFC5005 links...' % (feed.log_title[:30]))
+                            break
 
                         before_story_hashes = len(seen_story_hashes)
                         pfeed.process()
@@ -1223,7 +1224,6 @@ class FeedFetcherWorker:
 
                         if before_story_hashes == after_story_hashes:
                             logging.debug('   ---> [%-30s] ~FRNo change in story hashes, but has archive link: %s' % (feed.log_title[:30], link_prev_archive))
-                            break
                             
                 failed_color = "~FR" if not link_prev_archive else ""
                 logging.debug(f"   ---> [{feed.log_title[:30]:<30}] ~FGStory hashes found, archive RFC5005 ~SB{link_prev_archive}~SN: ~SB~FG{failed_color}{len(seen_story_hashes):,} stories~SN~FB")
