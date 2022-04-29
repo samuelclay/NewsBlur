@@ -153,7 +153,7 @@ class Feed(models.Model):
     
     @property
     def unread_cutoff(self):
-        if self.archive_subscribers > 0:
+        if self.archive_subscribers and self.archive_subscribers > 0:
             return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD_ARCHIVE)
         if self.premium_subscribers > 0:
             return datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
@@ -170,7 +170,7 @@ class Feed(models.Model):
     
     @property
     def days_of_story_hashes(self):
-        if self.archive_subscribers > 0:
+        if self.archive_subscribers and self.archive_subscribers > 0:
             return settings.DAYS_OF_STORY_HASHES_ARCHIVE
         return settings.DAYS_OF_STORY_HASHES
     
@@ -1551,7 +1551,7 @@ class Feed(models.Model):
             except Feed.DoesNotExist:
                 continue
             if (feed.active_subscribers <= 0 and 
-                feed.archive_subscribers <= 0 and 
+                (not feed.archive_subscribers or feed.archive_subscribers <= 0) and 
                 (not feed.last_story_date or feed.last_story_date < month_ago)):
                 months_ago = 6
                 if feed.last_story_date:
@@ -1575,7 +1575,7 @@ class Feed(models.Model):
         return self.number_of_stories_to_store()
     
     def number_of_stories_to_store(self, pre_archive=False):
-        if self.archive_subscribers > 0 and not pre_archive:
+        if self.archive_subscribers and self.archive_subscribers > 0 and not pre_archive:
             return 10000
         
         cutoff = 500
@@ -2285,7 +2285,7 @@ class Feed(models.Model):
             total = max(total, 60*2)
         
         # Pro subscribers get absolute minimum
-        if self.pro_subscribers >= 1:
+        if self.pro_subscribers and self.pro_subscribers >= 1:
             if self.stories_last_month == 0:
                 total = min(total, 60)
             else:

@@ -194,11 +194,13 @@ oldfirewall:
 repairmongo:
 	- sudo docker run -v "/srv/newsblur/docker/volumes/db_mongo:/data/db" mongo:4.0 mongod --repair --dbpath /data/db
 mongodump:
-	- docker exec -it db_mongo mongodump --port 29019 -d newsblur -o /data/db/mongodump
-	# - docker exec -it db_mongo cp -fr /data/db/mongodump /data/mongodump
-	# - docker exec -it db_mongo rm -fr /data/db/
+	- docker exec -it db_mongo mongodump --port 29019 -d newsblur -o /data/mongodump
+	- cp -fr docker/volumes/db_mongo/mongodump docker/volumes/mongodump
+# - docker exec -it db_mongo cp -fr /data/db/mongodump /data/mongodump
+# - docker exec -it db_mongo rm -fr /data/db/
 mongorestore:
-	- docker exec -it db_mongo mongorestore --port 29019 -d newsblur /data/mongodump/newsblur
+	- cp -fr docker/volumes/mongodump docker/volumes/db_mongo/
+	- docker exec -it db_mongo mongorestore --port 29019 -d newsblur /data/db/mongodump/newsblur
 
 # performance tests
 perf-cli:
