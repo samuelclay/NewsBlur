@@ -7,8 +7,8 @@ BACKUP_FILENAME="backup_postgresql_${now}.sql"
 BACKUP_FILE="${BACKUP_PATH}${BACKUP_FILENAME}"
 UPLOAD_FILE="${UPLOAD_PATH}${BACKUP_FILENAME}"
 echo "---> PG dumping - ${now}: ${BACKUP_FILE}"
-sudo docker exec -it postgres sh -c "mkdir -p $BACKUP_PATH"
-sudo docker exec -it postgres sh -c "/usr/lib/postgresql/13/bin/pg_dump -U newsblur -h 127.0.0.1 -Fc newsblur > $BACKUP_FILE"
+sudo docker exec postgres sh -c "mkdir -p $BACKUP_PATH"
+sudo docker exec postgres sh -c "/usr/lib/postgresql/13/bin/pg_dump -U newsblur -h 127.0.0.1 -Fc newsblur > $BACKUP_FILE"
 
 
 echo " ---> Uploading postgres backup to S3"
