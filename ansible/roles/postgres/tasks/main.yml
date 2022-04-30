@@ -105,5 +105,5 @@
     name: postgres backup
     minute: "0"
     hour: "4"
-    job: /srv/newsblur/docker/postgres/backup_postgres.sh 1> /var/log/postgres_backup.log 2>&1
+    job: /srv/newsblur/docker/postgres/backup_postgres.sh >> /var/log/postgres_backup.log 2>&1
 
