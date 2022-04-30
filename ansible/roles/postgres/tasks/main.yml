@@ -20,21 +20,16 @@
     path: /srv/newsblur/backups
     state: directory
     mode: 0777
-  
-- name: Start postgres docker containers
+
+- name: Start postgres basebackup on secondary
   become: yes
   docker_container:
     name: postgres
     image: postgres:13
     state: started
     container_default_behavior: no_defaults
-    command: postgres -c config_file=/etc/postgresql/postgresql.conf
-    env:
-      # POSTGRES_USER: "{{ postgres_user }}" # Don't auto-create newsblur, manually add it
-      POSTGRES_PASSWORD: "{{ postgres_password }}"
-    hostname: "{{ inventory_hostname }}"
+    command: pg_basebackup -h db-postgres.service.nyc1.consul -p 5432 -U newsblur -D /var/lib/postgresql/main -Fp -R -Xs -P -c fast
     networks_cli_compatible: yes
-    # network_mode: host
     network_mode: default
     networks:
       - name: newsblurnet
@@ -48,6 +43,35 @@
       - /srv/newsblur/docker/postgres/postgres_hba-13.conf:/etc/postgresql/pg_hba.conf
       - /srv/newsblur/backups/:/var/lib/postgresql/backup/
     restart_policy: unless-stopped
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-postgres-secondary']
+
+- name: Start postgres docker containers
+  become: yes
+  docker_container:
+    name: postgres
+    image: postgres:13
+    state: started
+    container_default_behavior: no_defaults
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    env:
+      # POSTGRES_USER: "{{ postgres_user }}" # Don't auto-create newsblur, manually add it
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+    hostname: "{{ inventory_hostname }}"
+    networks_cli_compatible: yes
+    network_mode: default
+    networks:
+      - name: newsblurnet
+        aliases: 
+          - postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - /srv/newsblur/docker/volumes/postgres:/var/lib/postgresql
+      - /srv/newsblur/docker/postgres/postgres.conf:/etc/postgresql/postgresql.conf
+      - /srv/newsblur/docker/postgres/postgres_hba-13.conf:/etc/postgresql/pg_hba.conf
+      - /srv/newsblur/backups/:/var/lib/postgresql/backup/
+    restart_policy: unless-stopped
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-postgres-primary', 'db-postgres']
 
 - name: Ensure newsblur role in postgres
   shell: >
