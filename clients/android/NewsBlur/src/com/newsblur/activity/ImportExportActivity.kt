@@ -5,21 +5,17 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.webkit.MimeTypeMap
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.google.android.material.snackbar.Snackbar
 import com.newsblur.R
 import com.newsblur.databinding.ActivityImportExportBinding
 import com.newsblur.network.APIConstants
 import com.newsblur.network.APIManager
-import com.newsblur.util.Log
-import com.newsblur.util.NBScope
-import com.newsblur.util.UIUtils
-import com.newsblur.util.executeAsyncTask
+import com.newsblur.service.NBSyncService
+import com.newsblur.util.*
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 import javax.inject.Inject
 
 
@@ -66,20 +62,46 @@ class ImportExportActivity : NbActivity() {
         UIUtils.handleUri(this, Uri.parse(exportOpmlUrl))
     }
 
-    private fun importOpmlFile(content: String) {
+    private fun importOpmlFile(uri: Uri) {
         NBScope.executeAsyncTask(
+                onPreExecute = {
+                    binding.btnUpload.setViewGone()
+                    binding.progressUpload.setViewVisible()
+                },
                 doInBackground = {
-                    val xmlMapper = XmlMapper()
-                    val node: JsonNode = xmlMapper.readTree(content)
-
-                    val jsonMapper = ObjectMapper()
-                    val result = jsonMapper.writeValueAsString(node)
-                    apiManager.importOpml(result)
+                    val file = File.createTempFile("opml", ".xml")
+                    contentResolver.openInputStream(uri)?.use { input ->
+                        file.outputStream().use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                    val requestBody = MultipartBody.Builder()
+                            .setType(MultipartBody.FORM)
+                            .addFormDataPart("file", file.name, file.asRequestBody())
+                            .build()
+                    apiManager.importOpml(requestBody)
                 },
                 onPostExecute = {
                     if (it.isError) {
+                        Snackbar.make(
+                                binding.root,
+                                it.getErrorMessage("Error importing OPML file"),
+                                Snackbar.LENGTH_LONG
+                        ).show()
+                    } else {
+                        Snackbar.make(
+                                binding.root,
+                                "Imported OPML file successfully!",
+                                Snackbar.LENGTH_LONG
+                        ).show()
 
+                        // refresh all feeds and folders
+                        NBSyncService.forceFeedsFolders()
+                        FeedUtils.triggerSync(this)
                     }
+
+                    binding.btnUpload.setViewVisible()
+                    binding.progressUpload.setViewGone()
                 }
         )
     }
@@ -87,29 +109,18 @@ class ImportExportActivity : NbActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         super.onActivityResult(requestCode, resultCode, resultData)
         if (requestCode == pickXmlFileRequestCode && resultCode == Activity.RESULT_OK) {
-            // The result data contains a URI for the document or directory that
-            // the user selected.
             resultData?.data?.also { uri ->
-                // Perform operations on the document using its URI.
-                val content = readTextFromUri(uri)
-                importOpmlFile(content)
+                importOpmlFile(uri)
             }
+                    ?: Snackbar.make(
+                            binding.root,
+                            "OPML file retrieval failed!",
+                            Snackbar.LENGTH_LONG
+                    ).show()
         }
     }
 
-    @Throws(IOException::class)
-    private fun readTextFromUri(uri: Uri): String {
-        val stringBuilder = StringBuilder()
-        contentResolver.openInputStream(uri)?.use { inputStream ->
-            BufferedReader(InputStreamReader(inputStream)).use { reader ->
-                var line: String? = reader.readLine()
-                while (line != null) {
-                    stringBuilder.append(line)
-                    line = reader.readLine()
-                }
-            }
-        }
-        return stringBuilder.toString()
+    override fun handleUpdate(updateType: Int) {
+        // ignore
     }
-
 }

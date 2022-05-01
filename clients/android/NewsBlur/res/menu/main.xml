@@ -18,9 +18,9 @@
         android:title="@string/menu_premium_account"
         app:showAsAction="never" />
 
-<!--    <item android:id="@+id/menu_import_export"-->
-<!--        android:title="@string/import_export"-->
-<!--        app:showAsAction="never" />-->
+    <item android:id="@+id/menu_import_export"
+        android:title="@string/import_export"
+        app:showAsAction="never" />
 
     <item android:id="@+id/menu_textsize"
         app:showAsAction="never"
