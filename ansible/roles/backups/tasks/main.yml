@@ -79,6 +79,12 @@
 
   - name: Start postgres basebackup on secondary
     block:
+      - name: Stop existing postgres
+        become: yes
+        command:
+          docker stop postgres
+        ignore_errors: yes
+
       - name: Move old data dir
         become: yes
         command:
