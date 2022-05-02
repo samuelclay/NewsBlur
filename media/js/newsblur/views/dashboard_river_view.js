@@ -186,7 +186,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     // ==========
     
     redraw: function () {
-        this.story_titles.render();
+        this.story_titles.render({immediate: true});
     },
 
     reload: function () {

@@ -1114,10 +1114,10 @@ border-bottom-color: #303739;
     border-top: 1px solid #333536;
     border-bottom: 1px solid #232526;
 }
-.NB-dark .NB-story-grid.NB-story-title {
+.NB-dark .NB-story-title-grid.NB-story-title {
     border: none;
 }
-.NB-dark .NB-story-grid.NB-story-title .NB-storytitles-grid-bottom {
+.NB-dark .NB-story-title-grid.NB-story-title .NB-storytitles-grid-bottom {
     background-color: #292b2c;    
 }
 .NB-dark .NB-story-title:hover:not(.NB-selected),
