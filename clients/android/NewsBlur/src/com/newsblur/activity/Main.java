@@ -38,9 +38,11 @@ import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.BootReceiver;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ShortcutUtils;
 import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
@@ -130,6 +132,17 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         binding.mainProfileButton.setOnClickListener(v -> onClickProfileButton());
         binding.mainUserImage.setOnClickListener(v -> onClickUserButton());
         binding.mainSearchFeedsButton.setOnClickListener(v -> onClickSearchFeedsButton());
+
+        // Check whether it's a shortcut intent
+        String shortcutExtra = getIntent().getStringExtra(ShortcutUtils.SHORTCUT_EXTRA);
+        if (shortcutExtra != null && shortcutExtra.startsWith(ShortcutUtils.SHORTCUT_ALL_STORIES)) {
+            Intent intent = new Intent(this, AllStoriesItemsList.class);
+            intent.putExtra(ItemsList.EXTRA_FEED_SET, FeedSet.allFeeds());
+            if (shortcutExtra.equals(ShortcutUtils.SHORTCUT_ALL_STORIES_SEARCH)) {
+                intent.putExtra(ItemsList.EXTRA_VISIBLE_SEARCH, true);
+            }
+            startActivity(intent);
+        }
 	}
 
     @Override
