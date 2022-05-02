@@ -80,7 +80,7 @@
   - name: Start postgres basebackup on secondary
     become: yes
     command:
-      docker exec postgres pg_basebackup -h db-postgres.service.nyc1.consul -p 5432 -U newsblur -D /var/lib/postgresql/data -Fp -R -Xs -P -c fast
+      docker exec postgres pg_basebackup -h db-postgres-staging .service.nyc1.consul -p 5432 -U newsblur -D /var/lib/postgresql/data -Fp -R -Xs -P -c fast
     # when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-postgres-secondary']
     tags:
       - never
