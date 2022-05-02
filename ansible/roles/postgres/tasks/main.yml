@@ -8,24 +8,28 @@
   register: updated_config
 
 - name: Ensure postgres archive directory
+  become: yes
   file:
     path: /srv/newsblur/docker/volumes/postgres/archive
     state: directory
     mode: 0755
   
 - name: Ensure postgres backup directory
+  become: yes
   file:
     path: /srv/newsblur/docker/volumes/postgres/backups
     state: directory
     mode: 0755
   
 - name: Ensure postgres data directory
+  become: yes
   file:
     path: /srv/newsblur/docker/volumes/postgres/data
     state: directory
     mode: 0755
 
 - name: Start postgres docker containers
+  become: yes
   docker_container:
     name: postgres
     image: postgres:13
@@ -50,14 +54,17 @@
       - /srv/newsblur/docker/volumes/postgres/backups:/var/lib/postgresql/backups
       - /srv/newsblur/docker/postgres/postgres.conf:/etc/postgresql/postgresql.conf
       - /srv/newsblur/docker/postgres/postgres_hba-13.conf:/etc/postgresql/pg_hba.conf
+      - /srv/newsblur/docker/postgres/postgres_ident-13.conf:/etc/postgresql/pg_ident.conf
     restart_policy: unless-stopped
   when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-postgres-primary', 'db-postgres']
 
 - name: Change ownership in postgres docker container
+  become: yes
   command: >
     docker exec postgres chown -fR postgres.postgres /var/lib/postgresql
   
 - name: Ensure newsblur role in postgres
+  become: yes
   shell: >
     sleep 15; 
     docker exec postgres createuser -s newsblur -U postgres;
