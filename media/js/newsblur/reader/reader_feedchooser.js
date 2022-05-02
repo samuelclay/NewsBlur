@@ -195,7 +195,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         ]),
                         $.make('li', { className: 'NB-2' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                            'Stories can stay unread forever'
+                            'Choose when stories are automatically marked as read'
                         ]),
                         $.make('li', { className: 'NB-3' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
@@ -211,7 +211,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         ]),
                         $.make('li', { className: 'NB-6' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                            'Choose when stories are automatically marked as read'
+                            'Stories can stay unread forever'
                         ])
                     ]),
                     $.make('div', { className: 'NB-payment-providers' }, [

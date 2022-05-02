@@ -567,7 +567,7 @@ background-color: #E6ECE8;}
 
 .NB-feedlist ul.folder {
     margin: 0;
-    padding: 0 0 0 22px;
+    padding: 0 0 0 30px;
     list-style: none;
 }
 .NB-feedlist ul.folder.NB-root {
@@ -575,7 +575,7 @@ background-color: #E6ECE8;}
 }
 
 .NB-feedlist .folder_title {
-    padding: 4px 0 4px 22px;
+    padding: 4px 0 4px 36px;
     border-top: 1px solid transparent;
     border-bottom: 1px solid transparent;
     font-weight: bold;
@@ -592,7 +592,7 @@ background-color: #E6ECE8;}
     height: 16px;
     background-size: 16px;
     position: absolute;
-    left: 2px;
+    left: 10px;
     top: 2px;
 }
 .NB-theme-feed-size-m .NB-feedlist li.folder .NB-folder-icon {
@@ -816,6 +816,7 @@ background-color: #E6ECE8;}
     background-position: 6px 7px;
 }
 .NB-feedlist .folder_title.NB-toplevel .NB-feedlist-manage-icon {
+    left: 8px;
     background-position: 6px 8px;
 }
 .NB-feedlist .feed:hover .NB-feedlist-manage-icon,
@@ -3093,6 +3094,11 @@ body {
 }
 .NB-image-preview-small-left .NB-view-river .NB-story-title-list .NB-storytitles-story-image {
     left: -228px;
+}
+.NB-image-preview-small-left .NB-view-river .NB-story-title-list .NB-storytitles-story-image,
+.NB-image-preview-small-right .NB-view-river .NB-story-title-list .NB-storytitles-story-image {
+    top: 8px;
+    height: calc(100% - 16px);
 }
 .NB-image-preview-small-left .NB-story-title-magazine .NB-storytitles-story-image-container,
 .NB-image-preview-large-left .NB-story-title-magazine .NB-storytitles-story-image-container {
@@ -7440,7 +7446,7 @@ form.opml_import_form input {
     background-size: 36px;
 }
 .NB-module-premium-archive-icon.NB-2 {
-    background: transparent url('/media/embed/icons/icons8/icons8-relax-with-book-100.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/icons8/icons8-calendar-100.png') no-repeat 0 0;
     background-size: 36px;
 }
 .NB-module-premium-archive-icon.NB-3 {
@@ -7456,7 +7462,7 @@ form.opml_import_form input {
     background-size: 36px;
 }
 .NB-module-premium-archive-icon.NB-6 {
-    background: transparent url('/media/embed/icons/icons8/icons8-calendar-100.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/icons8/icons8-relax-with-book-100.png') no-repeat 0 0;
     background-size: 36px;
 }
 .NB-module-premium-reason {
