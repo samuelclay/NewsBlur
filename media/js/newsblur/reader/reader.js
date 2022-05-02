@@ -540,12 +540,6 @@
                          .removeClass('NB-pref-story-position-right')
                          .toggleClass('NB-pref-story-position-' + this.model.preference('story_position'));
             this.$s.$body.toggleClass('NB-dashboard-columns-single', this.model.preference('dashboard_columns') == 1);
-            this.$s.$body.removeClass('NB-story-layout-full')
-                         .removeClass('NB-story-layout-split')
-                         .removeClass('NB-story-layout-list')
-                         .removeClass('NB-story-layout-grid')
-                         .removeClass('NB-story-layout-magazine')
-                         .addClass('NB-story-layout-'+NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'));
         },
         
         load_delayed_stylesheets: function() {
@@ -1706,14 +1700,14 @@
         // = Story Layout =
         // ================
         
-        switch_story_layout: function(story_layout) {
+        switch_story_layout: function(story_layout, force) {
             var feed_layout = NEWSBLUR.assets.view_setting(this.active_feed, 'layout');
             var active_layout = this.story_layout;
             var original_layout = this.story_layout;
             story_layout = story_layout || feed_layout || active_layout;
             
             // console.log(['switch_story_layout', active_layout, feed_layout, story_layout, this.active_feed, story_layout == active_layout]);
-            if (story_layout == active_layout) return;
+            if (story_layout == active_layout && !force) return;
             
             this.story_layout = story_layout;
             
@@ -1724,7 +1718,7 @@
             this.set_correct_story_view_for_feed();
             this.apply_resizable_layout({right_side: true});
             
-            NEWSBLUR.app.story_titles.render();
+            NEWSBLUR.app.story_titles.render({immediate: !!force});
 
             if (story_layout == 'list') {
                 if (this.active_story) {
@@ -3112,7 +3106,8 @@
                 this.show_story_titles_above_intelligence_level({ 'animate': true, 'follow': true });
                 NEWSBLUR.app.dashboard_rivers.left.redraw();
                 NEWSBLUR.app.dashboard_rivers.right.redraw();
-                NEWSBLUR.app.story_titles.render({"maintain_scroll": true});
+                NEWSBLUR.app.story_titles.render({ "immediate": true });
+                this.switch_story_layout(null, true);
             }
 
             this.load_theme();

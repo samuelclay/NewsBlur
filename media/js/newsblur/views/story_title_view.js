@@ -26,12 +26,18 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     
     render: function() {
         var template_name = 'template';
+        var story_layout = this.options.override_layout || NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
+        var pane_anchor = this.options.override_layout ? "west" : NEWSBLUR.assets.preference('story_pane_anchor');
+        
         if (this.options.is_list) template_name = "list_template";
+        if (story_layout == 'split' && _.contains(['north', 'south'], pane_anchor)) template_name = "list_template";;
         if (this.options.is_grid) template_name = "grid_template";
         if (this.options.is_magazine) template_name = "magazine_template";
-        if (this.model.get('selected')) template_name = "template";
-        // console.log(['render story title', template_name, this.$el[0], this.options.is_grid, this.show_image_preview(), this.options.override_layout, NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'))]);
-        var story_layout = this.options.override_layout || NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
+        if (this.options.is_list || this.options.is_grid || this.options.is_magazine) {
+            if (this.model.get('selected')) template_name = "list_template";
+        }
+        
+        console.log(['render story title', template_name, this.$el[0], this.options.is_grid, this.show_image_preview(), this.options.override_layout, NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'))]);
         this.$el.html(this[template_name]({
             story    : this.model,
             feed     : (this.options.override_layout == 'split' || 
@@ -57,7 +63,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
                             
     template: _.template('\
-        <div class="NB-story-title <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %> <% if (show_image_preview) { %>NB-has-image<% } %> ">\
+        <div class="NB-story-title NB-story-title-split <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %> <% if (show_image_preview) { %>NB-has-image<% } %> ">\
             <div class="NB-storytitles-feed-border-inner"></div>\
             <div class="NB-storytitles-feed-border-outer"></div>\
             <a href="<%= story.get("story_permalink") %>" class="story_title NB-hidden-fade">\
@@ -106,7 +112,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     '),
      
     list_template: _.template('\
-        <div class="NB-story-title <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %> <% if (show_image_preview) { %>NB-has-image<% } %> ">\
+        <div class="NB-story-title NB-story-title-list <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %> <% if (show_image_preview) { %>NB-has-image<% } %> ">\
             <div class="NB-storytitles-feed-border-inner"></div>\
             <div class="NB-storytitles-feed-border-outer"></div>\
             <a href="<%= story.get("story_permalink") %>" class="story_title NB-hidden-fade">\
@@ -149,7 +155,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     '),
     
     grid_template: _.template('\
-        <div class="NB-story-title NB-story-grid <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %>">\
+        <div class="NB-story-title NB-story-title-grid <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %>">\
             <div class="NB-storytitles-feed-border-inner"></div>\
             <div class="NB-storytitles-feed-border-outer"></div>\
             <% if (story.image_url()) { %>\
@@ -192,7 +198,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     '),
     
     magazine_template: _.template('\
-        <div class="NB-story-title <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %>">\
+        <div class="NB-story-title NB-story-title-magazine <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %>">\
             <div class="NB-storytitles-feed-border-inner"></div>\
             <div class="NB-storytitles-feed-border-outer"></div>\
             <% if (story.image_url()) { %>\
