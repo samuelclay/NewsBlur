@@ -2,8 +2,8 @@
 
 now=$(date '+%Y-%m-%d-%H-%M')
 BACKUP_FILENAME="backup_postgresql_${now}.sql"
-BACKUP_PATH="/var/lib/postgresql/backup/"
-UPLOAD_PATH="/srv/newsblur/backups/"
+BACKUP_PATH="/var/lib/postgresql/backups/"
+UPLOAD_PATH="/srv/newsblur/docker/volumes/postgres/backups/"
 BACKUP_FILE="${BACKUP_PATH}${BACKUP_FILENAME}"
 UPLOAD_FILE="${UPLOAD_PATH}${BACKUP_FILENAME}"
 

@@ -8,45 +8,24 @@
   register: updated_config
 
 - name: Ensure postgres archive directory
-  become: yes
   file:
     path: /srv/newsblur/docker/volumes/postgres/archive
     state: directory
-    mode: 0777
+    mode: 0755
   
 - name: Ensure postgres backup directory
-  become: yes
   file:
-    path: /srv/newsblur/backups
+    path: /srv/newsblur/docker/volumes/postgres/backups
     state: directory
-    mode: 0777
-
-- name: Start postgres basebackup on secondary
-  become: yes
-  docker_container:
-    name: postgres
-    image: postgres:13
-    state: started
-    container_default_behavior: no_defaults
-    command: pg_basebackup -h db-postgres.service.nyc1.consul -p 5432 -U newsblur -D /var/lib/postgresql/main -Fp -R -Xs -P -c fast
-    networks_cli_compatible: yes
-    network_mode: default
-    networks:
-      - name: newsblurnet
-        aliases: 
-          - postgres
-    ports:
-      - 5432:5432
-    volumes:
-      - /srv/newsblur/docker/volumes/postgres:/var/lib/postgresql
-      - /srv/newsblur/docker/postgres/postgres.conf:/etc/postgresql/postgresql.conf
-      - /srv/newsblur/docker/postgres/postgres_hba-13.conf:/etc/postgresql/pg_hba.conf
-      - /srv/newsblur/backups/:/var/lib/postgresql/backup/
-    restart_policy: unless-stopped
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-postgres-secondary']
+    mode: 0755
+  
+- name: Ensure postgres data directory
+  file:
+    path: /srv/newsblur/docker/volumes/postgres/data
+    state: directory
+    mode: 0755
 
 - name: Start postgres docker containers
-  become: yes
   docker_container:
     name: postgres
     image: postgres:13
@@ -66,16 +45,21 @@
     ports:
       - 5432:5432
     volumes:
-      - /srv/newsblur/docker/volumes/postgres:/var/lib/postgresql
+      - /srv/newsblur/docker/volumes/postgres/data:/var/lib/postgresql/data
+      - /srv/newsblur/docker/volumes/postgres/archive:/var/lib/postgresql/archive
+      - /srv/newsblur/docker/volumes/postgres/backups:/var/lib/postgresql/backups
       - /srv/newsblur/docker/postgres/postgres.conf:/etc/postgresql/postgresql.conf
       - /srv/newsblur/docker/postgres/postgres_hba-13.conf:/etc/postgresql/pg_hba.conf
-      - /srv/newsblur/backups/:/var/lib/postgresql/backup/
     restart_policy: unless-stopped
   when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-postgres-primary', 'db-postgres']
 
+- name: Change ownership in postgres docker container
+  command: >
+    docker exec postgres chown -fR postgres.postgres /var/lib/postgresql
+  
 - name: Ensure newsblur role in postgres
   shell: >
-    sleep 5; 
+    sleep 15; 
     docker exec postgres createuser -s newsblur -U postgres;
     docker exec postgres createdb newsblur -U newsblur;
   register: ensure_role
@@ -101,11 +85,10 @@
   register: app_changed
 
 - name: Add sanity checkers cronjob for disk usage
-  become: yes
   cron:
     name: disk_usage_sanity_checker
-    user: root
-    cron_file: /etc/cron.hourly/disk_usage_sanity_checker
+    minute: "0"
+    hour: "0"
     job: >-
       docker pull newsblur/newsblur_python3:latest;
       docker run --rm -it
