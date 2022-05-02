@@ -1808,8 +1808,8 @@ background-color: #E6ECE8;}
 .NB-image-preview-large-left .NB-story-title {
     padding-left: 116px;
 }
-.NB-image-preview-small-left .NB-story-title.NB-story-title-grid,
-.NB-image-preview-large-left .NB-story-title.NB-story-title-grid {
+.NB-story-title.NB-story-title-grid,
+.NB-view-river .NB-story-title.NB-story-title-grid {
     padding-left: 0;
 }
 .NB-image-preview-small-left .NB-view-river .NB-story-title,
