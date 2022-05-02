@@ -695,4 +695,7 @@
     <string name="go_to_feed">Go to feed</string>
 
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
+
+    <string name="search">Search</string>
+    <string name="add_feed">Add feed</string>
 </resources>

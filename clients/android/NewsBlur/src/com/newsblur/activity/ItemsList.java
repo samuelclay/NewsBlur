@@ -64,9 +64,9 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
     public static final String EXTRA_FEED_SET = "feed_set";
     public static final String EXTRA_STORY_HASH = "story_hash";
     public static final String EXTRA_WIDGET_STORY = "widget_story";
-	private static final String STORY_ORDER = "storyOrder";
-	private static final String READ_FILTER = "readFilter";
-    private static final String DEFAULT_FEED_VIEW = "defaultFeedView";
+    public static final String EXTRA_VISIBLE_SEARCH = "visibleSearch";
+    private static final String STORY_ORDER = "storyOrder";
+    private static final String READ_FILTER = "readFilter";
     private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
     private ActivityItemslistBinding binding;
 
@@ -88,7 +88,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         // the correct session, but that can be delayed by sync backup, so we try here to
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
         feedUtils.prepareReadingSession(fs, false);
-
         if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false)) {
             String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
             UIUtils.startReadingActivity(fs, hash, this);
@@ -122,6 +121,9 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             binding.itemlistSearchQuery.setText(activeSearchQuery);
             binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
             checkSearchQuery();
+        } else if (getIntent().getBooleanExtra(EXTRA_VISIBLE_SEARCH, false)){
+            binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
+            binding.itemlistSearchQuery.requestFocus();
         }
 
         binding.itemlistSearchQuery.setOnKeyListener(new OnKeyListener() {
