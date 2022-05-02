@@ -41,7 +41,7 @@
       # - dir: /backup_redis/
       #   file: "{{ redis_filename }}"
     tags: never, restore_postgres, restore_mongo, restore_redis, restore_redis_story
-  
+
   - name: Restore postgres
     block:
       - name: pg_restore
@@ -76,3 +76,13 @@
         command: "mv -f /srv/newsblur/backups/{{ redis_story_filename }} /srv/newsblur/docker/volumes/redis/dump.rdb"
         ignore_errors: yes
     tags: never, restore_redis_story
+
+  - name: Start postgres basebackup on secondary
+    become: yes
+    command:
+      docker exec postgres pg_basebackup -h db-postgres.service.nyc1.consul -p 5432 -U newsblur -D /var/lib/postgresql/data -Fp -R -Xs -P -c fast
+    # when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-postgres-secondary']
+    tags:
+      - never
+      - restore_pg_basebackup
+
