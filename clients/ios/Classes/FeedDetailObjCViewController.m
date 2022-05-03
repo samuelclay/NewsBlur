@@ -2807,7 +2807,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     cellRect = [storyTitlesTable convertRect:cellRect toView:storyTitlesTable.superview];
     
     BOOL completelyVisible = CGRectContainsRect(storyTitlesTable.frame, cellRect);
-    if (!completelyVisible) {
+    if (!completelyVisible && [storyTitlesTable numberOfRowsInSection:0] > 0) {
         [storyTitlesTable scrollToRowAtIndexPath:offsetIndexPath 
                                 atScrollPosition:UITableViewScrollPositionTop 
                                         animated:YES];
