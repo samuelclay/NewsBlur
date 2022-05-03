@@ -81,7 +81,7 @@ class PageImporter(object):
                 self.save_no_page(reason="Broken page")
                 return
             elif any(s in feed_link.lower() for s in BROKEN_PAGE_URLS):
-                self.save_no_page(reason="Broke page url")
+                self.save_no_page(reason="Banned")
                 return
             elif feed_link.startswith('http'):
                 if urllib_fallback:
@@ -238,7 +238,7 @@ class PageImporter(object):
         logging.debug('   ---> [%-30s] ~FYNo original page: %s / %s' % (self.feed.log_title[:30], reason, self.feed.feed_link))
         self.feed.has_page = False
         self.feed.save()
-        self.feed.save_page_history(404, "Feed has no original page.")
+        self.feed.save_page_history(404, f"Feed has no original page: {reason}")
 
     def rewrite_page(self, response):
         BASE_RE = re.compile(r'<head(.*?)>', re.I)
