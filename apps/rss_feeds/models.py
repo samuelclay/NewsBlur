@@ -1658,8 +1658,11 @@ class Feed(models.Model):
     #         print "db.stories.remove({\"story_feed_id\": %s, \"_id\": \"%s\"})" % (f, u)
 
         
-    def get_stories(self, offset=0, limit=25, force=False):
-        stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
+    def get_stories(self, offset=0, limit=25, order="neweat", force=False):
+        if order == "newest":
+            stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
+        elif order == "oldest":
+            stories_db = MStory.objects(story_feed_id=self.pk).order_by('story_date')[offset:offset+limit]
         stories = self.format_stories(stories_db, self.pk)
         
         return stories
