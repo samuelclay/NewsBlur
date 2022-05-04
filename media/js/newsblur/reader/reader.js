@@ -2665,7 +2665,7 @@
               encodeURIComponent(story.get('story_title')),
               '&url=',
               encodeURIComponent(story.get('story_permalink')),
-	      '&via=Newsblur'
+	      '&via=NewsBlur'
             ].join('');
             window.open(twitter_url, '_blank');
             NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});

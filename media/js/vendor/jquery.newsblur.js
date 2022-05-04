@@ -286,7 +286,7 @@ NEWSBLUR.log = function(msg) {
             if (feed.is_starred())
                 return NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/tag.svg';
             if (feed.get('is_newsletter'))
-                return NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/email.png';
+                return NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/email.svg';
 
             return empty_icon;
         },
