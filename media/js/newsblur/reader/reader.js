@@ -43,6 +43,7 @@
                 $feed_link_error: $('.NB-feeds-list-error'),
                 $feeds_progress: $('#NB-progress'),
                 $dashboard: $('.NB-feeds-header-dashboard'),
+                $header_dashboard: $('.NB-feeds-header-river-dashboard'),
                 $river_sites_header: $('.NB-feeds-header-river-sites'),
                 $river_infrequent_header: $('.NB-feeds-header-river-infrequent'),
                 $river_blurblogs_header: $('.NB-feeds-header-river-blurblogs'),
@@ -565,6 +566,7 @@
             }
             this.$s.$body.addClass('NB-show-reader');
             this.flags['splash_page_frontmost'] = false;
+            this.$s.$header_dashboard.removeClass('NB-selected');
 
             if (resize) {
                 this.$s.$layout.layout().resizeAll();
@@ -581,6 +583,7 @@
             this.reset_feed();
             this.open_sidebar();
             this.$s.$body.removeClass('NB-show-reader');
+            this.$s.$header_dashboard.addClass('NB-selected');
             this.flags['splash_page_frontmost'] = true;
             
             if (!skip_router) {

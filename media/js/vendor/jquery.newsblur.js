@@ -233,7 +233,7 @@ NEWSBLUR.log = function(msg) {
         },
         
         favicon: function (feed, empty_on_missing) {
-            var empty_icon = NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/world.png';
+            var empty_icon = NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/world.svg';
             if (!feed) return empty_icon;
             // console.log(['Favicon', feed]);
 
@@ -243,23 +243,23 @@ NEWSBLUR.log = function(msg) {
             else if (_.isString(feed)) {
                 var feed_id = feed;
                 if (feed_id == 'river:')
-                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/ak-icon-allstories.png';
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/all-stories.svg';
                 if (feed_id == 'river:infrequent')
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/noun_turtle.png';
                 if (feed_id == 'river:blurblogs')
-                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/ak-icon-blurblogs.png';
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/all-shares.svg';
                 if (feed_id == 'river:global')
-                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/ak-icon-global.png';
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/global-shares.svg';
                 if (_.string.startsWith(feed_id, 'river:'))
-                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_folder.png';
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/folder-open.svg';
                 if (feed_id == "read")
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_unread32.png';
                 if (feed_id == "starred")
-                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/clock.png';
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/saved-stories.svg';
                 if (feed_id == "searches")
-                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_search_black.png';
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/search.svg';
                 if (_.string.startsWith(feed_id, 'starred:'))
-                    return NEWSBLUR.Globals.MEDIA_URL + 'img/reader/tag.png';
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/tag.svg';
                 if (_.string.startsWith(feed_id, 'feed:'))
                     return $.favicon(parseInt(feed_id.replace('feed:', ''), 10));
                 if (_.string.startsWith(feed_id, 'social:'))
@@ -284,7 +284,7 @@ NEWSBLUR.log = function(msg) {
             if (feed.get('favicon_url'))
                 return feed.get('favicon_url');
             if (feed.is_starred())
-                return NEWSBLUR.Globals.MEDIA_URL + '/img/reader/tag.png';
+                return NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/tag.svg';
             if (feed.get('is_newsletter'))
                 return NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/email.png';
 
