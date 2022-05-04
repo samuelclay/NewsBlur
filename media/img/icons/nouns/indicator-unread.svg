@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="68px" height="68px" viewBox="0 0 68 68" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>indicator-unread</title>
+    <g id="indicator-unread" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="noun-dots-2561422-95978E" fill="#AEA99C" fill-rule="nonzero">
+            <path d="M34,68 C52.9198026,68 68,52.6613523 68,34 C68,15.0801974 52.6613523,0 34,0 C15.3386477,0 0,15.3386477 0,34 C0,52.9198026 15.081196,68 34,68 Z M34,26.9998003 C37.9048856,26.9998003 41,30.0949146 41,33.9998003 C41,37.9046859 37.9048856,40.9998003 34,40.9998003 C30.0951144,40.9998003 27,37.9046859 27,33.9998003 C27,30.0949146 30.0951144,26.9998003 34,26.9998003 Z" id="Shape"></path>
+        </g>
+    </g>
+</svg>

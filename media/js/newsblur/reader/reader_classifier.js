@@ -322,13 +322,13 @@ var classifier_prototype = {
                 ]),
                 $.make('li', [
                     $.make('b', 'The intelligence slider filters stories.'),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_focus.png'}),
+                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-focus.svg'}),
                     ' are stories you like',
                     $.make('br'),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_unread.png'}),
+                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-unread.svg'}),
                     ' are stories you have not yet rated',
                     $.make('br'),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_hidden.png'}),
+                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-hidden.svg'}),
                     ' are stories you don\'t like'
                 ]),
                 $.make('li', [
@@ -366,13 +366,13 @@ var classifier_prototype = {
                 $.make('li', [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/intelligence_slider_positive.png', style: 'float: right', width: 114, height: 29 }),
                     $.make('b', 'As a reminder, use the intelligence slider to select a filter:'),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_hidden.png'}),
+                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-hidden.svg'}),
                     ' are stories you don\'t like',
                     $.make('br'),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_unread.png'}),
+                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-unread.svg'}),
                     ' are stories you have not yet rated',
                     $.make('br'),
-                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_focus.png'}),
+                    $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-focus.svg'}),
                     ' are stories you like'
 
                 ]),

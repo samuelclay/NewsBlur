@@ -17,7 +17,7 @@ NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
         } else if (_.string.startsWith(feed_id, 'river:')) {
             url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/folder-open.svg';
         } else if (feed_id == "read") {
-            url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_unread.png';
+            url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/indicator-unread.svg';
         } else if (feed_id == "starred") {
             url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/saved-stories.svg';
         } else if (_.string.startsWith(feed_id, 'starred:')) {
