@@ -1382,7 +1382,7 @@ img.feed_favicon {
 .NB-feedbar {
     border-bottom: 1px solid #dbdbda;
     background-color: #F3F3EE;
-    background-image: linear-gradient(top, #F3F3EE, #f0f3ed);
+    background-image: linear-gradient(180deg, #F3F3EE, #f0f3ed);
 }
 
 .NB-feedbar .feed .feed_favicon {
@@ -4875,9 +4875,7 @@ body {
     color: #505050;
     overflow: hidden;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#F3F3EE), to(#E8EBE4));
-    background-image: -moz-linear-gradient(center top , #F3F3EE 0%, #E8EBE4 100%);
-    background-image: linear-gradient(top, #F3F3EE, #E8EBE4);
+    background-image: linear-gradient(180deg, #F3F3EE, #f0f3ed);
     border-bottom: 1px solid #dbdbda;
 }
 .NB-feeds-header-user .NB-feeds-header-user-image {
@@ -5186,9 +5184,7 @@ body {
 .NB-taskbar-container {
     text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
     background-color: #F3F3EE;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#F3F3EE), to(#E8EBE4));
-    background-image: -moz-linear-gradient(center top , #F3F3EE 0%, #E8EBE4 100%);
-    background-image: linear-gradient(top, #F3F3EE, #E8EBE4);
+    background-image: linear-gradient(180deg, #F3F3EE, #f0f3ed);
     z-index: 10;
     height: 36px;
 }
@@ -13155,14 +13151,9 @@ form.opml_import_form input {
 .NB-search-header {
     overflow: hidden;
     padding: 8px 8px 8px 36px;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F3F4EF));
-    background-image: -moz-linear-gradient(center top , #FEFEFE 0%, #F3F4EF 100%);
-    background-image: linear-gradient(top, #FEFEFE, #F3F4EF);
     border-bottom: 1px solid #dbdbda;
     background-color: #F3F3EE;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#F3F3EE), to(#E8EBE4));
-    background-image: -moz-linear-gradient(center top , #F3F3EE 0%, #E8EBE4 100%);
-    background-image: linear-gradient(top, #F3F3EE, #E8EBE4);
+    background-image: linear-gradient(180deg, #F3F3EE, #f0f3ed);
 }
 
 .NB-search-header .NB-search-header-save {
