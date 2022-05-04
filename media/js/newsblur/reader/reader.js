@@ -4156,13 +4156,13 @@
                     var $align = $item;
                     if (type == 'feed') {
                         left = toplevel ? 2 : -22;
-                        top = toplevel ? 1 : 3;
+                        top = toplevel ? 1 : 5;
                     } else if (type == 'socialfeed' || type == 'starred' || type == 'search') {
-                        left = 0;
-                        top = 2;
+                        left = 2;
+                        top = 4;
                     } else if (type == 'folder') {
-                        left = toplevel ? 0 : -21;
-                        top = toplevel ? 3 : 3;
+                        left = toplevel ? 8 : -20;
+                        top = toplevel ? 6 : 6;
                     } else if (type == 'story') {
                         left = 7;
                         top = 3;
@@ -4192,8 +4192,8 @@
                         top = toplevel ? 20 : 21;
                         $align = $('.NB-feedlist-manage-icon', $item);
                     } else if (type == 'folder') {
-                        left = toplevel ? 0 : -22;
-                        top = toplevel ? 21 : 18;
+                        left = toplevel ? 8 : -22;
+                        top = toplevel ? 24 : 21;
                     } else if (type == 'story') {
                         left = 7;
                         top = 19;

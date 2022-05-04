@@ -1086,8 +1086,8 @@ border-bottom-color: #303739;
 .NB-dark .NB-searches-folder {
     /* border-bottom: 1px solid #333536; */
 }
-.NB-dark .NB-feeds-header-read-container.NB-feeds-header-container {
-    /* border-top: 1px solid #333536; */
+.NB-dark .NB-feeds-header-container {
+    background-color: #434543;
 }
 /* Unread feed count badge */
 .NB-dark .unread_count_neutral {
