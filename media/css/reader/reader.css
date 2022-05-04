@@ -1380,14 +1380,9 @@ img.feed_favicon {
   opacity: 1.0;
 }
 .NB-feedbar {
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F3F4EF));
-    background-image: -moz-linear-gradient(center top , #FEFEFE 0%, #F3F4EF 100%);
-    background-image: linear-gradient(top, #FEFEFE, #F3F4EF);
     border-bottom: 1px solid #dbdbda;
     background-color: #F3F3EE;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#F3F3EE), to(#E8EBE4));
-    background-image: -moz-linear-gradient(center top , #F3F3EE 0%, #E8EBE4 100%);
-    background-image: linear-gradient(top, #F3F3EE, #E8EBE4);
+    background-image: linear-gradient(top, #F3F3EE, #f0f3ed);
 }
 
 .NB-feedbar .feed .feed_favicon {
@@ -1905,17 +1900,17 @@ img.feed_favicon {
 }
 
 .NB-story-title.NB-story-positive .NB-storytitles-sentiment {
-    background: transparent url('/media/embed/icons/nouns/indicator-focus.svg') no-repeat 13px 4px;
-    background-size: 10px;
+    background: transparent url('/media/embed/icons/nouns/indicator-focus.svg') no-repeat 11px 3px;
+    background-size: 12px;
 }
 
 .NB-story-title.NB-story-neutral .NB-storytitles-sentiment {
-    background: transparent url('/media/embed/icons/nouns/indicator-unread.svg') no-repeat 13px 4px;
+    background: transparent url('/media/embed/icons/nouns/indicator-unread.svg') no-repeat 12px 4px;
     background-size: 10px;
 }
 
 .NB-story-title.NB-story-negative .NB-storytitles-sentiment {
-    background: transparent url('/media/embed/icons/nouns/indicator-hidden.svg') no-repeat 13px 4px;
+    background: transparent url('/media/embed/icons/nouns/indicator-hidden.svg') no-repeat 12px 4px;
     background-size: 10px;
 }
 
@@ -3443,22 +3438,22 @@ body {
 }
   
 .NB-feed-story.NB-story-starred .NB-feed-story-sentiment {
-    background: transparent url('/media/embed/icons/circular/g_icn_starred.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/circular/g_icn_starred.png') no-repeat 6px 0;
     background-size: 10px;
 }
 
 .NB-feed-story.NB-story-positive .NB-feed-story-sentiment {
-    background: transparent url('/media/embed/icons/nouns/indicator-focus.svg') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/indicator-focus.svg') no-repeat 6px 0;
     background-size: 10px;
 }
 
 .NB-feed-story.NB-story-neutral .NB-feed-story-sentiment {
-    background: transparent url('/media/embed/icons/nouns/indicator-unread.svg') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/indicator-unread.svg') no-repeat 6px 0;
     background-size: 10px;
 }
 
 .NB-feed-story.NB-story-negative .NB-feed-story-sentiment {
-    background: transparent url('/media/embed/icons/nouns/indicator-hidden.svg') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/indicator-hidden.svg') no-repeat 6px 0;
     background-size: 10px;
 }
 .NB-feed-story.read .NB-feed-story-sentiment {
