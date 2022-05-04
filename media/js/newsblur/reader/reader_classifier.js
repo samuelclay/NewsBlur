@@ -359,8 +359,8 @@ var classifier_prototype = {
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_classifier_tag.png', style: 'float: right', width: 135 }),
                     $.make('b', 'You can change your opinions.'),
                     ' You can click the ',
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/thumbs_up.png', style: 'vertical-align: middle;padding: 0 8px 0 2px', width: 14, height: 20 }),
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/thumbs_down.png', style: 'vertical-align: top; padding: 0', width: 14, height: 20 }),
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/thumbs-up.svg', style: 'vertical-align: middle;padding: 0 8px 0 2px', width: 14, height: 20 }),
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/thumbs-down.svg', style: 'vertical-align: top; padding: 0', width: 14, height: 20 }),
                     ' buttons next to stories as you read them.'
                 ]),
                 $.make('li', [

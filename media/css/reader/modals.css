@@ -424,7 +424,7 @@ fieldset legend {
 }
 
 .NB-modal .NB-fieldset {
-    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    /* border-bottom: 1px solid rgba(0, 0, 0, .1); */
     margin: 24px 0 0;
     overflow: hidden;
 }
