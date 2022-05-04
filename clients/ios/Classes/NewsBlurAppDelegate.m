@@ -1186,6 +1186,10 @@
 }
 
 - (void)showLogin {
+    if (self.loginViewController.view.window != nil) {
+        return;
+    }
+    
     self.dictFeeds = nil;
     self.dictSocialFeeds = nil;
     self.dictSavedStoryTags = nil;
@@ -1930,6 +1934,10 @@
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder {
     self.readStories = [NSMutableArray array];
     NSMutableArray *feeds = [NSMutableArray array];
+    
+    if (self.loginViewController.view.window != nil) {
+        return;
+    }
     
     self.inFeedDetail = YES;
     [feedDetailView resetFeedDetail];
