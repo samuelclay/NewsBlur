@@ -81,7 +81,7 @@ def load_feed_favicon(request, feed_id):
         not_found = True
         
     if not_found or not feed_icon.data:
-        return HttpResponseRedirect(settings.MEDIA_URL + 'img/icons/circular/world.png')
+        return HttpResponseRedirect(settings.MEDIA_URL + 'img/icons/nouns/world.svg')
         
     icon_data = base64.b64decode(feed_icon.data)
     return HttpResponse(icon_data, content_type='image/png')

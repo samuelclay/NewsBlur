@@ -68,9 +68,9 @@ favicons = (app) =>
                 else
                     if ENV_DEBUG
                         log.debug "Redirect: #{feed_id}, etag: #{etag}/#{docs?.color} " + if err then "(err: #{err})" else ""
-                    if ENV_DEV
-                        res.redirect '/media/img/icons/circular/world.png' 
+                    if ENV_DEV or ENV_DOCKER
+                        res.redirect '/media/img/icons/nouns/world.svg' 
                     else
-                        res.redirect 'https://www.newsblur.com/media/img/icons/circular/world.png' 
+                        res.redirect 'https://www.newsblur.com/media/img/icons/nouns/world.svg' 
 
 exports.favicons = favicons
