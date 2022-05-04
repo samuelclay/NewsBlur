@@ -851,8 +851,8 @@ img.feed_favicon {
 .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon,
 .NB-feeds-header .NB-feedlist-collapse-icon {
     position: absolute;
-    top: 0px;
-    right: 0px;
+    top: 1px;
+    right: 4px;
     width: 24px;
     height: 24px;
     background: transparent url('/media/embed/icons/circular/folder_collapse.png') no-repeat center center;
@@ -930,13 +930,14 @@ img.feed_favicon {
 }
 .NB-feedlist .feed.selected,
 .NB-feedlist .feed.NB-selected,
-.NB-feeds-header.NB-selected,
 .NB-feedlist .folder.NB-selected > .folder_title {
     background-color: #FFFFD2;
     /* background-color: #c9e5fb; */
     border-radius: 8px;
 }
-
+.NB-feeds-header.NB-selected {
+    background-color: #FFFFD2;
+}
 .NB-feedlist .folder.NB-selected > .folder_title {
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
 }
@@ -1048,27 +1049,27 @@ img.feed_favicon {
     line-height: 11px;
 }
 .NB-theme-feed-size-xs .NB-feeds-header .unread_count {
-    margin-top: 6px;
+    margin-top: 9px;
     padding-top: 3px;
     padding-bottom: 2px;
 }
 .NB-theme-feed-size-s .NB-feeds-header .unread_count {
-    margin-top: 6px;
+    margin-top: 9px;
     padding-top: 2px;
     padding-bottom: 2px;
 }
 .NB-theme-feed-size-m .NB-feeds-header .unread_count {
-    margin-top: 6px;
+    margin-top: 9px;
     padding-top: 2px;
     padding-bottom: 2px;
 }
 .NB-theme-feed-size-l .NB-feeds-header .unread_count {
-    margin-top: 5px;
+    margin-top: 6px;
     padding-top: 4px;
     padding-bottom: 3px;
 }
 .NB-theme-feed-size-xl .NB-feeds-header .unread_count {
-    margin-top: 5px;
+    margin-top: 7px;
     padding-top: 4px;
     padding-bottom: 3px;
 }
@@ -1971,7 +1972,7 @@ img.feed_favicon {
     width: 16px;
     height: 16px;
     margin: -1px 6px 0 0;
-    background: transparent url('/media/embed/icons/circular/menu_icn_share.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/share.svg') no-repeat 0 0;
     background-size: 16px;
     float: left;
     display: none;
@@ -2199,7 +2200,7 @@ img.feed_favicon {
     width: 12px;
     height: 12px;
     margin: 2px 4px 0 0;
-    background: transparent url('/media/embed/icons/circular/share.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/share.svg') no-repeat 0 0;
     background-size: 16px;
 }
 .NB-storytitles-shares .NB-user-avatar {
@@ -4510,7 +4511,7 @@ body {
     background-size: 16px;
 }
 .NB-sideoption.NB-feed-story-share .NB-sideoption-icon {
-    background-image: url('/media/embed/icons/circular/share.png');
+    background-image: url('/media/embed/icons/nouns/share.svg');
     background-size: 16px;
 }
 
@@ -7342,7 +7343,7 @@ form.opml_import_form input {
     background-size: 16px;
 }
 .NB-module-gettingstarted .NB-module-friends-button .NB-icon {
-    background: transparent url('/media/embed/icons/circular/share.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/share.svg') no-repeat 0 0;
     background-size: 16px;
 }
 .NB-module-gettingstarted .NB-module-account-train .NB-icon {
@@ -8196,7 +8197,7 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/silk/arrow_rotate_clockwise.png') no-repeat  0 1px;  
 }
 .NB-menu-manage .NB-menu-manage-story-share .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_share.png') no-repeat 0 2px;
+    background: transparent url('/media/embed/icons/nouns/share.svg') no-repeat 0 2px;
     background-size: 16px;
 }
 .NB-menu-manage .NB-menu-manage-story-share.NB-active .NB-menu-manage-image {
