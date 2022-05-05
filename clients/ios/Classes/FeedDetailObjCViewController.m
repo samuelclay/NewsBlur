@@ -1326,8 +1326,12 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
                                        stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
         }
     }
-    [self performSelector:@selector(cacheStoryImages:) withObject:storyImageUrls afterDelay:0.2];
-
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),
+                   dispatch_get_main_queue(), ^(void) {
+        [self cacheStoryImages:storyImageUrls];
+    });
+    
     self.pageFetching = NO;
 }
 
