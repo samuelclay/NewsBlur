@@ -253,7 +253,7 @@ NEWSBLUR.log = function(msg) {
                 if (_.string.startsWith(feed_id, 'river:'))
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/folder-open.svg';
                 if (feed_id == "read")
-                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/circular/g_icn_unread32.png';
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/indicator-unread.svg';
                 if (feed_id == "starred")
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/saved-stories.svg';
                 if (feed_id == "searches")
