@@ -1261,18 +1261,21 @@ class Profile(models.Model):
                 return
         except MSentEmail.DoesNotExist:
             MSentEmail.objects.create(**params)
-
+        feed_count = UserSubscription.objects.filter(user=self.user).count()
         user    = self.user
         text    = render_to_string('mail/email_new_premium_archive.txt', locals())
         html    = render_to_string('mail/email_new_premium_archive.xhtml', locals())
-        subject = f"Your NewsBlur Premium Archive backfill is complete: from {pre_archive_count:,} to {total_story_count:,} stories"
+        if total_story_count > pre_archive_count:
+            subject = f"NewsBlur archive backfill is complete: from {pre_archive_count:,} to {total_story_count:,} stories"
+        else:
+            subject = f"NewsBlur archive backfill is complete: {total_story_count:,} stories"
         msg     = EmailMultiAlternatives(subject, text, 
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
                                          to=['%s <%s>' % (user, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send()
         
-        logging.user(self.user, "~BB~FM~SBSending email for new premium archive: %s" % self.user.email)
+        logging.user(self.user, "~BB~FM~SBSending email for new premium archive: %s (%s to %s stories)" % (self.user.email, pre_archive_count, total_story_count))
     
     def send_new_premium_pro_email(self, force=False):
         if not self.user.email or not self.send_emails:
