@@ -2180,7 +2180,12 @@
 //        [self showDetailViewController:detailViewController sender:self];
 //        feedsNavigationController.navigationItem.hidesBackButton = YES;
 //    }
-
+    
+    self.inFindingStoryMode = NO;
+    self.findingStoryStartDate = nil;
+    self.tryFeedStoryId = nil;
+    self.tryFeedFeedId = nil;
+    
     NSInteger activeStoryLocation = [storiesCollection locationOfActiveStory];
     if (activeStoryLocation >= 0) {
         BOOL animated = ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad &&
