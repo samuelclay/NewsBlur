@@ -658,7 +658,7 @@ class UserSubscription(models.Model):
                      (total, round(duration, 2)))
         r.publish(user.username, 'fetch_archive:done')
 
-        return ending_story_count, pre_archive_count
+        return ending_story_count, min(pre_archive_count, starting_story_count)
         
     
     @classmethod
