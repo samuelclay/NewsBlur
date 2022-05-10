@@ -460,7 +460,7 @@ resource "digitalocean_droplet" "db-postgres" {
 # servers=$(for i in {1..9}; do echo -n "-target=\"digitalocean_droplet.db-mongo-primary[$i]\" " ; done); tf plan -refresh=false `eval echo $servers`
 # 
 resource "digitalocean_droplet" "db-mongo-primary" {
-  count    = 1
+  count    = 2
   backups  = true
   image    = var.droplet_os
   name     = "db-mongo-primary${count.index+1}"
@@ -481,7 +481,7 @@ resource "digitalocean_droplet" "db-mongo-primary" {
 }
 
 resource "digitalocean_volume" "mongo_secondary_volume" {
-  count                   = 2
+  count                   = 3
   region                  = "nyc1"
   name                    = "mongosecondary${count.index+1}"
   size                    = 400
@@ -490,7 +490,7 @@ resource "digitalocean_volume" "mongo_secondary_volume" {
 }
 
 resource "digitalocean_droplet" "db-mongo-secondary" {
-  count    = 2
+  count    = 3
   image    = var.droplet_os
   name     = "db-mongo-secondary${count.index+1}"
   region   = var.droplet_region
