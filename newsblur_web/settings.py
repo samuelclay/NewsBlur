@@ -36,6 +36,8 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 import django.http
 import re
 from mongoengine import connect
+from pymongo import monitoring
+from utils.mongo_command_monitor import MongoCommandLogger
 import boto3
 
 # ===================
@@ -124,7 +126,6 @@ MIDDLEWARE = (
     'utils.request_introspection_middleware.DumpRequestMiddleware',
     'apps.profile.middleware.DBProfilerMiddleware',
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
-    'utils.mongo_raw_log_middleware.MongoDumpMiddleware',
     'utils.redis_raw_log_middleware.RedisDumpMiddleware',
     'django_prometheus.middleware.PrometheusAfterMiddleware',
 )
@@ -596,17 +597,21 @@ try:
 except ModuleNotFoundError:
     pass
 
+started_task_or_app = False
 try:
     from newsblur_web.task_env import *
     print(" ---> Starting NewsBlur task server...")
+    started_task_or_app = True
 except ModuleNotFoundError:
     pass
 try:
     from newsblur_web.app_env import *
     print(" ---> Starting NewsBlur app server...")
+    started_task_or_app = True
 except ModuleNotFoundError:
     pass
-
+if not started_task_or_app:
+    print(" ---> Starting NewsBlur development server...")
 
 if not DEBUG:
     INSTALLED_APPS += (
@@ -704,6 +709,9 @@ ANYMAIL = {
 # =========
 # = Mongo =
 # =========
+
+MONGO_COMMAND_LOGGER = MongoCommandLogger()
+monitoring.register(MONGO_COMMAND_LOGGER)
 
 MONGO_DB_DEFAULTS = {
     'name': 'newsblur',
