@@ -17,7 +17,7 @@ def push_callback(request, push_id):
     if request.method == 'GET':
         mode = request.GET['hub.mode']
         topic = request.GET['hub.topic']
-        challenge = request.GET['hub.challenge']
+        challenge = request.GET.get('hub.challenge', '')
         lease_seconds = request.GET.get('hub.lease_seconds')
         verify_token = request.GET.get('hub.verify_token', '')
 
