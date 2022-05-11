@@ -45,7 +45,7 @@ class MongoCommandLogger(monitoring.CommandListener):
             query = f"{[dict(dict(i)['q']) for i in command_insert]}"
         elif command_update:
             query = f"{[dict(dict(i)['q']) for i in command_update]}"
-        elif command_get_more:
+        elif command_get_more and isinstance(command_get_more, dict):
             query = f"{command_get_more['collection']}"
         query_size = len(str(query))
         if query_size > 500:
