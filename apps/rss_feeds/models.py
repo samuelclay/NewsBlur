@@ -1,4 +1,5 @@
 import difflib
+import bson
 import requests
 import datetime
 import time
@@ -92,6 +93,7 @@ class Feed(models.Model):
     s3_page = models.BooleanField(default=False, blank=True, null=True)
     s3_icon = models.BooleanField(default=False, blank=True, null=True)
     search_indexed = models.BooleanField(default=None, null=True, blank=True)
+    fs_size_bytes = models.IntegerField(null=True, blank=True)
 
     class Meta:
         db_table="feeds"
@@ -1627,8 +1629,41 @@ class Feed(models.Model):
     def trim_feed(self, verbose=False, cutoff=None):
         if not cutoff:
             cutoff = self.story_cutoff
-        return MStory.trim_feed(feed=self, cutoff=cutoff, verbose=verbose)
-    
+
+        stories_removed = MStory.trim_feed(feed=self, cutoff=cutoff, verbose=verbose)
+
+        self.count_fs_size_bytes()
+
+        return stories_removed
+
+    def count_fs_size_bytes(self):
+        stories = MStory.objects.filter(story_feed_id=self.pk)
+        sum_bytes = 0
+
+        for story in stories:
+            story_with_content = story.to_mongo()
+            if story_with_content.get('story_content_z', None):
+                story_with_content['story_content'] = zlib.decompress(story_with_content['story_content_z'])
+                del story_with_content['story_content_z']
+            if story_with_content.get('original_page_z', None):
+                story_with_content['original_page'] = zlib.decompress(story_with_content['original_page_z'])
+                del story_with_content['original_page_z']
+            if story_with_content.get('original_text_z', None):
+                story_with_content['original_text'] = zlib.decompress(story_with_content['original_text_z'])
+                del story_with_content['original_text_z']
+            if story_with_content.get('story_latest_content_z', None):
+                story_with_content['story_latest_content'] = zlib.decompress(story_with_content['story_latest_content_z'])
+                del story_with_content['story_latest_content_z']
+            if story_with_content.get('story_original_content_z', None):
+                story_with_content['story_original_content'] = zlib.decompress(story_with_content['story_original_content_z'])
+                del story_with_content['story_original_content_z']
+            sum_bytes += len(bson.BSON.encode(story_with_content))
+
+        self.fs_size_bytes = sum_bytes
+        self.save()
+
+        return sum_bytes
+        
     def purge_feed_stories(self, update=True):
         MStory.purge_feed_stories(feed=self, cutoff=self.story_cutoff)
         if update:
