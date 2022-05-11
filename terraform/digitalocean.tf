@@ -107,7 +107,7 @@ resource "digitalocean_droplet" "app-django" {
   image    = var.droplet_os
   name     = "app-django${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size_10
+  size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -125,7 +125,7 @@ resource "digitalocean_droplet" "app-counts" {
   image    = var.droplet_os
   name     = "app-counts${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -161,7 +161,7 @@ resource "digitalocean_droplet" "app-refresh" {
   image    = var.droplet_os
   name     = "app-refresh${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size_10
+  size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
