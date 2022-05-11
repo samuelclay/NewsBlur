@@ -77,7 +77,7 @@ class DBProfilerMiddleware:
 
     def process_celery(self):
         setattr(self, 'activated_segments', [])
-        if random.random() < 0.01:
+        if random.random() < 0.01 or settings.DEBUG_QUERIES:
             self.activated_segments.append('db_profiler')
             connection.use_debug_cursor = True
             setattr(settings, 'ORIGINAL_DEBUG', settings.DEBUG)
@@ -158,7 +158,7 @@ class SQLLogToConsoleMiddleware:
                 connection.queriesx = []
             for query in queries:
                 if query.get('mongo'):
-                    query['sql'] = "~FM%s: %s" % (query['mongo']['collection'], query['mongo']['query'])
+                    query['sql'] = "~FM%s %s: %s" % (query['mongo']['op'], query['mongo']['collection'], query['mongo']['query'])
                 elif query.get('redis_user'):
                     query['sql'] = "~FC%s" % (query['redis_user']['query'])
                 elif query.get('redis_story'):

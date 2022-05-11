@@ -43,6 +43,15 @@ variable "droplet_os" {
   default = "ubuntu-20-04-x64"
 }
 
+variable "sentry_droplet_size" {
+  type = string
+  default = "s-4vcpu-8gb"
+}
+
+variable "metrics_droplet_size" {
+  type = string
+  default = "s-1vcpu-2gb"
+}
 
 variable "mongo_droplet_size" {
   type = string
@@ -52,11 +61,6 @@ variable "mongo_droplet_size" {
 variable "mongo_primary_droplet_size" {
   type = string
   default = "so-4vcpu-32gb"
-}
-
-variable "metrics_droplet_size" {
-  type = string
-  default = "s-1vcpu-2gb"
 }
 
 variable "mongo_secondary_droplet_size" {
@@ -77,9 +81,4 @@ variable "elasticsearch_droplet_size" {
 variable "redis_story_droplet_size" {
   type = string
   default = "m-2vcpu-16gb"
-}
-
-variable "sentry_droplet_size" {
-  type = string
-  default = "s-4vcpu-8gb"
 }
