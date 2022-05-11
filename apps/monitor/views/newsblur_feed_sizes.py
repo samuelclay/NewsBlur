@@ -13,12 +13,12 @@ class FeedSizes(View):
         
         fs_size_bytes = MStatistics.get('munin:fs_size_bytes')
         if not fs_size_bytes:
-            fs_size_bytes = Feed.objects.aggregate(Sum('fs_size_bytes'))
+            fs_size_bytes = Feed.objects.aggregate(Sum('fs_size_bytes'))['fs_size_bytes__sum']
             MStatistics.set('munin:fs_size_bytes', fs_size_bytes, 60*60*12)
 
         archive_users_size_bytes = MStatistics.get('munin:archive_users_size_bytes')
         if not archive_users_size_bytes:
-            archive_users_size_bytes = Feed.objects.filter(archive_subscribers__gte=1).aggregate(Sum('fs_size_bytes'))
+            archive_users_size_bytes = Feed.objects.filter(archive_subscribers__gte=1).aggregate(Sum('fs_size_bytes'))['fs_size_bytes__sum']
             MStatistics.set('munin:archive_users_size_bytes', archive_users_size_bytes, 60*60*12)
 
         data = {
