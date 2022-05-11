@@ -151,12 +151,14 @@ class SQLLogToConsoleMiddleware:
         if not self.activated(request):
             return response
         if connection.queries:
-            time_elapsed = sum([float(q['time']) for q in connection.queries])
             queries = connection.queries
             if getattr(connection, 'queriesx', False):
                 queries.extend(connection.queriesx)
                 connection.queriesx = []
+            time_elapsed = sum([float(q['time']) for q in connection.queries])
             for query in queries:
+                sql_time = float(query['time'])
+                query['color'] = '~FC' if sql_time < 0.015 else '~FK~SB' if sql_time < 0.05 else '~FR~SB'
                 if query.get('mongo'):
                     query['sql'] = "~FM%s %s: %s" % (query['mongo']['op'], query['mongo']['collection'], query['mongo']['query'])
                 elif query.get('redis_user'):
@@ -177,13 +179,14 @@ class SQLLogToConsoleMiddleware:
                     query['sql'] = re.sub(r'INSERT', '~FGINSERT', query['sql'])
                     query['sql'] = re.sub(r'UPDATE', '~FY~SBUPDATE', query['sql'])
                     query['sql'] = re.sub(r'DELETE', '~FR~SBDELETE', query['sql'])
+
             if (
                 settings.DEBUG
                 and settings.DEBUG_QUERIES
                 and not getattr(settings, 'DEBUG_QUERIES_SUMMARY_ONLY', False)
             ):
                 t = Template(
-                    "{% for sql in sqllog %}{% if not forloop.first %}                  {% endif %}[{{forloop.counter}}] ~FC{{sql.time}}s~FW: {{sql.sql|safe}}{% if not forloop.last %}\n{% endif %}{% endfor %}"
+                    "{% for sql in sqllog %}{% if not forloop.first %}                  {% endif %}[{{forloop.counter}}] {{sql.color}}{{sql.time}}~SNs~FW: {{sql.sql|safe}}{% if not forloop.last %}\n{% endif %}{% endfor %}"
                 )
                 logging.debug(
                     t.render(
