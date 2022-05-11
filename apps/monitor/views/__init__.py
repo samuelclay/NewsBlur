@@ -4,6 +4,7 @@ from apps.monitor.views.newsblur_classifiers import Classifiers
 from apps.monitor.views.newsblur_dbtimes import DbTimes
 from apps.monitor.views.newsblur_errors import Errors
 from apps.monitor.views.newsblur_feed_counts import FeedCounts
+from apps.monitor.views.newsblur_feed_sizes import FeedSizes
 from apps.monitor.views.newsblur_feeds import Feeds
 from apps.monitor.views.newsblur_loadtimes import LoadTimes
 from apps.monitor.views.newsblur_stories import Stories

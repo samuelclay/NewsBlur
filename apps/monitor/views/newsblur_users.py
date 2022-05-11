@@ -9,14 +9,18 @@ from apps.profile.models import Profile, RNewUserQueue
 class Users(View):
 
     def get(self, request):
+        last_year = datetime.datetime.utcnow() - datetime.timedelta(days=365)
         last_month = datetime.datetime.utcnow() - datetime.timedelta(days=30)
         last_day = datetime.datetime.utcnow() - datetime.timedelta(minutes=60*24)
 
         data = {
             'all': User.objects.count(),
+            'yearly': Profile.objects.filter(last_seen_on__gte=last_year).count(),
             'monthly': Profile.objects.filter(last_seen_on__gte=last_month).count(),
             'daily': Profile.objects.filter(last_seen_on__gte=last_day).count(),
             'premium': Profile.objects.filter(is_premium=True).count(),
+            'archive': Profile.objects.filter(is_archive=True).count(),
+            'pro': Profile.objects.filter(is_pro=True).count(),
             'queued': RNewUserQueue.user_count(),
         }
         chart_name = "users"
