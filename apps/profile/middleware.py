@@ -181,8 +181,7 @@ class SQLLogToConsoleMiddleware:
                     query['sql'] = re.sub(r'DELETE', '~FR~SBDELETE', query['sql'])
 
             if (
-                settings.DEBUG
-                and settings.DEBUG_QUERIES
+                settings.DEBUG_QUERIES
                 and not getattr(settings, 'DEBUG_QUERIES_SUMMARY_ONLY', False)
             ):
                 t = Template(
