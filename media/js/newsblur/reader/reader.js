@@ -535,12 +535,27 @@
                 this.model.preference('story_position', 'stretch');
                 this.model.preference('full_width_story', false); // Turn off to ignore and deprecate
             }
+            var columns;
+            switch (this.model.preference('dashboard_columns')) {
+                case 1:
+                    columns = "single";
+                    break;
+                case 2:
+                    columns = "double";
+                    break;
+                case 3:
+                    columns = "triple";
+                    break;
+            }
             this.$s.$body.removeClass('NB-pref-story-position-stretch')
                          .removeClass('NB-pref-story-position-left')
                          .removeClass('NB-pref-story-position-center')
                          .removeClass('NB-pref-story-position-right')
                          .toggleClass('NB-pref-story-position-' + this.model.preference('story_position'));
-            this.$s.$body.toggleClass('NB-dashboard-columns-single', this.model.preference('dashboard_columns') == 1);
+            this.$s.$body.removeClass('NB-dashboard-columns-single')
+                         .removeClass('NB-dashboard-columns-double')
+                         .removeClass('NB-dashboard-columns-triple')
+                         .toggleClass('NB-dashboard-columns-' + columns);
         },
         
         load_delayed_stylesheets: function() {

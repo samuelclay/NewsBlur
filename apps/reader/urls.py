@@ -5,6 +5,7 @@ urlpatterns = [
     url(r'^$', views.index),
     url(r'^buster', views.iframe_buster, name='iframe-buster'),
     url(r'^login_as', views.login_as, name='login_as'),
+    url(r'^welcome', views.welcome_req, name='welcome'),
     url(r'^logout', views.logout, name='welcome-logout'),
     url(r'^login', views.login, name='welcome-login'),
     url(r'^autologin/(?P<username>\w+)/(?P<secret>\w+)/?', views.autologin, name='autologin'),
