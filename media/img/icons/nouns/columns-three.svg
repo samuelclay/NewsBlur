@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="156px" height="155px" viewBox="0 0 156 155" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>columns-three</title>
+    <g id="columns-three" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="noun-three-column-4619356-676767" transform="translate(12.000000, 11.000000)" fill="#676767" fill-rule="nonzero">
+            <polygon id="Path" points="46 0 84 0 84 132 46 132"></polygon>
+            <path d="M38,0 L14.25,0 C10.4707733,0 6.84595333,1.48996571 4.17354,4.14216 C1.50112667,6.79448 0,10.3920457 0,14.1428571 L0,117.857143 C0,121.607954 1.50125333,125.20552 4.17354,127.85784 C6.84595333,130.51016 10.4707733,132 14.25,132 L38,132 L38,0 Z" id="Path"></path>
+            <path d="M117.75,0 L94,0 L94,132 L117.75,132 C121.529227,132 125.154047,130.510034 127.82646,127.85784 C130.498873,125.20552 132,121.607954 132,117.857143 L132,14.1428571 C132,10.3920457 130.498747,6.79448 127.82646,4.14216 C125.154047,1.48984 121.529227,0 117.75,0 L117.75,0 Z" id="Path"></path>
+        </g>
+    </g>
+</svg>

@@ -42,19 +42,21 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
                 <div class="NB-dashboard-column-control <% if (parseInt(river_order, 10) == 0) { %>NB-active<% } %>">\
                     <ul class="segmented-control NB-dashboard-columns-control">\
                         <li class="NB-dashboard-column-option NB-dashboard-columns-control-1">\
-                            <img src="/media/img/reader/columns_single.png" class="NB-icon">\
+                            <img src="/media/img/icons/nouns/columns-one.svg" class="NB-icon">\
                         </li>\
                         <li class="NB-dashboard-column-option NB-dashboard-columns-control-2">\
-                            <img src="/media/img/reader/columns_double.png" class="NB-icon">\
+                            <img src="/media/img/icons/nouns/columns-two.svg" class="NB-icon">\
                         </li>\
                         <li class="NB-dashboard-column-option NB-dashboard-columns-control-3">\
-                            <img src="/media/img/reader/columns_single.png" class="NB-icon">\
+                            <img src="/media/img/icons/nouns/columns-three.svg" class="NB-icon">\
                         </li>\
                     </ul>\
                 </div>\
                 <div class="NB-module-river-settings NB-javascript"></div>\
-                <div class="NB-module-river-favicon"><img src="<%= favicon_url %>"></div>\
-                <div class="NB-module-river-title"><%= river_title %></div>\
+                <div class="NB-module-river-title">\
+                    <div class="NB-module-river-favicon"><img src="<%= favicon_url %>"></div>\
+                    <div class="NB-module-river-title-text"><%= river_title %></div>\
+                </div>\
             </h5>\
             \
             <div class="NB-view-river">\

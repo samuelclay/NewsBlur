@@ -5932,19 +5932,35 @@ form.opml_import_form input {
 .NB-dashboard-columns-triple .NB-splash-modules .NB-account-wide {
     max-width: none;
 }
+.NB-dashboard-columns-triple .NB-dashboard-rivers-left .NB-module-header {
+    margin: 0 0 4px;
+}
 .NB-dashboard-columns-triple .NB-splash-modules .NB-modules-center {
-    margin-right: 0;
+    margin: 4px 0 0;
+    padding: 0 4px;
 }
 .NB-dashboard-columns-triple .NB-splash-modules .NB-account-wide {
     margin: 0 24px;
 }
 .NB-dashboard-columns-triple .NB-dashboard-rivers-left {
     display: flex;
-flex-wrap: nowrap;flex-direction: row;align-content: center;justify-content: center;flex-grow: 1;flex-basis: 0; flex-shrink: 1;gap: 24px;}
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+    gap: 4px;
+}
 .NB-dashboard-columns-triple .NB-dashboard-rivers-left .NB-dashboard-river {
     flex-basis: 100%;
 }
-.NB-dashboard-columns-triple .NB-dashboard-rivers-left > :last-child .NB-dashboard-river {
+.NB-dashboard-columns-triple .NB-dashboard-rivers-left > * {
+    flex: 1;
+}
+.NB-dashboard-columns-triple .NB-dashboard-rivers-left .NB-feedbar-options {
+    text-indent: 258%;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 12px;
 }
 .NB-splash-info {
   width: 100%;
@@ -7602,8 +7618,13 @@ flex-wrap: nowrap;flex-direction: row;align-content: center;justify-content: cen
     margin: 24px 12px 0 0px;
     padding: 0 24px;
     flex: 1;
+    transition: margin 0.24s ease-out,
+                padding 0.24s ease-out,
+                gap 0.24s ease-out;
 }
-
+.NB-module-header {
+    transition: margin 0.24s ease-out;
+}
 .NB-modules-center .NB-module {
     margin: 0 0 34px;
 	clear: both;
@@ -7617,22 +7638,23 @@ flex-wrap: nowrap;flex-direction: row;align-content: center;justify-content: cen
 .NB-module-river .NB-module-river-favicon {
     display: inline-block;
     cursor: pointer;
-}
+/* flex: 1; */}
 .NB-module-river .NB-module-river-favicon img {
     width: 16px;
     height: 16px;
     transform: translate(0px, 2px);
-    margin-right: 4px;
+    margin-right: 8px;
 }
 .NB-module-river .NB-module-river-title {
     display: inline-block;
     cursor: pointer;
-}
+    text-align: left;
+display: flex;justify-content: center;}
 .NB-module-river .NB-dashboard-column-control {
     float: left;
     line-height: 0;
     display: none;
-}
+margin-right: 6px;}
 .NB-module-river .NB-dashboard-column-control.NB-active {
     display: inline-block;
 }
