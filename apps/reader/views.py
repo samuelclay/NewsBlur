@@ -150,7 +150,11 @@ def dashboard(request, **kwargs):
         'social_profile'    : social_profile,
         'debug'             : settings.DEBUG,
     }, "reader/dashboard.xhtml"
-    
+
+@render_to('reader/dashboard.xhtml')
+def welcome_req(request, **kwargs):
+    return welcome(request, **kwargs)
+
 def welcome(request, **kwargs):
     user              = get_user(request)
     statistics        = MStatistics.all()
@@ -1265,7 +1269,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     if not user.profile.is_archive:
         story_data = {
             'title': "You must have a premium archive subscription on NewsBlur to have RSS feeds for folders.",
-            'link': "https://%s" % domain,
+            'link': "https://%s/?next=premium" % domain,
             'description': "You must have a premium archive subscription on NewsBlur to have RSS feeds for folders.",
             'unique_id': "https://%s/premium_only" % domain,
             'pubdate': localtime_for_timezone(datetime.datetime.now(), user.profile.timezone),

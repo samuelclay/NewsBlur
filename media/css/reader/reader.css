@@ -1916,7 +1916,7 @@ img.feed_favicon {
 }
 
 .NB-story-title.NB-story-starred .NB-storytitles-sentiment {
-    background: transparent url('/media/embed/icons/circular/g_icn_starred.png') no-repeat 13px 4px;
+    background: transparent url('/media/embed/icons/nouns/indicator-unread.svg') no-repeat 13px 4px;
     background-size: 10px;
 }
 
@@ -1982,9 +1982,6 @@ img.feed_favicon {
     display: block;
 }
 
-.NB-story-title.read {
-    font-weight: normal;
-}
 .NB-story-title.read .NB-storytitles-sentiment {
   opacity: .15;
 }
@@ -3439,7 +3436,7 @@ body {
 }
   
 .NB-feed-story.NB-story-starred .NB-feed-story-sentiment {
-    background: transparent url('/media/embed/icons/circular/g_icn_starred.png') no-repeat 6px 0;
+    background: transparent url('/media/embed/icons/nouns/indicator-unread.svg') no-repeat 6px 0;
     background-size: 10px;
 }
 
@@ -4971,7 +4968,7 @@ body {
     background-size: 8px;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-starred {
-    background: transparent url('/media/embed/icons/circular/g_icn_starred.png') no-repeat 6px 2px;
+    background: transparent url('/media/embed/icons/nouns/indicator-unread.svg') no-repeat 6px 2px;
     background-size: 8px;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-right {
@@ -5369,7 +5366,7 @@ background: transparent;
     background-size: 16px;
 }
 .NB-taskbar .NB-task-story-next-starred .NB-task-image {
-    background: transparent url('/media/embed/icons/circular/g_icn_starred.png') no-repeat center center; 
+    background: transparent url('/media/embed/icons/nouns/indicator-unread.svg') no-repeat center center; 
     background-size: 8px;
     width: 8px;
     height: 8px;
@@ -5928,6 +5925,27 @@ form.opml_import_form input {
 .NB-dashboard-columns-single .NB-splash-modules .NB-account-wide {
     margin: 0 24px;
 }
+.NB-dashboard-columns-triple .NB-splash-modules {
+    display: block;
+}
+.NB-dashboard-columns-triple .NB-splash-modules .NB-modules-center,
+.NB-dashboard-columns-triple .NB-splash-modules .NB-account-wide {
+    max-width: none;
+}
+.NB-dashboard-columns-triple .NB-splash-modules .NB-modules-center {
+    margin-right: 0;
+}
+.NB-dashboard-columns-triple .NB-splash-modules .NB-account-wide {
+    margin: 0 24px;
+}
+.NB-dashboard-columns-triple .NB-dashboard-rivers-left {
+    display: flex;
+flex-wrap: nowrap;flex-direction: row;align-content: center;justify-content: center;flex-grow: 1;flex-basis: 0; flex-shrink: 1;gap: 24px;}
+.NB-dashboard-columns-triple .NB-dashboard-rivers-left .NB-dashboard-river {
+    flex-basis: 100%;
+}
+.NB-dashboard-columns-triple .NB-dashboard-rivers-left > :last-child .NB-dashboard-river {
+}
 .NB-splash-info {
   width: 100%;
   height: 55px;
@@ -6359,7 +6377,7 @@ form.opml_import_form input {
 
 .NB-taskbar-intelligence .NB-taskbar-intelligence-starred {
     right: -4px;
-    background: transparent url(/media/embed/icons/circular/g_icn_starred.png) no-repeat 0 0;
+    background: transparent url(/media/embed/icons/nouns/indicator-unread.svg) no-repeat 0 0;
     background-size: 8px;
 }
 

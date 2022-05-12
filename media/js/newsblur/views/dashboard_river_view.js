@@ -47,6 +47,9 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
                         <li class="NB-dashboard-column-option NB-dashboard-columns-control-2">\
                             <img src="/media/img/reader/columns_double.png" class="NB-icon">\
                         </li>\
+                        <li class="NB-dashboard-column-option NB-dashboard-columns-control-3">\
+                            <img src="/media/img/reader/columns_single.png" class="NB-icon">\
+                        </li>\
                     </ul>\
                 </div>\
                 <div class="NB-module-river-settings NB-javascript"></div>\
@@ -97,6 +100,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         
         this.$(".NB-dashboard-columns-control-1").toggleClass('NB-active', columns == 1);
         this.$(".NB-dashboard-columns-control-2").toggleClass('NB-active', columns == 2);
+        this.$(".NB-dashboard-columns-control-3").toggleClass('NB-active', columns == 3);
 
         NEWSBLUR.reader.add_body_classes();
 
@@ -196,7 +200,8 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     choose_columns: function ($event) {
         var single_column = $($event.currentTarget).hasClass('NB-dashboard-columns-control-1');
         var double_column = $($event.currentTarget).hasClass('NB-dashboard-columns-control-2');
-        var columns = single_column ? 1 : 2;
+        var triple_column = $($event.currentTarget).hasClass('NB-dashboard-columns-control-3');
+        var columns = single_column ? 1 : double_column ? 2 : triple_column ? 3 : null;
 
         NEWSBLUR.assets.preference('dashboard_columns', columns);
         NEWSBLUR.app.dashboard_rivers.left.rivers.forEach(function (river) {
