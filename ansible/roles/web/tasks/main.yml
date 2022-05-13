@@ -104,6 +104,15 @@
   tags:
     - logrotate
 
+- name: Force reload gunicorn
+  debug: 
+    msg: Forcing reload...
+  register: app_changed
+  changed_when: true
+  tags:
+    - never
+    - force
+
 - name: Reload gunicorn
   debug: 
     msg: Reloading gunicorn
