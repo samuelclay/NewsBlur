@@ -5891,7 +5891,7 @@ form.opml_import_form input {
 }
 
 .NB-splash-modules {
-    max-width: 1200px;
+    max-width: 1600px;
     display: flex;
     flex-direction: row;
     flex-flow: row nowrap;
@@ -5933,9 +5933,16 @@ form.opml_import_form input {
     max-width: none;
 }
 .NB-dashboard-columns-triple .NB-dashboard-rivers-left .NB-module-header {
+    margin: 0 0 24px;
+}
+.NB-density-compact.NB-dashboard-columns-triple .NB-dashboard-rivers-left .NB-module-header {
     margin: 0 0 4px;
 }
 .NB-dashboard-columns-triple .NB-splash-modules .NB-modules-center {
+    margin: 24px 0 0;
+    padding: 0 24px;
+}
+.NB-density-compact.NB-dashboard-columns-triple .NB-splash-modules .NB-modules-center {
     margin: 4px 0 0;
     padding: 0 4px;
 }
@@ -5948,6 +5955,9 @@ form.opml_import_form input {
     flex-direction: row;
     align-content: center;
     justify-content: center;
+    gap: 24px;
+}
+.NB-density-compact.NB-dashboard-columns-triple .NB-dashboard-rivers-left {
     gap: 4px;
 }
 .NB-dashboard-columns-triple .NB-dashboard-rivers-left .NB-dashboard-river {
