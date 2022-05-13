@@ -143,6 +143,7 @@ node: deploy_node
 deploy_task:
 	- ansible-playbook ansible/deploy.yml -l task
 task: deploy_task
+celery: deploy_task
 deploy_www:
 	- ansible-playbook ansible/deploy.yml -l haproxy
 www: deploy_www

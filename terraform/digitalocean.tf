@@ -414,7 +414,8 @@ resource "digitalocean_droplet" "db-postgres" {
   image    = var.droplet_os
   name     = "db-postgres${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size_160
+  size     = contains([0], count.index) ? var.droplet_size_160 : var.droplet_size_240
+  # size     = var.droplet_size_240
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
