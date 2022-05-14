@@ -25,7 +25,7 @@
     <item
         android:id="@+id/menu_textsize"
         app:showAsAction="never"
-        android:title="@string/menu_textsize"/>
+        android:title="@string/menu_text_size"/>
 
     <item
         android:id="@+id/menu_font"
