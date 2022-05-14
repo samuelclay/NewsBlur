@@ -378,8 +378,9 @@
     <string name="settings_cat_story_list">Story List</string>
 
     <string name="oldest">Oldest</string>
-    <string name="newest">Newest first</string>
-    <string name="menu_story_order">Story order…</string>
+    <string name="newest">Newest</string>
+    <string name="menu_story_order">Story order</string>
+    <string name="settings_story_order">Story order…</string>
     <string-array name="default_story_order_entries">
         <item>@string/newest</item>
         <item>@string/oldest</item>

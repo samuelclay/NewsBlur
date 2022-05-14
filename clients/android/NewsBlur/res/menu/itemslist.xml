@@ -8,8 +8,16 @@
           android:title="@string/menu_search_stories"
           app:showAsAction="ifRoom" android:icon="@drawable/ic_menu_search_gray55" />
     <item android:id="@+id/menu_story_order"
-          android:title="@string/menu_story_order"
-          app:showAsAction="never" />
+          android:title="@string/menu_story_order">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_story_order_newest"
+                    android:title="@string/newest" />
+                <item android:id="@+id/menu_story_order_oldest"
+                    android:title="@string/oldest" />
+            </group>
+        </menu>
+    </item>
     <item android:id="@+id/menu_read_filter"
           android:title="@string/menu_read_filter"
           app:showAsAction="never" />

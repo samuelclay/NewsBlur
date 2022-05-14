@@ -68,8 +68,8 @@
         android:title="@string/settings_cat_story_list">
         <ListPreference
             android:key="default_story_order"
-            android:title="@string/menu_story_order"
-            android:dialogTitle="@string/menu_story_order"
+            android:title="@string/settings_story_order"
+            android:dialogTitle="@string/settings_story_order"
             android:entries="@array/default_story_order_entries"
             android:entryValues="@array/default_story_order_values"
             android:defaultValue="@string/default_story_order_value" />
