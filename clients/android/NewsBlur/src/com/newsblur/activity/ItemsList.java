@@ -14,8 +14,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.newsblur.R;
 import com.newsblur.database.BlurDatabaseHelper;
@@ -25,7 +23,6 @@ import com.newsblur.fragment.ItemSetFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.SaveSearchFragment;
 import com.newsblur.fragment.StoryOrderDialogFragment;
-import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
@@ -41,6 +38,7 @@ import com.newsblur.util.StoryContentPreviewStyle;
 import com.newsblur.util.StoryListStyle;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
+import com.newsblur.util.TextSizeStyle;
 import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
 
@@ -49,7 +47,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, OnSeekBarChangeListener {
+public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener {
 
     @Inject
     BlurDatabaseHelper dbHelper;
@@ -293,6 +291,21 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             menu.findItem(R.id.menu_spacing_compact).setChecked(true);
         }
 
+        TextSizeStyle textSizeStyle = TextSizeStyle.fromSize(PrefsUtils.getListTextSize(this));
+        if (textSizeStyle == TextSizeStyle.XS) {
+            menu.findItem(R.id.menu_text_size_xs).setChecked(true);
+        } else if (textSizeStyle == TextSizeStyle.S) {
+            menu.findItem(R.id.menu_text_size_s).setChecked(true);
+        } else if (textSizeStyle == TextSizeStyle.M) {
+            menu.findItem(R.id.menu_text_size_m).setChecked(true);
+        } else if (textSizeStyle == TextSizeStyle.L) {
+            menu.findItem(R.id.menu_text_size_l).setChecked(true);
+        } else if (textSizeStyle == TextSizeStyle.XL) {
+            menu.findItem(R.id.menu_text_size_xl).setChecked(true);
+        } else if (textSizeStyle == TextSizeStyle.XXL) {
+            menu.findItem(R.id.menu_text_size_xxl).setChecked(true);
+        }
+
         boolean isMarkReadOnScroll = PrefsUtils.isMarkReadOnFeedScroll(this);
         if (isMarkReadOnScroll) {
             menu.findItem(R.id.menu_mark_read_on_scroll_enabled).setChecked(true);
@@ -321,10 +334,24 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             ReadFilterDialogFragment readFilter = ReadFilterDialogFragment.newInstance(currentValue);
             readFilter.show(getSupportFragmentManager(), READ_FILTER);
             return true;
-		} else if (item.getItemId() == R.id.menu_textsize) {
-			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getListTextSize(this), TextSizeDialogFragment.TextSizeType.ListText);
-			textSize.show(getSupportFragmentManager(), TextSizeDialogFragment.class.getName());
-			return true;
+		} else if (item.getItemId() == R.id.menu_text_size_xs) {
+		    updateTextSizeStyle(TextSizeStyle.XS);
+            return true;
+        } else if (item.getItemId() == R.id.menu_text_size_s) {
+            updateTextSizeStyle(TextSizeStyle.S);
+            return true;
+        } else if (item.getItemId() == R.id.menu_text_size_m) {
+            updateTextSizeStyle(TextSizeStyle.M);
+            return true;
+        } else if (item.getItemId() == R.id.menu_text_size_l) {
+            updateTextSizeStyle(TextSizeStyle.L);
+            return true;
+        } else if (item.getItemId() == R.id.menu_text_size_xl) {
+            updateTextSizeStyle(TextSizeStyle.XL);
+            return true;
+        } else if (item.getItemId() == R.id.menu_text_size_xxl) {
+            updateTextSizeStyle(TextSizeStyle.XXL);
+            return true;
         } else if (item.getItemId() == R.id.menu_search_stories) {
             if (binding.itemlistSearchQuery.getVisibility() != View.VISIBLE) {
                 binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
@@ -346,11 +373,9 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             PrefsUtils.setSelectedTheme(this, ThemeValue.BLACK);
             UIUtils.restartActivity(this);
         } else if (item.getItemId() == R.id.menu_spacing_comfortable) {
-		    PrefsUtils.setSpacingStyle(this, SpacingStyle.COMFORTABLE);
-		    itemSetFragment.updateSpacingStyle();
+		    updateSpacingStyle(SpacingStyle.COMFORTABLE);
         } else if (item.getItemId() == R.id.menu_spacing_compact) {
-		    PrefsUtils.setSpacingStyle(this, SpacingStyle.COMPACT);
-		    itemSetFragment.updateSpacingStyle();
+		    updateSpacingStyle(SpacingStyle.COMPACT);
         } else if (item.getItemId() == R.id.menu_list_style_list) {
             PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.LIST);
             itemSetFragment.updateListStyle();
@@ -493,6 +518,16 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 	    transaction.commit();
     }
 
+    private void updateTextSizeStyle(TextSizeStyle textSizeStyle) {
+	    PrefsUtils.setListTextSize(this, textSizeStyle.getSize());
+        itemSetFragment.updateTextSize();
+    }
+
+    private void updateSpacingStyle(SpacingStyle spacingStyle) {
+        PrefsUtils.setSpacingStyle(this, spacingStyle);
+        itemSetFragment.updateSpacingStyle();
+    }
+
 	@Override
     public void storyOrderChanged(StoryOrder newValue) {
         updateStoryOrderPreference(newValue);
@@ -513,24 +548,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         itemSetFragment.hasUpdated();
         itemSetFragment.scrollToTop();
     }
-
-    // NB: this callback is for the text size slider
-	@Override
-	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        float size = AppConstants.LIST_FONT_SIZE[progress];
-	    PrefsUtils.setListTextSize(this, size);
-        if (itemSetFragment != null) itemSetFragment.setTextSize(size);
-	}
-
-    // unused OnSeekBarChangeListener method
-	@Override
-	public void onStartTrackingTouch(SeekBar seekBar) {
-	}
-
-    // unused OnSeekBarChangeListener method
-	@Override
-	public void onStopTrackingTouch(SeekBar seekBar) {
-	}
 
     @Override
     public void finish() {

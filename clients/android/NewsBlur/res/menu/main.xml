@@ -40,7 +40,6 @@
                     android:title="@string/menu_text_size_xxl" />
             </group>
         </menu>
-
     </item>
 
     <item android:id="@+id/menu_spacing"
