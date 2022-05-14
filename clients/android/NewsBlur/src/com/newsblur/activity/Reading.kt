@@ -8,8 +8,6 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
-import android.widget.SeekBar
-import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
@@ -44,7 +42,7 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
-abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeListener,
+abstract class Reading : NbActivity(), OnPageChangeListener,
         ScrollChangeListener, ReadingFontChangedListener {
 
     @Inject
@@ -578,19 +576,6 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
             if (gotSome) triggerSync()
         }
     }
-
-    // NB: this callback is for the text size slider
-    override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-        val size = AppConstants.READING_FONT_SIZE[progress]
-        PrefsUtils.setTextSize(this, size)
-        val data = Intent(ReadingItemFragment.TEXT_SIZE_CHANGED)
-        data.putExtra(ReadingItemFragment.TEXT_SIZE_VALUE, size)
-        sendBroadcast(data)
-    }
-
-    override fun onStartTrackingTouch(seekBar: SeekBar) {}
-
-    override fun onStopTrackingTouch(seekBar: SeekBar) {}
 
     override fun readingFontChanged(newValue: String) {
         PrefsUtils.setFontString(this, newValue)

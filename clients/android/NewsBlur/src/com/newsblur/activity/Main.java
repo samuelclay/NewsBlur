@@ -42,7 +42,7 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ShortcutUtils;
 import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StateFilter;
-import com.newsblur.util.TextSizeStyle;
+import com.newsblur.util.ListTextSize;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 import com.newsblur.widget.WidgetUtils;
@@ -307,18 +307,18 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             menu.findItem(R.id.menu_spacing_compact).setChecked(true);
         }
 
-        TextSizeStyle textSizeStyle = TextSizeStyle.fromSize(PrefsUtils.getListTextSize(this));
-        if (textSizeStyle == TextSizeStyle.XS) {
+        ListTextSize listTextSize = ListTextSize.fromSize(PrefsUtils.getListTextSize(this));
+        if (listTextSize == ListTextSize.XS) {
             menu.findItem(R.id.menu_text_size_xs).setChecked(true);
-        } else if (textSizeStyle == TextSizeStyle.S) {
+        } else if (listTextSize == ListTextSize.S) {
             menu.findItem(R.id.menu_text_size_s).setChecked(true);
-        } else if (textSizeStyle == TextSizeStyle.M) {
+        } else if (listTextSize == ListTextSize.M) {
             menu.findItem(R.id.menu_text_size_m).setChecked(true);
-        } else if (textSizeStyle == TextSizeStyle.L) {
+        } else if (listTextSize == ListTextSize.L) {
             menu.findItem(R.id.menu_text_size_l).setChecked(true);
-        } else if (textSizeStyle == TextSizeStyle.XL) {
+        } else if (listTextSize == ListTextSize.XL) {
             menu.findItem(R.id.menu_text_size_xl).setChecked(true);
-        } else if (textSizeStyle == TextSizeStyle.XXL) {
+        } else if (listTextSize == ListTextSize.XXL) {
             menu.findItem(R.id.menu_text_size_xxl).setChecked(true);
         }
         
@@ -354,22 +354,22 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             }
             return true;
 		} else if (item.getItemId() == R.id.menu_text_size_xs) {
-		    folderFeedList.setTextSize(TextSizeStyle.XS);
+		    folderFeedList.setListTextSize(ListTextSize.XS);
 		    return true;
         } else if (item.getItemId() == R.id.menu_text_size_s) {
-            folderFeedList.setTextSize(TextSizeStyle.S);
+            folderFeedList.setListTextSize(ListTextSize.S);
             return true;
         } else if (item.getItemId() == R.id.menu_text_size_m) {
-            folderFeedList.setTextSize(TextSizeStyle.M);
+            folderFeedList.setListTextSize(ListTextSize.M);
             return true;
         } else if (item.getItemId() == R.id.menu_text_size_l) {
-            folderFeedList.setTextSize(TextSizeStyle.L);
+            folderFeedList.setListTextSize(ListTextSize.L);
             return true;
         } else if (item.getItemId() == R.id.menu_text_size_xl) {
-            folderFeedList.setTextSize(TextSizeStyle.XL);
+            folderFeedList.setListTextSize(ListTextSize.XL);
             return true;
         } else if (item.getItemId() == R.id.menu_text_size_xxl) {
-            folderFeedList.setTextSize(TextSizeStyle.XXL);
+            folderFeedList.setListTextSize(ListTextSize.XXL);
 			return true;
         } else if (item.getItemId() == R.id.menu_spacing_comfortable) {
 		    folderFeedList.setSpacingStyle(SpacingStyle.COMFORTABLE);

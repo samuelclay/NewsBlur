@@ -460,19 +460,12 @@ public class PrefsUtils {
         return prefs.getBoolean(PrefConstants.SHOW_PUBLIC_COMMENTS, true);
     }
     
-    public static float getTextSize(Context context) {
+    public static float getReadingTextSize(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        float storedValue = preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f);
-        // some users have wacky, pre-migration values stored that won't render.  If the value is below our
-        // minimum size, soft reset to the defaul size.
-        if (storedValue < AppConstants.READING_FONT_SIZE[0]) {
-            return 1.0f;
-        } else {
-            return storedValue;
-        }
+        return preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f);
     }
 
-    public static void setTextSize(Context context, float size) {
+    public static void setReadingTextSize(Context context, float size) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         Editor editor = prefs.edit();
         editor.putFloat(PrefConstants.PREFERENCE_TEXT_SIZE, size);

@@ -59,7 +59,7 @@ import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
-import com.newsblur.util.TextSizeStyle;
+import com.newsblur.util.ListTextSize;
 import com.newsblur.viewModel.AllFoldersViewModel;
 
 import javax.inject.Inject;
@@ -603,10 +603,10 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         }
     }
 
-    public void setTextSize(TextSizeStyle textSizeStyle) {
-        PrefsUtils.setListTextSize(requireContext(), textSizeStyle.getSize());
+    public void setListTextSize(ListTextSize listTextSize) {
+        PrefsUtils.setListTextSize(requireContext(), listTextSize.getSize());
         if (adapter != null) {
-            adapter.setTextSize(textSizeStyle.getSize());
+            adapter.setTextSize(listTextSize.getSize());
             adapter.notifyDataSetChanged();
         }
     }
