@@ -411,7 +411,8 @@
     <string name="menu_story_content_preview">Story content preview</string>
     <string name="menu_story_thumbnail_preview">Thumbnail preview</string>
     <string name="menu_mark_read_on_scroll">Mark read on scroll</string>
-    <string name="menu_read_filter">Read story filter…</string>
+    <string name="settings_read_filter">Read story filter…</string>
+    <string name="menu_read_filter">Read story filter</string>
     <string-array name="default_read_filter_entries">
         <item>@string/all_stories</item>
         <item>@string/unread_only</item>

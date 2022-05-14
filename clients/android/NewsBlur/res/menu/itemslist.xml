@@ -20,7 +20,16 @@
     </item>
     <item android:id="@+id/menu_read_filter"
           android:title="@string/menu_read_filter"
-          app:showAsAction="never" />
+          app:showAsAction="never">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_read_filter_all_stories"
+                    android:title="@string/all_stories" />
+                <item android:id="@+id/menu_read_filter_unread_only"
+                    android:title="@string/unread_only" />
+            </group>
+        </menu>
+    </item>
     <item android:id="@+id/menu_mark_read_on_scroll"
           android:title="@string/menu_mark_read_on_scroll"
           app:showAsAction="never" >
