@@ -142,7 +142,13 @@
     <string name="menu_notifications_unread">Notify on all new stories</string>
     <string name="menu_mark_folder_as_read">Mark folder as read</string>
     <string name="menu_sharenewsblur">Share this story</string>
-    <string name="menu_textsize">Adjust text size</string>
+    <string name="menu_text_size">Adjust text size</string>
+    <string name="menu_text_size_xs">XS</string>
+    <string name="menu_text_size_s">S</string>
+    <string name="menu_text_size_m">M</string>
+    <string name="menu_text_size_l">L</string>
+    <string name="menu_text_size_xl">XL</string>
+    <string name="menu_text_size_xxl">XXL</string>
     <string name="menu_font">Change font</string>
     <string name="menu_save_story">Save this story</string>
     <string name="menu_unsave_story">Unsave this story</string>
