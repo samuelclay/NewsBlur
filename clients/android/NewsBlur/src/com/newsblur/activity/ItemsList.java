@@ -22,7 +22,6 @@ import com.newsblur.di.IconLoader;
 import com.newsblur.fragment.ItemSetFragment;
 import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.SaveSearchFragment;
-import com.newsblur.fragment.StoryOrderDialogFragment;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
@@ -37,7 +36,6 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryContentPreviewStyle;
 import com.newsblur.util.StoryListStyle;
 import com.newsblur.util.StoryOrder;
-import com.newsblur.util.StoryOrderChangedListener;
 import com.newsblur.util.ListTextSize;
 import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
@@ -47,7 +45,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener {
+public abstract class ItemsList extends NbActivity implements ReadFilterChangedListener {
 
     @Inject
     BlurDatabaseHelper dbHelper;
@@ -63,7 +61,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
     public static final String EXTRA_STORY_HASH = "story_hash";
     public static final String EXTRA_WIDGET_STORY = "widget_story";
     public static final String EXTRA_VISIBLE_SEARCH = "visibleSearch";
-    private static final String STORY_ORDER = "storyOrder";
     private static final String READ_FILTER = "readFilter";
     private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
     private ActivityItemslistBinding binding;
@@ -232,6 +229,13 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 
+        StoryOrder storyOrder = PrefsUtils.getStoryOrder(this, fs);
+        if (storyOrder == StoryOrder.NEWEST) {
+            menu.findItem(R.id.menu_story_order_newest).setChecked(true);
+        } else if (storyOrder == StoryOrder.OLDEST) {
+            menu.findItem(R.id.menu_story_order_oldest).setChecked(true);
+        }
+
         StoryListStyle listStyle = PrefsUtils.getStoryListStyle(this, fs);
         if (listStyle == StoryListStyle.GRID_F) {
              menu.findItem(R.id.menu_list_style_grid_f).setChecked(true);
@@ -324,10 +328,11 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 		} else if (item.getItemId() == R.id.menu_mark_all_as_read) {
             feedUtils.markRead(this, fs, null, null, R.array.mark_all_read_options, true);
 			return true;
-		} else if (item.getItemId() == R.id.menu_story_order) {
-            StoryOrder currentValue = getStoryOrder();
-            StoryOrderDialogFragment storyOrder = StoryOrderDialogFragment.newInstance(currentValue);
-            storyOrder.show(getSupportFragmentManager(), STORY_ORDER);
+		} else if (item.getItemId() == R.id.menu_story_order_newest) {
+		    updateStoryOrder(StoryOrder.NEWEST);
+            return true;
+        } else if (item.getItemId() == R.id.menu_story_order_oldest) {
+            updateStoryOrder(StoryOrder.OLDEST);
             return true;
         } else if (item.getItemId() == R.id.menu_read_filter) {
             ReadFilter currentValue = getReadFilter();
@@ -431,14 +436,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 		return false;
 	}
 	
-	public StoryOrder getStoryOrder() {
-        return PrefsUtils.getStoryOrder(this, fs);
-    }
-    
-	private void updateStoryOrderPreference(StoryOrder newOrder) {
-        PrefsUtils.updateStoryOrder(this, fs, newOrder);
-    }
-	
 	private ReadFilter getReadFilter() {
         return PrefsUtils.getReadFilter(this, fs);
     }
@@ -528,9 +525,8 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         itemSetFragment.updateSpacingStyle();
     }
 
-	@Override
-    public void storyOrderChanged(StoryOrder newValue) {
-        updateStoryOrderPreference(newValue);
+    private void updateStoryOrder(StoryOrder storyOrder) {
+        PrefsUtils.updateStoryOrder(this, fs, storyOrder);
         restartReadingSession();
     }
 
