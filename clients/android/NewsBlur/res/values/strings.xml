@@ -142,7 +142,7 @@
     <string name="menu_notifications_unread">Notify on all new stories</string>
     <string name="menu_mark_folder_as_read">Mark folder as read</string>
     <string name="menu_sharenewsblur">Share this story</string>
-    <string name="menu_text_size">Adjust text size</string>
+    <string name="menu_text_size">Text size</string>
     <string name="menu_text_size_xs">XS</string>
     <string name="menu_text_size_s">S</string>
     <string name="menu_text_size_m">M</string>

@@ -377,11 +377,10 @@ public class ItemSetFragment extends NbFragment {
         adapter.notifyAllItemsChanged();
     }
 
-    public void setTextSize(Float size) {
-        if (adapter != null) {
-            adapter.setTextSize(size);
-            adapter.notifyAllItemsChanged();
-        }
+    public void updateTextSize() {
+        float textSize = PrefsUtils.getListTextSize(requireContext());
+        adapter.setTextSize(textSize);
+        adapter.notifyAllItemsChanged();
     }
 
     private void calcColumnCount(StoryListStyle listStyle) {
