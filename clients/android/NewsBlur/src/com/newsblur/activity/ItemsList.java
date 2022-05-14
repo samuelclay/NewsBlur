@@ -38,7 +38,7 @@ import com.newsblur.util.StoryContentPreviewStyle;
 import com.newsblur.util.StoryListStyle;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryOrderChangedListener;
-import com.newsblur.util.TextSizeStyle;
+import com.newsblur.util.ListTextSize;
 import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
 
@@ -291,18 +291,18 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             menu.findItem(R.id.menu_spacing_compact).setChecked(true);
         }
 
-        TextSizeStyle textSizeStyle = TextSizeStyle.fromSize(PrefsUtils.getListTextSize(this));
-        if (textSizeStyle == TextSizeStyle.XS) {
+        ListTextSize listTextSize = ListTextSize.fromSize(PrefsUtils.getListTextSize(this));
+        if (listTextSize == ListTextSize.XS) {
             menu.findItem(R.id.menu_text_size_xs).setChecked(true);
-        } else if (textSizeStyle == TextSizeStyle.S) {
+        } else if (listTextSize == ListTextSize.S) {
             menu.findItem(R.id.menu_text_size_s).setChecked(true);
-        } else if (textSizeStyle == TextSizeStyle.M) {
+        } else if (listTextSize == ListTextSize.M) {
             menu.findItem(R.id.menu_text_size_m).setChecked(true);
-        } else if (textSizeStyle == TextSizeStyle.L) {
+        } else if (listTextSize == ListTextSize.L) {
             menu.findItem(R.id.menu_text_size_l).setChecked(true);
-        } else if (textSizeStyle == TextSizeStyle.XL) {
+        } else if (listTextSize == ListTextSize.XL) {
             menu.findItem(R.id.menu_text_size_xl).setChecked(true);
-        } else if (textSizeStyle == TextSizeStyle.XXL) {
+        } else if (listTextSize == ListTextSize.XXL) {
             menu.findItem(R.id.menu_text_size_xxl).setChecked(true);
         }
 
@@ -335,22 +335,22 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             readFilter.show(getSupportFragmentManager(), READ_FILTER);
             return true;
 		} else if (item.getItemId() == R.id.menu_text_size_xs) {
-		    updateTextSizeStyle(TextSizeStyle.XS);
+		    updateTextSizeStyle(ListTextSize.XS);
             return true;
         } else if (item.getItemId() == R.id.menu_text_size_s) {
-            updateTextSizeStyle(TextSizeStyle.S);
+            updateTextSizeStyle(ListTextSize.S);
             return true;
         } else if (item.getItemId() == R.id.menu_text_size_m) {
-            updateTextSizeStyle(TextSizeStyle.M);
+            updateTextSizeStyle(ListTextSize.M);
             return true;
         } else if (item.getItemId() == R.id.menu_text_size_l) {
-            updateTextSizeStyle(TextSizeStyle.L);
+            updateTextSizeStyle(ListTextSize.L);
             return true;
         } else if (item.getItemId() == R.id.menu_text_size_xl) {
-            updateTextSizeStyle(TextSizeStyle.XL);
+            updateTextSizeStyle(ListTextSize.XL);
             return true;
         } else if (item.getItemId() == R.id.menu_text_size_xxl) {
-            updateTextSizeStyle(TextSizeStyle.XXL);
+            updateTextSizeStyle(ListTextSize.XXL);
             return true;
         } else if (item.getItemId() == R.id.menu_search_stories) {
             if (binding.itemlistSearchQuery.getVisibility() != View.VISIBLE) {
@@ -518,8 +518,8 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 	    transaction.commit();
     }
 
-    private void updateTextSizeStyle(TextSizeStyle textSizeStyle) {
-	    PrefsUtils.setListTextSize(this, textSizeStyle.getSize());
+    private void updateTextSizeStyle(ListTextSize listTextSize) {
+	    PrefsUtils.setListTextSize(this, listTextSize.getSize());
         itemSetFragment.updateTextSize();
     }
 

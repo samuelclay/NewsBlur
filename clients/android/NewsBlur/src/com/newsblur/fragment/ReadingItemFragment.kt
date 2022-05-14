@@ -76,7 +76,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     private var feedIconUrl: String? = null
     private var faviconText: String? = null
     private var classifier: Classifier? = null
-    private var textSizeReceiver: BroadcastReceiver? = null
     private var readingFontReceiver: BroadcastReceiver? = null
     private var displayFeedDetails = false
     private var user: UserDetails? = null
@@ -128,9 +127,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
         user = PrefsUtils.getUserDetails(requireContext())
         markStoryReadBehavior = PrefsUtils.getMarkStoryReadBehavior(requireContext())
-        textSizeReceiver = TextSizeReceiver()
 
-        requireActivity().registerReceiver(textSizeReceiver, IntentFilter(TEXT_SIZE_CHANGED))
         readingFontReceiver = ReadingFontReceiver()
         requireActivity().registerReceiver(readingFontReceiver, IntentFilter(READING_FONT_CHANGED))
 
@@ -156,7 +153,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     }
 
     override fun onDestroy() {
-        requireActivity().unregisterReceiver(textSizeReceiver)
         requireActivity().unregisterReceiver(readingFontReceiver)
         binding.readingWebview.setOnTouchListener(null)
         binding.root.setOnTouchListener(null)
@@ -282,6 +278,16 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             }
         }
 
+        val readingTextSize = PrefsUtils.getReadingTextSize(requireContext())
+        when (ReadingTextSize.fromSize(readingTextSize)) {
+            ReadingTextSize.XS -> menu.findItem(R.id.menu_text_size_xs).isChecked = true
+            ReadingTextSize.S -> menu.findItem(R.id.menu_text_size_s).isChecked = true
+            ReadingTextSize.M -> menu.findItem(R.id.menu_text_size_m).isChecked = true
+            ReadingTextSize.L -> menu.findItem(R.id.menu_text_size_l).isChecked = true
+            ReadingTextSize.XL -> menu.findItem(R.id.menu_text_size_xl).isChecked = true
+            ReadingTextSize.XXL -> menu.findItem(R.id.menu_text_size_xxl).isChecked = true
+        }
+
         pm.setOnMenuItemClickListener(this)
         pm.show()
     }
@@ -312,9 +318,28 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             feedUtils.sendStoryFull(story, requireContext())
             true
         }
-        R.id.menu_textsize -> {
-            val textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getTextSize(requireContext()), TextSizeDialogFragment.TextSizeType.ReadingText)
-            textSize.show(requireActivity().supportFragmentManager, TextSizeDialogFragment::class.java.name)
+        R.id.menu_text_size_xs -> {
+            setTextSizeStyle(ReadingTextSize.XS)
+            true
+        }
+        R.id.menu_text_size_s -> {
+            setTextSizeStyle(ReadingTextSize.S)
+            true
+        }
+        R.id.menu_text_size_m -> {
+            setTextSizeStyle(ReadingTextSize.M)
+            true
+        }
+        R.id.menu_text_size_l -> {
+            setTextSizeStyle(ReadingTextSize.L)
+            true
+        }
+        R.id.menu_text_size_xl -> {
+            setTextSizeStyle(ReadingTextSize.XL)
+            true
+        }
+        R.id.menu_text_size_xxl -> {
+            setTextSizeStyle(ReadingTextSize.XXL)
             true
         }
         R.id.menu_font -> {
@@ -768,7 +793,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             sniffAltTexts(storyText)
 
             storyText = swapInOfflineImages(storyText)
-            val currentSize = PrefsUtils.getTextSize(requireContext())
+            val currentSize = PrefsUtils.getReadingTextSize(requireContext())
             val font = PrefsUtils.getFont(requireContext())
             val themeValue = PrefsUtils.getSelectedTheme(requireContext())
 
@@ -927,11 +952,10 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         }
     }
 
-    private inner class TextSizeReceiver : BroadcastReceiver() {
-
-        override fun onReceive(context: Context, intent: Intent) {
-            binding.readingWebview.setTextSize(intent.getFloatExtra(TEXT_SIZE_VALUE, 1.0f))
-        }
+    private fun setTextSizeStyle(readingTextSize: ReadingTextSize) {
+        val textSize = readingTextSize.size
+        PrefsUtils.setReadingTextSize(requireContext(), textSize)
+        binding.readingWebview.setTextSize(textSize)
     }
 
     private inner class ReadingFontReceiver : BroadcastReceiver() {
@@ -944,8 +968,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     companion object {
         private const val BUNDLE_SCROLL_POS_REL = "scrollStateRel"
-        const val TEXT_SIZE_CHANGED = "textSizeChanged"
-        const val TEXT_SIZE_VALUE = "textSizeChangeValue"
         const val READING_FONT_CHANGED = "readingFontChanged"
 
         @JvmStatic
