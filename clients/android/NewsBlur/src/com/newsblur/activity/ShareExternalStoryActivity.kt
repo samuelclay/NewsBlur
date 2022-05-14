@@ -32,7 +32,7 @@ class ShareExternalStoryActivity : AppCompatActivity() {
         if (intent.action == Intent.ACTION_SEND && intent.type == "text/plain") {
             handleIntent()
         } else {
-            finishWithToast("NewsBlur action unrecognized")
+            finishWithToast("NewsBlur invalid intent action!")
         }
     }
 
