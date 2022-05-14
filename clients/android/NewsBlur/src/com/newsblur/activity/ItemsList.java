@@ -20,7 +20,6 @@ import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.ActivityItemslistBinding;
 import com.newsblur.di.IconLoader;
 import com.newsblur.fragment.ItemSetFragment;
-import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.SaveSearchFragment;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
@@ -30,7 +29,6 @@ import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
-import com.newsblur.util.ReadFilterChangedListener;
 import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryContentPreviewStyle;
@@ -45,7 +43,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public abstract class ItemsList extends NbActivity implements ReadFilterChangedListener {
+public abstract class ItemsList extends NbActivity {
 
     @Inject
     BlurDatabaseHelper dbHelper;
@@ -61,7 +59,6 @@ public abstract class ItemsList extends NbActivity implements ReadFilterChangedL
     public static final String EXTRA_STORY_HASH = "story_hash";
     public static final String EXTRA_WIDGET_STORY = "widget_story";
     public static final String EXTRA_VISIBLE_SEARCH = "visibleSearch";
-    private static final String READ_FILTER = "readFilter";
     private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
     private ActivityItemslistBinding binding;
 
@@ -236,6 +233,13 @@ public abstract class ItemsList extends NbActivity implements ReadFilterChangedL
             menu.findItem(R.id.menu_story_order_oldest).setChecked(true);
         }
 
+        ReadFilter readFilter = PrefsUtils.getReadFilter(this, fs);
+        if (readFilter == ReadFilter.ALL) {
+            menu.findItem(R.id.menu_read_filter_all_stories).setChecked(true);
+        } else if (readFilter == ReadFilter.UNREAD) {
+            menu.findItem(R.id.menu_read_filter_unread_only).setChecked(true);
+        }
+
         StoryListStyle listStyle = PrefsUtils.getStoryListStyle(this, fs);
         if (listStyle == StoryListStyle.GRID_F) {
              menu.findItem(R.id.menu_list_style_grid_f).setChecked(true);
@@ -334,12 +338,13 @@ public abstract class ItemsList extends NbActivity implements ReadFilterChangedL
         } else if (item.getItemId() == R.id.menu_story_order_oldest) {
             updateStoryOrder(StoryOrder.OLDEST);
             return true;
-        } else if (item.getItemId() == R.id.menu_read_filter) {
-            ReadFilter currentValue = getReadFilter();
-            ReadFilterDialogFragment readFilter = ReadFilterDialogFragment.newInstance(currentValue);
-            readFilter.show(getSupportFragmentManager(), READ_FILTER);
+        } else if (item.getItemId() == R.id.menu_read_filter_all_stories) {
+		    updateReadFilter(ReadFilter.ALL);
             return true;
-		} else if (item.getItemId() == R.id.menu_text_size_xs) {
+		} else if (item.getItemId() == R.id.menu_read_filter_unread_only) {
+            updateReadFilter(ReadFilter.UNREAD);
+            return true;
+        } else if (item.getItemId() == R.id.menu_text_size_xs) {
 		    updateTextSizeStyle(ListTextSize.XS);
             return true;
         } else if (item.getItemId() == R.id.menu_text_size_s) {
@@ -435,14 +440,6 @@ public abstract class ItemsList extends NbActivity implements ReadFilterChangedL
 	
 		return false;
 	}
-	
-	private ReadFilter getReadFilter() {
-        return PrefsUtils.getReadFilter(this, fs);
-    }
-
-    private void updateReadFilterPreference(ReadFilter newValue) {
-        PrefsUtils.updateReadFilter(this, fs, newValue);
-    }
 
     @Override
 	public void handleUpdate(int updateType) {
@@ -530,9 +527,8 @@ public abstract class ItemsList extends NbActivity implements ReadFilterChangedL
         restartReadingSession();
     }
 
-    @Override
-    public void readFilterChanged(ReadFilter newValue) {
-        updateReadFilterPreference(newValue);
+    private void updateReadFilter(ReadFilter readFilter) {
+        PrefsUtils.updateReadFilter(this, fs, readFilter);
         restartReadingSession();
     }
 
