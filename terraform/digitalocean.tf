@@ -410,11 +410,11 @@ resource "digitalocean_droplet" "db-redis-pubsub" {
 }
 
 resource "digitalocean_droplet" "db-postgres" {
-  count    = 2
+  count    = 3
   image    = var.droplet_os
   name     = "db-postgres${count.index+1}"
   region   = var.droplet_region
-  size     = contains([0], count.index) ? var.droplet_size_160 : var.droplet_size_240
+  size     = contains([0,2], count.index) ? var.droplet_size_160 : var.droplet_size_240
   # size     = var.droplet_size_240
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
