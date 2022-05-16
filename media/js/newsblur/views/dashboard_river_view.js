@@ -428,7 +428,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         }
 
         // _.delay(_.bind(function() {
-        var dashboard_count = NEWSBLUR.assets.view_setting(this.model.get('river_id'), 'dashboard_count');
+        var dashboard_count = parseInt(NEWSBLUR.assets.view_setting(this.model.get('river_id'), 'dashboard_count'), 10);
         NEWSBLUR.assets.add_dashboard_story(story_hash, this.options.dashboard_stories, dashboard_count);
         // }, this), Math.random() * delay);
         
