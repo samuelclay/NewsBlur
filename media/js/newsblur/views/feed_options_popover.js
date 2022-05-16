@@ -80,6 +80,12 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         toplevel: "All Site Stories",
                         include_special_folders: true
                     })
+                ]),
+                $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-dashboardcount' }, [
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-5  NB-active', role: "button" }, '5 stories'),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-10', role: "button" }, '10'),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-15', role: "button" }, '15'),
+                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-20', role: "button" }, '20'),
                 ])
             ])),
             $.make('div', { className: 'NB-popover-section' }, [
@@ -194,6 +200,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     show_correct_feed_view_options_in_menu: function() {
         var order = NEWSBLUR.assets.view_setting(this.options.feed_id, 'order');
         var read_filter = NEWSBLUR.assets.view_setting(this.options.feed_id, 'read_filter');
+        var dashboard_count = parseInt(NEWSBLUR.assets.view_setting(this.options.feed_id, 'dashboard_count'), 10);
         var mark_scroll = NEWSBLUR.assets.preference('mark_read_on_scroll_titles');
         var density = NEWSBLUR.assets.preference('density');
         var image_preview = NEWSBLUR.assets.preference('image_preview');
@@ -206,6 +213,10 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var $newest = this.$('.NB-view-setting-order-newest');
         var $unread = this.$('.NB-view-setting-readfilter-unread');
         var $all = this.$('.NB-view-setting-readfilter-all');
+        var $count5 = this.$('.NB-view-setting-dashboardcount-5');
+        var $count10 = this.$('.NB-view-setting-dashboardcount-10');
+        var $count15 = this.$('.NB-view-setting-dashboardcount-15');
+        var $count20 = this.$('.NB-view-setting-dashboardcount-20');
         var $mark_unread = this.$('.NB-view-setting-markscroll-unread');
         var $mark_read = this.$('.NB-view-setting-markscroll-read');
         var $density_compact = this.$('.NB-view-setting-density-compact');
@@ -225,6 +236,14 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         $oldest.text('Oldest' + (order == 'oldest' ? ' first' : ''));
         $newest.text('Newest' + (order != 'oldest' ? ' first' : ''));
         $unread.toggleClass('NB-active', read_filter == 'unread');
+        $count5.toggleClass('NB-active', dashboard_count == 5);
+        $count10.toggleClass('NB-active', dashboard_count == 10);
+        $count15.toggleClass('NB-active', dashboard_count == 15);
+        $count20.toggleClass('NB-active', dashboard_count == 20);
+        $count5.text('5' + (dashboard_count == 5 ? ' stories' : ''));
+        $count10.text('10' + (dashboard_count == 10 ? ' stories' : ''));
+        $count15.text('15' + (dashboard_count == 15 ? ' stories' : ''));
+        $count20.text('20' + (dashboard_count == 20 ? ' stories' : ''));
         $all.toggleClass('NB-active', read_filter != 'unread');
         $mark_unread.toggleClass('NB-active', !mark_scroll);
         $mark_read.toggleClass('NB-active', mark_scroll);
@@ -268,11 +287,20 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     change_view_setting: function(e) {
         var $target = $(e.currentTarget);
         var options = {};
-        
+        // console.log(['change_view_setting', $target]);
+
         if ($target.hasClass("NB-view-setting-order-newest")) {
             options = {order: 'newest'};
         } else if ($target.hasClass("NB-view-setting-order-oldest")) {
             options = {order: 'oldest'};
+        } else if ($target.hasClass("NB-view-setting-dashboardcount-5")) {
+            options = {dashboard_count: 5};
+        } else if ($target.hasClass("NB-view-setting-dashboardcount-10")) {
+            options = {dashboard_count: 10};
+        } else if ($target.hasClass("NB-view-setting-dashboardcount-15")) {
+            options = {dashboard_count: 15};
+        } else if ($target.hasClass("NB-view-setting-dashboardcount-20")) {
+            options = {dashboard_count: 20};
         } else if ($target.hasClass("NB-view-setting-readfilter-all")) {
             options = {read_filter: 'all'};
         } else if ($target.hasClass("NB-view-setting-readfilter-unread")) {

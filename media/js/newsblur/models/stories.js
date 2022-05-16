@@ -611,8 +611,9 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         this.models = this.models.slice(0, count);
     },
 
-    limit_visible_on_dashboard: function (count, score) {
-        score = _.isUndefined(score) ? NEWSBLUR.reader.get_unread_view_score() : score;
+    limit_visible_on_dashboard: function (count) {
+        if (!NEWSBLUR.Globals.is_premium) count = 3;
+        // var score = NEWSBLUR.reader.get_unread_view_score();
 
         while (this.models.length) {
             if (this.models.length <= count) return;

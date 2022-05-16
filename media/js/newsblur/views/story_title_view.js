@@ -37,7 +37,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             if (this.model.get('selected')) template_name = "list_template";
         }
         
-        console.log(['render story title', template_name, this.$el[0], this.options.is_grid, this.show_image_preview(), this.options.override_layout, NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'))]);
+        // console.log(['render story title', template_name, this.$el[0], this.options.is_grid, this.show_image_preview(), this.options.override_layout, NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'))]);
         this.$el.html(this[template_name]({
             story    : this.model,
             feed     : (this.options.override_layout == 'split' || 

@@ -240,7 +240,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     },
     
     post_load_stories: function (data) {
-        // console.log(['post_load_stories', this.model.get('river_id'), this.options.dashboard_stories.length, data, data.stories.length])
+        console.log(['post_load_stories', this.model.get('river_id'), this.options.dashboard_stories.length, data, data.stories.length])
         this.story_titles.end_loading();
         this.fill_out({ new_stories: data.stories.length });
         this.cache.story_hashes = this.options.dashboard_stories.pluck('story_hash');
@@ -265,7 +265,9 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             this.complete_fill();
             return;
         }
-        if (visible >= 5) {
+        var dashboard_count = parseInt(NEWSBLUR.assets.view_setting(this.model.get('river_id'), 'dashboard_count'), 10);
+        console.log(['dashboard_count', this.model.get('river_id'), visible, dashboard_count, options.new_stories == 0]);
+        if (visible >= dashboard_count) {
             this.complete_fill();
             return;
         }
@@ -278,7 +280,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
                 this.show_end_line();
                 return;
             }
-            if (this.page > 20) {
+            if (this.page > 60) {
                 this.complete_fill();
                 return;
             }
@@ -364,7 +366,8 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         this.$(".NB-end-line").addClass("NB-visible");
     },
     
-    complete_fill: function() {
+    complete_fill: function () {
+        console.log(['complete_fill', this.model.get('river_id')])
         var feeds = this.feeds();
         NEWSBLUR.assets.complete_river(this.model.get('river_id'), feeds, this.page);
     },
@@ -425,7 +428,8 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         }
 
         // _.delay(_.bind(function() {
-            NEWSBLUR.assets.add_dashboard_story(story_hash, this.options.dashboard_stories);
+        var dashboard_count = NEWSBLUR.assets.view_setting(this.model.get('river_id'), 'dashboard_count');
+        NEWSBLUR.assets.add_dashboard_story(story_hash, this.options.dashboard_stories, dashboard_count);
         // }, this), Math.random() * delay);
         
     },
