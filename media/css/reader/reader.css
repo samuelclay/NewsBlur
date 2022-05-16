@@ -13394,6 +13394,12 @@ margin-right: 6px;}
 .NB-filter-popover .segmented-control.NB-feed-notification-types li {
     width: 39px;
 }
+.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-dashboardcount li {
+    width: 30px;
+}
+.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-dashboardcount li.NB-active {
+    width: 64px;
+}
 .NB-filter-popover .segmented-control.NB-menu-manage-view-setting-infrequent li {
     width: auto;
     padding-left: 10px;
