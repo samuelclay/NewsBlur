@@ -8,14 +8,14 @@
     owner: nb
     group: nb
 
-- name: Ensure nb /srv/newsblur owner
-  become: yes
-  file:
-    path: /srv/newsblur
-    state: directory
-    owner: nb
-    group: nb
-    recurse: yes
+# - name: Ensure nb /srv/newsblur owner
+#   become: yes
+#   file:
+#     path: /srv/newsblur
+#     state: directory
+#     owner: nb
+#     group: nb
+#     recurse: yes
 
 - name: Pull newsblur_web github
   git:
