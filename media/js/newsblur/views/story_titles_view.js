@@ -51,7 +51,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             return story.el;
         });
         this.$el.html($stories);
-        console.log(['Rendered story titles', this.$el, $stories]);
+        // console.log(['Rendered story titles', this.$el, $stories]);
         this.end_loading();
         this.fill_out();
         this.override_grid();
@@ -180,13 +180,13 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         }
         
         options = options || {};
-        console.log(['fill out story titles', this.options.on_dashboard ? "dashboard" : "stories", options, NEWSBLUR.assets.flags['no_more_stories'], NEWSBLUR.assets.stories.length, NEWSBLUR.reader.flags.story_titles_closed]);
+        // console.log(['fill out story titles', this.options.on_dashboard ? "dashboard" : "stories", options, NEWSBLUR.assets.flags['no_more_stories'], NEWSBLUR.assets.stories.length, NEWSBLUR.reader.flags.story_titles_closed]);
         
         if (this.collection.page_fill_outs < NEWSBLUR.reader.constants.FILL_OUT_PAGES && 
             !this.collection.no_more_stories) {
             var $last = this.$('.NB-story-title:visible:last');
             var container_height = this.$story_titles.height();
-            NEWSBLUR.log(["fill out", $last.length && $last.position().top, container_height, $last.length, this.$story_titles.scrollTop()]);
+            // NEWSBLUR.log(["fill out", $last.length && $last.position().top, container_height, $last.length, this.$story_titles.scrollTop()]);
             this.collection.page_fill_outs += 1;
             _.delay(_.bind(function() {
                 this.scroll();

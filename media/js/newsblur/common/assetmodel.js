@@ -784,13 +784,15 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             if (!NEWSBLUR.Globals.is_premium && NEWSBLUR.Globals.is_authenticated) {
                 data.stories = data.stories.splice(0, 3);
             }
+            var count = parseInt(NEWSBLUR.assets.view_setting(feed_id, 'dashboard_count'), 10);
             if (page > 1) {
                 dashboard_stories.add(data.stories, { silent: true });
-                dashboard_stories.limit_visible_on_dashboard(NEWSBLUR.Globals.is_premium ? 5 : 3);
-                dashboard_stories.trigger('add', {added: data.stories.length});
+                dashboard_stories.limit_visible_on_dashboard(count);
+                // dashboard_stories.trigger('add', { added: data.stories.length });
+                dashboard_stories.trigger('reset', {added: data.stories.length});
             } else {
-                dashboard_stories.reset(data.stories, {added: data.stories.length, silent: true});
-                dashboard_stories.limit_visible_on_dashboard(NEWSBLUR.Globals.is_premium ? 5 : 3);
+                dashboard_stories.reset(data.stories, { added: data.stories.length, silent: true });
+                dashboard_stories.limit_visible_on_dashboard(count);
                 dashboard_stories.trigger('reset', {added: data.stories.length});
             }
 
@@ -825,13 +827,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
     },
     
-    add_dashboard_story: function(story_hash, dashboard_stories) {
+    add_dashboard_story: function(story_hash, dashboard_stories, dashboard_count) {
         var self = this;
         
 
         var pre_callback = function(data) {
             dashboard_stories.add(data.stories, {silent: true});
-            dashboard_stories.limit_visible_on_dashboard(NEWSBLUR.Globals.is_premium ? 5 : 3);
+            dashboard_stories.limit_visible_on_dashboard(dashboard_count);
             dashboard_stories.trigger('reset', {added: 1});
         };
         
@@ -1437,7 +1439,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             view_settings = {'view': view_settings};
         }
         var params = {'feed_id': feed_id+''};
-        _.each(['view', 'order', 'read_filter', 'layout'], function(facet) {
+        _.each(['view', 'order', 'read_filter', 'layout', 'dashboard_count'], function(facet) {
             if (setting[facet]) {
                 view_settings[facet.substr(0, 1)] = setting[facet];
                 params['feed_'+facet+'_setting'] = setting[facet];
