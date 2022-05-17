@@ -2,7 +2,7 @@
 <svg width="107px" height="107px" viewBox="0 0 107 107" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>add-list</title>
     <g id="add-list" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="noun-add-to-list-1913842-95978E" transform="translate(53.666000, 53.000000) scale(-1, 1) translate(-53.666000, -53.000000) translate(11.000000, 17.000000)" fill="#95968E" fill-rule="nonzero">
+        <g id="noun-add-to-list-1913842-95978E" transform="translate(53.666000, 53.000000) scale(-1, -1) translate(-53.666000, -53.000000) translate(11.000000, 17.000000)" fill="#95968E" fill-rule="nonzero">
             <path d="M4,8 L49.332,8 C51.5429,8 53.332,6.2109 53.332,4 C53.332,1.7891 51.5429,0 49.332,0 L4,0 C1.7891,0 0,1.7891 0,4 C0,6.2109 1.7891,8 4,8 Z" id="Path"></path>
             <path d="M4,24 L49.332,24 C51.5429,24 53.332,22.2109 53.332,20 C53.332,17.7891 51.5429,16 49.332,16 L4,16 C1.7891,16 0,17.7891 0,20 C0,22.2109 1.7891,24 4,24 Z" id="Path"></path>
             <path d="M4,40 L49.332,40 C51.5429,40 53.332,38.2109 53.332,36 C53.332,33.7891 51.5429,32 49.332,32 L4,32 C1.7891,32 0,33.7891 0,36 C0,38.2109 1.7891,40 4,40 Z" id="Path"></path>

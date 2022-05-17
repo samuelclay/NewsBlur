@@ -148,8 +148,11 @@ hr {
 }
 
 .NB-account-wide {
-    max-width: 38%;
+    flex: 1;
     margin: 24px 24px 32px 0;
+}
+.NB-dashboard-account {
+    margin: 0;
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -5906,13 +5909,14 @@ form.opml_import_form input {
         display: block;
     }
     .NB-splash-modules .NB-modules-center,
-    .NB-splash-modules .NB-account-wide {
+    .NB-splash-modules .NB-dashboard-account {
         max-width: none;
     }
-    .NB-splash-modules .NB-modules-center {
+    .NB-splash-modules .NB-modules-center,
+    .NB-splash-modules .NB-account-wide {
         margin-right: 0;
     }
-    .NB-splash-modules .NB-account-wide {
+    .NB-splash-modules .NB-dashboard-account {
         margin: 0 24px;
     }
 }
@@ -5920,37 +5924,39 @@ form.opml_import_form input {
     display: block;
 }
 .NB-dashboard-columns-single .NB-splash-modules .NB-modules-center,
-.NB-dashboard-columns-single .NB-splash-modules .NB-account-wide {
+.NB-dashboard-columns-single .NB-splash-modules .NB-dashboard-account {
     max-width: none;
 }
-.NB-dashboard-columns-single .NB-splash-modules .NB-modules-center {
-    margin-right: 0;
-}
+.NB-dashboard-columns-single .NB-splash-modules .NB-modules-center,
 .NB-dashboard-columns-single .NB-splash-modules .NB-account-wide {
-    margin: 0 24px;
+    margin-right: 0;
 }
 .NB-dashboard-columns-triple .NB-splash-modules {
     display: block;
 }
 .NB-dashboard-columns-triple .NB-splash-modules .NB-modules-center,
-.NB-dashboard-columns-triple .NB-splash-modules .NB-account-wide {
+.NB-dashboard-columns-triple .NB-splash-modules .NB-dashboard-account {
     max-width: none;
 }
-.NB-dashboard-columns-triple .NB-dashboard-rivers-left .NB-module-header {
+.NB-dashboard-columns-triple .NB-dashboard-rivers-left .NB-module-header,
+.NB-dashboard-columns-triple .NB-dashboard-rivers-right .NB-module-header {
     margin: 0 0 24px;
 }
-.NB-density-compact.NB-dashboard-columns-triple .NB-dashboard-rivers-left .NB-module-header {
+.NB-density-compact.NB-dashboard-columns-triple .NB-dashboard-rivers-left .NB-module-header,
+.NB-density-compact.NB-dashboard-columns-triple .NB-dashboard-rivers-right .NB-module-header {
     margin: 0 0 4px;
 }
-.NB-dashboard-columns-triple .NB-splash-modules .NB-modules-center {
+.NB-dashboard-columns-triple .NB-splash-modules .NB-modules-center,
+.NB-dashboard-columns-triple .NB-splash-modules .NB-account-wide {
     margin: 24px 0 0;
     padding: 0 24px;
 }
-.NB-density-compact.NB-dashboard-columns-triple .NB-splash-modules .NB-modules-center {
+.NB-density-compact.NB-dashboard-columns-triple .NB-splash-modules .NB-modules-center,
+.NB-density-compact.NB-dashboard-columns-triple .NB-splash-modules .NB-account-wide {
     margin: 4px 0 0;
     padding: 0 4px;
 }
-.NB-dashboard-columns-triple .NB-splash-modules .NB-account-wide {
+.NB-dashboard-columns-triple .NB-splash-modules .NB-dashboard-account {
     margin: 0 24px;
 }
 .NB-dashboard-columns-triple .NB-dashboard-rivers-left,
@@ -7633,7 +7639,8 @@ form.opml_import_form input {
 /* = Center Modules = */
 /* ================== */
 
-.NB-modules-center {
+.NB-modules-center,
+.NB-account-wide {
     margin: 24px 12px 0 0px;
     padding: 0 24px;
     flex: 1;
