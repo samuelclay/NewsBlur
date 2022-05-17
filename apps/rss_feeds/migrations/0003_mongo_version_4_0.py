@@ -11,8 +11,7 @@ def set_mongo_feature_compatibility_version(apps, schema_editor):
     print(f"\n ---> Current MongoDB featureCompatibilityVersion: {old_version}")
 
     if old_version != new_version:
-        doc = db.command({"setFeatureCompatibilityVersion": new_version})
-        new_version = doc["featureCompatibilityVersion"]["version"]
+        db.command({"setFeatureCompatibilityVersion": new_version})
         print(f" ---> Updated MongoDB featureCompatibilityVersion: {new_version}")
     
 
