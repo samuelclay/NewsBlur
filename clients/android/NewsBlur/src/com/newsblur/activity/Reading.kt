@@ -42,8 +42,7 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
-abstract class Reading : NbActivity(), OnPageChangeListener,
-        ScrollChangeListener, ReadingFontChangedListener {
+abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListener {
 
     @Inject
     lateinit var feedUtils: FeedUtils
@@ -575,11 +574,6 @@ abstract class Reading : NbActivity(), OnPageChangeListener,
             val gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, currentCount)
             if (gotSome) triggerSync()
         }
-    }
-
-    override fun readingFontChanged(newValue: String) {
-        PrefsUtils.setFontString(this, newValue)
-        sendBroadcast(Intent(ReadingItemFragment.READING_FONT_CHANGED))
     }
 
     /**
