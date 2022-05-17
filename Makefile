@@ -38,6 +38,8 @@ coffee:
 migrations:
 	- docker exec -it newsblur_web ./manage.py makemigrations
 makemigration: migrations
+datamigration: 
+	- docker exec -it newsblur_web ./manage.py makemigrations --empty $(app)
 migration: migrations
 migrate:
 	- docker exec -it newsblur_web ./manage.py migrate
