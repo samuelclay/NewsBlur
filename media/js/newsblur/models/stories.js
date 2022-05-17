@@ -75,7 +75,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     
     image_url: function(index) {
         if (!index) index = 0;
-        if (this.get('image_urls').length >= index+1) {
+        if (this.get('image_urls') && this.get('image_urls').length >= index+1) {
             var url = this.get('image_urls')[index];
             if (window.location.protocol == 'https:' && 
                 _.str.startsWith(url, "http://")) {
