@@ -4851,13 +4851,13 @@
                         NEWSBLUR.assets.save_dashboard_river("river:global", "left", 2, _.bind(function () {
                             this.load_dashboard_rivers();
                         }, this), function (e) {
-                            console.log(['Error saving dashbaord river', e]);
+                            console.log(['Error saving dashboard river', e]);
                     });
                     }, this), function (e) {
-                        console.log(['Error saving dashbaord river', e]);
+                        console.log(['Error saving dashboard river', e]);
                 });
                 }, this), function (e) {
-                        console.log(['Error saving dashbaord river', e]);
+                        console.log(['Error saving dashboard river', e]);
                 });
             }            
         },

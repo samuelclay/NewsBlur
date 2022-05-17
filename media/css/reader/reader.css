@@ -4436,6 +4436,10 @@ body {
     text-align: center;
     width: 132px;
     line-height: 12px;
+    transition: width 0.12s ease-out;
+}
+.NB-story-starred .NB-feed-story-sideoptions-container {
+    width: 194px;
 }
 
 .NB-narrow-content .NB-feed-story-sideoptions-container {
@@ -4576,7 +4580,7 @@ body {
     margin: 0;
 }
 .NB-sideoption-save {
-    padding: 4px 12px 6px;
+    padding: 4px 6px 6px;
     border: 1px solid #DBE6EA;
     text-align: left;
     color: #606060;
@@ -4586,14 +4590,13 @@ body {
     margin: 11px 2px 0 0;
     width: 16px;
     height: 16px;
-    background: transparent url("/media/img/icons/nouncs/tag.svg") no-repeat 0 0;
+    background: transparent url("/media/img/icons/nouns/tag.svg") no-repeat 0 0;
     background-size: 14px;
 }
 .NB-sideoption-save .NB-sideoption-save-title {
     text-transform: uppercase;
     font-size: 10px;
     text-align: left;
-    text-shadow: 0 1px 0 #F6F6F6;
     color: #202020;
     margin: 12px 0 4px;
 }
@@ -4618,6 +4621,7 @@ body {
     color: white;
     font-weight: bold;
     cursor: pointer;
+    display: inline-block;
 }
 .NB-sideoption-save .NB-sideoption-save-populate:hover {
     background-color: rgba(205, 205, 205, .8);    
@@ -5949,7 +5953,8 @@ form.opml_import_form input {
 .NB-dashboard-columns-triple .NB-splash-modules .NB-account-wide {
     margin: 0 24px;
 }
-.NB-dashboard-columns-triple .NB-dashboard-rivers-left {
+.NB-dashboard-columns-triple .NB-dashboard-rivers-left,
+.NB-dashboard-columns-triple .NB-dashboard-rivers-right {
     display: flex;
     flex-wrap: nowrap;
     flex-direction: row;
@@ -5957,16 +5962,20 @@ form.opml_import_form input {
     justify-content: center;
     gap: 24px;
 }
-.NB-density-compact.NB-dashboard-columns-triple .NB-dashboard-rivers-left {
+.NB-density-compact.NB-dashboard-columns-triple .NB-dashboard-rivers-left,
+.NB-density-compact.NB-dashboard-columns-triple .NB-dashboard-rivers-right {
     gap: 4px;
 }
-.NB-dashboard-columns-triple .NB-dashboard-rivers-left .NB-dashboard-river {
+.NB-dashboard-columns-triple .NB-dashboard-rivers-left .NB-dashboard-river,
+.NB-dashboard-columns-triple .NB-dashboard-rivers-right .NB-dashboard-river {
     flex-basis: 100%;
 }
-.NB-dashboard-columns-triple .NB-dashboard-rivers-left > * {
+.NB-dashboard-columns-triple .NB-dashboard-rivers-left > *,
+.NB-dashboard-columns-triple .NB-dashboard-rivers-right > * {
     flex: 1;
 }
-.NB-dashboard-columns-triple .NB-dashboard-rivers-left .NB-feedbar-options {
+.NB-dashboard-columns-triple .NB-dashboard-rivers-left .NB-feedbar-options,
+.NB-dashboard-columns-triple .NB-dashboard-rivers-right .NB-feedbar-options {
     text-indent: 258%;
     white-space: nowrap;
     overflow: hidden;
@@ -7635,7 +7644,8 @@ form.opml_import_form input {
 .NB-module-header {
     transition: margin 0.24s ease-out;
 }
-.NB-modules-center .NB-module {
+.NB-dashboard-rivers-left .NB-module,
+.NB-dashboard-rivers-right .NB-module {
     margin: 0 0 34px;
 	clear: both;
 }
@@ -7648,7 +7658,7 @@ form.opml_import_form input {
 .NB-module-river .NB-module-river-favicon {
     display: inline-block;
     cursor: pointer;
-/* flex: 1; */}
+}
 .NB-module-river .NB-module-river-favicon img {
     width: 16px;
     height: 16px;
@@ -7659,12 +7669,15 @@ form.opml_import_form input {
     display: inline-block;
     cursor: pointer;
     text-align: left;
-display: flex;justify-content: center;}
+    display: flex;
+    justify-content: center;
+}
 .NB-module-river .NB-dashboard-column-control {
     float: left;
     line-height: 0;
     display: none;
-margin-right: 6px;}
+    margin-right: 6px;
+}
 .NB-module-river .NB-dashboard-column-control.NB-active {
     display: inline-block;
 }
@@ -13444,6 +13457,48 @@ margin-right: 6px;}
 }
 .NB-filter-popover .NB-modal-feed-chooser {
     width: 100%;
+    margin: 0 0 6px;
+}
+.NB-filter-popover .NB-filter-popover-manage-dashboard-modules {
+    display: flex;
+    gap: 6px;
+}
+.NB-filter-popover .NB-filter-popover-manage-button {
+    flex: 1 2 0;
+    border-radius: 4px;
+    font-size: 12px;
+    margin: 2px 0;
+    padding: 4px 6px;
+    display: flex;
+    gap: 6px;
+}
+.NB-filter-popover .NB-filter-popover-manage-button:hover {
+    cursor: pointer;
+    background-color: #d5d6d2;
+}
+.NB-filter-popover .NB-filter-popover-manage-button .NB-icon {
+    /* flex: 1 1 0; */
+    width: 16px;
+    height: 16px;
+}
+.NB-filter-popover .NB-filter-popover-manage-button .NB-text {
+    flex: 2 1 0;
+}
+.NB-filter-popover .NB-filter-popover-dashboard-add-module-left .NB-icon {
+    background: transparent url('/media/embed/icons/nouns/add-list.svg') no-repeat 0 0;
+    background-size: 16px;
+}
+.NB-filter-popover .NB-filter-popover-dashboard-add-module-right .NB-icon {
+    background: transparent url('/media/embed/icons/nouns/add-list-right.svg') no-repeat 0 0;
+    background-size: 16px;
+    order: 2;
+}
+.NB-filter-popover .NB-filter-popover-dashboard-remove-module .NB-icon {
+    background: transparent url('/media/embed/icons/nouns/remove-list.svg') no-repeat 0 0;
+    background-size: 16px;
+}
+.NB-filter-popover .NB-filter-popover-dashboard-add-module-right .NB-text {
+    text-align: right;
 }
 .NB-feedbar-options-stat {
     position: relative;

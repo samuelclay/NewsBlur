@@ -2136,22 +2136,35 @@ class MDashboardRiver(mongo.Document):
         return cls.objects(user_id=user_id)
 
     @classmethod
+    def remove_river(cls, user_id, river_side, river_order):
+        try:
+            river = cls.objects.get(user_id=user_id, river_side=river_side, river_order=river_order)
+        except cls.DoesNotExist:
+            return
+
+        river.delete()
+
+        for r, river in enumerate(cls.objects.filter(user_id=user_id, river_side=river_side)):
+            if river.river_order != r:
+                logging.debug(f" ---> Rebalancing {river} from {river.river_order} to {r}")
+                river.river_order = r
+                river.save()
+
+    @classmethod
     def save_user(cls, user_id, river_id, river_side, river_order):
         try:
             river = cls.objects.get(user_id=user_id, river_side=river_side, river_order=river_order)
         except cls.DoesNotExist:
             river = None
-        
+
         if not river:
             river = cls.objects.create(user_id=user_id, river_id=river_id, 
-                                       river_side=river_side, river_order=river_order)
+                                    river_side=river_side, river_order=river_order)
 
         river.river_id = river_id
         river.river_side = river_side
         river.river_order = river_order
         river.save()
-
-        return river
 
 class RNewUserQueue:
     
