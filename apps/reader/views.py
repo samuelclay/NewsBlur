@@ -2877,11 +2877,27 @@ def delete_search(request):
 def save_dashboard_river(request):
     river_id = request.POST['river_id']
     river_side = request.POST['river_side']
-    river_order = request.POST['river_order']
+    river_order = int(request.POST['river_order'])
 
     logging.user(request, "~FCSaving dashboard river: ~SB%s~SN (%s %s)" % (river_id, river_side, river_order))
 
     MDashboardRiver.save_user(request.user.pk, river_id, river_side, river_order)
+    dashboard_rivers = MDashboardRiver.get_user_rivers(request.user.pk)
+
+    return {
+        'dashboard_rivers': dashboard_rivers,
+    }
+
+@required_params('river_id', 'river_side', 'river_order')
+@json.json_view
+def remove_dashboard_river(request):
+    river_id = request.POST['river_id']
+    river_side = request.POST['river_side']
+    river_order = int(request.POST['river_order'])
+
+    logging.user(request, "~FRRemoving~FC dashboard river: ~SB%s~SN (%s %s)" % (river_id, river_side, river_order))
+
+    MDashboardRiver.remove_river(request.user.pk, river_side, river_order)
     dashboard_rivers = MDashboardRiver.get_user_rivers(request.user.pk)
 
     return {

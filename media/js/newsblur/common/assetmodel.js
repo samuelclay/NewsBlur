@@ -1850,6 +1850,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, this), error_callback);
     },
 
+    remove_dashboard_river: function (river_id, river_side, river_order, callback, error_callback) {
+        this.make_request('/reader/remove_dashboard_river', {
+            river_id: river_id,
+            river_side: river_side,
+            river_order: river_order
+        }, _.bind(function (response) {
+            this.dashboard_rivers.reset(response.dashboard_rivers);
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
     follow_user: function(user_id, callback) {
         this.make_request('/social/follow', {'user_id': user_id}, _.bind(function(data) {
             NEWSBLUR.log(["follow data", data]);

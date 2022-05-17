@@ -438,6 +438,8 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         NEWSBLUR.FeedOptionsPopover.create({
             anchor: this.$(".NB-feedbar-options"),
             feed_id: this.model.get('river_id'),
+            river_side: this.model.get('river_side'),
+            river_order: this.model.get('river_order'),
             on_dashboard: this,
             show_markscroll: false
         });

@@ -64,4 +64,5 @@ urlpatterns = [
     url(r'^save_search', views.save_search, name='save-search'),
     url(r'^delete_search', views.delete_search, name='delete-search'),
     url(r'^save_dashboard_river', views.save_dashboard_river, name='save-dashboard-river'),
+    url(r'^remove_dashboard_river', views.remove_dashboard_river, name='remove-dashboard-river'),
 ]
