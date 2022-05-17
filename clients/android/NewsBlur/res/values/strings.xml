@@ -136,7 +136,7 @@
     <string name="menu_delete_saved_search">Delete saved search</string>
     <string name="menu_unfollow">Unfollow user</string>
     <string name="menu_choose_folders">Choose folders</string>
-    <string name="menu_notifications_choose">Notifications…</string>
+    <string name="menu_notifications_choose">Notifications</string>
     <string name="menu_notifications_disable">Disable notifications</string>
     <string name="menu_notifications_focus">Notify on new focus stories</string>
     <string name="menu_notifications_unread">Notify on all new stories</string>
@@ -149,7 +149,7 @@
     <string name="menu_text_size_l">L</string>
     <string name="menu_text_size_xl">XL</string>
     <string name="menu_text_size_xxl">XXL</string>
-    <string name="menu_font">Change font</string>
+    <string name="menu_font">Font</string>
     <string name="menu_save_story">Save this story</string>
     <string name="menu_unsave_story">Unsave this story</string>
     <string name="menu_newest_mark_older_stories_as_read">\u21E3 Mark older as read</string>
@@ -169,7 +169,7 @@
     <string name="menu_infrequent_cutoff">Infrequent stories per month</string>
     <string name="menu_intel">Intelligence trainer</string>
     <string name="menu_rename_feed">Rename feed</string>
-    <string name="menu_story_list_style_choose">List style…</string>
+    <string name="menu_story_list_style_choose">List style</string>
     <string name="menu_save_search">Save Search</string>
     <string name="menu_web_search">Web search</string>
     <string name="list_style_list">List</string>

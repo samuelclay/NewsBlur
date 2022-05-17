@@ -40,7 +40,6 @@ import com.newsblur.service.OriginalTextService
 import com.newsblur.util.*
 import com.newsblur.util.PrefConstants.ThemeValue
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 import java.util.regex.Pattern
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -76,7 +75,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     private var feedIconUrl: String? = null
     private var faviconText: String? = null
     private var classifier: Classifier? = null
-    private var readingFontReceiver: BroadcastReceiver? = null
     private var displayFeedDetails = false
     private var user: UserDetails? = null
 
@@ -128,9 +126,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         user = PrefsUtils.getUserDetails(requireContext())
         markStoryReadBehavior = PrefsUtils.getMarkStoryReadBehavior(requireContext())
 
-        readingFontReceiver = ReadingFontReceiver()
-        requireActivity().registerReceiver(readingFontReceiver, IntentFilter(READING_FONT_CHANGED))
-
         if (markStoryReadBehavior == MarkStoryReadBehavior.IMMEDIATELY) {
             sampledQueue = SampledQueue(250, 5)
         }
@@ -153,7 +148,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     }
 
     override fun onDestroy() {
-        requireActivity().unregisterReceiver(readingFontReceiver)
         binding.readingWebview.setOnTouchListener(null)
         binding.root.setOnTouchListener(null)
         requireActivity().window.decorView.setOnSystemUiVisibilityChangeListener(null)
@@ -288,6 +282,17 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             ReadingTextSize.XXL -> menu.findItem(R.id.menu_text_size_xxl).isChecked = true
         }
 
+        when (Font.getFont(PrefsUtils.getFontString(requireContext()))) {
+            Font.ANONYMOUS_PRO -> menu.findItem(R.id.menu_font_anonymous).isChecked = true
+            Font.CHRONICLE -> menu.findItem(R.id.menu_font_chronicle).isChecked = true
+            Font.DEFAULT -> menu.findItem(R.id.menu_font_default).isChecked = true
+            Font.GOTHAM_NARROW -> menu.findItem(R.id.menu_font_gotham).isChecked = true
+            Font.NOTO_SANS -> menu.findItem(R.id.menu_font_noto_sand).isChecked = true
+            Font.NOTO_SERIF -> menu.findItem(R.id.menu_font_noto_serif).isChecked = true
+            Font.OPEN_SANS_CONDENSED -> menu.findItem(R.id.menu_font_open_sans).isChecked = true
+            Font.ROBOTO -> menu.findItem(R.id.menu_font_roboto).isChecked = true
+        }
+
         pm.setOnMenuItemClickListener(this)
         pm.show()
     }
@@ -342,9 +347,36 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             setTextSizeStyle(ReadingTextSize.XXL)
             true
         }
-        R.id.menu_font -> {
-            val storyFont = ReadingFontDialogFragment.newInstance(PrefsUtils.getFontString(requireContext()))
-            storyFont.show(requireActivity().supportFragmentManager, ReadingFontDialogFragment::class.java.name)
+        R.id.menu_font_anonymous -> {
+            setReadingFont(getString(R.string.anonymous_pro_font_prefvalue))
+            true
+        }
+        R.id.menu_font_chronicle -> {
+            setReadingFont(getString(R.string.chronicle_font_prefvalue))
+            true
+        }
+        R.id.menu_font_default -> {
+            setReadingFont(getString(R.string.default_font_prefvalue))
+            true
+        }
+        R.id.menu_font_gotham -> {
+            setReadingFont(getString(R.string.gotham_narrow_font_prefvalue))
+            true
+        }
+        R.id.menu_font_noto_sand -> {
+            setReadingFont(getString(R.string.noto_sans_font_prefvalue))
+            true
+        }
+        R.id.menu_font_noto_serif -> {
+            setReadingFont(getString(R.string.noto_serif_font_prefvalue))
+            true
+        }
+        R.id.menu_font_open_sans -> {
+            setReadingFont(getString(R.string.open_sans_condensed_font_prefvalue))
+            true
+        }
+        R.id.menu_font_roboto -> {
+            setReadingFont(getString(R.string.roboto_font_prefvalue))
             true
         }
         R.id.menu_reading_save -> {
@@ -958,17 +990,14 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         binding.readingWebview.setTextSize(textSize)
     }
 
-    private inner class ReadingFontReceiver : BroadcastReceiver() {
-
-        override fun onReceive(context: Context, intent: Intent) {
-            contentHash = 0 // Force reload since content hasn't changed
-            reloadStoryContent()
-        }
+    private fun setReadingFont(font: String) {
+       PrefsUtils.setFontString(requireContext(), font)
+        contentHash = 0 // Force reload since content hasn't changed
+        reloadStoryContent()
     }
 
     companion object {
         private const val BUNDLE_SCROLL_POS_REL = "scrollStateRel"
-        const val READING_FONT_CHANGED = "readingFontChanged"
 
         @JvmStatic
         fun newInstance(story: Story?, feedTitle: String?, feedFaviconColor: String?, feedFaviconFade: String?, feedFaviconBorder: String?, faviconText: String?, faviconUrl: String?, classifier: Classifier?, displayFeedDetails: Boolean, sourceUserId: String?): ReadingItemFragment {
