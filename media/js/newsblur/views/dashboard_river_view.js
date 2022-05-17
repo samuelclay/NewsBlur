@@ -39,7 +39,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     render: function () {
         var $river = $(_.template('<div class="NB-module NB-module-river NB-dashboard-river NB-dashboard-river-order-<%= river_order %>">\
             <h5 class="NB-module-header">\
-                <div class="NB-dashboard-column-control <% if (parseInt(river_order, 10) == 0) { %>NB-active<% } %>">\
+                <div class="NB-dashboard-column-control <% if (parseInt(river_order, 10) == 0 && river_side == "left") { %>NB-active<% } %>">\
                     <ul class="segmented-control NB-dashboard-columns-control">\
                         <li class="NB-dashboard-column-option NB-dashboard-columns-control-1">\
                             <img src="/media/img/icons/nouns/columns-one.svg" class="NB-icon">\
@@ -69,6 +69,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             favicon_url: this.model.favicon_url(),
             river_title: NEWSBLUR.reader.feed_title(this.model.get('river_id')),
             river_order: this.model.get('river_order'),
+            river_side: this.model.get('river_side'),
             single_column: NEWSBLUR.assets.preference('dashboard_columns') == 1
         }));
 
