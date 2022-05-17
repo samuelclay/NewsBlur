@@ -4435,8 +4435,8 @@
                 $add.html($folders);
                 $save.addClass("NB-disabled").attr('disabled', "disabled").text('Select folders');
             } else {
-                folder_view = NEWSBLUR.assets.folders.get_view($feed) ||
-                              this.active_folder.folder_view;
+                var folder_view = NEWSBLUR.assets.folders.get_view($feed) ||
+                                  this.active_folder.folder_view;
                 var in_folder = folder_view.collection.options.title;
             }
             
