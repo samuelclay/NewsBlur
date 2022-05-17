@@ -109,9 +109,9 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         return content;
     },
     
-    story_authors: function() {
-        return this.get('story_authors').replace(/</g, '&lt;')
-                                        .replace(/>/g, '&gt;');
+    story_authors: function () {
+        let authors = this.get('story_authors') || "";
+        return authors.replace(/</g, '&lt;').replace(/>/g, '&gt;');
     },
     
     user_highlights: function() {
