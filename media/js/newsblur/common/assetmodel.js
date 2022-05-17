@@ -831,11 +831,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var self = this;
         
 
-        var pre_callback = function(data) {
-            dashboard_stories.add(data.stories, {silent: true});
-            dashboard_stories.limit_visible_on_dashboard(dashboard_count);
-            dashboard_stories.trigger('reset', {added: 1});
-        };
+        var pre_callback = (function (dashboard_stories, dashboard_count) {
+            return function (data) {
+                dashboard_stories.add(data.stories, { silent: true });
+                dashboard_stories.limit_visible_on_dashboard(dashboard_count);
+                dashboard_stories.trigger('reset', { added: 1 });
+            };
+        })(dashboard_stories, dashboard_count);
         
         if (!('hashes' in this.queued_realtime_stories)) { this.queued_realtime_stories['hashes'] = []; }
         this.queued_realtime_stories['hashes'].push(story_hash);
