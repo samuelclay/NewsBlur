@@ -88,8 +88,6 @@ services:
     environment:
       - POSTGRES_USER=newsblur
       - POSTGRES_PASSWORD=newsblur
-      # - POSTGRES_DB=newsblur_prod
-    user: "${CURRENT_UID}:${CURRENT_GID}"
     # healthcheck:
     #   test: ["CMD-SHELL", "pg_isready -U newsblur"]
     #   interval: 10s
