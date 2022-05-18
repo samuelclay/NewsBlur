@@ -10652,8 +10652,10 @@ form.opml_import_form input {
     flex-grow: 1;
     width: 50%;
     font-size: 0.7em;
-    text-transform: uppercase;
     color: #838b82;
+}
+.NB-modal-feedchooser .NB-provider-text {
+    text-transform: uppercase;
 }
 .NB-modal-feedchooser .NB-provider-main .NB-modal-submit-button,
 .NB-modal-feedchooser .NB-provider-alternate .NB-modal-submit-button {
