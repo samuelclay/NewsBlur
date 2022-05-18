@@ -4658,8 +4658,8 @@ body {
     border: 1px solid #DBE6EA;
 }
 .NB-sideoption-share .NB-sideoption-share-title {
-    text-transform: uppercase;
-    font-size: 10px;
+    font-size: 12px;
+    margin: 2px 0 8px;
     text-align: left;
     text-shadow: 0 1px 0 #F6F6F6;
     color: #202020;
@@ -4732,15 +4732,8 @@ body {
   margin: 0 0 12px;
 }
 .NB-sideoption-share .NB-sideoption-share-save {
-  font-size: 10px;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: white;
-  padding: 2px 6px;
   margin: 2px 0;
-  width: 100%;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
+  max-width: 138px;
   box-sizing: border-box;
   cursor: pointer;
 }
@@ -4750,12 +4743,8 @@ body {
 }
 .NB-sideoption-share .NB-sideoption-share-unshare {
     line-height: 1;
-    font-size: 11px;
-    padding: 2px 6px;
     margin: 6px 0;
-    width: 100%;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
+    max-width: 138px;
     box-sizing: border-box;
     font-weight: normal;
 }
@@ -8340,7 +8329,6 @@ form.opml_import_form input {
   float: right;
   font-size: 10px;
   font-weight: bold;
-  text-transform: uppercase;
   color: white;
   padding: 2px 6px;
   background-color: #639510;
