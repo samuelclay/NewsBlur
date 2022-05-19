@@ -107,7 +107,7 @@ resource "digitalocean_droplet" "app-django" {
   image    = var.droplet_os
   name     = "app-django${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size_10
+  size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -125,7 +125,7 @@ resource "digitalocean_droplet" "app-counts" {
   image    = var.droplet_os
   name     = "app-counts${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -161,7 +161,7 @@ resource "digitalocean_droplet" "app-refresh" {
   image    = var.droplet_os
   name     = "app-refresh${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size_10
+  size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -414,7 +414,8 @@ resource "digitalocean_droplet" "db-postgres" {
   image    = var.droplet_os
   name     = "db-postgres${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size_160
+  size     = contains([0], count.index) ? var.droplet_size_160 : var.droplet_size_240
+  # size     = var.droplet_size_240
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -460,7 +461,7 @@ resource "digitalocean_droplet" "db-postgres" {
 # servers=$(for i in {1..9}; do echo -n "-target=\"digitalocean_droplet.db-mongo-primary[$i]\" " ; done); tf plan -refresh=false `eval echo $servers`
 # 
 resource "digitalocean_droplet" "db-mongo-primary" {
-  count    = 1
+  count    = 2
   backups  = true
   image    = var.droplet_os
   name     = "db-mongo-primary${count.index+1}"
@@ -481,7 +482,7 @@ resource "digitalocean_droplet" "db-mongo-primary" {
 }
 
 resource "digitalocean_volume" "mongo_secondary_volume" {
-  count                   = 2
+  count                   = 3
   region                  = "nyc1"
   name                    = "mongosecondary${count.index+1}"
   size                    = 400
@@ -490,7 +491,7 @@ resource "digitalocean_volume" "mongo_secondary_volume" {
 }
 
 resource "digitalocean_droplet" "db-mongo-secondary" {
-  count    = 2
+  count    = 3
   image    = var.droplet_os
   name     = "db-mongo-secondary${count.index+1}"
   region   = var.droplet_region

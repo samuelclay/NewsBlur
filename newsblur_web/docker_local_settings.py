@@ -26,7 +26,6 @@ DEBUG = True
 # DEBUG_ASSETS controls JS/CSS asset packaging. Turning this off requires you to run 
 # `./manage.py collectstatic` first. Turn this on for development so you can see
 # changes in your JS/CSS. 
-DEBUG_ASSETS = False # Make sure to run `./manage.py collectstatic` first
 DEBUG_ASSETS = False  # Make sure to run `./manage.py collectstatic` first
 DEBUG_ASSETS = True
 

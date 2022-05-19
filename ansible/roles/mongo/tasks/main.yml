@@ -73,7 +73,7 @@
   become: yes
   docker_container:
     name: mongo
-    image: mongo:3.6
+    image: mongo:4.0
     state: started
     container_default_behavior: no_defaults
     hostname: "{{ inventory_hostname }}"
@@ -100,7 +100,7 @@
   become: yes
   docker_container:
     name: mongo
-    image: mongo:3.6
+    image: mongo:4.0
     state: started
     container_default_behavior: no_defaults
     hostname: "{{ inventory_hostname }}"
