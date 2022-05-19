@@ -12,7 +12,7 @@ class Command(BaseCommand):
             try:
                 c = db_conn.cursor()
                 connected = True
-                print("Connected to postgres")
+                # print("Connected to postgres")
             except OperationalError as e:
-                print(f"Waiting for db_postgres: {e}")
+                print(f" ---> Waiting for db_postgres: {e}")
                 time.sleep(5)

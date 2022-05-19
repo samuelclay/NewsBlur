@@ -8,7 +8,6 @@ from celery.exceptions import SoftTimeLimitExceeded
 from utils import log as logging
 from django.conf import settings
 from apps.profile.middleware import DBProfilerMiddleware
-from utils.mongo_raw_log_middleware import MongoDumpMiddleware
 from utils.redis_raw_log_middleware import RedisDumpMiddleware
 FEED_TASKING_MAX = 10000
 
@@ -130,8 +129,7 @@ def UpdateFeeds(feed_pks):
     profiler = DBProfilerMiddleware()
     profiler_activated = profiler.process_celery()
     if profiler_activated:
-        mongo_middleware = MongoDumpMiddleware()
-        mongo_middleware.process_celery(profiler)
+        settings.MONGO_COMMAND_LOGGER.process_celery(profiler)
         redis_middleware = RedisDumpMiddleware()
         redis_middleware.process_celery(profiler)
     
