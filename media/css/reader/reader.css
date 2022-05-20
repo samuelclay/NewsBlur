@@ -7642,10 +7642,10 @@ form.opml_import_form input {
     gap 0.24s ease-out;
 }
 .NB-modules-center {
-    flex: 8 1 0;
+    flex: 4 1 0;
 }
 .NB-account-wide {
-    flex: 7 1 0;
+    flex: 3 1 0;
 }
 
 .NB-module-header {
