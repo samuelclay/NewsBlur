@@ -116,9 +116,9 @@ def index(request, **kwargs):
 def dashboard(request, **kwargs):
     user              = request.user
     feed_count        = UserSubscription.objects.filter(user=request.user).count()
-    recommended_feeds = RecommendedFeed.objects.filter(is_public=True,
-                                                       approved_date__lte=datetime.datetime.now()
-                                                       ).select_related('feed')[:2]
+    # recommended_feeds = RecommendedFeed.objects.filter(is_public=True,
+    #                                                    approved_date__lte=datetime.datetime.now()
+    #                                                    ).select_related('feed')[:2]
     unmoderated_feeds = []
     if user.is_staff:
         unmoderated_feeds = RecommendedFeed.objects.filter(is_public=False,
@@ -144,7 +144,7 @@ def dashboard(request, **kwargs):
         'custom_styling'    : custom_styling,
         'dashboard_rivers'  : dashboard_rivers,
         'account_images'    : list(range(1, 4)),
-        'recommended_feeds' : recommended_feeds,
+        # 'recommended_feeds' : recommended_feeds,
         'unmoderated_feeds' : unmoderated_feeds,
         'statistics'        : statistics,
         'social_profile'    : social_profile,

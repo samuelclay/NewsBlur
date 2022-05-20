@@ -5912,7 +5912,7 @@ form.opml_import_form input {
     }
 }
 .NB-dashboard-columns-single .NB-splash-modules {
-    display: block;
+    flex-flow: column;
 }
 .NB-dashboard-columns-single .NB-splash-modules .NB-modules-center,
 .NB-dashboard-columns-single .NB-splash-modules .NB-dashboard-account {
@@ -6427,6 +6427,7 @@ form.opml_import_form input {
     height: 13px;
     position: relative;
     padding: 4px 8px 4px;
+    display: flex;
 }
 .NB-narrow-pane-blue .NB-intelligence-slider .NB-intelligence-slider-blue .NB-intelligence-label {
     display: none;
@@ -7637,9 +7638,16 @@ form.opml_import_form input {
     margin: 24px 0 0 0px;
     flex: 1;
     transition: margin 0.24s ease-out,
-                padding 0.24s ease-out,
-                gap 0.24s ease-out;
+    padding 0.24s ease-out,
+    gap 0.24s ease-out;
 }
+.NB-modules-center {
+    flex: 8 1 0;
+}
+.NB-account-wide {
+    flex: 7 1 0;
+}
+
 .NB-module-header {
     transition: margin 0.24s ease-out;
 }
