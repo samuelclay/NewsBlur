@@ -146,7 +146,7 @@
             this.handle_login_and_signup_forms();
             this.handle_wakeup();
             this.apply_story_styling();
-            this.load_recommended_feeds();
+            // this.load_recommended_feeds();
             this.setup_dashboard_graphs();
             this.setup_feedback_table();
             this.setup_howitworks_hovers();
