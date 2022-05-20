@@ -8041,22 +8041,19 @@ form.opml_import_form input {
 
 
 .NB-menu-manage li.NB-menu-separator {
-    background-color: rgba(0, 0, 0, .01);
-    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    background-color: rgba(0, 0, 0, .05);
     padding: 0;
     height: 1px;
 }
 
 .NB-menu-manage li.NB-menu-separator-inverse {
     background-color: rgba(0, 0, 0, .01);
-    border-bottom: 1px solid rgba(0, 0, 0, .4);
     padding: 0;
     height: 1px;
 }
 
 .NB-menu-manage li.NB-menu-separator-top {
     background-color: rgba(0, 0, 0, .01);
-    border-bottom: 1px solid rgba(0, 0, 0, .4);
 
     margin-bottom: 1px;
     padding: 0;
@@ -8064,8 +8061,7 @@ form.opml_import_form input {
 }
 
 .NB-menu-manage li.NB-menu-separator:hover {
-    background-color: rgba(0, 0, 0, .01);
-    border-bottom: 1px solid rgba(0, 0, 0, .4);
+    background-color: rgba(0, 0, 0, .05);
 
     color: inherit;
     cursor: default;
@@ -8079,7 +8075,6 @@ form.opml_import_form input {
 
 .NB-menu-manage li.NB-menu-separator-inverse:hover {
     background-color: rgba(0, 0, 0, .01);
-    border-bottom: 1px solid rgba(0, 0, 0, .4);
 
     color: inherit;
     cursor: default;
@@ -8482,6 +8477,7 @@ form.opml_import_form input {
 }
 .NB-menu-manage .NB-menu-manage-theme .segmented-control {
     margin: 2px 0 0 36px;
+    max-width: 300px;
 }
 .NB-menu-manage .NB-menu-manage-theme .segmented-control li {
     padding: 4px 8px;
@@ -8492,6 +8488,7 @@ form.opml_import_form input {
 }
 .NB-menu-manage .NB-menu-manage-font .segmented-control {
     margin: 2px 0 0 36px;
+    max-width: 300px;
 }
 .NB-menu-manage .NB-menu-manage-font .segmented-control li {
     padding: 4px 8px;
@@ -8502,6 +8499,7 @@ form.opml_import_form input {
 }
 .NB-menu-manage .NB-menu-manage-size .segmented-control {
     margin: 2px 0 0 36px;
+    max-width: 300px;
 }
 .NB-menu-manage .NB-menu-manage-size .segmented-control li {
     font-weight: bold;
