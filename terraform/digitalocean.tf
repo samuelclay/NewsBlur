@@ -410,7 +410,7 @@ resource "digitalocean_droplet" "db-redis-pubsub" {
 }
 
 resource "digitalocean_droplet" "db-postgres" {
-  count    = 3
+  count    = 2
   image    = var.droplet_os
   name     = "db-postgres${count.index+1}"
   region   = var.droplet_region
