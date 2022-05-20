@@ -253,13 +253,15 @@ private extension ShareViewController {
         request.httpMethod = "POST"
         request.httpBody = postBody.data(using: .utf8)
         
-        let config = URLSessionConfiguration.background(withIdentifier: "group.com.newsblur.share")
+        let config = URLSessionConfiguration.background(withIdentifier: UUID().uuidString)
         config.sharedContainerIdentifier = "group.com.newsblur.NewsBlur-Group"
         
         let session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
         let task = session.dataTask(with: request as URLRequest)
         
         task.resume()
+        
+        NSLog("⚾️ sending: \(request) \(postBody) \(config.identifier ?? "")")
     }
     
     var requestPath: String {
@@ -365,6 +367,8 @@ extension ShareViewController: URLSessionTaskDelegate {
         if let error = error {
             print("task completed with error: \(error)")
             
+            NSLog("⚾️ share error: \(error)")
+            
             switch mode {
             case .save:
                 content.body = "Unable to save this story"
@@ -376,7 +380,7 @@ extension ShareViewController: URLSessionTaskDelegate {
         } else {
             print("task completed successfully: \(String(describing: task.response))")
             
-            NSLog("⚾️ share: \(String(describing: task.response))")
+            NSLog("⚾️ share success: \(String(describing: task.response))")
             
             switch mode {
             case .save:
