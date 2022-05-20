@@ -105,3 +105,14 @@
       - never
       - pg_basebackup
 
+  - name: Promote secondary postgres to primary
+    block:
+      - name: pg_ctl promote
+        become: yes
+        command:
+          docker exec -it postgres su - postgres -c "/usr/lib/postgresql/13/bin/pg_ctl -D /var/lib/postgresql/data promote"
+    # when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-postgres-secondary']
+    tags:
+      - never
+      - pg_promote
+

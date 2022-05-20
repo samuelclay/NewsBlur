@@ -85,7 +85,7 @@
                         <img src="/media/img/logo_512.png" class="logo">
                         <h1>NewsBlur is in <span class="error404">maintenance mode</span></h1>
                         <div class="description">
-                            <p>This is bog standard maintenance of a PostgreSQL server. Switching from a primary to a secondary should be a hot reload and require no downtime. I'm going to force about a minute of downtime because it's way easier than coordinating the handoff between feed fetchers, app servers, writing to the old database server, ensuring all writes went to the secondary before it gets promoted, and then ensuring the old database server is taken offline so it doens't rejoin the cluster. Whew. And it probably took me longer to write this than to just do the maintenance.</p>
+                            <p>This is a database migration in prep for the NewsBlur Premium Archive subscription. Technically I don't need to bring down the site to do this, but I just wanted to be 100% sure. This should last less than 10-15 seconds, although it always takes me an extra 30 seconds to remember to take the maintenance page down.</p>
                             <p>To pass the time, <a href="http://mltshp.com/popular">check out what's popular on MLTSHP</a>.</p>
                         </div>
                     </div>
