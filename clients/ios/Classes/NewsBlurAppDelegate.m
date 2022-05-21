@@ -1753,8 +1753,9 @@
         [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
     } else if (self.pendingFolder != nil) {
         [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:self.pendingFolder];
-        self.pendingFolder = nil;
     }
+    
+    self.pendingFolder = nil;
 }
 
 - (NSString *)widgetFolder {
