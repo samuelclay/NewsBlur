@@ -1632,7 +1632,8 @@ class Feed(models.Model):
 
         stories_removed = MStory.trim_feed(feed=self, cutoff=cutoff, verbose=verbose)
 
-        self.count_fs_size_bytes()
+        if not self.fs_size_bytes:
+            self.count_fs_size_bytes()
 
         return stories_removed
 
