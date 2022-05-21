@@ -736,8 +736,6 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
             return;
         }
         
-        [self.storyTitlesTable reloadData];
-        
         for (FeedDetailTableCell *cell in [self.storyTitlesTable visibleCells]) {
             if (![cell isKindOfClass:[FeedDetailTableCell class]]) return;
             if ([cell.storyImageUrl isEqualToString:imageUrl]) {
