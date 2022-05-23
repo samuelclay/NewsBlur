@@ -422,7 +422,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         if (this.options.on_dashboard) {
             this.options.on_dashboard.initialize();
         } else {
-            NEWSBLUR.reader.reload_feed(setting);
+            NEWSBLUR.reader.reload_feed();
         }
     },
     
