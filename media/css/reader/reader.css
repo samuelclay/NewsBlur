@@ -244,6 +244,7 @@ hr {
 .NB-account .NB-signup-optional {
     float: right;
     text-transform: uppercase;
+    display: none;
     color: #ABC0A8;
     font-weight: bold;
     font-size: 9px;
@@ -1639,7 +1640,6 @@ img.feed_favicon {
     font-size: 14px;
     font-weight: bold;
     color: #606060;
-    text-transform: uppercase;
     text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
 }
 
@@ -4099,7 +4099,6 @@ body {
     height: 16px;
     background: transparent url('/media/embed/icons/circular/g_icn_fav.png') no-repeat center 0;
     background-size: 14px;
-    text-transform: uppercase;
     margin-top: -1px;
     padding: 1px 6px 1px 2px;
 }
@@ -4141,7 +4140,6 @@ body {
     float: left;
 }
 .NB-story-comment .NB-story-comment-reply-button .NB-story-comment-reply-button-wrapper {
-    text-transform: uppercase;
     background-color: #E9AF86;
     color: white;
     padding: 1px 4px;
@@ -4194,7 +4192,6 @@ body {
     cursor: pointer;
 }
 .NB-story-comment-edit-button .NB-story-comment-edit-button-wrapper {
-    text-transform: uppercase;
     background-color: #74A2E7;
     color: white;
     padding: 1px 4px;
@@ -4597,7 +4594,6 @@ body {
     background-size: 14px;
 }
 .NB-sideoption-save .NB-sideoption-save-title {
-    text-transform: uppercase;
     font-size: 10px;
     text-align: left;
     color: #202020;
@@ -4616,7 +4612,6 @@ body {
     float: right;
     font-size: 9px;
     line-height: 11px;
-    text-transform: uppercase;
     padding: 2px 4px;
     margin: 10px 0 2px 0;
     border-radius: 2px;
@@ -4702,7 +4697,6 @@ body {
 }
 .NB-sideoption-share .NB-sideoption-share-crosspost-text {
     font-size: 9px;
-    text-transform: uppercase;
     text-align: left;
     color: #7483A2;
     text-shadow: 0 1px 0 #FBFBFB;
@@ -4713,7 +4707,6 @@ body {
     opacity: 0;
     transition: opacity 1s ease-out;
     margin-top: 12px;
-    text-transform: uppercase;
     font-size: 10px;
     color: yellowgreen;
 }
@@ -4794,7 +4787,6 @@ body {
 }
 
 #story_taskbar .NB-feed-error .NB-feed-error-text {
-  text-transform: uppercase;
   font-size: 10px;
   text-align: center;
   font-weight: bold;
@@ -5768,6 +5760,16 @@ background: transparent;
 .NB-style-popover .NB-options-grid-height {
     margin-top: 6px;
 }
+.NB-style-popover .NB-options-grid-columns-0 {
+    flex-grow: 3;
+}
+.NB-style-popover .NB-options-grid-height-s {
+    flex-grow: 2;
+}
+.NB-style-popover .NB-options-grid-height-m {
+    flex-grow: 3;
+}
+
 .NB-style-popover .NB-grid-columns-option,
 .NB-style-popover .NB-grid-height-option {
     min-width: 23px;
@@ -6136,7 +6138,6 @@ form.opml_import_form input {
 
 .NB-splash-info .NB-splash-links a {
     font-weight: bold;
-    text-transform: uppercase;
     font-size: 11px;
     display: block;
 }
@@ -6798,7 +6799,6 @@ form.opml_import_form input {
     cursor: pointer;
     padding: 0 30px 0 26px;
     font-size: 12px;
-    text-transform: uppercase;
     background-color: #D8DEE2;
     position: relative;
     border: 1px solid transparent;
@@ -7716,7 +7716,6 @@ form.opml_import_form input {
     color: rgba(0, 0, 0, .5);
     border: 1px solid rgba(0, 0, 0, .1);
     border-radius: 16px;
-    text-transform: uppercase;
     font-size: 9px;
     font-weight: bold;
     padding: 1px 4px 1px 8px;
@@ -8340,7 +8339,6 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-confirm .NB-menu-manage-story-share-save {
   font-size: 10px;
   font-weight: bold;
-  text-transform: uppercase;
   color: white;
   padding: 2px 6px;
   margin: 4px 0 0;
@@ -9630,7 +9628,6 @@ form.opml_import_form input {
 .NB-modal-intro .NB-friends-service-connected {
     font-weight: bold;
     font-size: 12px;
-    text-transform: uppercase;
     color: darkgreen;
 }
 .NB-modal-intro .NB-intro-services .NB-note {
@@ -9993,7 +9990,6 @@ form.opml_import_form input {
 .NB-modal-folder-settings .NB-exception-option-status {
     color: #3945C0;
     font-weight: bold;
-    text-transform: uppercase;
     opacity: 0;
 }
 
@@ -10246,7 +10242,6 @@ form.opml_import_form input {
     color: #C0C0C0;
     margin: 12px 0 0;
     font-weight: bold;
-    text-transform: uppercase;
     text-shadow:1px 1px 0 #F6F6F6;
 }
 .NB-modal-feedchooser .NB-feedchooser-info-reset {
@@ -10254,7 +10249,6 @@ form.opml_import_form input {
     line-height: 16px;
     margin: 12px 0 0;
     font-weight: bold;
-    text-transform: uppercase;
     text-shadow:1px 1px 0 #F6F6F6;
     display: none;
     cursor: pointer;
@@ -10992,10 +10986,8 @@ form.opml_import_form input {
   float: right;
   font-size: 14px;
   font-weight: bold;
-  text-transform: uppercase;
   margin: 6px 12px 0 0;
   color: #404030;
-  text-shadow: 1px 1px 0 #E0E0E0;
 }
 .NB-keyboard-shortcut-image {
   clear: both;
@@ -11273,7 +11265,6 @@ form.opml_import_form input {
     width: auto;
     overflow: hidden;
     text-align: center;
-    text-transform: uppercase;
     line-height: 18px;
 }
 .NB-modal-preferences .segmented-control:last-child {
@@ -11304,7 +11295,6 @@ form.opml_import_form input {
     margin: 0 0 4px 0;
     float: left;
     cursor: pointer;
-    text-transform: uppercase;
     font-size: 12px;
     color: #303030;
     display: block;
@@ -12411,7 +12401,6 @@ form.opml_import_form input {
 .NB-modal-profile-editor .NB-account-link {
     margin-left: 12px;
     font-size: 10px;
-    text-transform: uppercase;
 }
 
 .NB-modal-profile-editor .NB-tab-blurblog label {
@@ -12646,8 +12635,6 @@ form.opml_import_form input {
 .NB-badge-actions .NB-modal-submit-button {
     width: 90px;
     text-align: center;
-    text-transform: uppercase;
-    text-shadow: none;
     margin: 0 0 4px;
     clear: right;
     float: right;
@@ -12780,7 +12767,6 @@ form.opml_import_form input {
     height: 16px;
 }
 .NB-interactions-popover .NB-interactions-header {
-    text-transform: uppercase;
     font-size: 10px;
     text-align: center;
     overflow: hidden;
@@ -12878,7 +12864,6 @@ form.opml_import_form input {
 .NB-interaction-date {
     color: #5e828b;
     font-size: 10px;
-    text-transform: uppercase;
     padding: 5px 0 0;
 }
 .NB-interaction:hover:not(.NB-disabled) .NB-interaction-date { 
@@ -13020,7 +13005,6 @@ form.opml_import_form input {
 }
 .NB-modal-organizer .NB-organizer-action-title {
     float: left;
-    text-transform: uppercase;
     font-size: 11px;
     font-weight: bold;
 }
@@ -13029,7 +13013,6 @@ form.opml_import_form input {
     margin-left: 6px;
     cursor: pointer;
     color: #405BA8;
-    text-transform: uppercase;
 }
 .NB-modal-organizer .NB-organizer-action:hover {
     color: #A85B40;
@@ -13061,7 +13044,6 @@ form.opml_import_form input {
     margin: 12px 0 0;
 }
 .NB-modal-organizer .NB-organizer-sidebar-title {
-    text-transform: uppercase;
     font-size: 11px;
     line-height: 18px;
     font-weight: bold;
