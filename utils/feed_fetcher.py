@@ -1229,7 +1229,7 @@ class FeedFetcherWorker:
                 failed_color = "~FR" if not link_prev_archive else ""
                 logging.debug(f"   ---> [{feed.log_title[:30]:<30}] ~FGStory hashes found, archive RFC5005 ~SB{link_prev_archive}~SN: ~SB~FG{failed_color}{len(seen_story_hashes):,} stories~SN~FB")
             else:
-                for page in range(3 if settings.DEBUG else 100):
+                for page in range(3 if settings.DEBUG and False else 100):
                     if failed_pages >= 1: 
                         break
                     self.options['archive_page'] = page+1
