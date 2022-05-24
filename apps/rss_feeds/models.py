@@ -1035,7 +1035,7 @@ class Feed(models.Model):
             else:
                 return 'black'
 
-    def fill_out_archive_stories(self, force=False):
+    def fill_out_archive_stories(self, force=False, starting_page=1):
         """
         Starting from page 1 and iterating through N pages, determine whether
         page(i) matches page(i-1) and if there are any new stories.
@@ -1047,7 +1047,7 @@ class Feed(models.Model):
                           self.log_title[:30]))
             return before_story_count, before_story_count
 
-        self.update(archive_page=1)
+        self.update(archive_page=starting_page)
 
         after_story_count = MStory.objects(story_feed_id=self.pk).count()
         logging.debug("   ---> [%-30s] ~FCFilled out archive, ~FM~SB%s~SN new stories~FC, total of ~SB%s~SN stories" % (

@@ -1144,7 +1144,7 @@ class FeedFetcherWorker:
 
         # time_taken = datetime.datetime.utcnow() - self.time_start
 
-    def fetch_and_process_archive_pages(self, feed_id, starting_page=0):
+    def fetch_and_process_archive_pages(self, feed_id):
         feed = Feed.get_by_id(feed_id)
         first_seen_feed = None
         
@@ -1230,7 +1230,7 @@ class FeedFetcherWorker:
                 logging.debug(f"   ---> [{feed.log_title[:30]:<30}] ~FGStory hashes found, archive RFC5005 ~SB{link_prev_archive}~SN: ~SB~FG{failed_color}{len(seen_story_hashes):,} stories~SN~FB")
             else:
                 for page in range(3 if settings.DEBUG and False else 150):
-                    if page < starting_page:
+                    if page < self.options['archive_page']:
                         continue
                     if failed_pages >= 1: 
                         break
