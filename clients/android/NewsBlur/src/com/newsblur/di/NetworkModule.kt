@@ -5,17 +5,15 @@ import android.content.SharedPreferences
 import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.Feed
 import com.newsblur.domain.Story
 import com.newsblur.network.APIConstants
 import com.newsblur.network.APIManager
-import com.newsblur.serialization.BooleanTypeAdapter
-import com.newsblur.serialization.ClassifierMapTypeAdapter
-import com.newsblur.serialization.DateStringTypeAdapter
-import com.newsblur.serialization.FeedListTypeAdapter
-import com.newsblur.serialization.StoryTypeAdapter
+import com.newsblur.network.domain.StoriesResponse
+import com.newsblur.serialization.*
 import com.newsblur.util.AppConstants
 import com.newsblur.util.NetworkUtils
 import com.newsblur.util.PrefConstants
@@ -42,7 +40,7 @@ object NetworkModule {
         registerTypeAdapter(Boolean::class.java, BooleanTypeAdapter())
         registerTypeAdapter(Boolean::class.javaPrimitiveType, BooleanTypeAdapter())
         registerTypeAdapter(Story::class.java, StoryTypeAdapter())
-        registerTypeAdapter(object : TypeToken<List<Feed?>?>() {}.type, FeedListTypeAdapter())
+        registerTypeAdapter(StoriesResponse::class.java, StoriesResponseTypeAdapter())
         registerTypeAdapter(object : TypeToken<Map<String?, Classifier?>?>() {}.type, ClassifierMapTypeAdapter())
     }.create()
 
