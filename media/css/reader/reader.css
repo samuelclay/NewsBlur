@@ -5538,7 +5538,7 @@ background: transparent;
     font-weight: bold;
 }
 .NB-filter-popover .segmented-control.NB-options-feed-size li {
-    width: 50px;
+
 }
 .NB-filter-popover .segmented-control li.NB-options-feed-size-xs,
 .NB-style-popover li.NB-options-font-size-xs,
@@ -7713,6 +7713,7 @@ form.opml_import_form input {
 .NB-module-river .NB-feedbar-options {
     cursor: pointer;
     float: right;
+    text-transform: uppercase;
     color: rgba(0, 0, 0, .5);
     border: 1px solid rgba(0, 0, 0, .1);
     border-radius: 16px;
@@ -13381,25 +13382,77 @@ form.opml_import_form input {
 .NB-filter-popover-container .popover-content {
     padding: 0;
 }
+.NB-style-popover .segmented-control {
+    margin-top: 4px;
+}
 .NB-filter-popover .segmented-control,
 .NB-style-popover .segmented-control {
-    margin: 4px 0 0;
     line-height: 18px;
     float: none;
+    flex-grow: 1;
 }
 .NB-filter-popover .segmented-control li {
     padding: 2px 12px 2px;
     font-size: 11px;
-    width: 104px;
+}
+.NB-filter-popover .NB-popover-icon-control {
+    margin: 4px 0 0;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.NB-filter-popover .NB-popover-icon-control > .NB-icon {
+    width: 16px;
+    height: 16px;
+}
+.NB-filter-popover .NB-popover-icon-control-dashboardcount > .NB-icon {
+    background: transparent url('/media/embed/icons/nouns/count.svg') no-repeat 0 0;
+    background-size: 16px;
+}
+.NB-filter-popover .NB-popover-icon-control-readfilter > .NB-icon {
+    background: transparent url('/media/embed/icons/nouns/venn.svg') no-repeat 0 0;
+    background-size: 16px;
+}
+.NB-filter-popover .NB-popover-icon-control-order > .NB-icon {
+    background: transparent url('/media/embed/icons/nouns/order.svg') no-repeat 0 0;
+    background-size: 16px;
+}
+.NB-filter-popover .NB-popover-icon-control-infrequent > .NB-icon {
+    background: transparent url('/media/embed/icons/nouns/frequency.svg') no-repeat 0 0;
+    background-size: 16px;
+}
+.NB-filter-popover .NB-popover-icon-control-markscroll > .NB-icon {
+    background: transparent url('/media/embed/icons/nouns/order.svg') no-repeat 0 0;
+    background-size: 16px;
+}
+.NB-filter-popover .NB-popover-icon-control-density > .NB-icon {
+    background: transparent url('/media/embed/icons/nouns/square-space.svg') no-repeat 0 0;
+    background-size: 16px;
+}
+.NB-filter-popover .NB-popover-icon-control-contentpreview > .NB-icon {
+    background: transparent url('/media/embed/icons/nouns/paragraph.svg') no-repeat 0 0;
+    background-size: 16px;
+}
+.NB-filter-popover .NB-popover-icon-control-imagepreview > .NB-icon {
+    background: transparent url('/media/embed/icons/nouns/image.svg') no-repeat 0 0;
+    background-size: 16px;
+}
+.NB-filter-popover .NB-popover-icon-control-feed-font > .NB-icon {
+    background: transparent url('/media/embed/icons/nouns/font.svg') no-repeat 0 0;
+    background-size: 16px;
+}
+.NB-filter-popover .NB-popover-icon-control-feed-size > .NB-icon {
+    background: transparent url('/media/embed/icons/nouns/font-size.svg') no-repeat 0 0;
+    background-size: 16px;
 }
 .NB-filter-popover .segmented-control.NB-feed-notification-types li {
-    width: 39px;
+    flex-grow: 1;
 }
 .NB-filter-popover .segmented-control.NB-menu-manage-view-setting-dashboardcount li {
-    width: 30px;
+    flex-grow: 1;
 }
 .NB-filter-popover .segmented-control.NB-menu-manage-view-setting-dashboardcount li.NB-active {
-    width: 64px;
+    flex-grow: 3;
 }
 .NB-filter-popover .segmented-control.NB-menu-manage-view-setting-infrequent li {
     width: auto;
@@ -13418,11 +13471,11 @@ form.opml_import_form input {
 }
 .NB-filter-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li.NB-view-setting-contentpreview-title,
 .NB-style-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li.NB-view-setting-contentpreview-title {
-    width: 64px;
+    flex-grow: 2;
 }
 .NB-filter-popover .segmented-control.NB-menu-manage-view-setting-imagepreview li.NB-view-setting-imagepreview-none,
 .NB-style-popover .segmented-control.NB-menu-manage-view-setting-imagepreview li.NB-view-setting-imagepreview-none {
-    width: 64px;
+    flex-grow: 3;
     padding: 5px 12px;
 }
 .NB-filter-popover .segmented-control.NB-menu-manage-view-setting-imagepreview li,
