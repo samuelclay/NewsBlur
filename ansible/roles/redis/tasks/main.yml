@@ -9,9 +9,16 @@
     dest: /srv/newsblur/docker/redis/redis_replica.conf
   notify: restart redis
   register: updated_config
-    
+
+- name: Create Redis docker volume with correct permissions
+  file:
+    path: /srv/newsblur/docker/volumes/redis
+    state: directory
+    recurse: yes
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"  
+
 - name: Start redis docker containers
-  become: yes
   docker_container:
     name: redis
     image: redis:6.2.7
