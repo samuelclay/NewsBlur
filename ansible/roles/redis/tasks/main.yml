@@ -9,26 +9,12 @@
     dest: /srv/newsblur/docker/redis/redis_replica.conf
   notify: restart redis
   register: updated_config
-
-- name: Turning off secondary for redis by deleting redis_replica.conf
-  copy:
-    dest: /srv/newsblur/docker/redis/redis_replica.conf
-    content: ""
-  tags:
-    # - never
-    - replicaofnoone
-
-- name: Setting Redis REPLICAOF NO ONE
-  shell: docker exec redis redis-cli REPLICAOF NO ONE
-  tags:
-    # - never
-    - replicaofnoone
     
 - name: Start redis docker containers
   become: yes
   docker_container:
     name: redis
-    image: redis:6.2.6
+    image: redis:6.2.7
     state: started
     command: /usr/local/etc/redis/redis_server.conf
     container_default_behavior: no_defaults
