@@ -79,6 +79,8 @@ ALLOWED_SUBDOMAINS = [
     'discovery', 
     'debug', 
     'debug3', 
+    'staging2', 
+    'staging3', 
     'nb',
 ]
 
