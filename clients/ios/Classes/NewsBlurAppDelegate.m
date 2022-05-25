@@ -3019,7 +3019,7 @@
         }
     }
     
-    [self.feedsViewController updateFeedTitlesTable];
+    [self.feedsViewController deferredUpdateFeedTitlesTable];
     
     [self.storyPagesViewController reloadWidget];
 }
