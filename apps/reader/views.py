@@ -149,6 +149,7 @@ def dashboard(request, **kwargs):
         'statistics'        : statistics,
         'social_profile'    : social_profile,
         'debug'             : settings.DEBUG,
+        'debug_assets'      : settings.DEBUG_ASSETS,
     }, "reader/dashboard.xhtml"
 
 @render_to('reader/dashboard.xhtml')
