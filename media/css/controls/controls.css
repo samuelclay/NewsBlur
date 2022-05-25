@@ -101,7 +101,7 @@ ul.segmented-control-vertical {
     padding: 1px;
     margin: 0 auto;
     clear: none;
-    display: inline-block;
+    display: block;
     text-align: center;
 }
 

@@ -23,7 +23,7 @@
 
 .NB-input {
     font-size: 14px;
-    padding: 2px;
+    padding: 6px 8px;
     margin: 2px 4px 2px;
     border: 1px solid rgba(0, 0, 0, .2);
     border-radius: 1px;
@@ -122,7 +122,7 @@ fieldset legend {
     padding: 0 6px;
     width: 16px;
     height: 16px;
-    background: transparent url('/media/img/icons/circular/g_icn_arrow_down.png') no-repeat center center;
+    background: transparent url('/media/img/icons/nouns/down.svg') no-repeat center center;
     background-size: 8px;
     cursor: pointer;
 }

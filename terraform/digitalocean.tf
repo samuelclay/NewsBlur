@@ -192,8 +192,9 @@ resource "digitalocean_droplet" "blog" {
 }
 
 resource "digitalocean_droplet" "staging-web" {
+  count    = 3
   image    = var.droplet_os
-  name     = "staging-web"
+  name     = count.index == 0 ? "staging-web" : "staging-web${count.index+1}"
   region   = var.droplet_region
   size     = var.droplet_size_20
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]

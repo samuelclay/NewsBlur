@@ -797,7 +797,7 @@ img.feed_favicon {
     top: 2px;
     width: 20px;
     height: 22px;
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_right.png') no-repeat 4px 6px;
+    background: transparent url('/media/embed/icons/nouns/right.svg') no-repeat 4px 6px;
     background-size: 8px;
 }
 .NB-feedlist .folder_title .NB-feedlist-manage-icon {
@@ -806,7 +806,7 @@ img.feed_favicon {
 
 .NB-feedlist .feed .NB-feedlist-manage-icon:hover,
 .NB-feedlist .folder_title .NB-feedlist-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 4px 6px;
+    background: transparent url('/media/embed/icons/nouns/down.svg') no-repeat 4px 6px;
     background-size: 8px;
 }
 .NB-feedlist .folder_title .NB-feedlist-manage-icon:hover {
@@ -814,7 +814,7 @@ img.feed_favicon {
 }
 .NB-feedlist .feed.NB-hover-inverse .NB-feedlist-manage-icon:hover,
 .NB-feedlist .folder.NB-hover-inverse .NB-feedlist-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 4px 8px;
+    background: transparent url('/media/embed/icons/nouns/up.svg') no-repeat 4px 8px;
     background-size: 8px;
 }
 .NB-feedlist .folder.NB-hover-inverse .NB-feedlist-manage-icon:hover {
@@ -1440,8 +1440,8 @@ img.feed_favicon {
     float: right;
     width: 16px;
     height: 12px;
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 4px 2px;
-    background-size: 8px;
+    background: transparent url('/media/embed/icons/nouns/down.svg') no-repeat 3px 2px;
+    background-size: 9px;
     margin: 0 0 0 4px;
 }
 
@@ -1541,11 +1541,11 @@ img.feed_favicon {
     width: 20px;
     height: 22px;
     cursor: pointer;
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_right.png') no-repeat 6px 7px;
+    background: transparent url('/media/embed/icons/nouns/right.svg') no-repeat 6px 7px;
     background-size: 8px;
 }
 .NB-feedbar .NB-feedlist-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 6px 7px;
+    background: transparent url('/media/embed/icons/nouns/down.svg') no-repeat 6px 7px;
     background-size: 8px;
 }
 .NB-feedbar .NB-folder .NB-feedlist-manage-icon {
@@ -1553,7 +1553,7 @@ img.feed_favicon {
     left: 8px;
 }
 .NB-feedbar .NB-hover-inverse .NB-feedlist-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 4px 5px;
+    background: transparent url('/media/embed/icons/nouns/up.svg') no-repeat 4px 5px;
     background-size: 8px;
 }
 .NB-feedbar .NB-folder.NB-hover-inverse .NB-feedlist-manage-icon:hover {
@@ -2299,7 +2299,7 @@ img.feed_favicon {
     top: 12px;
     width: 28px;
     height: 22px;
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_right.png') no-repeat 13px 6px;
+    background: transparent url('/media/embed/icons/nouns/right.svg') no-repeat 13px 6px;
     background-size: 8px;
     z-index: 1;
 }
@@ -2318,12 +2318,12 @@ img.feed_favicon {
 }
 
 .NB-story-title:hover .NB-story-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 13px 6px;
+    background: transparent url('/media/embed/icons/nouns/down.svg') no-repeat 13px 6px;
     background-size: 8px;
     cursor: pointer;
 }
 .NB-story-title.NB-hover-inverse:hover .NB-story-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 13px 6px;
+    background: transparent url('/media/embed/icons/nouns/up.svg') no-repeat 13px 6px;
     background-size: 8px;
     cursor: pointer;
 }
@@ -3473,7 +3473,7 @@ body {
 }
 
 .NB-feed-story .NB-feed-story-manage-icon {
-    background: url("/media/embed/icons/circular/g_icn_arrow_right.png") no-repeat scroll 13px 6px transparent;
+    background: url("/media/embed/icons/nouns/right.svg") no-repeat scroll 13px 6px transparent;
     background-size: 8px;
     display: none;
     height: 22px;
@@ -3487,12 +3487,12 @@ body {
 }
 
 .NB-feed-story .NB-feed-story-header:hover .NB-feed-story-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 13px 6px;
+    background: transparent url('/media/embed/icons/nouns/down.svg') no-repeat 13px 6px;
     background-size: 8px;
     cursor: pointer;
 }
 .NB-feed-story.NB-hover-inverse .NB-feed-story-header:hover .NB-feed-story-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 13px 6px;
+    background: transparent url('/media/embed/icons/nouns/up.svg') no-repeat 13px 6px;
     background-size: 8px;
 }
 
@@ -5244,11 +5244,11 @@ body {
     height: 16px;
 }
 .NB-task-add .NB-task-image {
-    background: transparent url('/media/embed/icons/circular/nav_icn_add.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/add.svg') no-repeat 0 0;
     background-size: 16px;
 }
 .NB-task-manage .NB-task-image {
-    background: transparent url('/media/embed/icons/circular/nav_icn_settings.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/settings.svg') no-repeat 0 0;
     background-size: 16px;
 }
 
@@ -5520,8 +5520,8 @@ background: transparent;
     float: right;
     width: 16px;
     height: 12px;
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat 4px 3px;
-    background-size: 8px;
+    background: transparent url('/media/embed/icons/nouns/up.svg') no-repeat 3px 2px;
+    background-size: 9px;
     margin: 0 0 0 4px;
 }
 
@@ -5592,15 +5592,18 @@ background: transparent;
 }
 .NB-filter-popover .NB-view-setting-contentpreview-small .NB-icon,
 .NB-style-popover .NB-view-setting-contentpreview-small .NB-icon {
-    background-image: url("/media/embed/reader/content_preview_small.png");
+    background-image: url("/media/embed/icons/nouns/content-preview-s.svg");
+    background-size: 16px;
 }
 .NB-filter-popover .NB-view-setting-contentpreview-medium .NB-icon,
 .NB-style-popover .NB-view-setting-contentpreview-medium .NB-icon {
-    background-image: url("/media/embed/reader/content_preview_medium.png");
+    background-image: url("/media/embed/icons/nouns/content-preview-m.svg");
+    background-size: 16px;
 }
 .NB-filter-popover .NB-view-setting-contentpreview-large .NB-icon,
 .NB-style-popover .NB-view-setting-contentpreview-large .NB-icon {
-    background-image: url("/media/embed/reader/content_preview_large.png");
+    background-image: url("/media/embed/icons/nouns/content-preview-l.svg");
+    background-size: 16px;
 }
 .NB-style-popover .NB-options-line-spacing-xs .NB-icon {
     background-image: url("/media/embed/reader/line_spacing_xs.png");
@@ -7731,7 +7734,7 @@ form.opml_import_form input {
     float: right;
     width: 16px;
     height: 12px;
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat center center;
+    background: transparent url('/media/embed/icons/nouns/down.svg') no-repeat center center;
     background-size: 8px;
     margin: 0 0 0 4px;
 }
@@ -8011,14 +8014,14 @@ form.opml_import_form input {
 }
 
 .NB-menu-manage-container .NB-menu-manage-arrow .NB-icon {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat 5px 6px;
+    background: transparent url('/media/embed/icons/nouns/down.svg') no-repeat 5px 6px;
     width: 19px;
     height: 20px;
     background-size: 8px;
 }
 
 .NB-menu-manage-container.NB-inverse .NB-menu-manage-arrow .NB-icon {
-    background-image: url('/media/embed/icons/circular/g_icn_arrow_up.png');
+    background-image: url('/media/embed/icons/nouns/up.svg');
     background-size: 8px;
 }
 
@@ -8210,8 +8213,9 @@ form.opml_import_form input {
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-social-profile .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_fetch_subscribers.png') no-repeat  0 1px;
+    background: transparent url('/media/embed/icons/nouns/subscribers.svg') no-repeat 0 0;
     background-size: 18px;
+    filter: hue-rotate(87deg) saturate(10.5);
 }
 .NB-menu-manage .NB-menu-manage-keyboard .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/menu_icn_keyboard.png') no-repeat  0 1px;    
@@ -8275,7 +8279,7 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/silk/arrow_rotate_clockwise.png') no-repeat  0 1px;  
 }
 .NB-menu-manage .NB-menu-manage-confirm .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_right.png') no-repeat  4px 3px;
+    background: transparent url('/media/embed/icons/nouns/right.svg') no-repeat  4px 3px;
     background-size: 8px;
 }
 .NB-menu-manage .NB-menu-manage-confirm {
@@ -8463,8 +8467,9 @@ form.opml_import_form input {
     background-size: 16px;
 }
 .NB-menu-manage .NB-menu-manage-profile-editor .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_fetch_subscribers.png') no-repeat  0 0;
+    background: transparent url('/media/embed/icons/nouns/subscribers.svg') no-repeat 0 0;
     background-size: 18px;
+    filter: hue-rotate(87deg) saturate(10.5);
 }
 .NB-menu-manage .NB-menu-manage-preferences .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/menu_icn_preferences.png') no-repeat  0 0;
@@ -10479,7 +10484,7 @@ form.opml_import_form input {
 }
 
 .NB-modal-feedchooser .NB-feedlist .feed .NB-feedlist-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_right.png') no-repeat 3px 4px;
+    background: transparent url('/media/embed/icons/nouns/right.svg') no-repeat 3px 4px;
     background-size: 8px;
 }
 
@@ -10488,7 +10493,7 @@ form.opml_import_form input {
 }
 
 .NB-modal-feedchooser .NB-feedlist .feed.NB-hover-inverse .NB-feedlist-manage-icon:hover {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_right.png') no-repeat 3px 4px;
+    background: transparent url('/media/embed/icons/nouns/right.svg') no-repeat 3px 4px;
     background-size: 8px;
 }
 
@@ -13022,11 +13027,11 @@ form.opml_import_form input {
 .NB-modal-organizer .NB-organizer-action.NB-active:hover {
     color: #000;
     padding-right: 12px;
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_down.png') no-repeat right 3px;
+    background: transparent url('/media/embed/icons/nouns/down.svg') no-repeat right 3px;
     background-size: 8px;
 }
 .NB-modal-organizer .NB-sort-inverse .NB-organizer-action.NB-active {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_up.png') no-repeat right 4px;
+    background: transparent url('/media/embed/icons/nouns/up.svg') no-repeat right 4px;
     background-size: 8px;    
 }
 .NB-modal-organizer .NB-organizer-selects .NB-organizer-action {
@@ -13097,7 +13102,7 @@ form.opml_import_form input {
     background-size: 16px;
 }
 .NB-modal-organizer .NB-icon-subfolder {
-    background: transparent url('/media/embed/icons/circular/g_icn_arrow_right.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/right.svg') no-repeat 0 0;
     float: left;
     width: 8px;
     height: 8px;
@@ -13402,48 +13407,58 @@ form.opml_import_form input {
     align-items: center;
 }
 .NB-filter-popover .NB-popover-icon-control > .NB-icon {
-    width: 16px;
+    width: 24px;
     height: 16px;
 }
 .NB-filter-popover .NB-popover-icon-control-dashboardcount > .NB-icon {
     background: transparent url('/media/embed/icons/nouns/count.svg') no-repeat 0 0;
     background-size: 16px;
+    filter: hue-rotate(206deg) saturate(10.5);
 }
 .NB-filter-popover .NB-popover-icon-control-readfilter > .NB-icon {
     background: transparent url('/media/embed/icons/nouns/venn.svg') no-repeat 0 0;
     background-size: 16px;
+    filter: hue-rotate(106deg) saturate(10.5);
 }
 .NB-filter-popover .NB-popover-icon-control-order > .NB-icon {
     background: transparent url('/media/embed/icons/nouns/order.svg') no-repeat 0 0;
     background-size: 16px;
+    filter: hue-rotate(312deg) saturate(10.5);
 }
 .NB-filter-popover .NB-popover-icon-control-infrequent > .NB-icon {
     background: transparent url('/media/embed/icons/nouns/frequency.svg') no-repeat 0 0;
     background-size: 16px;
+    filter: hue-rotate(256deg) saturate(10.5);
 }
 .NB-filter-popover .NB-popover-icon-control-markscroll > .NB-icon {
-    background: transparent url('/media/embed/icons/nouns/order.svg') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/scroll.svg') no-repeat 0 0;
     background-size: 16px;
+    filter: hue-rotate(56deg) saturate(10.5);
 }
 .NB-filter-popover .NB-popover-icon-control-density > .NB-icon {
     background: transparent url('/media/embed/icons/nouns/square-space.svg') no-repeat 0 0;
     background-size: 16px;
+    filter: hue-rotate(126deg) saturate(10.5);
 }
 .NB-filter-popover .NB-popover-icon-control-contentpreview > .NB-icon {
-    background: transparent url('/media/embed/icons/nouns/paragraph.svg') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/content-preview.svg') no-repeat 0 0;
     background-size: 16px;
+    filter: hue-rotate(186deg) saturate(10.5);
 }
 .NB-filter-popover .NB-popover-icon-control-imagepreview > .NB-icon {
     background: transparent url('/media/embed/icons/nouns/image.svg') no-repeat 0 0;
     background-size: 16px;
+    filter: hue-rotate(231deg) saturate(10.5);
 }
 .NB-filter-popover .NB-popover-icon-control-feed-font > .NB-icon {
     background: transparent url('/media/embed/icons/nouns/font.svg') no-repeat 0 0;
     background-size: 16px;
+    filter: hue-rotate(226deg) saturate(10.5);
 }
 .NB-filter-popover .NB-popover-icon-control-feed-size > .NB-icon {
     background: transparent url('/media/embed/icons/nouns/font-size.svg') no-repeat 0 0;
     background-size: 16px;
+    filter: hue-rotate(40deg) saturate(10.5);
 }
 .NB-filter-popover .segmented-control.NB-feed-notification-types li {
     flex-grow: 1;
@@ -13461,13 +13476,9 @@ form.opml_import_form input {
 }
 .NB-filter-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li,
 .NB-style-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li {
-    padding: 2px 9px 2px;
+    padding: 2px 6px 2px;
     font-size: 11px;
-    width: 30px;
     height: 20px;
-}
-.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li {
-    padding: 2px 12px 2px;
 }
 .NB-filter-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li.NB-view-setting-contentpreview-title,
 .NB-style-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li.NB-view-setting-contentpreview-title {
@@ -13480,13 +13491,8 @@ form.opml_import_form input {
 }
 .NB-filter-popover .segmented-control.NB-menu-manage-view-setting-imagepreview li,
 .NB-style-popover .segmented-control.NB-menu-manage-view-setting-imagepreview li {
-    padding: 6px 9px 2px;
+    padding: 6px 8px 2px;
     font-size: 11px;
-    width: 16px;
-}
-.NB-filter-popover .segmented-control.NB-menu-manage-view-setting-imagepreview li {
-    padding-left: 12px;
-    padding-right: 12px;
 }
 .NB-menu-manage-view-setting-imagepreview .NB-icon {
     width: 16px;
@@ -13543,7 +13549,7 @@ form.opml_import_form input {
 }
 .NB-feedbar-options-stat {
     position: relative;
-    padding-left: 22px;
+    padding-left: 30px;
     margin-bottom: 6px;
 }
 .NB-feedbar-options-stat:last-child {
@@ -13561,20 +13567,24 @@ form.opml_import_form input {
     position: absolute;
 }
 .NB-stat-subscribers .NB-icon {
-    background: transparent url('/media/embed/icons/circular/menu_icn_fetch_subscribers.png');
+    background: transparent url('/media/embed/icons/nouns/subscribers.svg') no-repeat 0 0;
     background-size: 16px;
+    filter: hue-rotate(87deg) saturate(10.5);
 }
 .NB-stat-updated .NB-icon {
-    background: transparent url('/media/embed/icons/circular/menu_icn_fetch.png') 0 -1px;
+    background: transparent url('/media/embed/icons/nouns/boomerang.svg') no-repeat 0 0;
     background-size: 16px;
+    filter: hue-rotate(320deg) saturate(16.5);
 }
 .NB-stat-average .NB-icon {
-    background: transparent url('/media/embed/icons/circular/nav_story_list.png') no-repeat 0 1px;
-    background-size: 16px 13px;
+    background: transparent url('/media/embed/icons/nouns/monthly.svg') no-repeat 0 0;
+    background-size: 16px;
+    filter: hue-rotate(287deg) saturate(10.5);
 }
 .NB-stat-decay .NB-icon {
-    background: transparent url('/media/embed/icons/circular/menu_icn_lastupdated.png');
+    background: transparent url('/media/embed/icons/nouns/refresh.svg') no-repeat 0 0;
     background-size: 16px;
+    filter: hue-rotate(7deg) saturate(10.5);
 }
 .NB-stat-realtime .NB-icon {
     background: transparent url('/media/embed/icons/nouns/saved-stories.svg');

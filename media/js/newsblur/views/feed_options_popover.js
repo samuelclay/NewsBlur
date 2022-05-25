@@ -140,7 +140,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 ])),
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
-                $.make('div', { className: 'NB-popover-section-title' }, 'Display options'),
+                $.make('div', { className: 'NB-popover-section-title' }, 'Story title styling'),
                 (this.options.show_markscroll && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-markscroll' }, [
                     $.make('div', { className: 'NB-icon' }),
                     $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-markscroll' }, [
