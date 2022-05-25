@@ -116,6 +116,7 @@ class UserSubscription(models.Model):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         pipeline = r.pipeline()
         story_hashes = {} if group_by_feed else []
+        is_archive = User.objects.get(pk=user_id).profile.is_archive
         
         if not feed_ids and not across_all_feeds:
             return story_hashes
@@ -169,7 +170,7 @@ class UserSubscription(models.Model):
                     pipeline.zremrangebyscore(unread_ranked_stories_key, 0, max_score-1)
                     pipeline.zremrangebyscore(unread_ranked_stories_key, min_score+1, 2*min_score)
 
-                if User.objects.get(pk=user_id).profile.is_archive:
+                if is_archive:
                     user_unread_stories_feed_key = f"uU:{user_id}:{feed_id}"
                     oldest_manual_unread = r.zrevrange(user_unread_stories_feed_key, -1, -1, withscores=True)
                     if oldest_manual_unread:
