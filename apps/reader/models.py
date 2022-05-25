@@ -163,14 +163,14 @@ class UserSubscription(models.Model):
                     min_score, max_score = max_score, min_score
             
                 pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
-                if order == 'oldest':
-                    pipeline.zremrangebyscore(unread_ranked_stories_key, 0, min_score-1)
-                    pipeline.zremrangebyscore(unread_ranked_stories_key, max_score+1, 2*max_score)
-                else:
-                    pipeline.zremrangebyscore(unread_ranked_stories_key, 0, max_score-1)
-                    pipeline.zremrangebyscore(unread_ranked_stories_key, min_score+1, 2*min_score)
+                # if order == 'oldest':
+                #     pipeline.zremrangebyscore(unread_ranked_stories_key, 0, min_score-1)
+                #     pipeline.zremrangebyscore(unread_ranked_stories_key, max_score+1, 2*max_score)
+                # else:
+                #     pipeline.zremrangebyscore(unread_ranked_stories_key, 0, max_score-1)
+                #     pipeline.zremrangebyscore(unread_ranked_stories_key, min_score+1, 2*min_score)
 
-                if is_archive:
+                if is_archive and False:
                     user_unread_stories_feed_key = f"uU:{user_id}:{feed_id}"
                     oldest_manual_unread = r.zrevrange(user_unread_stories_feed_key, -1, -1, withscores=True)
                     if oldest_manual_unread:
