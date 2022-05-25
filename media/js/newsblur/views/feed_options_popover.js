@@ -63,7 +63,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         NEWSBLUR.ReaderPopover.prototype.close.apply(this, arguments);
     },
 
-    render: function() {
+    render: function () {
         var self = this;
         var feed = NEWSBLUR.assets.active_feed;
         if (this.options.feed_id) {
@@ -75,7 +75,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         
         this.$el.html($.make('div', [
             (this.options.on_dashboard && $.make('div', { className: 'NB-popover-section' }, [
-                $.make('div', { className: 'NB-modal-feed-chooser-container'}, [
+                $.make('div', { className: 'NB-modal-feed-chooser-container' }, [
                     NEWSBLUR.utils.make_feed_chooser({
                         feed_id: this.options.feed_id,
                         selected_folder_title: this.options.feed_id,
@@ -104,80 +104,110 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-popover-section' }, [
                 (is_feed && $.make('div', { className: 'NB-section-icon NB-filter-popover-filter-icon' })),
                 $.make('div', { className: 'NB-popover-section-title' }, 'Filter stories'),
-                (this.options.on_dashboard && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-dashboardcount' }, [
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-5  NB-active', role: "button" }, '5 stories'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-10', role: "button" }, '10'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-15', role: "button" }, '15'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-20', role: "button" }, '20'),
+                (this.options.on_dashboard && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-dashboardcount' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-dashboardcount' }, [
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-5  NB-active', role: "button" }, '5 stories'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-10', role: "button" }, '10'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-15', role: "button" }, '15'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-20', role: "button" }, '20'),
+                    ])
                 ])),
-                (this.options.show_readfilter && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-all  NB-active', role: "button" }, 'All stories'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-unread', role: "button" }, 'Unread only')
+                (this.options.show_readfilter && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-readfilter' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-all  NB-active', role: "button" }, 'All stories'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-readfilter-unread', role: "button" }, 'Unread only')
+                    ])
                 ])),
-                (this.options.show_order && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-newest NB-active', role: "button" }, 'Newest first'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-oldest', role: "button" }, 'Oldest')
+                (this.options.show_order && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-order' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-newest NB-active', role: "button" }, 'Newest first'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-order-oldest', role: "button" }, 'Oldest')
+                    ])
                 ])),
                 (this.options.show_infrequent && $.make('div', { className: 'NB-popover-section-title' }, 'Infrequent stories per month')),
-                (this.options.show_infrequent && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-infrequent' }, [
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-5', role: "button" }, '5'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-15', role: "button" }, '15'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-30 NB-active', role: "button" }, '< 30 stories/month'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-60', role: "button" }, '60'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-90', role: "button" }, '90')
-                ]))
+                (this.options.show_infrequent && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-infrequent' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-infrequent' }, [
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-5', role: "button" }, '5'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-15', role: "button" }, '15'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-30 NB-active', role: "button" }, '< 30 stories/month'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-60', role: "button" }, '60'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-90', role: "button" }, '90')
+                    ])
+                ])),
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, 'Display options'),
-                (this.options.show_markscroll && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-markscroll' }, [
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-markscroll-read NB-active', role: "button" }, 'Read on scroll'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-markscroll-unread', role: "button" }, 'Leave unread')
-                ])),
-                (this.options.show_density && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-density' }, [
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-density-compact NB-active', role: "button" }, 'Compact'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-density-comfortable', role: "button" }, 'Comfortable')
-                ])),
-                (this.options.show_contentpreview && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-contentpreview' }, [
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-title', role: "button" }, 'Title only'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-small', role: "button" }, $.make('div', { className: 'NB-icon' })),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-medium', role: "button" }, $.make('div', { className: 'NB-icon' })),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-large', role: "button" }, $.make('div', { className: 'NB-icon' })),
-                ])),
-                (this.options.show_imagepreview && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-imagepreview' }, [
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-none', role: "button" }, 'No image'),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-small-left', role: "button" }, [
-                        $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL']+'img/reader/image_preview_small_left.png' })
-                    ]),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-large-left', role: "button" }, [
-                        $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL']+'img/reader/image_preview_large_left.png' })
-                    ]),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-large-right', role: "button" }, [
-                        $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL']+'img/reader/image_preview_large_right.png' })
-                    ]),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-small-right', role: "button" }, [
-                        $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL']+'img/reader/image_preview_small_right.png' })
+                (this.options.show_markscroll && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-markscroll' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-markscroll' }, [
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-markscroll-read NB-active', role: "button" }, 'Read on scroll'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-markscroll-unread', role: "button" }, 'Leave unread')
                     ])
                 ])),
-                $.make('ul', { className: 'segmented-control NB-options-feed-font' }, [
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-feed-font-whitney NB-theme-feed-font-whitney', role: "button" }, [
-                        $.make('div', { className: 'NB-icon' }),
-                        'Whitney'
-                    ]),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-feed-font-lucida NB-theme-feed-font-lucida', role: "button" }, [
-                        $.make('div', { className: 'NB-icon' }),
-                        'Lucida Grande'
-                    ]),
-                    $.make('li', { className: 'NB-view-setting-option NB-view-setting-feed-font-gotham NB-theme-feed-font-gotham', role: "button" }, [
-                        $.make('div', { className: 'NB-icon' }),
-                        'Gotham'
+                (this.options.show_density && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-density' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-density' }, [
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-density-compact NB-active', role: "button" }, 'Compact'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-density-comfortable', role: "button" }, 'Comfortable')
+                    ])
+                ])),
+                (this.options.show_contentpreview && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-contentpreview' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-contentpreview' }, [
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-title', role: "button" }, 'Title only'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-small', role: "button" }, $.make('div', { className: 'NB-icon' })),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-medium', role: "button" }, $.make('div', { className: 'NB-icon' })),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-contentpreview-large', role: "button" }, $.make('div', { className: 'NB-icon' })),
+                    ])
+                ])),
+                (this.options.show_imagepreview && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-imagepreview' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-imagepreview' }, [
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-none', role: "button" }, 'No image'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-small-left', role: "button" }, [
+                            $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/reader/image_preview_small_left.png' })
+                        ]),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-large-left', role: "button" }, [
+                            $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/reader/image_preview_large_left.png' })
+                        ]),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-large-right', role: "button" }, [
+                            $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/reader/image_preview_large_right.png' })
+                        ]),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-imagepreview-small-right', role: "button" }, [
+                            $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/reader/image_preview_small_right.png' })
+                        ])
+                    ])
+                ])),
+                $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-feed-font' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    $.make('ul', { className: 'segmented-control NB-options-feed-font' }, [
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-feed-font-whitney NB-theme-feed-font-whitney', role: "button" }, [
+                            $.make('div', { className: 'NB-icon' }),
+                            'Whitney'
+                        ]),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-feed-font-lucida NB-theme-feed-font-lucida', role: "button" }, [
+                            $.make('div', { className: 'NB-icon' }),
+                            'Lucida'
+                        ]),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-feed-font-gotham NB-theme-feed-font-gotham', role: "button" }, [
+                            $.make('div', { className: 'NB-icon' }),
+                            'Gotham'
+                        ])
                     ])
                 ]),
-                $.make('ul', { className: 'segmented-control NB-options-feed-size' }, [
-                    $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-xs', role: "button" }, 'XS'),
-                    $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-s', role: "button" }, 'S'),
-                    $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-m NB-active', role: "button" }, 'M'),
-                    $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-l', role: "button" }, 'L'),
-                    $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-xl', role: "button" }, 'XL')
+                $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-feed-size' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    $.make('ul', { className: 'segmented-control NB-options-feed-size' }, [
+                        $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-xs', role: "button" }, 'XS'),
+                        $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-s', role: "button" }, 'S'),
+                        $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-m NB-active', role: "button" }, 'M'),
+                        $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-l', role: "button" }, 'L'),
+                        $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-xl', role: "button" }, 'XL')
+                    ])
                 ])
             ]),
             (is_feed && $.make('div', { className: 'NB-popover-section' }, [
@@ -287,7 +317,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             var freq = frequencies[f];
             var $infrequent = this.$('.NB-view-setting-infrequent-' + freq);
             $infrequent.toggleClass('NB-active', infrequent == freq);
-            $infrequent.text(infrequent == freq ? '< '+freq+' stories/month' : freq);
+            $infrequent.text(infrequent == freq ? '< '+freq+'/month' : freq);
         }
         
         if (this.options.on_dashboard) {
