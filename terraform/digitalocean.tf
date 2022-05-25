@@ -376,10 +376,11 @@ resource "digitalocean_droplet" "db-redis-sessions" {
 }
 
 resource "digitalocean_droplet" "db-redis-story" {
+  count    = 2
   image    = var.droplet_os
-  name     = "db-redis-story"
+  name     = contains([0], count.index) ? "db-redis-story" : "db-redis-story${count.index+1}"
   region   = var.droplet_region
-  size     = var.redis_story_droplet_size
+  size     = contains([0], count.index) ? "m-2vcpu-16gb" : var.redis_story_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -462,7 +463,7 @@ resource "digitalocean_droplet" "db-postgres" {
 # 
 resource "digitalocean_droplet" "db-mongo-primary" {
   count    = 2
-  backups  = true
+  backups  = contains([1], count.index) ? true : false
   image    = var.droplet_os
   name     = "db-mongo-primary${count.index+1}"
   region   = var.droplet_region
@@ -492,6 +493,7 @@ resource "digitalocean_volume" "mongo_secondary_volume" {
 
 resource "digitalocean_droplet" "db-mongo-secondary" {
   count    = 3
+  # backups  = contains([0], count.index) ? true : false
   image    = var.droplet_os
   name     = "db-mongo-secondary${count.index+1}"
   region   = var.droplet_region
