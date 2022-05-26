@@ -1156,7 +1156,6 @@
     }
     
     self.splitViewController.showsSecondaryOnlyButton = YES;
-    [self updateSplitBehavior];
     
     self.feedsNavigationController = (UINavigationController *)splitChildren[0];
     self.feedsViewController = self.feedsNavigationController.viewControllers.firstObject;
@@ -1183,6 +1182,8 @@
     self.firstTimeUserAddSitesViewController = [FirstTimeUserAddSitesViewController new];
     self.firstTimeUserAddFriendsViewController = [FirstTimeUserAddFriendsViewController new];
     self.firstTimeUserAddNewsBlurViewController = [FirstTimeUserAddNewsBlurViewController new];
+    
+    [self updateSplitBehavior];
 }
 
 - (void)showLogin {
