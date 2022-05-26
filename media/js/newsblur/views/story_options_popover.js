@@ -52,13 +52,13 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, 'Story Layout - Split'),
                 $.make('ul', { className: 'segmented-control NB-options-story-titles-pane' }, [
-                    $.make('li', { className: 'NB-story-titles-pane-option NB-options-story-titles-pane-north', role: "button" }, [
-                        $.make('div', { className: 'NB-icon' }),
-                        'Top'
-                    ]),
                     $.make('li', { className: 'NB-story-titles-pane-option NB-options-story-titles-pane-west', role: "button" }, [
                         $.make('div', { className: 'NB-icon' }),
                         'Left'
+                    ]),
+                    $.make('li', { className: 'NB-story-titles-pane-option NB-options-story-titles-pane-north', role: "button" }, [
+                        $.make('div', { className: 'NB-icon' }),
+                        'Top'
                     ]),
                     $.make('li', { className: 'NB-story-titles-pane-option NB-options-story-titles-pane-south NB-active', role: "button" }, [
                         $.make('div', { className: 'NB-icon' }),
@@ -77,6 +77,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 ]),
                 $.make('ul', { className: 'segmented-control NB-options-story-position' }, [
                     $.make('li', { className: 'NB-story-position-option NB-options-story-position-stretch', role: "button" }, [
+                        $.make('div', { className: 'NB-icon' }),
                         'Full width'
                     ]),
                     $.make('li', { className: 'NB-story-position-option NB-options-story-position-left', role: "button" }, [
