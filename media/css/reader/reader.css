@@ -6179,8 +6179,9 @@ form.opml_import_form input {
 }
 
 .NB-modal-classifiers .NB-modal-title .NB-icon {
-    background: transparent url('/media/embed/icons/circular/g_modal_intelligence.png');
+    background: transparent url("/media/embed/icons/nouns/dialog-trainer.svg") no-repeat center center;
     background-size: 28px;
+    filter: hue-rotate(140deg) saturate(15);
 }
 
 .NB-modal-classifiers h2.NB-like {
@@ -7367,8 +7368,9 @@ form.opml_import_form input {
     background-size: 16px;
 }
 .NB-module-gettingstarted .NB-module-account-train .NB-icon {
-    background: transparent url(/media/embed/icons/circular/menu_icn_train.png) no-repeat center center;
+    background: transparent url("/media/embed/icons/nouns/dialog-trainer.svg") no-repeat center center;
     background-size: 16px;
+    filter: hue-rotate(140deg) saturate(15);
 }
 .NB-module-gettingstarted .NB-intro-goal .NB-not-done {
     margin: 6px auto;
@@ -7988,7 +7990,7 @@ form.opml_import_form input {
 
 .NB-menu-manage li.NB-menu-item {
     margin: 0 0 0 0;
-    padding: 0;
+    padding: 0px;
     cursor: pointer;
     clear: both;
     position: relative;
@@ -8123,20 +8125,23 @@ form.opml_import_form input {
 }
 
 .NB-menu-manage .NB-menu-manage-feed-train .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_train.png') no-repeat 0 0;
+    background: transparent url("/media/embed/icons/nouns/dialog-trainer.svg") no-repeat center center;
     background-size: 18px;
+    filter: hue-rotate(140deg) saturate(15);
 }
 .NB-menu-manage .NB-menu-manage-feed-notifications .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_notifications.png') no-repeat 0 0;
+    background: transparent url("/media/embed/icons/nouns/dialog-notifications.svg") no-repeat center center;
     background-size: 18px;
+    filter: hue-rotate(320deg) saturate(18);
 }
 .NB-menu-manage .NB-menu-manage-feed-recommend .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/g_icn_award.png') no-repeat  0 1px;    
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-story-train .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_train.png') no-repeat 0 0;
+    background: transparent url("/media/embed/icons/nouns/dialog-trainer.svg") no-repeat center center;
     background-size: 18px;
+    filter: hue-rotate(140deg) saturate(15);
 }
 .NB-menu-manage .NB-menu-manage-story-mark-read-newer.NB-up .NB-menu-manage-image,
 .NB-menu-manage .NB-menu-manage-story-mark-read-older.NB-up .NB-menu-manage-image {
@@ -8162,8 +8167,9 @@ form.opml_import_form input {
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-mark-read .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_markread.png') no-repeat 0 0;
+    background: transparent url("/media/embed/icons/nouns/mark-read.svg") no-repeat center center;
     background-size: 18px; 
+    filter: hue-rotate(20deg) saturate(18);
 }
 .NB-menu-manage .NB-menu-manage-folder-subscribe .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/nav_icn_add.png') no-repeat 0 0;
@@ -8179,12 +8185,14 @@ form.opml_import_form input {
     filter: hue-rotate(87deg) saturate(10.5);
 }
 .NB-menu-manage .NB-menu-manage-keyboard .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_keyboard.png') no-repeat  0 1px;    
+    background: transparent url("/media/embed/icons/nouns/dialog-keyboard.svg") no-repeat center center;
     background-size: 18px;
+    filter: hue-rotate(139deg) saturate(10);
 }
 .NB-menu-manage .NB-menu-manage-tutorial .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_tips.png') no-repeat  0 1px;    
+    background: transparent url("/media/embed/icons/nouns/dialog-tips.svg") no-repeat center center;
     background-size: 18px;
+    filter: hue-rotate(321deg) saturate(18);
 }
 .NB-menu-manage .NB-menu-manage-feed-exception .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/newuser_icn_sharewith_active.png') no-repeat  0 1px;    
@@ -8400,32 +8408,39 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-share-confirm .NB-sideoption-share .NB-modal-submit-button {
 }
 .NB-menu-manage .NB-menu-manage-site-mark-read .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_markread.png') no-repeat 0 0;
+    background: transparent url("/media/embed/icons/nouns/mark-read.svg") no-repeat center center;
     background-size: 18px;
+    filter: hue-rotate(20deg) saturate(18);
 }
 .NB-menu-manage .NB-menu-manage-trainer .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_train.png') no-repeat 0 0;
+    background: transparent url("/media/embed/icons/nouns/dialog-trainer.svg") no-repeat center center;
     background-size: 18px;
+    filter: hue-rotate(140deg) saturate(15);
 }
 .NB-menu-manage .NB-menu-manage-goodies .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_goodies.png') no-repeat  0 1px;
+    background: transparent url("/media/embed/icons/nouns/dialog-goodies.svg") no-repeat center center;
     background-size: 18px;
+    filter: hue-rotate(186deg) saturate(18);
 }
 .NB-menu-manage .NB-menu-manage-newsletters .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_mail.png') no-repeat  0 0;
+    background: transparent url("/media/embed/icons/nouns/email.svg") no-repeat center center;
     background-size: 18px;
+    filter: hue-rotate(134deg) saturate(16);
 }
 .NB-menu-manage .NB-menu-manage-notifications .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_notifications.png') no-repeat  0 0;
+    background: transparent url("/media/embed/icons/nouns/dialog-notifications.svg") no-repeat center center;
     background-size: 18px;
+    filter: hue-rotate(320deg) saturate(18);
 }
 .NB-menu-manage .NB-menu-manage-import .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/nav_icn_global.png') no-repeat  2px 2px;
-    background-size: 14px;
+    background: transparent url("/media/embed/icons/nouns/dialog-import.svg") no-repeat center center;
+    background-size: 18px;
+    filter: hue-rotate(30deg) saturate(10);
 }
 .NB-menu-manage .NB-menu-manage-friends .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_followers.png') no-repeat 2px 1px;
-    background-size: 16px;
+    background: transparent url('/media/embed/icons/nouns/followers.svg') no-repeat 0 0;
+    background-size: 18px;
+    filter: hue-rotate(139deg) saturate(18.5);
 }
 .NB-menu-manage .NB-menu-manage-profile-editor .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/nouns/subscribers.svg') no-repeat 0 0;
@@ -8433,37 +8448,46 @@ form.opml_import_form input {
     filter: hue-rotate(87deg) saturate(10.5);
 }
 .NB-menu-manage .NB-menu-manage-preferences .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_preferences.png') no-repeat  0 0;
+    background: transparent url('/media/embed/icons/nouns/dialog-preferences.svg') no-repeat 0 0;
     background-size: 18px;
+    filter: hue-rotate(320deg) saturate(17.5);
 }
 .NB-menu-manage .NB-menu-manage-theme .NB-menu-manage-image {
-    background: transparent url('/media/img/reader/half.png') no-repeat  0 0;
+    background: transparent url("/media/embed/icons/nouns/menu-theme.svg") no-repeat center center;
     background-size: 18px;
+    filter: hue-rotate(130deg) saturate(10);
+}
+.NB-menu-manage .NB-menu-item.NB-menu-manage-size,
+.NB-menu-manage .NB-menu-item.NB-menu-manage-theme,
+.NB-menu-manage .NB-menu-item.NB-menu-manage-font {
+    padding: 2px 0;
 }
 .NB-menu-manage .NB-menu-manage-theme .segmented-control {
-    margin: 2px 0 0 36px;
+    margin: 0 0 0 36px;
     max-width: 300px;
 }
 .NB-menu-manage .NB-menu-manage-theme .segmented-control li {
     padding: 4px 8px;
 }
-.NB-menu-manage .NB-menu-manage-font .NB-menu-manage-image {
-    background: transparent url('/media/img/icons/circular/menu_icn_font.png') no-repeat  0 0;
+.NB-menu-manage .NB-menu-manage-font .NB-menu-manage-image {    
+    background: transparent url("/media/embed/icons/nouns/font.svg") no-repeat center center;
     background-size: 18px;
+    filter: hue-rotate(226deg) saturate(10.5);
 }
 .NB-menu-manage .NB-menu-manage-font .segmented-control {
-    margin: 2px 0 0 36px;
+    margin: 0 0 0 36px;
     max-width: 300px;
 }
 .NB-menu-manage .NB-menu-manage-font .segmented-control li {
     padding: 4px 8px;
 }
 .NB-menu-manage .NB-menu-manage-size .NB-menu-manage-image {
-    background: transparent url('/media/img/icons/circular/menu_icn_size.png') no-repeat  0 0;
+    background: transparent url("/media/embed/icons/nouns/font-size.svg") no-repeat center center;
     background-size: 18px;
+    filter: hue-rotate(40deg) saturate(10.5);
 }
 .NB-menu-manage .NB-menu-manage-size .segmented-control {
-    margin: 2px 0 0 36px;
+    margin: 0 0 0 36px;
     max-width: 300px;
 }
 .NB-menu-manage .NB-menu-manage-size .segmented-control li {
@@ -8490,16 +8514,18 @@ form.opml_import_form input {
     padding: 3px 12px 2px;
 }
 .NB-menu-manage .NB-menu-manage-account .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_profile.png') no-repeat  0 0;
+    background: transparent url('/media/embed/icons/nouns/dialog-account.svg') no-repeat 0 0;
     background-size: 18px;
+    filter: hue-rotate(287deg) saturate(10.5);
 }
 .NB-menu-manage .NB-menu-manage-feedchooser .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/g_icn_mute.png') no-repeat  0 0;
     background-size: 18px;
 }
 .NB-menu-manage .NB-menu-manage-organizer .NB-menu-manage-image {
-    background: transparent url('/media/embed/icons/circular/menu_icn_book.png') no-repeat  0 0;
+    background: transparent url("/media/embed/icons/nouns/dialog-organize.svg") no-repeat center center;
     background-size: 18px;
+    filter: hue-rotate(311deg) saturate(16);
 }
 .NB-menu-manage .NB-menu-manage-premium .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/g_icn_greensun.png') no-repeat  0 0px;
@@ -8517,8 +8543,9 @@ form.opml_import_form input {
     padding: 0 4px 0 0;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-email {
-    background: transparent url('/media/embed/icons/circular/menu_icn_mail.png') no-repeat 0 0;
-    background-size: 16px;
+    background: transparent url("/media/embed/icons/nouns/email.svg") no-repeat center center;
+    background-size: 18px;
+    filter: hue-rotate(134deg) saturate(16);
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-instapaper {
     background: transparent url('/media/embed/reader/instapaper.png') no-repeat 0 0;
@@ -8558,8 +8585,9 @@ form.opml_import_form input {
     background: transparent url('/media/embed/reader/googleplus.png') no-repeat 0 0;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-email {
-    background: transparent url('/media/embed/icons/circular/menu_icn_mail.png') no-repeat 0 0;
-    background-size: 16px;
+    background: transparent url("/media/embed/icons/nouns/email.svg") no-repeat center center;
+    background-size: 18px;
+    filter: hue-rotate(134deg) saturate(16);
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-twitter {
     background: transparent url('/media/embed/reader/twitter_bird.png') no-repeat 0 0;
@@ -9117,8 +9145,9 @@ form.opml_import_form input {
 
 
 .NB-modal-tutorial .NB-modal-title .NB-icon {
-    background: transparent url('/media/embed/icons/circular/g_modal_tutorial.png');
+    background: transparent url("/media/embed/icons/nouns/dialog-tips.svg") no-repeat center center;
     background-size: 28px;
+    filter: hue-rotate(321deg) saturate(18);
 }
 .NB-modal-tutorial h4 {
   clear: both;
@@ -9993,8 +10022,9 @@ form.opml_import_form input {
 /* ======================= */
 
 .NB-modal-notifications .NB-modal-title .NB-icon {
-    background: transparent url('/media/embed/icons/circular/menu_icn_notifications.png');
+    background: transparent url("/media/embed/icons/nouns/dialog-notifications.svg") no-repeat center center;
     background-size: 28px;
+    filter: hue-rotate(320deg) saturate(18);
 }
 .NB-modal.NB-modal-notifications .NB-fieldset {
     border-bottom: none;
@@ -10714,8 +10744,9 @@ form.opml_import_form input {
     margin: 32px 0 32px;
 }
 .NB-modal-goodies .NB-modal-title .NB-icon {
-    background: transparent url('/media/embed/icons/circular/g_modal_goodies.png');
+    background: transparent url("/media/embed/icons/nouns/dialog-goodies.svg") no-repeat center center;
     background-size: 28px;
+    filter: hue-rotate(186deg) saturate(18);
 }
 .NB-modal-goodies .NB-goodies-group {
   clear: both;
@@ -10905,8 +10936,9 @@ form.opml_import_form input {
 
 
 .NB-modal-keyboard .NB-modal-title .NB-icon {
-    background: transparent url('/media/embed/icons/circular/g_modal_keyboard.png');
+    background: transparent url("/media/embed/icons/nouns/dialog-keyboard.svg") no-repeat center center;
     background-size: 28px;
+    filter: hue-rotate(139deg) saturate(10);
 }
 .NB-modal-keyboard .NB-keyboard-group {
   clear: both;
@@ -10974,8 +11006,9 @@ form.opml_import_form input {
     overflow: hidden;
 }
 .NB-modal-preferences .NB-modal-title .NB-icon {
-    background: transparent url('/media/embed/icons/circular/g_modal_preferences.png');
+    background: transparent url('/media/embed/icons/nouns/dialog-preferences.svg') no-repeat 0 0;
     background-size: 28px;
+    filter: hue-rotate(320deg) saturate(17.5);
 }
 .NB-modal-preferences .NB-modal-submit-button {
     float: left;
@@ -11213,8 +11246,9 @@ form.opml_import_form input {
     background: transparent url('/media/embed/reader/googleplus.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-email] {
-    background: transparent url('/media/embed/icons/circular/menu_icn_mail.png') no-repeat 0 0;
-    background-size: 16px;
+    background: transparent url("/media/embed/icons/nouns/email.svg") no-repeat center center;
+    background-size: 18px;
+    filter: hue-rotate(134deg) saturate(16);
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-instapaper] {
     background: transparent url('/media/embed/reader/instapaper.png') no-repeat 0 0;
@@ -11293,8 +11327,9 @@ form.opml_import_form input {
 /* ================== */
 
 .NB-modal-account .NB-modal-title .NB-icon {
-    background: transparent url('/media/embed/icons/circular/g_modal_account.png');
+    background: transparent url('/media/embed/icons/nouns/dialog-account.svg') no-repeat 0 0;
     background-size: 28px;
+    filter: hue-rotate(287deg) saturate(10.5);
 }
 .NB-modal-account .NB-preference-username input,
 .NB-modal-account .NB-preference-email input {
@@ -12060,8 +12095,9 @@ form.opml_import_form input {
 /* ================= */
 
 .NB-modal-friends .NB-modal-title .NB-icon {
-    background: transparent url('/media/embed/icons/circular/g_modal_friends.png');
+    background: transparent url('/media/embed/icons/nouns/followers.svg') no-repeat 0 0;
     background-size: 28px;
+    filter: hue-rotate(139deg) saturate(18.5);
 }
 
 .NB-modal-friends .NB-tab {
@@ -12202,8 +12238,9 @@ form.opml_import_form input {
 /* ======================== */
 
 .NB-modal-profile-editor .NB-modal-title .NB-icon {
-    background: transparent url('/media/embed/icons/circular/g_modal_profile.png');
+    background: transparent url('/media/embed/icons/nouns/subscribers.svg') no-repeat 0 0;
     background-size: 28px;
+    filter: hue-rotate(87deg) saturate(10.5);
 }
 
 .NB-modal-profile-editor .NB-tab {
@@ -12877,8 +12914,9 @@ form.opml_import_form input {
 /* ============= */
 
 .NB-modal-organizer .NB-modal-title .NB-icon {
-    background: transparent url('/media/embed/icons/circular/g_modal_book.png');
+    background: transparent url("/media/embed/icons/nouns/dialog-organize.svg") no-repeat center center;
     background-size: 28px;
+    filter: hue-rotate(311deg) saturate(16);
 }
 .NB-modal-organizer .NB-feedlist {
     width: 70%;
@@ -13028,7 +13066,6 @@ form.opml_import_form input {
 .NB-modal-organizer .segmented-control {
     margin: 0;
     line-height: 18px;
-    display: block;
     overflow: hidden;
 }
 .NB-modal-organizer .segmented-control li {
@@ -13562,12 +13599,14 @@ form.opml_import_form input {
     background: transparent url("/media/embed/icons/circular/menu_icn_settings.png") no-repeat center center;
 }
 .NB-filter-popover-notifications-icon {
-    background: transparent url("/media/embed/icons/circular/menu_icn_notifications.png") no-repeat center center;
+    background: transparent url("/media/embed/icons/nouns/dialog-notifications.svg") no-repeat center center;
     background-size: 32px;
+    filter: hue-rotate(320deg) saturate(18);
 }
 .NB-feedbar-notifications-icon {
-    background: transparent url("/media/embed/icons/circular/menu_icn_notifications.png") no-repeat center center;
+    background: transparent url("/media/embed/icons/nouns/dialog-notifications.svg") no-repeat center center;
     background-size: 12px;
+    filter: hue-rotate(320deg) saturate(18);
     width: 12px;
     height: 12px;
     display: inline-block;
