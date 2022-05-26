@@ -885,6 +885,7 @@ color: #a85b40;
 }
 .NB-dark .segmented-control li.NB-active, 
 .NB-dark .segmented-control li.NB-active:not(.NB-disabled), 
+.NB-dark .segmented-control li:active:not(.NB-disabled),
 .NB-dark .segmented-control-active li {
     background: none;
     background-color: #6c6c74;
@@ -900,7 +901,6 @@ color: #a85b40;
 .NB-dark .segmented-control li:hover:not(.NB-disabled):not(.NB-active) {
     background-color: #585b63;
 }
-
 .NB-dark #story_taskbar {
     border-top: 1px solid #303030;
 }

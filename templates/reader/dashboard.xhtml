@@ -65,9 +65,9 @@
         <div class="NB-dashboard-account">
             {% render_features_module %}
 
-            {% if recommended_feeds %}
+            {% comment %} {% if recommended_feeds %}
                 {% render_recommended_feed recommended_feeds %}
-            {% endif %}
+            {% endif %} {% endcomment %}
 
             {% if user.is_staff and unmoderated_feeds %}
                 {% render_recommended_feed unmoderated_feeds 1 %}
