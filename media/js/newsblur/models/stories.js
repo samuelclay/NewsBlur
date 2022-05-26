@@ -457,8 +457,6 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         
         if (options.previously_read) return;
 
-        var story_unread_counter  = NEWSBLUR.app.story_unread_counter;
-        var unread_view           = NEWSBLUR.reader.get_unread_view_name();
         var active_feed           = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
         var story_feed            = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
         var friend_feeds          = NEWSBLUR.assets.get_friend_feeds(story);
@@ -497,10 +495,6 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
                 var socialsub_count = Math.max(socialsub.get('ng') + (options.unread?1:-1), 0);
                 socialsub.set('ng', socialsub_count, {instant: true});
             });
-        }
-        
-        if (story_unread_counter) {
-            story_unread_counter.flash();
         }
         
         // if ((unread_view == 'positive' && feed.get('ps') == 0) ||

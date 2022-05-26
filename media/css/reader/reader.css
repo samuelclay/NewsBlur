@@ -4808,34 +4808,6 @@ body {
     opacity: .5;
 }
 
-/* ======================= */
-/* = Story Modifications = */
-/* ======================= */
-
-#story_taskbar .feed_counts_floater {
-    position: absolute;
-    bottom: 5px;
-    left: 350px;
-    height: 27px;
-    z-index: 10;
-    display: block;
-    font-size: 19px;
-}
-.NB-is-anonymous #story_taskbar .feed_counts_floater {
-    display: none;
-}
-
-#story_taskbar .feed_counts_floater .unread_count {
-    float: right;
-    line-height: 24px;
-    padding: 0 8px;
-}
-
-#story_taskbar .feed_counts_floater .unread_count.unread_count_full {
-    display: block;
-}
-
-
 /* ================ */
 /* = Feeds Header = */
 /* ================ */
