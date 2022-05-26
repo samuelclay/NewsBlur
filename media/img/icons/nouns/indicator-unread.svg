@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="68px" height="68px" viewBox="0 0 68 68" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="150px" height="150px" viewBox="0 0 150 150" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>indicator-unread</title>
     <defs>
         <linearGradient x1="50%" y1="0%" x2="50%" y2="98.6150568%" id="linearGradient-1">
@@ -8,8 +8,8 @@
         </linearGradient>
     </defs>
     <g id="indicator-unread" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="noun-dots-2561422-95978E" transform="translate(11.000000, 10.000000)" fill="url(#linearGradient-1)" fill-rule="nonzero">
-            <path d="M23.5,0 C36.524671,0 47,10.4681455 47,23.5 C46.9922059,36.524671 36.5240723,47 23.5,47 C10.475329,47 0,36.5318545 0,23.5 C0,10.475329 10.4681455,0 23.5,0 Z M23.5,10 C16.0136155,10 10,16.0177422 10,23.5 C10,30.9863845 16.0177422,37 23.5,37 C30.9819139,37 36.9955225,30.9822578 37,23.5 C37,16.0136155 30.9822578,10 23.5,10 Z" id="Shape"></path>
+        <g id="noun-dots-2561422-95978E" transform="translate(24.264706, 22.058824)" fill="url(#linearGradient-1)" fill-rule="nonzero">
+            <path d="M51.8382353,0 C80.5691271,0 103.676471,23.0914975 103.676471,51.8382353 C103.659278,80.5691271 80.5678066,103.676471 51.8382353,103.676471 C23.1073435,103.676471 0,80.5849731 0,51.8382353 C0,23.1073435 23.0914975,0 51.8382353,0 Z M51.8382353,22.0588235 C35.3241519,22.0588235 22.0588235,35.3332549 22.0588235,51.8382353 C22.0588235,68.3523187 35.3332549,81.6176471 51.8382353,81.6176471 C68.3424571,81.6176471 81.6077703,68.3432157 81.6176471,51.8382353 C81.6176471,35.3241519 68.3432157,22.0588235 51.8382353,22.0588235 Z" id="Shape"></path>
         </g>
     </g>
 </svg>
