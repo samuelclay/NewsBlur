@@ -3611,7 +3611,7 @@ body {
     border-radius: 4px;
     
     padding: 1px 5px;
-    margin: 8px 4px 5px 0;
+    margin: 8px 4px 0 0;
     line-height: 14px;
     background-color: rgba(0, 0, 0, .1);
     color: #959B8B;
@@ -4470,6 +4470,7 @@ body {
     border-bottom: 1px solid rgb(240,240,240); */
     clear: both;
     transition: background-color .12s ease-out;
+    border-radius: 3px;
     -webkit-user-select: none;
     -moz-user-select: none;
     -o-user-select: none;
@@ -4480,7 +4481,6 @@ body {
     margin: 8px 8px 0 0;
     width: auto;
     min-width: 90px;
-    border-radius: 3px;
     clear: right;
 }
 .NB-extra-narrow-content .NB-sideoption {
@@ -5237,10 +5237,6 @@ background: transparent;
     display: none;
     border-top: 1px solid #dbdbda;
 }
-#story_taskbar .feed_counts_floater .unread_count {
-    margin-top: 1px;
-    text-shadow: none;
-}
 #story_taskbar .NB-taskbar {
     margin: 5px 0 0 0;    
 }
@@ -5652,17 +5648,20 @@ background: transparent;
     width: 16px;
     height: 16px;
     display: inline-block;
-    margin: 0 2px 0 0;
-    vertical-align: text-bottom;
+    margin: 0 8px 1px 0;
+    vertical-align: bottom;
 }
 .NB-options-story-titles-pane-north .NB-icon {
-    background: transparent url("/media/embed/reader/layout_top.png") no-repeat center center;
+    background: transparent url("/media/embed/icons/nouns/layout-top.svg") no-repeat center center;
+    background-size: 16px;
 }
 .NB-options-story-titles-pane-west .NB-icon {
-    background: transparent url("/media/embed/reader/layout_left.png") no-repeat center center;
+    background: transparent url("/media/embed/icons/nouns/layout-left.svg") no-repeat center center;
+    background-size: 16px;
 }
 .NB-options-story-titles-pane-south .NB-icon {
-    background: transparent url("/media/embed/reader/layout_bottom.png") no-repeat center center;
+    background: transparent url("/media/embed/icons/nouns/layout-bottom.svg") no-repeat center center;
+    background-size: 16px;
 }
 .NB-style-popover .NB-story-position-option .NB-icon {
     width: 16px;
@@ -5674,26 +5673,27 @@ background: transparent;
 .NB-options-story-position .NB-story-position-option {
     width: auto;
     font-size: 12px;
-    padding: 4px 15px;
+    padding: 4px 10px;
 }
 .NB-options-story-position-stretch {
     
 }
 .NB-options-story-position-left .NB-icon {
-    background: transparent url("/media/embed/reader/position_left.svg") no-repeat center center;
+    background: transparent url("/media/embed/icons/nouns/position-left.svg") no-repeat center center;
     background-size: 16px;
 }
 .NB-options-story-position-center .NB-icon {
-    background: transparent url("/media/embed/reader/position_center.svg") no-repeat center center;
+    background: transparent url("/media/embed/icons/nouns/position-center.svg") no-repeat center center;
     background-size: 16px;
 }
 .NB-options-story-position-right .NB-icon {
-    background: transparent url("/media/embed/reader/position_right.svg") no-repeat center center;
+    background: transparent url("/media/embed/icons/nouns/position-right.svg") no-repeat center center;
     background-size: 16px;
 }
-.NB-options-story-position-stretch .NB-icon {
-    background: transparent url("/media/embed/reader/position_stretch.png") no-repeat center center;
+.NB-style-popover .NB-options-story-position-stretch .NB-icon {
+    background: transparent url("/media/embed/icons/nouns/position-stretch.svg") no-repeat center center;
     background-size: 16px;
+    margin: 0 8px 0 0;
 }
 
 .NB-style-popover .NB-options-single-story {
@@ -5708,14 +5708,16 @@ background: transparent;
     width: 16px;
     height: 16px;
     display: inline-block;
-    margin: 0 2px 0 0;
+    margin: 0 8px 1px 0;
     vertical-align: bottom;
 }
 .NB-options-single-story-off .NB-icon {
-    background: transparent url("/media/embed/icons/silk/text_linespacing.png") no-repeat center center;
+    background: transparent url("/media/embed/icons/nouns/single-story-all.svg") no-repeat center center;
+    background-size: 16px;
 }
 .NB-options-single-story-on .NB-icon {
-    background: transparent url("/media/embed/icons/silk/text_horizontalrule.png") no-repeat center center;
+    background: transparent url("/media/embed/icons/nouns/single-story-one.svg") no-repeat center center;
+    background-size: 16px;
 }
 
 .NB-style-popover .NB-options-grid-columns,
@@ -5745,9 +5747,9 @@ background: transparent;
     width: 16px;
     height: 16px;
     display: inline-block;
-    margin: 1px 6px -2px 0;
+    margin: 0 6px 0 0;
     vertical-align: bottom;
-    background: transparent url('/media/img/icons/circular/nav_story_grid_active.png') no-repeat 0 0;
+    background: transparent url("/media/embed/icons/nouns/layout-grid.svg") no-repeat center center;
     background-size: 16px;
 }
 
