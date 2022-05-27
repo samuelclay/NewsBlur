@@ -3520,6 +3520,10 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies &amp; Mobile Apps')
                     ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-statistics', role: "button" }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Statistics &amp; History')
+                    ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-notifications', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Notifications')
@@ -6449,6 +6453,14 @@
                 if (!$t.hasClass('NB-disabled')) {
                     $.modal.close(function() {
                         self.open_goodies_modal();
+                    });
+                }
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-statistics' }, function($t, $p){
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    $.modal.close(function() {
+                        self.open_feed_statistics_modal();
                     });
                 }
             });  
