@@ -273,6 +273,7 @@ fieldset legend {
     background: #DCDCDC;
     background: linear-gradient(to top, #DCDCDC, #D2D2D2);
     border-radius: 3px;
+    border: none;
 }
 
 .NB-modal-submit-green {
