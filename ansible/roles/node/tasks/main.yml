@@ -20,6 +20,17 @@
     mode: 0600
     line: 'SERVER_NAME = "{{ inventory_hostname }}"'
 
+- name: Copy imageproxy secrets
+  copy:
+    src: /srv/secrets-newsblur/settings/imageproxy.key
+    dest: /srv/imageproxy.key
+  register: app_changed
+  notify: restart node
+  with_items:
+    - node-images
+    - staging
+  when: item in inventory_hostname
+
 - name: Get the volume name
   shell: ls /dev/disk/by-id/ | grep -v part
   register: volume_name_raw
@@ -105,9 +116,13 @@
       - "{{ item.ports }}"
     env:
       NODE_ENV: "production"
+      IMAGEPROXY_CACHE: "memory:200:4h"
+      IMAGEPROXY_SIGNATUREKEY: "@/srv/imageproxy.key"
+      IMAGEPROXY_VERBOSE: "1"
     restart_policy: unless-stopped
     volumes:
       - /srv/newsblur/node:/srv/node
+      - /srv/imageproxy.key:/srv/imageproxy.key
   with_items:
     - container_name: imageproxy
       image: ghcr.io/willnorris/imageproxy
