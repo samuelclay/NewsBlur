@@ -2894,6 +2894,11 @@
                 if (!feed) return;
                 
                 feed_title = feed.get('feed_title');
+            } else if (_.string.startsWith(feed_id, 'search:')){
+                var feed = NEWSBLUR.assets.get_feed(feed_id);
+                if (!feed) return;
+                
+                feed_title = feed.get('feed_title');
             }
     
             return feed_title;
