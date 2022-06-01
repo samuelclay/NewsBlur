@@ -136,6 +136,10 @@
                 
             case SKPaymentTransactionStateDeferred:
                 NSLog(@"Transaction state -> Deferred");
+                
+                [self saveReceipt:transaction isComplete:NO];
+                break;
+                
             case SKPaymentTransactionStateFailed:
                 NSLog(@"Transaction state -> Failed");
                 //called when the transaction does not finish
@@ -166,11 +170,17 @@
         //        return;
     }
     
+    [self saveReceipt:transaction isComplete:YES];
+}
+
+- (void)saveReceipt:(SKPaymentTransaction *)transaction isComplete:(BOOL)isComplete {
     NSString *urlString = [NSString stringWithFormat:@"%@/profile/save_ios_receipt/",
                            self.appDelegate.url];
+    NSString *transactionIdentifier = isComplete ? transaction.originalTransaction.transactionIdentifier : @"in-progress";
+    
     NSDictionary *params = @{
                              //                             @"receipt": [receipt base64EncodedStringWithOptions:0],
-                             @"transaction_identifier": transaction.originalTransaction.transactionIdentifier,
+        @"transaction_identifier": transactionIdentifier,
                              @"product_identifier": transaction.payment.productIdentifier,
                              };
     

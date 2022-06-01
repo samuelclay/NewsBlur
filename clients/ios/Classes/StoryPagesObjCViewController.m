@@ -1067,9 +1067,9 @@
         frame.origin.y = 0;
     } else {
         frame.origin.x = 0;
-        frame.origin.y = (frame.size.height * pageIndex) - self.view.safeAreaInsets.bottom;
+        frame.origin.y = (frame.size.height * pageIndex) - self.view.safeAreaInsets.bottom + self.view.safeAreaInsets.bottom;
     }
-
+    
     self.scrollingToPage = pageIndex;
     [self.currentPage hideNoStoryMessage];
     [self.nextPage hideNoStoryMessage];

@@ -1156,7 +1156,6 @@
     }
     
     self.splitViewController.showsSecondaryOnlyButton = YES;
-    [self updateSplitBehavior];
     
     self.feedsNavigationController = (UINavigationController *)splitChildren[0];
     self.feedsViewController = self.feedsNavigationController.viewControllers.firstObject;
@@ -1183,9 +1182,15 @@
     self.firstTimeUserAddSitesViewController = [FirstTimeUserAddSitesViewController new];
     self.firstTimeUserAddFriendsViewController = [FirstTimeUserAddFriendsViewController new];
     self.firstTimeUserAddNewsBlurViewController = [FirstTimeUserAddNewsBlurViewController new];
+    
+    [self updateSplitBehavior];
 }
 
 - (void)showLogin {
+    if (self.loginViewController.view.window != nil) {
+        return;
+    }
+    
     self.dictFeeds = nil;
     self.dictSocialFeeds = nil;
     self.dictSavedStoryTags = nil;
@@ -1749,8 +1754,9 @@
         [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
     } else if (self.pendingFolder != nil) {
         [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:self.pendingFolder];
-        self.pendingFolder = nil;
     }
+    
+    self.pendingFolder = nil;
 }
 
 - (NSString *)widgetFolder {
@@ -1930,6 +1936,10 @@
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder {
     self.readStories = [NSMutableArray array];
     NSMutableArray *feeds = [NSMutableArray array];
+    
+    if (self.loginViewController.view.window != nil) {
+        return;
+    }
     
     self.inFeedDetail = YES;
     [feedDetailView resetFeedDetail];
@@ -2172,7 +2182,12 @@
 //        [self showDetailViewController:detailViewController sender:self];
 //        feedsNavigationController.navigationItem.hidesBackButton = YES;
 //    }
-
+    
+    self.inFindingStoryMode = NO;
+    self.findingStoryStartDate = nil;
+    self.tryFeedStoryId = nil;
+    self.tryFeedFeedId = nil;
+    
     NSInteger activeStoryLocation = [storiesCollection locationOfActiveStory];
     if (activeStoryLocation >= 0) {
         BOOL animated = ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad &&
@@ -3005,7 +3020,7 @@
         }
     }
     
-    [self.feedsViewController updateFeedTitlesTable];
+    [self.feedsViewController deferredUpdateFeedTitlesTable];
     
     [self.storyPagesViewController reloadWidget];
 }
