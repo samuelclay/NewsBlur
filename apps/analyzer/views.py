@@ -75,7 +75,8 @@ def save_classifier(request):
                         'social_user_id': social_user_id or 0,
                     }
                     if content_type in ('author', 'tag', 'title'):
-                        classifier_dict.update({content_type: post_content})
+                        max_length = ClassifierCls._fields[content_type].max_length
+                        classifier_dict.update({content_type: post_content[:max_length]})
                     if content_type == 'feed':
                         if not post_content.startswith('social:'):
                             classifier_dict['feed_id'] = post_content
