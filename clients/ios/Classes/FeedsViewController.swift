@@ -69,6 +69,24 @@ class FeedsViewController: FeedsObjCViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + (isOffline ? .seconds(1) : .milliseconds(100)), execute: workItem)
     }
     
+    var reloadWorkItem: DispatchWorkItem?
+    
+    @objc func deferredUpdateFeedTitlesTable() {
+        reloadWorkItem?.cancel()
+        
+        let workItem = DispatchWorkItem { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
+            self.updateFeedTitlesTable()
+            self.refreshHeaderCounts()
+        }
+        
+        reloadWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: workItem)
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
