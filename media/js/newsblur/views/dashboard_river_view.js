@@ -135,6 +135,13 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         if (_.string.startsWith(river_id, 'social:')) {
             return [river_id];
         }
+        if (_.string.startsWith(river_id, 'search:feed')) {
+            var feed = NEWSBLUR.assets.get_feed(river_id);
+            return [feed.get('feed_id').replace('feed:', '')];
+        }
+        if (_.string.startsWith(river_id, 'search:river')) {
+            river_id = river_id.substring("search:".length, river_id.lastIndexOf(":"));
+        }
         
         var active_folder = NEWSBLUR.assets.get_folder(river_id);
         if (!active_folder) {
@@ -218,7 +225,12 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         this.redraw();
     },
 
-    load_stories: function(options) {
+    load_stories: function (options) {
+        if (_.string.startsWith(this.model.get('river_id'), 'search:')) {
+            var feed = NEWSBLUR.assets.get_feed(this.model.get('river_id'));
+            this.options.query = feed.get('query');
+        }
+
         options = _.extend({
             global_feed: this.options.global_feed,
             infrequent: this.options.infrequent,
@@ -231,7 +243,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         if (!this.$stories.length) return;
         if (this.model.get('river_id') == "river:global") feeds = [];
         
-        // console.log(['dashboard river load_stories', this.model.get('river_id'), this.page, feeds.length, options]);
+        // console.log(['dashboard river load_stories', this.model.get('river_id'), this.page, feeds, options, this.$stories.length]);
         this.page = 1;
         this.story_titles.show_loading();
         NEWSBLUR.assets.fetch_dashboard_stories(this.model.get('river_id'), feeds, this.page, this.options.dashboard_stories, options,
@@ -241,7 +253,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     },
     
     post_load_stories: function (data) {
-        console.log(['post_load_stories', this.model.get('river_id'), this.options.dashboard_stories.length, data, data.stories.length])
+        // console.log(['post_load_stories', this.model.get('river_id'), this.options.dashboard_stories.length, data, data.stories.length])
         this.story_titles.end_loading();
         this.fill_out({ new_stories: data.stories.length });
         this.cache.story_hashes = this.options.dashboard_stories.pluck('story_hash');
@@ -267,7 +279,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             return;
         }
         var dashboard_count = parseInt(NEWSBLUR.assets.view_setting(this.model.get('river_id'), 'dashboard_count'), 10);
-        console.log(['dashboard_count', this.model.get('river_id'), visible, dashboard_count, options.new_stories == 0]);
+        // console.log(['dashboard_count', this.model.get('river_id'), visible, dashboard_count, options.new_stories == 0]);
         if (visible >= dashboard_count) {
             this.complete_fill();
             return;
@@ -368,7 +380,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     },
     
     complete_fill: function () {
-        console.log(['complete_fill', this.model.get('river_id')])
+        // console.log(['complete_fill', this.model.get('river_id')])
         var feeds = this.feeds();
         NEWSBLUR.assets.complete_river(this.model.get('river_id'), feeds, this.page);
     },

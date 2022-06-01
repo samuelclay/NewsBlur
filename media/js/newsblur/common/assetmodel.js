@@ -760,7 +760,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             page: page,
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter'),
-            query: NEWSBLUR.reader.flags.search,
+            query: options.query,
             limit: 5,
             infrequent: false,
             include_hidden: false,
@@ -818,7 +818,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 'ajax_group': 'dashboard',
                 'request_type': 'GET'
             });
-        } else if (_.string.startsWith(feed_id, 'river:') || _.string.startsWith(feed_id, 'feed:')) {
+        } else if (_.string.startsWith(feed_id, 'river:') || _.string.startsWith(feed_id, 'feed:') || _.string.startsWith(feed_id, 'search:')) {
             this.make_request('/reader/river_stories', options, pre_callback, error_callback, {
                 'ajax_group': 'dashboard',
                 'request_type': 'GET'

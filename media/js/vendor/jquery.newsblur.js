@@ -238,10 +238,14 @@ NEWSBLUR.log = function(msg) {
             // console.log(['Favicon', feed]);
 
             // Feed is a string
-            if (_.isNumber(feed))
+            if (_.isNumber(feed)) {
                 return NEWSBLUR.URLs.favicon.replace('{id}', feed);
-            else if (_.isString(feed)) {
+            } else if (_.isString(feed)) {
                 var feed_id = feed;
+                if (_.string.startsWith(feed_id, 'search:')) {
+                    feed_id = feed_id.substring('search:'.length);
+                }
+
                 if (feed_id == 'river:')
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/all-stories.svg';
                 if (feed_id == 'river:infrequent')
