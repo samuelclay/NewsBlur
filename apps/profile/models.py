@@ -492,7 +492,7 @@ class Profile(models.Model):
         self.retrieve_paypal_ids()
         if self.paypal_sub_id:
             seen_payments = set()
-            seen_payment_history = PaymentHistory.objects.filter(user=self.user)
+            seen_payment_history = PaymentHistory.objects.filter(user=self.user, payment_provider="paypal")
             deleted_paypal_payments = 0
             for payment in list(seen_payment_history):
                 if payment.payment_date.date() in seen_payments:
@@ -540,6 +540,7 @@ class Profile(models.Model):
                                                                 payment_amount=int(float(transaction['amount_with_breakdown']['gross_amount']['value'])),
                                                                 payment_provider='paypal',
                                                                 refunded=refunded)
+
                     ipns = PayPalIPN.objects.filter(Q(custom=self.user.username) |
                                         Q(payer_email=self.user.email) |
                                         Q(custom=self.user.pk)).order_by('-payment_date')
@@ -551,9 +552,6 @@ class Profile(models.Model):
                             continue
                         seen_payments.add(created)
                         total_paypal_payments += 1
-                        # refunded = None
-                        # if transaction['status'] in ['PARTIALLY_REFUNDED', 'REFUNDED']:
-                        #     refunded = True
                         PaymentHistory.objects.get_or_create(user=self.user,
                                                                 payment_date=created,
                                                                 payment_amount=int(transaction.payment_gross),
