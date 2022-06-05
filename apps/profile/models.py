@@ -658,6 +658,24 @@ class Profile(models.Model):
         return preferences.get(key, default)
 
     @classmethod
+    def resync_stripe_and_paypal_history(cls, start_days=365, end_days=0, skip=0):
+        start_date = datetime.datetime.now() - datetime.timedelta(days=start_days)
+        end_date = datetime.datetime.now() - datetime.timedelta(days=end_days)
+        payments = PaymentHistory.objects.filter(payment_date__gte=start_date,
+                                                 payment_date__lte=end_date)
+        last_seen_date = None
+        for p, payment in enumerate(payments):
+            if p < skip:
+                continue
+            if p == skip and skip > 0:
+                print(f" ---> Skipping {skip} payments...")
+            if payment.payment_date.date() != last_seen_date:
+                last_seen_date = payment.payment_date.date()
+                print(f" ---> Payment date: {last_seen_date} (#{p})")
+                
+            payment.user.profile.setup_premium_history()
+
+    @classmethod
     def reimport_stripe_history(cls, limit=10, days=7, starting_after=None):
         stripe.api_key = settings.STRIPE_SECRET
         week = (datetime.datetime.now() - datetime.timedelta(days=days)).strftime('%s')
