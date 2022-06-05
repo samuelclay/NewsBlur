@@ -487,11 +487,6 @@ class Profile(models.Model):
         active_plan = None
         premium_renewal = False
         active_provider = None
-        existing_history = PaymentHistory.objects.filter(user=self.user, 
-                                                         payment_provider__in=['paypal', 'stripe'])
-        if existing_history.count():
-            logging.user(self.user, "~BY~SN~FRDeleting~FW existing history: ~SB%s payments" % existing_history.count())
-            existing_history.delete()
         
         # Find modern Paypal payments
         self.retrieve_paypal_ids()
@@ -521,7 +516,7 @@ class Profile(models.Model):
                         logging.user(self.user, f"~FRCouldn't find paypal transactions: ~SB{paypal_id}")
                         continue
                     for transaction in transactions['transactions']:
-                        created = dateutil.parser.parse(transaction['time'])
+                        created = dateutil.parser.parse(transaction['time']).date()
                         if transaction['status'] not in ['COMPLETED', 'PARTIALLY_REFUNDED', 'REFUNDED']: continue
                         if created in seen_payments: continue
                         seen_payments.add(created)
@@ -534,10 +529,31 @@ class Profile(models.Model):
                                                                 payment_amount=int(float(transaction['amount_with_breakdown']['gross_amount']['value'])),
                                                                 payment_provider='paypal',
                                                                 refunded=refunded)
+                    ipns = PayPalIPN.objects.filter(Q(custom=self.user.username) |
+                                        Q(payer_email=self.user.email) |
+                                        Q(custom=self.user.pk)).order_by('-payment_date')
+                    for transaction in ipns:
+                        created = transaction.payment_date.date()
+                        if created in seen_payments: continue
+                        seen_payments.add(created)
+                        total_paypal_payments += 1
+                        # refunded = None
+                        # if transaction['status'] in ['PARTIALLY_REFUNDED', 'REFUNDED']:
+                        #     refunded = True
+                        PaymentHistory.objects.get_or_create(user=self.user,
+                                                                payment_date=created,
+                                                                payment_amount=int(transaction.payment_gross),
+                                                                payment_provider='paypal')
         else:
             logging.user(self.user, "~FBNo Paypal payments")
         
         # Record Stripe payments
+        existing_stripe_history = PaymentHistory.objects.filter(user=self.user, 
+                                                         payment_provider="stripe")
+        if existing_stripe_history.count():
+            logging.user(self.user, "~BY~SN~FRDeleting~FW existing stripe history: ~SB%s payments" % existing_stripe_history.count())
+            existing_stripe_history.delete()
+            
         if self.stripe_id:
             self.retrieve_stripe_ids()
             
