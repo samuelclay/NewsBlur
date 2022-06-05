@@ -493,12 +493,16 @@ class Profile(models.Model):
         if self.paypal_sub_id:
             seen_payments = set()
             seen_payment_history = PaymentHistory.objects.filter(user=self.user)
-            for payment in seen_payment_history:
+            deleted_paypal_payments = 0
+            for payment in list(seen_payment_history):
                 if payment.payment_date.date() in seen_payments:
                     payment.delete()
+                    deleted_paypal_payments += 1
                 else:
                     seen_payments.add(payment.payment_date.date())
                     total_paypal_payments += 1
+            if deleted_paypal_payments > 0:
+                logging.user(self.user, f"~BY~SN~FRDeleting~FW duplicate paypal history: ~SB{deleted_paypal_payments} payments")
             paypal_api = self.paypal_api()
             for paypal_id_model in self.user.paypal_ids.all():
                 paypal_id = paypal_id_model.paypal_sub_id
