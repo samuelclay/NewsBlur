@@ -508,7 +508,6 @@ class Profile(models.Model):
 
                 if paypal_subscription:
                     if paypal_subscription['status'] in ["APPROVAL_PENDING", "APPROVED", "ACTIVE"]:
-                        active_plan = paypal_subscription['plan_id']
                         active_provider = "paypal"
                         premium_renewal = True
 
