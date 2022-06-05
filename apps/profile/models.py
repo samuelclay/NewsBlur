@@ -498,6 +498,7 @@ class Profile(models.Model):
                     payment.delete()
                 else:
                     seen_payments.add(payment.payment_date.date())
+                    total_paypal_payments += 1
             paypal_api = self.paypal_api()
             for paypal_id_model in self.user.paypal_ids.all():
                 paypal_id = paypal_id_model.paypal_sub_id
