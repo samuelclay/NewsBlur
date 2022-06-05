@@ -511,8 +511,8 @@ class Profile(models.Model):
                         active_provider = "paypal"
                         premium_renewal = True
 
-                    start_date = datetime.datetime(2009, 1, 1).strftime("%Y-%m-%dT%H:%M:%SZ")
-                    end_date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+                    start_date = datetime.datetime(2009, 1, 1).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+                    end_date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000Z")
                     try:
                         transactions = paypal_api.get(f"/v1/billing/subscriptions/{paypal_id}/transactions?start_time={start_date}&end_time={end_date}")
                     except paypalrestsdk.exceptions.ResourceNotFound:
@@ -856,8 +856,8 @@ class Profile(models.Model):
         for stripe_id in stripe_ids:
             self.user.stripe_ids.create(stripe_id=stripe_id)
     
-    def retrieve_paypal_ids(self):
-        if self.paypal_sub_id:
+    def retrieve_paypal_ids(self, force=False):
+        if self.paypal_sub_id and not force:
             return
         
         ipns = PayPalIPN.objects.filter(Q(custom=self.user.username) |
