@@ -657,6 +657,8 @@ class Feed(models.Model):
             feed.setup_feed_for_premium_subscribers()
 
     def setup_feed_for_premium_subscribers(self):
+        if self.active_premium_subscribers >= 1:
+            return
         self.count_subscribers()
         self.set_next_scheduled_update(verbose=settings.DEBUG)
         self.sync_redis()
