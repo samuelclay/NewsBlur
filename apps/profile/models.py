@@ -533,8 +533,11 @@ class Profile(models.Model):
                                         Q(payer_email=self.user.email) |
                                         Q(custom=self.user.pk)).order_by('-payment_date')
                     for transaction in ipns:
+                        if transaction.txn_type != "subscr_payment":
+                            continue
                         created = transaction.payment_date.date()
-                        if created in seen_payments: continue
+                        if created in seen_payments: 
+                            continue
                         seen_payments.add(created)
                         total_paypal_payments += 1
                         # refunded = None
