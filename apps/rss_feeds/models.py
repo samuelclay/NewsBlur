@@ -649,9 +649,6 @@ class Feed(models.Model):
         
     @classmethod
     def setup_feeds_for_premium_subscribers(cls, feed_ids):
-        logging.info(f" ---> ~SN~FMIgnoring premium setup of ~SB{len(feed_ids)}~SN feeds...")
-        return
-    
         logging.info(f" ---> ~SN~FMScheduling immediate premium setup of ~SB{len(feed_ids)}~SN feeds...")
         
         feeds = Feed.objects.filter(pk__in=feed_ids)
