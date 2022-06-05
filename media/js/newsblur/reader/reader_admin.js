@@ -78,6 +78,10 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
                     "User is premium, expires: ",
                     (data.premium_expire || $.make('b', 'NEVER'))
                 ]));
+                $actions.append($.make('div', { style: 'margin-bottom: 12px' }, [
+                    "Premium renewal: ",
+                    (data.premium_renewal ? $.make('b', 'Active') : "Off")
+                ]));
                 $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-refund", style: "float: left" }, "Full Refund"));
                 $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-refund-partial", style: "float: left" }, "Refund $12"));
                 $actions.append($.make('div', { className: "NB-modal-submit-button NB-modal-submit-green NB-admin-action-never-expire", style: "float: left" }, "Never expire"));
