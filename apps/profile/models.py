@@ -492,6 +492,12 @@ class Profile(models.Model):
         self.retrieve_paypal_ids()
         if self.paypal_sub_id:
             seen_payments = set()
+            seen_payment_history = PaymentHistory.objects.filter(user=self.user)
+            for payment in seen_payment_history:
+                if payment.payment_date.date() in seen_payments:
+                    payment.delete()
+                else:
+                    seen_payments.add(payment.payment_date.date())
             paypal_api = self.paypal_api()
             for paypal_id_model in self.user.paypal_ids.all():
                 paypal_id = paypal_id_model.paypal_sub_id
