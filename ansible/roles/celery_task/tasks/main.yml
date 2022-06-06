@@ -109,6 +109,17 @@
     state: touch
     mode: 0666
 
+- name: Add spam.py for task-work
+  become: yes
+  copy:
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"  
+    src: /srv/secrets-newsblur/spam/spam.py
+    dest: /srv/newsblur/apps/social/spam.py
+  when: "'task-work' in inventory_hostname"
+  tags:
+    - spam
+
 - name: Add sanity checkers cronjob for feeds fetched
   become: yes
   copy:
