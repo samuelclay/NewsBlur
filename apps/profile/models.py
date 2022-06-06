@@ -160,7 +160,8 @@ class Profile(models.Model):
         
         logging.user(self.user, "Deleting user: %s / %s" % (self.user.email, self.user.profile.last_seen_ip))
         try:
-            self.cancel_premium()
+            if not fast:
+                self.cancel_premium()
         except:
             logging.user(self.user, "~BR~SK~FWError cancelling premium renewal for: %s" % self.user.username)
         
