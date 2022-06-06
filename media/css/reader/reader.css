@@ -8763,6 +8763,8 @@ form.opml_import_form input {
     overflow: hidden;
     padding: 10px 0 0;
     text-align: center;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-label {
@@ -8793,11 +8795,10 @@ form.opml_import_form input {
   margin-top: 12px;
 }
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-update {
-  float: left;
-  width: 33%;
-  text-align: center;
-  overflow: hidden;
-  margin: 0 0 12px 0;
+    flex: 1 1 0;
+    text-align: center;
+    overflow: hidden;
+    margin: 0 0 12px 0;
 }
 .NB-modal-statistics .NB-statistics-update-explainer {
     clear: both;
@@ -8823,9 +8824,11 @@ form.opml_import_form input {
 }
 
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-fetches-half {
-  float: left;
+  /* float: left; */
   text-align: center;
   margin: 0 18px 6px 0;
+  flex: 1 1 0;
+  flex-basis: fit-content;
 }
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-fetches-half:last-child {
     margin-right: 0;
@@ -8835,6 +8838,7 @@ form.opml_import_form input {
   text-align: center;
   margin: 0 24px;
   overflow: hidden;
+  width: 100%;
 }
 
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-history-count-chart {
@@ -8844,6 +8848,7 @@ form.opml_import_form input {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  margin: 36px auto;
 }
 
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-history-hours-chart {
@@ -8863,6 +8868,7 @@ form.opml_import_form input {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  margin: 36px auto;
 }
 
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-history-hours-chart {
