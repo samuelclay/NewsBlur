@@ -199,6 +199,8 @@ def assemble_statistics(user, feed_id):
     stats['last_update'] = relative_timesince(feed.last_update)
     stats['next_update'] = relative_timeuntil(feed.next_scheduled_update)
     stats['push'] = feed.is_push
+    stats['fs_size_bytes'] = feed.fs_size_bytes
+    stats['archive_count'] = feed.archive_count
     if feed.is_push:
         try:
             stats['push_expires'] = localtime_for_timezone(feed.push.lease_expires, 

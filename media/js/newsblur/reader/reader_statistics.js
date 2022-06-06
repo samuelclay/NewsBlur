@@ -143,6 +143,12 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 (data.active && $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['next_update'] && ('in ' + data['next_update'])))),
                 (!data.active && !data.loading && $.make('div', { className: 'NB-statistics-count' }, "Not active"))
               ]),
+
+              $.make('div', { className: 'NB-statistics-update'}, [
+                $.make('div', { className: 'NB-statistics-label' }, 'Stories in archive'),
+                $.make('div', { className: 'NB-statistics-count', title: Inflector.commas(data['fs_size_bytes']) + " bytes" }, '&nbsp;' + (Inflector.commas(data['archive_count'])) + " " + Inflector.pluralize("story", data['archive_count']))
+              ]),
+
               ((data.average_stories_per_month == 0 || data.stories_last_month == 0) &&
                data.update_interval_minutes > 60 &&
                   $.make('div', { className: 'NB-statistics-update-explainer' }, [

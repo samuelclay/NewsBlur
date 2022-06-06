@@ -94,6 +94,7 @@ class Feed(models.Model):
     s3_icon = models.BooleanField(default=False, blank=True, null=True)
     search_indexed = models.BooleanField(default=None, null=True, blank=True)
     fs_size_bytes = models.IntegerField(null=True, blank=True)
+    archive_count = models.IntegerField(null=True, blank=True)
 
     class Meta:
         db_table="feeds"
@@ -622,6 +623,9 @@ class Feed(models.Model):
         
         if force or has_new_stories or count_extra:
             self.save_feed_stories_last_month()
+
+        if not self.fs_size_bytes or not self.archive_count:
+            self.count_fs_size_bytes()
 
         if force or (has_new_stories and count_extra):
             self.save_popular_authors()
@@ -1639,8 +1643,10 @@ class Feed(models.Model):
     def count_fs_size_bytes(self):
         stories = MStory.objects.filter(story_feed_id=self.pk)
         sum_bytes = 0
+        count = 0
 
         for story in stories:
+            count += 1
             story_with_content = story.to_mongo()
             if story_with_content.get('story_content_z', None):
                 story_with_content['story_content'] = zlib.decompress(story_with_content['story_content_z'])
@@ -1660,6 +1666,7 @@ class Feed(models.Model):
             sum_bytes += len(bson.BSON.encode(story_with_content))
 
         self.fs_size_bytes = sum_bytes
+        self.archive_count = count
         self.save()
 
         return sum_bytes
