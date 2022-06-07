@@ -36,6 +36,7 @@ from apps.statistics.models import MAnalyticsFetcher, MStatistics
 import feedparser
 
 feedparser.sanitizer._HTMLSanitizer.acceptable_elements.update(['iframe'])
+feedparser.sanitizer._HTMLSanitizer.acceptable_elements.update(['text'])
 
 from utils.story_functions import pre_process_story, strip_tags, linkify
 from utils import log as logging
