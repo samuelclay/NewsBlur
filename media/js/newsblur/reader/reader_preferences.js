@@ -704,6 +704,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-pinboard', name: 'story_share_pinboard' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-pinboard' })
                             ]),
+                            $.make('div', { className: 'NB-preference-option', title: 'Raindrop.io' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-raindrop', name: 'story_share_raindrop' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-raindrop' })
+                            ]),
                             $.make('div', { className: 'NB-preference-option', title: 'Pinterest' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-pinterest', name: 'story_share_pinterest' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-pinterest' })
