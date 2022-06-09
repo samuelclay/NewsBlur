@@ -2706,6 +2706,22 @@
             NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
         },
         
+        send_story_to_raindrop: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'https://app.raindrop.io/add?';
+            var raindrop_url = [
+              url,
+              'link=',
+              encodeURIComponent(story.get('story_permalink')),
+              '&title=',
+              encodeURIComponent(story.get('story_title')),
+              '&tags=',
+              encodeURIComponent(story.get('story_tags').join(', '))
+            ].join('');
+            window.open(raindrop_url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
+        },
+        
         send_story_to_pinterest: function(story_id) {
             var story = this.model.get_story(story_id);
             var url = 'https://www.pinterest.com/pin/find/?';
@@ -3956,6 +3972,11 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-pinboard');
                         }, this))),
+                        (NEWSBLUR.Preferences['story_share_raindrop'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-raindrop'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Raindrop.io').parent().addClass('NB-menu-manage-highlight-raindrop');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-raindrop');
+                        }, this))),
                         (NEWSBLUR.Preferences['story_share_pinterest'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-pinterest'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Pinterest').parent().addClass('NB-menu-manage-highlight-pinterest');
                         }, this)).bind('mouseleave', _.bind(function(e) {
@@ -4007,6 +4028,8 @@
                           this.send_story_to_delicious(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-pinboard')) {
                           this.send_story_to_pinboard(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-raindrop')) {
+                          this.send_story_to_raindrop(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-pinterest')) {
                           this.send_story_to_pinterest(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-buffer')) {
