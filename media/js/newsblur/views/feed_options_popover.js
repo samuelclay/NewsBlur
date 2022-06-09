@@ -225,6 +225,10 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('div', { className: 'NB-icon' }),
                     $.make('div', { className: 'NB-stat' }, Inflector.pluralize("story", feed.get('average_stories_per_month'), true) + " per month")
                 ])),
+                (feed.get('archive_count') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-archive-count' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    $.make('div', { className: 'NB-stat' }, Inflector.pluralize("story", feed.get('archive_count'), true) + " in archive")
+                ])),
                 (feed.get('updated') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-updated' }, [
                     $.make('div', { className: 'NB-icon' }),
                     $.make('div', { className: 'NB-stat' }, "Updated " + feed.get('updated') + ' ago')

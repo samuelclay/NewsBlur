@@ -567,7 +567,7 @@ hr {
 
 .NB-feedlist ul.folder {
     margin: 0;
-    padding: 0 0 0 30px;
+    padding: 0 0 0 25px;
     list-style: none;
 }
 .NB-feedlist ul.folder.NB-root {
@@ -767,6 +767,8 @@ img.feed_favicon {
     -webkit-box-orient: vertical;  
     overflow: hidden;
     word-break: break-all;
+
+    transition: padding .12s ease-out, margin 0.12s ease-out, top 0.12s ease-out;
 }
 
 .NB-density-compact .NB-feedlist .feed_title {
@@ -1882,6 +1884,8 @@ img.feed_favicon {
     height: 20px;
     left: -31px;
     top: 12px;
+
+    transition: top 0.12s ease-out;
 }
 
 .NB-theme-feed-size-xs .NB-storytitles-sentiment {
@@ -1935,7 +1939,9 @@ img.feed_favicon {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-/* margin: -15px 0 0 0; */}
+/* margin: -15px 0 0 0; */
+    transition: padding .12s ease-out, margin 0.12s ease-out, top 0.12s ease-out, height 0.12s ease-out;
+}
 .NB-story-title-magazine.NB-story-title .NB-storytitles-story-image {
     background-size: 40%, contain;
 }
@@ -2006,6 +2012,7 @@ img.feed_favicon {
     box-sizing: border-box;
     overflow-wrap: break-word;
     word-break: break-word;
+    transition: padding .12s ease-out, margin 0.12s ease-out, top 0.12s ease-out;
 }
 
 .NB-density-compact .NB-story-title a.story_title {
@@ -13629,6 +13636,11 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/nouns/monthly.svg') no-repeat 0 0;
     background-size: 16px;
     filter: hue-rotate(287deg) saturate(10.5);
+}
+.NB-stat-archive-count .NB-icon {
+    background: transparent url('/media/embed/icons/nouns/cabinet.svg') no-repeat 0 0;
+    background-size: 16px;
+    filter: hue-rotate(143deg) saturate(14.5);
 }
 .NB-stat-decay .NB-icon {
     background: transparent url('/media/embed/icons/nouns/refresh.svg') no-repeat 0 0;
