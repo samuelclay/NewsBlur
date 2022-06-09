@@ -205,6 +205,8 @@ class Feed(models.Model):
             'num_subscribers': self.num_subscribers,
             'updated': relative_timesince(self.last_update),
             'updated_seconds_ago': seconds_timesince(self.last_update),
+            'fs_size_bytes': self.fs_size_bytes,
+            'archive_count': self.archive_count,
             'last_story_date': self.last_story_date,
             'last_story_seconds_ago': seconds_timesince(self.last_story_date),
             'stories_last_month': self.stories_last_month,

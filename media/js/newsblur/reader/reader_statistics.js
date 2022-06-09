@@ -146,7 +146,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
 
               $.make('div', { className: 'NB-statistics-update'}, [
                 $.make('div', { className: 'NB-statistics-label' }, 'Stories in archive'),
-                $.make('div', { className: 'NB-statistics-count', title: Inflector.commas(data['fs_size_bytes']) + " bytes" }, '&nbsp;' + (Inflector.commas(data['archive_count'])) + " " + Inflector.pluralize("story", data['archive_count']))
+                (data['archive_count'] && $.make('div', { className: 'NB-statistics-count', title: Inflector.commas(data['fs_size_bytes']) + " bytes" }, '&nbsp;' + ((Inflector.commas(data['archive_count'])) + " " + Inflector.pluralize("story", data['archive_count']))))
               ]),
 
               ((data.average_stories_per_month == 0 || data.stories_last_month == 0) &&
