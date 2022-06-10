@@ -3374,6 +3374,11 @@
             this.apply_story_styling();
         },
         
+        switch_density: function(density) {
+            this.model.preference('density', density);
+            this.apply_story_styling();
+        },
+        
         switch_theme: function(theme) {
             this.model.preference('theme', theme);
             this.apply_story_styling();
@@ -3384,6 +3389,7 @@
             var auto_theme = NEWSBLUR.assets.preference('theme'); // Add auto
             var feed_font = NEWSBLUR.assets.preference('feed_font'); 
             var feed_size = NEWSBLUR.assets.preference('feed_size'); 
+            var density = NEWSBLUR.assets.preference('density'); 
     
             if (!this.flags.watching_system_theme && window.matchMedia) {
                 var darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -3415,6 +3421,8 @@
             $('.NB-options-feed-font-'+feed_font).addClass('NB-active');  
             $('.NB-feed-size-option').removeClass('NB-active');
             $('.NB-options-feed-size-'+feed_size).addClass('NB-active');  
+            $('.NB-density-option').removeClass('NB-active');
+            $('.NB-options-density-'+density).addClass('NB-active');  
             
             $("body").addClass('NB-theme-transitioning');
             
@@ -3608,6 +3616,13 @@
                             $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-xl', role: "button" }, 'XL')
                         ])
                     ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-density' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('ul', { className: 'segmented-control NB-menu-manage-options-density' }, [
+                            $.make('li', { className: 'NB-density-option NB-options-density-compact', role: "button" }, 'Compact'),
+                            $.make('li', { className: 'NB-density-option NB-options-density-comfortable NB-active', role: "button" }, 'Comfortable')
+                        ])
+                    ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-theme' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('ul', { className: 'segmented-control NB-options-theme' }, [
@@ -3641,6 +3656,9 @@
                 $(".NB-options-feed-size-m", $manage_menu).toggleClass('NB-active', feed_size == 'm');
                 $(".NB-options-feed-size-l", $manage_menu).toggleClass('NB-active', feed_size == 'l');
                 $(".NB-options-feed-size-xl", $manage_menu).toggleClass('NB-active', feed_size == 'xl');
+                var density = this.model.preference('density');
+                $(".NB-options-density-compact", $manage_menu).toggleClass('NB-active', density == 'compact');
+                $(".NB-options-density-comfortable", $manage_menu).toggleClass('NB-active', density == 'comfortable');
             } else if (type == 'feed') {
                 var feed = this.model.get_feed(feed_id);
                 if (!feed) return;
@@ -6595,6 +6613,14 @@
             $.targetIs(e, { tagSelector: '.NB-options-feed-size-xl' }, function($t, $p){
                 e.preventDefault();
                 self.switch_feed_font_size('xl');
+            });  
+            $.targetIs(e, { tagSelector: '.NB-options-density-compact' }, function($t, $p){
+                e.preventDefault();
+                self.switch_density('compact');
+            });  
+            $.targetIs(e, { tagSelector: '.NB-options-density-comfortable' }, function($t, $p){
+                e.preventDefault();
+                self.switch_density('comfortable');
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-logout' }, function($t, $p){
                 e.preventDefault();
