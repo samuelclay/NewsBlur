@@ -724,6 +724,7 @@ img.feed_favicon {
     left: 6px;
     width: 16px;
     height: 16px;
+    transition: all 0.12s ease-out;
 }
 .NB-density-compact .NB-feedlist img.feed_favicon {
     top: 1px;
@@ -1030,6 +1031,8 @@ img.feed_favicon {
     display: none;
     line-height: 14px;
     border-radius: 4px;
+
+    transition: all .12s ease-out;
 /*    border-top: 1px solid rgba(255, 255, 255, .4);*/
     /* border-bottom: 1px solid rgba(0, 0, 0, .1); */
 }
@@ -2228,6 +2231,7 @@ img.feed_favicon {
     height: 12px;
     color: #707070;
     position: absolute;
+    transition: top 0.12s ease-out;
 }
 .NB-story-title-magazine.NB-story-title .NB-story-feed {
     position: relative;
