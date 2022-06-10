@@ -769,7 +769,7 @@ img.feed_favicon {
     overflow: hidden;
     word-break: break-all;
 
-    transition: padding .12s ease-out, margin 0.12s ease-out, top 0.12s ease-out;
+    transition: padding 0.12s ease-out, margin 0.12s ease-out, top 0.12s ease-out;
 }
 
 .NB-density-compact .NB-feedlist .feed_title {
@@ -928,6 +928,7 @@ img.feed_favicon {
     position: absolute;
     right: 4px;
     top: 3px;
+    transition: top 0.12s ease-out;
 }
 .NB-density-compact .NB-feedlist .feed_counts {
     top: 1px;
@@ -1032,7 +1033,7 @@ img.feed_favicon {
     line-height: 14px;
     border-radius: 4px;
 
-    transition: all .12s ease-out;
+    transition: all 0.12s ease-out;
 /*    border-top: 1px solid rgba(255, 255, 255, .4);*/
     /* border-bottom: 1px solid rgba(0, 0, 0, .1); */
 }
@@ -1778,6 +1779,10 @@ img.feed_favicon {
     font-size: 18px;
     line-height: 22px;
 }
+.NB-story-title-magazine.NB-story-title,
+.NB-story-title-magazine.NB-story-title .NB-storytitles-magazine-bottom {
+    transition: padding 0.12s ease-out, margin 0.12s ease-out;
+}
 .NB-theme-feed-size-xs .NB-story-title-magazine.NB-story-title {
     font-size: 14px;
     line-height: 16px;
@@ -1803,7 +1808,15 @@ img.feed_favicon {
     line-height: 24px;
     padding-top: 30px;
 }
-
+.NB-density-compact .NB-story-title-magazine.NB-story-title {
+    padding-top: 4px;
+}
+.NB-density-compact .NB-story-title-magazine.NB-story-title.NB-selected {
+    padding-top: 4px;
+}
+.NB-density-compact .NB-story-title-magazine.NB-story-title.NB-selected .NB-story-feed {
+    margin-bottom: 6px;
+}
 .NB-story-pane-west .NB-story-title {
     padding-right: 10px;
     padding-left: 40px;
@@ -1943,7 +1956,7 @@ img.feed_favicon {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 /* margin: -15px 0 0 0; */
-    transition: padding .12s ease-out, margin 0.12s ease-out, top 0.12s ease-out, height 0.12s ease-out;
+    transition: padding 0.12s ease-out, margin 0.12s ease-out, top 0.12s ease-out, height 0.12s ease-out;
 }
 .NB-story-title-magazine.NB-story-title .NB-storytitles-story-image {
     background-size: 40%, contain;
@@ -2015,7 +2028,7 @@ img.feed_favicon {
     box-sizing: border-box;
     overflow-wrap: break-word;
     word-break: break-word;
-    transition: padding .12s ease-out, margin 0.12s ease-out, top 0.12s ease-out;
+    transition: padding 0.12s ease-out, margin 0.12s ease-out, top 0.12s ease-out;
 }
 
 .NB-density-compact .NB-story-title a.story_title {
@@ -2084,7 +2097,6 @@ img.feed_favicon {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     display: -webkit-box;
-
 }
 .NB-density-compact .NB-storytitles-content-preview {
     margin-bottom: 0;
@@ -2166,7 +2178,6 @@ img.feed_favicon {
     display: none;
 }
 
-
 .NB-theme-feed-size-xs .NB-story-title-magazine .NB-storytitles-content-preview {
     font-size: 12px;
     line-height: 15px;
@@ -2191,6 +2202,12 @@ img.feed_favicon {
     font-size: 18px;
     line-height: 22px;
     margin: 30px 0;
+}
+.NB-story-title-magazine .NB-storytitles-content-preview {
+    transition: padding 0.12s ease-out, margin 0.12s ease-out;
+}
+.NB-density-compact .NB-story-title-magazine .NB-storytitles-content-preview {
+    margin: 12px 0;
 }
 .read .NB-storytitles-content-preview {
     color: #b3b3b1;
@@ -2417,7 +2434,7 @@ img.feed_favicon {
     margin-bottom: 0;
 }
 .NB-story-title {
-    transition: transform .08s ease-out, border-radius .08s ease-out;
+    transition: transform 0.12s ease-out, border-radius 0.12s ease-out;
 }
 .NB-story-title.NB-selected,
 .NB-interaction:hover:not(.NB-disabled) {
@@ -2783,9 +2800,10 @@ img.feed_favicon {
     margin: 0 0 20px 4px;
     color: #A6A3A7;
     font-weight: normal;
+    transition: padding 0.12s ease-out, margin 0.12s ease-out;
 }
 .NB-density-compact .NB-storytitles-magazine-bottom {
-    margin-bottom: 0;
+    margin-bottom: 4px;
 }
 
 .NB-theme-feed-size-xs .NB-story-title .NB-storytitles-magazine-bottom {
@@ -4481,7 +4499,7 @@ body {
     /* box-shadow: 0 1px 2px rgb(230, 230, 230);
     border-bottom: 1px solid rgb(240,240,240); */
     clear: both;
-    transition: background-color .12s ease-out;
+    transition: background-color 0.12s ease-out;
     border-radius: 3px;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -4509,7 +4527,7 @@ body {
     float: right;
     background: transparent url('/media/embed/icons/nouns/saved-stories.svg') no-repeat 8px center;
     background-size: 16px;
-    transition: background .12s ease-out;
+    transition: background 0.12s ease-out;
 }
 .NB-sideoption.NB-feed-story-train .NB-sideoption-icon {
     background-image: url("/media/embed/icons/nouns/train.svg");
@@ -4531,8 +4549,8 @@ body {
     font-weight: normal;
     height: 32px;
     box-sizing: border-box;
-    transition: padding .12s ease-out,
-    color .12s ease-out;
+    transition: padding 0.12s ease-out,
+    color 0.12s ease-out;
 }
 .NB-content-narrow .NB-sideoption .NB-sideoption-title {
     padding-left: 10px;
@@ -4970,7 +4988,7 @@ body {
     line-height: 22px;
     cursor: pointer;
     overflow: hidden;
-    transition: transform .08s ease-out, border-radius .08s ease-out;
+    transition: transform 0.12s ease-out, border-radius 0.12s ease-out;
 }
 
 .NB-theme-feed-size-xs .NB-feeds-header {
@@ -6030,10 +6048,10 @@ form.opml_import_form input {
   margin: 0;
   padding: 12px 12px 12px 20px;
   display: block;
-  -webkit-transition: all .12s ease-out;
-  -moz-transition: all .12s ease-out;
-  -o-transition: all .12s ease-out;
-  -ms-transition: all .12s ease-out;
+  -webkit-transition: all 0.12s ease-out;
+  -moz-transition: all 0.12s ease-out;
+  -o-transition: all 0.12s ease-out;
+  -ms-transition: all 0.12s ease-out;
   background: transparent url('/media/embed/reader/spacer_16.png') no-repeat 0 -17px;
   background-size: 16px;
   font-weight: bold;
