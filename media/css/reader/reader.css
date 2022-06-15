@@ -1781,7 +1781,7 @@ img.feed_favicon {
 }
 .NB-story-title-magazine.NB-story-title,
 .NB-story-title-magazine.NB-story-title .NB-storytitles-magazine-bottom {
-    transition: padding 0.36s ease-out, margin 0.36s ease-out;
+    transition: padding 0.36s ease-out, margin 0.36s ease-out, transform 0.12s ease-out, border-radius 0.12s ease-out;
 }
 .NB-theme-feed-size-xs .NB-story-title-magazine.NB-story-title {
     font-size: 14px;
@@ -1955,8 +1955,15 @@ img.feed_favicon {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-/* margin: -15px 0 0 0; */
+    /* margin: -15px 0 0 0; */
     transition: padding 0.36s ease-out, margin 0.36s ease-out, top 0.36s ease-out, height 0.36s ease-out;
+}
+.NB-image-preview-large-right .NB-story-title-list.NB-story-title .NB-storytitles-story-image,
+.NB-image-preview-large-left .NB-story-title-list.NB-story-title .NB-storytitles-story-image,
+.NB-image-preview-large-left .NB-story-title-split.NB-story-title .NB-storytitles-story-image,
+.NB-image-preview-large-right .NB-story-title-split.NB-story-title .NB-storytitles-story-image {
+    margin: 0 0 0 0;
+    top: 0;
 }
 .NB-story-title-magazine.NB-story-title .NB-storytitles-story-image {
     background-size: 40%, contain;
@@ -2176,6 +2183,9 @@ img.feed_favicon {
 .NB-story-title-magazine.NB-selected .NB-storytitles-content-preview,
 .NB-story-title-grid.NB-selected .NB-storytitles-content-preview {
     display: none;
+}
+.NB-layout-split .NB-story-title-list.NB-selected .NB-storytitles-content-preview {
+    display: block;
 }
 
 .NB-theme-feed-size-xs .NB-story-title-magazine .NB-storytitles-content-preview {
@@ -2434,7 +2444,7 @@ img.feed_favicon {
     margin-bottom: 0;
 }
 .NB-story-title {
-    transition: transform 0.36s ease-out, border-radius 0.36s ease-out;
+    transition: transform 0.12s ease-out, border-radius 0.12s ease-out;
 }
 .NB-story-title.NB-selected,
 .NB-interaction:hover:not(.NB-disabled) {
