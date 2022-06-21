@@ -16,7 +16,7 @@ from django.urls import reverse
 from django.shortcuts import render
 from django.core.mail import mail_admins
 from django.conf import settings
-from apps.profile.models import Profile, PaymentHistory, RNewUserQueue, MRedeemedCode, MGiftCode
+from apps.profile.models import Profile, PaymentHistory, RNewUserQueue, MRedeemedCode, MGiftCode, PaypalIds
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory
 from apps.profile.forms import StripePlusPaymentForm, PLANS, DeleteAccountForm
 from apps.profile.forms import ForgotPasswordForm, ForgotPasswordReturnForm, AccountSettingsForm
@@ -291,7 +291,12 @@ def paypal_webhooks(request):
         user = User.objects.get(pk=int(data['resource']['custom_id']))
         user.profile.setup_premium_history()
     elif data['event_type'] in ["BILLING.SUBSCRIPTION.CANCELLED", "BILLING.SUBSCRIPTION.SUSPENDED"]:
-        user = User.objects.get(pk=int(data['resource']['custom_id']))
+        custom_id = data['resource'].get('custom_id', None)
+        if custom_id:
+            user = User.objects.get(pk=int(custom_id))
+        else:
+            paypal_id = PaypalIds.objects.get(paypal_sub_id=data['resource']['id'])
+            user = paypal_id.user
         user.profile.setup_premium_history()
 
     return HttpResponse("OK")
