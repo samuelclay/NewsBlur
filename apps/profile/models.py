@@ -217,6 +217,14 @@ class Profile(models.Model):
         logging.user(self.user, "Deleting %s starred stories." % starred_stories.count())
         starred_stories.delete()
         
+        paypal_ids = PaypalIds.objects.filter(user=self.user)
+        logging.user(self.user, "Deleting %s PayPal IDs." % paypal_ids.count())
+        paypal_ids.delete()
+        
+        stripe_ids = StripeIds.objects.filter(user=self.user)
+        logging.user(self.user, "Deleting %s Stripe IDs." % stripe_ids.count())
+        stripe_ids.delete()
+        
         logging.user(self.user, "Deleting user: %s" % self.user)
         self.user.delete()
     
