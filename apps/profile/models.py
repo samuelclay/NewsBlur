@@ -652,7 +652,7 @@ class Profile(models.Model):
                      total_paypal_payments, total_stripe_payments, len(payment_history), self.premium_expire))
 
         if (set_premium_expire and not self.is_premium and
-            (not self.premium_expire or self.premium_expire > datetime.datetime.now())):
+            self.premium_expire > datetime.datetime.now()):
             self.activate_premium()
         
         # logging.user(self.user, "~FCActive plan: %s, archive: %s, is_archive? %s" % (active_plan, Profile.plan_to_stripe_price('archive'), self.is_archive))
