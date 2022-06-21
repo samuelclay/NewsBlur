@@ -685,6 +685,9 @@ color: #a85b40;
 .NB-dark .NB-modal-feedchooser .NB-feedchooser-premium-bullets li {
     border-top-color:rgba(0, 0, 0, .1);
 }
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-premium-bullets li .NB-feedchooser-premium-bullet-image {
+    filter: brightness(5);
+}
 .NB-dark .NB-modal-feedchooser .NB-feedchooser-dollar-value {
     text-shadow: 0 1px 0 #2b2a1e;
 }
