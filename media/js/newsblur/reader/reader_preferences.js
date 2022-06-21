@@ -534,25 +534,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showimagepreview-sl', type: 'radio', name: 'image_preview', value: "small-left" }),
                                 $.make('label', { 'for': 'NB-preference-showimagepreview-sl' }, [
-                                    'Show a small image thumbnail on the left side of the story title'
+                                    'Small image thumbnail on the left'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showimagepreview-sr', type: 'radio', name: 'image_preview', value: "small-right" }),
                                 $.make('label', { 'for': 'NB-preference-showimagepreview-sr' }, [
-                                    'Show a small image thumbnail on the right side of the story title'
+                                    'Small image thumbnail on the right'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showimagepreview-ll', type: 'radio', name: 'image_preview', value: "large-left" }),
                                 $.make('label', { 'for': 'NB-preference-showimagepreview-ll' }, [
-                                    'Show a large image thumbnail on the left side of the story title'
+                                    'Large image thumbnail on the left'
                                 ])
                             ]),
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-showimagepreview-lr', type: 'radio', name: 'image_preview', value: "large-right" }),
                                 $.make('label', { 'for': 'NB-preference-showimagepreview-lr' }, [
-                                    'Show a large image thumbnail on the right side of the story title'
+                                    'Large image thumbnail on the right'
                                 ])
                             ]),
                             $.make('div', [
