@@ -709,7 +709,7 @@ color: #a85b40;
     box-shadow: 0 2px 0 #383215;
 }
 .NB-dark .NB-modal-feedchooser .NB-feedchooser-premium-already {
-    border-color: rgba(255,255,255,0.1);
+    background-color: rgb(48 88 83);
     color: #85bd67;
 }
 
