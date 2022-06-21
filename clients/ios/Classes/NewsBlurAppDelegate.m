@@ -1393,7 +1393,7 @@
     
     [self.userTagsViewController view]; // Force viewDidLoad
     CGRect frame = [sender CGRectValue];
-    [self showPopoverWithViewController:self.userTagsViewController contentSize:CGSizeMake(220, 382) sourceView:self.storyPagesViewController.view sourceRect:frame permittedArrowDirections:UIPopoverArrowDirectionDown];
+    [self showPopoverWithViewController:self.userTagsViewController contentSize:CGSizeMake(220, 382) sourceView:self.storyPagesViewController.view sourceRect:frame permittedArrowDirections:UIPopoverArrowDirectionUp | UIPopoverArrowDirectionDown];
 }
 
 #pragma mark - UIPopoverPresentationControllerDelegate
