@@ -223,7 +223,7 @@ class UserSubscription(models.Model):
 
         if not cutoff_date:
             if read_filter == "unread":
-                cutoff_date = datetime.datetime.now() - datetime.timedelta(days=self.user.profile.days_of_unread)
+                cutoff_date = self.user.profile.unread_cutoff
                 cutoff_date = max(cutoff_date, self.mark_read_date)
             elif read_filter == "all":
                 cutoff_date = datetime.datetime.now() - datetime.timedelta(days=self.user.profile.days_of_story_hashes)
