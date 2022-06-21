@@ -575,7 +575,7 @@ hr {
 }
 
 .NB-feedlist .folder_title {
-    padding: 6px 6px 6px 36px;
+    padding: 6px 8px 6px 36px;
     border-top: 1px solid transparent;
     border-bottom: 1px solid transparent;
     font-weight: bold;
@@ -621,7 +621,7 @@ hr {
     position: relative;
     cursor: pointer;
     padding: 0px 2px 0px 6px;
-    margin: 0 4px;
+    margin: 0 6px 0 4px;
 }
 
 .NB-feedlist .feed.NB-feed-exception {
@@ -8528,8 +8528,11 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-item.NB-menu-manage-font {
     padding: 2px 0;
 }
+.NB-menu-manage .NB-menu-manage-density .segmented-control,
+.NB-menu-manage .NB-menu-manage-font .segmented-control,
+.NB-menu-manage .NB-menu-manage-size .segmented-control,
 .NB-menu-manage .NB-menu-manage-theme .segmented-control {
-    margin: 0 0 0 36px;
+    margin: 0 6px 0 36px;
     max-width: 300px;
 }
 .NB-menu-manage .NB-menu-manage-theme .segmented-control li {
@@ -8540,10 +8543,6 @@ form.opml_import_form input {
     background-size: 18px;
     filter: hue-rotate(226deg) saturate(10.5);
 }
-.NB-menu-manage .NB-menu-manage-font .segmented-control {
-    margin: 0 0 0 36px;
-    max-width: 300px;
-}
 .NB-menu-manage .NB-menu-manage-font .segmented-control li {
     padding: 4px 8px;
 }
@@ -8551,10 +8550,6 @@ form.opml_import_form input {
     background: transparent url("/media/embed/icons/nouns/font-size.svg") no-repeat center center;
     background-size: 18px;
     filter: hue-rotate(40deg) saturate(10.5);
-}
-.NB-menu-manage .NB-menu-manage-size .segmented-control {
-    margin: 0 0 0 36px;
-    max-width: 300px;
 }
 .NB-menu-manage .NB-menu-manage-size .segmented-control li {
     font-weight: bold;
@@ -8578,10 +8573,6 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-size .segmented-control li.NB-options-feed-size-xl {
     font-size: 15px;
     padding: 3px 12px 2px;
-}
-.NB-menu-manage .NB-menu-manage-density .segmented-control {
-    margin: 0 0 0 36px;
-    max-width: 300px;
 }
 .NB-menu-manage .NB-menu-manage-density .NB-menu-manage-image {    
     background: transparent url("/media/embed/icons/nouns/square-space.svg") no-repeat center center;
