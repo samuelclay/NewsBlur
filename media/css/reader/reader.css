@@ -852,7 +852,7 @@ img.feed_favicon {
 
 .NB-feedlists .folder .folder_title .feed_counts_floater,
 .NB-feeds-header .feed_counts_floater {
-    margin-right: 2px;
+    margin-right: 10px;
 }
 
 .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon,
@@ -5077,7 +5077,7 @@ body {
 .NB-feeds-header-starred .NB-feeds-header-count {
     background-color: #506B9A;
     margin-top: 4px;
-    margin-right: 3px;
+    margin-right: 11px;
     display: block;
 }
 .NB-starred-feeds {
