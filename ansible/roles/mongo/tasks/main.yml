@@ -78,6 +78,7 @@
     force: yes
     
 - name: Start db-mongo docker container
+  become: yes
   docker_container:
     name: mongo
     image: mongo:4.0
@@ -105,6 +106,7 @@
   when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-primary', 'db-mongo-secondary']
 
 - name: Start db-mongo-analytics docker container
+  become: yes
   docker_container:
     name: mongo
     image: mongo:4.0
