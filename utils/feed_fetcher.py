@@ -874,7 +874,14 @@ class FeedFetcherWorker:
         if self.options.get('archive_page', None):
             for feed_id in feed_queue:
                 feed = self.refresh_feed(feed_id)
-                self.fetch_and_process_archive_pages(feed_id)
+                try:
+                    self.fetch_and_process_archive_pages(feed_id)
+                except SoftTimeLimitExceeded:
+                    logging.debug(
+                        '   ---> [%-30s] ~FRTime limit reached while fetching ~FGarchive pages~FR. Made it to ~SB%s'
+                        % (feed.log_title[:30], self.options['archive_page'])
+                    )
+                    pass
             if len(feed_queue) == 1:
                 feed = self.refresh_feed(feed_queue[0])
                 return feed
