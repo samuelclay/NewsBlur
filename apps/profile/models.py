@@ -1303,7 +1303,7 @@ class Profile(models.Model):
         
         logging.user(self.user, "~BB~FM~SBSending email for new premium: %s" % self.user.email)
     
-    def send_new_premium_archive_email(self, new_story_count, total_story_count, pre_archive_count, force=False):
+    def send_new_premium_archive_email(self, total_story_count, pre_archive_count, force=False):
         if not self.user.email:
             return
         
