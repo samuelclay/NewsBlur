@@ -1312,6 +1312,7 @@ class Profile(models.Model):
             MSentEmail.objects.get(**params)
             if not force:
                 # Return if email already sent
+                logging.user(self.user, "~BB~FMNot ~SBSending email for new premium archive: %s (%s to %s stories)" % (self.user.email, pre_archive_count, total_story_count))
                 return
         except MSentEmail.DoesNotExist:
             MSentEmail.objects.create(**params)

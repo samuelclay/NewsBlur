@@ -101,7 +101,7 @@ class FetchFeed:
             self.options['force'] = True
             modified = None
             etag = None
-            if self.options.get('archive_page', None) == "rfc5005":
+            if self.options.get('archive_page', None) == "rfc5005" and self.options.get('archive_page_link', None):
                 address = self.options['archive_page_link']
             elif self.options.get('archive_page', None):
                 address = qurl(address, add={self.options['archive_page_key']: self.options['archive_page']})
@@ -1166,6 +1166,7 @@ class FeedFetcherWorker:
                     else:
                         logging.debug('   ---> [%-30s] ~FBFeed has no RFC5005 links...' % (feed.log_title[:30]))
                 else:
+                    self.options['archive_page_link'] = link_prev_archive
                     ffeed = FetchFeed(feed_id, self.options)
                     try:
                         ret_feed, fetched_feed = ffeed.fetch()
