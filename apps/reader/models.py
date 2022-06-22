@@ -613,7 +613,8 @@ class UserSubscription(models.Model):
         search_chunks = [FetchArchiveFeedsChunk.s(feed_ids=feed_id_chunk,
                                                   user_id=user_id
                                                   ).set(queue='search_indexer')
-                                                   .set(time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED)
+                                                   .set(time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED, 
+                                                        soft_time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED-30)
                          for feed_id_chunk in feed_id_chunks]
         callback = FinishFetchArchiveFeeds.s(user_id=user_id,
                                              start_time=start_time,

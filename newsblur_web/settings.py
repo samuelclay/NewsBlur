@@ -98,7 +98,7 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880 # 5 MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880 # 5 MB
 PROMETHEUS_EXPORT_MIGRATIONS = False
 MAX_SECONDS_COMPLETE_ARCHIVE_FETCH = 60 * 60 * 1 # 1 hour
-MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED = 60 * 10 # 10 minutes
+MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED = 60 * 1 # 1 minutes
 
 # Uncomment below to force all feeds to store this many stories. Default is to cut 
 # off at 25 stories for single subscriber non-premium feeds and 500 for popular feeds.
