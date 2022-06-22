@@ -580,7 +580,8 @@ class UserSubscription(models.Model):
     def schedule_fetch_archive_feeds_for_user(cls, user_id):
         from apps.profile.tasks import FetchArchiveFeedsForUser
         FetchArchiveFeedsForUser.apply_async(kwargs=dict(user_id=user_id), 
-                                             queue='search_indexer')
+                                             queue='search_indexer',
+                                             time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH)
         
     # Should be run as a background task
     @classmethod
@@ -611,7 +612,8 @@ class UserSubscription(models.Model):
         
         search_chunks = [FetchArchiveFeedsChunk.s(feed_ids=feed_id_chunk,
                                                   user_id=user_id
-                                                  ).set(queue='search_indexer').set(time_limit=1500)
+                                                  ).set(queue='search_indexer')
+                                                   .set(time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED)
                          for feed_id_chunk in feed_id_chunks]
         callback = FinishFetchArchiveFeeds.s(user_id=user_id,
                                              start_time=start_time,
