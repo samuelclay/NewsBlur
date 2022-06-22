@@ -69,7 +69,7 @@ variable "mongo_droplet_size" {
 
 variable "mongo_primary_droplet_size" {
   type = string
-  default = "so-4vcpu-32gb"
+  default = "m3-8vcpu-64gb"
 }
 
 variable "mongo_secondary_droplet_size" {
