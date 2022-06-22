@@ -2185,7 +2185,7 @@ img.feed_favicon {
     display: none;
 }
 .NB-layout-split .NB-story-title-list.NB-selected .NB-storytitles-content-preview {
-    display: block;
+    display: -webkit-box;
 }
 
 .NB-theme-feed-size-xs .NB-story-title-magazine .NB-storytitles-content-preview {
