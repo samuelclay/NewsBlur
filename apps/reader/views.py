@@ -690,8 +690,7 @@ def load_single_feed(request, feed_id):
         ).order_by('%sstarred_date' % ('-' if order == 'newest' else ''))[offset:offset+limit]
         stories = Feed.format_stories(mstories) 
     elif usersub and read_filter == 'unread':
-        stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit,
-                                      default_cutoff_date=user.profile.unread_cutoff)
+        stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
     else:
         stories = feed.get_stories(offset, limit, order=order)
     
@@ -1683,46 +1682,6 @@ def complete_river(request):
         logging.user(request, "~FC~BBRiver complete on page ~SB%s~SN, truncating ~SB%s~SN stories from ~SB%s~SN feeds" % (page, stories_truncated, len(feed_ids)))
     
     return dict(code=1, message="Truncated %s stories from %s" % (stories_truncated, len(feed_ids)))
-    
-@json.json_view
-def unread_story_hashes__old(request):
-    user              = get_user(request)
-    feed_ids          = request.GET.getlist('feed_id') or request.GET.getlist('feed_id[]')
-    feed_ids          = [int(feed_id) for feed_id in feed_ids if feed_id]
-    include_timestamps = is_true(request.GET.get('include_timestamps', False))
-    usersubs = {}
-    
-    if not feed_ids:
-        usersubs = UserSubscription.objects.filter(Q(unread_count_neutral__gt=0) |
-                                                   Q(unread_count_positive__gt=0),
-                                                   user=user, active=True)
-        feed_ids = [sub.feed_id for sub in usersubs]
-    else:
-        usersubs = UserSubscription.objects.filter(Q(unread_count_neutral__gt=0) |
-                                                   Q(unread_count_positive__gt=0),
-                                                   user=user, active=True, feed__in=feed_ids)
-    
-    unread_feed_story_hashes = {}
-    story_hash_count = 0
-    
-    usersubs = dict((sub.feed_id, sub) for sub in usersubs)
-    for feed_id in feed_ids:
-        if feed_id in usersubs:
-            us = usersubs[feed_id]
-        else:
-            continue
-        if not us.unread_count_neutral and not us.unread_count_positive:
-            continue
-        unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=500,
-                                                           withscores=include_timestamps,
-                                                           hashes_only=True,
-                                                           default_cutoff_date=user.profile.unread_cutoff)
-        story_hash_count += len(unread_feed_story_hashes[feed_id])
-
-    logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
-                           (len(feed_ids), len(story_hash_count)))
-
-    return dict(unread_feed_story_hashes=unread_feed_story_hashes)
 
 @json.json_view
 def unread_story_hashes(request):
