@@ -468,7 +468,7 @@ resource "digitalocean_droplet" "db-mongo-primary" {
   image    = var.droplet_os
   name     = "db-mongo-primary${count.index+1}"
   region   = var.droplet_region
-  size     = var.mongo_primary_droplet_size
+  size     = contains([1], count.index) ? "m3-8vcpu-64gb" : var.mongo_primary_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
