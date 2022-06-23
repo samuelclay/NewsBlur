@@ -12,26 +12,11 @@
 
 @class SAConfettiView;
 
-@interface PremiumViewController : BaseViewController <UITableViewDelegate, UITableViewDataSource> {
-    NewsBlurAppDelegate *appDelegate;
-}
+@interface PremiumViewController : BaseViewController <UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic) IBOutlet UIActivityIndicatorView *spinner;
-@property (nonatomic) IBOutlet UITableView *productsTable;
-@property (nonatomic) IBOutlet UITableView *reasonsTable;
-@property (nonatomic) IBOutlet UINavigationBar *navigationBar;
-@property (nonatomic) IBOutlet UIBarButtonItem *doneButton;
-@property (nonatomic) IBOutlet UIBarButtonItem *restoreButton;
-@property (nonatomic) IBOutlet UIView *freeView;
-@property (nonatomic) IBOutlet UIView *premiumView;
+@property (nonatomic) IBOutlet UITableView *premiumTable;
 @property (nonatomic) IBOutlet SAConfettiView *confettiView;
-@property (nonatomic) IBOutlet NSLayoutConstraint *productsHeight;
-@property (nonatomic) IBOutlet UILabel *labelTitle;
-@property (nonatomic) IBOutlet UILabel *labelSubtitle;
-@property (nonatomic) IBOutlet UITextView *policyTextView;
-@property (nonatomic) IBOutlet UILabel *labelPremiumTitle;
-@property (nonatomic) IBOutlet UILabel *labelPremiumExpire;
 
 
 - (IBAction)closeDialog:(id)sender;
