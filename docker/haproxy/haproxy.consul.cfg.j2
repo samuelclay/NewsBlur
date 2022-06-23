@@ -146,6 +146,14 @@ backend sentry
         server {{host}} {{host}}.node.nyc1.consul:9000
     {% endfor %}
 
+backend staging
+    balance roundrobin
+    option httpchk GET /_haproxychk
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.staging %}
+        server {{host}} {{host}}.node.nyc1.consul:8000
+    {% endfor %}
+
 backend node_images
     option httpchk HEAD /sc,seLJDaKBog3LLEMDe8cjBefMhnVSibO4RA5boZhWcVZ0=/https://samuelclay.com/static/images/2019%20-%20Cuba.jpg
     http-check expect rstatus 200|301
