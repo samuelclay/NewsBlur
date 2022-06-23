@@ -201,8 +201,6 @@ class UserSubscription(models.Model):
         
             results = pipeline.execute()
 
-            if store_stories_key:
-                r.zunionstore(store_stories_key, unread_ranked_stories_keys, aggregate="MAX")
         
             for hashes in results:
                 if not isinstance(hashes, list): continue
@@ -211,6 +209,9 @@ class UserSubscription(models.Model):
                     feed_counter += 1
                 else:
                     story_hashes.extend(hashes)
+
+        if store_stories_key:
+            r.zunionstore(store_stories_key, unread_ranked_stories_keys, aggregate="MAX")
         
         return story_hashes
         
