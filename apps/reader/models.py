@@ -112,7 +112,7 @@ class UserSubscription(models.Model):
     @classmethod
     def story_hashes(cls, user_id, feed_ids=None, usersubs=None, read_filter="unread", order="newest", 
                      include_timestamps=False, group_by_feed=False, cutoff_date=None,
-                     across_all_feeds=True):
+                     across_all_feeds=True, offset=0, limit=500):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         pipeline = r.pipeline()
         story_hashes = {} if group_by_feed else []
@@ -189,7 +189,7 @@ class UserSubscription(models.Model):
                         len(debug_stories),
                         debug_stories)))
                 
-                byscorefunc(unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps)
+                byscorefunc(unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps, start=offset, num=limit)
                 pipeline.delete(unread_ranked_stories_key)
                 if expire_unread_stories_key:
                     pipeline.delete(unread_stories_key)
@@ -207,120 +207,16 @@ class UserSubscription(models.Model):
         
         return story_hashes
         
-    def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False,
-                    hashes_only=False, cutoff_date=None, default_cutoff_date=None):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        renc = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL_ENCODED)
-        rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
-        ignore_user_stories = False
+    def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', cutoff_date=None):
+        story_hashes = UserSubscription.story_hashes(self.user.pk, feed_ids=[self.feed.pk], 
+                                                     order=order, read_filter=read_filter,
+                                                     offset=offset, limit=limit,
+                                                     cutoff_date=cutoff_date)
         
-        stories_key         = 'F:%s' % (self.feed_id)
-        read_stories_key    = 'RS:%s:%s' % (self.user_id, self.feed_id)
-        unread_stories_key  = 'U:%s:%s' % (self.user_id, self.feed_id)
-
-        unread_ranked_stories_key  = 'z%sU:%s:%s' % ('h' if hashes_only else '', 
-                                                     self.user_id, self.feed_id)
-
-        if not cutoff_date:
-            if read_filter == "unread":
-                cutoff_date = self.user.profile.unread_cutoff
-                cutoff_date = max(cutoff_date, self.mark_read_date)
-            elif read_filter == "all":
-                cutoff_date = datetime.datetime.now() - datetime.timedelta(days=self.user.profile.days_of_story_hashes)
-            elif default_cutoff_date:
-                cutoff_date = default_cutoff_date
-
-        current_time = int(time.time() + 60*60*24)
-        if order == 'oldest':
-            byscorefunc = rt.zrangebyscore
-            if read_filter == 'unread':
-                min_score = int(time.mktime(cutoff_date.timetuple())) + 1
-            else:
-                min_score = int(time.mktime(cutoff_date.timetuple())) - 1000
-            max_score = current_time
-        else:
-            byscorefunc = rt.zrevrangebyscore
-            min_score = current_time
-            if read_filter == 'unread':
-                # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
-                max_score = int(time.mktime(cutoff_date.timetuple())) + 1
-            else:
-                max_score = 0
-
-        if withscores or not offset or not rt.exists(unread_ranked_stories_key):
-            rt.delete(unread_ranked_stories_key)
-            if not r.exists(stories_key):
-                # No stories on feed
-                return []
-            elif read_filter == 'all' or not r.exists(read_stories_key):
-                ignore_user_stories = True
-                unread_stories_key = stories_key
-            else:
-                r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
-            sorted_stories_key          = 'zF:%s' % (self.feed_id)
-            r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])            
-            if order == 'oldest':
-                removed_min = r.zremrangebyscore(unread_ranked_stories_key, 0, min_score-1)
-                removed_max = r.zremrangebyscore(unread_ranked_stories_key, max_score+1, 2*max_score)
-            else:
-                removed_min = r.zremrangebyscore(unread_ranked_stories_key, 0, max_score-1)
-                removed_max = r.zremrangebyscore(unread_ranked_stories_key, min_score+1, 2*min_score)
-
-            if not ignore_user_stories:
-                r.delete(unread_stories_key)
-                
-            if self.user.profile.is_archive and read_filter == "unread":
-                oldest_manual_unread = self.oldest_manual_unread_story_date()
-                if oldest_manual_unread:
-                    if order == 'oldest':
-                        min_score = int(oldest_manual_unread[0][1])
-                    else:
-                        max_score = int(oldest_manual_unread[0][1])
-                    user_unread_stories_feed_key = f"uU:{self.user_id}:{self.feed_id}"                        
-                    r.zunionstore(unread_ranked_stories_key, [unread_ranked_stories_key, user_unread_stories_feed_key], aggregate="MAX")
-            
-            # Weird encoding error on redis' part, where a DUMP causes an encoding 
-            # error due to decode_responses=True. Seems easy enough to work around.
-            dump = renc.dump(unread_ranked_stories_key)
-            if dump:
-                pipeline = rt.pipeline()
-                pipeline.delete(unread_ranked_stories_key)
-                pipeline.restore(unread_ranked_stories_key, 1*60*60*1000, dump)
-                pipeline.execute()
-                r.delete(unread_ranked_stories_key)
-        else:
-            if self.user.profile.is_archive:
-                oldest_manual_unread = self.oldest_manual_unread_story_date()
-                if oldest_manual_unread:
-                    if order == 'oldest':
-                        min_score = int(oldest_manual_unread[0][1])
-                    else:
-                        max_score = int(oldest_manual_unread[0][1])
-
-        if settings.DEBUG and False:
-            debug_stories = rt.zrevrange(unread_ranked_stories_key, 0, -1, withscores=True)
-            print((" ---> Unread all stories (%s/%s - %s/%s) %s stories: %s" % (
-                min_score, datetime.datetime.fromtimestamp(min_score).strftime('%Y-%m-%d %T'),
-                max_score, datetime.datetime.fromtimestamp(max_score).strftime('%Y-%m-%d %T'),
-                len(debug_stories),
-                debug_stories)))
-        
-        story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
-                                  max_score, start=offset, num=500,
-                                  withscores=withscores)[:limit]
-        
-        if withscores:
-            story_ids = [(s[0], int(s[1])) for s in story_ids]
-
-        if withscores or hashes_only:
-            return story_ids
-        elif story_ids:
-            story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
-            mstories = MStory.objects(story_hash__in=story_ids).order_by(story_date_order)
-            stories = Feed.format_stories(mstories)
-            return stories
-        else:
-            return []
+        story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
+        mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
+        stories = Feed.format_stories(mstories)
+        return stories
         
     @classmethod
     def feed_stories(cls, user_id, feed_ids=None, offset=0, limit=6, 
