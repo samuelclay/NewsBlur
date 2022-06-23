@@ -2444,7 +2444,7 @@ img.feed_favicon {
     margin-bottom: 0;
 }
 .NB-story-title {
-    transition: transform 0.12s ease-out, border-radius 0.12s ease-out;
+    transition: transform 0.12s ease-out, border-radius 0.12s ease-out, height 0.36s ease-out;
 }
 .NB-story-title.NB-selected,
 .NB-interaction:hover:not(.NB-disabled) {
@@ -2563,6 +2563,7 @@ img.feed_favicon {
     height: 360px;
     padding: 0;
     border-radius: 2px;
+
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
