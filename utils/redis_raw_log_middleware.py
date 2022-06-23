@@ -20,16 +20,16 @@ class RedisDumpMiddleware(object):
             # save old methods
             setattr(Connection, '_logging', True)
             connection.queriesx = []
-            Connection.pack_command = \
-                    self._instrument(Connection.pack_command)
+            Connection.send_command = \
+                    self._instrument(Connection.send_command)
 
     def process_celery(self, profiler):
         if not self.activated(profiler): return
         if not getattr(Connection, '_logging', False):
             # save old methods
             setattr(Connection, '_logging', True)
-            Connection.pack_command = \
-                    self._instrument(Connection.pack_command)
+            Connection.send_command = \
+                    self._instrument(Connection.send_command)
 
     def process_response(self, request, response):
         # if settings.DEBUG and hasattr(self, 'orig_pack_command'):
@@ -78,7 +78,7 @@ class RedisDumpMiddleware(object):
             if len(str(arg)) > 100:
                 arg = "[%s bytes]" % len(str(arg))
             query.append(str(arg).replace('\n', ''))
-        return { 'query': ' '.join(query), 'redis_server_name': redis_server_name }
+        return { 'query': f"{redis_server_name}: {' '.join(query)}", 'redis_server_name': redis_server_name }
 
     def __call__(self, request):
         response = None
