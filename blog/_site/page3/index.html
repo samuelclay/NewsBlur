@@ -64,7 +64,26 @@
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
         <div class="home">
-    <ul class="post-list"><li><span class="post-meta">Jun 14, 2017</span>
+    <ul class="post-list"><li><span class="post-meta">Oct 24, 2017</span>
+        <h3>
+          <a class="post-link" href="/2017/10/24/improved-text-view-story-extraction/">
+            Improved Text view story extraction
+          </a>
+        </h3>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>The Text view is one of the most popular NewsBlur features. It’s available on all three platforms and gives you the full text of the original story, even in truncated RSS feeds. Up until today, NewsBlur’s implementation of the Text view used Readability’s open source text extractor.</p>
+
+<p>Starting today, all stories will be run through <a href="https://mercury.postlight.com/web-parser/">Postlight Labs’ Mercury Parser</a>. That means that not only will the full text be more likely to correctly pull the entire article, but it will also do a much better job with extracting full size images in stories.</p>
+
+<p>Take a look:</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/text_view_images.png" alt="" /></p>
+
+<p>A welcome improvement. This new text extractor and parser also does a better job of handling Unicode and Chinese characters. And when it doesn’t extract text as well as the old text extractor, NewsBlur will automatically fallback on the old method.</p>
+
+
+        </div>
+      </li><li><span class="post-meta">Jun 14, 2017</span>
         <h3>
           <a class="post-link" href="/2017/06/14/launching-real-time-filterable-push-notifications/">
             Launching real-time filterable push notifications for iOS, Android, web, and email
@@ -363,29 +382,6 @@
 </ul>
 
 <p>What a good way to close out January.</p>
-
-
-        </div>
-      </li><li><span class="post-meta">Jan 11, 2017</span>
-        <h3>
-          <a class="post-link" href="/2017/01/11/the-dashboard-river-will-keep-you-up-to-date-in/">
-            The dashboard river will keep you up-to-date in real-time
-          </a>
-        </h3>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>This is a seriously cool feature and I’m glad it’s ready to launch. The dashboard river, the real-time stream of the top five stories of All Site Stories, is now on the dashboard of the web app.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/dashboard-river.png" alt="" /></p>
-
-<p>After testing this feature for the past few weeks I now realize that I could not live without it. By having the latest stories always loaded and instantly ready to go, I leave NewsBlur open and just take a quick glance to see if the top of my list is interesting.</p>
-
-<p>It also loads instantly, which means that if you see a story you want to read, clicking on it brings up the text without taking a single moment.</p>
-
-<p>One big change that this necessitated was the handling of the Text view when reading by folders. Used to be that a folder got its own feed/text/story view and every feed had to stay with the same story view. But on iOS and Android it’s different. Every feed gets to keep its own feed/text/story setting.</p>
-
-<p>This is now how it works on the web. If you read on feed by its Text (extracted original text) view and another by its Feed view, then you are automatically switched between the two views. Quite a bit of logic had to accomodate scrolling (you don’t automatically switch, since that would throw you from one scroll viewport into another) and switching between stories.</p>
-
-<p>Enjoy the dashboard river. And if you look closely you might even see the next big feature that itself is about to launch soon.</p>
 
 
         </div>
