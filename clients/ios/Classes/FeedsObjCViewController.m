@@ -698,6 +698,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     appDelegate.userActivitiesArray = [results objectForKey:@"activities"];
     
     appDelegate.isPremium = [[appDelegate.dictUserProfile objectForKey:@"is_premium"] integerValue] == 1;
+    appDelegate.isPremiumArchive = [[appDelegate.dictUserProfile objectForKey:@"is_archive"] integerValue] == 1;
     id premiumExpire = [appDelegate.dictUserProfile objectForKey:@"premium_expire"];
     if (premiumExpire && ![premiumExpire isKindOfClass:[NSNull class]] && premiumExpire != 0) {
         appDelegate.premiumExpire = [premiumExpire integerValue];
@@ -1032,8 +1033,12 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self.appDelegate showFindFriends];
     }];
     
-    if (appDelegate.isPremium) {
-        [viewController addTitle:@"Premium Account" iconName:@"g_icn_greensun.png" selectionShouldDismiss:YES handler:^{
+    if (appDelegate.isPremium && appDelegate.isPremiumArchive) {
+        [viewController addTitle:@"Premium Archive" iconName:@"g_icn_greensun.png" selectionShouldDismiss:YES handler:^{
+            [self.appDelegate showPremiumDialog];
+        }];
+    } else if (appDelegate.isPremium) {
+        [viewController addTitle:@"Upgrade to Archive" iconName:@"g_icn_greensun.png" selectionShouldDismiss:YES handler:^{
             [self.appDelegate showPremiumDialog];
         }];
     } else {

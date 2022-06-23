@@ -167,6 +167,7 @@
 @synthesize dictUnreadCounts;
 @synthesize dictTextFeeds;
 @synthesize isPremium;
+@synthesize isPremiumArchive;
 @synthesize premiumExpire;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
@@ -238,6 +239,7 @@
     cachedStoryImages = [[PINCache alloc] initWithName:@"NBStoryImages"];
     cachedStoryImages.memoryCache.removeAllObjectsOnEnteringBackground = NO;
     isPremium = NO;
+    isPremiumArchive = NO;
     premiumExpire = 0;
     
     NBURLCache *urlCache = [[NBURLCache alloc] init];

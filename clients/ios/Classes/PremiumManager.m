@@ -9,8 +9,8 @@
 #import "PremiumManager.h"
 #import "PremiumViewController.h"
 
-#define kPremium24ProductIdentifier @"newsblur_premium_auto_renew_24"
 #define kPremium36ProductIdentifier @"newsblur_premium_auto_renew_36"
+#define kPremiumArchiveProductIdentifier @"newsblur_premium_archive"
 
 @interface PremiumManager () <SKProductsRequestDelegate, SKPaymentTransactionObserver>
 
@@ -24,16 +24,24 @@
 
 - (instancetype)init {
     if ((self = [super init])) {
-        self.products = [NSArray array];
-        self.reasons = @[@[@"Enable every site by going premium", @"g_icn_buffer"],
-                    @[@"Sites updated up to 10x more often", @"g_icn_lightning"],
+        self.premiumProduct = nil;
+        self.premiumArchiveProduct = nil;
+        self.premiumReasons = @[@[@"Enable every site by going premium", @"g_icn_buffer"],
+                    @[@"Sites updated up to 5x more often", @"g_icn_lightning"],
                     @[@"River of News (reading by folder)", @"g_icn_folder_black"],
                     @[@"Search sites and folders", @"g_icn_search_black"],
                     @[@"Save stories with searchable tags", @"g_icn_tag_black"],
                     @[@"Privacy options for your blurblog", @"g_icn_privacy"],
-                    @[@"Custom RSS feeds for folders and saved stories", @"g_icn_folder_black"],
+                    @[@"Custom RSS feeds for saved stories", @"g_icn_folder_black"],
                     @[@"Text view conveniently extracts the story", @"g_icn_textview_black"],
-                    @[@"You feed Shiloh, my poor, hungry dog, for a month", @"g_icn_eating"],
+                    @[@"You feed Lyric, NewsBlur\'s hungry hound, for 6 days", @"g_icn_eating"],
+                    ];
+        self.premiumArchiveReasons = @[@[@"Everything in the premium subscription, of course", @"g_icn_buffer"],
+                    @[@"Choose when stories are automatically marked as read", @"g_icn_buffer"],
+                    @[@"Every story from every site is archived and searchable forever", @"g_icn_buffer"],
+                    @[@"Feeds that support paging are back-filled in for a complete archive", @"g_icn_buffer"],
+                    @[@"Export trained stories from folders as RSS feeds", @"g_icn_buffer"],
+                    @[@"Stories can stay unread forever", @"g_icn_buffer"]
                     ];
     }
     
@@ -50,8 +58,9 @@
     if ([SKPaymentQueue canMakePayments]){
         SKProductsRequest *productsRequest = [[SKProductsRequest alloc]
                                               initWithProductIdentifiers:[NSSet setWithObjects:
-                                                                          kPremium24ProductIdentifier,
-                                                                          kPremium36ProductIdentifier, nil]];
+                                                                          kPremium36ProductIdentifier,
+                                                                          kPremiumArchiveProductIdentifier,
+                                                                          nil]];
         productsRequest.delegate = self;
         self.request = productsRequest;
         [productsRequest start];
@@ -63,8 +72,14 @@
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response{
     SKProduct *validProduct = nil;
     NSUInteger count = [response.products count];
-    if (count > 0){
-        self.products = response.products;
+    if (count > 0) {
+        for (SKProduct *product in response.products) {
+            if ([product.productIdentifier isEqualToString:kPremium36ProductIdentifier]) {
+                self.premiumProduct = product;
+            } else if ([product.productIdentifier isEqualToString:kPremiumArchiveProductIdentifier]) {
+                self.premiumArchiveProduct = product;
+            }
+        }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.appDelegate.premiumViewController loadedProducts];
