@@ -112,7 +112,7 @@ class UserSubscription(models.Model):
     @classmethod
     def story_hashes(cls, user_id, feed_ids=None, usersubs=None, read_filter="unread", order="newest", 
                      include_timestamps=False, group_by_feed=False, cutoff_date=None,
-                     across_all_feeds=True, offset=0, limit=500):
+                     across_all_feeds=True, ranked_stories_keys=None, offset=0, limit=500):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         pipeline = r.pipeline()
         story_hashes = {} if group_by_feed else []
@@ -131,7 +131,8 @@ class UserSubscription(models.Model):
         if not cutoff_date:
             cutoff_date = datetime.datetime.now() - datetime.timedelta(days=UserSubscription.days_of_story_hashes_for_user(user_id))
         feed_counter = 0
-
+        unread_ranked_stories_keys = []
+        
         read_dates = dict()
         for us in usersubs:
             read_dates[us.feed_id] = int(max(us.mark_read_date, cutoff_date).strftime('%s'))
@@ -190,12 +191,16 @@ class UserSubscription(models.Model):
                         debug_stories)))
                 
                 byscorefunc(unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps, start=offset, num=limit)
-                pipeline.delete(unread_ranked_stories_key)
-                if expire_unread_stories_key:
-                    pipeline.delete(unread_stories_key)
+                unread_ranked_stories_keys.append(unread_ranked_stories_key)
+                # pipeline.delete(unread_ranked_stories_key)
+                # if expire_unread_stories_key:
+                #     pipeline.delete(unread_stories_key)
 
         
             results = pipeline.execute()
+
+            if ranked_stories_keys:
+                r.zunionstore(ranked_stories_keys, unread_ranked_stories_keys, aggregate="MAX")
         
             for hashes in results:
                 if not isinstance(hashes, list): continue
@@ -222,7 +227,7 @@ class UserSubscription(models.Model):
     def feed_stories(cls, user_id, feed_ids=None, offset=0, limit=6, 
                      order='newest', read_filter='all', usersubs=None, cutoff_date=None,
                      all_feed_ids=None, cache_prefix=""):
-        rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
+        rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         across_all_feeds = False
         
         if order == 'oldest':
@@ -257,18 +262,19 @@ class UserSubscription(models.Model):
 
         story_hashes = cls.story_hashes(user_id, feed_ids=feed_ids, 
                                         read_filter=read_filter, order=order, 
-                                        include_timestamps=True,
+                                        include_timestamps=False,
                                         usersubs=usersubs,
                                         cutoff_date=cutoff_date,
-                                        across_all_feeds=across_all_feeds)
+                                        across_all_feeds=across_all_feeds,
+                                        ranked_stories_keys=ranked_stories_keys)
         
         if not story_hashes:
             return [], []
         
-        pipeline = rt.pipeline()
-        for story_hash_group in chunks(story_hashes, 100):
-            pipeline.zadd(ranked_stories_keys, dict(story_hash_group))
-        pipeline.execute()
+        # pipeline = rt.pipeline()
+        # for story_hash_group in chunks(story_hashes, 100):
+        #     pipeline.zadd(ranked_stories_keys, dict(story_hash_group))
+        # pipeline.execute()
         story_hashes = range_func(ranked_stories_keys, offset, limit)
 
         if read_filter == "unread":
