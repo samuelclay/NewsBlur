@@ -729,7 +729,6 @@ def load_single_feed(request, feed_id):
             unread_story_hashes = UserSubscription.story_hashes(user.pk, read_filter='unread',
                                                       feed_ids=[usersub.feed_id],
                                                       usersubs=[usersub],
-                                                      group_by_feed=False,
                                                       cutoff_date=user.profile.unread_cutoff)
         story_hashes = [story['story_hash'] for story in stories if story['story_hash']]
         starred_stories = MStarredStory.objects(user_id=user.pk, 
@@ -1427,7 +1426,6 @@ def load_river_stories__redis(request):
             mstories = stories
             unread_feed_story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
                                                                      read_filter="unread", order=order, 
-                                                                     group_by_feed=False, 
                                                                      cutoff_date=user.profile.unread_cutoff)
         else:
             stories = []
@@ -1681,7 +1679,7 @@ def complete_river(request):
     if feed_ids:
         stories_truncated = UserSubscription.truncate_river(user.pk, feed_ids, read_filter, cache_prefix="dashboard:")
     
-    if page > 1:
+    if page >= 1:
         logging.user(request, "~FC~BBRiver complete on page ~SB%s~SN, truncating ~SB%s~SN stories from ~SB%s~SN feeds" % (page, stories_truncated, len(feed_ids)))
     
     return dict(code=1, message="Truncated %s stories from %s" % (stories_truncated, len(feed_ids)))
@@ -1738,6 +1736,7 @@ def unread_story_hashes(request):
     story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
                                                  order=order, read_filter=read_filter,
                                                  include_timestamps=include_timestamps,
+                                                 group_by_feed=True,
                                                  cutoff_date=user.profile.unread_cutoff)
 
     logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 

@@ -111,7 +111,7 @@ class UserSubscription(models.Model):
         
     @classmethod
     def story_hashes(cls, user_id, feed_ids=None, usersubs=None, read_filter="unread", order="newest", 
-                     include_timestamps=False, group_by_feed=True, cutoff_date=None,
+                     include_timestamps=False, group_by_feed=False, cutoff_date=None,
                      across_all_feeds=True):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         pipeline = r.pipeline()
@@ -362,10 +362,10 @@ class UserSubscription(models.Model):
         story_hashes = cls.story_hashes(user_id, feed_ids=feed_ids, 
                                         read_filter=read_filter, order=order, 
                                         include_timestamps=True,
-                                        group_by_feed=False,
                                         usersubs=usersubs,
                                         cutoff_date=cutoff_date,
                                         across_all_feeds=across_all_feeds)
+        
         if not story_hashes:
             return [], []
         
@@ -382,7 +382,6 @@ class UserSubscription(models.Model):
             unread_story_hashes = cls.story_hashes(user_id, feed_ids=feed_ids, 
                                                    read_filter="unread", order=order, 
                                                    include_timestamps=True,
-                                                   group_by_feed=False,
                                                    cutoff_date=cutoff_date)
             if unread_story_hashes:
                 for unread_story_hash_group in chunks(unread_story_hashes, 100):
@@ -830,8 +829,9 @@ class UserSubscription(models.Model):
             return
         
         cutoff_date = cutoff_date - datetime.timedelta(seconds=1)
-        story_hashes = self.get_stories(limit=500, order="newest", cutoff_date=cutoff_date,
-                                        read_filter="unread", hashes_only=True)
+        story_hashes = UserSubscription.story_hashes(self.user.pk, feed_ids=[self.feed.pk], 
+                                                     order="newest", read_filter="unread",
+                                                     cutoff_date=cutoff_date)
         data = self.mark_story_ids_as_read(story_hashes, aggregated=True)
         return data
         
@@ -938,7 +938,7 @@ class UserSubscription(models.Model):
             
             unread_story_hashes = self.story_hashes(user_id=self.user_id, feed_ids=[self.feed_id],
                                                     usersubs=[self],
-                                                    read_filter='unread', group_by_feed=False,
+                                                    read_filter='unread',
                                                     cutoff_date=self.user.profile.unread_cutoff)
         
             if not stories:
@@ -1005,7 +1005,7 @@ class UserSubscription(models.Model):
         else:
             unread_story_hashes = self.story_hashes(user_id=self.user_id, feed_ids=[self.feed_id],
                                                     usersubs=[self],
-                                                    read_filter='unread', group_by_feed=False,
+                                                    read_filter='unread',
                                                     include_timestamps=True,
                                                     cutoff_date=date_delta)
 
@@ -1402,7 +1402,9 @@ class RUserStory:
     def switch_feed(cls, user_id, old_feed_id, new_feed_id):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         p = r.pipeline()
-        story_hashes = cls.get_stories(user_id, old_feed_id, r=r)
+        
+        story_hashes = UserSubscription.story_hashes(user_id, feed_ids=[old_feed_id])
+        # story_hashes = cls.get_stories(user_id, old_feed_id, r=r)
         
         for story_hash in story_hashes:
             _, hash_story = MStory.split_story_hash(story_hash)
