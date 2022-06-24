@@ -26,22 +26,22 @@
     if ((self = [super init])) {
         self.premiumProduct = nil;
         self.premiumArchiveProduct = nil;
-        self.premiumReasons = @[@[@"Enable every site by going premium", @"g_icn_buffer"],
-                    @[@"Sites updated up to 5x more often", @"g_icn_lightning"],
-                    @[@"River of News (reading by folder)", @"g_icn_folder_black"],
-                    @[@"Search sites and folders", @"g_icn_search_black"],
-                    @[@"Save stories with searchable tags", @"g_icn_tag_black"],
-                    @[@"Privacy options for your blurblog", @"g_icn_privacy"],
-                    @[@"Custom RSS feeds for saved stories", @"g_icn_folder_black"],
-                    @[@"Text view conveniently extracts the story", @"g_icn_textview_black"],
-                    @[@"You feed Lyric, NewsBlur\'s hungry hound, for 6 days", @"g_icn_eating"],
+        self.premiumReasons = @[@[@"Enable every site by going premium", @"icons8-sheets-100"],
+                    @[@"Sites updated up to 5x more often", @"icons8-lightning-bolt-100"],
+                    @[@"River of News (reading by folder)", @"icons8-comics-magazine-100"],
+                    @[@"Search sites and folders", @"icons8-search-100"],
+                    @[@"Save stories with searchable tags", @"icons8-tags-100"],
+                    @[@"Privacy options for your blurblog", @"icons8-security-wi-fi-100"],
+                    @[@"Custom RSS feeds for saved stories", @"icons8-rss-100"],
+                    @[@"Text view conveniently extracts the story", @"icons8-activity-history-100"],
+                    @[@"You feed Lyric, NewsBlur\'s hungry hound, for 6 days", @"icons8-knife-and-spatchula-100"],
                     ];
-        self.premiumArchiveReasons = @[@[@"Everything in the premium subscription, of course", @"g_icn_buffer"],
-                    @[@"Choose when stories are automatically marked as read", @"g_icn_buffer"],
-                    @[@"Every story from every site is archived and searchable forever", @"g_icn_buffer"],
-                    @[@"Feeds that support paging are back-filled in for a complete archive", @"g_icn_buffer"],
-                    @[@"Export trained stories from folders as RSS feeds", @"g_icn_buffer"],
-                    @[@"Stories can stay unread forever", @"g_icn_buffer"]
+        self.premiumArchiveReasons = @[@[@"Everything in the premium subscription, of course", @"icons8-bursts-100"],
+                    @[@"Choose when stories are automatically marked as read", @"icons8-relax-with-book-100"],
+                    @[@"Every story from every site is archived and searchable forever", @"icons8-filing-cabinet-100"],
+                    @[@"Feeds that support paging are back-filled in for a complete archive", @"icons8-quadcopter-100"],
+                    @[@"Export trained stories from folders as RSS feeds", @"icons8-rss-100"],
+                    @[@"Stories can stay unread forever", @"icons8-calendar-100"]
                     ];
     }
     
