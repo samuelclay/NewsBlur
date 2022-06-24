@@ -1920,15 +1920,15 @@ def mark_story_as_unread(request):
     if not story:
         logging.user(request, "~FY~SBUnread~SN story in feed: %s (NOT FOUND)" % (feed))
         return dict(code=-1, message="Story not found.")
-    
-    if usersub:
-        data = usersub.invert_read_stories_after_unread_story(story, request)
 
     message = RUserStory.story_can_be_marked_unread_by_user(story, request.user)
     if message:
         data['code'] = -1
         data['message'] = message
         return data
+    
+    if usersub:
+        data = usersub.invert_read_stories_after_unread_story(story, request)
     
     social_subs = MSocialSubscription.mark_dirty_sharing_story(user_id=request.user.pk, 
                                                                story_feed_id=feed_id, 

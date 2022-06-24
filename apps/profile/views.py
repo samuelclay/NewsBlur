@@ -33,9 +33,10 @@ from utils import log as logging
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
 from paypal.standard.forms import PayPalPaymentsForm
 
-SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','hide_mobile','send_emails',
+INTEGER_FIELD_PREFS = ('feed_pane_size', 'days_of_unread')
+SINGLE_FIELD_PREFS = ('timezone','hide_mobile','send_emails',
                       'hide_getting_started', 'has_setup_feeds', 'has_found_friends',
-                      'has_trained_intelligence', 'days_of_unread')
+                      'has_trained_intelligence')
 SPECIAL_PREFERENCES = ('old_password', 'new_password', 'autofollow_friends', 'dashboard_date',)
 
 @ajax_login_required
@@ -51,6 +52,10 @@ def set_preference(request):
         if preference_value in ['true','false']: preference_value = True if preference_value == 'true' else False
         if preference_name in SINGLE_FIELD_PREFS:
             setattr(request.user.profile, preference_name, preference_value)
+        elif preference_name in INTEGER_FIELD_PREFS:
+            setattr(request.user.profile, preference_name, int(preference_value))
+            if preference_name in preferences:
+                del preferences[preference_name]
         elif preference_name in SPECIAL_PREFERENCES:
             if preference_name == 'autofollow_friends':
                 social_services = MSocialServices.get_user(request.user.pk)
