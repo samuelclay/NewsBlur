@@ -260,7 +260,15 @@
         cell.textLabel.textColor = UIColorFromRGB(0x0c0c0c);
         cell.textLabel.numberOfLines = 2;
         CGSize itemSize = CGSizeMake(18, 18);
-        cell.imageView.image = [UIImage imageNamed:reasons[indexPath.row][1]];
+        NSString *imageName = reasons[indexPath.row][1];
+        UIImage *image = [UIImage imageNamed:imageName];
+        
+        if (ThemeManager.themeManager.isDarkTheme) {
+            cell.imageView.image = [image imageWithTintColor:UIColor.whiteColor];
+        } else {
+            cell.imageView.image = image;
+        }
+        
         cell.imageView.contentMode = UIViewContentModeScaleAspectFill;
         cell.imageView.clipsToBounds = NO;
         UIGraphicsBeginImageContextWithOptions(itemSize, NO, UIScreen.mainScreen.scale);
@@ -346,13 +354,17 @@
     UILabel *label = [[UILabel alloc] init];
     label.text = section == kPremiumArchiveSubscriptionSection ? @"   Premium Archive Subscription" : @"   Premium Subscription";
     label.opaque = YES;
-    label.backgroundColor = UIColorFromRGB(0xd0d0d0);
-    label.textColor = UIColorFromRGB(0x0c0c0c);
+    label.backgroundColor = UIColor.darkGrayColor;
+    label.textColor = UIColor.whiteColor;
     label.font = [UIFont systemFontOfSize:20];
     CGSize measuredSize = [label.text sizeWithAttributes:@{NSFontAttributeName: label.font}];
     label.frame = CGRectMake(0, 0, measuredSize.width, measuredSize.height);
     
     return label;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return 60;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
