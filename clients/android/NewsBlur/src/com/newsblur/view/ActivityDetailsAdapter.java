@@ -26,6 +26,7 @@ public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetail
     protected ForegroundColorSpan linkColor, contentColor, quoteColor;
     protected final UserDetails currentUserDetails;
     protected final boolean userIsYou;
+    protected final String UNKNOWN_USERNAME = "Unknown";
 
     public ActivityDetailsAdapter(final Context context, UserDetails user, ImageLoader iconLoader) {
         super(context, R.layout.row_activity); // final argument seems unused since we override getView()
