@@ -24,6 +24,9 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class WidgetConfig extends FeedChooser {
 
     @Inject
