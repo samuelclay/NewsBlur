@@ -280,7 +280,8 @@
     <string name="settings">Preferences…</string>
     <string name="menu_mute_sites">Mute Sites…</string>
     <string name="mute_sites">Mute Sites</string>
-    <string name="widget">Widget…</string>
+    <string name="menu_widget">Widget…</string>
+    <string name="widget">Widget</string>
     <string name="title_widget_setup">Tap to setup in NewsBlur</string>
     <string name="title_no_subscriptions">No active subscriptions detected</string>
     <string name="title_widget_loading">Loading…</string>
