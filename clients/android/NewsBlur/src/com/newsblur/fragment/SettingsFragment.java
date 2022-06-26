@@ -14,6 +14,9 @@ import com.newsblur.util.PrefConstants;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Inject
