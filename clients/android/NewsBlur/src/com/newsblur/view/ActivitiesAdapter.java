@@ -95,25 +95,39 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
 
     private CharSequence getFollowContent(ActivityDetails activity, String userString) {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
+        int usernameLength;
         stringBuilder.append(userString);
         stringBuilder.append(" ");
         stringBuilder.append(startedFollowing);
         stringBuilder.append(" ");
-        stringBuilder.append(activity.user.username);
+        if (activity.user != null) {
+            stringBuilder.append(activity.user.username);
+            usernameLength = activity.user.username.length();
+        } else {
+            stringBuilder.append(UNKNOWN_USERNAME);
+            usernameLength = UNKNOWN_USERNAME.length();
+        }
 
         int contentColorLength = userString.length() + startedFollowing.length() + 1;
         stringBuilder.setSpan(contentColor, 0, contentColorLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        stringBuilder.setSpan(linkColor, contentColorLength + 1, contentColorLength + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        stringBuilder.setSpan(linkColor, contentColorLength + 1, contentColorLength + 1 + usernameLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return stringBuilder;
     }
 
     private CharSequence getCommentLikeContent(ActivityDetails activity, String userString) {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
+        int usernameLength;
         stringBuilder.append(userString);
         stringBuilder.append(" ");
         stringBuilder.append(favorited);
         stringBuilder.append(" ");
-        stringBuilder.append(activity.user.username);
+        if (activity.user != null) {
+            stringBuilder.append(activity.user.username);
+            usernameLength = activity.user.username.length();
+        } else {
+            stringBuilder.append(UNKNOWN_USERNAME);
+            usernameLength = UNKNOWN_USERNAME.length();
+        }
         stringBuilder.append(" ");
         stringBuilder.append(commentsOn);
         stringBuilder.append(" ");
@@ -122,7 +136,6 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
         stringBuilder.append(activity.content);
         stringBuilder.append("\" ");
 
-        int usernameLength = activity.user.username.length();
         stringBuilder.setSpan(contentColor, 0, userString.length() + favorited.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         int usernameSpanStart = userString.length() + favorited.length() + 2;
         stringBuilder.setSpan(linkColor, usernameSpanStart, usernameSpanStart + usernameLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -138,17 +151,24 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
 
     private CharSequence getCommentReplyContent(ActivityDetails activity, String userString) {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
+        int usernameLength;
         stringBuilder.append(userString);
         stringBuilder.append(" ");
         stringBuilder.append(repliedTo);
         stringBuilder.append(" ");
-        stringBuilder.append(activity.user.username);
+        if (activity.user != null) {
+            stringBuilder.append(activity.user.username);
+            usernameLength = activity.user.username.length();
+        } else {
+            stringBuilder.append(UNKNOWN_USERNAME);
+            usernameLength = UNKNOWN_USERNAME.length();
+        }
         stringBuilder.append("\n\n\"");
         stringBuilder.append(activity.content);
         stringBuilder.append("\"");
 
         stringBuilder.setSpan(contentColor, 0, userString.length() + repliedTo.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        stringBuilder.setSpan(linkColor, userString.length() + repliedTo.length() + 2, userString.length() + repliedTo.length() + 2 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        stringBuilder.setSpan(linkColor, userString.length() + repliedTo.length() + 2, userString.length() + repliedTo.length() + 2 + usernameLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         stringBuilder.setSpan(quoteColor, stringBuilder.length() - activity.content.length() - 2, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return stringBuilder;
     }

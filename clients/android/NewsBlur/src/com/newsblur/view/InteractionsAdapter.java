@@ -17,7 +17,6 @@ import com.newsblur.util.ImageLoader;
 public class InteractionsAdapter extends ActivityDetailsAdapter {
 
     private final String nowFollowingYou, repliedToYour, comment, reply, favoritedComments, reshared, your, you;
-    private final String UNKNOWN_USERNAME = "Unknown";
 
     public InteractionsAdapter(final Context context, UserDetails user, ImageLoader iconLoader) {
         super(context, user, iconLoader);
@@ -139,7 +138,14 @@ public class InteractionsAdapter extends ActivityDetailsAdapter {
 
     private CharSequence getSharedStoryContent(ActivityDetails activity) {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
-        stringBuilder.append(activity.user.username);
+        int usernameLength;
+        if (activity.user != null) {
+            usernameLength = activity.user.username.length();
+            stringBuilder.append(activity.user.username);
+        } else {
+            usernameLength = UNKNOWN_USERNAME.length();
+            stringBuilder.append(UNKNOWN_USERNAME);
+        }
         stringBuilder.append(" ");
         stringBuilder.append(reshared);
         stringBuilder.append(" ");
@@ -151,7 +157,6 @@ public class InteractionsAdapter extends ActivityDetailsAdapter {
             stringBuilder.append("\"");
         }
 
-        int usernameLength = activity.user.username.length();
         int titleSpanStart = usernameLength + 1 + reshared.length() + 1;
         int titleLength = activity.title.length();
         stringBuilder.setSpan(linkColor, 0, titleSpanStart + titleLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
