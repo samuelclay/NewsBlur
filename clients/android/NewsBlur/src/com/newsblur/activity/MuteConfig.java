@@ -192,10 +192,11 @@ public class MuteConfig extends FeedChooser implements MuteConfigAdapter.FeedSta
     private void showSitesCount() {
         ViewGroup.LayoutParams oldLayout = binding.listView.getLayoutParams();
         FrameLayout.LayoutParams newLayout = new FrameLayout.LayoutParams(oldLayout);
-        newLayout.topMargin = UIUtils.dp2px(this, 56);
+        newLayout.topMargin = UIUtils.dp2px(this, 85);
         binding.listView.setLayoutParams(newLayout);
         binding.containerSitesCount.setVisibility(View.VISIBLE);
         binding.textResetSites.setOnClickListener(view -> resetToPopularFeeds());
+        binding.textUpgrade.setOnClickListener(view -> openUpgradeToPremium());
     }
 
     private void hideSitesCount() {
