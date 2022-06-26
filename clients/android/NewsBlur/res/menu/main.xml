@@ -7,7 +7,7 @@
           app:showAsAction="never" />
 
     <item android:id="@+id/menu_mute_sites"
-        android:title="@string/mute_sites"
+        android:title="@string/menu_mute_sites"
         app:showAsAction="never" />
 
     <item android:id="@+id/menu_widget"
