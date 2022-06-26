@@ -112,7 +112,6 @@ public abstract class ItemsList extends NbActivity {
         if (activeSearchQuery != null) {
             binding.itemlistSearchQuery.setText(activeSearchQuery);
             binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
-            checkSearchQuery();
         } else if (getIntent().getBooleanExtra(EXTRA_VISIBLE_SEARCH, false)){
             binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
             binding.itemlistSearchQuery.requestFocus();
