@@ -3,6 +3,7 @@ import mongoengine as mongo
 import urllib.request, urllib.error, urllib.parse
 import redis
 import dateutil
+import requests
 from django.conf import settings
 from apps.social.models import MSharedStory
 from apps.profile.models import Profile
@@ -298,8 +299,8 @@ class MFeedback(mongo.Document):
     def collect_feedback(cls):
         seen_posts = set()
         try:
-            data = urllib.request.urlopen('https://forum.newsblur.com/posts.json').read()
-        except (urllib.error.HTTPError) as e:
+            data = requests.get('https://forum.newsblur.com/posts.json', timeout=3)
+        except (urllib.error.HTTPError, requests.exceptions.ConnectTimeout) as e:
             logging.debug(" ***> Failed to collect feedback: %s" % e)
             return
         data = json.decode(data).get('latest_posts', "")
