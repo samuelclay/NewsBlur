@@ -150,7 +150,7 @@ class UserSubscription(models.Model):
                 oldest_manual_unread = r.zrevrange(user_unread_stories_feed_key, -1, -1, withscores=True)
                 manual_unread_feed_oldest_date[us.feed_id] = int(oldest_manual_unread[0][1])
         
-        for feed_id_group in chunks(feed_ids, 20):
+        for feed_id_group in chunks(feed_ids, 100):
             pipeline = r.pipeline()
             for feed_id in feed_id_group:
                 stories_key               = 'F:%s' % feed_id
