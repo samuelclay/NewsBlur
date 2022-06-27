@@ -105,7 +105,7 @@ class Feed(models.Model):
         if not self.feed_title:
             self.feed_title = "[Untitled]"
             self.save()
-        return "%s%s: %s - %s/%s/%s/%s/%s" % (
+        return "%s%s: %s - %s/%s/%s/%s/%s %s stories (%s bytes)" % (
             self.pk, 
             (" [B: %s]" % self.branch_from_feed.pk if self.branch_from_feed else ""),
             self.feed_title, 
@@ -114,6 +114,8 @@ class Feed(models.Model):
             self.active_premium_subscribers,
             self.archive_subscribers,
             self.pro_subscribers,
+            self.archive_count,
+            self.fs_size_bytes,
             )
     
     @property
