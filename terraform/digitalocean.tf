@@ -377,11 +377,11 @@ resource "digitalocean_droplet" "db-redis-sessions" {
 }
 
 resource "digitalocean_droplet" "db-redis-story" {
-  count    = 2
+  count    = 1
   image    = var.droplet_os
   name     = contains([0], count.index) ? "db-redis-story" : "db-redis-story${count.index+1}"
   region   = var.droplet_region
-  size     = contains([0], count.index) ? "c-16" : var.redis_story_droplet_size
+  size     = contains([1], count.index) ? "c-16" : var.redis_story_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
