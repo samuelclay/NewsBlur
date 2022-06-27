@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AllFoldersViewModel
-@Inject constructor(private val dbHelper: BlurDatabaseHelper): ViewModel() {
+@Inject constructor(private val dbHelper: BlurDatabaseHelper) : ViewModel() {
 
     private val cancellationSignal = CancellationSignal()
 
@@ -48,11 +48,8 @@ class AllFoldersViewModel
             launch {
                 dbHelper.getFoldersCursor(cancellationSignal).let {
                     _folders.postValue(it)
-                }
-            }
-            launch {
-                dbHelper.getFeedsCursor(cancellationSignal).let {
-                    _feeds.postValue(it)
+                    // get feeds after folders load
+                    getFeeds()
                 }
             }
             launch {
@@ -63,6 +60,16 @@ class AllFoldersViewModel
             launch {
                 dbHelper.getSavedSearchCursor(cancellationSignal).let {
                     _savedSearch.postValue(it)
+                }
+            }
+        }
+    }
+
+    private fun getFeeds() {
+        viewModelScope.launch(Dispatchers.IO) {
+            launch {
+                dbHelper.getFeedsCursor(cancellationSignal).let {
+                    _feeds.postValue(it)
                 }
             }
         }
