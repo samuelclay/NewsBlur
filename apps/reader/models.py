@@ -185,6 +185,7 @@ class UserSubscription(models.Model):
                     pipeline.zremrangebyscore(unread_ranked_stories_key, 0, max_score-1)
                     pipeline.zremrangebyscore(unread_ranked_stories_key, min_score+1, 2*min_score)
 
+                # If archive premium user has manually marked an older story as unread
                 if is_archive and feed_id in manual_unread_feed_oldest_date:
                     if order == 'oldest':
                         min_score = manual_unread_feed_oldest_date[feed_id]
@@ -219,11 +220,14 @@ class UserSubscription(models.Model):
                         feed_counter += 1
                     else:
                         story_hashes.extend(hashes)
-                return story_hashes
-            else:
-                r.zunionstore(store_stories_key, unread_ranked_stories_keys, aggregate="MAX")
+
+        if store_stories_key:
+            r.zunionstore(store_stories_key, unread_ranked_stories_keys, aggregate="MAX")
 
         after_unread_pipeline.execute()
+
+        if not store_stories_key:
+            return story_hashes
         
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', cutoff_date=None):
         story_hashes = UserSubscription.story_hashes(self.user.pk, feed_ids=[self.feed.pk], 
