@@ -117,7 +117,6 @@ class UserSubscription(models.Model):
         pipeline = r.pipeline()
         story_hashes = {} if group_by_feed else []
         is_archive = User.objects.get(pk=user_id).profile.is_archive
-        expire_unread_stories_key = False
         
         if not feed_ids and not across_all_feeds:
             return story_hashes
@@ -133,6 +132,8 @@ class UserSubscription(models.Model):
             cutoff_date = datetime.datetime.now() - datetime.timedelta(days=UserSubscription.days_of_story_hashes_for_user(user_id))
         feed_counter = 0
         unread_ranked_stories_keys = []
+        expire_unread_stories_key = False
+        after_unread_pipeline = r.pipeline()
         
         read_dates = dict()
         manual_unread_pipeline = r.pipeline()
@@ -203,6 +204,10 @@ class UserSubscription(models.Model):
                 if not store_stories_key:
                     byscorefunc(unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps, start=offset, num=limit)
                 unread_ranked_stories_keys.append(unread_ranked_stories_key)
+                after_unread_pipeline.delete(unread_ranked_stories_key)
+                if expire_unread_stories_key:
+                    after_unread_pipeline.delete(unread_stories_key)
+
         
             results = pipeline.execute()
 
@@ -218,13 +223,7 @@ class UserSubscription(models.Model):
             else:
                 r.zunionstore(store_stories_key, unread_ranked_stories_keys, aggregate="MAX")
 
-        for feed_id_group in chunks(feed_ids, 200):
-            pipeline = r.pipeline()
-            for feed_id in feed_id_group:
-                pipeline.delete(unread_ranked_stories_key)
-                if expire_unread_stories_key:
-                    pipeline.delete(unread_stories_key)
-            pipeline.execute()
+        after_unread_pipeline.execute()
         
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', cutoff_date=None):
         story_hashes = UserSubscription.story_hashes(self.user.pk, feed_ids=[self.feed.pk], 
