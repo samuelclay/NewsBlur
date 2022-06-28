@@ -299,7 +299,7 @@ class MFeedback(mongo.Document):
     def collect_feedback(cls):
         seen_posts = set()
         try:
-            data = requests.get('https://forum.newsblur.com/posts.json', timeout=3)
+            data = requests.get('https://forum.newsblur.com/posts.json', timeout=3).content
         except (urllib.error.HTTPError, requests.exceptions.ConnectTimeout) as e:
             logging.debug(" ***> Failed to collect feedback: %s" % e)
             return
