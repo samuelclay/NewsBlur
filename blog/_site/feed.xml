@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://blog.newsblur.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2022-06-28T17:39:10-04:00</updated><id>https://blog.newsblur.com/feed.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://blog.newsblur.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2022-06-28T17:47:00-04:00</updated><id>https://blog.newsblur.com/feed.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
 A new sound of an old instrument.
 </subtitle><entry><title type="html">NewsBlur Premium Archive subscription keeps all of your stories searchable, shareable, and unread forever</title><link href="https://blog.newsblur.com/2022/06/29/premium-archive-subscription/" rel="alternate" type="text/html" title="NewsBlur Premium Archive subscription keeps all of your stories searchable, shareable, and unread forever" /><published>2022-06-29T00:00:00-04:00</published><updated>2022-06-29T00:00:00-04:00</updated><id>https://blog.newsblur.com/2022/06/29/premium-archive-subscription</id><content type="html" xml:base="https://blog.newsblur.com/2022/06/29/premium-archive-subscription/">&lt;p&gt;For $99/year every story from every site you subscribe to will stay in NewsBlur’s archive. This new premium tier also allows you to mark any story as unread as well as choose when stories are automatically marked as read. You can now have full control of your story archive, letting you search, share, and read stories forever without having to worry about them being deleted.&lt;/p&gt;
 
@@ -13,12 +13,16 @@ A new sound of an old instrument.
   &lt;li&gt;&lt;img src=&quot;/assets/icons8/icons8-calendar-100.png&quot; style=&quot;width: 16px;margin: 0 6px 0 0;display: inline-block;&quot; /&gt; Stories can stay unread forever&lt;/li&gt;
 &lt;/ul&gt;
 
+&lt;p&gt;You can now enjoy a new preference for exactly when stories are marked as read:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/premium-archive-mark-read-date.png&quot; style=&quot;width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;&quot; /&gt;&lt;/p&gt;
+
 &lt;p&gt;A technical note about the backfilling of your archive:&lt;/p&gt;
 
 &lt;blockquote&gt;
-NewsBlur uses two techniques to retrieve older stories that are no longer in the RSS feed. The first strategy is to append `?page=2` and `?paged=2` to the RSS feed and seeing if we&apos;re about to blindly iterate through the blog&apos;s archive. For WordPress and a few other CMSs, this works great and gives us a full archive. 
+&lt;p&gt;NewsBlur uses two techniques to retrieve older stories that are no longer in the RSS feed. The first strategy is to append `?page=2` and `?paged=2` to the RSS feed and seeing if we&apos;re about to blindly iterate through the blog&apos;s archive. For WordPress and a few other CMSs, this works great and gives us a full archive. &lt;/p&gt;
 
-A second technique is to use &lt;a href=&quot;https://datatracker.ietf.org/doc/html/rfc5005&quot;&gt;RFC 5005&lt;/a&gt;, which supports links embedded inside the RSS feed to denote next and previous pages of an archive.
+&lt;p&gt;A second technique is to use &lt;a href=&quot;https://datatracker.ietf.org/doc/html/rfc5005&quot;&gt;RFC 5005&lt;/a&gt;, which supports links embedded inside the RSS feed to denote next and previous pages of an archive.&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;p&gt;NewsBlur attempts all of these techniques on every single feed you’ve subscribed to, and when it’s done backfilling stories, you’ll receive an email showing you how big your archive grew during this backfill process.&lt;/p&gt;
