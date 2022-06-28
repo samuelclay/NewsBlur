@@ -1,7 +1,7 @@
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
-<!--   Keep in sync with ShortcutUtils-->
+    <!--   Keep in sync with ShortcutUtils-->
     <shortcut
-        android:icon="@drawable/ic_search"
+        android:icon="@drawable/ic_shortcut_search"
         android:shortcutId="all_stories_search"
         android:shortcutShortLabel="@string/search">
         <intent
@@ -15,7 +15,7 @@
     </shortcut>
 
     <shortcut
-        android:icon="@drawable/ak_icon_allstories"
+        android:icon="@drawable/ic_shortcut_stories"
         android:shortcutId="all_stories"
         android:shortcutShortLabel="@string/all_stories">
         <intent
@@ -29,7 +29,7 @@
     </shortcut>
 
     <shortcut
-        android:icon="@drawable/ic_menu_add_gray55"
+        android:icon="@drawable/ic_shortcut_add_feed"
         android:shortcutId="add_feed"
         android:shortcutShortLabel="@string/add_feed">
         <intent
