@@ -86,12 +86,16 @@
   <li><img src="/assets/icons8/icons8-calendar-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Stories can stay unread forever</li>
 </ul>
 
+<p>You can now enjoy a new preference for exactly when stories are marked as read:</p>
+
+<p><img src="/assets/premium-archive-mark-read-date.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
 <p>A technical note about the backfilling of your archive:</p>
 
 <blockquote>
-NewsBlur uses two techniques to retrieve older stories that are no longer in the RSS feed. The first strategy is to append `?page=2` and `?paged=2` to the RSS feed and seeing if we're about to blindly iterate through the blog's archive. For WordPress and a few other CMSs, this works great and gives us a full archive. 
+<p>NewsBlur uses two techniques to retrieve older stories that are no longer in the RSS feed. The first strategy is to append `?page=2` and `?paged=2` to the RSS feed and seeing if we're about to blindly iterate through the blog's archive. For WordPress and a few other CMSs, this works great and gives us a full archive. </p>
 
-A second technique is to use <a href="https://datatracker.ietf.org/doc/html/rfc5005">RFC 5005</a>, which supports links embedded inside the RSS feed to denote next and previous pages of an archive.
+<p>A second technique is to use <a href="https://datatracker.ietf.org/doc/html/rfc5005">RFC 5005</a>, which supports links embedded inside the RSS feed to denote next and previous pages of an archive.</p>
 </blockquote>
 
 <p>NewsBlur attempts all of these techniques on every single feed you’ve subscribed to, and when it’s done backfilling stories, you’ll receive an email showing you how big your archive grew during this backfill process.</p>
