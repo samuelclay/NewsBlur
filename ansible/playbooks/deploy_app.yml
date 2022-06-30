@@ -111,7 +111,7 @@
       git:
         repo: https://github.com/samuelclay/NewsBlur.git
         dest: /srv/newsblur/
-        version: pro
+        version: master
       register: pulled
       tags:
         - static
