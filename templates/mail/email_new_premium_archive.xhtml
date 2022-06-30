@@ -1,0 +1,25 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load utils_tags %}
+
+{% block body %}
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">Now everything you read on the web is archived, searchable, shareable, and not going anywhere</h2>
+
+    <center>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td align="center">
+        <img src="https://{% current_domain %}/media/img/email/datacenter.svg" style="width:180px;height:180px;margin: 24px auto 6px;" alt="Your archive sits in the cloud">
+
+        <h2 syle="font-size: 34px;text-align: center;display: block; margin: 0 auto 24px;">{{ total_story_count|commify }} stories across {{ feed_count|commify }} sites</h2>
+                </td>
+            </tr>
+        </table>
+    </center>
+
+    <p style="line-height: 20px;">A <b>huge</b> thank you for subscribing to the premium archive tier. Your subscription helps pay for the machines which store and process your archive.</p>
+    <p style="line-height: 20px;">NewsBlur is an archive for the web you follow. Search it, clip highlights and share notes, and rest assured that your data will remain even as the web it pulls from may not. Thanks again for supporting NewsBlur.</p>
+    <p style="line-height: 20px;">- Sam Clay</p>
+{% endblock %}
+
+{% block resources_header %}As always, you have access to a number of resources:{% endblock resources_header %}

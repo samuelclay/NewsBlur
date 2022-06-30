@@ -67,9 +67,7 @@ class RedisGrafanaMetric(View):
         return render(request, 'monitor/prometheus_data.html', context, content_type="text/plain")
 
 class RedisActiveConnection(RedisGrafanaMetric):
-
-    def get_context(self):
-        
+    
     def get_fields(self):
         return (
             ('connected_clients', dict(

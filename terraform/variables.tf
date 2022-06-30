@@ -37,6 +37,10 @@ variable "droplet_size_240" {
   type = string
   default = "g-8vcpu-32gb"
 }
+variable "droplet_size_320" {
+  type = string
+  default = "c-16"
+}
 
 variable "droplet_size_40" {
   type = string
@@ -85,5 +89,5 @@ variable "elasticsearch_droplet_size" {
 
 variable "redis_story_droplet_size" {
   type = string
-  default = "m-2vcpu-16gb"
+  default = "c-16"
 }

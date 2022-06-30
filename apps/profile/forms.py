@@ -10,6 +10,8 @@ from apps.social.models import MSocialProfile
 
 PLANS = [
     ("newsblur-premium-36", mark_safe("$36 / year <span class='NB-small'>($3/month)</span>")),
+    ("newsblur-premium-archive", mark_safe("$99 / year <span class='NB-small'>(~$8/month)</span>")),
+    ("newsblur-premium-pro", mark_safe("$299 / year <span class='NB-small'>(~$25/month)</span>")),
 ]
 
 class HorizRadioRenderer(forms.RadioSelect):
