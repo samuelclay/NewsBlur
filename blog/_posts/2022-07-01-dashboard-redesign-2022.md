@@ -4,7 +4,7 @@ title: "2022 redesign: new dashboard layout, refreshed stories and story titles,
 tags: ['web']
 ---
 
-The launch of the new [Premium Archive subscription tier](/2022/06/29/premium-archive-subscription/) also includes the 2022 redesign. You'll see a third dashboard layout which stretches out your dashboard rivers across the width of the screen.
+The launch of the new [Premium Archive subscription tier](/2022/07/01/premium-archive-subscription/) also includes the 2022 redesign. You'll see a third dashboard layout which stretches out your dashboard rivers across the width of the screen.
 
 <img src="/assets/premium-archive-dashboard-comfortable.png" style="width: calc(140%);margin: 12px 0 12px calc(-20%);max-width: none;border: none">
 

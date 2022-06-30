@@ -29,7 +29,7 @@ A technical note about the backfilling of your archive:
 
 NewsBlur attempts all of these techniques on every single feed you've subscribed to, and when it's done backfilling stories, you'll receive an email showing you how big your archive grew during this backfill process.
 
-The launch of the new Premium Archive subscription tier also contains the [2022 redesign](/2022/06/29/dashboard-redesign-2022/), which includes a new dashboard layout, a refreshed design for story titles and feed title, and all new icons.
+The launch of the new Premium Archive subscription tier also contains the [2022 redesign](/2022/07/01/dashboard-redesign-2022/), which includes a new dashboard layout, a refreshed design for story titles and feed title, and all new icons.
 
 Here's a screenshot that's only possible with the new premium archive, complete with backfilled blog post from the year 2000, ready to be marked as unread.
 
