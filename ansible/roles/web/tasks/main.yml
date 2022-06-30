@@ -61,6 +61,7 @@
     source: pull
 
 - name: Start NewsBlur Web Docker container
+  become: yes
   throttle: 3
   docker_container:
     name: newsblur_web
