@@ -61,7 +61,6 @@
     source: pull
 
 - name: Start NewsBlur Web Docker container
-  become: yes
   throttle: 3
   docker_container:
     name: newsblur_web
@@ -86,7 +85,6 @@
     user: 1000:1001
     volumes:
       - /srv/newsblur:/srv/newsblur
-      - /etc/hosts:/etc/hosts
 
 - name: Register web app in consul
   tags: consul

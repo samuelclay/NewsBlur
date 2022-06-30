@@ -327,8 +327,7 @@ def api_unread_story(request, trigger_slug=None):
         found_feed_ids = [feed_id]
         found_trained_feed_ids = [feed_id] if usersub.is_trained else []
         stories = usersub.get_stories(order="newest", read_filter="unread", 
-                                      offset=0, limit=limit,
-                                      default_cutoff_date=user.profile.unread_cutoff)
+                                      offset=0, limit=limit)
     else:
         folder_title = feed_or_folder
         if folder_title == "Top Level":

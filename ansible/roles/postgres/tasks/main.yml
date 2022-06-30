@@ -7,29 +7,20 @@
   notify: reload postgres
   register: updated_config
 
-- name: Ensure postgres archive directory
+- name: Create Postgres docker volumes with correct permissions
   become: yes
   file:
-    path: /srv/newsblur/docker/volumes/postgres/archive
+    path: "{{ item  }}"
     state: directory
-    mode: 0755
-  
-- name: Ensure postgres backup directory
-  become: yes
-  file:
-    path: /srv/newsblur/docker/volumes/postgres/backups
-    state: directory
-    mode: 0755
-  
-- name: Ensure postgres data directory
-  become: yes
-  file:
-    path: /srv/newsblur/docker/volumes/postgres/data
-    state: directory
-    mode: 0755
+    recurse: yes
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"  
+  with_items:
+    - /srv/newsblur/docker/volumes/postgres/archive
+    - /srv/newsblur/docker/volumes/postgres/backups
+    - /srv/newsblur/docker/volumes/postgres/data
 
 - name: Start postgres docker containers
-  become: yes
   docker_container:
     name: postgres
     image: postgres:13
@@ -48,6 +39,7 @@
           - postgres
     ports:
       - 5432:5432
+    user: 1000:1001
     volumes:
       - /srv/newsblur/docker/volumes/postgres/data:/var/lib/postgresql/data
       - /srv/newsblur/docker/volumes/postgres/archive:/var/lib/postgresql/archive
@@ -62,6 +54,7 @@
   become: yes
   command: >
     docker exec postgres chown -fR postgres.postgres /var/lib/postgresql
+  ignore_errors: yes
   
 - name: Ensure newsblur role in postgres
   become: yes

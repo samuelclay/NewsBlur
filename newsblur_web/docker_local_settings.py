@@ -21,7 +21,7 @@ SESSION_COOKIE_DOMAIN = 'localhost'
 
 DOCKERBUILD = True
 DEBUG = False
-DEBUG = True
+# DEBUG = True
 
 # DEBUG_ASSETS controls JS/CSS asset packaging. Turning this off requires you to run 
 # `./manage.py collectstatic` first. Turn this on for development so you can see
@@ -34,6 +34,7 @@ DEBUG_ASSETS = True
 # down verbosity.
 DEBUG_QUERIES = DEBUG
 DEBUG_QUERIES_SUMMARY_ONLY = True
+# DEBUG_QUERIES_SUMMARY_ONLY = False
 
 MEDIA_URL = '/media/'
 IMAGES_URL = '/imageproxy'
@@ -41,9 +42,19 @@ IMAGES_URL = '/imageproxy'
 # IMAGES_URL = 'https://haproxy/imageproxy'
 SECRET_KEY = 'YOUR SECRET KEY'
 AUTO_PREMIUM_NEW_USERS = True
+AUTO_PREMIUM_ARCHIVE_NEW_USERS = True
+AUTO_PREMIUM_PRO_NEW_USERS = True
+AUTO_PREMIUM = True
+AUTO_PREMIUM = False
+if not AUTO_PREMIUM:
+    AUTO_PREMIUM_NEW_USERS = False
+    AUTO_PREMIUM_ARCHIVE_NEW_USERS = False
+    AUTO_PREMIUM_PRO_NEW_USERS = False
 AUTO_ENABLE_NEW_USERS = True
 ENFORCE_SIGNUP_CAPTCHA = False
 ENABLE_PUSH = False
+
+PRO_MINUTES_BETWEEN_FETCHES = 15
 
 CACHES = {
     'default': {

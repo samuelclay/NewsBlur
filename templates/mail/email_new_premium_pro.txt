@@ -1,0 +1,11 @@
+{% extends "mail/email_base.txt" %}
+
+{% block body %}Thank you, thank you, thank you!
+
+A *huge* thanks for going premium.
+
+Your subscription goes a long way towards funding the further development of NewsBlur.
+
+There's still a ton of great work to be done, and you are personally keeping the dream alive. Thanks again, paying users like you make this entire endeavor worthwhile.
+
+- Sam Clay{% endblock body %}

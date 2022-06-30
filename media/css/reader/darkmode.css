@@ -99,13 +99,13 @@ body.NB-dark {
 
 .NB-dark .ui-layout-resizer-west {
     background-color: rgb(52,59,61);
-    border-left: 1px solid #0B0F20;
+    border-left: 1px solid #303030;
 }
 .NB-dark .right-pane .ui-layout-resizer-south, 
 .NB-dark .right-pane .ui-layout-resizer-north {
     background-color: rgb(52,59,61);
-    border-top: 1px solid #0B0F20;
-    border-bottom: 1px solid #0B0F20;    
+    border-top: 1px solid #303030;
+    border-bottom: 1px solid #303030;    
 }
 
 
@@ -181,6 +181,9 @@ color: #a85b40;
     background-color: #303739;
 }
 
+.NB-dark .NB-module-account-subscription .NB-module-stats-count-description {
+    color: #c0c0c0;
+}
 /* "Logout", "Try" & "Add" button colors */
 .NB-dark .NB-recommended-try,
 .NB-dark .NB-recommended-add,
@@ -244,13 +247,11 @@ color: #a85b40;
     color: #797b7c;
 }
 
-.NB-dark .NB-feeds-header-user-dashboard img, 
 .NB-dark .NB-feeds-header-user-interactions img, 
 .NB-dark .NB-feeds-header-collapse-sidebar img {
     opacity: 0.9;
 }
 
-.NB-dark .NB-feeds-header-user-dashboard:hover img, 
 .NB-dark .NB-feeds-header-user-interactions:hover img, 
 .NB-dark .NB-feeds-header-collapse-sidebar:hover img {
     opacity: 1.0;
@@ -671,6 +672,9 @@ color: #a85b40;
 .NB-dark .NB-modal-feedchooser .NB-modal-subtitle b {
     color: #85bd67;
 }
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-premium-plan {
+    background-color: #303739;
+}
 .NB-dark .NB-modal-feedchooser .NB-feedchooser-info-reset {
     text-shadow: 0 1px 0 #181818;
 }
@@ -679,7 +683,10 @@ color: #a85b40;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
 }
 .NB-dark .NB-modal-feedchooser .NB-feedchooser-premium-bullets li {
-    background-color: #3b484b;
+    border-top-color:rgba(0, 0, 0, .1);
+}
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-premium-bullets li .NB-feedchooser-premium-bullet-image {
+    filter: brightness(5);
 }
 .NB-dark .NB-modal-feedchooser .NB-feedchooser-dollar-value {
     text-shadow: 0 1px 0 #2b2a1e;
@@ -693,13 +700,17 @@ color: #a85b40;
 .NB-dark .NB-modal-feedchooser .NB-modal-submit.NB-modal-submit-paypal {
     background-color: #3b3725;
     background-image: -webkit-gradient(
-    linear,
-    left bottom,
-    left top,
-    color-stop(0.16, #3b3725),
-    color-stop(0.84, #3b392e)
-    );
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #3b3725),
+        color-stop(0.84, #3b392e)
+        );
     box-shadow: 0 2px 0 #383215;
+}
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-premium-already {
+    background-color: rgb(48 88 83);
+    color: #85bd67;
 }
 
 /* Intelligence Trainer: Container color */
@@ -848,7 +859,7 @@ color: #a85b40;
     background: #393b3c;
     background-color: #393b3c;
     background-image: none;
-    border-color: #101719;
+    border-color: #303030
 }
 
 /* Buttons on bottom & top bar */
@@ -877,6 +888,7 @@ color: #a85b40;
 }
 .NB-dark .segmented-control li.NB-active, 
 .NB-dark .segmented-control li.NB-active:not(.NB-disabled), 
+.NB-dark .segmented-control li:active:not(.NB-disabled),
 .NB-dark .segmented-control-active li {
     background: none;
     background-color: #6c6c74;
@@ -892,9 +904,8 @@ color: #a85b40;
 .NB-dark .segmented-control li:hover:not(.NB-disabled):not(.NB-active) {
     background-color: #585b63;
 }
-
 .NB-dark #story_taskbar {
-    border-top: 1px solid #101719;
+    border-top: 1px solid #303030;
 }
 .NB-dark .NB-feedbar .NB-taskbar .NB-task-story-previous {
     border-right: 1px solid rgba(0,0,0,0.1);
@@ -1014,8 +1025,8 @@ text-shadow: none;
 }
 
 .NB-dark .NB-feedlist .feed {
-    border-top: 1px solid #434543;
-    border-bottom: 1px solid #434543;
+    /* border-top: 1px solid #434543; */
+    /* border-bottom: 1px solid #434543; */
     padding-right: 2px;
     background-color: #434543;
 }
@@ -1026,9 +1037,9 @@ text-shadow: none;
 .NB-dark .NB-feeds-header.NB-selected, 
 .NB-dark .NB-feedlist .folder.NB-selected>.folder_title {
     background: none;
-    background-color: #313E4E;
-    border-top: 1px solid #2C305D;
-    border-bottom: 1px solid #2C305D;
+    background-color: #4d6d95;
+    /* border-top: 1px solid #2C305D; */
+    /* border-bottom: 1px solid #2C305D; */
 }
 
 /* Shared Stories*/
@@ -1048,14 +1059,14 @@ border-bottom-color: #303739;
 .NB-dark .NB-feeds-header .NB-feeds-header-title,
 .NB-dark .NB-feedlists .NB-socialfeeds .feed .feed_title,
 .NB-dark .NB-feedlist .feed_title {
-    color: #d2d2d2;
+    color: #bdbdbd;
     text-shadow: 0 1px 0 rgba(0,0,0,.8);
 }
 
 /* Feed folder text */
 .NB-dark .NB-feedlist .folder_title,
 .NB-dark .NB-feedlist .folder.NB-selected>.folder_title {
-    color: #98999B;
+    color: #bdbdbd;
     text-shadow: 0 1px 0 rgba(0,0,0,.8);
 }
 
@@ -1076,16 +1087,16 @@ border-bottom-color: #303739;
 .NB-dark .NB-feeds-header-searches.NB-feeds-header, 
 .NB-dark .NB-feeds-header-starred.NB-feeds-header, 
 .NB-dark .NB-searches-folder {
-    border-bottom: 1px solid #333536;
+    /* border-bottom: 1px solid #333536; */
 }
-.NB-dark .NB-feeds-header-read-container.NB-feeds-header-container {
-    border-top: 1px solid #333536;
+.NB-dark .NB-feeds-header-container {
+    background-color: #434543;
 }
 /* Unread feed count badge */
 .NB-dark .unread_count_neutral {
     background-color: #7a7e77;
     color: #FDFEFE;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+    /* text-shadow: 0 1px 0 rgba(0, 0, 0, .3); */
 }
 
 
@@ -1107,11 +1118,12 @@ border-bottom-color: #303739;
     border-top: 1px solid #333536;
     border-bottom: 1px solid #232526;
 }
-.NB-dark .NB-story-grid.NB-story-title {
+.NB-dark .NB-story-title-grid.NB-story-title {
     border: none;
 }
-.NB-dark .NB-story-grid.NB-story-title .NB-storytitles-grid-bottom {
+.NB-dark .NB-story-title-grid.NB-story-title .NB-storytitles-grid-bottom {
     background-color: #292b2c;    
+    border-top-color: #303030;
 }
 .NB-dark .NB-story-title:hover:not(.NB-selected),
 .NB-dark .NB-story-title:hover:not(.NB-selected) .NB-storytitles-grid-bottom {
@@ -1152,8 +1164,8 @@ border-bottom-color: #303739;
 /* Selected stories highlight */
 .NB-dark .NB-story-title.NB-selected {
     color: #eee;
-    border-top: 1px solid #414545;
-    border-bottom: 1px solid #202121;
+    /* border-top: 1px solid #414545;
+    border-bottom: 1px solid #202121; */
     background: none;
     background-color: #30393F;
 }
@@ -1367,13 +1379,13 @@ color: #fff;
 .NB-dark .NB-sideoption {
     border: none;
     text-shadow: none;
-    background-color: #393b3c;
+    background-color: transparent;
 }
 
 
 /* Story button text color (Train, Save, Share) */
 .NB-dark .NB-sideoption .NB-sideoption-title {
-    color: rgba(255, 255, 255, 0.2);
+    color: #808080;
 }
 
 .NB-dark .NB-sideoption-save,

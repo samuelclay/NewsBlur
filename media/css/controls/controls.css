@@ -4,11 +4,12 @@ ul.segmented-control {
     padding: 1px;
     margin: 0 auto;
     clear: none;
-    display: inline-block;
     color: white;
     text-align: center;
     border-radius: 4px;
     transition: 0.14s ease-in-out background;
+    display: flex;
+    align-items: center;
 }
 
 .segmented-control ::-moz-selection {
@@ -24,16 +25,16 @@ ul.segmented-control {
 }
 .segmented-control li {
     background: none;
-    float: left;
     margin: 0 2px 0 0;
     cursor: pointer;
     padding: 0;
-    clear: none;
     text-align: center;
     border-radius: 4px;
     color: #61635e;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
     transition: 0.14s ease-in-out background; 
+    flex: 1 1 0;
+    white-space: nowrap;
 }
 .segmented-control li:last-child {
     margin-right: 0;
@@ -100,7 +101,7 @@ ul.segmented-control-vertical {
     padding: 1px;
     margin: 0 auto;
     clear: none;
-    display: inline-block;
+    display: block;
     text-align: center;
 }
 

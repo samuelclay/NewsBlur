@@ -185,7 +185,7 @@ class SQLLogToConsoleMiddleware:
                 and not getattr(settings, 'DEBUG_QUERIES_SUMMARY_ONLY', False)
             ):
                 t = Template(
-                    "{% for sql in sqllog %}{% if not forloop.first %}                  {% endif %}[{{forloop.counter}}] {{sql.color}}{{sql.time}}~SNs~FW: {{sql.sql|safe}}{% if not forloop.last %}\n{% endif %}{% endfor %}"
+                    "{% for sql in sqllog %}{% if not forloop.first %}                  {% endif %}[{{forloop.counter}}] {{sql.color}}{{sql.time}}~SN~FW: {{sql.sql|safe}}{% if not forloop.last %}\n{% endif %}{% endfor %}"
                 )
                 logging.debug(
                     t.render(

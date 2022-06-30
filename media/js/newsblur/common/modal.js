@@ -99,7 +99,7 @@ NEWSBLUR.Modal.prototype = {
         this.folder_title = folder_title;
         this.folder = this.model.get_folder(folder_title);
         
-        $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_folder.png');
+        $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/folder-open.svg');
         $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.folder_title);
         $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).hide();
     },

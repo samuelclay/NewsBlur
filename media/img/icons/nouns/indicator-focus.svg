@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150px" height="150px" viewBox="0 0 150 150" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>indicator-focus</title>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#7BD48F" offset="0%"></stop>
+            <stop stop-color="#6BBF7A" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#80D493" offset="0%"></stop>
+            <stop stop-color="#5BB46B" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="indicator-focus" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="noun-dots-2561422-95978E" transform="translate(-0.000000, 0.000000)" fill-rule="nonzero">
+            <path d="M75.0000067,126.886712 C46.2420053,126.886712 23.1128586,103.773424 23.1128586,74.9995594 C23.1128586,46.2415555 46.2261445,23.1124067 75.0000067,23.1124067 C103.758008,23.1124067 126.887155,46.2256946 126.887155,74.9995594 C126.869946,103.757563 103.756686,126.886712 75.0000067,126.886712 M75.0000067,150 C116.734862,150 150.000007,116.164748 150.000007,75 C150.000007,33.8352523 116.164751,0 75.0000067,0 C33.8352626,0 6.66499878e-06,33.8352523 6.66499878e-06,75 C-0.0171957334,116.166951 33.2673546,150 75.0000067,150 Z" id="Shape" fill="url(#linearGradient-1)"></path>
+            <path d="M75.0085429,108.088235 C56.7316492,108.088235 41.9117647,93.2816137 41.9117647,75 C41.9117647,56.7183863 56.7316492,41.9117647 75.0085429,41.9117647 C93.2683508,41.9117647 108.088235,56.7183863 108.088235,75 C108.088235,93.2816137 93.2683508,108.088235 75.0085429,108.088235 Z" id="Path" fill="url(#linearGradient-2)"></path>
+        </g>
+    </g>
+</svg>

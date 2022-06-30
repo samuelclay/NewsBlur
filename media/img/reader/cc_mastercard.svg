@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="44px" height="30px" viewBox="0 0 44 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Artboard</title>
+    <defs>
+        <linearGradient x1="41.7613636%" y1="29.9498967%" x2="60.7909091%" y2="76.2592975%" id="linearGradient-1">
+            <stop stop-color="#00B3EE" offset="0%"></stop>
+            <stop stop-color="#0082D8" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="0%" y1="50%" x2="100.004974%" y2="50%" id="linearGradient-2">
+            <stop stop-color="#FEDE00" offset="0%"></stop>
+            <stop stop-color="#FFD000" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Artboard" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="cc_mastercard" fill-rule="nonzero">
+            <path d="M41.125,0 L2.875,0 C1.287,0 0,1.287 0,2.875 L0,27.125 C0,28.713 1.287,30 2.875,30 L41.125,30 C42.713,30 44,28.713 44,27.125 L44,2.875 C44,1.287 42.713,0 41.125,0 Z" id="Path" fill="url(#linearGradient-1)"></path>
+            <circle id="Oval" fill="#CF1928" cx="15.053" cy="15.053" r="10.053"></circle>
+            <circle id="Oval" fill="url(#linearGradient-2)" cx="28.053" cy="15.053" r="10.053"></circle>
+            <path d="M18,15.053 C18,18.125 19.382,20.871 21.553,22.715 C23.725,20.871 25.106,18.125 25.106,15.053 C25.106,11.981 23.724,9.235 21.553,7.391 C19.382,9.235 18,11.981 18,15.053 Z" id="Path" fill="#D97218"></path>
+        </g>
+    </g>
+</svg>
