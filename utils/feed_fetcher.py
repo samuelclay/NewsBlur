@@ -944,7 +944,7 @@ class FeedFetcherWorker:
                 feed_fetch_duration = time.time() - start_duration
                 raw_feed = ffeed.raw_feed
 
-                if (fetched_feed and ret_feed == FEED_OK) or self.options['force']:
+                if fetched_feed and (ret_feed == FEED_OK or self.options['force']):
                     pfeed = ProcessFeed(feed_id, fetched_feed, self.options, raw_feed=raw_feed)
                     ret_feed, ret_entries = pfeed.process()
                     feed = pfeed.feed
