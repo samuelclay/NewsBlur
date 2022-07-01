@@ -625,6 +625,9 @@ class ProcessFeed:
         """
         ret_values = dict(new=0, updated=0, same=0, error=0)
 
+        if not self.feed:
+            return FEED_ERREXC, ret_values
+        
         if hasattr(self.fpf, 'status'):
             if self.options['verbose']:
                 if self.fpf.bozo and self.fpf.status != 304:
