@@ -722,6 +722,10 @@ class ProcessFeed:
         The feed has changed (or it is the first time we parse it)
         saving the etag and last_modified fields
         """
+        if not self.feed:
+            logging.debug(f"Missing feed: {self.feed}")
+            return
+        
         original_etag = self.feed.etag
         self.feed.etag = self.fpf.get('etag')
         if self.feed.etag:
