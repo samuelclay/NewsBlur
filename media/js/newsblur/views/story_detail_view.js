@@ -43,7 +43,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.bind('change:shared', this.render_comments, this);
         this.model.bind('change:comments', this.render_comments, this);
         this.model.bind('change:story_content', this.render_story_content, this);
-        this.model.bind('change:visible', this.attach_custom_handler, this);
+        this.model.bind('change:selected', this.attach_custom_handler, this);
         if (this.collection) {
             this.collection.bind('render:intelligence', this.render_intelligence, this);
         }
