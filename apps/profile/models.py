@@ -868,10 +868,12 @@ class Profile(models.Model):
                 continue
 
             url = f"/v1/billing/subscriptions/{paypal_id}/suspend"
-            response = paypal_api.post(url, {
-                'reason': f"Cancelled on {today}"
-            })
-            # logging.user(self.user, f"response: {response}")
+            try:
+                response = paypal_api.post(url, {
+                    'reason': f"Cancelled on {today}"
+                })
+            except paypalrestsdk.ResourceNotFound as e:
+                logging.user(self.user, f"~FRCouldn't find paypal response during ~FB~SB{paypal_id}~SN~FR profile suspend: ~SB~FB{e}")
             
             logging.user(self.user, "~FRCanceling Paypal subscription: %s" % paypal_id)
             return paypal_id
