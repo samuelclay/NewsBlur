@@ -1,6 +1,5 @@
 import re
 import stripe
-import paypal
 import requests
 import datetime
 import dateutil
@@ -35,6 +34,7 @@ from utils.user_functions import get_user
 from utils import log as logging
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
 from paypal.standard.forms import PayPalPaymentsForm
+from paypal.standard.ipn.views import ipn as paypal_standard_ipn
 
 INTEGER_FIELD_PREFS = ('feed_pane_size', 'days_of_unread')
 SINGLE_FIELD_PREFS = ('timezone','hide_mobile','send_emails',
@@ -272,7 +272,7 @@ def set_collapsed_folders(request):
 
 def paypal_ipn(request):
     try:
-        return paypal.standard.ipn.views.ipn(request)
+        return paypal_standard_ipn(request)
     except AssertionError:
         # Paypal may have sent webhooks to ipn, so redirect
         logging.user(request, f" ---> Paypal IPN to webhooks redirect: {request.body}")
@@ -283,7 +283,7 @@ def paypal_webhooks(request):
         data = json.decode(request.body)
     except python_json.decoder.JSONDecodeError:
         # Kick it over to paypal ipn
-        return paypal.standard.ipn.views.ipn(request)
+        return paypal_standard_ipn(request)
     
     logging.user(request, f" ---> Paypal webhooks {data.get('event_type', '<no event_type>')} data: {data}")
     
