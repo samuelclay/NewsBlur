@@ -2395,7 +2395,7 @@ class Feed(models.Model):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         if not self.num_subscribers:
             logging.debug('   ---> [%-30s] Not scheduling feed fetch immediately, no subs.' % (self.log_title[:30]))
-            return
+            return self
             
         if verbose:
             logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (self.log_title[:30]))
