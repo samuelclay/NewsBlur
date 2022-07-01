@@ -527,6 +527,7 @@ class Profile(models.Model):
 
                 if paypal_subscription:
                     if paypal_subscription['status'] in ["APPROVAL_PENDING", "APPROVED", "ACTIVE"]:
+                        active_plan = paypal_subscription['plan']['id']
                         active_provider = "paypal"
                         premium_renewal = True
 
@@ -659,7 +660,7 @@ class Profile(models.Model):
             self.premium_expire > datetime.datetime.now()):
             self.activate_premium()
         
-        logging.user(self.user, "~FCActive plan: %s, archive: %s, is_archive? %s" % (active_plan, Profile.plan_to_stripe_price('archive'), self.is_archive))
+        logging.user(self.user, "~FCActive plan: %s, stripe/paypal: %s/%s, is_archive? %s" % (active_plan, Profile.plan_to_stripe_price('archive'), Profile.plan_to_paypal_plan_id('archive'), self.is_archive))
         if (active_plan == Profile.plan_to_stripe_price('pro') and not self.is_pro):
             self.activate_pro()
         elif (active_plan == Profile.plan_to_stripe_price('archive') and not self.is_archive):
