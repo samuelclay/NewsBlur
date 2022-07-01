@@ -43,7 +43,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.bind('change:shared', this.render_comments, this);
         this.model.bind('change:comments', this.render_comments, this);
         this.model.bind('change:story_content', this.render_story_content, this);
-        this.model.bind('change:selected', this.attach_custom_handler, this);
         if (this.collection) {
             this.collection.bind('render:intelligence', this.render_intelligence, this);
         }
@@ -127,6 +126,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.render_starred_tags();
         this.apply_starred_story_selections();
         this.watch_images_load();
+        this.attach_custom_handler();
     },
     
     attach_custom_handler: function () {
