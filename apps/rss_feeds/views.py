@@ -315,7 +315,10 @@ def exception_retry(request):
     if feed.fetched_once != original_fetched_once:
         feed.save(update_fields=['fetched_once'])
 
-    feed = feed.update(force=True, compute_scores=False, verbose=True)
+    try:
+        feed = feed.update(force=True, compute_scores=False, verbose=True)
+    except Exception as e:
+        logging.user(request, f"~FRFetch failed: {e}")
     feed = Feed.get_by_id(feed.pk)
 
     try:
