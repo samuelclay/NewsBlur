@@ -43,6 +43,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.bind('change:shared', this.render_comments, this);
         this.model.bind('change:comments', this.render_comments, this);
         this.model.bind('change:story_content', this.render_story_content, this);
+        this.model.bind('change:visible', this.attach_custom_handler, this);
         if (this.collection) {
             this.collection.bind('render:intelligence', this.render_intelligence, this);
         }
@@ -126,14 +127,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.render_starred_tags();
         this.apply_starred_story_selections();
         this.watch_images_load();
-        this.attach_custom_handler();
     },
     
     attach_custom_handler: function () {
         // Use this to create your own story_content handler.
         // Add this to your Manage > Account > Custom CSS:
         // 
-        // NEWSBLUR.Views.StoryDetailView.prototype.attach_custom_handler = () { console.log(['Story selected', this.model.get('story_title'), this.model.get('story_content').length + " bytes"])}
+        // NEWSBLUR.Views.StoryDetailView.prototype.attach_custom_handler = () => { console.log(['Story selected', NEWSBLUR.reader.active_story.get('story_title'), NEWSBLUR.reader.active_story.get('story_content').length + " bytes"]); }
     },
     
     watch_images_load: function () {
