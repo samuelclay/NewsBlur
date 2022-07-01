@@ -659,7 +659,7 @@ class Profile(models.Model):
             self.premium_expire > datetime.datetime.now()):
             self.activate_premium()
         
-        # logging.user(self.user, "~FCActive plan: %s, archive: %s, is_archive? %s" % (active_plan, Profile.plan_to_stripe_price('archive'), self.is_archive))
+        logging.user(self.user, "~FCActive plan: %s, archive: %s, is_archive? %s" % (active_plan, Profile.plan_to_stripe_price('archive'), self.is_archive))
         if (active_plan == Profile.plan_to_stripe_price('pro') and not self.is_pro):
             self.activate_pro()
         elif (active_plan == Profile.plan_to_stripe_price('archive') and not self.is_archive):
@@ -1903,7 +1903,13 @@ class MSentEmail(mongo.Document):
     }
     
     def __str__(self):
-        return "%s sent %s email to %s" % (self.sending_user_id, self.email_type, self.receiver_user_id)
+        sender_user = self.sending_user_id
+        if sender_user:
+            sender_user = User.objects.get(pk=self.sending_user_id)
+        receiver_user = self.receiver_user_id
+        if receiver_user:
+            receiver_user = User.objects.get(pk=self.receiver_user_id)
+        return "%s sent %s email to %s %s" % (sender_user, self.email_type, receiver_user, receiver_user.profile if receiver_user else receiver_user)
     
     @classmethod
     def record(cls, email_type, receiver_user_id, sending_user_id=None):
