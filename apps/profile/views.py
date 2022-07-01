@@ -270,6 +270,14 @@ def set_collapsed_folders(request):
     response = dict(code=code)
     return response
 
+def paypal_ipn(request):
+    try:
+        return paypal.standard.ipn.views.ipn(request)
+    except AssertionError:
+        # Paypal may have sent webhooks to ipn, so redirect
+        logging.user(request, f" ---> Paypal IPN to webhooks redirect: {request.body}")
+        return paypal_webhooks(request)
+    
 def paypal_webhooks(request):
     try:
         data = json.decode(request.body)
