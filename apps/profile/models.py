@@ -1659,16 +1659,35 @@ post_save.connect(create_profile, sender=User)
 
 def paypal_signup(sender, **kwargs):
     ipn_obj = sender
+    user = None
     try:
         user = User.objects.get(username__iexact=ipn_obj.custom)
     except User.DoesNotExist:
+        pass
+
+    if not user:
         try:
             user = User.objects.get(email__iexact=ipn_obj.payer_email)
         except User.DoesNotExist:
-            logging.debug(" ---> Paypal subscription not found during flagging: %s/%s" % (
-                ipn_obj.payer_email,
-                ipn_obj.custom))    
-            return {"code": -1, "message": "User doesn't exist."}
+            pass
+        
+    if not user:
+        try:
+            user = User.objects.get(pk=ipn_obj.custom)
+        except User.DoesNotExist:
+            pass
+
+    if not user:
+        try:
+            user = PaypalIds.objects.get(paypal_sub_id=ipn_obj.subscr_id).user
+        except PaypalIds.DoesNotExist:
+            pass
+
+    if not user:
+        logging.debug(" ---> Paypal subscription not found during paypal_signup: %s/%s" % (
+            ipn_obj.payer_email,
+            ipn_obj.custom))    
+        return {"code": -1, "message": "User doesn't exist."}
 
     logging.user(user, "~BC~SB~FBPaypal subscription signup")
     try:
@@ -1681,7 +1700,7 @@ def paypal_signup(sender, **kwargs):
     user.profile.cancel_premium_stripe()
     # user.profile.cancel_premium_paypal(second_most_recent_only=True)
 
-    assert False, "Shouldn't be here anymore as the new Paypal REST API uses webhooks"
+    # assert False, "Shouldn't be here anymore as the new Paypal REST API uses webhooks"
 valid_ipn_received.connect(paypal_signup)
 
 def paypal_payment_history_sync(sender, **kwargs):

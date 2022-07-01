@@ -1,4 +1,6 @@
+import re
 import stripe
+import paypal
 import requests
 import datetime
 import dateutil
@@ -26,6 +28,7 @@ from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
 from apps.social.models import MSocialServices, MActivity, MSocialProfile
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from utils import json_functions as json
+import json as python_json
 from utils.user_functions import ajax_login_required
 from utils.view_functions import render_to, is_true
 from utils.user_functions import get_user
@@ -268,9 +271,13 @@ def set_collapsed_folders(request):
     return response
 
 def paypal_webhooks(request):
-    data = json.decode(request.body)
-    logging.user(request, f" ---> {data['event_type']}:")
-    from pprint import pprint; pprint(data)
+    try:
+        data = json.decode(request.body)
+    except python_json.decoder.JSONDecodeError:
+        # Kick it over to paypal ipn
+        return paypal.standard.ipn.views.ipn(request)
+    
+    logging.user(request, f" ---> Paypal webhooks {data.get('event_type', '<no event_type>')} data: {data}")
     
     if data['event_type'] == "BILLING.SUBSCRIPTION.CREATED":
         # Don't start a subscription but save it in case the payment comes before the subscription activation
