@@ -415,7 +415,8 @@ class TwitterFetcher:
                 if chosen_variant:
                     entities += "<video src=\"%s\" autoplay loop muted playsinline controls> <hr>" % chosen_variant['url']
                 categories.add(media['type'])                
-                
+
+        # Replace all shortened urls with their full urls
         for url in content_tweet['entities'].get('urls', []):
             if url['url'] in tweet_text:
                 replacement = "<a href=\"%s\">%s</a>" % (url['expanded_url'], url['display_url'])
@@ -423,6 +424,11 @@ class TwitterFetcher:
                     tweet_text = tweet_text.replace(url['url'], replacement)
                     replaced[url['url']] = True
                 tweet_title = tweet_title.replace(url['url'], url['display_url'])
+
+        # Replace @username's with an <a> link
+        for word in re.findall("@\w+", tweet_text, re.MULTILINE):
+            replacement = "<a href=\"https://twitter.com/%s\">%s</a>" % (word[1:], word)
+            tweet_text = tweet_text.replace(word, replacement)
         
         quote_tweet_content = ""
         if 'quoted_status' in content_tweet:
