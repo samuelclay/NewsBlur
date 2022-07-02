@@ -382,6 +382,10 @@ class TwitterFetcher:
         
         tweet_title = user_tweet['full_text']
         tweet_text = linebreaks(content_tweet['full_text'])
+
+        # Remove unserializable control characters
+        tweet_text = re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F]', '', tweet_text)
+        
         replaced = {}
         entities_media = content_tweet['entities'].get('media', [])
         if 'extended_entities' in content_tweet:
