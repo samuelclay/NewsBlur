@@ -115,8 +115,9 @@ class UserSubscription(models.Model):
                      across_all_feeds=True, store_stories_key=None, offset=0, limit=500):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         pipeline = r.pipeline()
+        user = User.objects.get(pk=user_id)
         story_hashes = {} if group_by_feed else []
-        is_archive = User.objects.get(pk=user_id).profile.is_archive
+        is_archive = user.profile.is_archive
         
         if not feed_ids and not across_all_feeds:
             return story_hashes
@@ -129,7 +130,7 @@ class UserSubscription(models.Model):
 
         current_time = int(time.time() + 60*60*24)
         if not cutoff_date:
-            cutoff_date = datetime.datetime.now() - datetime.timedelta(days=UserSubscription.days_of_story_hashes_for_user(user_id))
+            cutoff_date = user.profile.unread_cutoff
         feed_counter = 0
         unread_ranked_stories_keys = []
         expire_unread_stories_key = False
@@ -302,11 +303,6 @@ class UserSubscription(models.Model):
         
         return story_hashes, unread_feed_story_hashes
     
-    @classmethod
-    def days_of_story_hashes_for_user(cls, user_id):
-        user = User.objects.get(pk=user_id)
-        return user.profile.days_of_story_hashes
-
     def oldest_manual_unread_story_date(self, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
