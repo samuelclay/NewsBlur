@@ -1266,8 +1266,9 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         if story['story_authors']:
             story_data['author_name'] = story['story_authors']
         rss.add_item(**story_data)
-    
-    if not user.profile.is_archive:
+
+    # TODO: Remove below date hack to accomodate users who paid for premium but want folder rss
+    if not user.profile.is_archive and (datetime.datetime.now() > datetime.datetime(2023, 7, 1)):
         story_data = {
             'title': "You must have a premium archive subscription on NewsBlur to have RSS feeds for folders.",
             'link': "https://%s/?next=premium" % domain,
