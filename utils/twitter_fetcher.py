@@ -382,9 +382,6 @@ class TwitterFetcher:
         
         tweet_title = user_tweet['full_text']
         tweet_text = linebreaks(content_tweet['full_text'])
-
-        # Remove unserializable control characters
-        tweet_text = re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F]', '', tweet_text)
         
         replaced = {}
         entities_media = content_tweet['entities'].get('media', [])
@@ -471,6 +468,9 @@ class TwitterFetcher:
             (", " if content_tweet['favorite_count'] and content_tweet['retweet_count'] else ""),
             ("<b>%s</b> %s" % (content_tweet['retweet_count'], "retweet" if content_tweet['retweet_count'] == 1 else "retweets")) if content_tweet['retweet_count'] else "",
         )
+        
+        # Remove unserializable control characters
+        content = re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F-\x84\x86-\x9F\uFDD0-\uFDEF\uFFFE\uFFFF]', '', content)
         
         story = {
             'title': tweet_title,
