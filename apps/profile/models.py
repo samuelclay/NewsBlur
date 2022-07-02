@@ -520,14 +520,16 @@ class Profile(models.Model):
             for paypal_id_model in self.user.paypal_ids.all():
                 paypal_id = paypal_id_model.paypal_sub_id
                 try:
-                    paypal_subscription = paypal_api.get(f'/v1/billing/subscriptions/{paypal_id}')
+                    paypal_subscription = paypal_api.get(f'/v1/billing/subscriptions/{paypal_id}?fields=plan')
                 except paypalrestsdk.ResourceNotFound:
                     logging.user(self.user, f"~FRCouldn't find paypal payments: {paypal_id}")
                     paypal_subscription = None
 
                 if paypal_subscription:
                     if paypal_subscription['status'] in ["APPROVAL_PENDING", "APPROVED", "ACTIVE"]:
-                        active_plan = paypal_subscription['plan_id']
+                        active_plan = paypal_subscription.get('plan_id', None)
+                        if not active_plan:
+                            active_plan = paypal_subscription['plan']['name']
                         active_provider = "paypal"
                         premium_renewal = True
 
@@ -592,10 +594,11 @@ class Profile(models.Model):
                 stripe_subscriptions = stripe.Subscription.list(customer=stripe_customer.id).data
                 
                 for subscription in stripe_subscriptions:
-                    if subscription.plan.active and not subscription.cancel_at:
+                    if subscription.plan.active:
                         active_plan = subscription.plan.id
                         active_provider = "stripe"
-                        premium_renewal = True
+                        if not subscription.cancel_at:
+                            premium_renewal = True
                         break
                             
                 for payment in stripe_payments:
@@ -665,9 +668,9 @@ class Profile(models.Model):
             self.activate_pro()
         elif (active_plan == Profile.plan_to_stripe_price('archive') and not self.is_archive):
             self.activate_archive()
-        elif (Profile.plan_to_paypal_plan_id('pro') == active_plan and not self.is_pro):
+        elif (active_plan == Profile.plan_to_paypal_plan_id('pro') and not self.is_pro):
             self.activate_premium()
-        elif (Profile.plan_to_paypal_plan_id('archive') == active_plan and not self.is_archive):
+        elif (active_plan == Profile.plan_to_paypal_plan_id('archive') and not self.is_archive):
             self.activate_archive()
         
     def preference_value(self, key, default=None):
