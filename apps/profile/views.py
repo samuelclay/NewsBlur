@@ -294,14 +294,15 @@ def paypal_webhooks(request):
     elif data['event_type'] in ["BILLING.SUBSCRIPTION.ACTIVATED", "BILLING.SUBSCRIPTION.UPDATED"]:
         user = User.objects.get(pk=int(data['resource']['custom_id']))
         user.profile.store_paypal_sub_id(data['resource']['id'])
-        plan_id = data['resource']['plan_id']
-        if plan_id == Profile.plan_to_paypal_plan_id('premium'):
-            user.profile.activate_premium()
-        elif plan_id == Profile.plan_to_paypal_plan_id('archive'):
-            user.profile.activate_archive()
-        elif plan_id == Profile.plan_to_paypal_plan_id('pro'):
-            user.profile.activate_pro()
+        # plan_id = data['resource']['plan_id']
+        # if plan_id == Profile.plan_to_paypal_plan_id('premium'):
+        #     user.profile.activate_premium()
+        # elif plan_id == Profile.plan_to_paypal_plan_id('archive'):
+        #     user.profile.activate_archive()
+        # elif plan_id == Profile.plan_to_paypal_plan_id('pro'):
+        #     user.profile.activate_pro()
         user.profile.cancel_premium_stripe()
+        user.profile.setup_premium_history()
         if data['event_type'] == "BILLING.SUBSCRIPTION.ACTIVATED":
             user.profile.cancel_and_prorate_existing_paypal_subscriptions(data)
     elif data['event_type'] == "PAYMENT.SALE.COMPLETED":
@@ -374,7 +375,6 @@ def profile_is_premium(request):
     # Check tries
     code = 0
     retries = int(request.GET['retries'])
-    profile = Profile.objects.get(user=request.user)
     
     subs = UserSubscription.objects.filter(user=request.user)
     total_subs = subs.count()
@@ -386,9 +386,9 @@ def profile_is_premium(request):
             subject = "Premium activation failed: %s (%s/%s)" % (request.user, activated_subs, total_subs)
             message = """User: %s (%s) -- Email: %s""" % (request.user.username, request.user.pk, request.user.email)
             mail_admins(subject, message)
-            request.user.profile.is_premium = True
-            request.user.profile.save()
+            request.user.profile.activate_premium()
         
+    profile = Profile.objects.get(user=request.user)
     return {
         'is_premium': profile.is_premium,
         'is_premium_archive': profile.is_archive,
@@ -403,7 +403,6 @@ def profile_is_premium_archive(request):
     # Check tries
     code = 0
     retries = int(request.GET['retries'])
-    profile = Profile.objects.get(user=request.user)
 
     subs = UserSubscription.objects.filter(user=request.user)
     total_subs = subs.count()
@@ -411,14 +410,14 @@ def profile_is_premium_archive(request):
     
     if retries >= 30:
         code = -1
-        if not request.user.profile.is_premium:
+        if not request.user.profile.is_premium_archive:
             subject = "Premium archive activation failed: %s (%s/%s)" % (request.user, activated_subs, total_subs)
             message = """User: %s (%s) -- Email: %s""" % (request.user.username, request.user.pk, request.user.email)
             mail_admins(subject, message)
-            request.user.profile.is_premium = True
-            request.user.profile.is_premium_archive = True
-            request.user.profile.save()
-        
+            request.user.profile.activate_archive()
+
+    profile = Profile.objects.get(user=request.user)
+
     return {
         'is_premium': profile.is_premium,
         'is_premium_archive': profile.is_archive,
