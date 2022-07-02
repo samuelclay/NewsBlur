@@ -75,7 +75,8 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             
             if (data.is_premium) {
                 $actions.append($.make('div', { style: 'margin-bottom: 12px' }, [
-                    "User is premium, expires: ",
+                    (data.is_premium && !data.is_archive && "User is premium, expires: "),
+                    (data.is_premium && data.is_archive && "User is premium ARCHIVE, expires: "),
                     (data.premium_expire || $.make('b', 'NEVER'))
                 ]));
                 $actions.append($.make('div', { style: 'margin-bottom: 12px' }, [
