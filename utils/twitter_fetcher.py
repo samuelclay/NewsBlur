@@ -471,7 +471,7 @@ class TwitterFetcher:
         
         # Remove unserializable control characters
         content = re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F-\x84\x86-\x9F\uFDD0-\uFDEF\uFFFE\uFFFF]', '', content)
-        
+        author_fullname = re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F-\x84\x86-\x9F\uFDD0-\uFDEF\uFFFE\uFFFF]', '', author_fullname)
         story = {
             'title': tweet_title,
             'link': "https://twitter.com/%s/status/%s" % (original_author_screen_name, user_tweet['id']),
