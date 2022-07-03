@@ -1670,24 +1670,25 @@ post_save.connect(create_profile, sender=User)
 def paypal_signup(sender, **kwargs):
     ipn_obj = sender
     user = None
-    try:
-        user = User.objects.get(username__iexact=ipn_obj.custom)
-    except User.DoesNotExist:
-        pass
+    if ipn_obj.custom:
+        try:
+            user = User.objects.get(username__iexact=ipn_obj.custom)
+        except User.DoesNotExist:
+            pass
 
-    if not user:
+    if not user and ipn_obj.payer_email:
         try:
             user = User.objects.get(email__iexact=ipn_obj.payer_email)
         except User.DoesNotExist:
             pass
         
-    if not user:
+    if not user and ipn_obj.custom:
         try:
             user = User.objects.get(pk=ipn_obj.custom)
         except User.DoesNotExist:
             pass
 
-    if not user:
+    if not user and ipn_obj.subscr_id:
         try:
             user = PaypalIds.objects.get(paypal_sub_id=ipn_obj.subscr_id).user
         except PaypalIds.DoesNotExist:
