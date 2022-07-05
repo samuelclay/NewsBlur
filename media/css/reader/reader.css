@@ -1946,7 +1946,7 @@ img.feed_favicon {
 
 .NB-story-title .NB-storytitles-story-image {
     position: absolute;
-    right: -84px;
+    right: -80px;
     width: 78px;
     height: 100%;
     background-size: 40%, cover;
@@ -2036,6 +2036,10 @@ img.feed_favicon {
     overflow-wrap: break-word;
     word-break: break-word;
     transition: padding 0.36s ease-out, margin 0.36s ease-out, top 0.36s ease-out;
+}
+.NB-image-preview-small-right .NB-story-title.NB-has-image a.story_title,
+.NB-image-preview-large-right .NB-story-title.NB-has-image a.story_title {
+    padding-right: 12px;
 }
 
 .NB-density-compact .NB-story-title a.story_title {
