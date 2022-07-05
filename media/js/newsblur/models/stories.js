@@ -219,7 +219,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             background = false;
         }
         
-        if (background && $.browser.webkit && false) {
+        if (background && $.browser.webkit) {
             var event = new CustomEvent("openInNewTab", {
                 bubbles: true,
                 detail: {background: background}
