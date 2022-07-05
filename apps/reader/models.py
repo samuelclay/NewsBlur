@@ -775,7 +775,10 @@ class UserSubscription(models.Model):
     
     def invert_read_stories_after_unread_story(self, story, request=None):
         data = dict(code=1)
-        if story.story_date > self.mark_read_date and self.mark_read_date > self.user.profile.unread_cutoff:
+        unread_cutoff = self.user.profile.unread_cutoff
+        if self.mark_read_date > unread_cutoff:
+            unread_cutoff = self.mark_read_date
+        if story.story_date > unread_cutoff:
             return data
 
         # Check if user is archive and story is outside unread cutoff
