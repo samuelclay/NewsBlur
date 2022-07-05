@@ -794,7 +794,7 @@ class UserSubscription(models.Model):
         # Story is outside the mark as read range, so invert all stories before.
         newer_stories = MStory.objects(story_feed_id=story.story_feed_id,
                                        story_date__gte=story.story_date,
-                                       story_date__lte=self.mark_read_date
+                                       story_date__lte=unread_cutoff
                                        ).only('story_hash')
         newer_stories = [s.story_hash for s in newer_stories]
         self.mark_read_date = story.story_date - datetime.timedelta(minutes=1)
