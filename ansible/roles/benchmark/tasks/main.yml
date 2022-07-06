@@ -29,26 +29,29 @@
       register: cpu
 
     - name: Benchmark cpu results
-      debug: msg="{{ cpu.stdout.split('\n') }}"
+      debug: msg="{{ cpu.stdout }}"
 
     - name: Prepare sysbench disk i/o 
       become: yes
       shell:
         # chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
-        cmd: sysbench fileio --file-total-size=50G prepare
+        cmd: sysbench fileio --file-total-size=5G prepare
       
     - name: Run sysbench disk i/o
       become: yes
       shell:
         # chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
-        cmd: sysbench fileio --file-total-size=50G --file-test-mode=rndrw --time=300 --max-requests=0 run
+        cmd: sysbench fileio --file-total-size=5G --file-test-mode=rndrw --time=30 --max-requests=0 run
       register: io
       
     - name: Cleanup sysbench
       become: yes
       shell:
         # chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
-        cmd: sysbench fileio --file-total-size=150G cleanup
+        cmd: sysbench fileio --file-total-size=5G cleanup
+    
+    - name: Benchmark io results
+      debug: msg="{{ io.stdout }}"
   when: (inventory_hostname | regex_replace('[0-9]+', '')) not in ['db-mongo-secondary', 'db-mongo-analytics']
 
 - name: Run sysbench on mounted fs
@@ -60,7 +63,7 @@
       register: cpu
 
     - name: Benchmark cpu results
-      debug: msg="{{ cpu.stdout.split('\n') }}"
+      debug: msg="{{ cpu.stdout }}"
 
     - name: Prepare sysbench disk i/o (on mounted volume)
       become: yes
@@ -80,7 +83,7 @@
       shell:
         chdir: "/mnt/{{ inventory_hostname|regex_replace('db-', '')|regex_replace('-', '') }}"
         cmd: sysbench fileio --file-total-size=150G cleanup
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo-secondary', 'db-mongo-analytics']
 
-- name: Benchmark io results
-  debug: msg="{{ io.stdout.split('\n') }}"
+    - name: Benchmark io results (on mounted volume)
+      debug: msg="{{ io.stdout }}"
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo-secondary', 'db-mongo-analytics']
