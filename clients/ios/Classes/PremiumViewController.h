@@ -16,7 +16,6 @@
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UITableView *premiumTable;
-@property (nonatomic) IBOutlet SAConfettiView *confettiView;
 
 
 - (IBAction)closeDialog:(id)sender;

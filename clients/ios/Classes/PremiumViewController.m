@@ -13,6 +13,8 @@
 #define kPremiumSubscriptionSection 0
 #define kPremiumArchiveSubscriptionSection 1
 
+#define kManageSubscriptionHeight 100
+
 @interface PremiumViewController ()
 
 @end
@@ -43,34 +45,8 @@
     self.navigationItem.title = @"NewsBlur Premium";
     [self loadProducts];
     
-    if (self.appDelegate.isPremium) {
-        self.premiumTable.tableHeaderView = [self makeManageSubscriptionView];
-    } else {
-        self.premiumTable.tableHeaderView = nil;
-    }
-    
     self.premiumTable.tableFooterView = [self makePolicyView];
     [self updateTheme];
-    
-    if (self.appDelegate.isPremium) {
-        [self.confettiView setNeedsLayout];
-        [self.confettiView startConfetti];
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [self.confettiView stopConfetti];
-        });
-    }
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    [self.confettiView setNeedsLayout];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-    
-    [self.confettiView stopConfetti];
 }
 
 - (void)closeDialog:(id)sender {
@@ -91,7 +67,7 @@
 }
 
 - (UIView *)makeManageSubscriptionView {
-    CGSize viewSize = CGSizeMake(self.view.frame.size.width, 90);
+    CGSize viewSize = CGSizeMake(self.view.frame.size.width, kManageSubscriptionHeight);
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, viewSize.width, viewSize.height)];
     
     UIView *button = [self makeButtonWithTitle:@"Manage Subscription" forURL:@"https://apps.apple.com/account/subscriptions"];
@@ -116,7 +92,7 @@
     label.font = [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
     label.textColor = UIColorFromRGB(0x0c0c0c);
     CGSize measuredSize = [label.text sizeWithAttributes:@{NSFontAttributeName: label.font}];
-    label.frame = CGRectMake((viewSize.width - measuredSize.width) / 2, viewSize.height - measuredSize.height - 10, measuredSize.width, measuredSize.height);
+    label.frame = CGRectMake((viewSize.width - measuredSize.width) / 2, 15 + CGRectGetHeight(button.frame) + 15, measuredSize.width, measuredSize.height);
     
     [view addSubview:label];
     
@@ -124,18 +100,19 @@
 }
 
 - (UIView *)makePolicyView {
-    CGSize viewSize = CGSizeMake(self.view.frame.size.width, 90);
+    CGSize viewSize = CGSizeMake(self.view.frame.size.width, 120);
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, viewSize.width, viewSize.height)];
     
     UIView *button = [self makeButtonWithTitle:@"Privacy Policy" forURL:@"https://newsblur.com/privacy/"];
+    CGFloat buttonHeight = CGRectGetHeight(button.frame) + 5;
     
-    button.frame = CGRectMake(((viewSize.width - CGRectGetWidth(button.frame)) / 2) - 20, 15, CGRectGetWidth(button.frame) + 40, CGRectGetHeight(button.frame) + 5);
+    button.frame = CGRectMake(((viewSize.width - CGRectGetWidth(button.frame)) / 2) - 20, 15, CGRectGetWidth(button.frame) + 40, buttonHeight);
     
     [view addSubview:button];
     
     button = [self makeButtonWithTitle:@"Terms of Use" forURL:@"https://newsblur.com/tos/"];
     
-    button.frame = CGRectMake(((viewSize.width - CGRectGetWidth(button.frame)) / 2) - 20, viewSize.height - 30, CGRectGetWidth(button.frame) + 40, CGRectGetHeight(button.frame) + 5);
+    button.frame = CGRectMake(((viewSize.width - CGRectGetWidth(button.frame)) / 2) - 20, 15 + buttonHeight + 15, CGRectGetWidth(button.frame) + 40, buttonHeight);
     
     [view addSubview:button];
     
@@ -367,8 +344,24 @@
     return 60;
 }
 
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    if (section == kPremiumArchiveSubscriptionSection && self.appDelegate.isPremiumArchive) {
+        return [self makeManageSubscriptionView];
+    } else if (section == kPremiumSubscriptionSection && self.appDelegate.isPremium) {
+        return [self makeManageSubscriptionView];
+    } else {
+        return nil;
+    }
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    return 0;
+    if (section == kPremiumArchiveSubscriptionSection && self.appDelegate.isPremiumArchive) {
+        return kManageSubscriptionHeight;
+    } else if (section == kPremiumSubscriptionSection && self.appDelegate.isPremium) {
+        return kManageSubscriptionHeight;
+    } else {
+        return 0;
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

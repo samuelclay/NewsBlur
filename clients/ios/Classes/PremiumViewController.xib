@@ -4,12 +4,12 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PremiumViewController">
             <connections>
-                <outlet property="confettiView" destination="TFM-k9-HJ2" id="Xqn-VR-200"/>
                 <outlet property="premiumTable" destination="fn0-sC-cuM" id="AmW-m0-Koz"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -19,29 +19,28 @@
             <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="fn0-sC-cuM">
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="fn0-sC-cuM">
                     <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <connections>
                         <outlet property="dataSource" destination="-1" id="Hc6-OJ-jhm"/>
                         <outlet property="delegate" destination="-1" id="bI2-jz-jA3"/>
                     </connections>
                 </tableView>
-                <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TFM-k9-HJ2" customClass="SAConfettiView" customModule="NewsBlur" customModuleProvider="target">
-                    <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
-                </view>
             </subviews>
             <constraints>
-                <constraint firstAttribute="bottom" secondItem="fn0-sC-cuM" secondAttribute="bottom" id="BCw-iy-KQA"/>
-                <constraint firstItem="TFM-k9-HJ2" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="FTr-As-NDa"/>
-                <constraint firstItem="TFM-k9-HJ2" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="LUc-I7-7Oh"/>
                 <constraint firstAttribute="trailing" secondItem="fn0-sC-cuM" secondAttribute="trailing" id="Xx0-Rx-ajt"/>
+                <constraint firstAttribute="bottom" secondItem="fn0-sC-cuM" secondAttribute="bottom" id="eSa-L8-FDC"/>
                 <constraint firstItem="fn0-sC-cuM" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="l7J-N0-Stv"/>
-                <constraint firstAttribute="trailing" secondItem="TFM-k9-HJ2" secondAttribute="trailing" id="rWJ-2y-ikK"/>
                 <constraint firstItem="fn0-sC-cuM" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="u6N-Ew-57l"/>
-                <constraint firstAttribute="bottom" secondItem="TFM-k9-HJ2" secondAttribute="bottom" id="z9v-dX-Xko"/>
             </constraints>
             <nil key="simulatedTopBarMetrics"/>
             <point key="canvasLocation" x="24.5" y="51.5"/>
         </view>
     </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>
