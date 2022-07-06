@@ -144,13 +144,13 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
                 $.make('li', [
                   $.make('b', 'Second: The intelligence slider filters stories based on training.'),
                   $.make('div', { className: 'NB-tutorial-stories', id: 'story_titles' }),
-                  $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_focus.png'}),
+                  $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-focus.svg'}),
                   'Focus stories are stories you like',
                   $.make('br'),
-                  $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_unread.png'}),
+                  $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-unread.svg'}),
                   'Unread stories include both focus and unread stories',
                   $.make('br'),
-                  $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/g_icn_hidden.png'}),
+                  $.make('img', { className: 'NB-trainer-bullet', src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/indicator-hidden.svg'}),
                   'Hidden stories are filtered out'
                 ]),
                 $.make('li', [

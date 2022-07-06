@@ -1,0 +1,11 @@
+{% extends "mail/email_base.txt" %}
+
+{% block body %}Thank you, thank you, thank you!
+
+A *huge* thanks for subscribing to the premium archive tier!
+
+Your subscription helps pay for the machines which store and process your archive.
+
+NewsBlur is an archive for the web you follow. Search it, clip highlights and share notes, and rest assured that your data will remain even as the web it pulls from may not. Thanks again for supporting NewsBlur.
+
+- Sam Clay{% endblock body %}

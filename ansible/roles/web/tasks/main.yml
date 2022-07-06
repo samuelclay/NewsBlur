@@ -86,7 +86,6 @@
     user: 1000:1001
     volumes:
       - /srv/newsblur:/srv/newsblur
-      - /etc/hosts:/etc/hosts
 
 - name: Register web app in consul
   tags: consul

@@ -47,6 +47,8 @@ def user(u, msg, request=None, warn_color=True):
             )
     is_premium = u.is_authenticated and u.profile.is_premium
     premium = '*' if is_premium else ''
+    if is_premium and u.profile.is_archive:
+        premium = "^"
     username = cipher(str(u)) if settings.CIPHER_USERNAMES else str(u)
     info(' ---> [~FB~SN%-6s~SB] %s[%s%s] %s' % (platform, time_elapsed, username, premium, msg))
 
@@ -84,7 +86,8 @@ def colorize(msg):
         r'\*\*\*>'        : '~FB~SB~BB--->~BT~FW',
         r'\['             : '~SB~FB[~SN~FM',
         r'AnonymousUser'  : '~FBAnonymousUser',
-        r'\*(\s*)~FB~SB\]'           : r'~SN~FR*\1~FB~SB]',
+        r'\*\]'           : r'~SN~FR*~FB~SB]',
+        r'\^\]'           : r'~SN~FR^~FB~SB]',
         r'\]'             : '~FB~SB]~FW~SN',
     }
     colors = {

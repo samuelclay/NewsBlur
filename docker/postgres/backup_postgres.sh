@@ -22,4 +22,4 @@ sudo docker run --user 1000:1001 --rm \
 # Don't delete backup since the backup_mongo.py script will rm them
 ## rm /opt/mongo/newsblur/backup/backup_mongo_${now}.tgz
 ## rm /opt/mongo/newsblur/backup/backup_mongo_${now}
-echo $(date -u) " ---> Finished uploading backups to S3"
+echo "\n$(date -u) ---> Finished uploading backups to S3"
