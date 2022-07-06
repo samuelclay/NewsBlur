@@ -1,5 +1,8 @@
 import re
 import datetime
+
+from jmespath import search
+from urllib.parse import urlparse, parse_qs
 import tweepy
 import dateutil.parser
 from qurl import qurl
@@ -37,6 +40,18 @@ class TwitterFetcher:
             data['title'] = "%s on Twitter" % list_info.full_name
             data['link'] = "https://twitter.com%s" % list_info.uri
             data['description'] = "%s on Twitter" % list_info.full_name
+        elif '/search' in address:
+            search_query = self.extract_search_query()
+            if not search_query:
+                return
+            
+            tweets = self.fetch_search_query(search_query)
+            if not tweets:
+                return
+                            
+            data['title'] = "\"%s\" on Twitter" % search_query
+            data['link'] = "%s" % address
+            data['description'] = "Searching \"%s\" on Twitter" % search_query
         else:
             username = self.extract_username()
             if not username:
@@ -89,7 +104,17 @@ class TwitterFetcher:
             return
         
         return list_id
-    
+
+    def extract_search_query(self):
+        search_query = None
+        address = qurl(self.address, remove=['_'])
+        query = urlparse(address).query
+        query_dict = parse_qs(query)
+        if 'q' in query_dict:
+            search_query = query_dict['q'][0]
+        
+        return search_query
+
     def twitter_api(self, include_social_services=False):
         twitter_api = None
         social_services = None
@@ -262,6 +287,49 @@ class TwitterFetcher:
             return [], list_info
         return list_timeline, list_info
         
+    def fetch_search_query(self, search_query):
+        twitter_api = self.twitter_api()
+        if not twitter_api:
+            return None
+        
+        try:
+            list_timeline = twitter_api.search(search_query, tweet_mode='extended')
+        except TypeError as e:
+            logging.debug('   ***> [%-30s] ~FRTwitter list fetch failed, disconnecting twitter: %s: %s' % 
+                          (self.feed.log_title[:30], self.address, e))
+            self.feed.save_feed_history(570, "Twitter Error: %s" % (e))
+            return None
+        except tweepy.error.TweepError as e:
+            message = str(e).lower()
+            if 'suspended' in message:
+                logging.debug('   ***> [%-30s] ~FRTwitter user suspended, disconnecting twitter: %s: %s' % 
+                              (self.feed.log_title[:30], self.address, e))
+                self.feed.save_feed_history(572, "Twitter Error: User suspended")
+                # self.disconnect_twitter()
+                return None
+            elif 'expired token' in message:
+                logging.debug('   ***> [%-30s] ~FRTwitter user expired, disconnecting twitter: %s: %s' % 
+                              (self.feed.log_title[:30], self.address, e))
+                self.feed.save_feed_history(573, "Twitter Error: Expired token")
+                self.disconnect_twitter()
+                return None
+            elif 'not found' in message:
+                logging.debug('   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
+                              (self.feed.log_title[:30], self.address, e))
+                self.feed.save_feed_history(574, "Twitter Error: User not found")
+                return None
+            elif 'over capacity' in message or 'Max retries' in message:
+                logging.debug('   ***> [%-30s] ~FRTwitter over capacity, ignoring... %s: %s' % 
+                              (self.feed.log_title[:30], self.address, e))
+                self.feed.save_feed_history(470, "Twitter Error: Over capacity")
+                return None
+            else:
+                raise e
+        
+        if not list_timeline:
+            return []
+        return list_timeline
+        
     def tweet_story(self, user_tweet):
         categories = set()
         
@@ -314,6 +382,7 @@ class TwitterFetcher:
         
         tweet_title = user_tweet['full_text']
         tweet_text = linebreaks(content_tweet['full_text'])
+        
         replaced = {}
         entities_media = content_tweet['entities'].get('media', [])
         if 'extended_entities' in content_tweet:
@@ -347,7 +416,8 @@ class TwitterFetcher:
                 if chosen_variant:
                     entities += "<video src=\"%s\" autoplay loop muted playsinline controls> <hr>" % chosen_variant['url']
                 categories.add(media['type'])                
-                
+
+        # Replace all shortened urls with their full urls
         for url in content_tweet['entities'].get('urls', []):
             if url['url'] in tweet_text:
                 replacement = "<a href=\"%s\">%s</a>" % (url['expanded_url'], url['display_url'])
@@ -355,6 +425,11 @@ class TwitterFetcher:
                     tweet_text = tweet_text.replace(url['url'], replacement)
                     replaced[url['url']] = True
                 tweet_title = tweet_title.replace(url['url'], url['display_url'])
+
+        # Replace @username's with an <a> link
+        for word in re.findall("@\w+", tweet_text, re.MULTILINE):
+            replacement = "<a href=\"https://twitter.com/%s\">%s</a>" % (word[1:], word)
+            tweet_text = tweet_text.replace(word, replacement)
         
         quote_tweet_content = ""
         if 'quoted_status' in content_tweet:
@@ -394,6 +469,9 @@ class TwitterFetcher:
             ("<b>%s</b> %s" % (content_tweet['retweet_count'], "retweet" if content_tweet['retweet_count'] == 1 else "retweets")) if content_tweet['retweet_count'] else "",
         )
         
+        # Remove unserializable control characters
+        content = re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F-\x84\x86-\x9F\uFDD0-\uFDEF\uFFFE\uFFFF]', '', content)
+        author_fullname = re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F-\x84\x86-\x9F\uFDD0-\uFDEF\uFFFE\uFFFF]', '', author_fullname)
         story = {
             'title': tweet_title,
             'link': "https://twitter.com/%s/status/%s" % (original_author_screen_name, user_tweet['id']),

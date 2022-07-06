@@ -1,6 +1,10 @@
 {
     "service": {
-        "name": "{{ inventory_hostname|regex_replace('\d+', '') }}",
+        {% if inventory_hostname in ["db-redis-user", "db-redis-story", "db-redis-session", "db-redis-pubsub"] %}
+            "name": "{{ inventory_hostname|regex_replace('\d+', '') }}",
+        {% else %}
+            "name": "{{ inventory_hostname|regex_replace('\d+', '') }}-staging",
+        {% endif %}
         "id": "{{ inventory_hostname }}",
         "tags": [
             "redis"
@@ -8,13 +12,13 @@
         "port": 6379,
         "checks": [{
             "id": "{{inventory_hostname}}-ping",
-            {% if inventory_hostname == 'db-redis-story' %}
+            {% if inventory_hostname.startswith('db-redis-story') %}
                 "http": "http://{{ ansible_ssh_host }}:5579/db_check/redis_story?consul=1",
-            {% elif inventory_hostname == 'db-redis-user' %}
+            {% elif inventory_hostname.startswith('db-redis-user') %}
                 "http": "http://{{ ansible_ssh_host }}:5579/db_check/redis_user?consul=1",
-            {% elif inventory_hostname == 'db-redis-pubsub' %}
+            {% elif inventory_hostname.startswith('db-redis-pubsub') %}
                 "http": "http://{{ ansible_ssh_host }}:5579/db_check/redis_pubsub?consul=1",
-            {% elif inventory_hostname == 'db-redis-sessions' %}
+            {% elif inventory_hostname.startswith('db-redis-sessions') %}
                 "http": "http://{{ ansible_ssh_host }}:5579/db_check/redis_sessions?consul=1",            
             {% else %}
                 "http": "http://{{ ansible_ssh_host }}:5000/db_check/redis?consul=1",

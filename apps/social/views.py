@@ -1355,7 +1355,9 @@ def shared_stories_rss_feed(request, user_id, username=None):
         user = User.objects.get(pk=user_id)
     except User.DoesNotExist:
         raise Http404
-    
+
+    limit = 25
+    offset = request.GET.get('page', 0) * limit
     username = username and username.lower()
     profile = MSocialProfile.get_user(user.pk)
     params = {'username': profile.username_slug, 'user_id': user.pk}
@@ -1383,7 +1385,7 @@ def shared_stories_rss_feed(request, user_id, username=None):
     )
     rss = feedgenerator.Atom1Feed(**data)
 
-    shared_stories = MSharedStory.objects.filter(user_id=user.pk).order_by('-shared_date')[:25]
+    shared_stories = MSharedStory.objects.filter(user_id=user.pk).order_by('-shared_date')[offset:offset+limit]
     for shared_story in shared_stories:
         feed = Feed.get_by_id(shared_story.story_feed_id)
         content = render_to_string('social/rss_story.xhtml', {

@@ -20,4 +20,4 @@
     - {role: 'mongo-exporter', tags: ['mongo-exporter', 'metrics']}
     - {role: 'monitor', tags: 'monitor'}
     - {role: 'flask_metrics', tags: ['flask-metrics', 'metrics']}
-    - {role: 'benchmark', tags: 'benchmark'}
+    # - {role: 'benchmark', tags: 'benchmark'}

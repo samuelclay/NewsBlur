@@ -61,7 +61,7 @@ def push_callback(request, push_id):
 
         # Don't give fat ping, just fetch.
         # subscription.feed.queue_pushed_feed_xml(request.body)
-        if subscription.feed.active_premium_subscribers >= 1:
+        if subscription.feed.active_subscribers >= 1:
             subscription.feed.queue_pushed_feed_xml("Fetch me", latest_push_date_delta=latest_push_date_delta)
             MFetchHistory.add(feed_id=subscription.feed_id, 
                               fetch_type='push')

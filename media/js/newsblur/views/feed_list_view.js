@@ -323,6 +323,8 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             NEWSBLUR.reader.open_organizer_modal();
         } else if (next == 'chooser') {
             NEWSBLUR.reader.open_feedchooser_modal();
+        } else if (next == 'premium') {
+            NEWSBLUR.reader.open_feedchooser_modal({'premium_only': true});
         } else if (next == 'renew') {
             NEWSBLUR.reader.open_feedchooser_modal({'premium_only': true});
         } else if (next == 'password') {

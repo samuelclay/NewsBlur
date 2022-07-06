@@ -170,6 +170,7 @@ NEWSBLUR.utils = {
             var prefix = 'feed:';
             if (feed.is_starred()) prefix = '';
             else if (feed.is_social()) prefix = '';
+            else if (feed.is_search()) prefix = '';
 
             var $option = $.make('option', { value: prefix + feed.id }, feed.get('feed_title'));
             $option.appendTo(feed.is_starred() ? $starred_feeds_optgroup : 

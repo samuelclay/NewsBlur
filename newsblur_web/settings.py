@@ -29,6 +29,7 @@ import logging
 import datetime
 import redis
 import sentry_sdk
+import paypalrestsdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
@@ -96,6 +97,8 @@ PAYPAL_TEST           = False
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880 # 5 MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880 # 5 MB
 PROMETHEUS_EXPORT_MIGRATIONS = False
+MAX_SECONDS_COMPLETE_ARCHIVE_FETCH = 60 * 60 * 1 # 1 hour
+MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED = 60 * 15 # 15 minutes
 
 # Uncomment below to force all feeds to store this many stories. Default is to cut 
 # off at 25 stories for single subscriber non-premium feeds and 500 for popular feeds.
@@ -263,11 +266,21 @@ logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 DAYS_OF_UNREAD          = 30
 DAYS_OF_UNREAD_FREE     = 14
+DAYS_OF_UNREAD_ARCHIVE  = 9999
 # DoSH can be more, since you can up this value by N, and after N days,
-# you can then up the DAYS_OF_UNREAD value with no impact.
-DAYS_OF_STORY_HASHES    = 30
+# you can then up the DAYS_OF_UNREAD value with no impact. 
+# The max is for archive subscribers.
+DAYS_OF_STORY_HASHES    = DAYS_OF_UNREAD
+DAYS_OF_STORY_HASHES_ARCHIVE = DAYS_OF_UNREAD_ARCHIVE
 
+# SUBSCRIBER_EXPIRE sets the number of days after which a user who hasn't logged in
+# is no longer considered an active subscriber
 SUBSCRIBER_EXPIRE       = 7
+
+# PRO_MINUTES_BETWEEN_FETCHES sets the number of minutes to fetch feeds for 
+# Premium Pro accounts. Defaults to every 5 minutes, but that's for NewsBlur
+# servers. On your local, you should probably set this to 10-15 minutes
+PRO_MINUTES_BETWEEN_FETCHES = 5
 
 ROOT_URLCONF            = 'newsblur_web.urls'
 INTERNAL_IPS            = ('127.0.0.1',)
@@ -345,13 +358,16 @@ INSTALLED_APPS = (
     'pipeline',
 )
 
-# ==========
-# = Stripe =
-# ==========
+# ===================
+# = Stripe & Paypal =
+# ===================
 
 STRIPE_SECRET = "YOUR-SECRET-API-KEY"
 STRIPE_PUBLISHABLE = "YOUR-PUBLISHABLE-API-KEY"
 ZEBRA_ENABLE_APP = True
+
+PAYPAL_API_CLIENTID = "YOUR-PAYPAL-API-CLIENTID"
+PAYPAL_API_SECRET = "YOUR-PAYPAL-API-SECRET"
 
 # ==========
 # = Celery =
@@ -784,11 +800,9 @@ REDIS_POOL                 = redis.ConnectionPool(host=REDIS_USER['host'], port=
 REDIS_ANALYTICS_POOL       = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=2, decode_responses=True)
 REDIS_STATISTICS_POOL      = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=3, decode_responses=True)
 REDIS_FEED_UPDATE_POOL     = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=4, decode_responses=True)
-# REDIS_STORY_HASH_POOL2   = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=8) # Only used when changing DAYS_OF_UNREAD
 REDIS_STORY_HASH_TEMP_POOL = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=10, decode_responses=True)
 # REDIS_CACHE_POOL         = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=6) # Duped in CACHES
 REDIS_STORY_HASH_POOL      = redis.ConnectionPool(host=REDIS_STORY['host'], port=REDIS_PORT, db=1, decode_responses=True)
-REDIS_STORY_HASH_POOL_ENCODED = redis.ConnectionPool(host=REDIS_STORY['host'], port=REDIS_PORT, db=1, decode_responses=False)
 REDIS_FEED_READ_POOL       = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=REDIS_PORT, db=1, decode_responses=True)
 REDIS_FEED_SUB_POOL        = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=REDIS_PORT, db=2, decode_responses=True)
 REDIS_SESSION_POOL         = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=REDIS_PORT, db=5, decode_responses=True)
@@ -876,6 +890,12 @@ PIPELINE = {
         },
     }
 }
+
+paypalrestsdk.configure({
+    "mode": "sandbox" if DEBUG else "live",
+    "client_id": PAYPAL_API_CLIENTID,
+    "client_secret": PAYPAL_API_SECRET
+})
 
 # =======
 # = AWS =

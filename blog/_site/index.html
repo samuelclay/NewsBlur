@@ -22,7 +22,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="The NewsBlur Blog" />
 <script type="application/ld+json">
-{"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"url":"https://blog.newsblur.com/","@type":"WebSite","headline":"The NewsBlur Blog","description":"NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument.","name":"The NewsBlur Blog","@context":"https://schema.org"}</script>
+{"name":"The NewsBlur Blog","headline":"The NewsBlur Blog","url":"https://blog.newsblur.com/","@type":"WebSite","description":"NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument.","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css">
   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
@@ -63,7 +63,90 @@
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
         <div class="home">
-    <ul class="post-list"><li><span class="post-meta">Mar 28, 2022</span>
+    <ul class="post-list"><li><span class="post-meta">Jul 1, 2022</span>
+        <h3>
+          <a class="post-link" href="/2022/07/01/premium-archive-subscription/">
+            NewsBlur Premium Archive subscription keeps all of your stories searchable, shareable, and unread forever
+          </a>
+        </h3>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>For $99/year every story from every site you subscribe to will stay in NewsBlur’s archive. This new premium tier also allows you to mark any story as unread as well as choose when stories are automatically marked as read. You can now have full control of your story archive, letting you search, share, and read stories forever without having to worry about them being deleted.</p>
+
+<p>The NewsBlur Premium Archive subscription offers you the following:</p>
+
+<ul>
+  <li><img src="/assets/icons8/icons8-bursts-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Everything in the premium subscription, of course</li>
+  <li><img src="/assets/icons8/icons8-relax-with-book-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Choose when stories are automatically marked as read</li>
+  <li><img src="/assets/icons8/icons8-filing-cabinet-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Every story from every site is archived and searchable forever</li>
+  <li><img src="/assets/icons8/icons8-quadcopter-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Feeds that support paging are back-filled in for a complete archive</li>
+  <li><img src="/assets/icons8/icons8-rss-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Export trained stories from folders as RSS feeds</li>
+  <li><img src="/assets/icons8/icons8-calendar-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Stories can stay unread forever</li>
+</ul>
+
+<p>You can now enjoy a new preference for exactly when stories are marked as read:</p>
+
+<p><img src="/assets/premium-archive-mark-read-date.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>A technical note about the backfilling of your archive:</p>
+
+<blockquote>
+<p>NewsBlur uses two techniques to retrieve older stories that are no longer in the RSS feed. The first strategy is to append `?page=2` and `?paged=2` to the RSS feed and seeing if we're about to blindly iterate through the blog's archive. For WordPress and a few other CMSs, this works great and gives us a full archive. </p>
+
+<p>A second technique is to use <a href="https://datatracker.ietf.org/doc/html/rfc5005">RFC 5005</a>, which supports links embedded inside the RSS feed to denote next and previous pages of an archive.</p>
+</blockquote>
+
+<p>NewsBlur attempts all of these techniques on every single feed you’ve subscribed to, and when it’s done backfilling stories, you’ll receive an email showing you how big your archive grew during this backfill process.</p>
+
+<p>The launch of the new Premium Archive subscription tier also contains the <a href="/2022/07/01/dashboard-redesign-2022/">2022 redesign</a>, which includes a new dashboard layout, a refreshed design for story titles and feed title, and all new icons.</p>
+
+<p>Here’s a screenshot that’s only possible with the new premium archive, complete with backfilled blog post from the year 2000, ready to be marked as unread.</p>
+
+<p><img src="/assets/premium-archive-unread.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>How’s that for an archive?</p>
+
+        </div>
+      </li><li><span class="post-meta">Jul 1, 2022</span>
+        <h3>
+          <a class="post-link" href="/2022/07/01/dashboard-redesign-2022/">
+            2022 redesign: new dashboard layout, refreshed stories and story titles, and entirely redrawn icons
+          </a>
+        </h3>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>The launch of the new <a href="/2022/07/01/premium-archive-subscription/">Premium Archive subscription tier</a> also includes the 2022 redesign. You’ll see a third dashboard layout which stretches out your dashboard rivers across the width of the screen.</p>
+
+<p><img src="/assets/premium-archive-dashboard-comfortable.png" style="width: calc(140%);margin: 12px 0 12px calc(-20%);max-width: none;border: none" /></p>
+
+<p>The latest redesign style has more accomodations for spacing and padding around each story title element. The result is a cleaner story title with easier to read headlines. The author has been moved and restyled to be next to the story date. Favicons and unread status indicators have been swapped, and font sizes, colors, and weights have been adjusted.</p>
+
+<p><img src="/assets/premium-archive-dashboard-compact.png" style="width: calc(140%);margin: 12px 0 12px calc(-20%);max-width: none;border: none" /></p>
+
+<p>If you find the interface to be too airy, there is a setting in the main Manage menu allowing you to switch between Comfortable and Compact. The compact interface is denser than before, giving power users a highly detailed view.</p>
+
+<p>Transitions have also been added to help you feel the difference. And there are new animations during many of the transitions that accompany changing settings.</p>
+
+<p>
+    <video autoplay="" loop="" playsinline="" muted="" width="500" style="width: 500px;border: 2px solid rgba(0,0,0,0.1)">
+        <source src="/assets/premium-archive-grid.mp4" type="video/mp4" />
+    </video>
+</p>
+
+<p>And lastly, this redesign comes with a suite of all new icons. The goal with this icon redesign is to bring a consistent weight to each icon as well as vectorize them with SVG so they look good at all resolutions.</p>
+
+<p><img src="/assets/premium-archive-manage-menu.png" style="width: 275px;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>A notable icon change is the unread indicator, which now has different size icons for both unread stories and focus stories, giving focus stories more depth.</p>
+
+<p><img src="/assets/premium-archive-unread-dark.png" style="width: 375px;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>Here’s a screenshot that’s only possible with the new premium archive, complete with backfilled blog post from the year 2000, ready to be marked as unread.</p>
+
+<p><img src="/assets/premium-archive-unread.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>I tried to find every icon, so if you spot a dialog or menu that you’d like to see given some more love, reach out on the support forum.</p>
+
+        </div>
+      </li><li><span class="post-meta">Mar 28, 2022</span>
         <h3>
           <a class="post-link" href="/2022/03/28/redesigned-ios-layout/">
             New gesture-based layout for the NewsBlur iPad App
@@ -458,79 +541,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
 <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 <p>And please keep the <a href="https://forum.newsblur.com">good ideas coming on the forum</a>.</p>
-
-
-        </div>
-      </li><li><span class="post-meta">Jun 18, 2020</span>
-        <h3>
-          <a class="post-link" href="/2020/06/18/see-the-news-on-your-android-dashboard-with-the/">
-            See the news on your Android dashboard with the new home screen widget
-          </a>
-        </h3>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>Hot on the heels of the <a href="https://blog.newsblur.com/2021/06/21/2020-02-26-catch-the-news-in-a-glimpse-with-the-new-newsblur.html">iOS widget release</a> a few months ago, the Android widget is now ready to go!</p>
-
-<p>Check it out:</p>
-
-<figure class="tmblr-full" data-orig-height="923" data-orig-width="621" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-v10-s.png"><img style="width: 650px; height: 966px; margin: 0 auto;" data-orig-height="923" data-orig-width="621" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-v10-s.png" /></figure>
-
-<p>Ideally both iOS and Android widgets would have been released at the same time. But now that we have a new Android developer, <a href="https://github.com/sictiru">Andrei Dan</a>, we’ve built the widget and are planning many more new features for Android.</p>
-
-<p>Everything I wrote for the iOS release holds for today’s Android widget:</p>
-
-<p>&gt; Most of the time when we release a new feature, it finds immediate use. But every so often a new feature comes along that changes how NewsBlur gets used. I consider offline stories part of this exclusive club. Same with the Text view, which shows you the full text of a story. And push notifications are right up there.</p>
-
-<p>If you’re like me and you rely on your phone for your news consumption, having stories handy every time you look at your phone changes your relationship to NewsBlur.</p>
-
-<figure class="tmblr-full" data-orig-height="923" data-orig-width="621" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-v10-l.png"><img style="width: 650px; height: 966px; margin: 0 auto;" data-orig-height="923" data-orig-width="621" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-v10-l.png" /></figure>
-
-<p>It’s so incredibly useful to have NewsBlur come to me. I hope you feel the same about this Android widget.</p>
-
-<p>If you have any feedback, ideas, or would like changes, please post them on the <a href="https://forum.newsblur.com">NewsBlur support forum</a>.</p>
-
-
-        </div>
-      </li><li><span class="post-meta">Feb 26, 2020</span>
-        <h3>
-          <a class="post-link" href="/2020/02/26/catch-the-news-in-a-glimpse-with-the-new-newsblur/">
-            Catch the news in a glimpse with the new NewsBlur Today View widget on iOS
-          </a>
-        </h3>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>Most of the time when we release a new feature, it finds immediate use. But every so often a new feature comes along that changes how NewsBlur gets used. I consider offline stories part of this exclusive club. Same with the Text view, which shows you the full text of a story. And push notifications are right up there.</p>
-
-<p>Today, I’m pleased to announce the launch of our new Today View widget on iOS.</p>
-
-<figure class="tmblr-full" data-orig-height="889" data-orig-width="500" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-widget.png"><img data-orig-height="889" data-orig-width="500" src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-widget.png" /></figure>
-
-<p>Instead of having to open up the app to see what’s new, the stories come to you in the Today View, adjacent to the notification center. Personally I find myself checking this Today View widget a dozen times more than I open the NewsBlur app. It’s so incredibly useful to have NewsBlur come to me.</p>
-
-<p>Additionally, in version 10.0 of the iOS app, we have a bunch of new features:</p>
-
-<ul>
-  <li>A new iOS widget shows the latest stories in your Notification Center and on your iPad dashboard</li>
-  <li>Statistics visualization for every site</li>
-  <li>Automatic downloading of the original story full text for offline reading</li>
-  <li>Unsubscribe from a feed directly from a story</li>
-  <li>Preferences import &amp; export</li>
-</ul>
-
-<p>And tons of bugs were fixed along with other small improvements:</p>
-
-<ul>
-  <li>Fixed crash on start for a few users</li>
-  <li>Fixed highlighting issue</li>
-  <li>Fixed settings with stories on bottom</li>
-  <li>Tweaked dark theme colors to be darker</li>
-  <li>Fixed wonky behavior on iPad</li>
-  <li>Clearing offline now clears the cached stories, text, and images from the database</li>
-  <li>Manually changing the theme now turns off the preference to follow the system appearance</li>
-  <li>Turning on following the system appearance immediately updates the theme appropriately</li>
-  <li>Fixed crash on feed load list</li>
-  <li>Fixed crash on start</li>
-</ul>
-
-<p>And if you’re an Android user, I just want you to know that we intended to ship this feature first on Android (and in fact, it is 90% built) but then our Android developer bailed. I’ll be hiring for another Android devleoper soon, but if that interests you, <a href="mailto:samuel@newsblur.com">please reach out</a>!</p>
 
 
         </div>

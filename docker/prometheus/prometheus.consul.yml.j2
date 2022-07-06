@@ -65,6 +65,11 @@ scrape_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/errors
       scheme: https
+    - job_name: 'feed_sizes'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/feed-sizes
+      scheme: https
     - job_name: 'feed_counts'
       static_configs:
         - targets: ['{{ monitor_server }}']

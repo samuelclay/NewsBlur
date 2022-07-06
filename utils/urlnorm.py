@@ -24,6 +24,7 @@ inspired by:
 __license__ = "Python"
 
 import re, unicodedata, urllib.parse
+from url_normalize import url_normalize
 from urllib.parse import quote, unquote
 
 default_port = {
@@ -40,6 +41,9 @@ default_port = {
 }
 
 def normalize(url):
+    return url_normalize(url)
+
+def normalize__pilgrim(url):
     """Normalize a URL."""
     if not isinstance(url, str):
         return url
