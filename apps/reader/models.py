@@ -206,10 +206,6 @@ class UserSubscription(models.Model):
                 if not store_stories_key:
                     byscorefunc(unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps, start=offset, num=limit)
                 unread_ranked_stories_keys.append(unread_ranked_stories_key)
-                after_unread_pipeline.delete(unread_ranked_stories_key)
-                if expire_unread_stories_key:
-                    after_unread_pipeline.delete(unread_stories_key)
-
         
             results = pipeline.execute()
 
