@@ -133,8 +133,6 @@ class UserSubscription(models.Model):
             cutoff_date = user.profile.unread_cutoff
         feed_counter = 0
         unread_ranked_stories_keys = []
-        expire_unread_stories_key = False
-        after_unread_pipeline = r.pipeline()
         
         read_dates = dict()
         manual_unread_pipeline = r.pipeline()
@@ -167,7 +165,7 @@ class UserSubscription(models.Model):
                     # TODO: Remove above +1 and switch below to AGGREGATE='MAX', which may obviate the need 
                     # for the U:%s keys and just work with the zF: & RS: directly into zU:
                     pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
-                    expire_unread_stories_key = True
+                    pipeline.expire(unread_stories_key, 24*60*60) # 24 hours
                 else:
                     min_score = 0
                     unread_stories_key = stories_key
@@ -179,6 +177,7 @@ class UserSubscription(models.Model):
                     min_score, max_score = max_score, min_score
             
                 pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
+                pipeline.expire(unread_ranked_stories_key, 24*60*60) # 24 hours
                 if order == 'oldest':
                     pipeline.zremrangebyscore(unread_ranked_stories_key, 0, min_score-1)
                     pipeline.zremrangebyscore(unread_ranked_stories_key, max_score+1, 2*max_score)
@@ -194,7 +193,7 @@ class UserSubscription(models.Model):
                         max_score = manual_unread_feed_oldest_date[feed_id]
                         
                     pipeline.zunionstore(unread_ranked_stories_key, [unread_ranked_stories_key, user_unread_stories_feed_key], aggregate="MAX")
-                
+                    
                 if settings.DEBUG and False:
                     debug_stories = r.zrevrange(unread_ranked_stories_key, 0, -1, withscores=True)
                     print((" ---> Story hashes (%s/%s - %s/%s) %s stories: %s" % (
@@ -220,8 +219,6 @@ class UserSubscription(models.Model):
 
         if store_stories_key:
             r.zunionstore(store_stories_key, unread_ranked_stories_keys, aggregate="MAX")
-
-        after_unread_pipeline.execute()
 
         if not store_stories_key:
             return story_hashes
