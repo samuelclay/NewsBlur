@@ -133,15 +133,16 @@ class UserSubscription(models.Model):
             cutoff_date = user.profile.unread_cutoff
         feed_counter = 0
         unread_ranked_stories_keys = []
-        expire_unread_stories_key = False
-        after_unread_pipeline = r.pipeline()
         
         read_dates = dict()
+        needs_unread_recalc = dict()
         manual_unread_pipeline = r.pipeline()
         manual_unread_feed_oldest_date = dict()
         oldest_manual_unread = None
+        usersub_count = len(usersubs)
         for us in usersubs:
             read_dates[us.feed_id] = int(max(us.mark_read_date, cutoff_date).strftime('%s'))
+            needs_unread_recalc[us.feed_id] = us.needs_unread_recalc or usersub_count == 1
             user_unread_stories_feed_key = f"uU:{user_id}:{us.feed_id}"
             manual_unread_pipeline.exists(user_unread_stories_feed_key)
         results = manual_unread_pipeline.execute()
@@ -166,25 +167,27 @@ class UserSubscription(models.Model):
                     min_score = read_dates[feed_id] + 1
                     # TODO: Remove above +1 and switch below to AGGREGATE='MAX', which may obviate the need 
                     # for the U:%s keys and just work with the zF: & RS: directly into zU:
-                    pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
-                    expire_unread_stories_key = True
+                    if needs_unread_recalc[feed_id]:
+                        pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
                 else:
                     min_score = 0
                     unread_stories_key = stories_key
+                    unread_ranked_stories_key = sorted_stories_key
 
                 if order == 'oldest':
                     byscorefunc = pipeline.zrangebyscore
                 else:
                     byscorefunc = pipeline.zrevrangebyscore
                     min_score, max_score = max_score, min_score
-            
-                pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
-                if order == 'oldest':
-                    pipeline.zremrangebyscore(unread_ranked_stories_key, 0, min_score-1)
-                    pipeline.zremrangebyscore(unread_ranked_stories_key, max_score+1, 2*max_score)
-                else:
-                    pipeline.zremrangebyscore(unread_ranked_stories_key, 0, max_score-1)
-                    pipeline.zremrangebyscore(unread_ranked_stories_key, min_score+1, 2*min_score)
+
+                if needs_unread_recalc[feed_id]:
+                    pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
+                    if order == 'oldest':
+                        pipeline.zremrangebyscore(unread_ranked_stories_key, 0, min_score-1)
+                        pipeline.zremrangebyscore(unread_ranked_stories_key, max_score+1, 2*max_score)
+                    else:
+                        pipeline.zremrangebyscore(unread_ranked_stories_key, 0, max_score-1)
+                        pipeline.zremrangebyscore(unread_ranked_stories_key, min_score+1, 2*min_score)
 
                 # If archive premium user has manually marked an older story as unread
                 if is_archive and feed_id in manual_unread_feed_oldest_date:
@@ -206,10 +209,6 @@ class UserSubscription(models.Model):
                 if not store_stories_key:
                     byscorefunc(unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps, start=offset, num=limit)
                 unread_ranked_stories_keys.append(unread_ranked_stories_key)
-                after_unread_pipeline.delete(unread_ranked_stories_key)
-                if expire_unread_stories_key:
-                    after_unread_pipeline.delete(unread_stories_key)
-
         
             results = pipeline.execute()
 
@@ -224,8 +223,6 @@ class UserSubscription(models.Model):
 
         if store_stories_key:
             r.zunionstore(store_stories_key, unread_ranked_stories_keys, aggregate="MAX")
-
-        after_unread_pipeline.execute()
 
         if not store_stories_key:
             return story_hashes
@@ -1047,7 +1044,20 @@ class UserSubscription(models.Model):
             folders.extend(list(orphan_ids))
             usf.folders = json.encode(folders)
             usf.save()
-    
+
+    @classmethod
+    def all_subs_needs_unread_recalc(cls, user_id):
+        subs = cls.objects.filter(user=user_id)
+        total = len(subs)
+        needed_recalc = 0
+        for sub in subs:
+            if not sub.needs_unread_recalc:
+                sub.needs_unread_recalc = True
+                sub.save()
+                needed_recalc += 1
+
+        logging.debug(f" ---> Relcaculated {needed_recalc} of {total} subscriptions for user_id: {user_id}")
+        
     @classmethod
     def verify_feeds_scheduled(cls, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
