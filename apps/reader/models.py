@@ -168,10 +168,7 @@ class UserSubscription(models.Model):
                 
                 max_score = current_time
                 if read_filter == 'unread':
-                    # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
-                    min_score = read_dates[feed_id] + 1
-                    # TODO: Remove above +1 and switch below to AGGREGATE='MAX', which may obviate the need 
-                    # for the U:%s keys and just work with the zF: & RS: directly into zU:
+                    min_score = read_dates[feed_id]
                     if needs_unread_recalc[feed_id]:
                         pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
                         pipeline.expire(unread_stories_key, unread_cutoff_diff.days*24*60*60)
@@ -187,7 +184,7 @@ class UserSubscription(models.Model):
                     min_score, max_score = max_score, min_score
 
                 if needs_unread_recalc[feed_id]:
-                    pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
+                    pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key], aggregate="MAX")
                     pipeline.expire(unread_ranked_stories_key, unread_cutoff_diff.days*24*60*60)
                     if order == 'oldest':
                         pipeline.zremrangebyscore(unread_ranked_stories_key, 0, min_score-1)
@@ -1246,6 +1243,13 @@ class RUserStory:
             for social_user_id in social_user_ids:
                 social_read_story_key = 'RS:%s:B:%s' % (user_id, social_user_id)
                 redis_commands(social_read_story_key)
+
+        feed_id, _ = MStory.split_story_hash(story_hash)
+
+        unread_stories_key = f"U:{user_id}:{story_feed_id}"
+        unread_ranked_stories_key = f"zU:{user_id}:{story_feed_id}"
+        r.srem(unread_stories_key, story_hash)
+        r.zrem(unread_ranked_stories_key, story_hash)
         
         if not aggregated:
             key = 'lRS:%s' % user_id
