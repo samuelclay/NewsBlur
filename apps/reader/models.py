@@ -101,11 +101,11 @@ class UserSubscription(models.Model):
                                        Q(unread_count_positive__gt=0))
         if not feed_ids:
             usersubs = usersubs.filter(user=user_id, 
-                                       active=True).only('feed', 'mark_read_date', 'is_trained')
+                                       active=True).only('feed', 'mark_read_date', 'is_trained', 'needs_unread_recalc')
         else:
             usersubs = usersubs.filter(user=user_id, 
                                        active=True, 
-                                       feed__in=feed_ids).only('feed', 'mark_read_date', 'is_trained')
+                                       feed__in=feed_ids).only('feed', 'mark_read_date', 'is_trained', 'needs_unread_recalc')
         
         return usersubs
         
