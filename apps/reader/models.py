@@ -135,7 +135,6 @@ class UserSubscription(models.Model):
             cutoff_date = user.profile.unread_cutoff
         feed_counter = 0
         unread_ranked_stories_keys = []
-        unread_cutoff_diff = (datetime.datetime.now() - user.profile.unread_cutoff)
         
         read_dates = dict()
         needs_unread_recalc = dict()
