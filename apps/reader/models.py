@@ -133,6 +133,7 @@ class UserSubscription(models.Model):
             cutoff_date = user.profile.unread_cutoff
         feed_counter = 0
         unread_ranked_stories_keys = []
+        unread_cutoff_diff = (datetime.datetime.now() - user.profile.unread_cutoff)
         
         read_dates = dict()
         needs_unread_recalc = dict()
@@ -173,6 +174,8 @@ class UserSubscription(models.Model):
                     # for the U:%s keys and just work with the zF: & RS: directly into zU:
                     if needs_unread_recalc[feed_id]:
                         pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+                        pipeline.expire(unread_stories_key, unread_cutoff_diff.days*24*60*60)
+
                 else:
                     min_score = 0
                     unread_stories_key = stories_key
@@ -185,6 +188,7 @@ class UserSubscription(models.Model):
 
                 if needs_unread_recalc[feed_id]:
                     pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
+                    pipeline.expire(unread_ranked_stories_key, unread_cutoff_diff.days*24*60*60)
                     if order == 'oldest':
                         pipeline.zremrangebyscore(unread_ranked_stories_key, 0, min_score-1)
                         pipeline.zremrangebyscore(unread_ranked_stories_key, max_score+1, 2*max_score)
