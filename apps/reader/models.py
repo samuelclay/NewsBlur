@@ -124,6 +124,8 @@ class UserSubscription(models.Model):
         
         if not usersubs:
             usersubs = cls.subs_for_feeds(user_id, feed_ids=feed_ids, read_filter=read_filter)
+            if not usersubs:
+                usersubs = cls.subs_for_feeds(user_id, feed_ids=feed_ids, read_filter="all")
             feed_ids = [sub.feed_id for sub in usersubs]
             if not feed_ids:
                 return story_hashes
