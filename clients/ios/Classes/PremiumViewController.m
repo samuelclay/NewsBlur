@@ -89,7 +89,7 @@
     
     label.textAlignment = NSTextAlignmentCenter;
     label.numberOfLines = 0;
-    label.font = [UIFont systemFontOfSize:[UIFont smallSystemFontSize]];
+    label.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:[UIFont smallSystemFontSize]];
     label.textColor = UIColorFromRGB(0x0c0c0c);
     CGSize measuredSize = [label.text sizeWithAttributes:@{NSFontAttributeName: label.font}];
     label.frame = CGRectMake((viewSize.width - measuredSize.width) / 2, 15 + CGRectGetHeight(button.frame) + 15, measuredSize.width, measuredSize.height);
@@ -233,7 +233,7 @@
         cell.backgroundColor = UIColorFromRGB(0xf4f4f4);
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.textLabel.text = reasons[indexPath.row][0];
-        cell.textLabel.font = [UIFont systemFontOfSize:14.f weight:UIFontWeightLight];
+        cell.textLabel.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:14.0];
         cell.textLabel.textColor = UIColorFromRGB(0x0c0c0c);
         cell.textLabel.numberOfLines = 2;
         CGSize itemSize = CGSizeMake(18, 18);
@@ -265,9 +265,10 @@
         SKProduct *product = [self productForSection:indexPath.section];
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         cell.backgroundColor = UIColorFromRGB(0xf4f4f4);
+        cell.textLabel.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:18.0];
         cell.textLabel.textColor = UIColorFromRGB(0x203070);
         cell.textLabel.numberOfLines = 2;
-        cell.detailTextLabel.font = [UIFont systemFontOfSize:18.f weight:UIFontWeightBold];
+        cell.detailTextLabel.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:18.0];
         cell.detailTextLabel.textColor = UIColorFromRGB(0x0c0c0c);
         NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
         [formatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
@@ -304,7 +305,7 @@
         label.text = isSubscribed ? @"✅" : @"👉🏽";
         label.opaque = NO;
         label.backgroundColor = UIColor.clearColor;
-        label.font = [UIFont systemFontOfSize:18];
+        label.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:18.0];
         CGSize measuredSize = [label.text sizeWithAttributes:@{NSFontAttributeName: label.font}];
         label.frame = CGRectMake(0, 0, measuredSize.width, measuredSize.height);
         UIGraphicsBeginImageContextWithOptions(label.bounds.size, label.opaque, 0.0);
@@ -333,7 +334,7 @@
     label.opaque = YES;
     label.backgroundColor = UIColor.darkGrayColor;
     label.textColor = UIColor.whiteColor;
-    label.font = [UIFont systemFontOfSize:20];
+    label.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:20.0];
     CGSize measuredSize = [label.text sizeWithAttributes:@{NSFontAttributeName: label.font}];
     label.frame = CGRectMake(0, 0, measuredSize.width, measuredSize.height);
     
