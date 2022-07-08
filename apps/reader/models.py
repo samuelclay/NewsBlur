@@ -166,6 +166,7 @@ class UserSubscription(models.Model):
                 read_stories_key          = 'RS:%s:%s' % (user_id, feed_id)
                 unread_stories_key        = 'U:%s:%s' % (user_id, feed_id)
                 unread_ranked_stories_key = 'zU:%s:%s' % (user_id, feed_id)
+                all_ranked_stories_key    = 'zA:%s:%s' % (user_id, feed_id)
                 user_manual_unread_stories_feed_key = f"uU:{user_id}:{feed_id}"
                 
                 max_score = current_time
@@ -175,10 +176,8 @@ class UserSubscription(models.Model):
                         pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
                         # pipeline.expire(unread_stories_key, unread_cutoff_diff.days*24*60*60)
                         pipeline.expire(unread_stories_key, 24*60*60) # 24 hours
-
                 else:
                     min_score = 0
-                    unread_stories_key = stories_key
 
                 if order == 'oldest':
                     byscorefunc = pipeline.zrangebyscore
@@ -186,19 +185,27 @@ class UserSubscription(models.Model):
                     byscorefunc = pipeline.zrevrangebyscore
                     min_score, max_score = max_score, min_score
 
+                ranked_stories_key = unread_ranked_stories_key
                 if needs_unread_recalc[feed_id]:
-                    pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key], aggregate="MAX")
-                    # pipeline.expire(unread_ranked_stories_key, unread_cutoff_diff.days*24*60*60)
-                    pipeline.expire(unread_ranked_stories_key, 24*60*60) # 24 hours
-                    if order == 'oldest':
-                        pipeline.zremrangebyscore(unread_ranked_stories_key, 0, min_score-1)
-                        pipeline.zremrangebyscore(unread_ranked_stories_key, max_score+1, 2*max_score)
+                    if read_filter == 'unread':
+                        pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key], aggregate="MAX")
+                        # pipeline.expire(unread_ranked_stories_key, unread_cutoff_diff.days*24*60*60)
+                        pipeline.expire(unread_ranked_stories_key, 24*60*60) # 24 hours
                     else:
-                        pipeline.zremrangebyscore(unread_ranked_stories_key, 0, max_score-1)
-                        pipeline.zremrangebyscore(unread_ranked_stories_key, min_score+1, 2*min_score)
+                        ranked_stories_key = all_ranked_stories_key
+                        pipeline.zinterstore(all_ranked_stories_key, [sorted_stories_key, stories_key], aggregate="MAX")
+                        pipeline.expire(all_ranked_stories_key, 24*60*60) # 24 hours
+                        
+                if needs_unread_recalc[feed_id]:
+                    if order == 'oldest':
+                        pipeline.zremrangebyscore(ranked_stories_key, 0, min_score-1)
+                        pipeline.zremrangebyscore(ranked_stories_key, max_score+1, 2*max_score)
+                    else:
+                        pipeline.zremrangebyscore(ranked_stories_key, 0, max_score-1)
+                        pipeline.zremrangebyscore(ranked_stories_key, min_score+1, 2*min_score)
 
                 # If archive premium user has manually marked an older story as unread
-                if is_archive and feed_id in manual_unread_feed_oldest_date:
+                if is_archive and feed_id in manual_unread_feed_oldest_date and read_filter == "unread":
                     if order == 'oldest':
                         min_score = manual_unread_feed_oldest_date[feed_id]
                     else:
@@ -215,8 +222,8 @@ class UserSubscription(models.Model):
                         debug_stories)))
 
                 if not store_stories_key:
-                    byscorefunc(unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps, start=offset, num=limit)
-                unread_ranked_stories_keys.append(unread_ranked_stories_key)
+                    byscorefunc(ranked_stories_key, min_score, max_score, withscores=include_timestamps, start=offset, num=limit)
+                unread_ranked_stories_keys.append(ranked_stories_key)
         
             results = pipeline.execute()
 
