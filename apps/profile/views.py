@@ -56,6 +56,8 @@ def set_preference(request):
         if preference_name in SINGLE_FIELD_PREFS:
             setattr(request.user.profile, preference_name, preference_value)
         elif preference_name in INTEGER_FIELD_PREFS:
+            if preference_name == "days_of_unread" and int(preference_value) != request.user.profile.days_of_unread:
+                UserSubscription.all_subs_needs_unread_recalc(request.user.pk)
             setattr(request.user.profile, preference_name, int(preference_value))
             if preference_name in preferences:
                 del preferences[preference_name]
