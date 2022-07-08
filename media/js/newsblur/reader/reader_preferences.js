@@ -1368,7 +1368,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             if (self.original_preferences['ssl'] != form['ssl']) {
                 NEWSBLUR.reader.check_and_load_ssl();
             }
-            if (self.original_preferences['days_of_unreads'] != form['days_of_unreads']) {
+            if (self.original_preferences['days_of_unread'] != form['days_of_unread']) {
                 NEWSBLUR.reader.force_feeds_refresh();
             }
             self.close();
