@@ -157,7 +157,10 @@ backend staging
 backend node_images
     option httpchk HEAD /sc,seLJDaKBog3LLEMDe8cjBefMhnVSibO4RA5boZhWcVZ0=/https://samuelclay.com/static/images/2019%20-%20Cuba.jpg
     http-check expect rstatus 200|301
-    server-template node-images 1 _node-images._tcp.service.nyc1.consul:8088 check inter 2000ms resolvers consul resolve-opts allow-dup-ip
+    default-server check inter 10000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.node_images %}
+        server {{host}} {{host}}.node.nyc1.consul:8088
+    {% endfor %}
 
 backend metrics
     option httpchk GET /_haproxychk

@@ -11,4 +11,5 @@
 - name: restart node
   become: yes
   command: docker restart node
+  ignore_errors: yes
   listen: restart node
