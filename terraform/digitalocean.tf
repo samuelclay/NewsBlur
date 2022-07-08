@@ -280,8 +280,9 @@ resource "digitalocean_droplet" "node-favicons" {
 }
 
 resource "digitalocean_droplet" "node-images" {
+  count    = 2
   image    = var.droplet_os
-  name     = "node-images"
+  name     = "node-images${count.index+1}"
   region   = var.droplet_region
   size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -381,7 +382,7 @@ resource "digitalocean_droplet" "db-redis-story" {
   image    = var.droplet_os
   name     = contains([0], count.index) ? "db-redis-story" : "db-redis-story${count.index+1}"
   region   = var.droplet_region
-  size     = contains([0], count.index) ? "c-16" : var.redis_story_droplet_size
+  size     = contains([1], count.index) ? "m-8vcpu-64gb" : var.redis_story_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
