@@ -685,6 +685,10 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 }
 
 - (void)beginOfflineTimer {
+    if ([self.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
+        return;
+    }
+    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         if (!self.storiesCollection.storyLocationsCount && !self.pageFinished &&
             self.storiesCollection.feedPage == 1 && self.isOnline) {
