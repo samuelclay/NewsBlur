@@ -17,10 +17,8 @@
 // indices in appDelegate.dictFoldersArray and button tags
 // keep in sync with NewsBlurTopSectionNames
 static enum {
-    NewsBlurTopSectionGlobalSharedStories = 0,
-    NewsBlurTopSectionAllSharedStories = 1,
-    NewsBlurTopSectionInfrequentSiteStories = 2,
-    NewsBlurTopSectionAllStories = 3
+    NewsBlurTopSectionInfrequentSiteStories = 0,
+    NewsBlurTopSectionAllStories = 1
 } NewsBlurTopSection;
 
 @class NewsBlurAppDelegate;
