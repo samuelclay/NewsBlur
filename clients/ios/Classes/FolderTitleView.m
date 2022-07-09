@@ -126,18 +126,18 @@
     UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
     NSInteger titleOffsetY = ((rect.size.height - font.pointSize) / 2) - 1;
     NSString *folderTitle;
-    if (section == NewsBlurTopSectionGlobalSharedStories) {
-        folderTitle = @"Global Shared Stories";
-    } else if (section == NewsBlurTopSectionAllSharedStories) {
-        folderTitle = @"All Shared Stories";
-    } else if (section == NewsBlurTopSectionInfrequentSiteStories) {
+    if (section == NewsBlurTopSectionInfrequentSiteStories) {
         folderTitle = @"Infrequent Site Stories";
     } else if (section == NewsBlurTopSectionAllStories) {
-        folderTitle = @"All Stories";
+        folderTitle = @"All Site Stories";
     } else if ([folderName isEqual:@"widget_stories"]) {
         folderTitle = @"Widget Site Stories";
     } else if ([folderName isEqual:@"read_stories"]) {
         folderTitle = @"Read Stories";
+    } else if ([folderName isEqual:@"river_global"]) {
+        folderTitle = @"Global Shared Stories";
+    } else if ([folderName isEqual:@"river_blurblogs"]) {
+        folderTitle = @"All Shared Stories";
     } else if ([folderName isEqual:@"saved_stories"]) {
         folderTitle = @"Saved Stories";
     } else if ([folderName isEqual:@"saved_searches"]) {
@@ -191,7 +191,7 @@
         disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2-1, disclosureHeight, disclosureHeight);
 
         // Add collapse button to all folders except Everything
-        if (section != NewsBlurTopSectionGlobalSharedStories && section != NewsBlurTopSectionInfrequentSiteStories && section != NewsBlurTopSectionAllStories && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"widget_stories"]) {
+        if (section != NewsBlurTopSectionInfrequentSiteStories && section != NewsBlurTopSectionAllStories && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"river_global"] && ![folderName isEqual:@"widget_stories"]) {
             if (!isFolderCollapsed) {
                 UIImage *disclosureImage = [UIImage imageNamed:@"disclosure_down.png"];
                 [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
@@ -223,21 +223,7 @@
     int width = 20;
     int height = 20;
     
-    if (section == 0) {
-        folderImage = [UIImage imageNamed:@"ak-icon-global.png"];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            folderImageViewX = 10;
-        } else {
-            folderImageViewX = 8;
-        }
-    } else if (section == 1) {
-        folderImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            folderImageViewX = 10;
-        } else {
-            folderImageViewX = 8;
-        }
-    } else if (section == 2) {
+    if (section == NewsBlurTopSectionInfrequentSiteStories) {
         folderImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
@@ -245,7 +231,7 @@
             folderImageViewX = 7;
         }
         allowLongPress = YES;
-    } else if (section == 3) {
+    } else if (section == NewsBlurTopSectionAllStories) {
         folderImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
@@ -253,6 +239,20 @@
             folderImageViewX = 7;
         }
         allowLongPress = NO;
+    } else if ([folderName isEqual:@"river_global"]) {
+        folderImage = [UIImage imageNamed:@"ak-icon-global.png"];
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 8;
+        }
+    } else if ([folderName isEqual:@"river_blurblogs"]) {
+        folderImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 8;
+        }
     } else if ([folderName isEqual:@"saved_searches"]) {
         folderImage = [UIImage imageNamed:@"g_icn_search.png"];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
