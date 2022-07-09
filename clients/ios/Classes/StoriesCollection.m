@@ -317,7 +317,7 @@
         } else if ([activeFolder isEqualToString:@"river_global"]) {
             return @"Global Shared Stories";
         } else if ([activeFolder isEqualToString:@"everything"]) {
-            return @"All Stories";
+            return @"All Site Stories";
         } else if ([activeFolder isEqualToString:@"infrequent"]) {
             return @"Infrequent Site Stories";
         } else if (isSavedView && activeSavedStoryTag) {

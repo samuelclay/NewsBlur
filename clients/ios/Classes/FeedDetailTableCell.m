@@ -310,16 +310,16 @@ static UIFont *indicatorFont = nil;
             cell.hasAlpha = YES;
         }
         
-        [cell.siteFavicon drawInRect:CGRectMake(leftMargin - feedOffset, siteTitleY, 16.0, 16.0)];
+        UIImage *siteIcon = [Utilities roundCorneredImage:cell.siteFavicon radius:4 convertToSize:CGSizeMake(16, 16)];
+        [siteIcon drawInRect:CGRectMake(leftMargin - feedOffset, siteTitleY, 16.0, 16.0)];
     }
     
     // story title
+    UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
+    font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
     if (cell.isRead) {
-        font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize];
         textColor = UIColorFromLightSepiaMediumDarkRGB(0x585858, 0x585858, 0x989898, 0x888888);
     } else {
-        UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
-        font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
         textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xD0D0D0, 0xCCCCCC);
     }
     if (cell.highlighted || cell.selected) {
@@ -335,9 +335,7 @@ static UIFont *indicatorFont = nil;
                       attributes:@{NSFontAttributeName: font,
                                    NSParagraphStyleAttributeName: paragraphStyle}
                       context:nil].size;
-    BOOL needsCentering = theSize.height < font.pointSize * 2;
-    int centeringOffset = needsCentering ? ((font.pointSize * 2 - theSize.height) / 2) : 0;
-    int storyTitleY = 14 + riverPadding + centeringOffset;
+    int storyTitleY = 14 + riverPadding;
     if (cell.isShort) {
         storyTitleY = 14 + riverPadding - (theSize.height/font.pointSize*2);
     }
@@ -363,6 +361,21 @@ static UIFont *indicatorFont = nil;
     
 //    CGContextStrokeRect(context, storyTitleFrame);
     
+    if (cell.isRead) {
+        textColor = UIColorFromLightSepiaMediumDarkRGB(0xB8B8B8, 0xB8B8B8, 0xA0A0A0, 0x707070);
+        font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize - 1];
+    } else {
+        textColor = UIColorFromLightSepiaMediumDarkRGB(0x404040, 0x404040, 0xC0C0C0, 0xB0B0B0);
+        font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize - 1];
+    }
+    if (cell.highlighted || cell.selected) {
+        if (cell.isRead) {
+            textColor = UIColorFromLightSepiaMediumDarkRGB(0xB8B8B8, 0xB8B8B8, 0xA0A0A0, 0x707070);
+        } else {
+            textColor = UIColorFromLightSepiaMediumDarkRGB(0x686868, 0x686868, 0xA9A9A9, 0x989898);
+        }
+    }
+    
     if (cell.storyContent) {
         int storyContentWidth = rect.size.width;
         CGFloat boundingRows = cell.isShort ? 1.5 : 3;
@@ -383,21 +396,6 @@ static UIFont *indicatorFont = nil;
             storyContentY = r.size.height - 10 - 4 - ((font.pointSize + font.lineHeight) + contentSize.height)/2;
         }
         
-        if (cell.isRead) {
-            textColor = UIColorFromLightSepiaMediumDarkRGB(0xB8B8B8, 0xB8B8B8, 0xA0A0A0, 0x707070);
-            font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize - 1];
-        } else {
-            textColor = UIColorFromLightSepiaMediumDarkRGB(0x404040, 0x404040, 0xC0C0C0, 0xB0B0B0);
-            font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize - 1];
-        }
-        if (cell.highlighted || cell.selected) {
-            if (cell.isRead) {
-                textColor = UIColorFromLightSepiaMediumDarkRGB(0xB8B8B8, 0xB8B8B8, 0xA0A0A0, 0x707070);
-            } else {
-                textColor = UIColorFromLightSepiaMediumDarkRGB(0x686868, 0x686868, 0xA9A9A9, 0x989898);
-            }
-        }
-        
         [cell.storyContent
          drawWithRect:CGRectMake(storyTitleX, storyContentY,
                                  rect.size.width - storyTitleX + leftMargin, contentSize.height)
@@ -415,35 +413,17 @@ static UIFont *indicatorFont = nil;
     int storyAuthorDateY = r.size.height - 18;
     
     if (cell.isRead) {
-        textColor = UIColorFromLightSepiaMediumDarkRGB(0xB8B8B8, 0xB8B8B8, 0x909090, 0x404040);
         font = [UIFont fontWithName:@"WhitneySSm-Medium" size:11];
     } else {
-        textColor = UIColorFromLightSepiaMediumDarkRGB(0xA6A8A2, 0xA6A8A2, 0x909090, 0x505050);
         font = [UIFont fontWithName:@"WhitneySSm-Medium" size:11];
     }
-    if (cell.highlighted || cell.selected) {
-        if (cell.isRead) {
-            textColor = UIColorFromLightSepiaMediumDarkRGB(0xA8A8A8, 0xA8A8A8, 0x999999, 0x808080);
-        } else {
-            textColor = UIColorFromLightSepiaMediumDarkRGB(0x959595, 0x959595, 0xA0A0A0, 0x909090);
-        }
-    }
     
-    paragraphStyle.alignment = NSTextAlignmentRight;
+    // Story author and date
     NSString *date = [Utilities formatShortDateFromTimestamp:cell.storyTimestamp];
-    CGSize dateSize = [date sizeWithAttributes:@{NSFontAttributeName: font,
-                                                 NSForegroundColorAttributeName: textColor,
-                                                 NSParagraphStyleAttributeName: paragraphStyle}];
-    [date
-     drawInRect:CGRectMake(0, storyAuthorDateY, dateRect.size.width + leftMargin, 15.0)
-     withAttributes:@{NSFontAttributeName: font,
-                      NSForegroundColorAttributeName: textColor,
-                      NSParagraphStyleAttributeName: paragraphStyle}];
-    
-    // Story author
+    NSString *author = cell.storyAuthor.length > 0 ? [NSString stringWithFormat:@" · %@", cell.storyAuthor] : @"";
     paragraphStyle.alignment = NSTextAlignmentLeft;
-    [cell.storyAuthor
-     drawInRect:CGRectMake(leftMargin, storyAuthorDateY, dateRect.size.width - dateSize.width - 12, 15.0)
+    [[NSString stringWithFormat:@"%@%@", date, author]
+     drawInRect:CGRectMake(leftMargin, storyAuthorDateY, dateRect.size.width - 12, 15.0)
      withAttributes:@{NSFontAttributeName: font,
                       NSForegroundColorAttributeName: textColor,
                       NSParagraphStyleAttributeName: paragraphStyle}];
@@ -494,6 +474,16 @@ static UIFont *indicatorFont = nil;
         CGContextMoveToPoint(context, 0, cell.bounds.size.height - .5f*lineWidth);
         CGContextAddLineToPoint(context, cell.bounds.size.width, cell.bounds.size.height - .5f*lineWidth);
         CGContextStrokePath(context);
+        
+        // Rounded frame
+        UIColor *borderColor = UIColorFromLightDarkRGB(0xeeeeee, 0x0);
+        CGContextSaveGState(context);
+        CGContextSetLineWidth(context, 7);
+        CGContextSetStrokeColorWithColor(context, borderColor.CGColor);
+        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:r cornerRadius:8];
+        CGContextAddPath(context, path.CGPath);
+        CGContextDrawPath(context, kCGPathStroke);
+        CGContextRestoreGState(context);
     } else {
         // top border
         CGContextSetLineWidth(context, 1.0f);
@@ -508,7 +498,7 @@ static UIFont *indicatorFont = nil;
     
     // story indicator
     CGFloat storyIndicatorX = isLeft ? rect.origin.x + 2 : 15;
-    CGFloat storyIndicatorY = storyTitleFrame.origin.y + storyTitleFrame.size.height / 2;
+    CGFloat storyIndicatorY = storyTitleFrame.origin.y + (fontDescriptor.pointSize / 2);
     
     UIImage *unreadIcon;
     if (cell.storyScore == -1) {

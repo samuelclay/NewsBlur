@@ -2242,12 +2242,12 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     MenuViewController *viewController = [MenuViewController new];
     __weak MenuViewController *weakViewController = viewController;
     
-    BOOL everything = appDelegate.storiesCollection.isRiverView &&
-    [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"];
+    BOOL everything = [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"];
     BOOL infrequent = [self isInfrequent];
     BOOL river = [self isRiver];
     BOOL read = appDelegate.storiesCollection.isReadView;
     BOOL widget = appDelegate.storiesCollection.isWidgetView;
+    BOOL social = appDelegate.storiesCollection.isSocialRiverView;
     BOOL saved = appDelegate.storiesCollection.isSavedView;
     
     if (storiesCollection.inSearch) {
@@ -2262,7 +2262,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
     }
     
-    if (!infrequent && !saved && !read && !widget) {
+    if (!everything && !infrequent && !saved && !read && !social && !widget) {
         NSString *manageText = [NSString stringWithFormat:@"Manage this %@", appDelegate.storiesCollection.isRiverView ? @"folder" : @"site"];
         
         [viewController addTitle:manageText iconName:@"menu_icn_move.png" selectionShouldDismiss:NO handler:^{
@@ -2270,7 +2270,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
     
-    if (!appDelegate.storiesCollection.isRiverView && !infrequent && !saved && !read && !widget) {
+    if (!appDelegate.storiesCollection.isRiverView && !infrequent && !saved && !read && !social && !widget) {
         [viewController addTitle:@"Train this site" iconName:@"menu_icn_train.png" selectionShouldDismiss:YES handler:^{
             [self openTrainSite];
         }];

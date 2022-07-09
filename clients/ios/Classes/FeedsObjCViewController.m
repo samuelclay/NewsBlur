@@ -99,10 +99,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 + (void)initialize {
     // keep in sync with NewsBlurTopSection
-    NewsBlurTopSectionNames = @[/* 0 */ @"river_global",
-                                /* 1 */ @"river_blurblogs",
-                                /* 2 */ @"infrequent",
-                                /* 3 */ @"everything"];
+    NewsBlurTopSectionNames = @[/* 0 */ @"infrequent",
+                                /* 1 */ @"everything"];
 }
 
 - (void)viewDidLoad {
@@ -807,8 +805,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     }
     appDelegate.dictFolders = sortedFolders;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
-
-    // Add global shared stories, etc. to top
+    
+    // Add all stories etc. to top
     [NewsBlurTopSectionNames enumerateObjectsUsingBlock:^(NSString * _Nonnull sectionName, NSUInteger sectionIndex, BOOL * _Nonnull stop) {
         [appDelegate.dictFoldersArray removeObject:sectionName];
         [appDelegate.dictFoldersArray insertObject:sectionName atIndex:sectionIndex];
@@ -824,18 +822,26 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     // Add Read Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"read_stories"];
-    [appDelegate.dictFoldersArray insertObject:@"read_stories" atIndex:appDelegate.dictFoldersArray.count];
+    [appDelegate.dictFoldersArray addObject:@"read_stories"];
+    
+    // Add Global Shared Stories folder to bottom
+    [appDelegate.dictFoldersArray removeObject:@"river_global"];
+    [appDelegate.dictFoldersArray addObject:@"river_global"];
+    
+    // Add All Shared Stories folder to bottom
+    [appDelegate.dictFoldersArray removeObject:@"river_blurblogs"];
+    [appDelegate.dictFoldersArray addObject:@"river_blurblogs"];
     
     // Add Saved Searches folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"saved_searches"];
     if (appDelegate.savedSearchesCount) {
-        [appDelegate.dictFoldersArray insertObject:@"saved_searches" atIndex:appDelegate.dictFoldersArray.count];
+        [appDelegate.dictFoldersArray addObject:@"saved_searches"];
     }
     
     // Add Saved Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"saved_stories"];
     if (appDelegate.savedStoriesCount) {
-        [appDelegate.dictFoldersArray insertObject:@"saved_stories" atIndex:appDelegate.dictFoldersArray.count];
+        [appDelegate.dictFoldersArray addObject:@"saved_stories"];
     }
     
     // test for empty    
@@ -1303,7 +1309,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [values removeAllObjects];
     
     [titles addObject:@"Show feed list"];
-    [titles addObject:@"Open All Stories"];
+    [titles addObject:@"Open All Site Stories"];
     
     [values addObject:@"feeds"];
     [values addObject:@"everything"];
@@ -1777,7 +1783,9 @@ heightForHeaderInSection:(NSInteger)section {
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
     
     BOOL visibleFeeds = [[self.visibleFolders objectForKey:folderName] boolValue];
-    if (!visibleFeeds && section != NewsBlurTopSectionInfrequentSiteStories && section != NewsBlurTopSectionAllStories && section != NewsBlurTopSectionGlobalSharedStories &&
+    if (!visibleFeeds && section != NewsBlurTopSectionInfrequentSiteStories && section != NewsBlurTopSectionAllStories &&
+        ![folderName isEqualToString:@"river_global"] &&
+        ![folderName isEqualToString:@"river_blurblogs"] &&
         ![folderName isEqualToString:@"saved_searches"] &&
         ![folderName isEqualToString:@"saved_stories"] &&
         ![folderName isEqualToString:@"read_stories"] &&
@@ -1790,7 +1798,7 @@ heightForHeaderInSection:(NSInteger)section {
         return 0;
     }
 
-    if (section == NewsBlurTopSectionGlobalSharedStories &&
+    if ([folderName isEqual:@"river_global"] &&
         ![prefs boolForKey:@"show_global_shared_stories"]) {
         return 0;
     }
@@ -1819,10 +1827,11 @@ heightForHeaderInSection:(NSInteger)section {
     
     [self highlightSelectedHeader];
     
-    NSString *folder;
+    NSString *folder = [appDelegate.dictFoldersArray objectAtIndex:tag];
+    
     if (tag >= 0 && tag < [NewsBlurTopSectionNames count]) {
         folder = NewsBlurTopSectionNames[tag];
-    } else {
+    } else if (![folder isEqualToString:@"river_global"] && ![folder isEqualToString:@"river_blurblogs"]) {
         folder = [NSString stringWithFormat:@"%ld", (long)tag];
     }
     
@@ -2125,7 +2134,7 @@ heightForHeaderInSection:(NSInteger)section {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     int direction;
     if (selectedSegmentIndex == 0) {
-        hud.labelText = @"All Stories";
+        hud.labelText = @"All Site Stories";
         [userPreferences setInteger:-1 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
         

@@ -3624,7 +3624,7 @@
             titleLabel.text = [NSString stringWithFormat:@"     Global Shared Stories"];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"everything"]) {
-        titleLabel.text = [NSString stringWithFormat:@"     All Stories"];
+        titleLabel.text = [NSString stringWithFormat:@"     All Site Stories"];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
         titleLabel.text = [NSString stringWithFormat:@"     Infrequent Site Stories"];
@@ -3700,7 +3700,7 @@
     } else if ([folder isEqualToString:@"river_global"]) {
         return @"Global Shared Stories";
     } else if ([folder isEqualToString:@"everything"]) {
-        return @"All Stories";
+        return @"All Site Stories";
     } else if ([folder isEqualToString:@"infrequent"]) {
         return @"Infrequent Site Stories";
     } else if ([folder isEqualToString:@"widget_stories"]) {

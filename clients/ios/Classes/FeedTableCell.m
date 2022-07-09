@@ -229,33 +229,36 @@ static UIFont *textFont = nil;
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
     paragraphStyle.alignment = NSTextAlignmentLeft;
-    NSInteger faviconSize;
+    CGSize faviconSize;
     if (cell.isSocial) {
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            faviconSize = 28;
-            [cell.feedFavicon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize/2, faviconSize, faviconSize)];
+            faviconSize = CGSizeMake(28, 28);
+            UIImage *feedIcon = [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
+            [feedIcon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
             [cell.feedTitle drawInRect:CGRectMake(46, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 16, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
-            faviconSize = 26;
-            [cell.feedFavicon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize/2, faviconSize, faviconSize)];
+            faviconSize = CGSizeMake(26, 26);
+            UIImage *feedIcon = [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
+            [feedIcon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
             [cell.feedTitle drawInRect:CGRectMake(42, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 12, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         }
     } else {
-        faviconSize = 16;
+        faviconSize = CGSizeMake(16, 16);
+        UIImage *feedIcon = [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            [cell.feedFavicon drawInRect:CGRectMake(12.0, CGRectGetMidY(r)-faviconSize/2, faviconSize, faviconSize)];
+            [feedIcon drawInRect:CGRectMake(12.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
             [cell.feedTitle drawInRect:CGRectMake(36.0, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
-            [cell.feedFavicon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize/2, faviconSize, faviconSize)];
+            [feedIcon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
             [cell.feedTitle drawInRect:CGRectMake(34.0, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
