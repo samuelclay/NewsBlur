@@ -89,5 +89,5 @@ variable "elasticsearch_droplet_size" {
 
 variable "redis_story_droplet_size" {
   type = string
-  default = "c-16"
+  default = "m-8vcpu-64gb"
 }

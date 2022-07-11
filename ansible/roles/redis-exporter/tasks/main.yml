@@ -2,7 +2,7 @@
   become: yes
   docker_container:
     name: "{{item.redis_target}}-exporter"
-    image: oliver006/redis_exporter
+    image: oliver006/redis_exporter:latest
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
     env:
