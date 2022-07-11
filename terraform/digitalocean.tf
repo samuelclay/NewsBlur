@@ -380,7 +380,7 @@ resource "digitalocean_droplet" "db-redis-sessions" {
 resource "digitalocean_droplet" "db-redis-story" {
   count    = 2
   image    = var.droplet_os
-  name     = contains([0], count.index) ? "db-redis-story" : "db-redis-story${count.index+1}"
+  name     = "db-redis-story${count.index+1}"
   region   = var.droplet_region
   size     = contains([1], count.index) ? "m-8vcpu-64gb" : var.redis_story_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
