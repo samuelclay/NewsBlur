@@ -770,7 +770,7 @@ def load_single_feed(request, feed_id):
                 starred_date = localtime_for_timezone(starred_story['starred_date'],
                                                       user.profile.timezone)
                 story['starred_date'] = format_story_link_date__long(starred_date, now)
-                story['starred_timestamp'] = starred_date.strftime('%s')
+                story['starred_timestamp'] = int(starred_date.timestamp())
                 story['user_tags'] = starred_story['user_tags']
                 story['user_notes'] = starred_story['user_notes']
                 story['highlights'] = starred_story['highlights']
