@@ -176,7 +176,7 @@ class UserSubscription(models.Model):
                     if needs_unread_recalc[feed_id]:
                         pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
                         # pipeline.expire(unread_stories_key, unread_cutoff_diff.days*24*60*60)
-                        pipeline.expire(unread_stories_key, 24*60*60) # 24 hours
+                        pipeline.expire(unread_stories_key, 1*60*60) # 1 hour
                 else:
                     min_score = 0
 
@@ -191,7 +191,7 @@ class UserSubscription(models.Model):
                     if needs_unread_recalc[feed_id]:
                         pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key], aggregate="MAX")
                         # pipeline.expire(unread_ranked_stories_key, unread_cutoff_diff.days*24*60*60)
-                        pipeline.expire(unread_ranked_stories_key, 24*60*60) # 24 hours
+                        pipeline.expire(unread_ranked_stories_key, 1*60*60) # 1 hours
                         if order == 'oldest':
                             pipeline.zremrangebyscore(ranked_stories_key, 0, min_score-1)
                             pipeline.zremrangebyscore(ranked_stories_key, max_score+1, 2*max_score)
