@@ -92,12 +92,13 @@
         android:layout_alignParentStart="true"
         android:layout_toLeftOf="@id/row_feedcounters">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/row_feedfavicon"
             android:layout_width="19dp"
             android:layout_height="19dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="12dp" />
+            android:layout_marginLeft="12dp"
+            app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance"/>
 
         <TextView
             android:id="@+id/row_feedname"

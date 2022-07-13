@@ -47,7 +47,7 @@ public class ImageLoader {
 	}
 
     public static ImageLoader asIconLoader(Context context) {
-        return new ImageLoader(FileCache.asIconCache(context), R.drawable.world, UIUtils.dp2px(context, 4), false, (Runtime.getRuntime().maxMemory()/20));
+        return new ImageLoader(FileCache.asIconCache(context), R.drawable.ic_world, UIUtils.dp2px(context, 4), false, (Runtime.getRuntime().maxMemory()/20));
     }
 
     public static ImageLoader asThumbnailLoader(Context context, FileCache chainCache) {

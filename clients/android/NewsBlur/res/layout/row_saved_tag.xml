@@ -7,7 +7,7 @@
 
     <ImageView
         android:id="@+id/row_tag_icon"
-        android:src="@drawable/tag"
+        android:src="@drawable/ic_tag"
         android:layout_width="19dp"
         android:layout_height="19dp"
         android:layout_alignParentLeft="true"

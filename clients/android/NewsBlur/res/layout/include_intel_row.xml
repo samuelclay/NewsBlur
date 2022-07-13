@@ -11,7 +11,7 @@
         android:layout_margin="4dp"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:background="@drawable/ic_clear_gray55"
+        android:background="@drawable/ic_clear"
     />
 
     <ImageButton
@@ -24,7 +24,7 @@
         android:layout_marginLeft="6dp"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:background="@drawable/ic_dislike_gray55"
+        android:background="@drawable/ic_thumb_down_yellow"
     />
 
     <ImageButton
@@ -34,7 +34,7 @@
         android:layout_margin="4dp"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:background="@drawable/ic_like_gray55"
+        android:background="@drawable/ic_thumb_up_yellow"
     />
         
     <TextView

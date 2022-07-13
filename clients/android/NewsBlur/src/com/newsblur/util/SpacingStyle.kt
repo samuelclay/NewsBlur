@@ -18,12 +18,17 @@ enum class SpacingStyle {
     }
 
     fun getStoryTitleVerticalPadding(context: Context): Int = when (this) {
-        COMFORTABLE -> UIUtils.dp2px(context, 6)
-        COMPACT -> UIUtils.dp2px(context, 1)
+        COMFORTABLE -> UIUtils.dp2px(context, 11)
+        COMPACT -> UIUtils.dp2px(context, 2)
     }
 
     fun getStoryContentVerticalPadding(context: Context): Int = when (this) {
-        COMFORTABLE -> UIUtils.dp2px(context, 6)
-        COMPACT -> UIUtils.dp2px(context, 1)
+        COMFORTABLE -> UIUtils.dp2px(context, 11)
+        COMPACT -> UIUtils.dp2px(context, 2)
+    }
+
+    fun getStoryContainerMargin(context: Context): Int = when (this) {
+        COMFORTABLE -> UIUtils.dp2px(context, 10)
+        COMPACT -> UIUtils.dp2px(context, 2)
     }
 }

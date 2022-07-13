@@ -28,7 +28,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:paddingRight="4dp"
-            android:src="@drawable/toggle_icon_all" />
+            android:src="@drawable/ic_world" />
 
         <TextView
             android:id="@+id/toggle_all_text"
@@ -60,7 +60,8 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:paddingRight="4dp"
-            android:src="@drawable/toggle_icon_unread" />
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_indicator_unread" />
 
         <TextView
             android:id="@+id/toggle_some_text"
@@ -89,10 +90,10 @@
 
         <ImageView
             android:id="@+id/toggle_focus_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:paddingRight="4dp"
-            android:src="@drawable/toggle_icon_focus" />
+            android:src="@drawable/ic_indicator_focus" />
 
         <TextView
             android:id="@+id/toggle_focus_text"
@@ -123,7 +124,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:paddingRight="4dp"
-            android:src="@drawable/toggle_icon_saved" />
+            android:src="@drawable/ic_saved" />
 
         <TextView
             android:id="@+id/toggle_saved_text"

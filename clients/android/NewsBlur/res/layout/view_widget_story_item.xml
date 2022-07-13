@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
         android:id="@+id/view_widget_item"
@@ -20,14 +21,15 @@
             android:layout_height="match_parent"
             android:layout_toRightOf="@id/story_item_favicon_borderbar_1" />
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/story_item_feedicon"
             android:layout_width="19dp"
             android:layout_height="19dp"
             android:layout_alignParentLeft="true"
             android:layout_marginStart="18dp"
             android:layout_marginTop="2dp"
-            android:layout_toRightOf="@+id/story_item_favicon_borderbar_2" />
+            android:layout_toRightOf="@+id/story_item_favicon_borderbar_2"
+            app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance"/>
 
         <TextView
             android:id="@+id/story_item_feedtitle"

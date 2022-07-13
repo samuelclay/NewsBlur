@@ -565,12 +565,12 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                     Classifier.LIKE -> {
                         chip.setChipBackgroundColorResource(R.color.tag_green)
                         chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.tag_green_text))
-                        chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_up)
+                        chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_up_green)
                     }
                     Classifier.DISLIKE -> {
                         chip.setChipBackgroundColorResource(R.color.tag_red)
                         chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.tag_red_text))
-                        chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_down)
+                        chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_down_red)
                     }
                 }
             }
@@ -594,7 +594,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                 val chip: Chip = v.findViewById(R.id.chip)
                 if (i < story!!.userTags.size) {
                     chip.text = story!!.userTags[i]
-                    chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.tag)
+                    chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_tag)
                 } else {
                     chip.text = getString(R.string.add_tag)
                     chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_add_gray75)

@@ -13,10 +13,10 @@
 </item>
 
 <item
-    android:drawable="@drawable/ic_arrow_forward_gray46"
-    android:bottom="12dp"
-    android:left="92dp"
-    android:right="12dp"
-    android:top="12dp"/>
+    android:drawable="@drawable/ic_arrow_forward"
+    android:bottom="8dp"
+    android:left="87dp"
+    android:right="10dp"
+    android:top="8dp"/>
 
 </layer-list>

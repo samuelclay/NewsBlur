@@ -87,24 +87,24 @@ public class StoryIntelTrainerFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 newTitleTraining = Classifier.LIKE;
-                binding.intelTitleLike.setBackgroundResource(R.drawable.ic_like_active);
-                binding.intelTitleDislike.setBackgroundResource(R.drawable.ic_dislike_gray55);
+                binding.intelTitleLike.setBackgroundResource(R.drawable.ic_thumb_up_green);
+                binding.intelTitleDislike.setBackgroundResource(R.drawable.ic_thumb_down_yellow);
             }
         });
         binding.intelTitleDislike.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 newTitleTraining = Classifier.DISLIKE;
-                binding.intelTitleLike.setBackgroundResource(R.drawable.ic_like_gray55);
-                binding.intelTitleDislike.setBackgroundResource(R.drawable.ic_dislike_active);
+                binding.intelTitleLike.setBackgroundResource(R.drawable.ic_thumb_up_yellow);
+                binding.intelTitleDislike.setBackgroundResource(R.drawable.ic_thumb_down_red);
             }
         });
         binding.intelTitleClear.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 newTitleTraining = null;
-                binding.intelTitleLike.setBackgroundResource(R.drawable.ic_like_gray55);
-                binding.intelTitleDislike.setBackgroundResource(R.drawable.ic_dislike_gray55);
+                binding.intelTitleLike.setBackgroundResource(R.drawable.ic_thumb_up_yellow);
+                binding.intelTitleDislike.setBackgroundResource(R.drawable.ic_thumb_down_yellow);
             }
         });
 
