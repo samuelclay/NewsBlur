@@ -141,11 +141,11 @@ class UserSubscription(models.Model):
         manual_unread_pipeline = r.pipeline()
         manual_unread_feed_oldest_date = dict()
         oldest_manual_unread = None
-        usersub_count = len(usersubs)
+        # usersub_count = len(usersubs)
         for us in usersubs:
             read_dates[us.feed_id] = int(max(us.mark_read_date, cutoff_date).strftime('%s'))
             if read_filter == "unread":
-                needs_unread_recalc[us.feed_id] = us.needs_unread_recalc or usersub_count == 1
+                needs_unread_recalc[us.feed_id] = us.needs_unread_recalc # or usersub_count == 1
                 user_manual_unread_stories_feed_key = f"uU:{user_id}:{us.feed_id}"
                 manual_unread_pipeline.exists(user_manual_unread_stories_feed_key)
                 user_unread_ranked_stories_key = f"zU:{user_id}:{us.feed_id}"
@@ -1254,10 +1254,11 @@ class RUserStory:
 
         feed_id, _ = MStory.split_story_hash(story_hash)
 
-        unread_stories_key = f"U:{user_id}:{story_feed_id}"
-        unread_ranked_stories_key = f"zU:{user_id}:{story_feed_id}"
-        r.srem(unread_stories_key, story_hash)
-        r.zrem(unread_ranked_stories_key, story_hash)
+        # Don't remove unread stories from zU because users are actively paging through
+        # unread_stories_key = f"U:{user_id}:{story_feed_id}"
+        # unread_ranked_stories_key = f"zU:{user_id}:{story_feed_id}"
+        # r.srem(unread_stories_key, story_hash)
+        # r.zrem(unread_ranked_stories_key, story_hash)
         
         if not aggregated:
             key = 'lRS:%s' % user_id
