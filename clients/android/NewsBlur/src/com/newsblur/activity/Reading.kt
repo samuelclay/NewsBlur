@@ -176,7 +176,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         }
     }
 
-    override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration?) {
+    override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration) {
         super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig)
         isMultiWindowModeHack = isInMultiWindowMode
     }
