@@ -44,8 +44,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.0"
     implementation 'androidx.lifecycle:lifecycle-process:2.5.0'
     implementation 'androidx.core:core-splashscreen:1.0.0-rc01'
-    implementation "com.google.dagger:hilt-android:2.38.1"
-    kapt "com.google.dagger:hilt-compiler:2.38.1"
+    implementation "com.google.dagger:hilt-android:2.40.1"
+    kapt "com.google.dagger:hilt-compiler:2.40.1"
 }
 
 android {
