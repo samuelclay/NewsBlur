@@ -372,7 +372,6 @@
 .NB-welcome-header-account .NB-signup-optional {
     float: right;
     text-transform: uppercase;
-    display: none;
     color: rgba(255, 255, 255, 0.4);
     font-weight: bold;
     font-size: 9px;

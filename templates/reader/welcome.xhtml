@@ -87,11 +87,7 @@
                         </div>
                         <div>
                             <div class="NB-signup-optional">
-                                {% if login_form.errors and login_form.errors|length %}
-                                    <a href="{% url "profile-forgot-password" %}" class="NB-splash-link">Forgot?</a>
-                                {% else %}
-                                    Optional
-                                {% endif %}
+                                <a href="{% url "profile-forgot-password" %}" class="NB-splash-link">Forgot?</a>
                             </div>
                             {{ login_form.password.label_tag }}
                             {{ login_form.password }}
