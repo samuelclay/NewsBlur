@@ -2,7 +2,6 @@ package com.newsblur.database;
 
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
@@ -60,8 +59,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private final static float defaultTextSize_story_item_feedtitle = 13f;
     private final static float defaultTextSize_story_item_title = 14f;
-    private final static float defaultTextSize_story_item_date = 11f;
-    private final static float defaultTextSize_story_item_author = 11f;
+    private final static float defaultTextSize_story_item_date_or_author = 11f;
     private final static float defaultTextSize_story_item_snip = 12f;
 
     private final static float READ_STORY_ALPHA = 0.35f;
@@ -576,11 +574,11 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (! ignoreIntel) {
             int score = story.extern_intelTotalScore;
             if (score > 0) {
-                vh.intelDot.setImageResource(R.drawable.g_icn_focus);
+                vh.intelDot.setImageResource(R.drawable.ic_indicator_focus);
             } else if (score == 0) {
-                vh.intelDot.setImageResource(R.drawable.g_icn_unread);
+                vh.intelDot.setImageResource(R.drawable.ic_indicator_unread);
             } else {
-                vh.intelDot.setImageResource(R.drawable.g_icn_hidden);
+                vh.intelDot.setImageResource(R.drawable.ic_indicator_hidden);
             }
         } else {
             vh.intelDot.setImageResource(android.R.color.transparent);
@@ -622,13 +620,13 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         // dynamic text sizing
         vh.feedTitleView.setTextSize(textSize * defaultTextSize_story_item_feedtitle);
         vh.storyTitleView.setTextSize(textSize * defaultTextSize_story_item_title);
-        vh.storyDate.setTextSize(textSize * defaultTextSize_story_item_date);
+        vh.storyDate.setTextSize(textSize * defaultTextSize_story_item_date_or_author);
 
         // dynamic spacing
         int verticalTitlePadding = spacingStyle.getStoryTitleVerticalPadding(context);
         vh.storyTitleView.setPadding(vh.storyTitleView.getPaddingLeft(), verticalTitlePadding,
                 vh.storyTitleView.getPaddingRight(), verticalTitlePadding);
-        
+
         // read/unread fading
         if (this.ignoreReadStatus || (! story.read)) {
             vh.leftBarOne.getBackground().setAlpha(255);
@@ -691,15 +689,23 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (TextUtils.isEmpty(story.authors)) {
             vh.storyAuthor.setText("");
         } else {
-            vh.storyAuthor.setText(story.authors);
+            vh.storyAuthor.setText(vh.storyAuthor.getContext().getString(R.string.story_author, story.authors));
         }
 
-        vh.storyAuthor.setTextSize(textSize * defaultTextSize_story_item_author);
+        vh.storyAuthor.setTextSize(textSize * defaultTextSize_story_item_date_or_author);
         vh.storySnippet.setTextSize(textSize * defaultTextSize_story_item_snip);
 
         int contentVerticalPadding = spacingStyle.getStoryContentVerticalPadding(context);
         vh.storySnippet.setPadding(vh.storySnippet.getPaddingLeft(), vh.storySnippet.getPaddingTop(),
                 vh.storySnippet.getPaddingRight(), contentVerticalPadding);
+
+        int verticalContainerMargin = spacingStyle.getStoryContainerMargin(context);
+        RelativeLayout.LayoutParams feedIconLp = (RelativeLayout.LayoutParams) vh.feedIconView.getLayoutParams();
+        feedIconLp.setMargins(feedIconLp.leftMargin, verticalContainerMargin, feedIconLp.rightMargin, feedIconLp.bottomMargin);
+        RelativeLayout.LayoutParams feedTitleLp = (RelativeLayout.LayoutParams) vh.feedTitleView.getLayoutParams();
+        feedTitleLp.setMargins(feedTitleLp.leftMargin, verticalContainerMargin, feedTitleLp.rightMargin, feedTitleLp.bottomMargin);
+        RelativeLayout.LayoutParams storyDateLp = (RelativeLayout.LayoutParams) vh.storyDate.getLayoutParams();
+        storyDateLp.setMargins(storyDateLp.leftMargin, storyDateLp.topMargin, storyDateLp.rightMargin, verticalContainerMargin);
 
         if (PrefsUtils.getThumbnailStyle(context)  != ThumbnailStyle.OFF && vh.thumbViewRight != null && vh.thumbViewLeft != null) {
             // the view will display a stale, recycled thumb before the new one loads if the old is not cleared
@@ -754,11 +760,9 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (this.ignoreReadStatus || (! story.read)) {
             vh.storyAuthor.setAlpha(1.0f);
             vh.storySnippet.setAlpha(1.0f);
-            vh.storyTitleView.setTypeface(vh.storyTitleView.getTypeface(), Typeface.BOLD);
         } else {
             vh.storyAuthor.setAlpha(READ_STORY_ALPHA);
             vh.storySnippet.setAlpha(READ_STORY_ALPHA);
-            vh.storyTitleView.setTypeface(vh.storyTitleView.getTypeface(), Typeface.NORMAL);
         }
     }
 

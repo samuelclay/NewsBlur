@@ -12,7 +12,7 @@ public class GlobalSharedStoriesReading extends Reading {
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
 
-        UIUtils.setupToolbar(this, R.drawable.ak_icon_global, getResources().getString(R.string.global_shared_stories_title), false);
+        UIUtils.setupToolbar(this, R.drawable.ic_global_shares, getResources().getString(R.string.global_shared_stories_title), false);
     }
 
     @Override

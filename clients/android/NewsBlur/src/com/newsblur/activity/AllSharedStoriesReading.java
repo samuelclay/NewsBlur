@@ -11,7 +11,7 @@ public class AllSharedStoriesReading extends Reading {
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
 
-        UIUtils.setupToolbar(this, R.drawable.ak_icon_blurblogs, getResources().getString(R.string.all_shared_stories_title), false);
+        UIUtils.setupToolbar(this, R.drawable.ic_all_shares, getResources().getString(R.string.all_shared_stories_title), false);
     }
 
 }

@@ -82,24 +82,24 @@
 
 	<string name="reply_to">Reply to \"%s\"</string>
     <string name="edit_reply">Edit reply</string>
-    <string name="edit_reply_update">UPDATE REPLY</string>
-    <string name="edit_reply_delete">DELTE REPLY</string>
+    <string name="edit_reply_update">Update reply</string>
+    <string name="edit_reply_delete">Delete replyY</string>
 	
-	<string name="alert_dialog_ok">OKAY</string>
+	<string name="alert_dialog_ok">Okay</string>
 	<string name="alert_dialog_cancel">@android:string/cancel</string>
-	<string name="alert_dialog_done">DONE</string>
-	<string name="alert_dialog_openlink">OPEN LINK</string>
-	<string name="alert_dialog_openimage">OPEN IMAGE</string>
-    <string name="dialog_folders_save">SAVE FOLDERS</string>
-    <string name="dialog_story_intel_save">SAVE TRAINING</string>
-    <string name="dialog_story_tags_save">SAVE TAGS</string>
+	<string name="alert_dialog_done">Done</string>
+	<string name="alert_dialog_openlink">Open link</string>
+	<string name="alert_dialog_openimage">Open Image</string>
+    <string name="dialog_folders_save">Save folders</string>
+    <string name="dialog_story_intel_save">Save training</string>
+    <string name="dialog_story_tags_save">Save tags</string>
 	
     <string name="profile">Profile</string>
     <string name="profile_location_icon">Location icon</string>
-    <string name="profile_following">FOLLOWING</string>
-    <string name="profile_followers">FOLLOWERS</string>
-    <string name="profile_shared">SHARED STORIES</string>
-    <string name="profile_ago">AGO</string>
+    <string name="profile_following">Following</string>
+    <string name="profile_followers">Followers</string>
+    <string name="profile_shared">Shared stories</string>
+    <string name="profile_ago">ago</string>
     <string name="profile_recent_actvity">Activities</string>
     <string name="profile_recent_interactions">Interactions</string>
     <string name="profile_started_following">followed</string>
@@ -112,8 +112,8 @@
     <string name="profile_shared_story">shared</string>
     <string name="profile_comment">comment</string>
     <string name="profile_reply">reply</string>
-    <string name="profile_button_follow">FOLLOW</string>
-    <string name="profile_button_unfollow">UNFOLLOW</string>
+    <string name="profile_button_follow">Follow</string>
+    <string name="profile_button_unfollow">Unfollow</string>
     <string name="profile_subscribed_to">subscribed to</string>
     <string name="profile_saved">saved</string>
     <string name="profile_reshared">re-shared</string>
@@ -263,9 +263,9 @@
     <string name="add_facebook">Add Facebook friends</string>
     <string name="need_to_login"><u>I need to log in!</u></string>
     <string name="need_to_register"><u>I need to register</u></string>
-    <string name="public_comment_count">%d PUBLIC COMMENTS</string>
-    <string name="friends_comments_count">%d COMMENTS</string>
-    <string name="friends_shares_count">%d SHARES</string>
+    <string name="public_comment_count">%d public comments</string>
+    <string name="friends_comments_count">%d comments</string>
+    <string name="friends_shares_count">%d shares</string>
     <string name="unknown_user">Unknown User</string>
     <string name="delete_feed_message">Delete feed \&quot;%s\&quot;?</string>
     <string name="delete_saved_search_message">Delete saved search %s?</string>
@@ -323,9 +323,9 @@
 
     <string name="mute_config_title">You can follow up to 64 sites with a free standard account</string>
     <string name="mute_config_message">Please mute %d sites or reset to most popular sites.</string>
-    <string name="mute_config_reset_button">RESET TO POPULAR SITES</string>
-    <string name="mute_config_upgrade_to_premium">UPGRADE TO NEWSBLUR PREMIUM</string>
-    <string name="mute_config_upgrade">UPGRADE</string>
+    <string name="mute_config_reset_button">Reset to popular sites</string>
+    <string name="mute_config_upgrade_to_premium">Upgrade to NewsBlur Premium</string>
+    <string name="mute_config_upgrade">Upgrade</string>
     <string name="mute_config_sites">%1$s/%2$s</string>
 
     <string name="menu_network_select">Download using…</string>
@@ -526,21 +526,21 @@
     <string name="thumbnail_style_default_value">RIGHT_LARGE</string>
 
     <string name="infrequent_choice_title">Stories from sites with</string>
-    <string name="infrequent_5">&lt; 5 STORIES/MONTH</string>
-    <string name="infrequent_15">&lt; 15 STORIES/MONTH</string>
-    <string name="infrequent_30">&lt; 30 STORIES/MONTH</string>
-    <string name="infrequent_60">&lt; 60 STORIES/MONTH</string>
-    <string name="infrequent_90">&lt; 90 STORIES/MONTH</string>
+    <string name="infrequent_5">&lt; 5 stories/month</string>
+    <string name="infrequent_15">&lt; 15 stories/month</string>
+    <string name="infrequent_30">&lt; 30 stories/month</string>
+    <string name="infrequent_60">&lt; 60 stories/month</string>
+    <string name="infrequent_90">&lt; 90 stories/month</string>
 
     <string name="story_intel_dialog_title">What do you like and dislike about this story?</string>
     <string name="feed_intel_dialog_title">What do you like and dislike about this site?</string>
-    <string name="intel_title_header">STORY TITLE</string>
-    <string name="feed_intel_title_header">TITLES</string>
-    <string name="intel_tag_header">STORY TAGS</string>
-    <string name="feed_intel_tag_header">TAGS</string>
-    <string name="intel_author_header">STORY AUTHOR</string>
-    <string name="feed_intel_author_header">AUTHORS</string>
-    <string name="intel_feed_header">EVERYTHING BY PUBLISHER</string>
+    <string name="intel_title_header">Story titles</string>
+    <string name="feed_intel_title_header">Titles</string>
+    <string name="intel_tag_header">Story tags</string>
+    <string name="feed_intel_tag_header">Tags</string>
+    <string name="intel_author_header">Story authors</string>
+    <string name="feed_intel_author_header">Authors</string>
+    <string name="intel_feed_header">Everything by publisher</string>
 
     <string name="auto">Auto</string>
     <string name="light">Light</string>
@@ -709,4 +709,6 @@
 
     <string name="search">Search</string>
     <string name="add_feed">Add feed</string>
+
+    <string name="story_author">• %s</string>
 </resources>

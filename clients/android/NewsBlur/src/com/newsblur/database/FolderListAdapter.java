@@ -209,7 +209,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             v.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
             ImageView folderIconView = v.findViewById(R.id.row_folder_icon);
             if ( folderIconView != null ) {
-                folderIconView.setImageResource(isExpanded ? R.drawable.g_icn_folder : R.drawable.g_icn_folder_rss);
+                folderIconView.setImageResource(isExpanded ? R.drawable.ic_folder : R.drawable.ic_folder_closed);
             }
 		}
 
@@ -227,7 +227,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         // if a group has a sub-view called row_folder_indicator, it will act as an expando
         @Nullable ImageView folderIndicatorView = v.findViewById(R.id.row_folder_indicator);
         if ( folderIndicatorView != null ) {
-            folderIndicatorView.setImageResource(isExpanded ? R.drawable.indicator_expanded : R.drawable.indicator_collapsed);
+            folderIndicatorView.setImageResource(isExpanded ? R.drawable.ic_arrow_down : R.drawable.ic_arrow_up);
 			folderIndicatorView.setOnClickListener(v1 -> toggleGroup(v1, groupPosition, isExpanded));
         }
 
@@ -645,11 +645,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         activeFolderChildren = new ArrayList<List<Feed>>();
         folderNeutCounts = new ArrayList<Integer>();
         folderPosCounts = new ArrayList<Integer>();
-        // add the always-present (if enabled) special rows/folders that got at the top of the list
-        if (PrefsUtils.isEnableRowGlobalShared(context) && (currentState != StateFilter.SAVED)) addSpecialRow(GLOBAL_SHARED_STORIES_GROUP_KEY);
-        if ((currentState != StateFilter.SAVED)) addSpecialRow(ALL_SHARED_STORIES_GROUP_KEY);
+
         if (PrefsUtils.isEnableRowInfrequent(context) && (currentState != StateFilter.SAVED)) addSpecialRow(INFREQUENT_SITE_STORIES_GROUP_KEY);
         addSpecialRow(ALL_STORIES_GROUP_KEY);
+
         // create a sorted list of folder display names
         List<String> sortedFolderNames = new ArrayList<String>(flatFolders.keySet());
         Collections.sort(sortedFolderNames, Folder.FolderNameComparator);
@@ -698,8 +697,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             Collections.sort(folderChildren, feedComparator);
         }
 
-        // add the always-present (if enabled) special rows/folders that got at the bottom of the list
         addSpecialRow(READ_STORIES_GROUP_KEY);
+        if (PrefsUtils.isEnableRowGlobalShared(context) && (currentState != StateFilter.SAVED)) addSpecialRow(GLOBAL_SHARED_STORIES_GROUP_KEY);
+        if ((currentState != StateFilter.SAVED)) addSpecialRow(ALL_SHARED_STORIES_GROUP_KEY);
         addSpecialRow(SAVED_SEARCHES_GROUP_KEY);
         addSpecialRow(SAVED_STORIES_GROUP_KEY);
         recountChildren();

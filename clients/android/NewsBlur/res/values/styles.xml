@@ -128,13 +128,6 @@
         <item name="android:textColor">@color/dark_story_content_text</item>
     </style>
 
-    <style name="storyDateText">
-        <item name="android:textColor">@color/story_date_text</item>
-    </style>
-    <style name="storyDateText.dark">
-        <item name="android:textColor">@color/dark_story_date_text</item>
-    </style>
-
     <style name="storyFeedTitleText">
         <item name="android:textColor">@color/story_feed_title_text</item>
     </style>
@@ -192,21 +185,19 @@
         <item name="android:background">@drawable/button_background_dark</item>
     </style>
 
-    <style name="storyButtons" parent="Widget.MaterialComponents.Button.OutlinedButton">
+    <style name="storyButtons" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/gray75</item>
+        <item name="android:textColor">@color/gray55</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
-        <item name="strokeColor">@color/gray85</item>
-        <item name="iconTint">@color/gray85</item>
+        <item name="iconTint">@color/gray75</item>
         <item name="iconSize">16dp</item>
     </style>
-    <style name="storyButtons.dark" parent="Widget.MaterialComponents.Button.OutlinedButton">
+    <style name="storyButtons.dark" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/gray46</item>
+        <item name="android:textColor">@color/gray55</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
-        <item name="strokeColor">@color/gray46</item>
         <item name="iconTint">@color/gray46</item>
         <item name="iconSize">16dp</item>
     </style>
@@ -312,16 +303,6 @@
     <style name="profileActivityList.black">
         <item name="android:background">@color/black</item>
         <item name="android:divider">@drawable/divider_dark</item>
-    </style>
-
-    <style name="itemHeaderDivider">
-        <item name="android:background">@drawable/divider_item_header</item>
-    </style>
-    <style name="itemHeaderDivider.dark">
-        <item name="android:background">@drawable/dark_divider_item_header</item>
-    </style>
-    <style name="itemHeaderDivider.black">
-        <item name="android:background">@drawable/black_divider_item_header</item>
     </style>
 
     <style name="storyCommentDivider">
@@ -442,6 +423,18 @@
         <item name="indicatorColor">@color/newsblur_blue</item>
         <item name="indicatorSize">24dp</item>
         <item name="trackThickness">3dp</item>
+    </style>
+
+    <style name="smallRoundImageShapeAppearance">
+        <item name="cornerSize">20%</item>
+    </style>
+
+    <style name="mediumRoundImageShapeAppearance">
+        <item name="cornerSize">15%</item>
+    </style>
+
+    <style name="largeRoundImageShapeAppearance">
+        <item name="cornerSize">10%</item>
     </style>
 
 </resources>

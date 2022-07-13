@@ -13,7 +13,7 @@
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
         android:contentDescription="@string/description_row_folder_icon"
-        android:src="@drawable/ic_menu_search_gray55" />
+        android:src="@drawable/ic_search" />
 
     <TextView
         android:id="@+id/row_foldername"
@@ -23,17 +23,5 @@
         android:layout_toRightOf="@id/row_folder_icon"
         android:text="@string/saved_searches_title"
         android:textStyle="bold" />
-
-    <View
-        style="?rowBorderTop"
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_alignParentTop="true" />
-
-    <View
-        style="?rowBorderBottom"
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     style="?readingBackground"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -13,16 +14,17 @@
         android:paddingBottom="8dp"
         android:paddingTop="8dp" >
 
-        <com.newsblur.view.RoundedImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/comment_user_image"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentTop="true"
             android:layout_marginRight="10dp"
             android:contentDescription="@string/description_comment_user"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"
+            app:shapeAppearanceOverlay="@style/mediumRoundImageShapeAppearance"/>
 
-        <com.newsblur.view.RoundedImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/comment_sharesource_image"
             android:layout_width="25dp"
             android:layout_height="25dp"
@@ -31,9 +33,10 @@
             android:layout_marginRight="10dp"
             android:contentDescription="@string/description_comment_user"
             android:scaleType="fitCenter"
-            android:visibility="invisible" />
+            android:visibility="invisible"
+            app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance"/>
 
-        <com.newsblur.view.RoundedImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/comment_user_reshare_image"
             android:layout_width="35dp"
             android:layout_height="35dp"
@@ -42,7 +45,8 @@
             android:layout_marginTop="15dp"
             android:contentDescription="@string/description_comment_user"
             android:scaleType="fitCenter"
-            android:visibility="invisible" />
+            android:visibility="invisible"
+            app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance"/>
 
         <ImageView
             android:id="@+id/comment_reply_icon"
@@ -71,7 +75,7 @@
             android:layout_marginRight="8dp"
             android:layout_toLeftOf="@id/comment_shareddate"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_star_gray55" />
+            android:src="@drawable/ic_star_inactive" />
         
         <TextView
             android:id="@+id/comment_username"

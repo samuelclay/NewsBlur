@@ -27,7 +27,7 @@
             android:layout_height="44dp"
             android:layout_below="@+id/mark_read_story_button"
             android:text="@string/train_this"
-            app:icon="@drawable/ic_train" />
+            app:icon="@drawable/ic_feed_train" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/share_story_button"
@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="44dp"
             android:text="@string/share_this"
-            app:icon="@drawable/ic_shared"/>
+            app:icon="@drawable/ic_share"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/save_story_button"
@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="44dp"
             android:text="@string/save_this"
-            app:icon="@drawable/ic_clock" />
+            app:icon="@drawable/ic_saved" />
 
     </RelativeLayout>
 

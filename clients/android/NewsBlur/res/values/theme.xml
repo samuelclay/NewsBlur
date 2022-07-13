@@ -21,7 +21,6 @@
         <item name="defaultText">@style/defaultText</item>
         <item name="linkText">@style/linkText</item>
         <item name="storySnippetText">@style/storySnippetText</item>
-        <item name="storyDateText">@style/storyDateText</item>
         <item name="storyFeedTitleText">@style/storyFeedTitleText</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground</item>
         <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground</item>
@@ -37,7 +36,6 @@
         <item name="rowBorderBottom">@style/rowBorderBottom</item>
         <item name="profileCount">@style/profileCount</item>
         <item name="profileActivityList">@style/profileActivityList</item>
-        <item name="itemHeaderDivider">@style/itemHeaderDivider</item>
         <item name="storyCommentDivider">@style/storyCommentDivider</item>
         <item name="activityDetailsPager">@style/activityDetailsPager</item>
         <item name="explainerText">@style/explainerText</item>
@@ -76,7 +74,6 @@
         <item name="defaultText">@style/defaultText.dark</item>
         <item name="linkText">@style/linkText.dark</item>
         <item name="storySnippetText">@style/storySnippetText.dark</item>
-        <item name="storyDateText">@style/storyDateText.dark</item>
         <item name="storyFeedTitleText">@style/storyFeedTitleText.dark</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground.dark</item>
         <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground.dark</item>
@@ -92,7 +89,6 @@
         <item name="rowBorderBottom">@style/rowBorderBottom.dark</item>
         <item name="profileCount">@style/profileCount.dark</item>
         <item name="profileActivityList">@style/profileActivityList.dark</item>
-        <item name="itemHeaderDivider">@style/itemHeaderDivider.dark</item>
         <item name="storyCommentDivider">@style/storyCommentDivider.dark</item>
         <item name="activityDetailsPager">@style/activityDetailsPager.dark</item>
         <item name="explainerText">@style/explainerText.dark</item>
@@ -132,7 +128,6 @@
         <item name="defaultText">@style/defaultText.dark</item>
         <item name="linkText">@style/linkText.dark</item>
         <item name="storySnippetText">@style/storySnippetText.dark</item>
-        <item name="storyDateText">@style/storyDateText.dark</item>
         <item name="storyFeedTitleText">@style/storyFeedTitleText.dark</item>
         <item name="selectorStoryBackground">@style/selectorStoryBackground.black</item>
         <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground.black</item>
@@ -148,7 +143,6 @@
         <item name="rowBorderBottom">@style/rowBorderBottom.black</item>
         <item name="profileCount">@style/profileCount.black</item>
         <item name="profileActivityList">@style/profileActivityList.black</item>
-        <item name="itemHeaderDivider">@style/itemHeaderDivider.black</item>
         <item name="storyCommentDivider">@style/storyCommentDivider.black</item>
         <item name="activityDetailsPager">@style/activityDetailsPager.black</item>
         <item name="explainerText">@style/explainerText.dark</item>

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    style="?selectorFeedBackground" >
+    style="?selectorFeedBackground">
 
     <LinearLayout
         android:id="@+id/row_foldersums"
@@ -45,7 +46,7 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/row_socialfeed_icon"
         android:layout_width="19dp"
         android:layout_height="19dp"
@@ -53,7 +54,8 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
-        android:contentDescription="@string/description_row_folder_icon" />
+        android:contentDescription="@string/description_row_folder_icon"
+        app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance"/>
 
     <TextView
         android:id="@+id/row_socialfeed_name"

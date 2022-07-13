@@ -20,12 +20,13 @@
             android:paddingTop="4dp"
             android:paddingBottom="4dp">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/reading_feed_icon"
                 android:layout_width="17dp"
                 android:layout_height="17dp"
                 android:layout_marginStart="16dp"
-                android:contentDescription="@string/description_row_folder_icon" />
+                android:contentDescription="@string/description_row_folder_icon"
+                app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance" />
 
             <TextView
                 android:id="@+id/reading_feed_title"
@@ -84,7 +85,7 @@
                         android:layout_alignTop="@id/reading_item_title"
                         android:layout_alignBottom="@+id/reading_item_title"
                         android:layout_marginStart="5dp"
-                        android:src="@drawable/g_icn_unread"
+                        android:src="@drawable/ic_indicator_unread"
                         android:visibility="gone"
                         tools:visibility="visible" />
 
@@ -128,7 +129,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/reading_item_date"
                         android:layout_alignLeft="@id/reading_item_title"
-                        android:drawablePadding="6dp"
+                        android:drawablePadding="4dp"
                         android:gravity="center_vertical"
                         android:paddingTop="8dp"
                         android:paddingBottom="4dp"
@@ -159,7 +160,7 @@
                         android:gravity="center_vertical"
                         android:textSize="12sp"
                         android:visibility="gone"
-                        app:drawableStartCompat="@drawable/ic_clock" />
+                        app:drawableStartCompat="@drawable/ic_saved" />
 
                     <com.google.android.material.chip.ChipGroup
                         android:id="@+id/reading_item_user_tags"
@@ -173,12 +174,6 @@
                         app:chipSpacingVertical="4dp" />
 
                 </RelativeLayout>
-
-                <View
-                    style="?itemHeaderDivider"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_gravity="bottom" />
 
                 <include layout="@layout/include_reading_share_bar" />
 

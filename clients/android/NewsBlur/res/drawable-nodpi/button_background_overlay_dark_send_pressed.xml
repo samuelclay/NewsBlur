@@ -13,10 +13,10 @@
 </item>
 
 <item
-    android:drawable="@drawable/ic_send_gray74"
-    android:bottom="12dp"
-    android:left="18dp"
-    android:right="14dp"
-    android:top="12dp"/>
+    android:drawable="@drawable/ic_send_to"
+    android:bottom="8dp"
+    android:left="14dp"
+    android:right="10dp"
+    android:top="8dp"/>
 
 </layer-list>
