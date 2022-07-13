@@ -597,7 +597,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                     chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_tag)
                 } else {
                     chip.text = getString(R.string.add_tag)
-                    chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_add_gray75)
+                    chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_add)
                 }
                 v.setOnClickListener {
                     val userTagsFragment = StoryUserTagsFragment.newInstance(story!!, fs!!)
