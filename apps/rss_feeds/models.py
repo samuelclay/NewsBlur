@@ -3089,7 +3089,7 @@ class MStarredStory(mongo.DynamicDocument):
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
     user_notes               = mongo.StringField()
     user_tags                = mongo.ListField(mongo.StringField(max_length=128))
-    highlights               = mongo.ListField(mongo.StringField(max_length=1024))
+    highlights               = mongo.ListField(mongo.StringField(max_length=16384))
     image_urls               = mongo.ListField(mongo.StringField(max_length=1024))
 
     meta = {
