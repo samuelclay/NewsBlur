@@ -786,8 +786,13 @@ SESSION_REDIS = {
 
 CACHES = {
     'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://%s:%s/6' % (REDIS_USER['host'], REDIS_PORT),
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': '%s:%s' % (REDIS_USER['host'], REDIS_PORT),
+        'OPTIONS': {
+            'DB': 6,
+            'PARSER_CLASS': 'redis.connection.HiredisParser',
+            'SERIALIZER_CLASS': 'redis_cache.serializers.PickleSerializer'
+        },
     },
 }
 

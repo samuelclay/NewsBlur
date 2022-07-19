@@ -58,8 +58,12 @@ PRO_MINUTES_BETWEEN_FETCHES = 15
 
 CACHES = {
     'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://db_redis:6579/6',
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': 'db_redis:6579',
+        'OPTIONS': {
+            'DB': 6,
+            'PARSER_CLASS': 'redis.connection.HiredisParser'
+        },
     },
 }
 
