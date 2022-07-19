@@ -81,7 +81,7 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
         $slider.slider({
             range: 'min',
             min: 0,
-            max: 4,
+            max: Object.keys(this.values).length-1,
             step: 1,
             value: _.indexOf(_.values(this.values), this.options['days']),
             slide: function(e, ui) {
