@@ -378,7 +378,7 @@ resource "digitalocean_droplet" "db-redis-sessions" {
 }
 
 resource "digitalocean_droplet" "db-redis-story" {
-  count    = 2
+  count    = 1
   image    = var.droplet_os
   name     = "db-redis-story${count.index+1}"
   region   = var.droplet_region
