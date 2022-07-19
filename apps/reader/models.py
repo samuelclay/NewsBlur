@@ -101,11 +101,11 @@ class UserSubscription(models.Model):
                                        Q(unread_count_positive__gt=0))
         if not feed_ids:
             usersubs = usersubs.filter(user=user_id, 
-                                       active=True).only('feed', 'mark_read_date', 'is_trained')
+                                       active=True).only('feed', 'mark_read_date', 'is_trained', 'needs_unread_recalc')
         else:
             usersubs = usersubs.filter(user=user_id, 
                                        active=True, 
-                                       feed__in=feed_ids).only('feed', 'mark_read_date', 'is_trained')
+                                       feed__in=feed_ids).only('feed', 'mark_read_date', 'is_trained', 'needs_unread_recalc')
         
         return usersubs
         
@@ -124,6 +124,8 @@ class UserSubscription(models.Model):
         
         if not usersubs:
             usersubs = cls.subs_for_feeds(user_id, feed_ids=feed_ids, read_filter=read_filter)
+            if not usersubs:
+                usersubs = cls.subs_for_feeds(user_id, feed_ids=feed_ids, read_filter="all")
             feed_ids = [sub.feed_id for sub in usersubs]
             if not feed_ids:
                 return story_hashes
@@ -133,25 +135,32 @@ class UserSubscription(models.Model):
             cutoff_date = user.profile.unread_cutoff
         feed_counter = 0
         unread_ranked_stories_keys = []
-        expire_unread_stories_key = False
-        after_unread_pipeline = r.pipeline()
         
         read_dates = dict()
+        needs_unread_recalc = dict()
         manual_unread_pipeline = r.pipeline()
         manual_unread_feed_oldest_date = dict()
         oldest_manual_unread = None
+        # usersub_count = len(usersubs)
         for us in usersubs:
             read_dates[us.feed_id] = int(max(us.mark_read_date, cutoff_date).strftime('%s'))
-            user_unread_stories_feed_key = f"uU:{user_id}:{us.feed_id}"
-            manual_unread_pipeline.exists(user_unread_stories_feed_key)
-        results = manual_unread_pipeline.execute()
-        for i, us in enumerate(usersubs):
-            if results[i]:
-                user_unread_stories_feed_key = f"uU:{user_id}:{us.feed_id}"
-                oldest_manual_unread = r.zrevrange(user_unread_stories_feed_key, -1, -1, withscores=True)
-                manual_unread_feed_oldest_date[us.feed_id] = int(oldest_manual_unread[0][1])
+            if read_filter == "unread":
+                needs_unread_recalc[us.feed_id] = us.needs_unread_recalc # or usersub_count == 1
+                user_manual_unread_stories_feed_key = f"uU:{user_id}:{us.feed_id}"
+                manual_unread_pipeline.exists(user_manual_unread_stories_feed_key)
+                user_unread_ranked_stories_key = f"zU:{user_id}:{us.feed_id}"
+                manual_unread_pipeline.exists(user_unread_ranked_stories_key)
+        if read_filter == "unread":
+            results = manual_unread_pipeline.execute()
+            for i, us in enumerate(usersubs):
+                if results[i*2]: # user_manual_unread_stories_feed_key
+                    user_manual_unread_stories_feed_key = f"uU:{user_id}:{us.feed_id}"
+                    oldest_manual_unread = r.zrevrange(user_manual_unread_stories_feed_key, -1, -1, withscores=True)
+                    manual_unread_feed_oldest_date[us.feed_id] = int(oldest_manual_unread[0][1])
+                if read_filter == "unread" and not results[i*2+1]: # user_unread_ranked_stories_key
+                    needs_unread_recalc[us.feed_id] = True
         
-        for feed_id_group in chunks(feed_ids, 10):
+        for feed_id_group in chunks(feed_ids, 500):
             pipeline = r.pipeline()
             for feed_id in feed_id_group:
                 stories_key               = 'F:%s' % feed_id
@@ -159,41 +168,47 @@ class UserSubscription(models.Model):
                 read_stories_key          = 'RS:%s:%s' % (user_id, feed_id)
                 unread_stories_key        = 'U:%s:%s' % (user_id, feed_id)
                 unread_ranked_stories_key = 'zU:%s:%s' % (user_id, feed_id)
+                user_manual_unread_stories_feed_key = f"uU:{user_id}:{feed_id}"
                 
                 max_score = current_time
                 if read_filter == 'unread':
-                    # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
-                    min_score = read_dates[feed_id] + 1
-                    # TODO: Remove above +1 and switch below to AGGREGATE='MAX', which may obviate the need 
-                    # for the U:%s keys and just work with the zF: & RS: directly into zU:
-                    pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
-                    expire_unread_stories_key = True
+                    min_score = read_dates[feed_id]
+                    if needs_unread_recalc[feed_id]:
+                        pipeline.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+                        # pipeline.expire(unread_stories_key, unread_cutoff_diff.days*24*60*60)
+                        pipeline.expire(unread_stories_key, 1*60*60) # 1 hour
                 else:
                     min_score = 0
-                    unread_stories_key = stories_key
 
                 if order == 'oldest':
                     byscorefunc = pipeline.zrangebyscore
                 else:
                     byscorefunc = pipeline.zrevrangebyscore
                     min_score, max_score = max_score, min_score
-            
-                pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
-                if order == 'oldest':
-                    pipeline.zremrangebyscore(unread_ranked_stories_key, 0, min_score-1)
-                    pipeline.zremrangebyscore(unread_ranked_stories_key, max_score+1, 2*max_score)
-                else:
-                    pipeline.zremrangebyscore(unread_ranked_stories_key, 0, max_score-1)
-                    pipeline.zremrangebyscore(unread_ranked_stories_key, min_score+1, 2*min_score)
 
+                ranked_stories_key = unread_ranked_stories_key
+                if read_filter == 'unread':
+                    if needs_unread_recalc[feed_id]:
+                        pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key], aggregate="MAX")
+                        # pipeline.expire(unread_ranked_stories_key, unread_cutoff_diff.days*24*60*60)
+                        pipeline.expire(unread_ranked_stories_key, 1*60*60) # 1 hours
+                        if order == 'oldest':
+                            pipeline.zremrangebyscore(ranked_stories_key, 0, min_score-1)
+                            pipeline.zremrangebyscore(ranked_stories_key, max_score+1, 2*max_score)
+                        else:
+                            pipeline.zremrangebyscore(ranked_stories_key, 0, max_score-1)
+                            pipeline.zremrangebyscore(ranked_stories_key, min_score+1, 2*min_score)
+                else:
+                    ranked_stories_key = sorted_stories_key
+                        
                 # If archive premium user has manually marked an older story as unread
-                if is_archive and feed_id in manual_unread_feed_oldest_date:
+                if is_archive and feed_id in manual_unread_feed_oldest_date and read_filter == "unread":
                     if order == 'oldest':
                         min_score = manual_unread_feed_oldest_date[feed_id]
                     else:
                         max_score = manual_unread_feed_oldest_date[feed_id]
                         
-                    pipeline.zunionstore(unread_ranked_stories_key, [unread_ranked_stories_key, user_unread_stories_feed_key], aggregate="MAX")
+                    pipeline.zunionstore(unread_ranked_stories_key, [unread_ranked_stories_key, user_manual_unread_stories_feed_key], aggregate="MAX")
                 
                 if settings.DEBUG and False:
                     debug_stories = r.zrevrange(unread_ranked_stories_key, 0, -1, withscores=True)
@@ -204,12 +219,8 @@ class UserSubscription(models.Model):
                         debug_stories)))
 
                 if not store_stories_key:
-                    byscorefunc(unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps, start=offset, num=limit)
-                unread_ranked_stories_keys.append(unread_ranked_stories_key)
-                after_unread_pipeline.delete(unread_ranked_stories_key)
-                if expire_unread_stories_key:
-                    after_unread_pipeline.delete(unread_stories_key)
-
+                    byscorefunc(ranked_stories_key, min_score, max_score, withscores=include_timestamps, start=offset, num=limit)
+                unread_ranked_stories_keys.append(ranked_stories_key)
         
             results = pipeline.execute()
 
@@ -224,8 +235,6 @@ class UserSubscription(models.Model):
 
         if store_stories_key:
             r.zunionstore(store_stories_key, unread_ranked_stories_keys, aggregate="MAX")
-
-        after_unread_pipeline.execute()
 
         if not store_stories_key:
             return story_hashes
@@ -307,8 +316,8 @@ class UserSubscription(models.Model):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
-        user_unread_stories_feed_key = f"uU:{self.user_id}:{self.feed_id}"
-        oldest_manual_unread = r.zrevrange(user_unread_stories_feed_key, -1, -1, withscores=True)
+        user_manual_unread_stories_feed_key = f"uU:{self.user_id}:{self.feed_id}"
+        oldest_manual_unread = r.zrevrange(user_manual_unread_stories_feed_key, -1, -1, withscores=True)
         
         return oldest_manual_unread
         
@@ -813,8 +822,8 @@ class UserSubscription(models.Model):
         oldest_unread_story_date = now
         
         if self.user.profile.last_seen_on < self.user.profile.unread_cutoff and not force:
-            # if not silent:
-            #     logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 week+)' % (self.user, self.feed))
+            if not silent and settings.DEBUG:
+                logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 week+)' % (self.user, self.feed))
             return self
         ong = self.unread_count_negative
         ont = self.unread_count_neutral
@@ -862,8 +871,8 @@ class UserSubscription(models.Model):
                     
             unread_stories = []
             for story in stories:
-                if story['story_date'] < date_delta:
-                    continue
+                # if story['story_date'] < date_delta:
+                #     continue
                 if story['story_hash'] in unread_story_hashes:
                     unread_stories.append(story)
                     if story['story_date'] < oldest_unread_story_date:
@@ -1047,7 +1056,20 @@ class UserSubscription(models.Model):
             folders.extend(list(orphan_ids))
             usf.folders = json.encode(folders)
             usf.save()
-    
+
+    @classmethod
+    def all_subs_needs_unread_recalc(cls, user_id):
+        subs = cls.objects.filter(user=user_id)
+        total = len(subs)
+        needed_recalc = 0
+        for sub in subs:
+            if not sub.needs_unread_recalc:
+                sub.needs_unread_recalc = True
+                sub.save()
+                needed_recalc += 1
+
+        logging.debug(f" ---> Relcaculated {needed_recalc} of {total} subscriptions for user_id: {user_id}")
+        
     @classmethod
     def verify_feeds_scheduled(cls, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
@@ -1229,6 +1251,14 @@ class RUserStory:
             for social_user_id in social_user_ids:
                 social_read_story_key = 'RS:%s:B:%s' % (user_id, social_user_id)
                 redis_commands(social_read_story_key)
+
+        feed_id, _ = MStory.split_story_hash(story_hash)
+
+        # Don't remove unread stories from zU because users are actively paging through
+        # unread_stories_key = f"U:{user_id}:{story_feed_id}"
+        # unread_ranked_stories_key = f"zU:{user_id}:{story_feed_id}"
+        # r.srem(unread_stories_key, story_hash)
+        # r.zrem(unread_ranked_stories_key, story_hash)
         
         if not aggregated:
             key = 'lRS:%s' % user_id
@@ -1819,11 +1849,11 @@ class RUserUnreadStory:
             story_date = int(time.mktime(story_date.timetuple()))
 
         feed_id, _ = MStory.split_story_hash(story_hash)
-        user_unread_stories_key = f"uU:{user_id}"
-        user_unread_stories_feed_key = f"uU:{user_id}:{feed_id}"
+        user_manual_unread_stories_key = f"uU:{user_id}"
+        user_manual_unread_stories_feed_key = f"uU:{user_id}:{feed_id}"
 
-        r.zadd(user_unread_stories_key, {story_hash: story_date})
-        r.zadd(user_unread_stories_feed_key, {story_hash: story_date})
+        r.zadd(user_manual_unread_stories_key, {story_hash: story_date})
+        r.zadd(user_manual_unread_stories_feed_key, {story_hash: story_date})
 
     @classmethod
     def mark_read(cls, user_id, story_hashes, r=None):
@@ -1836,11 +1866,11 @@ class RUserUnreadStory:
         for story_hash in story_hashes:
             feed_id, _ = MStory.split_story_hash(story_hash)
 
-            user_unread_stories_key = f"uU:{user_id}"
-            user_unread_stories_feed_key = f"uU:{user_id}:{feed_id}"
+            user_manual_unread_stories_key = f"uU:{user_id}"
+            user_manual_unread_stories_feed_key = f"uU:{user_id}:{feed_id}"
 
-            pipeline.zrem(user_unread_stories_key, story_hash)
-            pipeline.zrem(user_unread_stories_feed_key, story_hash)
+            pipeline.zrem(user_manual_unread_stories_key, story_hash)
+            pipeline.zrem(user_manual_unread_stories_feed_key, story_hash)
         pipeline.execute()
         
     @classmethod
@@ -1857,8 +1887,8 @@ class RUserUnreadStory:
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
 
-        user_unread_stories_feed_key = f"uU:{user_id}:{feed_id}"
-        story_hashes = r.zrange(user_unread_stories_feed_key, 0, -1, withscores=True)
+        user_manual_unread_stories_feed_key = f"uU:{user_id}:{feed_id}"
+        story_hashes = r.zrange(user_manual_unread_stories_feed_key, 0, -1, withscores=True)
 
         return story_hashes
 
@@ -1871,8 +1901,8 @@ class RUserUnreadStory:
         for (story_hash, story_timestamp) in story_hashes:
             _, hash_story = MStory.split_story_hash(story_hash)
             new_story_hash = "%s:%s" % (new_feed_id, hash_story)
-            read_feed_key = "RS:%s:%s" % (user_id, new_feed_id)
-            user_unread_stories_feed_key = f"uU:{user_id}:{new_feed_id}"
+            # read_feed_key = "RS:%s:%s" % (user_id, new_feed_id)
+            # user_manual_unread_stories_feed_key = f"uU:{user_id}:{new_feed_id}"
             cls.mark_unread(user_id, new_story_hash, story_timestamp, r=p)
         
         p.execute()

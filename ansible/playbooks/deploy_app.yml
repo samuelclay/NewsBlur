@@ -119,7 +119,7 @@
     - name: Reload gunicorn due to no git upstream changes
       become: yes
       block:
-        - name: Find gunicorn master process
+        - name: Find gunicorn process
           shell: "ps -C gunicorn fch -o pid | head -n 1"
           register: psaux
         - name: Reload gunicorn

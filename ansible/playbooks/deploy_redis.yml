@@ -1,6 +1,6 @@
 ---
-- name: DEPLOY -> monitor
-  hosts: db
+- name: DEPLOY -> redis
+  hosts: redis
   gather_facts: false
   vars_files:
     - ../env_vars/base.yml

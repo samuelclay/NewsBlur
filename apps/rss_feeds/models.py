@@ -1559,9 +1559,11 @@ class Feed(models.Model):
                 feed = Feed.objects.get(pk=feed_id)
             except Feed.DoesNotExist:
                 continue
+            # Ensure only feeds with no active subscribers are being trimmed
             if (feed.active_subscribers <= 0 and 
                 (not feed.archive_subscribers or feed.archive_subscribers <= 0) and 
                 (not feed.last_story_date or feed.last_story_date < month_ago)):
+                # 1 month since last story = keep 5 stories, >6 months since, only keep 1 story
                 months_ago = 6
                 if feed.last_story_date:
                     months_ago = int((now - feed.last_story_date).days / 30.0)
@@ -1612,6 +1614,8 @@ class Feed(models.Model):
         pipeline = r.pipeline()
         read_stories_per_week = []
         now = datetime.datetime.now()
+
+        # Check to see how many stories have been read each week since the feed's days of story hashes
         for weeks_back in range(2*int(math.floor(settings.DAYS_OF_STORY_HASHES/7))):
             weeks_ago = now - datetime.timedelta(days=7*weeks_back)
             week_of_year = weeks_ago.strftime('%Y-%U')

@@ -1,4 +1,22 @@
 ---
+- name: Install sysfsutils for disabling transparent huge pages
+  become: yes
+  package:
+    name: sysfsutils
+    state: latest
+
+- name: Disable transparent huge pages for redis performance - persistent change
+  become: yes
+  lineinfile:
+    path: /etc/sysfs.conf
+    create: true
+    regexp: '^kernel\/mm\/transparent\_hugepage\/enabled'
+    line: "kernel/mm/transparent_hugepage/enabled = never"
+
+- name: Disable transparent huge pages for redis performance - live change
+  become: yes
+  shell: echo never {{ ">" }} /sys/kernel/mm/transparent_hugepage/enabled
+  
 - name: Add a vm.overcommit_memory setting at the end of the sysctl.conf
   become: yes
   sysctl: name=vm.overcommit_memory value=1 state=present reload=yes
