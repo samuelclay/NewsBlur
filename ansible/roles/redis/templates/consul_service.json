@@ -1,6 +1,6 @@
 {
     "service": {
-        {% if inventory_hostname in ["db-redis-user", "db-redis-story", "db-redis-session", "db-redis-pubsub"] %}
+        {% if inventory_hostname in ["db-redis-user", "db-redis-story1", "db-redis-session", "db-redis-pubsub"] %}
             "name": "{{ inventory_hostname|regex_replace('\d+', '') }}",
         {% else %}
             "name": "{{ inventory_hostname|regex_replace('\d+', '') }}-staging",
