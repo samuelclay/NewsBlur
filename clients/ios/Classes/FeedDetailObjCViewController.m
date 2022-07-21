@@ -32,9 +32,9 @@
 #import "StoryTitleAttributedString.h"
 #import "NewsBlur-Swift.h"
 
-#define kTableViewRowHeight 50;
-#define kTableViewRiverRowHeight 72;
-#define kTableViewShortRowDifference 16;
+#define kTableViewRowHeight 55;
+#define kTableViewRiverRowHeight 90;
+#define kTableViewShortRowDifference 18;
 
 typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 {
@@ -1778,7 +1778,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row < storiesCollection.storyLocationsCount) {
         // mark the cell as read
-        appDelegate.feedsViewController.currentRowAtIndexPath = nil;
+//        appDelegate.feedsViewController.currentRowAtIndexPath = nil;
         
         NSInteger location = storiesCollection.locationOfActiveStory;
         NSIndexPath *oldIndexPath = [NSIndexPath indexPathForRow:location inSection:0];
@@ -1856,6 +1856,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         if ([self isShortTitles]) {
             height = height - kTableViewShortRowDifference;
         }
+        NSString *spacing = [[NSUserDefaults standardUserDefaults] objectForKey:@"feed_list_spacing"];
+        if ([spacing isEqualToString:@"compact"]) {
+            height -= kTableViewShortRowDifference;
+        }
+        
         UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
         UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize];
         if ([self isShortTitles] && self.textSize != FeedDetailTextSizeTitleOnly) {
@@ -2094,7 +2099,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSMutableArray *items = [NSMutableArray array];
     BOOL isSaved = [[story objectForKey:@"starred"] boolValue];
     
-    [items addObject:[self itemWithTitle:isSaved ? @"Unsave This Story" : @"Save This Story" iconName:@"clock.png" handler:^{
+    [items addObject:[self itemWithTitle:isSaved ? @"Unsave This Story" : @"Save This Story" iconName:@"saved-stories" iconColor:UIColorFromRGB(0xD58B4F) handler:^{
         [self.storiesCollection toggleStorySaved:story];
     }]];
     
@@ -2113,6 +2118,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (NSDictionary *)itemWithTitle:(NSString *)title iconName:(NSString *)iconName handler:(void (^)(void))handler {
     return @{@"title" : title, @"icon" : iconName, @"handler" : handler};
+}
+
+- (NSDictionary *)itemWithTitle:(NSString *)title iconName:(NSString *)iconName iconColor:(UIColor *)iconColor handler:(void (^)(void))handler {
+    return @{@"title" : title, @"icon" : iconName, @"iconColor" : iconColor, @"handler" : handler};
 }
 
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older {
@@ -2252,11 +2261,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     if (storiesCollection.inSearch) {
         if (storiesCollection.savedSearchQuery == nil) {
-            [viewController addTitle:@"Save search" iconName:@"g_icn_search.png" selectionShouldDismiss:YES handler:^{
+            [viewController addTitle:@"Save search" iconName:@"search" selectionShouldDismiss:YES handler:^{
                 [self saveSearch];
             }];
         } else {
-            [viewController addTitle:@"Delete saved search" iconName:@"g_icn_search.png" selectionShouldDismiss:YES handler:^{
+            [viewController addTitle:@"Delete saved search" iconName:@"search" selectionShouldDismiss:YES handler:^{
                 [self deleteSavedSearch];
             }];
         }
@@ -2283,7 +2292,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             }];
         }
         
-        [viewController addTitle:@"Notifications" iconName:@"menu_icn_notifications.png" selectionShouldDismiss:YES handler:^{
+        [viewController addTitle:@"Notifications" iconName:@"dialog-notifications" selectionShouldDismiss:YES handler:^{
             [self
              openNotificationsWithFeed:[NSString stringWithFormat:@"%@", [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
         }];
@@ -2379,6 +2388,15 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             [self.appDelegate.feedDetailViewController flashInfrequentStories];
         }];
     }
+    
+    preferenceKey = @"feed_list_spacing";
+    titles = @[@"Compact", @"Comfortable"];
+    values = @[@"compact", @"comfortable"];
+    
+    [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"comfortable" preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+        [self.appDelegate.feedsViewController reloadFeedTitlesTable];
+        [self reloadStories];
+    }];
     
     [viewController addThemeSegmentedControl];
     

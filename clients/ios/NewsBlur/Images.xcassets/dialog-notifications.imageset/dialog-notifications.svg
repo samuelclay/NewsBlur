@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150px" height="150px" viewBox="0 0 150 150" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>dialog-notifications</title>
+    <defs>
+        <polygon id="path-1" points="0 0 90 0 90 150 0 150"></polygon>
+        <polygon id="path-3" points="90 0 0 84.8333333 39.0265487 84.8333333 17.7212389 150 90 72 51.7699115 72"></polygon>
+    </defs>
+    <g id="dialog-notifications" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="noun-lightning-bolt-77533-95968E" transform="translate(23.000000, 0.000000)">
+            <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+            </mask>
+            <g id="Path"></g>
+            <g id="Clipped" mask="url(#mask-2)">
+                <g transform="translate(0.000000, 0.000000)">
+                    <mask id="mask-4" fill="white">
+                        <use xlink:href="#path-3"></use>
+                    </mask>
+                    <g id="Path" stroke="none" fill="none"></g>
+                    <polygon id="Path" stroke="none" fill="#95958E" fill-rule="evenodd" mask="url(#mask-4)" points="-3.78318584 -3.00027778 93.5840708 -3.00027778 93.5840708 153.166389 -3.78318584 153.166389"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
