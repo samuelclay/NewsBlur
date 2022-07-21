@@ -121,8 +121,8 @@
 
     <ImageButton
         android:id="@+id/main_add_button"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="27dp"
+        android:layout_height="27dp"
         android:layout_margin="9dp"
         android:background="@drawable/ic_add"
         android:contentDescription="@string/menu_add_feed"
