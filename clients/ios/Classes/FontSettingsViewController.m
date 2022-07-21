@@ -314,7 +314,8 @@
         } else {
             cell.textLabel.text = @"Save this story";
         }
-        cell.imageView.image = [UIImage imageNamed:@"clock.png"];
+        cell.imageView.image = [Utilities templateImageNamed:@"saved-stories" sized:20];
+        cell.imageView.tintColor = UIColorFromRGB(0x95968F);
     } else if (indexPath.row == 1) {
         bool isRead = [[self.appDelegate.activeStory objectForKey:@"read_status"] boolValue];
         if (isRead) {
@@ -322,16 +323,20 @@
         } else {
             cell.textLabel.text = @"Mark as read";
         }
-        cell.imageView.image = [UIImage imageNamed:@"g_icn_unread.png"];
+        cell.imageView.image = [Utilities templateImageNamed:@"indicator-unread" sized:16];
+        cell.imageView.tintColor = UIColorFromRGB(0x6A6659);
     } else if (indexPath.row == 2) {
         cell.textLabel.text = @"Send to...";
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_mail.png"];
+        cell.imageView.image = [Utilities templateImageNamed:@"sendto" sized:20];
+        cell.imageView.tintColor = UIColorFromRGB(0xBD9146);
     } else if (indexPath.row == 3) {
         cell.textLabel.text = @"Train this story";
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_train.png"];
+        cell.imageView.image = [Utilities templateImageNamed:@"dialog-trainer" sized:20];
+        cell.imageView.tintColor = UIColorFromRGB(0x689ED7);
     } else if (indexPath.row == 4) {
         cell.textLabel.text = @"Share this story";
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_share.png"];
+        cell.imageView.image = [Utilities templateImageNamed:@"share" sized:20];
+        cell.imageView.tintColor = UIColorFromRGB(0x94968E);
     } else if (indexPath.row == 5) {
         cell.textLabel.text = @"Delete this site";
         cell.imageView.image = [UIImage imageNamed:@"menu_icn_delete.png"];

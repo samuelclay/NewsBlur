@@ -132,15 +132,8 @@ viewForHeaderInSection:(NSInteger)section {
                                   colorWithAlphaComponent:0.8];
     [customView addSubview:headerLabel];
     
-    UIImage *folderImage;
-    int folderImageViewX = 10;
-    
-    if (self.feedId && section == 0) {
-        folderImage = [UIImage imageNamed:@"menu_icn_notifications.png"];
-    } else {
-        folderImage = [UIImage imageNamed:@"menu_icn_notifications.png"];
-    }
-    folderImageViewX = 9;
+    UIImage *folderImage = [UIImage imageNamed:@"dialog-notifications"];
+    int folderImageViewX = 9;
     UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
     folderImageView.frame = CGRectMake(folderImageViewX, folderImageViewY, 20, 20);
     [customView addSubview:folderImageView];

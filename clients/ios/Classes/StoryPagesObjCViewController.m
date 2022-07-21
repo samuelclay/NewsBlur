@@ -271,13 +271,13 @@
             UIImage *titleImage;
             if (appDelegate.storiesCollection.isSocialRiverView &&
                 [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_global"]) {
-                titleImage = [UIImage imageNamed:@"ak-icon-global.png"];
+                titleImage = [UIImage imageNamed:@"global-shares"];
             } else if (appDelegate.storiesCollection.isSocialRiverView &&
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
-                titleImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
+                titleImage = [UIImage imageNamed:@"all-shares"];
             } else if (appDelegate.storiesCollection.isRiverView &&
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"]) {
-                titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
+                titleImage = [UIImage imageNamed:@"all-stories"];
             } else if (appDelegate.storiesCollection.isRiverView &&
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
@@ -287,13 +287,13 @@
             } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
                 titleImage = [UIImage imageNamed:@"g_icn_folder_widget.png"];
             } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
-                titleImage = [UIImage imageNamed:@"g_icn_folder_read.png"];
+                titleImage = [UIImage imageNamed:@"indicator-unread"];
             } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_searches"]) {
-                titleImage = [UIImage imageNamed:@"g_icn_search.png"];
+                titleImage = [UIImage imageNamed:@"search"];
             } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
-                titleImage = [UIImage imageNamed:@"clock.png"];
+                titleImage = [UIImage imageNamed:@"saved-stories"];
             } else if (appDelegate.storiesCollection.isRiverView) {
-                titleImage = [UIImage imageNamed:@"g_icn_folder.png"];
+                titleImage = [UIImage imageNamed:@"folder-open"];
             } else {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                        [appDelegate.activeStory objectForKey:@"story_feed_id"]];

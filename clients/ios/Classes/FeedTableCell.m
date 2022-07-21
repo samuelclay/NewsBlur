@@ -120,8 +120,8 @@ static UIFont *textFont = nil;
                      firstColor:UIColorFromRGB(0xA4D97B)
             secondStateIconName:nil
                     secondColor:nil
-                  thirdIconName:@"g_icn_unread.png"
-                     thirdColor:UIColorFromRGB(0xFFFFD2)
+                  thirdIconName:@"indicator-unread"
+                     thirdColor:UIColorFromRGB(0x6A6659)
                  fourthIconName:nil
                     fourthColor:nil];
     
@@ -171,37 +171,25 @@ static UIFont *textFont = nil;
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     
+    BOOL isHighlighted = cell.highlighted || cell.selected;
     UIColor *backgroundColor;
     
-    backgroundColor = cell.highlighted || cell.selected ?
-                      UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xFFFFD2, 0x304050, 0x000022) :
-                      cell.isSocial ? UIColorFromRGB(0xE6ECE8) :
-                      cell.isSaved ? UIColorFromRGB(0xE9EBEE) :
+    backgroundColor = cell.isSocial ? UIColorFromRGB(0xD8E3DB) :
+                      cell.isSearch ? UIColorFromRGB(0xDBDFE6) :
+                      cell.isSaved ? UIColorFromRGB(0xDFDCD6) :
                       UIColorFromRGB(0xF7F8F5);
 
 //    [backgroundColor set];
     self.backgroundColor = backgroundColor;
     cell.backgroundColor = backgroundColor;
     
-    if (cell.highlighted || cell.selected) {
-//        [NewsBlurAppDelegate fillGradient:CGRectMake(r.origin.x, r.origin.y + 1, r.size.width, r.size.height - 1) startColor:UIColorFromRGB(0xFFFFD2) endColor:UIColorFromRGB(0xFDED8D)];
+    if (isHighlighted) {
+        UIColor *highlightColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xFFFFD2, 0x304050, 0x000022);
         
-        // top border
-        UIColor *highlightBorderColor = UIColorFromLightDarkRGB(0xE3D0AE, 0x1F1F72);
-        CGFloat lineWidth = 0.5f;
-        CGContextSetStrokeColor(context, CGColorGetComponents([highlightBorderColor CGColor]));
-        CGContextSetLineWidth(context, lineWidth);
-        CGContextBeginPath(context);
-        CGContextMoveToPoint(context, 0, lineWidth*0.5f);
-        CGContextAddLineToPoint(context, r.size.width, 0.5f);
-        CGContextStrokePath(context);
-        
-        // bottom border    
-        CGContextBeginPath(context);
-        CGContextSetLineWidth(context, lineWidth);
-        CGContextMoveToPoint(context, 0, r.size.height - .5f*lineWidth);
-        CGContextAddLineToPoint(context, r.size.width, r.size.height - .5f*lineWidth);
-        CGContextStrokePath(context);
+        CGContextSetFillColorWithColor(context, highlightColor.CGColor);
+        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:r cornerRadius:8];
+        CGContextAddPath(context, path.CGPath);
+        CGContextFillPath(context);
     }
     
     if (cell.isInactive) {
@@ -214,7 +202,7 @@ static UIFont *textFont = nil;
                         listType:(cell.isSocial ? NBFeedListSocial : cell.isSaved ? NBFeedListSaved : NBFeedListFeed)];
     }
     
-    UIColor *textColor = cell.highlighted || cell.selected ?
+    UIColor *textColor = isHighlighted ?
                          UIColorFromRGB(NEWSBLUR_BLACK_COLOR):
                          UIColorFromRGB(0x3A3A3A);
     UIFont *font;
