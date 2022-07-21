@@ -34,6 +34,7 @@
 @property (assign, nonatomic) int negativeCount;
 @property (assign, nonatomic) int savedStoriesCount;
 @property (assign, nonatomic) BOOL isSocial;
+@property (assign, nonatomic) BOOL isSearch;
 @property (assign, nonatomic) BOOL isSaved;
 @property (assign, nonatomic) BOOL isInactive;
 @property (nonatomic) NSString *searchQuery;

@@ -3533,23 +3533,11 @@
     gradient.colors = [NSArray arrayWithObjects:(id)[[self faviconColor:start] CGColor], (id)[[self faviconColor:end] CGColor], nil];
     
     CALayer *whiteBackground = [CALayer layer];
-    whiteBackground.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
+    whiteBackground.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
     whiteBackground.backgroundColor = [UIColorFromRGB(NEWSBLUR_WHITE_COLOR) colorWithAlphaComponent:0.7].CGColor;
     [gradientView.layer addSublayer:whiteBackground];
     
     [gradientView.layer addSublayer:gradient];
-    
-    CALayer *topBorder = [CALayer layer];
-    topBorder.frame = CGRectMake(0, 1, rect.size.width, 1);
-    topBorder.backgroundColor = [[self faviconColor:borderColor] colorWithAlphaComponent:0.7].CGColor;
-    topBorder.opacity = 1;
-    [gradientView.layer addSublayer:topBorder];
-    
-    CALayer *bottomBorder = [CALayer layer];
-    bottomBorder.frame = CGRectMake(0, rect.size.height-1, rect.size.width, 1);
-    bottomBorder.backgroundColor = [[self faviconColor:borderColor] colorWithAlphaComponent:0.7].CGColor;
-    bottomBorder.opacity = 1;
-    [gradientView.layer addSublayer:bottomBorder];
     
     return gradientView;
 }
@@ -3662,13 +3650,13 @@
         UIImage *titleImage;
         if (storiesCollection.isSocialRiverView &&
             [storiesCollection.activeFolder isEqualToString:@"river_global"]) {
-            titleImage = [UIImage imageNamed:@"ak-icon-global.png"];
+            titleImage = [UIImage imageNamed:@"global-shares"];
         } else if (storiesCollection.isSocialRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
-            titleImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
+            titleImage = [UIImage imageNamed:@"all-shares"];
         } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"everything"]) {
-            titleImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
+            titleImage = [UIImage imageNamed:@"all-stories"];
         } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
@@ -3677,11 +3665,11 @@
         } else if ([storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
             titleImage = [UIImage imageNamed:@"g_icn_folder_widget.png"];
         } else if ([storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
-            titleImage = [UIImage imageNamed:@"g_icn_folder_read.png"];
+            titleImage = [UIImage imageNamed:@"indicator-unread"];
         } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
-            titleImage = [UIImage imageNamed:@"clock.png"];
+            titleImage = [UIImage imageNamed:@"saved-stories"];
         } else if (storiesCollection.isRiverView) {
-            titleImage = [UIImage imageNamed:@"g_icn_folder.png"];
+            titleImage = [UIImage imageNamed:@"folder-open"];
         } else {
             titleImage = [self getFavicon:feedIdStr];
         }
@@ -3718,23 +3706,23 @@
 
 - (UIImage *)folderIcon:(NSString *)folder {
     if ([folder isEqualToString:@"river_global"]) {
-        return [UIImage imageNamed:@"ak-icon-global.png"];
+        return [UIImage imageNamed:@"global-shares"];
     } else if ([folder isEqualToString:@"river_blurblogs"]) {
-        return [UIImage imageNamed:@"ak-icon-blurblogs.png"];
+        return [UIImage imageNamed:@"all-shares"];
     } else if ([folder isEqualToString:@"everything"]) {
-        return [UIImage imageNamed:@"ak-icon-allstories.png"];
+        return [UIImage imageNamed:@"all-stories"];
     } else if ([folder isEqualToString:@"infrequent"]) {
         return [UIImage imageNamed:@"ak-icon-infrequent.png"];
     } else if ([folder isEqualToString:@"widget_stories"]) {
         return [UIImage imageNamed:@"g_icn_folder_widget.png"];
     } else if ([folder isEqualToString:@"read_stories"]) {
-        return [UIImage imageNamed:@"g_icn_folder_read.png"];
+        return [UIImage imageNamed:@"indicator-unread"];
     } else if ([folder isEqualToString:@"saved_searches"]) {
-        return [UIImage imageNamed:@"g_icn_search.png"];
+        return [UIImage imageNamed:@"search"];
     } else if ([folder isEqualToString:@"saved_stories"]) {
-        return [UIImage imageNamed:@"clock.png"];
+        return [UIImage imageNamed:@"saved-stories"];
     } else {
-        return [UIImage imageNamed:@"g_icn_folder.png"];
+        return [UIImage imageNamed:@"folder-open"];
     }
 }
 

@@ -107,7 +107,7 @@ static UIFont *indicatorFont = nil;
     } else if (storyScore == 1) {
         unreadIcon = @"g_icn_focus.png";
     } else {
-        unreadIcon = @"g_icn_unread.png";
+        unreadIcon = @"indicator-unread";
     }
     
     UIColor *shareColor = self.isSaved ?
@@ -125,7 +125,7 @@ static UIFont *indicatorFont = nil;
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     [self setDelegate:(FeedDetailViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedDetailViewController];
     
-    [self setFirstStateIconName:@"clock.png"
+    [self setFirstStateIconName:@"saved-stories"
                      firstColor:shareColor
             secondStateIconName:nil
                     secondColor:nil
@@ -176,6 +176,7 @@ static UIFont *indicatorFont = nil;
         return;
     }
     
+    BOOL isHighlighted = cell.highlighted || cell.selected;
     CGFloat riverPadding = 0;
     CGFloat riverPreview = 14;
     
@@ -207,11 +208,15 @@ static UIFont *indicatorFont = nil;
         rect.size.width -= previewHorizMargin;
     }
     
+    if (isHighlighted) {
+        leftMargin += 2;
+    }
+    
     rect.size.width -= 18; // Scrollbar padding
     CGRect dateRect = rect;
     
     UIColor *backgroundColor;
-    backgroundColor = cell.highlighted || cell.selected ?
+    backgroundColor = isHighlighted ?
                       UIColorFromLightSepiaMediumDarkRGB(0xFFFDEF, 0xEEECCD, 0x303A40, 0x303030) : UIColorFromLightSepiaMediumDarkRGB(0xF4F4F4, 0xFFFDEF, 0x4F4F4F, 0x101010);
     [backgroundColor set];
     
@@ -223,6 +228,14 @@ static UIFont *indicatorFont = nil;
         
         if (isLeft) {
             imageFrame.origin.x = previewHorizMargin + 2;
+            
+            if (isHighlighted) {
+                imageFrame.origin.x += 2;
+            }
+        } else {
+            if (isHighlighted) {
+                imageFrame.origin.x -= 2;
+            }
         }
         
         UIImage *cachedImage = (UIImage *)[appDelegate.cachedStoryImages objectForKey:cell.storyImageUrl];
@@ -236,7 +249,7 @@ static UIFont *indicatorFont = nil;
             }
             
             CGFloat alpha = 1.0f;
-            if (cell.highlighted || cell.selected) {
+            if (isHighlighted) {
                 alpha = cell.isRead ? 0.5f : 0.85f;
             } else if (cell.isRead) {
                 alpha = 0.34f;
@@ -292,7 +305,7 @@ static UIFont *indicatorFont = nil;
             font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
             textColor = UIColorFromLightSepiaMediumDarkRGB(0x606060, 0x606060, 0xD0D0D0, 0x909090);
         }
-        if (cell.highlighted || cell.selected) {
+        if (isHighlighted) {
             textColor = UIColorFromLightSepiaMediumDarkRGB(0x686868, 0x686868, 0xA0A0A0, 0x808080);
         }
         
@@ -320,9 +333,9 @@ static UIFont *indicatorFont = nil;
     if (cell.isRead) {
         textColor = UIColorFromLightSepiaMediumDarkRGB(0x585858, 0x585858, 0x989898, 0x888888);
     } else {
-        textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xD0D0D0, 0xCCCCCC);
+        textColor = UIColorFromLightSepiaMediumDarkRGB(0x111111, 0x333333, 0xD0D0D0, 0xCCCCCC);
     }
-    if (cell.highlighted || cell.selected) {
+    if (isHighlighted) {
         textColor = UIColorFromLightDarkRGB(0x686868, 0xA0A0A0);
     }
     CGFloat boundingRows = cell.isShort ? 1.5 : 3;
@@ -368,11 +381,11 @@ static UIFont *indicatorFont = nil;
         textColor = UIColorFromLightSepiaMediumDarkRGB(0x404040, 0x404040, 0xC0C0C0, 0xB0B0B0);
         font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize - 1];
     }
-    if (cell.highlighted || cell.selected) {
+    if (isHighlighted) {
         if (cell.isRead) {
             textColor = UIColorFromLightSepiaMediumDarkRGB(0xB8B8B8, 0xB8B8B8, 0xA0A0A0, 0x707070);
         } else {
-            textColor = UIColorFromLightSepiaMediumDarkRGB(0x686868, 0x686868, 0xA9A9A9, 0x989898);
+            textColor = UIColorFromLightSepiaMediumDarkRGB(0x888785, 0x686868, 0xA9A9A9, 0x989898);
         }
     }
     
@@ -417,7 +430,6 @@ static UIFont *indicatorFont = nil;
     } else {
         font = [UIFont fontWithName:@"WhitneySSm-Medium" size:11];
     }
-    
     // Story author and date
     NSString *date = [Utilities formatShortDateFromTimestamp:cell.storyTimestamp];
     NSString *author = cell.storyAuthor.length > 0 ? [NSString stringWithFormat:@" · %@", cell.storyAuthor] : @"";
@@ -429,26 +441,27 @@ static UIFont *indicatorFont = nil;
                       NSParagraphStyleAttributeName: paragraphStyle}];
     
     // feed bar
+    CGFloat feedBarOffset = isHighlighted ? 2 : 0;
     CGContextSetStrokeColor(context, CGColorGetComponents([cell.feedColorBarTopBorder CGColor]));
     if (cell.isRead) {
         CGContextSetAlpha(context, 0.15);
     }
     CGContextSetLineWidth(context, 4.0f);
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 2.0f, 0);
-    CGContextAddLineToPoint(context, 2.0f, cell.frame.size.height);
+    CGContextMoveToPoint(context, 2.0f + feedBarOffset, 0);
+    CGContextAddLineToPoint(context, 2.0f + feedBarOffset, cell.frame.size.height);
     CGContextStrokePath(context);
     
     CGContextSetStrokeColor(context, CGColorGetComponents([cell.feedColorBar CGColor]));
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 6.0f, 0);
-    CGContextAddLineToPoint(context, 6.0, cell.frame.size.height);
+    CGContextMoveToPoint(context, 6.0f + feedBarOffset, 0);
+    CGContextAddLineToPoint(context, 6.0 + feedBarOffset, cell.frame.size.height);
     CGContextStrokePath(context);
     
     // reset for borders
     UIColor *white = UIColorFromRGB(0xffffff);
     CGContextSetAlpha(context, 1.0);
-    if (cell.highlighted || cell.selected) {
+    if (isHighlighted) {
         // top border
         CGContextSetStrokeColor(context, CGColorGetComponents([white CGColor]));
         
@@ -506,7 +519,7 @@ static UIFont *indicatorFont = nil;
     } else if (cell.storyScore == 1) {
         unreadIcon = [UIImage imageNamed:@"g_icn_focus"];
     } else {
-        unreadIcon = [UIImage imageNamed:@"g_icn_unread"];
+        unreadIcon = [UIImage imageNamed:@"indicator-unread"];
     }
     
     [unreadIcon drawInRect:CGRectMake(storyIndicatorX, storyIndicatorY - 3, 8, 8) blendMode:0 alpha:(cell.isRead ? .15 : 1)];

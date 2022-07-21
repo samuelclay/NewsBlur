@@ -282,10 +282,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-//    [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath 
-//                                      animated:NO 
-//                                scrollPosition:UITableViewScrollPositionNone];
-    
     [super viewDidAppear:animated];
 //    self.navigationController.navigationBar.backItem.title = @"All Sites";
     [self layoutHeaderCounts:0];
@@ -295,6 +291,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.2];
         [self performSelector:@selector(fadeSelectedHeader) withObject:nil afterDelay:0.2];
         self.currentRowAtIndexPath = nil;
+    } else {
+        [self highlightSelection];
     }
     
     self.interactiveFeedDetailTransition = NO;
@@ -1015,7 +1013,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     MenuViewController *viewController = [MenuViewController new];
     
-    [viewController addTitle:@"Preferences" iconName:@"menu_icn_preferences.png" selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:@"Preferences" iconName:@"dialog-preferences" iconColor:UIColorFromRGB(0xDF8566) selectionShouldDismiss:YES handler:^{
         [self.appDelegate showPreferences];
     }];
     
@@ -1023,7 +1021,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self.appDelegate showMuteSites];
     }];
     
-    [viewController addTitle:@"Organize Sites" iconName:@"menu_icn_organize.png" selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:@"Organize Sites" iconName:@"dialog-organize" iconColor:UIColorFromRGB(0xDF8566) selectionShouldDismiss:YES handler:^{
         [self.appDelegate showOrganizeSites];
     }];
     
@@ -1031,11 +1029,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self.appDelegate showWidgetSites];
     }];
     
-    [viewController addTitle:@"Notifications" iconName:@"menu_icn_notifications.png" selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:@"Notifications" iconName:@"dialog-notifications" iconColor:UIColorFromRGB(0xD58B4F) selectionShouldDismiss:YES handler:^{
         [self.appDelegate openNotificationsWithFeed:nil];
     }];
     
-    [viewController addTitle:@"Find Friends" iconName:@"menu_icn_followers.png" selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:@"Find Friends" iconName:@"followers" iconColor:UIColorFromRGB(0x5FA1E7) selectionShouldDismiss:YES handler:^{
         [self.appDelegate showFindFriends];
     }];
     
@@ -1086,6 +1084,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"comfortable" preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         [self reloadFeedTitlesTable];
+        [self.appDelegate.feedDetailViewController reloadStories];
     }];
     
     [viewController addThemeSegmentedControl];
@@ -1498,6 +1497,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     cell.feedFavicon = [appDelegate getFavicon:feedIdStr isSocial:isSocial isSaved:isSaved];
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
     cell.isSocial      = isSocial;
+    cell.isSearch      = isSavedSearch;
     cell.isSaved       = isSaved;
     cell.isInactive    = isInactive;
     cell.searchQuery   = searchQuery;
@@ -1678,10 +1678,12 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (void)reloadFeedTitlesTable {
     [self resetRowHeights];
     [self.feedTitlesTable reloadData];
+    [self highlightSelection];
 }
 
 - (void)updateFeedTitlesTable {
     [self.feedTitlesTable reloadData];
+    [self highlightSelection];
 }
 
 - (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
@@ -1721,7 +1723,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     if (self.currentSection == section) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            folderTitle.invisibleHeaderButton.backgroundColor = UIColorFromRGB(0x214607);
+            [self highlightSelection];
         });
     }
     
@@ -1740,7 +1742,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (IBAction)sectionUntappedOutside:(UIButton *)button {
     button.backgroundColor = [UIColor clearColor];
     
-    [self highlightSelectedHeader];
+    [self highlightSelection];
 }
 
 - (void)fadeSelectedHeader {
@@ -1765,11 +1767,22 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     }
 }
 
-- (void)highlightSelectedHeader {
-    if (self.currentSection >= 0) {
+- (void)highlightSelection {
+    if (self.currentRowAtIndexPath != nil) {
+        [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath
+                                          animated:NO
+                                    scrollPosition:UITableViewScrollPositionNone];
+    } else if (self.currentSection >= 0) {
         FolderTitleView *title = self.folderTitleViews[@(self.currentSection)];
+        UIColor *color = UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xFFFFD2, 0x304050, 0x000022);
+        CGFloat hue;
+        CGFloat saturation;
+        CGFloat brightness;
+        CGFloat alpha;
+        [color getHue:&hue saturation:&saturation brightness:&brightness alpha:&alpha];
+        color = [UIColor colorWithHue:hue saturation:1 brightness:1 alpha:alpha];
         
-        title.invisibleHeaderButton.backgroundColor = UIColorFromRGB(0x214607);
+        title.invisibleHeaderButton.backgroundColor = color;
         [title.invisibleHeaderButton setNeedsDisplay];
     }
 }
@@ -1825,7 +1838,7 @@ heightForHeaderInSection:(NSInteger)section {
     self.currentRowAtIndexPath = nil;
     self.currentSection = tag;
     
-    [self highlightSelectedHeader];
+    [self highlightSelection];
     
     NSString *folder = [appDelegate.dictFoldersArray objectAtIndex:tag];
     

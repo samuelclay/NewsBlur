@@ -412,6 +412,10 @@ secondStateIconName:(NSString *)secondIconName
     CGSize slidingImageSize = slidingImage.size;
     CGRect slidingImageRect;
     
+    if (slidingImageSize.width > 30) {
+        slidingImageSize = CGSizeMake(18, 18);
+    }
+    
     CGPoint position = CGPointZero;
     
     position.y = CGRectGetHeight(self.bounds) / 2.0;
@@ -457,6 +461,7 @@ secondStateIconName:(NSString *)secondIconName
     
     slidingImageRect = CGRectIntegral(slidingImageRect);
     [_slidingImageView setFrame:slidingImageRect];
+    _slidingImageView.contentMode = UIViewContentModeScaleAspectFit;
 }
 
 - (void)moveWithDuration:(NSTimeInterval)duration andDirection:(MCSwipeTableViewCellDirection)direction {
