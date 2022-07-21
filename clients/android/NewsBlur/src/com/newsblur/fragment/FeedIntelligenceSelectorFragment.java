@@ -21,13 +21,6 @@ public class FeedIntelligenceSelectorFragment extends Fragment implements StateC
         final View v = inflater.inflate(R.layout.fragment_intelligenceselector, null);
         button = (StateToggleButton) v.findViewById(R.id.fragment_intelligence_statebutton);
         button.setStateListener(this);
-        v.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                button.setParentWidthPX(v.getWidth());
-            }
-        });
-                
         return v;
     }
 
@@ -39,5 +32,4 @@ public class FeedIntelligenceSelectorFragment extends Fragment implements StateC
     public void setState(StateFilter state) {
         button.setState(state);
     }
-
 }

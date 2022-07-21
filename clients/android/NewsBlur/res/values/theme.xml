@@ -40,6 +40,7 @@
         <item name="activityDetailsPager">@style/activityDetailsPager</item>
         <item name="explainerText">@style/explainerText</item>
         <item name="toggleText">@style/toggleText</item>
+        <item name="delimiter">@style/delimiter</item>
         <item name="selectorOverlayBackgroundLeft">@style/selectorOverlayBackgroundLeft</item>
         <item name="selectorOverlayBackgroundRight">@style/selectorOverlayBackgroundRight</item>
         <item name="selectorOverlayBackgroundRightDone">@style/selectorOverlayBackgroundRightDone</item>
@@ -93,6 +94,7 @@
         <item name="activityDetailsPager">@style/activityDetailsPager.dark</item>
         <item name="explainerText">@style/explainerText.dark</item>
         <item name="toggleText">@style/toggleText.dark</item>
+        <item name="delimiter">@style/delimiter.dark</item>
         <item name="selectorOverlayBackgroundLeft">@style/selectorOverlayBackgroundLeft.dark</item>
         <item name="selectorOverlayBackgroundRight">@style/selectorOverlayBackgroundRight.dark</item>
         <item name="selectorOverlayBackgroundRightDone">@style/selectorOverlayBackgroundRightDone.dark</item>
@@ -147,6 +149,7 @@
         <item name="activityDetailsPager">@style/activityDetailsPager.black</item>
         <item name="explainerText">@style/explainerText.dark</item>
         <item name="toggleText">@style/toggleText.dark</item>
+        <item name="delimiter">@style/delimiter.dark</item>
         <item name="selectorOverlayBackgroundLeft">@style/selectorOverlayBackgroundLeft.dark</item>
         <item name="selectorOverlayBackgroundRight">@style/selectorOverlayBackgroundRight.dark</item>
         <item name="selectorOverlayBackgroundRightDone">@style/selectorOverlayBackgroundRightDone.dark</item>

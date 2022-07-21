@@ -32,6 +32,13 @@
         <item name="fontFamily">@font/whitney</item>
     </style>
 
+    <style name="delimiter">
+        <item name="android:background">@color/gray85</item>
+    </style>
+    <style name="delimiter.dark">
+        <item name="android:background">@color/gray30</item>
+    </style>
+
     <style name="selectorFolderParent">
         <item name="android:paddingTop">2dp</item>
         <item name="android:paddingBottom">2dp</item>
