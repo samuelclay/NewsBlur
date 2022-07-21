@@ -519,7 +519,7 @@ div + p {
 }
 
 .NB-header {
-    line-height: 1.4em;
+    line-height: 1.7em;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F3F4EF));
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
     overflow: hidden;

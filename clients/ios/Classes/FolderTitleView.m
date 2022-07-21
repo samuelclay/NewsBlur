@@ -94,31 +94,9 @@
     
     // create the parent view that will hold header Label
     UIView* customView = [[UIView alloc] initWithFrame:rect];
-
-    // Background
-    [NewsBlurAppDelegate fillGradient:rect
-                           startColor:UIColorFromLightSepiaMediumDarkRGB(0xEAECE5, 0xffffc6, 0x6A6A6A, 0x444444)
-                             endColor:UIColorFromLightSepiaMediumDarkRGB(0xDCDFD6, 0xffffc0, 0x666666, 0x333333)];
-//    UIColor *backgroundColor = UIColorFromRGB(0xD7DDE6);
-//    [backgroundColor set];
-//    CGContextFillRect(context, rect);
     
-    // Borders
-    UIColor *topColor = UIColorFromLightSepiaMediumDarkRGB(0xFDFDFD, 0xFDFDF6, 0x878B8A, 0x474B4A);
-    CGContextSetStrokeColor(context, CGColorGetComponents([topColor CGColor]));
-    
-    CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 0, 0.25f);
-    CGContextAddLineToPoint(context, rect.size.width, 0.25f);
-    CGContextStrokePath(context);
-    
-    // bottom border
-    UIColor *bottomColor = UIColorFromLightSepiaMediumDarkRGB(0xB7BBAA, 0xe0e0a6, 0x404040, 0x0D0D0D);
-    CGContextSetStrokeColor(context, CGColorGetComponents([bottomColor CGColor]));
-    CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 0, rect.size.height-0.25f);
-    CGContextAddLineToPoint(context, rect.size.width, rect.size.height-0.25f);
-    CGContextStrokePath(context);
+    [UIColorFromRGB(0xF7F8F5) set];
+    CGContextFillRect(context, rect);
     
     // Folder title
     UIColor *textColor = UIColorFromRGB(0x4C4D4A);
@@ -159,6 +137,8 @@
         
     invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
     invisibleHeaderButton.frame = CGRectMake(rect.origin.x, 0, customView.frame.size.width, customView.frame.size.height);
+    invisibleHeaderButton.layer.cornerRadius = 10;
+    invisibleHeaderButton.clipsToBounds = YES;
     invisibleHeaderButton.alpha = .1;
     invisibleHeaderButton.tag = section;
     invisibleHeaderButton.accessibilityLabel = [NSString stringWithFormat:@"%@ folder%@", folderTitle, accessibilityCount];
@@ -232,7 +212,7 @@
         }
         allowLongPress = YES;
     } else if (section == NewsBlurTopSectionAllStories) {
-        folderImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
+        folderImage = [UIImage imageNamed:@"all-stories"];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
@@ -240,35 +220,35 @@
         }
         allowLongPress = NO;
     } else if ([folderName isEqual:@"river_global"]) {
-        folderImage = [UIImage imageNamed:@"ak-icon-global.png"];
+        folderImage = [UIImage imageNamed:@"global-shares"];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 8;
         }
     } else if ([folderName isEqual:@"river_blurblogs"]) {
-        folderImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
+        folderImage = [UIImage imageNamed:@"all-shares"];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 8;
         }
     } else if ([folderName isEqual:@"saved_searches"]) {
-        folderImage = [UIImage imageNamed:@"g_icn_search.png"];
+        folderImage = [UIImage imageNamed:@"search"];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;
         }
     } else if ([folderName isEqual:@"saved_stories"]) {
-        folderImage = [UIImage imageNamed:@"clock.png"];
+        folderImage = [UIImage imageNamed:@"saved-stories"];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;
         }
     } else if ([folderName isEqual:@"read_stories"]) {
-        folderImage = [UIImage imageNamed:@"g_icn_folder_read.png"];
+        folderImage = [UIImage imageNamed:@"indicator-unread"];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
@@ -283,9 +263,9 @@
         }
     } else {
         if (isFolderCollapsed) {
-            folderImage = [UIImage imageNamed:@"g_icn_folder_rss"];
+            folderImage = [UIImage imageNamed:@"folder-closed"];
         } else {
-            folderImage = [UIImage imageNamed:@"g_icn_folder"];
+            folderImage = [UIImage imageNamed:@"folder-open"];
         }
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         } else {

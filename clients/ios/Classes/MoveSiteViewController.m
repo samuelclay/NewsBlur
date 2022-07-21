@@ -36,7 +36,7 @@
 - (void)viewDidLoad {
     self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
-    UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_folder.png"]];
+    UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"folder-open"]];
     folderImage.frame = CGRectMake(0, 0, 24, 16);
     [folderImage setContentMode:UIViewContentModeRight];
     [toFolderInput setLeftView:folderImage];

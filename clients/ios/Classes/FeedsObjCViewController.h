@@ -123,6 +123,7 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 
 - (void)selectWidgetStories;
 
+- (void)reloadFeedTitlesTable;
 - (void)resetToolbar;
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation;
 - (void)refreshHeaderCounts;
