@@ -43,7 +43,6 @@ public class StateToggleButton extends LinearLayout {
 
     public void updateButtonStates() {
         binding.toggleAll.setEnabled(state != StateFilter.ALL);
-        binding.toggleAllIcon.setAlpha(state == StateFilter.ALL ? 1.0f : 0.6f);
 
         binding.toggleSome.setEnabled(state != StateFilter.SOME);
         binding.toggleSomeIcon.setAlpha(state == StateFilter.SOME ? 1.0f : 0.6f);

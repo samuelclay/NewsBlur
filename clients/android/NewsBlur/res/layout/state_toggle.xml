@@ -21,13 +21,6 @@
         android:paddingRight="8dp"
         android:paddingBottom="6dp">
 
-        <ImageView
-            android:id="@+id/toggle_all_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:paddingRight="4dp"
-            android:src="@drawable/ic_world" />
-
         <TextView
             android:id="@+id/toggle_all_text"
             style="?toggleText"
@@ -76,8 +69,8 @@
 
         <ImageView
             android:id="@+id/toggle_focus_icon"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
+            android:layout_width="17dp"
+            android:layout_height="17dp"
             android:src="@drawable/ic_indicator_focus" />
     </LinearLayout>
 
