@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 
+import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -40,7 +41,11 @@ public class StoryUtils {
     private static final ThreadLocal<SimpleDateFormat> twelveHourFormat = new ThreadLocal<SimpleDateFormat>() {
         @Override
         protected SimpleDateFormat initialValue() {
-            return new SimpleDateFormat("h:mma");
+            SimpleDateFormat sdf = new SimpleDateFormat("h:mma");
+            DateFormatSymbols dfs = new DateFormatSymbols();
+            dfs.setAmPmStrings(new String[] { "am", "pm" });
+            sdf.setDateFormatSymbols(dfs);
+            return sdf;
         }
     };
 
@@ -96,23 +101,6 @@ public class StoryUtils {
         } else {
             // Monday, January 1st 2014 00:00
             return monthLongFormat.get().format(storyDate) + getDayOfMonthSuffix(month) + " " + yearLongFormat.get().format(storyDate) + " " + timeFormat.format(storyDate);
-        }
-    }
-
-    public static CharSequence formatRelativeTime(Context context, long timestamp) {
-        Date date = new Date(timestamp);
-        Date sixDaysAgo = new Date(System.currentTimeMillis()
-                - (DateUtils.DAY_IN_MILLIS * 6));
-        if (DateUtils.isToday(timestamp)) {
-            // "3 hours ago"
-            return DateUtils.getRelativeTimeSpanString(timestamp,
-                    System.currentTimeMillis(),
-                    DateUtils.MINUTE_IN_MILLIS);
-        } else if (date.after(sixDaysAgo)){
-            // "Wednesday"
-            return DateFormat.format("EEEE", timestamp);
-        } else {
-            return DateFormat.getDateFormat(context).format(date);
         }
     }
 

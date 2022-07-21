@@ -67,7 +67,7 @@
         style="?storyFeedTitleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="6dp"
+        android:layout_marginLeft="8dp"
         android:layout_toLeftOf="@id/story_item_thumbnail_right"
         android:layout_toRightOf="@id/story_item_feedicon"
         android:ellipsize="end"
@@ -123,10 +123,12 @@
         android:paddingRight="4dp"
         android:maxLines="2"
         android:ellipsize="end"
+        android:lineSpacingExtra="1dp"
         style="?storySnippetText" />
 
     <!--dynamic spacing-->
     <TextView
+        style="?storySnippetText"
         android:id="@+id/story_item_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -136,6 +138,7 @@
 
     <!--dynamic spacing-->
     <TextView
+        style="?storySnippetText"
         android:id="@+id/story_item_author"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -167,12 +170,12 @@
     <View
         android:layout_height="0.5dp"
         android:layout_width="match_parent"
-        style="?rowBorderTop"
+        style="?rowBorder"
         android:layout_alignParentTop="true" />
     <View
         android:layout_height="0.5dp"
         android:layout_width="match_parent"
-        style="?rowBorderBottom"
+        style="?rowBorder"
         android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

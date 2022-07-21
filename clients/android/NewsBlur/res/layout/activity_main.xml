@@ -77,9 +77,8 @@
 
         <ImageButton
             android:id="@+id/main_search_feeds_button"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:padding="2dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_alignParentTop="true"
             android:layout_margin="8dp"
             android:layout_toStartOf="@+id/main_profile_button"
