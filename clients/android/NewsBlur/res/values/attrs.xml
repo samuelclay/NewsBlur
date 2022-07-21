@@ -38,6 +38,7 @@
     <attr name="selectorOverlayBackgroundText" format="string" />
     <attr name="muteicon" format="string" />
     <attr name="circleProgressIndicator" format="string" />
+    <attr name="delimiter" format="string" />
     
     <attr name="flow" format="string" />
     <attr name="imageViewSize" format="integer" />
