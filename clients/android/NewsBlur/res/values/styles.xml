@@ -32,13 +32,17 @@
         <item name="fontFamily">@font/whitney</item>
     </style>
 
-    <style name="selectorFolderBackground">
+    <style name="selectorFolderParent">
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingBottom">2dp</item>
+    </style>
+    <style name="selectorFolderBackground" parent="selectorFolderParent">
         <item name="android:background">@drawable/selector_folder_background</item>
     </style>
-    <style name="selectorFolderBackground.dark">
+    <style name="selectorFolderBackground.dark" parent="selectorFolderParent">
         <item name="android:background">@drawable/dark_selector_folder_background</item>
     </style>
-    <style name="selectorFolderBackground.black">
+    <style name="selectorFolderBackground.black" parent="selectorFolderParent">
         <item name="android:background">@drawable/black_selector_folder_background</item>
     </style>
 

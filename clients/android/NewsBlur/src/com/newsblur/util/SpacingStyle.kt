@@ -7,10 +7,8 @@ enum class SpacingStyle {
     COMPACT,
     ;
 
-    fun getGroupTitleVerticalPadding(context: Context): Int = when (this) {
-        COMFORTABLE -> UIUtils.dp2px(context, 9)
-        COMPACT -> UIUtils.dp2px(context, 4)
-    }
+    // same spacing on groups for both styles
+    fun getGroupTitleVerticalPadding(context: Context): Int = UIUtils.dp2px(context, 9)
 
     fun getChildTitleVerticalPadding(context: Context): Int = when (this) {
         COMFORTABLE -> UIUtils.dp2px(context, 7)

@@ -45,16 +45,11 @@
     <color name="col_button_background_pressed">@color/gray65</color>
     <color name="col_button_background_pressed_dark">@color/gray30</color>
 
-    <color name="folder_background_end">#E9EBE4</color>
-    <color name="folder_background_start">#DDE0D7</color>
-    <color name="dark_folder_background_end">@color/gray07</color>
-    <color name="dark_folder_background_start">@color/gray13</color>
-    <color name="black_folder_background_end">@color/black</color>
-    <color name="black_folder_background_start">@color/gray07</color>
-    <color name="folder_background_selected_end">#D9DBD4</color>
-    <color name="folder_background_selected_start">#CDD0C7</color>
-    <color name="dark_folder_background_selected_end">#4C4C4C</color>
-    <color name="dark_folder_background_selected_start">#1A1A1A</color>
+    <color name="folder_background">#E9EBE4</color>
+    <color name="dark_folder_background">@color/gray13</color>
+    <color name="black_folder_background">@color/gray07</color>
+    <color name="folder_background_selected">#CDD0C7</color>
+    <color name="dark_folder_background_selected">#4C4C4C</color>
     <color name="row_border_top">@color/white</color>
     <color name="row_border_bottom">@color/gray80</color>
     <color name="dark_row_border_top">@color/gray20</color>
