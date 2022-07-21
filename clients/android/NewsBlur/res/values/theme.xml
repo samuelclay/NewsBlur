@@ -32,8 +32,7 @@
         <item name="shareBarBackground">@style/shareBarBackground</item>
         <item name="shareBarText">@style/shareBarText</item>
         <item name="commentsHeader">@style/commentsHeader</item>
-        <item name="rowBorderTop">@style/rowBorderTop</item>
-        <item name="rowBorderBottom">@style/rowBorderBottom</item>
+        <item name="rowBorder">@style/rowBorder</item>
         <item name="profileCount">@style/profileCount</item>
         <item name="profileActivityList">@style/profileActivityList</item>
         <item name="storyCommentDivider">@style/storyCommentDivider</item>
@@ -86,8 +85,7 @@
         <item name="shareBarBackground">@style/shareBarBackground.dark</item>
         <item name="shareBarText">@style/shareBarText.dark</item>
         <item name="commentsHeader">@style/commentsHeader.dark</item>
-        <item name="rowBorderTop">@style/rowBorderTop.dark</item>
-        <item name="rowBorderBottom">@style/rowBorderBottom.dark</item>
+        <item name="rowBorder">@style/rowBorder.dark</item>
         <item name="profileCount">@style/profileCount.dark</item>
         <item name="profileActivityList">@style/profileActivityList.dark</item>
         <item name="storyCommentDivider">@style/storyCommentDivider.dark</item>
@@ -141,8 +139,7 @@
         <item name="shareBarBackground">@style/shareBarBackground.black</item>
         <item name="shareBarText">@style/shareBarText.dark</item>
         <item name="commentsHeader">@style/commentsHeader.black</item>
-        <item name="rowBorderTop">@style/rowBorderTop.black</item>
-        <item name="rowBorderBottom">@style/rowBorderBottom.black</item>
+        <item name="rowBorder">@style/rowBorder.black</item>
         <item name="profileCount">@style/profileCount.black</item>
         <item name="profileActivityList">@style/profileActivityList.black</item>
         <item name="storyCommentDivider">@style/storyCommentDivider.black</item>

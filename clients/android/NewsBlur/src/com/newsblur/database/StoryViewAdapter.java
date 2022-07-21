@@ -59,8 +59,8 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private final static float defaultTextSize_story_item_feedtitle = 13f;
     private final static float defaultTextSize_story_item_title = 14f;
-    private final static float defaultTextSize_story_item_date_or_author = 11f;
-    private final static float defaultTextSize_story_item_snip = 12f;
+    private final static float defaultTextSize_story_item_date_or_author = 12f;
+    private final static float defaultTextSize_story_item_snip = 13f;
 
     private final static float READ_STORY_ALPHA = 0.35f;
     private final static int READ_STORY_ALPHA_B255 = (int) (255f * READ_STORY_ALPHA);
@@ -748,7 +748,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             params.width = sizeDp;
         }
         if (params != null && (thumbnailStyle == ThumbnailStyle.RIGHT_SMALL || thumbnailStyle == ThumbnailStyle.LEFT_SMALL)) {
-            int verticalMargin = singleFeed ? UIUtils.dp2px(context, 10) : UIUtils.dp2px(context, 5);
+            int verticalMargin = singleFeed ? verticalContainerMargin + UIUtils.dp2px(context, 2) : verticalContainerMargin;
             params.setMargins(UIUtils.dp2px(context, 8), verticalMargin, 0, verticalMargin);
             params.addRule(RelativeLayout.ALIGN_BOTTOM, vh.storySnippet.getId());
         } else if (params != null) {

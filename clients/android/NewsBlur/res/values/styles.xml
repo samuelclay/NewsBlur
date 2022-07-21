@@ -270,24 +270,14 @@
         <item name="android:textColor">@color/dark_text</item>
     </style>
 
-    <style name="rowBorderTop">
-        <item name="android:background">@color/row_border_top</item>
+    <style name="rowBorder">
+        <item name="android:background">@color/row_border</item>
     </style>
-    <style name="rowBorderTop.dark">
-        <item name="android:background">@color/dark_row_border_top</item>
+    <style name="rowBorder.dark">
+        <item name="android:background">@color/dark_row_border</item>
     </style>
-    <style name="rowBorderTop.black">
-        <item name="android:background">@color/black_row_border_top</item>
-    </style>
-
-    <style name="rowBorderBottom">
-        <item name="android:background">@color/row_border_bottom</item>
-    </style>
-    <style name="rowBorderBottom.dark">
-        <item name="android:background">@color/dark_row_border_bottom</item>
-    </style>
-    <style name="rowBorderBottom.black">
-        <item name="android:background">@color/black_row_border_bottom</item>
+    <style name="rowBorder.black">
+        <item name="android:background">@color/black_row_border</item>
     </style>
 
     <style name="profileCount">
