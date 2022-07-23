@@ -709,20 +709,25 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
         for (NSString *storyImageUrl in storyImageUrls) {
 //            NSLog(@"Fetching image: %@", storyImageUrl);
             [manager GET:storyImageUrl parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-                UIImage *image = (UIImage *)responseObject;
-                
-                if (!image || image.size.height < 50 || image.size.width < 50) {
-                    [self.appDelegate.cachedStoryImages setObject:[NSNull null]
+                dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
+                dispatch_async(queue, ^{
+                    UIImage *image = (UIImage *)responseObject;
+                    
+                    if (!image || image.size.height < 50 || image.size.width < 50) {
+                        [self.appDelegate.cachedStoryImages setObject:[NSNull null]
+                                                          forKey:storyImageUrl];
+                        return;
+                    }
+                    
+                    CGSize maxImageSize = CGSizeMake(300, 300);
+                    image = [image imageByScalingAndCroppingForSize:maxImageSize];
+                    [self.appDelegate.cachedStoryImages setObject:image
                                                       forKey:storyImageUrl];
-                    return;
-                }
-                
-                CGSize maxImageSize = CGSizeMake(300, 300);
-                image = [image imageByScalingAndCroppingForSize:maxImageSize];
-                [self.appDelegate.cachedStoryImages setObject:image
-                                                  forKey:storyImageUrl];
-                [self.appDelegate.feedDetailViewController
-                    showStoryImage:storyImageUrl];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.appDelegate.feedDetailViewController
+                            showStoryImage:storyImageUrl];
+                    });
+                });
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
                 
             }];
@@ -1328,9 +1333,9 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
                                        stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
         }
     }
-    
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),
-                   dispatch_get_main_queue(), ^(void) {
+                   queue, ^(void) {
         [self cacheStoryImages:storyImageUrls];
     });
     
