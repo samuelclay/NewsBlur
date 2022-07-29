@@ -28,12 +28,16 @@ class MStatistics(mongo.Document):
         return "%s: %s" % (self.key, self.value)
     
     @classmethod
-    def get(cls, key, default=None):
+    def get(cls, key, default=None, set_default=False, expiration_sec=None):
         obj = cls.objects.filter(key=key).first()
         if not obj:
+            if set_default:
+                cls.set(key, default, expiration_sec=expiration_sec)
             return default
         if obj.expiration_date and obj.expiration_date < datetime.datetime.now():
             obj.delete()
+            if set_default:
+                cls.set(key, default, expiration_sec=expiration_sec)
             return default
         return obj.value
 
