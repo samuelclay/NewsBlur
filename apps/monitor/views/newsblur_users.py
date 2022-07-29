@@ -16,7 +16,7 @@ class Users(View):
         expiration_sec = 60*60 # 1 hour
         
         data = {
-            'all': MStatistics.get('munin:users_yearly', 
+            'all': MStatistics.get('munin:users_count', 
                                    lambda: User.objects.count(), 
                                    set_default=True, expiration_sec=expiration_sec),
             'yearly': MStatistics.get('munin:users_yearly', 
