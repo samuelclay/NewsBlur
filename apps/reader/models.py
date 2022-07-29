@@ -254,10 +254,19 @@ class UserSubscription(models.Model):
             return story_hashes
         
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', cutoff_date=None):
-        story_hashes = UserSubscription.story_hashes(self.user.pk, feed_ids=[self.feed.pk], 
-                                                     order=order, read_filter=read_filter,
-                                                     offset=offset, limit=limit,
-                                                     cutoff_date=cutoff_date)
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        unread_ranked_stories_key  = 'zU:%s:%s' % (self.user_id, self.feed_id)
+
+        if offset and r.exists(unread_ranked_stories_key):
+            byscorefunc = r.zrevrange
+            if order == "oldest":
+                byscorefunc = r.zrange
+            story_hashes = byscorefunc(unread_ranked_stories_key, start=offset, end=offset+limit)[:limit]
+        else:
+            story_hashes = UserSubscription.story_hashes(self.user.pk, feed_ids=[self.feed.pk], 
+                                                        order=order, read_filter=read_filter,
+                                                        offset=offset, limit=limit,
+                                                        cutoff_date=cutoff_date)
         
         story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
         mstories = MStory.objects(story_hash__in=story_hashes).order_by(story_date_order)
