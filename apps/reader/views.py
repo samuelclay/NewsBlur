@@ -671,8 +671,8 @@ def load_single_feed(request, feed_id):
         # User must be subscribed to a newsletter in order to read it
         raise Http404
     
-    if page > 200:
-        logging.user(request, "~BR~FK~SBOver page 200 on single feed: %s" % page)
+    if page > 400:
+        logging.user(request, "~BR~FK~SBOver page 400 on single feed: %s" % page)
         assert False
     
     if query:
