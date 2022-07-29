@@ -41,19 +41,12 @@
 
         </FrameLayout>
 
-        <View
-            android:id="@+id/item_feed_border"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@id/row_item_feed_header"
-            android:background="@color/gray55" />
-
         <com.newsblur.view.ReadingScrollView
             android:id="@+id/reading_scrollview"
             style="?readingBackground"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/item_feed_border"
+            android:layout_below="@+id/row_item_feed_header"
             android:scrollbars="vertical">
 
             <LinearLayout
