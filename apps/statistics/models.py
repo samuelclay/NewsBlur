@@ -32,11 +32,13 @@ class MStatistics(mongo.Document):
         obj = cls.objects.filter(key=key).first()
         if not obj:
             if set_default:
+                default = default()
                 cls.set(key, default, expiration_sec=expiration_sec)
             return default
         if obj.expiration_date and obj.expiration_date < datetime.datetime.now():
             obj.delete()
             if set_default:
+                default = default()
                 cls.set(key, default, expiration_sec=expiration_sec)
             return default
         return obj.value
