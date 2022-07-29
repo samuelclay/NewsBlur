@@ -492,7 +492,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         val colors = intArrayOf(Color.parseColor("#$feedColor"), Color.parseColor("#$feedFade"))
         val gradient = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, colors)
         UIUtils.setViewBackground(binding.rowItemFeedHeader, gradient)
-        binding.itemFeedBorder.setBackgroundColor(Color.parseColor("#$feedBorder"))
 
         if (faviconText == "black") {
             binding.readingFeedTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.text))
