@@ -289,9 +289,6 @@
     <style name="rowBorder.dark">
         <item name="android:background">@color/dark_row_border</item>
     </style>
-    <style name="rowBorder.black">
-        <item name="android:background">@color/black_row_border</item>
-    </style>
 
     <style name="profileCount">
         <item name="android:background">@color/item_background</item>

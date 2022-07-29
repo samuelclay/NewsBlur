@@ -148,7 +148,7 @@
         <item name="shareBarBackground">@style/shareBarBackground.black</item>
         <item name="shareBarText">@style/shareBarText.dark</item>
         <item name="commentsHeader">@style/commentsHeader.black</item>
-        <item name="rowBorder">@style/rowBorder.black</item>
+        <item name="rowBorder">@style/rowBorder.dark</item>
         <item name="profileCount">@style/profileCount.black</item>
         <item name="profileActivityList">@style/profileActivityList.black</item>
         <item name="storyCommentDivider">@style/storyCommentDivider.black</item>
