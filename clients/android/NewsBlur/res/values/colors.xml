@@ -26,6 +26,7 @@
     <color name="gray80">#CCCCCC</color>
     <color name="gray85">#D9D9D9</color>
     <color name="gray90">#E6E6E6</color>
+    <color name="gray95">#F2F2F2</color>
     <color name="gray96">#F4F4F4</color>
     <color name="white">#FFF</color>
     <color name="transparent">#00000000</color>
@@ -50,9 +51,8 @@
     <color name="black_folder_background">@color/gray07</color>
     <color name="folder_background_selected">#CDD0C7</color>
     <color name="dark_folder_background_selected">#4C4C4C</color>
-    <color name="row_border">@color/gray90</color>
-    <color name="dark_row_border">@color/gray13</color>
-    <color name="black_row_border">@color/gray10</color>
+    <color name="row_border">@color/gray95</color>
+    <color name="dark_row_border">@color/gray10</color>
     <color name="feed_background_selected_end">#FFFFD2</color>
     <color name="feed_background_selected_start">#E3D0AE</color>
     <color name="dark_feed_background_selected_end">#4C4C4C</color>

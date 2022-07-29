@@ -679,8 +679,12 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             } else if (storyContentPreviewStyle == StoryContentPreviewStyle.SMALL){
                 vh.storySnippet.setMaxLines(2);
             }
-            vh.storySnippet.setVisibility(View.VISIBLE);
-            vh.storySnippet.setText(story.shortContent);
+            if (!TextUtils.isEmpty(story.shortContent)) {
+                vh.storySnippet.setVisibility(View.VISIBLE);
+                vh.storySnippet.setText(story.shortContent);
+            } else {
+                vh.storySnippet.setVisibility(View.GONE);
+            }
         } else {
             vh.storyTitleView.setMaxLines(6);
             vh.storySnippet.setVisibility(View.GONE);
