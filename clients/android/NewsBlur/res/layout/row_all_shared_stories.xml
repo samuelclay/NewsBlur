@@ -73,6 +73,7 @@
         android:layout_toLeftOf="@id/row_foldersums"
         android:layout_toRightOf="@id/row_everything_icon"
         android:text="@string/all_shared_stories_title"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:letterSpacing="@dimen/extra_letter_spacing" />
 
 </RelativeLayout>

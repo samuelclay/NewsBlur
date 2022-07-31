@@ -204,7 +204,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             String folderName = activeFolderNames.get(groupPosition);
 			TextView folderTitle = v.findViewById(R.id.row_foldername);
 		    folderTitle.setText(folderName);
-		    folderTitle.setTextSize(textSize * defaultTextSize_count);
+		    folderTitle.setTextSize(textSize * defaultTextSize_childName);
             bindCountViews(v, folderNeutCounts.get(groupPosition), folderPosCounts.get(groupPosition), false);
             v.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
             ImageView folderIconView = v.findViewById(R.id.row_folder_icon);
@@ -214,7 +214,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 		}
 
         @NonNull TextView groupNameView = v.findViewById(R.id.row_foldername);
-        groupNameView.setTextSize(textSize * defaultTextSize_groupName);
+        groupNameView.setTextSize(textSize * defaultTextSize_childName);
         int titleVerticalPadding = spacingStyle.getGroupTitleVerticalPadding(context);
         groupNameView.setPadding(0, titleVerticalPadding, 0, titleVerticalPadding);
         @Nullable TextView sumNeutView = v.findViewById(R.id.row_foldersumneu);

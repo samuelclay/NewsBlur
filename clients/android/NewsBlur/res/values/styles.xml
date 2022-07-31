@@ -53,6 +53,19 @@
         <item name="android:background">@drawable/black_selector_folder_background</item>
     </style>
 
+    <style name="selectorFeedAlmostBlueBackground" parent="selectorFeedBackground">
+        <item name="android:background">@drawable/selector_feed_almost_blue_background</item>
+    </style>
+    <style name="selectorFeedAlmostRedBackground" parent="selectorFeedBackground">
+        <item name="android:background">@drawable/selector_feed_almost_red_background</item>
+    </style>
+    <style name="selectorFeedAlmostGreenBackground" parent="selectorFeedBackground">
+        <item name="android:background">@drawable/selector_feed_almost_green_background</item>
+    </style>
+    <style name="selectorFeedAlmostBlueBackground.dark" parent="selectorFeedBackground.dark" />
+    <style name="selectorFeedAlmostRedBackground.dark" parent="selectorFeedBackground.dark" />
+    <style name="selectorFeedAlmostGreenBackground.dark" parent="selectorFeedBackground.dark" />
+
     <style name="selectorFeedBackground">
         <item name="android:background">@drawable/selector_feed_background</item>
     </style>

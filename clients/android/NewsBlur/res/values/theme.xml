@@ -12,6 +12,9 @@
         <item name="buttonBarNeutralButtonStyle">@style/dialogButton</item>
         <item name="selectorFolderBackground">@style/selectorFolderBackground</item>
         <item name="selectorFeedBackground">@style/selectorFeedBackground</item>
+        <item name="selectorFeedAlmostBlueBackground">@style/selectorFeedAlmostBlueBackground</item>
+        <item name="selectorFeedAlmostRedBackground">@style/selectorFeedAlmostRedBackground</item>
+        <item name="selectorFeedAlmostGreenBackground">@style/selectorFeedAlmostGreenBackground</item>
         <item name="feedRowNeutCountText">@style/feedRowNeutCountText</item>
         <item name="actionbarBackground">@style/actionbarBackground</item>
         <item name="listBackground">@style/listBackground</item>
@@ -65,6 +68,9 @@
         <item name="buttonBarNeutralButtonStyle">@style/dialogButton.dark</item>
         <item name="selectorFolderBackground">@style/selectorFolderBackground.dark</item>
         <item name="selectorFeedBackground">@style/selectorFeedBackground.dark</item>
+        <item name="selectorFeedAlmostBlueBackground">@style/selectorFeedBackground.dark</item>
+        <item name="selectorFeedAlmostRedBackground">@style/selectorFeedBackground.dark</item>
+        <item name="selectorFeedAlmostGreenBackground">@style/selectorFeedBackground.dark</item>
         <item name="feedRowNeutCountText">@style/feedRowNeutCountText.dark</item>
         <item name="actionbarBackground">@style/actionbarBackground.dark</item>
         <item name="listBackground">@style/listBackground.dark</item>
@@ -119,6 +125,9 @@
         <item name="buttonBarNeutralButtonStyle">@style/dialogButton.dark</item>
         <item name="selectorFolderBackground">@style/selectorFolderBackground.black</item>
         <item name="selectorFeedBackground">@style/selectorFeedBackground.dark</item>
+        <item name="selectorFeedAlmostBlueBackground">@style/selectorFeedBackground.dark</item>
+        <item name="selectorFeedAlmostRedBackground">@style/selectorFeedBackground.dark</item>
+        <item name="selectorFeedAlmostGreenBackground">@style/selectorFeedBackground.dark</item>
         <item name="feedRowNeutCountText">@style/feedRowNeutCountText.dark</item>
         <item name="actionbarBackground">@style/actionbarBackground.black</item>
         <item name="listBackground">@style/listBackground.dark</item>

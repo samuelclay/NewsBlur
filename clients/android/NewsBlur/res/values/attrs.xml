@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="selectorFeedAlmostBlueBackground" format="string" />
+    <attr name="selectorFeedAlmostRedBackground" format="string" />
+    <attr name="selectorFeedAlmostGreenBackground" format="string" />
     <attr name="selectorFolderBackground" format="string" />
     <attr name="selectorFeedBackground" format="string" />
     <attr name="feedRowNeutCountText" format="string" />
