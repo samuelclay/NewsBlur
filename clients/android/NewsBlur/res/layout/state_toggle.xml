@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/toggle_container"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:baselineAligned="false"
@@ -37,6 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="1dp"
         android:layout_weight="1"
+        android:animateLayoutChanges="true"
         android:background="@drawable/intel_toggle_background_selector"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -51,6 +53,15 @@
             android:layout_height="20dp"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_indicator_unread" />
+
+        <TextView
+            android:id="@+id/toggle_some_text"
+            style="?toggleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:gravity="center"
+            android:text="@string/state_unread" />
     </LinearLayout>
 
     <LinearLayout
@@ -59,6 +70,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="1dp"
         android:layout_weight="1"
+        android:animateLayoutChanges="true"
         android:background="@drawable/intel_toggle_background_selector"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -72,6 +84,15 @@
             android:layout_width="17dp"
             android:layout_height="17dp"
             android:src="@drawable/ic_indicator_focus" />
+
+        <TextView
+            android:id="@+id/toggle_focus_text"
+            style="?toggleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:gravity="center"
+            android:text="@string/state_focus" />
     </LinearLayout>
 
     <LinearLayout
@@ -80,6 +101,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="1dp"
         android:layout_weight="1"
+        android:animateLayoutChanges="true"
         android:background="@drawable/intel_toggle_background_selector"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -93,6 +115,15 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_saved" />
+
+        <TextView
+            android:id="@+id/toggle_saved_text"
+            style="?toggleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:gravity="center"
+            android:text="@string/state_saved" />
 
     </LinearLayout>
 

@@ -138,4 +138,8 @@
 
     <color name="widget_background">#C8000000</color>
 
+    <color name="almost_green">#D6E3DA</color>
+    <color name="almost_blue">#DADFE7</color>
+    <color name="almost_red">#DFDCD5</color>
+
 </resources>

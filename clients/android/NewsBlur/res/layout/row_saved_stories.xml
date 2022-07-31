@@ -33,7 +33,8 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/row_saved_icon"
         android:text="@string/saved_stories_title"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:letterSpacing="@dimen/extra_letter_spacing" />
 
     <TextView
         android:id="@+id/row_foldersum"

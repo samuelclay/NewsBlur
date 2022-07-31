@@ -22,6 +22,7 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/row_everything_icon"
         android:text="@string/infrequent_title"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:letterSpacing="@dimen/extra_letter_spacing" />
 
 </RelativeLayout>
