@@ -671,8 +671,8 @@ def load_single_feed(request, feed_id):
         # User must be subscribed to a newsletter in order to read it
         raise Http404
     
-    if page > 200:
-        logging.user(request, "~BR~FK~SBOver page 200 on single feed: %s" % page)
+    if page > 400:
+        logging.user(request, "~BR~FK~SBOver page 400 on single feed: %s" % page)
         assert False
     
     if query:
@@ -1029,7 +1029,7 @@ def load_starred_stories(request):
         story['long_parsed_date']  = format_story_link_date__long(story_date, nowtz)
         starred_date               = localtime_for_timezone(story['starred_date'], user.profile.timezone)
         story['starred_date']      = format_story_link_date__long(starred_date, nowtz)
-        story['starred_timestamp'] = starred_date.strftime('%s')
+        story['starred_timestamp'] = int(starred_date.timestamp())
         story['read_status']       = 1
         story['starred']           = True
         story['intelligence']      = {
@@ -1354,7 +1354,7 @@ def load_read_stories(request):
             starred_date = localtime_for_timezone(starred_story['starred_date'],
                                                   user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date, now)
-            story['starred_timestamp'] = starred_date.strftime('%s')
+            story['starred_timestamp'] = int(starred_date.timestamp())
         if story['story_hash'] in shared_stories:
             story['shared'] = True
             story['shared_comments'] = strip_tags(shared_stories[story['story_hash']]['comments'])
@@ -1533,7 +1533,7 @@ def load_river_stories__redis(request):
             starred_date = localtime_for_timezone(starred_stories[story['story_hash']]['starred_date'],
                                                   user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date, now)
-            story['starred_timestamp'] = starred_date.strftime('%s')
+            story['starred_timestamp'] = int(starred_date.timestamp())
             story['user_tags'] = starred_stories[story['story_hash']]['user_tags']
             story['user_notes'] = starred_stories[story['story_hash']]['user_notes']
             story['highlights'] = starred_stories[story['story_hash']]['highlights']
