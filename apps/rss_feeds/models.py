@@ -1547,10 +1547,10 @@ class Feed(models.Model):
             self.save_popular_authors(feed_authors=feed_authors[:-1])
 
     @classmethod
-    def trim_old_stories(cls, start=0, verbose=True, dryrun=False, total=0):
+    def trim_old_stories(cls, start=0, verbose=True, dryrun=False, total=0, end=None):
         now = datetime.datetime.now()
         month_ago = now - datetime.timedelta(days=settings.DAYS_OF_STORY_HASHES)
-        feed_count = Feed.objects.latest('pk').pk
+        feed_count = end or Feed.objects.latest('pk').pk
 
         for feed_id in range(start, feed_count):
             if feed_id % 1000 == 0:
@@ -3089,7 +3089,7 @@ class MStarredStory(mongo.DynamicDocument):
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
     user_notes               = mongo.StringField()
     user_tags                = mongo.ListField(mongo.StringField(max_length=128))
-    highlights               = mongo.ListField(mongo.StringField(max_length=1024))
+    highlights               = mongo.ListField(mongo.StringField(max_length=16384))
     image_urls               = mongo.ListField(mongo.StringField(max_length=1024))
 
     meta = {

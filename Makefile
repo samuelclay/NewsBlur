@@ -5,19 +5,10 @@ newsblur := $(shell docker ps -qf "name=newsblur_web")
 
 .PHONY: node
 
-#creates newsblur, but does not rebuild images or create keys
-start:
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose up -d
+nb: pull bounce migrate bootstrap collectstatic
 
 metrics:
 	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose -f docker-compose.yml -f docker-compose.metrics.yml up -d
-
-metrics-ps:
-	- RUNWITHMAKEBUILD=True docker compose -f docker-compose.yml -f docker-compose.metrics.yml ps
-
-rebuild:
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose down
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose up -d
 
 collectstatic: 
 	- rm -fr static
@@ -25,12 +16,14 @@ collectstatic:
 	- docker run --rm -v $(shell pwd):/srv/newsblur newsblur/newsblur_deploy
 
 #creates newsblur, builds new images, and creates/refreshes SSL keys
-nb: pull
+bounce:
 	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose down
 	- [[ -d config/certificates ]] && echo "keys exist" || make keys
 	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose up -d --build --remove-orphans
-	- docker exec newsblur_web ./manage.py migrate
+
+bootstrap:
 	- docker exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
+
 nbup:
 	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose up -d --build --remove-orphans
 coffee:

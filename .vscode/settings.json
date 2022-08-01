@@ -35,4 +35,6 @@
     "files.associations": {
         "*.yml": "ansible"
     },
+    "nrf-connect.toolchain.path": "${nrf-connect.toolchain:1.9.1}",
+    "C_Cpp.default.configurationProvider": "nrf-connect",
 }
