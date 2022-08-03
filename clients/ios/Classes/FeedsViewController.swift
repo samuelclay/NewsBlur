@@ -52,6 +52,53 @@ class FeedsViewController: FeedsObjCViewController {
         }
     }
     
+    @objc func addSubfolderFeeds() {
+        for folderName in appDelegate.dictFoldersArray {
+            if let folderName = folderName as? String {
+                addSubfolderFeeds(for: folderName)
+            }
+        }
+    }
+    
+    private func addSubfolderFeeds(for folderTitle: String) {
+        guard let parentTitle = self.parentTitle(for: folderTitle) else {
+            return
+        }
+        
+        guard let childFeeds = appDelegate.dictFolders[folderTitle] as? [AnyObject],
+            let parentFeeds = appDelegate.dictFolders[parentTitle] as? [AnyObject] else {
+            return
+        }
+        
+        let existingSubfolders = appDelegate.dictSubfolders[parentTitle] as? [AnyObject] ?? []
+        
+        appDelegate.dictFolders[parentTitle] = parentFeeds + childFeeds
+        appDelegate.dictSubfolders[parentTitle] = existingSubfolders + childFeeds
+        
+        addSubfolderFeeds(for: parentTitle)
+    }
+    
+    @objc(parentTitleForFolderTitle:) func parentTitle(for folderTitle: String) -> String? {
+        guard let range = folderTitle.range(of: " ▸ ", options: .backwards) else {
+            return nil
+        }
+        
+        return String(folderTitle[..<range.lowerBound])
+    }
+    
+    @objc(parentTitlesForFolderTitle:) func parentTitles(for folderTitle: String) -> [String] {
+        var parentTitles = [String]()
+        
+        guard let parentTitle = parentTitle(for: folderTitle) else {
+            return []
+        }
+        
+        parentTitles.append(parentTitle)
+        parentTitles += self.parentTitles(for: parentTitle)
+        
+        return parentTitles
+    }
+    
     var loadWorkItem: DispatchWorkItem?
     
     @objc func loadNotificationStory() {

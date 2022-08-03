@@ -43,6 +43,7 @@
     NSInteger countWidth = 0;
     NSString *accessibilityCount = @"";
     NSArray *folderComponents = [folderName componentsSeparatedByString:@" ▸ "];
+    folderName = folderComponents.lastObject;
     
     CGFloat indentationOffset = (folderComponents.count - 1) * 28;
     rect.origin.x += indentationOffset;
@@ -121,7 +122,7 @@
     } else if ([folderName isEqual:@"saved_searches"]) {
         folderTitle = @"Saved Searches";
     } else {
-        folderTitle = [appDelegate.dictFoldersArray objectAtIndex:section];
+        folderTitle = folderName;
     }
     UIColor *shadowColor = UIColorFromRGB(0xF0F2E9);
     CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 0, [shadowColor CGColor]);
