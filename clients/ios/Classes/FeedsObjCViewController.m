@@ -801,8 +801,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         
         [sortedFolders setValue:sortedArray forKey:folderTitle];
     }
+    
     appDelegate.dictFolders = sortedFolders;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
+    appDelegate.dictSubfolders = [NSMutableDictionary dictionary];
+    
+    // Add feeds from subfolders
+    [self addSubfolderFeeds];
     
     // Add all stories etc. to top
     [NewsBlurTopSectionNames enumerateObjectsUsingBlock:^(NSString * _Nonnull sectionName, NSUInteger sectionIndex, BOOL * _Nonnull stop) {
@@ -910,11 +915,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         if ([folderName containsString:@" - "]) {
             NSDictionary *folder = folders[folderName];
             NSArray *components = [folderName componentsSeparatedByString:@" - "];
-            NSInteger count = components.count;
-            NSString *parentName = components[count - 2];
+            NSMutableArray *parentComponents = [components mutableCopy];
+            [parentComponents removeLastObject];
+            NSString *rawParentName = [parentComponents componentsJoinedByString:@" - "];
+            NSString *tidyParentName = [parentComponents componentsJoinedByString:@" ▸ "];
             NSString *tidyName = [components componentsJoinedByString:@" ▸ "];
             
-            if (folders[parentName] != nil) {
+            if (folders[rawParentName] != nil || folders[tidyParentName] != nil) {
                 folders[folderName] = nil;
                 folders[tidyName] = folder;
             }
@@ -986,6 +993,18 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (void)loadNotificationStory {
     @throw [NSException exceptionWithName:@"Missing loadNotificationStory implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
+- (void)addSubfolderFeeds {
+    @throw [NSException exceptionWithName:@"Missing addSubfolderFeeds implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
+- (NSString *)parentTitleForFolderTitle:(NSString *)folderTitle {
+    @throw [NSException exceptionWithName:@"Missing parentTitleForFolderTitle: implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
+- (NSArray<NSString *> *)parentTitlesForFolderTitle:(NSString *)folderTitle {
+    @throw [NSException exceptionWithName:@"Missing parentsTitlesForFolderTitle: implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
 
 - (void)showUserProfile {
@@ -1641,7 +1660,21 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
             return 0;
         }
         
+        for (NSString *parentName in [self parentTitlesForFolderTitle:folderName]) {
+            if ([appDelegate isFolderCollapsed:parentName]) {
+                return 0;
+            }
+        }
+        
         if (![self isFeedVisible:feedId]) {
+            return 0;
+        }
+    }
+    
+    NSArray *subfolderFeeds = appDelegate.dictSubfolders[folderName];
+    
+    for (id subFeedId in subfolderFeeds) {
+        if ([subFeedId isEqual:feedId]) {
             return 0;
         }
     }
@@ -1815,7 +1848,13 @@ heightForHeaderInSection:(NSInteger)section {
         ![prefs boolForKey:@"show_global_shared_stories"]) {
         return 0;
     }
-
+    
+    for (NSString *parentName in [self parentTitlesForFolderTitle:folderName]) {
+        if ([appDelegate isFolderCollapsed:parentName]) {
+            return 0;
+        }
+    }
+    
     UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
     UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize];
     NSInteger height = kFolderTitleHeight;
