@@ -254,6 +254,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, strong) NSMutableDictionary *dictFeeds;
 @property (nonatomic, strong) NSMutableDictionary *dictInactiveFeeds;
 @property (nonatomic) NSMutableDictionary *dictActiveFeeds;
+@property (nonatomic, strong) NSDictionary *dictSubfolders;
 @property (nonatomic) NSDictionary *dictSocialFeeds;
 @property (nonatomic) NSDictionary *dictSavedStoryTags;
 @property (nonatomic, strong) NSDictionary *dictSavedStoryFeedCounts;
