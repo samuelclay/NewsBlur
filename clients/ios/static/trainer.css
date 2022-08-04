@@ -9,6 +9,24 @@
 
 }
 
+.NB-trainer-heading {
+    padding: 16px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #303030;
+    text-shadow: 1px 1px 0 rgba(255,255,255,.5);
+}
+
+.NB-trainer-heading-like {
+    color: #3d931b;
+    background-size: 24px;
+}
+
+.NB-trainer-heading-dislike {
+    color: #932c15;
+    background-size: 24px;
+}
+
 .NB-trainer-section {
     font-size: 13px;
 
@@ -21,7 +39,6 @@
 .NB-trainer-section-inner {
     margin: 16px 0 0;
     overflow: hidden;
-    box-shadow: 0 0 8px rgba(0, 0, 0, .6);
 }
 .NB-trainer-publisher .NB-trainer-section-inner {
     margin-bottom: 16px;
@@ -29,13 +46,12 @@
 
 .NB-trainer-section-title {
     font-size: 15px;
-    text-transform: uppercase;
     padding: 4px 12px;
     background-color: #F0F8F2;
 
     padding: 8px 12px 8px;
     background-color: #E3ECF8;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#E3ECF8), to(#CBDBF5));
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#E9ECE4), to(#EAECE5));
     text-shadow: 0 1px 0 #F2F6FE;
     border-top: 1px solid #D1DAF7;
     border-bottom: 1px solid #A1A9CF;
@@ -76,7 +92,6 @@
     -webkit-tap-highlight-color: none;
 }
 .NB-title-info {
-    text-transform: uppercase;
     color: #C0C0C0;
     font-weight: bold;
     font-size: 12px;
@@ -112,7 +127,6 @@
     cursor: pointer;
     padding: 0 8px 0 26px;
     font-size: 12px;
-    text-transform: uppercase;
     background-color: #D8DEE2;
     position: relative;
     border: 1px solid transparent;
@@ -200,16 +214,10 @@
 .NB-classifier.NB-classifier-like {
   background-color: #34912E;
   border: 1px solid #202020;
-  -webkit-box-shadow: 1px 1px 1px #BDC0D7;
-  -moz-box-shadow: 1px 1px 1px #BDC0D7;
-  box-shadow: 1px 1px 1px #BDC0D7;
 }
 .NB-classifier.NB-classifier-dislike {
   background-color: #A90103;
   border: 1px solid #000;
-  -webkit-box-shadow: 1px 1px 1px #BDC0D7;
-  -moz-box-shadow: 1px 1px 1px #BDC0D7;
-  box-shadow: 1px 1px 1px #BDC0D7;
 }
 
 .NB-classifier.NB-classifier-dislike .NB-classifier-icon-like {
