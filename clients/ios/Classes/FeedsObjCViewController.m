@@ -1093,7 +1093,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     NSArray *titles = @[@"XS", @"S", @"M", @"L", @"XL"];
     NSArray *values = @[@"xs", @"small", @"medium", @"large", @"xl"];
     
-    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
         [self.appDelegate resizeFontSize];
     }];
     
@@ -1101,9 +1101,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     titles = @[@"Compact", @"Comfortable"];
     values = @[@"compact", @"comfortable"];
     
-    [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"comfortable" preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+    [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"comfortable" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
         [self reloadFeedTitlesTable];
-        [self.appDelegate.feedDetailViewController reloadStories];
+        [self.appDelegate.feedDetailViewController reloadData];
     }];
     
     [viewController addThemeSegmentedControl];

@@ -200,18 +200,20 @@
 }
 
 - (NSString *)makeTrainerSections {
+    NSString *heading = @"<div class=\"NB-trainer-heading\">What do you <b class=\"NB-trainer-heading-like\">👍 like</b> and <b class=\"NB-trainer-heading-dislike\">dislike 👎</b> about this story?</div>";
     NSString *storyAuthor = self.feedTrainer ? [self makeFeedAuthors] : [self makeStoryAuthor];
     NSString *storyTags = self.feedTrainer ? [self makeFeedTags] : [self makeStoryTags];
     NSString *storyTitle = self.feedTrainer ? [self makeFeedTitles] : [self makeTitle];
     NSString *storyPublisher = [self makePublisher];
     
     NSString *htmlString = [NSString stringWithFormat:@
-                            "<div class=\"NB-trainer-inner\">"
+                            "%@<div class=\"NB-trainer-inner\">"
                             "    <div class=\"NB-trainer-title NB-trainer-section\">%@</div>"
                             "    <div class=\"NB-trainer-author NB-trainer-section\">%@</div>"
                             "    <div class=\"NB-trainer-tags NB-trainer-section\">%@</div>"
                             "    <div class=\"NB-trainer-publisher NB-trainer-section\">%@</div>"
                             "</div>",
+                            heading,
                             storyTitle,
                             storyAuthor,
                             storyTags,

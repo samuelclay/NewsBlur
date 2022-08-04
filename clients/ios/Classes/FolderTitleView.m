@@ -37,6 +37,9 @@
         [subview removeFromSuperview];
     }
     
+    [UIColorFromRGB(0xF7F8F5) set];
+    CGContextFillRect(context, rect);
+    
     NSString *folderName = appDelegate.dictFoldersArray[section];
     NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
@@ -96,10 +99,8 @@
     // create the parent view that will hold header Label
     UIView* customView = [[UIView alloc] initWithFrame:rect];
     
-    [UIColorFromRGB(0xF7F8F5) set];
-    CGContextFillRect(context, rect);
-    
     // Folder title
+    UIColor *backgroundColor = UIColorFromRGB(0xEAECE6);
     UIColor *textColor = UIColorFromRGB(0x4C4D4A);
     UIFontDescriptor *boldFontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
     UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
@@ -123,7 +124,12 @@
         folderTitle = @"Saved Searches";
     } else {
         folderTitle = folderName;
+        backgroundColor = UIColorFromRGB(0xF7F8F5);
     }
+    
+    [backgroundColor set];
+    CGContextFillRect(context, rect);
+    
     UIColor *shadowColor = UIColorFromRGB(0xF0F2E9);
     CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 0, [shadowColor CGColor]);
 
@@ -274,6 +280,9 @@
         }
         allowLongPress = YES;
     }
+    
+    folderImage = [folderImage imageWithTintColor:UIColorFromRGB(0x95968F)];
+    
     [folderImage drawInRect:CGRectMake(rect.origin.x + folderImageViewX, CGRectGetMidY(rect)-height/2, width, height)];
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
