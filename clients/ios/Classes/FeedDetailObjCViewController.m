@@ -32,7 +32,7 @@
 #import "StoryTitleAttributedString.h"
 #import "NewsBlur-Swift.h"
 
-#define kTableViewRowHeight 55;
+#define kTableViewRowHeight 70;
 #define kTableViewRiverRowHeight 90;
 #define kTableViewShortRowDifference 18;
 
@@ -1864,6 +1864,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSString *spacing = [[NSUserDefaults standardUserDefaults] objectForKey:@"feed_list_spacing"];
         if ([spacing isEqualToString:@"compact"]) {
             height -= kTableViewShortRowDifference;
+        } else {
+            height += kTableViewShortRowDifference;
         }
         
         UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
@@ -1876,7 +1878,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 NSString *content = [story[@"story_content"] convertHTML];
                 
                 if (content.length < 50 && [story[@"story_title"] length] < 30) {
-                    return height + font.pointSize * 3;
+                    return height + font.pointSize * 2;
                 } else if (content.length < 50 && [story[@"story_title"] length] >= 30) {
                     return height + font.pointSize * 5;
                 } else if (content.length < 100) {
@@ -1887,7 +1889,13 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                     return height + font.pointSize * 9;
                 }
             } else {
-                return height + font.pointSize * 5;
+                NSDictionary *story = [self getStoryAtRow:indexPath.row];
+                
+                if ([story[@"story_title"] length] < 40) {
+                    return height + font.pointSize * 3;
+                } else {
+                    return height + font.pointSize * 4;
+                }
             }
         } else {
             return height + font.pointSize * 2;
@@ -2297,7 +2305,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             }];
         }
         
-        [viewController addTitle:@"Notifications" iconName:@"dialog-notifications" selectionShouldDismiss:YES handler:^{
+        [viewController addTitle:@"Notifications" iconName:@"dialog-notifications" iconColor:UIColorFromRGB(0xD58B4F) selectionShouldDismiss:YES handler:^{
             [self
              openNotificationsWithFeed:[NSString stringWithFormat:@"%@", [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
         }];
@@ -2354,7 +2362,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSArray *titles = @[@"Title", @"content_preview_small.png", @"content_preview_medium.png", @"content_preview_large.png"];
     NSArray *values = @[@"title", @"short", @"medium", @"long"];
     
-    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
         [self.appDelegate resizePreviewSize];
     }];
     
@@ -2371,7 +2379,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     titles = @[@"No image", @"image_preview_small_left.png", @"image_preview_large_left.png", @"image_preview_large_right.png", @"image_preview_small_right.png"];
     values = @[@"none", @"small_left", @"large_left", @"large_right", @"small_right"];
     
-    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
         [self.appDelegate resizePreviewSize];
     }];
     
@@ -2379,7 +2387,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     titles = @[@"XS", @"S", @"M", @"L", @"XL"];
     values = @[@"xs", @"small", @"medium", @"large", @"xl"];
     
-    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
         [self.appDelegate resizeFontSize];
     }];
     
@@ -2398,9 +2406,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     titles = @[@"Compact", @"Comfortable"];
     values = @[@"compact", @"comfortable"];
     
-    [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"comfortable" preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+    [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"comfortable" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
         [self.appDelegate.feedsViewController reloadFeedTitlesTable];
-        [self reloadStories];
+        [self reloadData];
     }];
     
     [viewController addThemeSegmentedControl];
@@ -2735,7 +2743,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         NSString *title = folder;
         NSString *iconName = @"menu_icn_move.png";
         
-        if (![title hasPrefix:@"river_"] && ![title hasSuffix:@"_stories"]) {
+        if (![title hasPrefix:@"river_"] && ![title hasSuffix:@"_stories"] && ![title hasPrefix:@"saved_"]) {
             if ([title isEqualToString:@"everything"]) {
                 title = @"Top Level";
                 iconName = @"menu_icn_all.png";
@@ -2745,7 +2753,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                 NSArray *components = [title componentsSeparatedByString:@" ▸ "];
                 title = components.lastObject;
                 for (NSUInteger idx = 0; idx < components.count; idx++) {
-                    title = [@"\t" stringByAppendingString:title];
+                    title = [@"\t\t" stringByAppendingString:title];
                 }
             }
             
@@ -2827,8 +2835,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:(rowIndex - offset) inSection:0];
     NSIndexPath *oldIndexPath = storyTitlesTable.indexPathForSelectedRow;
     
-    [self tableView:storyTitlesTable deselectRowAtIndexPath:oldIndexPath animated:YES];
-    [self tableView:storyTitlesTable selectRowAtIndexPath:indexPath animated:YES];
+    if (![indexPath isEqual:oldIndexPath]) {
+        [self tableView:storyTitlesTable deselectRowAtIndexPath:oldIndexPath animated:YES];
+        [self tableView:storyTitlesTable selectRowAtIndexPath:indexPath animated:YES];
+    }
     
     // check to see if the cell is completely visible
     CGRect cellRect = [storyTitlesTable rectForRowAtIndexPath:indexPath];
