@@ -1277,7 +1277,7 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
 //        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
 //        [navController presentViewController:trainerViewController animated:YES completion:nil];
-        [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(420, 382) sender:sender];
+        [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(500, 630) sender:sender];
     } else {
         if (self.trainNavigationController == nil) {
             self.trainNavigationController = [[UINavigationController alloc]
@@ -1294,7 +1294,7 @@
     trainerViewController.storyTrainer = YES;
     trainerViewController.feedLoaded = YES;
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(420, 382) sender:sender];
+        [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(500, 630) sender:sender];
     } else {
         if (self.trainNavigationController == nil) {
             self.trainNavigationController = [[UINavigationController alloc]

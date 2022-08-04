@@ -190,8 +190,15 @@ static UIFont *indicatorFont = nil;
     NSString *preview = [[NSUserDefaults standardUserDefaults] stringForKey:@"story_list_preview_images_size"];
     BOOL isSmall = [preview isEqualToString:@"small"] || [preview isEqualToString:@"small_left"] || [preview isEqualToString:@"small_right"];
     BOOL isLeft = [preview isEqualToString:@"small_left"] || [preview isEqualToString:@"large_left"];
+    NSString *spacing = [[NSUserDefaults standardUserDefaults] objectForKey:@"feed_list_spacing"];
+    BOOL isComfortable = ![spacing isEqualToString:@"compact"];
     
     CGRect rect = CGRectInset(r, 12, 12);
+    CGFloat comfortMargin = isComfortable ? 10 : 0;
+    
+    riverPadding += comfortMargin;
+    riverPreview += comfortMargin;
+    
     CGFloat previewHorizMargin = isSmall ? 14 : 0;
     CGFloat previewVertMargin = isSmall ? 36 : 0;
     CGFloat imageWidth = isSmall ? 60 : 80;
@@ -309,7 +316,7 @@ static UIFont *indicatorFont = nil;
             textColor = UIColorFromLightSepiaMediumDarkRGB(0x686868, 0x686868, 0xA0A0A0, 0x808080);
         }
         
-        NSInteger siteTitleY = (20 - font.pointSize/2)/2;
+        NSInteger siteTitleY = (20 + comfortMargin - font.pointSize/2)/2;
         [cell.siteTitle drawInRect:CGRectMake(leftMargin - feedOffset + 20, siteTitleY, rect.size.width - 20, 20)
                     withAttributes:@{NSFontAttributeName: font,
                                      NSForegroundColorAttributeName: textColor,
@@ -394,7 +401,7 @@ static UIFont *indicatorFont = nil;
         CGFloat boundingRows = cell.isShort ? 1.5 : 3;
         
         if (!cell.isShort && (self.cell.textSize == FeedDetailTextSizeMedium || self.cell.textSize == FeedDetailTextSizeLong)) {
-            boundingRows = (r.size.height - 30 - CGRectGetMaxY(storyTitleFrame)) / font.pointSize;
+            boundingRows = (r.size.height - 30 - comfortMargin - CGRectGetMaxY(storyTitleFrame)) / font.pointSize;
         }
         
         CGSize contentSize = [cell.storyContent
@@ -404,9 +411,9 @@ static UIFont *indicatorFont = nil;
                                            NSParagraphStyleAttributeName: paragraphStyle}
                               context:nil].size;
         CGFloat textRows = contentSize.height / font.pointSize;
-        int storyContentY = r.size.height - 16 - 4 - ((font.pointSize * textRows + font.lineHeight) + contentSize.height) / 2;
+        int storyContentY = r.size.height - 16 - comfortMargin - 4 - ((font.pointSize * textRows + font.lineHeight) + contentSize.height) / 2;
         if (cell.isShort) {
-            storyContentY = r.size.height - 10 - 4 - ((font.pointSize + font.lineHeight) + contentSize.height)/2;
+            storyContentY = r.size.height - 10 - comfortMargin - 4 - ((font.pointSize + font.lineHeight) + contentSize.height)/2;
         }
         
         [cell.storyContent
@@ -423,7 +430,7 @@ static UIFont *indicatorFont = nil;
     }
     
     // story date
-    int storyAuthorDateY = r.size.height - 18;
+    int storyAuthorDateY = r.size.height - 18 - comfortMargin;
     
     if (cell.isRead) {
         font = [UIFont fontWithName:@"WhitneySSm-Medium" size:11];
