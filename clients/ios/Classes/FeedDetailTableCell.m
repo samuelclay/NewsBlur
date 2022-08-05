@@ -204,7 +204,7 @@ static UIFont *indicatorFont = nil;
     CGFloat imageWidth = isSmall ? 60 : 80;
     CGFloat imageHeight = r.size.height - previewVertMargin;
     CGFloat leftOffset = isLeft ? imageWidth : 0;
-    CGFloat leftMargin = leftOffset + 30;
+    CGFloat leftMargin = leftOffset + 34;
     CGFloat topMargin = isSmall ? riverPreview : 0;
     
     if (isLeft) {
@@ -317,7 +317,7 @@ static UIFont *indicatorFont = nil;
         }
         
         NSInteger siteTitleY = (20 + comfortMargin - font.pointSize/2)/2;
-        [cell.siteTitle drawInRect:CGRectMake(leftMargin - feedOffset + 20, siteTitleY, rect.size.width - 20, 20)
+        [cell.siteTitle drawInRect:CGRectMake(leftMargin - feedOffset + 22, siteTitleY, rect.size.width - 20, 20)
                     withAttributes:@{NSFontAttributeName: font,
                                      NSForegroundColorAttributeName: textColor,
                                      NSParagraphStyleAttributeName: paragraphStyle}];
@@ -336,7 +336,7 @@ static UIFont *indicatorFont = nil;
     
     // story title
     UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits: UIFontDescriptorTraitBold];
-    font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
+    font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize + 1];
     if (cell.isRead) {
         textColor = UIColorFromLightSepiaMediumDarkRGB(0x585858, 0x585858, 0x989898, 0x888888);
     } else {
@@ -363,12 +363,12 @@ static UIFont *indicatorFont = nil;
     if (cell.isSaved) {
         UIImage *savedIcon = [UIImage imageNamed:@"clock"];
         [savedIcon drawInRect:CGRectMake(storyTitleX, storyTitleY - 1, 16, 16) blendMode:0 alpha:1];
-        storyTitleX += 20;
+        storyTitleX += 22;
     }
     if (cell.isShared) {
         UIImage *savedIcon = [UIImage imageNamed:@"menu_icn_share"];
         [savedIcon drawInRect:CGRectMake(storyTitleX, storyTitleY - 1, 16, 16) blendMode:0 alpha:1];
-        storyTitleX += 20;
+        storyTitleX += 22;
     }
     CGRect storyTitleFrame = CGRectMake(storyTitleX, storyTitleY,
                                         rect.size.width - storyTitleX + leftMargin, theSize.height);

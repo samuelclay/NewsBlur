@@ -2866,6 +2866,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     self.navigationController.navigationBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
     self.navigationController.toolbar.barTintColor = [UINavigationBar appearance].barTintColor;
     
+    if (self.isPhoneOrCompact) {
+        self.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
+    }
+    
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
     
