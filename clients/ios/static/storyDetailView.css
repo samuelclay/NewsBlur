@@ -895,7 +895,7 @@ a.NB-show-profile {
 }
 
 .NB-iphone .NB-button.NB-share-button .NB-icon {
-    background-position-y: 1px;
+    background-position-y: bottom;
     width: 20px;
     margin-left: -2px;
 }
