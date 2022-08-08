@@ -30,25 +30,25 @@
             app:icon="@drawable/ic_feed_train" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/share_story_button"
+            android:id="@+id/save_story_button"
             style="?storyButtons"
             android:layout_marginHorizontal="12dp"
             android:layout_toEndOf="@+id/train_story_button"
             android:layout_below="@+id/mark_read_story_button"
             android:layout_width="wrap_content"
             android:layout_height="44dp"
-            android:text="@string/share_this"
-            app:icon="@drawable/ic_share"/>
+            android:text="@string/save_this"
+            app:icon="@drawable/ic_saved" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/save_story_button"
+            android:id="@+id/share_story_button"
             style="?storyButtons"
-            android:layout_toEndOf="@+id/share_story_button"
+            android:layout_toEndOf="@+id/save_story_button"
             android:layout_below="@+id/mark_read_story_button"
             android:layout_width="wrap_content"
             android:layout_height="44dp"
-            android:text="@string/save_this"
-            app:icon="@drawable/ic_saved" />
+            android:text="@string/share_this"
+            app:icon="@drawable/ic_share"/>
 
     </RelativeLayout>
 

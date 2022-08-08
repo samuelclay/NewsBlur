@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/row_folder_icon"
-        android:layout_width="19dp"
-        android:layout_height="19dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="12dp"

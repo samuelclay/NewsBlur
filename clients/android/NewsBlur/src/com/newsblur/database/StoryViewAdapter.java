@@ -624,8 +624,9 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         // dynamic spacing
         int verticalTitlePadding = spacingStyle.getStoryTitleVerticalPadding(context);
+        int RightTitlePadding = spacingStyle.getStoryContentRightPadding(context, thumbnailStyle);
         vh.storyTitleView.setPadding(vh.storyTitleView.getPaddingLeft(), verticalTitlePadding,
-                vh.storyTitleView.getPaddingRight(), verticalTitlePadding);
+                RightTitlePadding, verticalTitlePadding);
 
         // read/unread fading
         if (this.ignoreReadStatus || (! story.read)) {
@@ -659,7 +660,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         // the image loader, which in turn can massively optimise loading.  the image loader will
         // reject nonsene values
 
-        if (PrefsUtils.getThumbnailStyle(context)  != ThumbnailStyle.OFF && vh.thumbTileView != null) {
+        if (!thumbnailStyle.isOff() && vh.thumbTileView != null) {
             // the view will display a stale, recycled thumb before the new one loads if the old is not cleared
             int thumbSizeGuess = vh.thumbTileView.getMeasuredHeight();
             vh.thumbTileView.setImageBitmap(null);
@@ -676,7 +677,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 vh.storySnippet.setMaxLines(6);
             } else if (storyContentPreviewStyle == StoryContentPreviewStyle.MEDIUM) {
                 vh.storySnippet.setMaxLines(4);
-            } else if (storyContentPreviewStyle == StoryContentPreviewStyle.SMALL){
+            } else if (storyContentPreviewStyle == StoryContentPreviewStyle.SMALL) {
                 vh.storySnippet.setMaxLines(2);
             }
             if (!TextUtils.isEmpty(story.shortContent)) {
@@ -699,9 +700,10 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         vh.storyAuthor.setTextSize(textSize * defaultTextSize_story_item_date_or_author);
         vh.storySnippet.setTextSize(textSize * defaultTextSize_story_item_snip);
 
+        int contentRightPadding = spacingStyle.getStoryContentRightPadding(context, thumbnailStyle);
         int contentVerticalPadding = spacingStyle.getStoryContentVerticalPadding(context);
         vh.storySnippet.setPadding(vh.storySnippet.getPaddingLeft(), vh.storySnippet.getPaddingTop(),
-                vh.storySnippet.getPaddingRight(), contentVerticalPadding);
+                contentRightPadding, contentVerticalPadding);
 
         int verticalContainerMargin = spacingStyle.getStoryContainerMargin(context);
         RelativeLayout.LayoutParams feedIconLp = (RelativeLayout.LayoutParams) vh.feedIconView.getLayoutParams();
@@ -711,15 +713,15 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         RelativeLayout.LayoutParams storyDateLp = (RelativeLayout.LayoutParams) vh.storyDate.getLayoutParams();
         storyDateLp.setMargins(storyDateLp.leftMargin, storyDateLp.topMargin, storyDateLp.rightMargin, verticalContainerMargin);
 
-        if (PrefsUtils.getThumbnailStyle(context)  != ThumbnailStyle.OFF && vh.thumbViewRight != null && vh.thumbViewLeft != null) {
+        if (!thumbnailStyle.isOff() && vh.thumbViewRight != null && vh.thumbViewLeft != null) {
             // the view will display a stale, recycled thumb before the new one loads if the old is not cleared
-            if (thumbnailStyle == ThumbnailStyle.LEFT_LARGE || thumbnailStyle == ThumbnailStyle.LEFT_SMALL) {
+            if (thumbnailStyle.isLeft()) {
                 int thumbSizeGuess = vh.thumbViewLeft.getMeasuredHeight();
                 vh.thumbViewLeft.setImageBitmap(null);
                 vh.thumbLoader = thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewLeft, thumbSizeGuess, true);
                 vh.thumbViewRight.setVisibility(View.GONE);
                 vh.thumbViewLeft.setVisibility(View.VISIBLE);
-            } else if (thumbnailStyle == ThumbnailStyle.RIGHT_LARGE || thumbnailStyle == ThumbnailStyle.RIGHT_SMALL) {
+            } else if (thumbnailStyle.isRight()) {
                 int thumbSizeGuess = vh.thumbViewRight.getMeasuredHeight();
                 vh.thumbViewRight.setImageBitmap(null);
                 vh.thumbLoader = thumbnailLoader.displayImage(story.thumbnailUrl, vh.thumbViewRight, thumbSizeGuess, true);
@@ -735,23 +737,23 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         int sizeRes = R.dimen.thumbnails_size;
-        if (thumbnailStyle == ThumbnailStyle.LEFT_SMALL || thumbnailStyle == ThumbnailStyle.RIGHT_SMALL) {
+        if (thumbnailStyle.isSmall()) {
             sizeRes = R.dimen.thumbnails_small_size;
         }
         int sizeDp = context.getResources().getDimensionPixelSize(sizeRes);
 
         RelativeLayout.LayoutParams params = null;
-        if ((thumbnailStyle == ThumbnailStyle.LEFT_LARGE || thumbnailStyle == ThumbnailStyle.LEFT_SMALL) && vh.thumbViewLeft != null) {
+        if (thumbnailStyle.isLeft() && vh.thumbViewLeft != null) {
             vh.thumbViewLeft.setThumbnailStyle(thumbnailStyle);
             params = (RelativeLayout.LayoutParams) vh.thumbViewLeft.getLayoutParams();
-        } else if ((thumbnailStyle == ThumbnailStyle.RIGHT_LARGE || thumbnailStyle == ThumbnailStyle.RIGHT_SMALL) && vh.thumbViewRight != null) {
+        } else if (thumbnailStyle.isRight() && vh.thumbViewRight != null) {
             vh.thumbViewRight.setThumbnailStyle(thumbnailStyle);
             params = (RelativeLayout.LayoutParams) vh.thumbViewRight.getLayoutParams();
         }
         if (params != null && params.width != sizeDp) {
             params.width = sizeDp;
         }
-        if (params != null && (thumbnailStyle == ThumbnailStyle.RIGHT_SMALL || thumbnailStyle == ThumbnailStyle.LEFT_SMALL)) {
+        if (params != null && thumbnailStyle.isSmall()) {
             int verticalMargin = singleFeed ? verticalContainerMargin + UIUtils.dp2px(context, 2) : verticalContainerMargin;
             params.setMargins(UIUtils.dp2px(context, 8), verticalMargin, 0, verticalMargin);
             params.addRule(RelativeLayout.ALIGN_BOTTOM, vh.storySnippet.getId());
