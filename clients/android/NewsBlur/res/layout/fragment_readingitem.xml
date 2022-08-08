@@ -139,8 +139,8 @@
                         android:layout_below="@id/reading_story_changes"
                         android:layout_alignLeft="@id/reading_item_title"
                         android:layout_marginTop="8dp"
-                        app:chipSpacingHorizontal="4dp"
-                        app:chipSpacingVertical="4dp" />
+                        app:chipSpacingHorizontal="8dp"
+                        app:chipSpacingVertical="6dp" />
 
                     <TextView
                         android:id="@+id/reading_item_saved_timestamp"
@@ -164,8 +164,8 @@
                         android:layout_alignLeft="@id/reading_item_title"
                         android:layout_marginTop="8dp"
                         android:visibility="gone"
-                        app:chipSpacingHorizontal="4dp"
-                        app:chipSpacingVertical="4dp" />
+                        app:chipSpacingHorizontal="8dp"
+                        app:chipSpacingVertical="6dp" />
 
                 </RelativeLayout>
 

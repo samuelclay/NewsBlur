@@ -287,7 +287,7 @@ public abstract class ItemsList extends NbActivity {
             menu.findItem(R.id.menu_story_thumbnail_right_small).setChecked(true);
         } else if (thumbnailStyle == ThumbnailStyle.RIGHT_LARGE) {
             menu.findItem(R.id.menu_story_thumbnail_right_large).setChecked(true);
-        } else if (thumbnailStyle == ThumbnailStyle.OFF) {
+        } else if (thumbnailStyle.isOff()) {
             menu.findItem(R.id.menu_story_thumbnail_no_preview).setChecked(true);
         }
 

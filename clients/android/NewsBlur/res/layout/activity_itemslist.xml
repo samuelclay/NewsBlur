@@ -19,12 +19,13 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:animateLayoutChanges="true"
-            android:drawableLeft="@android:drawable/ic_menu_search"
+            android:drawableLeft="@drawable/ic_search"
             android:hint="@string/story_search_hint"
             android:imeOptions="actionSearch"
             android:inputType="textNoSuggestions"
             android:textSize="16sp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:autofillHints="@null"/>
 
         <LinearLayout
             android:id="@+id/activity_itemlist_container"

@@ -29,4 +29,8 @@ enum class SpacingStyle {
         COMFORTABLE -> UIUtils.dp2px(context, 11)
         COMPACT -> UIUtils.dp2px(context, 3)
     }
+
+    fun getStoryContentRightPadding(context: Context, thumbnailStyle: ThumbnailStyle): Int =
+            if (thumbnailStyle.isRight()) UIUtils.dp2px(context, 4)
+            else UIUtils.dp2px(context, 16)
 }

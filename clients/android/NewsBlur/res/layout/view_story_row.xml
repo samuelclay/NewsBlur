@@ -109,7 +109,6 @@
         android:layout_toRightOf="@id/story_item_inteldot_container"
         android:ellipsize="end"
         android:maxLines="3"
-        android:paddingRight="4dp"
         android:textStyle="bold" />
 
     <!--dynamic spacing-->
@@ -120,8 +119,6 @@
         android:layout_toLeftOf="@id/story_item_thumbnail_right"
         android:layout_toRightOf="@id/story_item_inteldot_container"
         android:layout_below="@id/story_item_title"
-        android:paddingRight="4dp"
-        android:maxLines="2"
         android:ellipsize="end"
         android:lineSpacingExtra="1dp"
         style="?storySnippetText" />
