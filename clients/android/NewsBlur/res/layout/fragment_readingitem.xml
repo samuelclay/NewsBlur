@@ -139,7 +139,7 @@
                         android:layout_below="@id/reading_story_changes"
                         android:layout_alignLeft="@id/reading_item_title"
                         android:layout_marginTop="8dp"
-                        app:chipSpacingHorizontal="8dp"
+                        app:chipSpacingHorizontal="6dp"
                         app:chipSpacingVertical="6dp" />
 
                     <TextView
@@ -164,7 +164,7 @@
                         android:layout_alignLeft="@id/reading_item_title"
                         android:layout_marginTop="8dp"
                         android:visibility="gone"
-                        app:chipSpacingHorizontal="8dp"
+                        app:chipSpacingHorizontal="6dp"
                         app:chipSpacingVertical="6dp" />
 
                 </RelativeLayout>

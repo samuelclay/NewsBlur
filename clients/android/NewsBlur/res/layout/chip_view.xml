@@ -11,5 +11,5 @@
     app:chipIconSize="14dp"
     app:chipMinHeight="18dp"
     app:chipMinTouchTargetSize="18dp"
-    app:textEndPadding="2dp"
-    app:textStartPadding="2dp" />
+    app:textEndPadding="0dp"
+    app:textStartPadding="3dp" />
