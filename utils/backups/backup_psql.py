@@ -37,9 +37,9 @@ BACKUP_DIR = '/srv/newsblur/backup/'
 s3 = boto3.client('s3', aws_access_key_id=settings.S3_ACCESS_KEY, aws_secret_access_key=settings.S3_SECRET) 
 
 hostname = socket.gethostname().replace('-','_')
-s3_object_name = f'backup_{hostname}/backup_{hostname}_{time.strftime("%Y-%m-%d-%H-%M")}.sql'
-path = os.listdir(BACKUP_DIR)[0]
-full_path = os.path.join(BACKUP_DIR, path)
+full_path = sys.argv[1]
+backup_filename = os.path.basename(full_path)
+s3_object_name = f'backup_{hostname}/{backup_filename}.sql'
 print('Uploading %s to %s on S3 bucket %s' % (full_path, s3_object_name, settings.S3_BACKUP_BUCKET))
 s3.upload_file(full_path, settings.S3_BACKUP_BUCKET, s3_object_name, Callback=ProgressPercentage(full_path))
 os.remove(full_path)

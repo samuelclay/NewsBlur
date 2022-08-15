@@ -68,7 +68,6 @@
     border: 1px solid #07360F;
     font-size: 12px;
     padding: 4px 12px;
-    text-transform: uppercase;
     margin: 2px 4px 2px;
     -moz-box-shadow:2px 2px 0 rgba(35, 35, 35, 0.4);
     -webkit-box-shadow:2px 2px 0 rgba(35, 35, 35, 0.4);
@@ -546,7 +545,7 @@
 }
 .NB-welcome-pricing .NB-price {
     float: right;
-    margin: -2px -6px;
+    margin: -2px 0 0;
     padding: 2px 6px;
     background-color: #E0E8F2;
     border-radius: 8px;
@@ -563,7 +562,7 @@
     padding: 10px 8px;
     text-align: left;
     line-height: 16px;
-    width: 33%;
+    width: 30%;
     vertical-align: top;
 }
 .NB-pricing th {
@@ -573,7 +572,13 @@
     border-top: 1px solid #E4E4E4;
     border-right: 1px solid #E4E4E4;
 }
-.NB-pricing .NB-last {
+.NB-pricing td:first-child,
+.NB-pricing th:first-child {
+    white-space: nowrap;
+    width: 100px;
+}
+.NB-pricing td:last-child,
+.NB-pricing th:last-child {
     border-right: none;
 }
 .NB-pricing .NB-bold {
@@ -586,7 +591,9 @@
     height: 54px;
     margin: 0 12px 0 0;
 }
-
+.NB-pricing .NB-lyric-text {
+    padding-right: 20%;
+}
 /* ================== */
 /* = Bottom Actions = */
 /* ================== */

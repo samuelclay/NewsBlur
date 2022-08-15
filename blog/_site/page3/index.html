@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="The NewsBlur Blog" />
 <script type="application/ld+json">
-{"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"url":"https://blog.newsblur.com/page3/","@type":"WebPage","headline":"The NewsBlur Blog","description":"NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument.","@context":"https://schema.org"}</script>
+{"headline":"The NewsBlur Blog","url":"https://blog.newsblur.com/page3/","@type":"WebPage","description":"NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument.","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css">
   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
@@ -64,7 +64,55 @@
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
         <div class="home">
-    <ul class="post-list"><li><span class="post-meta">Jun 14, 2017</span>
+    <ul class="post-list"><li><span class="post-meta">Dec 11, 2017</span>
+        <h3>
+          <a class="post-link" href="/2017/12/11/infrequent-site-stories-is-the-blog-reader-we-need/">
+            Infrequent Site Stories is the blog reader we need
+          </a>
+        </h3>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>Launching today on all three platforms—web, iOS, and Android—is the new Infrequent Site Stories view. This configurable river of news offers a view of stories only from the blogs that publish less often than 1 story per day.</p>
+
+<p>Most of what you see in your day-to-day feed is news that’s up to the minute and is probably stale within a day. Even 8 hour old news can be a problem. But sometimes what you want is an overview of the news that isn’t exactly news. It’s stories from the blogs who have individual authors, or blogs that publish only a few times a month. And missing out on those stories is a tragedy because it is those blogs that pushed you to invest in an RSS reader in the first place.</p>
+
+<p>Today I’m happy to introduce a new feature that you won’t find anywhere else. It’s called Infrequent Site Stories and you can find it at the top of your feed list on the web, on iOS, and on Android.</p>
+
+<figure class="tmblr-full" data-orig-height="1131" data-orig-width="1200" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-ios-android.png"><img width="600" style="margin: 24px auto;" data-orig-height="1131" data-orig-width="1200" src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-ios-android.png" /></figure>
+
+<p>Infrequent Site Stories is the river that captures stories from those authors who aren’t pulling from the firehose. These are the stories that are more thoughtful and more relevant days, weeks, months, or even years down the line. These stories are not to be missed. And the best thing about these stories is that there are far fewer of them than there are of your normal full river from All Site Stories.</p>
+
+<p>You can also configure the Infrequent river to be more or less inclusive of content that is more or less frequently published by changing the filter anywhere from 5 to 90 stories per month.</p>
+
+<figure class="tmblr-full" data-orig-height="570" data-orig-width="1100" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-options.png"><img width="650" style="margin: 24px auto; border: 1px solid #606060;" data-orig-height="570" data-orig-width="1100" src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-options.png" /></figure>
+
+<p>These options are also available on all three official NewsBlur platforms and will let you perform a filter similar to how Focus mode reduces your number of unreads. It’s great to dip into Infrequent Site Stories and get stories you would ordinarily miss out on.</p>
+
+<figure class="tmblr-full" data-orig-height="866" data-orig-width="1400" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-web.png"><img width="650" style="margin: 24px auto;" data-orig-height="866" data-orig-width="1400" src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-web.png" /></figure>
+
+<p>Try out the new Infrequent Site Stories feed, available only to premium subscribers. If your experience is anything like mine, it’ll be one of the new must read feeds in your reader.</p>
+
+
+        </div>
+      </li><li><span class="post-meta">Oct 24, 2017</span>
+        <h3>
+          <a class="post-link" href="/2017/10/24/improved-text-view-story-extraction/">
+            Improved Text view story extraction
+          </a>
+        </h3>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>The Text view is one of the most popular NewsBlur features. It’s available on all three platforms and gives you the full text of the original story, even in truncated RSS feeds. Up until today, NewsBlur’s implementation of the Text view used Readability’s open source text extractor.</p>
+
+<p>Starting today, all stories will be run through <a href="https://mercury.postlight.com/web-parser/">Postlight Labs’ Mercury Parser</a>. That means that not only will the full text be more likely to correctly pull the entire article, but it will also do a much better job with extracting full size images in stories.</p>
+
+<p>Take a look:</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/text_view_images.png" alt="" /></p>
+
+<p>A welcome improvement. This new text extractor and parser also does a better job of handling Unicode and Chinese characters. And when it doesn’t extract text as well as the old text extractor, NewsBlur will automatically fallback on the old method.</p>
+
+
+        </div>
+      </li><li><span class="post-meta">Jun 14, 2017</span>
         <h3>
           <a class="post-link" href="/2017/06/14/launching-real-time-filterable-push-notifications/">
             Launching real-time filterable push notifications for iOS, Android, web, and email
@@ -331,61 +379,6 @@
 <p>You’ll get to preview the Kickstarter campaign and offer me any feedback you have. You’ll get to see Turn Touch and find out what it offers you.</p>
 
 <p>I’ve been working on this as a side project for that past few years. And by signing up you’ll have the first access to it.</p>
-
-
-        </div>
-      </li><li><span class="post-meta">Jan 25, 2017</span>
-        <h3>
-          <a class="post-link" href="/2017/01/25/a-new-newsblur-android-release-for-the-new-year/">
-            A new NewsBlur Android release for the new year
-          </a>
-        </h3>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>Version 5.0 has a bunch of new features. It’s got new gestures, better looking icons and thumbnail previews, and little UI design details to better match the rest of NewsBlur.</p>
-
-<p>Take a look:</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/android-v5.png" alt="" /></p>
-
-<p>The full feature list:</p>
-
-<ul>
-  <li>New gesture to mark a story as read and unread by swiping on the story title</li>
-  <li>UI updates to story titles</li>
-  <li>New preferences for the font size of feed titles and story titles</li>
-  <li>Fleuron on the bottom of story lists better help you keep tracking of where you are in a feed.</li>
-  <li>Thumbnails in story lists</li>
-  <li>Recover a forgotten password</li>
-  <li>Higher resolution icons</li>
-  <li>Mute feeds</li>
-  <li>Option to enable confirmation for destructive mark-reads</li>
-  <li>Custom server support</li>
-</ul>
-
-<p>What a good way to close out January.</p>
-
-
-        </div>
-      </li><li><span class="post-meta">Jan 11, 2017</span>
-        <h3>
-          <a class="post-link" href="/2017/01/11/the-dashboard-river-will-keep-you-up-to-date-in/">
-            The dashboard river will keep you up-to-date in real-time
-          </a>
-        </h3>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>This is a seriously cool feature and I’m glad it’s ready to launch. The dashboard river, the real-time stream of the top five stories of All Site Stories, is now on the dashboard of the web app.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/dashboard-river.png" alt="" /></p>
-
-<p>After testing this feature for the past few weeks I now realize that I could not live without it. By having the latest stories always loaded and instantly ready to go, I leave NewsBlur open and just take a quick glance to see if the top of my list is interesting.</p>
-
-<p>It also loads instantly, which means that if you see a story you want to read, clicking on it brings up the text without taking a single moment.</p>
-
-<p>One big change that this necessitated was the handling of the Text view when reading by folders. Used to be that a folder got its own feed/text/story view and every feed had to stay with the same story view. But on iOS and Android it’s different. Every feed gets to keep its own feed/text/story setting.</p>
-
-<p>This is now how it works on the web. If you read on feed by its Text (extracted original text) view and another by its Feed view, then you are automatically switched between the two views. Quite a bit of logic had to accomodate scrolling (you don’t automatically switch, since that would throw you from one scroll viewport into another) and switching between stories.</p>
-
-<p>Enjoy the dashboard river. And if you look closely you might even see the next big feature that itself is about to launch soon.</p>
 
 
         </div>

@@ -1290,6 +1290,29 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [[ThemeManager themeManager] updateTheme];
 }
 
+- (void)settingsUpdateSpecifierDictionary:(NSMutableDictionary *)dictionary {
+    NSMutableArray *titles = dictionary[@"Titles"];
+    NSMutableArray *values = dictionary[@"Values"];
+    
+    [titles removeAllObjects];
+    [values removeAllObjects];
+    
+    [titles addObject:@"Show feed list"];
+    [titles addObject:@"Open All Stories"];
+    
+    [values addObject:@"feeds"];
+    [values addObject:@"everything"];
+    
+    for (NSString *folder in self.appDelegate.dictFoldersArray) {
+        if ([folder hasPrefix:@"river_"] || [folder isEqualToString:@"everything"] || [folder isEqualToString:@"infrequent"] || [folder isEqualToString:@"widget"] || [folder isEqualToString:@"read_stories"] || [folder hasPrefix:@"saved_"]) {
+            continue;
+        }
+        
+        [titles addObject:[NSString stringWithFormat:@"Open %@", folder]];
+        [values addObject:folder];
+    }
+}
+
 - (void)settingDidChange:(NSNotification*)notification {
     NSString *identifier = notification.object;
     

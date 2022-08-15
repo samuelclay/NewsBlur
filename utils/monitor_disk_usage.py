@@ -18,8 +18,8 @@ def main():
     hostname = socket.gethostname()
     percent = int(percent.strip('%'))
     admin_email = settings.ADMINS[0][1]
-    if True:
-    #if percent > 95:
+    # if True:
+    if percent > 90:
         requests.post(
                 "https://api.mailgun.net/v2/%s/messages" % settings.MAILGUN_SERVER_NAME,
                 auth=("api", settings.MAILGUN_ACCESS_KEY),

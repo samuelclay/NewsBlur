@@ -9,7 +9,6 @@
 
   roles:
     - {role: 'base', tags: 'base'}
-    - {role: 'ufw', tags: 'ufw'}
     - {role: 'docker', tags: 'docker'}
     - {role: 'repo', tags: ['repo', 'pull']}
     - {role: 'dnsmasq', tags: 'dnsmasq'}
@@ -17,5 +16,6 @@
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
     - {role: 'postgres', tags: 'postgres'}
+    - {role: 'ufw', tags: 'ufw'}
     - {role: 'monitor', tags: 'monitor'}
     - {role: 'backups', tags: 'backups'}

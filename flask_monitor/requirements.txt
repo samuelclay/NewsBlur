@@ -11,3 +11,4 @@ mongoengine==0.21.0
 boto3==1.18.13
 pyyaml==5.3.1
 requests==2.25.0
+paypalrestsdk==1.13.1

@@ -86,7 +86,6 @@
     user: 1000:1001
     volumes:
       - /srv/newsblur:/srv/newsblur
-      - /etc/hosts:/etc/hosts
 
 - name: Register web app in consul
   tags: consul
@@ -103,6 +102,15 @@
   copy: src=logrotate.conf dest=/etc/logrotate.d/newsblur mode=0755
   tags:
     - logrotate
+
+- name: Force reload gunicorn
+  debug: 
+    msg: Forcing reload...
+  register: app_changed
+  changed_when: true
+  tags:
+    - never
+    - force
 
 - name: Reload gunicorn
   debug: 

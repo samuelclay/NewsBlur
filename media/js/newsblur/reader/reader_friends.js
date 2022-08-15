@@ -142,7 +142,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             $services.append($service);
         }, this));
        
-        $autofollow = $.make('div', { className: 'NB-friends-service NB-friends-autofollow'}, [
+        var $autofollow = $.make('div', { className: 'NB-friends-service NB-friends-autofollow'}, [
             $.make('input', { type: 'checkbox', className: 'NB-friends-autofollow-checkbox', id: 'NB-friends-autofollow-checkbox', checked: this.autofollow ? 'checked' : null }),
             $.make('label', { className: 'NB-friends-autofollow-label', 'for': 'NB-friends-autofollow-checkbox' }, [
                 'Auto-follow',

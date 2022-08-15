@@ -24,6 +24,7 @@ RUN       set -ex \
             && apt-get update \
             && apt-get install -y $rundDeps $buildDeps --no-install-recommends
 COPY      config/requirements.txt /srv/newsblur/
-RUN       pip install -r requirements.txt
+RUN       pip install --no-cache-dir -r requirements.txt
+RUN       pip cache purge
 RUN       apt-get purge -y --auto-remove ${buildDeps}
 RUN       rm -rf /var/lib/apt/lists/*

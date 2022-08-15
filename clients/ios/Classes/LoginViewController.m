@@ -46,6 +46,8 @@
 - (void)viewDidLoad {
     self.appDelegate = NewsBlurAppDelegate.sharedAppDelegate;
     
+    self.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+    
     self.usernameInput.borderStyle = UITextBorderStyleRoundedRect;
     self.passwordInput.borderStyle = UITextBorderStyleRoundedRect;
     self.emailInput.borderStyle = UITextBorderStyleRoundedRect;
@@ -62,11 +64,6 @@
      forState:UIControlStateNormal];
 
     //[self.onePasswordButton setHidden:![[OnePasswordExtension sharedExtension] isAppExtensionAvailable]];
-    
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        [self updateControls];
-        [self rearrangeViews];
-    }
     
     [super viewDidLoad];
 }
@@ -110,6 +107,11 @@
 - (void)viewDidAppear:(BOOL)animated {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [super viewDidAppear:animated];
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        [self updateControls];
+        [self rearrangeViews];
+    }
 }
 
 - (void)didReceiveMemoryWarning {

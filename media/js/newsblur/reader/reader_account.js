@@ -149,8 +149,13 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                             ])),
                             (NEWSBLUR.Globals.is_premium && $.make('div', [
                                 'Thank you! You have a ',
-                                $.make('b', 'premium account'),
-                                '.'
+                                (NEWSBLUR.Globals.is_pro && $.make('b', 'premium pro account')),
+                                (!NEWSBLUR.Globals.is_pro && NEWSBLUR.Globals.is_archive && $.make('b', 'premium archive account')),
+                                (!NEWSBLUR.Globals.is_pro && !NEWSBLUR.Globals.is_archive && NEWSBLUR.Globals.is_premium && $.make('b', 'premium account')),
+                                '.',
+                                (!NEWSBLUR.Globals.is_archive && $.make('a', { 
+                                        className: 'NB-modal-submit-button NB-modal-submit-green NB-account-premium-modal NB-block' 
+                                    }, 'Upgrade to a Premium Archive account'))
                             ]))
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
@@ -159,13 +164,8 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     ]),
                     (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-preference NB-preference-premium-renew' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', { className: 'NB-block' }, 'Your premium account is paid until:'),
-                            $.make('div', { className: 'NB-block' }, [
-                                $.make('span', { className: 'NB-raquo' }, '&raquo;'),
-                                ' ',
-                                (NEWSBLUR.Globals.premium_expire && NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire)),
-                                (!NEWSBLUR.Globals.premium_expire && $.make('b', "Never gonna expire. Congrats!"))
-                            ]),
+                            $.make('div', { className: "NB-premium-renewal-details-container" }, this.make_premium_renewal_details()),
+                            $.make('div', { className: 'NB-block NB-premium-expire-container' }, this.make_premium_expire()),
                             $.make('a', { href: '#', className: 'NB-block NB-account-premium-renew NB-modal-submit-button NB-modal-submit-green' }, 'Change your credit card')
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
@@ -183,9 +183,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         ])
                     ]),
                     (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-preference NB-preference-premium-cancel' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('a', { href: '#', className: 'NB-block NB-account-premium-cancel NB-modal-submit-button NB-modal-submit-red' }, 'Cancel subscription renewal')
-                        ]),
+                        $.make('div', { className: 'NB-preference-options NB-premium-renewal-container' }, this.make_premium_renewal()),
                         $.make('div', { className: 'NB-preference-label'}, [
                             'Premium renewal'
                         ])
@@ -330,11 +328,13 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     cancel_premium: function() {
         var $cancel = $(".NB-account-premium-cancel", this.$modal);
         $cancel.attr('disabled', 'disabled');
+        $cancel.removeClass('NB-modal-submit-red');
+        $cancel.addClass('NB-modal-submit-grey');
         $cancel.text("Cancelling...");
         
         var post_cancel = function(message) {
-            $cancel.removeAttr('disabled');
-            $cancel.text("Cancel subscription renewal");
+            $cancel.remove();
+            $(".NB-account-payment.NB-scheduled").addClass('NB-canceled');
             $(".NB-preference-premium-cancel .NB-error").remove();
             $(".NB-preference-premium-cancel .NB-preference-options").append($.make("div", {
                 className: "NB-error"
@@ -342,8 +342,10 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         };
 
         this.model.cancel_premium_subscription(_.bind(function(data) {
+            NEWSBLUR.Globals.premium_renewal = false;
             post_cancel("Your subscription will no longer automatically renew.");
         }, this), _.bind(function(data) {
+            NEWSBLUR.Globals.premium_renewal = false;
             post_cancel(data.message || "You have no active subscriptions.");
         }, this));
     },
@@ -450,22 +452,65 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         });
     },
     
-    fetch_payment_history: function() {
+    make_premium_expire: function () {
+        return $.make('div', [
+            $.make('span', { className: 'NB-raquo' }, '&raquo;'),
+            ' ',
+            (NEWSBLUR.Globals.premium_expire && NEWSBLUR.utils.format_date(NEWSBLUR.Globals.premium_expire)),
+            (!NEWSBLUR.Globals.premium_expire && $.make('b', "Never gonna expire. Congrats!"))
+        ]);
+    },
+
+    make_premium_renewal: function () {
+        return $.make('div', [
+            (NEWSBLUR.Globals.premium_renewal && $.make('a', { href: '#', className: 'NB-block NB-account-premium-cancel NB-modal-submit-button NB-modal-submit-red' }, 'Cancel subscription renewal')),
+            (!NEWSBLUR.Globals.premium_renewal && "Your subscription is no longer active."),
+            (!NEWSBLUR.Globals.premium_renewal && $.make('a', { href: '#', className: 'NB-block NB-account-premium-renew NB-modal-submit-button NB-modal-submit-green' }, 'Restart your subscription'))
+        ]);
+    },
+
+    make_premium_renewal_details: function () {
+        return $.make('div', [
+            (NEWSBLUR.Globals.premium_renewal && $.make('div', { className: 'NB-block' }, 'Your premium account is paid until:')),
+            (!NEWSBLUR.Globals.premium_renewal && $.make('div', { className: 'NB-block' }, 'Your premium account will downgrade on:'))
+        ]);
+    },
+
+    fetch_payment_history: function () {
         this.model.fetch_payment_history(NEWSBLUR.Globals.user_id, _.bind(function(data) {
             var $history = $('.NB-account-payments', this.$modal).empty();
+            
+            if (NEWSBLUR.Globals.premium_renewal != data.premium_renewal) {
+                NEWSBLUR.Globals.premium_renewal = data.premium_renewal;
+                $(".NB-premium-renewal-container", this.$modal).html(this.make_premium_renewal());
+                $(".NB-premium-renewal-details-container", this.$modal).html(this.make_premium_renewal_details());
+            }
+
+            if (NEWSBLUR.Globals.premium_expire != data.premium_expire) {
+                if (data.premium_expire) {
+                    NEWSBLUR.Globals.premium_expire = new Date(data.premium_expire);
+                    $(".NB-premium-expire-container", this.$modal).html(this.make_premium_expire());
+                }
+            }
+
             if (!data.payments || !data.payments.length) {
                 $history.append($.make('li',  { className: 'NB-account-payment' }, [
                     $.make('i', 'No payments found.')
                 ]));
             } else {
-                _.each(data.payments, function(payment) {
-                    $history.append($.make('li', { className: 'NB-account-payment' }, [
-                        $.make('div', { className: 'NB-account-payment-date' }, payment.payment_date),
+                if (data.next_invoice) {
+                    data.payments.splice(0, 0, data.next_invoice);
+                }
+                _.each(data.payments, function (payment) {
+                    var date = new Date(payment.payment_date);
+                    $history.append($.make('li', { className: 'NB-account-payment ' + (payment.scheduled ? ' NB-scheduled' : '') + (payment.refunded ? ' NB-refunded' : '') }, [
+                        $.make('div', { className: 'NB-account-payment-date' }, date.format("F d, Y")),
                         $.make('div', { className: 'NB-account-payment-amount' }, "$" + payment.payment_amount),
                         $.make('div', { className: 'NB-account-payment-provider' }, payment.payment_provider)
                     ]));
                 });
             }
+
             $(window).resize();
         }, this));
     },
