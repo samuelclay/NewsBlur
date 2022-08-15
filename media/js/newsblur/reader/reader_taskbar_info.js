@@ -34,10 +34,6 @@ NEWSBLUR.Views.ReaderTaskbarInfo = Backbone.View.extend({
     
     show_stories_progress_bar: function(feeds_loading, message) {
         message = message || "Fetching stories";
-        if (NEWSBLUR.app.story_unread_counter) {
-            NEWSBLUR.app.story_unread_counter.remove();
-        }
-        
         var $progress = $.make('div', { className: 'NB-river-progress' }, [
             $.make('div', { className: 'NB-river-progress-text' }),
             $.make('div', { className: 'NB-river-progress-bar' })
@@ -101,10 +97,6 @@ NEWSBLUR.Views.ReaderTaskbarInfo = Backbone.View.extend({
         
         this.$el.html($error);
         this.center(true);
-        
-        if (NEWSBLUR.app.story_unread_counter) {
-            NEWSBLUR.app.story_unread_counter.remove();
-        }
         
         $error.animate({'opacity': 1}, {'duration': 500, 'queue': false});
     },

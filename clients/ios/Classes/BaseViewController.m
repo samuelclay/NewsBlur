@@ -103,9 +103,16 @@
 #pragma mark -
 #pragma mark Keyboard support
 - (void)addKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)modifierFlags action:(SEL)action discoverabilityTitle:(NSString *)discoverabilityTitle {
+    [self addKeyCommandWithInput:input modifierFlags:modifierFlags action:action discoverabilityTitle:discoverabilityTitle wantPriority:NO];
+}
+
+- (void)addKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)modifierFlags action:(SEL)action discoverabilityTitle:(NSString *)discoverabilityTitle wantPriority:(BOOL)wantPriority {
     UIKeyCommand *keyCommand = [UIKeyCommand keyCommandWithInput:input modifierFlags:modifierFlags action:action];
     if ([keyCommand respondsToSelector:@selector(discoverabilityTitle)] && [self respondsToSelector:@selector(addKeyCommand:)]) {
         keyCommand.discoverabilityTitle = discoverabilityTitle;
+        if (@available(iOS 15.0, *)) {
+            keyCommand.wantsPriorityOverSystemBehavior = wantPriority;
+        }
         [self addKeyCommand:keyCommand];
     }
 }

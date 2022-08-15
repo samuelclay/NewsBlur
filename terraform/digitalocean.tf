@@ -23,6 +23,45 @@ resource "digitalocean_ssh_key" "default" {
   public_key = file("/srv/secrets-newsblur/keys/docker.key.pub")
 }
 
+# resource "digitalocean_project" "NewsBlur_Docker" {
+#   name        = "NewsBlur Docker"
+#   environment = "Production"
+#   description = "Infrastructure glued together with consul"
+# }
+
+# resource "digitalocean_project_resources" "NewsBlur_Docker" {
+#   project = digitalocean_project.NewsBlur_Docker.id
+#   resources = flatten([
+#     digitalocean_droplet.db-consul.*.urn, 
+#     digitalocean_droplet.www.*.urn,
+#     digitalocean_droplet.app-django.*.urn, 
+#     digitalocean_droplet.app-counts.*.urn, 
+#     digitalocean_droplet.app-push.*.urn, 
+#     digitalocean_droplet.app-refresh.*.urn, 
+#     digitalocean_droplet.blog.*.urn, 
+#     digitalocean_droplet.staging-web.*.urn, 
+#     digitalocean_droplet.discovery.*.urn, 
+#     digitalocean_droplet.node-text.*.urn, 
+#     digitalocean_droplet.node-socket.*.urn, 
+#     digitalocean_droplet.node-favicons.*.urn, 
+#     digitalocean_droplet.node-images.*.urn, 
+#     digitalocean_droplet.node-page.*.urn, 
+#     digitalocean_droplet.db-elasticsearch.*.urn, 
+#     digitalocean_droplet.db-redis-user.*.urn, 
+#     digitalocean_droplet.db-redis-sessions.*.urn, 
+#     digitalocean_droplet.db-redis-story.*.urn, 
+#     digitalocean_droplet.db-redis-pubsub.*.urn, 
+#     digitalocean_droplet.db-postgres.*.urn, 
+#     digitalocean_droplet.db-mongo-primary.*.urn, 
+#     digitalocean_droplet.db-mongo-secondary.*.urn, 
+#     digitalocean_droplet.db-mongo-analytics.*.urn, 
+#     digitalocean_droplet.db-metrics.*.urn, 
+#     digitalocean_droplet.db-sentry.*.urn, 
+#     digitalocean_droplet.task-celery.*.urn, 
+#     digitalocean_droplet.task-work.*.urn
+#   ])
+# }
+
 # #################
 # #   Resources   #
 # #################
@@ -38,10 +77,10 @@ resource "digitalocean_droplet" "db-consul" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -56,10 +95,10 @@ resource "digitalocean_droplet" "www" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -68,16 +107,16 @@ resource "digitalocean_droplet" "app-django" {
   image    = var.droplet_os
   name     = "app-django${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size_10
+  size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -86,16 +125,16 @@ resource "digitalocean_droplet" "app-counts" {
   image    = var.droplet_os
   name     = "app-counts${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size
+  size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -110,10 +149,10 @@ resource "digitalocean_droplet" "app-push" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -122,16 +161,16 @@ resource "digitalocean_droplet" "app-refresh" {
   image    = var.droplet_os
   name     = "app-refresh${count.index+1}"
   region   = var.droplet_region
-  size     = var.droplet_size_10
+  size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -145,16 +184,17 @@ resource "digitalocean_droplet" "blog" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
 resource "digitalocean_droplet" "staging-web" {
+  count    = 3
   image    = var.droplet_os
-  name     = "staging-web"
+  name     = count.index == 0 ? "staging-web" : "staging-web${count.index+1}"
   region   = var.droplet_region
   size     = var.droplet_size_20
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -162,10 +202,10 @@ resource "digitalocean_droplet" "staging-web" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -180,10 +220,10 @@ resource "digitalocean_droplet" "discovery" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -197,10 +237,10 @@ resource "digitalocean_droplet" "node-text" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -215,10 +255,10 @@ resource "digitalocean_droplet" "node-socket" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -232,16 +272,17 @@ resource "digitalocean_droplet" "node-favicons" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
 resource "digitalocean_droplet" "node-images" {
+  count    = 2
   image    = var.droplet_os
-  name     = "node-images"
+  name     = "node-images${count.index+1}"
   region   = var.droplet_region
   size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -249,10 +290,10 @@ resource "digitalocean_droplet" "node-images" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -278,10 +319,10 @@ resource "digitalocean_droplet" "node-page" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -295,10 +336,10 @@ resource "digitalocean_droplet" "db-elasticsearch" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -312,10 +353,10 @@ resource "digitalocean_droplet" "db-redis-user" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -329,27 +370,28 @@ resource "digitalocean_droplet" "db-redis-sessions" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
 resource "digitalocean_droplet" "db-redis-story" {
+  count    = 1
   image    = var.droplet_os
-  name     = "db-redis-story"
+  name     = "db-redis-story${count.index+1}"
   region   = var.droplet_region
-  size     = var.redis_story_droplet_size
+  size     = contains([1], count.index) ? "m-8vcpu-64gb" : var.redis_story_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -363,27 +405,29 @@ resource "digitalocean_droplet" "db-redis-pubsub" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
 resource "digitalocean_droplet" "db-postgres" {
+  count    = 2
   image    = var.droplet_os
-  name     = "db-postgres"
+  name     = contains([0], count.index) ? "db-postgres${count.index+1}" : "db-postgres${count.index+2}"
   region   = var.droplet_region
-  size     = var.droplet_size_160
+  size     = contains([0], count.index) ? var.droplet_size_160 : var.droplet_size_320
+  # size     = var.droplet_size_240
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -408,10 +452,10 @@ resource "digitalocean_droplet" "db-postgres" {
 #     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
 #   }
 #   provisioner "local-exec" {
-#     command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+#     command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
 #   }
 #   provisioner "local-exec" {
-#     command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+#     command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
 #   }
 # }
 
@@ -421,27 +465,26 @@ resource "digitalocean_droplet" "db-postgres" {
 # 
 resource "digitalocean_droplet" "db-mongo-primary" {
   count    = 1
-  backups  = true
+  backups  = contains([0], count.index) ? false : true
   image    = var.droplet_os
   name     = "db-mongo-primary${count.index+1}"
   region   = var.droplet_region
-  # size     = contains([0], count.index) ? "so1_5-2vcpu-16gb" : var.mongo_primary_droplet_size
-  size     = var.mongo_primary_droplet_size
+  size     = contains([1], count.index) ? "m3-8vcpu-64gb" : var.mongo_primary_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
     # command = "sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
 resource "digitalocean_volume" "mongo_secondary_volume" {
-  count                   = 2
+  count                   = 3
   region                  = "nyc1"
   name                    = "mongosecondary${count.index+1}"
   size                    = 400
@@ -450,7 +493,8 @@ resource "digitalocean_volume" "mongo_secondary_volume" {
 }
 
 resource "digitalocean_droplet" "db-mongo-secondary" {
-  count    = 2
+  count    = 3
+  # backups  = contains([0], count.index) ? true : false
   image    = var.droplet_os
   name     = "db-mongo-secondary${count.index+1}"
   region   = var.droplet_region
@@ -461,10 +505,10 @@ resource "digitalocean_droplet" "db-mongo-secondary" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -489,10 +533,10 @@ resource "digitalocean_droplet" "db-mongo-analytics" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -517,10 +561,10 @@ resource "digitalocean_droplet" "db-metrics" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -534,10 +578,10 @@ resource "digitalocean_droplet" "db-sentry" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -555,10 +599,10 @@ resource "digitalocean_droplet" "task-celery" {
     command = "sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }
 
@@ -573,9 +617,9 @@ resource "digitalocean_droplet" "task-work" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/playbooks/setup_root.yml"
   }
   provisioner "local-exec" {
-    command = "cd ..; ansible-playbook -l ${self.name} ansible/setup.yml"
+    command = "cd ..; ANSIBLE_FORCE_COLOR=1 ansible-playbook -l ${self.name} ansible/setup.yml"
   }
 }

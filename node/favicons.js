@@ -85,10 +85,10 @@
             if (ENV_DEBUG) {
               log.debug(`Redirect: ${feed_id}, etag: ${etag}/${docs != null ? docs.color : void 0} ` + (err ? `(err: ${err})` : ""));
             }
-            if (ENV_DEV) {
-              return res.redirect('/media/img/icons/circular/world.png');
+            if (ENV_DEV || ENV_DOCKER) {
+              return res.redirect('/media/img/icons/nouns/world.svg');
             } else {
-              return res.redirect('https://www.newsblur.com/media/img/icons/circular/world.png');
+              return res.redirect('https://beta.newsblur.com/media/img/icons/nouns/world.svg');
             }
           }
         });

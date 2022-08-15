@@ -26,7 +26,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     // = Render =
     // ==========
     
-    render: function() {
+    render: function(options) {
         // console.log(['render story_titles', this.options.override_layout, this.collection.length, this.$story_titles[0]]);
         this.clear();
         this.$story_titles.scrollTop(0);
@@ -39,6 +39,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             return new NEWSBLUR.Views.StoryTitleView({
                 model: story,
                 collection: collection,
+                is_list: story_layout == 'list',
                 is_grid: story_layout == 'grid',
                 is_magazine: story_layout == 'magazine',
                 override_layout: override_layout,
@@ -55,7 +56,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.fill_out();
         this.override_grid();
         
-        this.scroll_to_selected_story();
+        this.scroll_to_selected_story(null, options);
     },
     
     add: function(options) {
@@ -71,6 +72,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 return new NEWSBLUR.Views.StoryTitleView({
                     model: story,
                     collection: collection,
+                    is_list: story_layout == 'list',
                     is_grid: story_layout == 'grid',
                     is_magazine: story_layout == 'magazine',
                     override_layout: override_layout,
@@ -329,7 +331,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             
             // console.log(["scroll_to_selected_story 3", position]);
             this.$story_titles.stop().scrollTo(position, {
-                duration: NEWSBLUR.assets.preference('animations') ? 260 : 0,
+                duration: !options.immediate && NEWSBLUR.assets.preference('animations') ? 260 : 0,
                 queue: false
             });
         }    

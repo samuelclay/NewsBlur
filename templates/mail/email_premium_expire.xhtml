@@ -7,7 +7,7 @@
         Hey {{ user.username }}, your premium account has just expired.
     </h2>
     <p style="line-height: 20px;">You now have a free account with all the limitations of a free account. But that doesn't mean you can't renew your premium subscription and enjoy the many benefits of using NewsBlur.</p>
-    <p style="line-height: 20px;">Renew now: <a href="https://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser">https://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser</a></p>
+    <p style="line-height: 20px;">Renew now: <a href="https://{% current_domain %}{{ user.profile.autologin_url }}?next=premium">https://{% current_domain %}{{ user.profile.autologin_url }}?next=premium</a></p>
     <p style="line-height: 20px;">Spend a few days trying out <a href="https://{% current_domain %}{{ user.profile.autologin_url }}">NewsBlur</a> again. We hope you love it.</p>
 {% endblock %}
 

@@ -5,14 +5,10 @@
   when: "'haproxy' in group_names"
 - import_playbook: playbooks/deploy_node.yml
   when: "'node' in group_names"
-- import_playbook: playbooks/deploy_monitor.yml
-  when: "'postgres' in group_names"
-- import_playbook: playbooks/deploy_monitor.yml
-  when: "'mongo' in group_names"
-- import_playbook: playbooks/deploy_monitor.yml
+- import_playbook: playbooks/deploy_redis.yml
   when: "'redis' in group_names"
 - import_playbook: playbooks/deploy_monitor.yml
-  when: "'elasticsearch' in group_names"
+  when: '"postgres" in group_names or "mongo" in group_names or "redis" in group_names or "elasticsearch" in group_names'
 - import_playbook: playbooks/deploy_task.yml
   when: "'task' in group_names"
 - import_playbook: playbooks/deploy_staging.yml

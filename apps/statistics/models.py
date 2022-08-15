@@ -3,6 +3,7 @@ import mongoengine as mongo
 import urllib.request, urllib.error, urllib.parse
 import redis
 import dateutil
+import requests
 from django.conf import settings
 from apps.social.models import MSharedStory
 from apps.profile.models import Profile
@@ -27,12 +28,18 @@ class MStatistics(mongo.Document):
         return "%s: %s" % (self.key, self.value)
     
     @classmethod
-    def get(cls, key, default=None):
+    def get(cls, key, default=None, set_default=False, expiration_sec=None):
         obj = cls.objects.filter(key=key).first()
         if not obj:
+            if set_default:
+                default = default()
+                cls.set(key, default, expiration_sec=expiration_sec)
             return default
         if obj.expiration_date and obj.expiration_date < datetime.datetime.now():
             obj.delete()
+            if set_default:
+                default = default()
+                cls.set(key, default, expiration_sec=expiration_sec)
             return default
         return obj.value
 
@@ -298,8 +305,8 @@ class MFeedback(mongo.Document):
     def collect_feedback(cls):
         seen_posts = set()
         try:
-            data = urllib.request.urlopen('https://forum.newsblur.com/posts.json').read()
-        except (urllib.error.HTTPError) as e:
+            data = requests.get('https://forum.newsblur.com/posts.json', timeout=3).content
+        except (urllib.error.HTTPError, requests.exceptions.ConnectTimeout) as e:
             logging.debug(" ***> Failed to collect feedback: %s" % e)
             return
         data = json.decode(data).get('latest_posts', "")

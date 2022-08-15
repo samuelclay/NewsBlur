@@ -7,22 +7,20 @@
   notify: reload postgres
   register: updated_config
 
-- name: Ensure postgres archive directory
+- name: Create Postgres docker volumes with correct permissions
   become: yes
   file:
-    path: /srv/newsblur/docker/volumes/postgres/archive
+    path: "{{ item  }}"
     state: directory
-    mode: 0777
-  
-- name: Ensure postgres backup directory
-  become: yes
-  file:
-    path: /srv/newsblur/backups
-    state: directory
-    mode: 0777
-  
+    recurse: yes
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"  
+  with_items:
+    - /srv/newsblur/docker/volumes/postgres/archive
+    - /srv/newsblur/docker/volumes/postgres/backups
+    - /srv/newsblur/docker/volumes/postgres/data
+
 - name: Start postgres docker containers
-  become: yes
   docker_container:
     name: postgres
     image: postgres:13
@@ -34,7 +32,6 @@
       POSTGRES_PASSWORD: "{{ postgres_password }}"
     hostname: "{{ inventory_hostname }}"
     networks_cli_compatible: yes
-    # network_mode: host
     network_mode: default
     networks:
       - name: newsblurnet
@@ -42,16 +39,27 @@
           - postgres
     ports:
       - 5432:5432
+    user: 1000:1001
     volumes:
-      - /srv/newsblur/docker/volumes/postgres:/var/lib/postgresql
+      - /srv/newsblur/docker/volumes/postgres/data:/var/lib/postgresql/data
+      - /srv/newsblur/docker/volumes/postgres/archive:/var/lib/postgresql/archive
+      - /srv/newsblur/docker/volumes/postgres/backups:/var/lib/postgresql/backups
       - /srv/newsblur/docker/postgres/postgres.conf:/etc/postgresql/postgresql.conf
       - /srv/newsblur/docker/postgres/postgres_hba-13.conf:/etc/postgresql/pg_hba.conf
-      - /srv/newsblur/backups/:/var/lib/postgresql/backup/
+      - /srv/newsblur/docker/postgres/postgres_ident-13.conf:/etc/postgresql/pg_ident.conf
     restart_policy: unless-stopped
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-postgres-primary', 'db-postgres']
 
+- name: Change ownership in postgres docker container
+  become: yes
+  command: >
+    docker exec postgres chown -fR postgres.postgres /var/lib/postgresql
+  ignore_errors: yes
+  
 - name: Ensure newsblur role in postgres
+  become: yes
   shell: >
-    sleep 5; 
+    sleep 15; 
     docker exec postgres createuser -s newsblur -U postgres;
     docker exec postgres createdb newsblur -U newsblur;
   register: ensure_role
@@ -77,19 +85,20 @@
   register: app_changed
 
 - name: Add sanity checkers cronjob for disk usage
-  become: yes
   cron:
     name: disk_usage_sanity_checker
-    user: root
-    cron_file: /etc/cron.hourly/disk_usage_sanity_checker
+    minute: "0"
     job: >-
-      docker pull newsblur/newsblur_python3:latest;
-      docker run --rm -it
-      OUTPUT=$(eval sudo df / | head -n 2 |  tail -1);
-      -v /srv/newsblur:/srv/newsblur
-      --network=newsblurnet
-      --hostname {{ ansible_hostname }} 
-      newsblur/newsblur_python3 /srv/newsblur/utils/monitor_disk_usage.py $OUTPUT
+      OUTPUT=$(df / | head -n 2 |  tail -1) docker run --rm -it -v /srv/newsblur:/srv/newsblur --network=newsblurnet --hostname {{ ansible_hostname }} newsblur/newsblur_python3 /srv/newsblur/utils/monitor_disk_usage.py $OUTPUT
+  tags: cron
+
+- name: Add postgresql archive cleaner cronjob
+  cron:
+    name: postgres_archive_cleaner
+    minute: "0"
+    job: >-
+      sudo find /srv/newsblur/docker/volumes/postgres/archive -type f -mmin +180 -delete
+  tags: cron
 
 - name: Add postgres backup log
   become: yes
@@ -105,5 +114,6 @@
     name: postgres backup
     minute: "0"
     hour: "4"
-    job: /srv/newsblur/docker/postgres/backup_postgres.sh 1> /var/log/postgres_backup.log 2>&1
+    job: /srv/newsblur/docker/postgres/backup_postgres.sh >> /var/log/postgres_backup.log 2>&1
+  tags: cron
 

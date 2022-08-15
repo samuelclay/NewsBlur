@@ -333,6 +333,15 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
               $.make('div', { className: 'NB-goodies-title' }, 'Safari: NewsBlur unread count notifier'),
               $.make('div', { className: 'NB-goodies-subtitle' }, 'Safari extension to show on the toolbar how many unread stories are waiting for you on NewsBlur.')
             ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-safari-notifier NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://github.com/nriley/NewsBlur-Helper'
+              }, 'Download'),
+              $.make('div', { className: 'NB-goodies-safari' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Safari: Open links in background tab'),
+              $.make('div', { className: 'NB-goodies-subtitle' }, 'Safari extension to let you choose if links open in a new active tab or background tab.')
+            ]),
             
             $.make('fieldset', [
                 $.make('legend', 'Custom URLs')

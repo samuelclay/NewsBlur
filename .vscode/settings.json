@@ -7,6 +7,8 @@
         "--ignore=E501,W293,W503,W504,E302,E722,E226,E221,E402,E401"
     ],
     "python.pythonPath": "~/.virtualenvs/newsblur3/bin/python",
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs":"active",
     "git.ignoreLimitWarning": true,
     "search.exclude": {
         "clients": true,
@@ -33,4 +35,6 @@
     "files.associations": {
         "*.yml": "ansible"
     },
+    "nrf-connect.toolchain.path": "${nrf-connect.toolchain:1.9.1}",
+    "C_Cpp.default.configurationProvider": "nrf-connect",
 }

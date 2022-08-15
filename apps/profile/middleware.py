@@ -77,7 +77,7 @@ class DBProfilerMiddleware:
 
     def process_celery(self):
         setattr(self, 'activated_segments', [])
-        if random.random() < 0.01:
+        if random.random() < 0.01 or settings.DEBUG_QUERIES:
             self.activated_segments.append('db_profiler')
             connection.use_debug_cursor = True
             setattr(settings, 'ORIGINAL_DEBUG', settings.DEBUG)
@@ -151,14 +151,16 @@ class SQLLogToConsoleMiddleware:
         if not self.activated(request):
             return response
         if connection.queries:
-            time_elapsed = sum([float(q['time']) for q in connection.queries])
             queries = connection.queries
             if getattr(connection, 'queriesx', False):
                 queries.extend(connection.queriesx)
                 connection.queriesx = []
+            time_elapsed = sum([float(q['time']) for q in connection.queries])
             for query in queries:
+                sql_time = float(query['time'])
+                query['color'] = '~FC' if sql_time < 0.015 else '~FK~SB' if sql_time < 0.05 else '~FR~SB'
                 if query.get('mongo'):
-                    query['sql'] = "~FM%s: %s" % (query['mongo']['collection'], query['mongo']['query'])
+                    query['sql'] = "~FM%s %s: %s" % (query['mongo']['op'], query['mongo']['collection'], query['mongo']['query'])
                 elif query.get('redis_user'):
                     query['sql'] = "~FC%s" % (query['redis_user']['query'])
                 elif query.get('redis_story'):
@@ -177,13 +179,13 @@ class SQLLogToConsoleMiddleware:
                     query['sql'] = re.sub(r'INSERT', '~FGINSERT', query['sql'])
                     query['sql'] = re.sub(r'UPDATE', '~FY~SBUPDATE', query['sql'])
                     query['sql'] = re.sub(r'DELETE', '~FR~SBDELETE', query['sql'])
+
             if (
-                settings.DEBUG
-                and settings.DEBUG_QUERIES
+                settings.DEBUG_QUERIES
                 and not getattr(settings, 'DEBUG_QUERIES_SUMMARY_ONLY', False)
             ):
                 t = Template(
-                    "{% for sql in sqllog %}{% if not forloop.first %}                  {% endif %}[{{forloop.counter}}] ~FC{{sql.time}}s~FW: {{sql.sql|safe}}{% if not forloop.last %}\n{% endif %}{% endfor %}"
+                    "{% for sql in sqllog %}{% if not forloop.first %}                  {% endif %}[{{forloop.counter}}] {{sql.color}}{{sql.time}}~SN~FW: {{sql.sql|safe}}{% if not forloop.last %}\n{% endif %}{% endfor %}"
                 )
                 logging.debug(
                     t.render(
