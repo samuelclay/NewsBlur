@@ -6,12 +6,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.util.FeedSet
-import com.newsblur.util.FeedUtils
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class StoriesViewModel : ViewModel() {
+@HiltViewModel
+class StoriesViewModel
+@Inject constructor(private val dbHelper: BlurDatabaseHelper): ViewModel() {
 
     private val cancellationSignal = CancellationSignal()
     private val _activeStoriesLiveData = MutableLiveData<Cursor>()
@@ -19,7 +23,7 @@ class StoriesViewModel : ViewModel() {
 
     fun getActiveStories(fs: FeedSet) {
         viewModelScope.launch(Dispatchers.IO) {
-            FeedUtils.dbHelper!!.getActiveStoriesCursor(fs, cancellationSignal).let {
+            dbHelper.getActiveStoriesCursor(fs, cancellationSignal).let {
                 _activeStoriesLiveData.postValue(it)
             }
         }

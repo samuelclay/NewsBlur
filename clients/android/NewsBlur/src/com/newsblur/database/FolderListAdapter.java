@@ -17,7 +17,6 @@ import android.database.Cursor;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
@@ -25,6 +24,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.newsblur.R;
@@ -35,8 +37,9 @@ import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedListOrder;
+import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.FeedUtils;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
@@ -66,7 +69,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     private final static float defaultTextSize_childName = 14;
     private final static float defaultTextSize_groupName = 13;
-    private final static float defaultTextSize_count = 14;
+    private final static float defaultTextSize_count = 13;
 
     private final static float NONZERO_UNREADS_ALPHA = 0.87f;
     private final static float ZERO_UNREADS_ALPHA = 0.70f;
@@ -119,18 +122,21 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     public int lastFeedCount = 0;
 
     /** Flat names of folders explicity closed by the user. */
-    private Set<String> closedFolders = new HashSet<String>();
+    private final Set<String> closedFolders = new HashSet<String>();
 
-    private Context context;
-	private LayoutInflater inflater;
+    private final Context context;
+	private final LayoutInflater inflater;
 	private StateFilter currentState;
-    
+	private final ImageLoader iconLoader;
+	private final BlurDatabaseHelper dbHelper;
+
     // since we want to implement a custom expando that does group collapse/expand, we need
     // a way to call back to those functions on the listview from the onclick listener of
     // views we crate for the list.
     public WeakReference<ExpandableListView> listBackref;
 
     private float textSize;
+    private SpacingStyle spacingStyle;
 
     // in order to implement the laggy disappearance of marked-read feeds, preserve the ID of
     // the last feed or folder viewed and force the DB to include it in the selection
@@ -139,12 +145,15 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     public String activeSearchQuery;
 
-	public FolderListAdapter(Context context, StateFilter currentState) {
+	public FolderListAdapter(Context context, StateFilter currentState, ImageLoader iconLoader, BlurDatabaseHelper dbHelper) {
         this.currentState = currentState;
         this.context = context;
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.iconLoader = iconLoader;
+		this.dbHelper = dbHelper;
 
         textSize = PrefsUtils.getListTextSize(context);
+        spacingStyle = PrefsUtils.getSpacingStyle(context);
 	}
 
 	@Override
@@ -161,7 +170,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 v.findViewById(R.id.row_foldersumneu).setVisibility(View.GONE);
             } else {
                 v.findViewById(R.id.row_foldersumneu).setVisibility(View.VISIBLE);
-                ((TextView) v.findViewById(R.id.row_foldersumneu)).setText(Integer.toString(totalSocialNeutCount));	
+                ((TextView) v.findViewById(R.id.row_foldersumneu)).setText(Integer.toString(totalSocialNeutCount));
             }
             if (totalSocialPosiCount == 0) {
                 v.findViewById(R.id.row_foldersumpos).setVisibility(View.GONE);
@@ -183,7 +192,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             v = inflater.inflate(R.layout.row_saved_searches, null, false);
         } else if (isRowSavedStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_saved_stories, null, false);
-            TextView savedSum = ((TextView) v.findViewById(R.id.row_foldersum));
+            TextView savedSum = v.findViewById(R.id.row_foldersum);
             if (savedStoriesTotalCount > 0) {
                 savedSum.setVisibility(View.VISIBLE);
                 savedSum.setText(Integer.toString(savedStoriesTotalCount));
@@ -193,35 +202,33 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 		} else {
 			if (v == null) v = inflater.inflate(R.layout.row_folder, parent, false);
             String folderName = activeFolderNames.get(groupPosition);
-			TextView folderTitle = ((TextView) v.findViewById(R.id.row_foldername));
+			TextView folderTitle = v.findViewById(R.id.row_foldername);
 		    folderTitle.setText(folderName);
+		    folderTitle.setTextSize(textSize * defaultTextSize_childName);
             bindCountViews(v, folderNeutCounts.get(groupPosition), folderPosCounts.get(groupPosition), false);
             v.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
-            ImageView folderIconView = ((ImageView) v.findViewById(R.id.row_folder_icon));
+            ImageView folderIconView = v.findViewById(R.id.row_folder_icon);
             if ( folderIconView != null ) {
-                folderIconView.setImageResource(isExpanded ? R.drawable.g_icn_folder : R.drawable.g_icn_folder_rss);
+                folderIconView.setImageResource(isExpanded ? R.drawable.ic_folder : R.drawable.ic_folder_closed);
             }
 		}
 
-        TextView groupNameView = ((TextView) v.findViewById(R.id.row_foldername));
-        groupNameView.setTextSize(textSize * defaultTextSize_groupName);
-        TextView sumNeutView = ((TextView) v.findViewById(R.id.row_foldersumneu));
+        @NonNull TextView groupNameView = v.findViewById(R.id.row_foldername);
+        groupNameView.setTextSize(textSize * defaultTextSize_childName);
+        int titleVerticalPadding = spacingStyle.getGroupTitleVerticalPadding(context);
+        groupNameView.setPadding(0, titleVerticalPadding, 0, titleVerticalPadding);
+        @Nullable TextView sumNeutView = v.findViewById(R.id.row_foldersumneu);
         if (sumNeutView != null ) sumNeutView.setTextSize(textSize * defaultTextSize_count);
-        TextView sumPosiView = ((TextView) v.findViewById(R.id.row_foldersumpos));
+        @Nullable TextView sumPosiView = v.findViewById(R.id.row_foldersumpos);
         if (sumPosiView != null ) sumPosiView.setTextSize(textSize * defaultTextSize_count);
-        TextView sumSavedView = ((TextView) v.findViewById(R.id.row_foldersum));
+        @Nullable TextView sumSavedView = v.findViewById(R.id.row_foldersum);
         if (sumSavedView != null ) sumSavedView.setTextSize(textSize * defaultTextSize_count);
 
         // if a group has a sub-view called row_folder_indicator, it will act as an expando
-        ImageView folderIndicatorView = ((ImageView) v.findViewById(R.id.row_folder_indicator));
+        @Nullable ImageView folderIndicatorView = v.findViewById(R.id.row_folder_indicator);
         if ( folderIndicatorView != null ) {
-            folderIndicatorView.setImageResource(isExpanded ? R.drawable.indicator_expanded : R.drawable.indicator_collapsed);
-			folderIndicatorView.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-                    toggleGroup(v, groupPosition, isExpanded);
-				}
-			});
+            folderIndicatorView.setImageResource(isExpanded ? R.drawable.ic_arrow_down : R.drawable.ic_arrow_up);
+			folderIndicatorView.setOnClickListener(v1 -> toggleGroup(v1, groupPosition, isExpanded));
         }
 
 		return v;
@@ -246,22 +253,24 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public synchronized View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 		View v = convertView;
+		int titleVerticalPadding = spacingStyle.getChildTitleVerticalPadding(context);
 		if (isRowAllSharedStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_socialfeed, parent, false);
             SocialFeed f = socialFeedsActive.get(childPosition);
-            TextView nameView = ((TextView) v.findViewById(R.id.row_socialfeed_name));
+            TextView nameView = v.findViewById(R.id.row_socialfeed_name);
             nameView.setText(f.feedTitle);
             nameView.setTextSize(textSize * defaultTextSize_childName);
-            ImageView iconView = (ImageView) v.findViewById(R.id.row_socialfeed_icon);
-            FeedUtils.iconLoader.displayImage(f.photoUrl, iconView);
-            TextView neutCounter = ((TextView) v.findViewById(R.id.row_socialsumneu));
+            nameView.setPadding(nameView.getPaddingLeft(), titleVerticalPadding, nameView.getPaddingRight(), titleVerticalPadding);
+            ImageView iconView = v.findViewById(R.id.row_socialfeed_icon);
+            iconLoader.displayImage(f.photoUrl, iconView);
+            TextView neutCounter = v.findViewById(R.id.row_socialsumneu);
             if (f.neutralCount > 0 && currentState != StateFilter.BEST) {
                 neutCounter.setVisibility(View.VISIBLE);
                 neutCounter.setText(Integer.toString(checkNegativeUnreads(f.neutralCount)));
             } else {
                 neutCounter.setVisibility(View.GONE);
             }
-            TextView posCounter = ((TextView) v.findViewById(R.id.row_socialsumpos));
+            TextView posCounter = v.findViewById(R.id.row_socialsumpos);
             if (f.positiveCount > 0) {
                 posCounter.setVisibility(View.VISIBLE);
                 posCounter.setText(Integer.toString(checkNegativeUnreads(f.positiveCount)));
@@ -280,11 +289,12 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         } else if (isRowSavedStories(groupPosition)) {
             if (v == null) v = inflater.inflate(R.layout.row_saved_tag, parent, false);
             StarredCount sc = starredCountsByTag.get(childPosition);
-            TextView nameView =((TextView) v.findViewById(R.id.row_tag_name));
+            TextView nameView = v.findViewById(R.id.row_tag_name);
             nameView.setText(sc.tag);
             nameView.setTextSize(textSize * defaultTextSize_childName);
             nameView.setAlpha(NONZERO_UNREADS_ALPHA);
-            TextView savedCounter =((TextView) v.findViewById(R.id.row_saved_tag_sum));
+            nameView.setPadding(nameView.getPaddingLeft(), titleVerticalPadding, nameView.getPaddingRight(), titleVerticalPadding);
+            TextView savedCounter = v.findViewById(R.id.row_saved_tag_sum);
             savedCounter.setText(Integer.toString(checkNegativeUnreads(sc.count)));
             savedCounter.setTextSize(textSize * defaultTextSize_count);
 		} else if (isRowSavedSearches(groupPosition)) {
@@ -292,9 +302,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             SavedSearch ss = savedSearches.get(childPosition);
             TextView nameView = v.findViewById(R.id.row_saved_search_title);
             nameView.setText(UIUtils.fromHtml(ss.feedTitle));
+            nameView.setPadding(nameView.getPaddingLeft(), titleVerticalPadding, nameView.getPaddingRight(), titleVerticalPadding);
             ImageView iconView = v.findViewById(R.id.row_saved_search_icon);
-            FeedUtils.iconLoader.preCheck(ss.faviconUrl, iconView);
-            FeedUtils.iconLoader.displayImage(ss.faviconUrl, iconView);
+            iconLoader.preCheck(ss.faviconUrl, iconView);
+            iconLoader.displayImage(ss.faviconUrl, iconView);
         } else {
             if (v == null) v = inflater.inflate(R.layout.row_feed, parent, false);
             Feed f = activeFolderChildren.get(groupPosition).get(childPosition);
@@ -303,17 +314,18 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) containerTitle.getLayoutParams();
             lp.setMarginStart(rowMarginStart);
             containerTitle.setLayoutParams(lp);
-            TextView nameView =((TextView) v.findViewById(R.id.row_feedname));
+            TextView nameView = v.findViewById(R.id.row_feedname);
             nameView.setText(f.title);
             nameView.setTextSize(textSize * defaultTextSize_childName);
-            ImageView iconView = (ImageView) v.findViewById(R.id.row_feedfavicon);
-            FeedUtils.iconLoader.preCheck(f.faviconUrl, iconView);
-            FeedUtils.iconLoader.displayImage(f.faviconUrl, iconView);
-            TextView neutCounter = ((TextView) v.findViewById(R.id.row_feedneutral));
-            TextView posCounter = ((TextView) v.findViewById(R.id.row_feedpositive));
-            TextView savedCounter = ((TextView) v.findViewById(R.id.row_feedsaved));
-            ImageView muteIcon = ((ImageView) v.findViewById(R.id.row_feedmuteicon));
-            CircularProgressIndicator fetchingIcon = ((CircularProgressIndicator) v.findViewById(R.id.row_feedfetching));
+            nameView.setPadding(nameView.getPaddingLeft(), titleVerticalPadding, nameView.getPaddingRight(), titleVerticalPadding);
+            ImageView iconView = v.findViewById(R.id.row_feedfavicon);
+            iconLoader.preCheck(f.faviconUrl, iconView);
+            iconLoader.displayImage(f.faviconUrl, iconView);
+            TextView neutCounter = v.findViewById(R.id.row_feedneutral);
+            TextView posCounter = v.findViewById(R.id.row_feedpositive);
+            TextView savedCounter = v.findViewById(R.id.row_feedsaved);
+            ImageView muteIcon = v.findViewById(R.id.row_feedmuteicon);
+            CircularProgressIndicator fetchingIcon = v.findViewById(R.id.row_feedfetching);
             if (!f.active) {
                 muteIcon.setVisibility(View.VISIBLE);
                 neutCounter.setVisibility(View.GONE);
@@ -407,7 +419,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             return FeedSet.allSaved();
         } else {
             String folderName = getGroupFolderName(groupPosition);
-            FeedSet fs = FeedUtils.feedSetFromFolderName(folderName);
+            FeedSet fs = dbHelper.feedSetFromFolderName(folderName);
             if (currentState == StateFilter.SAVED) fs.setFilterSaved(true);
             return fs;
         }
@@ -439,7 +451,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	public synchronized long getGroupId(int groupPosition) {
         return activeFolderNames.get(groupPosition).hashCode();
 	}
-	
+
 	@Override
 	public synchronized int getChildrenCount(int groupPosition) {
 		if (isRowAllSharedStories(groupPosition)) {
@@ -549,7 +561,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
                 }
             }
         }
-        
+
         recountChildren();
         notifyDataSetChanged();
 	}
@@ -625,7 +637,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         Collections.sort(savedSearches, SavedSearch.SavedSearchComparatorByTitle);
         notifyDataSetChanged();
     }
-    
+
     private void recountFeeds() {
         if ((folders == null) || (feeds == null)) return;
         // re-init our local vars
@@ -633,11 +645,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         activeFolderChildren = new ArrayList<List<Feed>>();
         folderNeutCounts = new ArrayList<Integer>();
         folderPosCounts = new ArrayList<Integer>();
-        // add the always-present (if enabled) special rows/folders that got at the top of the list
-        if (PrefsUtils.isEnableRowGlobalShared(context) && (currentState != StateFilter.SAVED)) addSpecialRow(GLOBAL_SHARED_STORIES_GROUP_KEY);
-        if ((currentState != StateFilter.SAVED)) addSpecialRow(ALL_SHARED_STORIES_GROUP_KEY);
+
         if (PrefsUtils.isEnableRowInfrequent(context) && (currentState != StateFilter.SAVED)) addSpecialRow(INFREQUENT_SITE_STORIES_GROUP_KEY);
         addSpecialRow(ALL_STORIES_GROUP_KEY);
+
         // create a sorted list of folder display names
         List<String> sortedFolderNames = new ArrayList<String>(flatFolders.keySet());
         Collections.sort(sortedFolderNames, Folder.FolderNameComparator);
@@ -686,8 +697,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             Collections.sort(folderChildren, feedComparator);
         }
 
-        // add the always-present (if enabled) special rows/folders that got at the bottom of the list
         addSpecialRow(READ_STORIES_GROUP_KEY);
+        if (PrefsUtils.isEnableRowGlobalShared(context) && (currentState != StateFilter.SAVED)) addSpecialRow(GLOBAL_SHARED_STORIES_GROUP_KEY);
+        if ((currentState != StateFilter.SAVED)) addSpecialRow(ALL_SHARED_STORIES_GROUP_KEY);
         addSpecialRow(SAVED_SEARCHES_GROUP_KEY);
         addSpecialRow(SAVED_STORIES_GROUP_KEY);
         recountChildren();
@@ -923,7 +935,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             default:
                 if ((neutCount > 0) || showNeutZero) {
                     v.findViewById(R.id.row_foldersumneu).setVisibility(View.VISIBLE);
-                } else {    
+                } else {
                     v.findViewById(R.id.row_foldersumneu).setVisibility(View.GONE);
                 }
                 if (posCount == 0) {
@@ -964,6 +976,10 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     public void setTextSize(float textSize) {
         this.textSize = textSize;
+    }
+
+    public void setSpacingStyle(SpacingStyle spacingStyle) {
+        this.spacingStyle = spacingStyle;
     }
 
 }

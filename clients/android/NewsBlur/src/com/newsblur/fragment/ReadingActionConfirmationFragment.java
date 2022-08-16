@@ -10,7 +10,15 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class ReadingActionConfirmationFragment extends DialogFragment {
+
+    @Inject
+    FeedUtils feedUtils;
 
     private static final String READING_ACTION = "reading_action";
     private static final String DIALOG_TITLE = "dialog_title";
@@ -46,7 +54,7 @@ public class ReadingActionConfirmationFragment extends DialogFragment {
         builder.setItems(choicesId, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {
-                    FeedUtils.doAction(ra, getActivity());
+                    feedUtils.doAction(ra, getActivity());
                     if (finishAfter) {
                         getActivity().finish();
                     }

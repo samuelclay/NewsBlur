@@ -25,6 +25,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
+
+            <meta-data android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+
         </activity>
 
         <activity
@@ -70,10 +74,11 @@
             android:name=".activity.Settings"
             android:label="@string/settings"/>
 
+        <activity android:name=".activity.ImportExportActivity" />
         <activity
             android:name=".activity.WidgetConfig"
             android:launchMode="singleTask"
-            android:label="@string/widget" />
+            android:label="@string/menu_widget" />
         
         <activity
             android:name=".activity.FeedItemsList" />
@@ -234,7 +239,22 @@
                 <data android:mimeType="application/xml"/>
                 <data android:mimeType="application/json"/>
                 <data android:mimeType="application/feed+json"/>
+                <data android:scheme="http"/>
+                <data android:scheme="https"/>
             </intent-filter>
+        </activity>
+
+        <activity android:name=".activity.ShareExternalStoryActivity"
+            android:theme="@style/Theme.Translucent"
+            android:windowSoftInputMode="adjustResize"
+            android:launchMode="singleInstance"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
         </activity>
 
     </application>

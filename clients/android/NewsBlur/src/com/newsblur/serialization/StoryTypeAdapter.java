@@ -8,6 +8,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
 import com.newsblur.domain.Story;
+import com.newsblur.network.APIConstants;
 import com.newsblur.util.UIUtils;
 
 import java.lang.reflect.Type;
@@ -46,8 +47,11 @@ public class StoryTypeAdapter implements JsonDeserializer<Story> {
         if (httpSniff.matcher(story.content).find() && story.secureImageUrls != null && story.secureImageUrls.size() > 0) {
             for (String url : story.secureImageUrls.keySet()) {
                 if (httpSniff.matcher(url).find()) {
-                    String httpsUrl = story.secureImageUrls.get(url);
-                    story.content = story.content.replace(url, httpsUrl);
+                    String secureUrl = story.secureImageUrls.get(url);
+                    if (APIConstants.isCustomServer() && secureUrl != null && !secureUrl.startsWith("http")) {
+                        secureUrl = APIConstants.buildUrl(APIConstants.PATH_IMAGE_PROXY + secureUrl);
+                    }
+                    story.content = story.content.replace(url, secureUrl);
                 }
             }
         }

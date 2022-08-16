@@ -1,5 +1,7 @@
 package com.newsblur.domain;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 public class ActivityDetails {
@@ -14,6 +16,7 @@ public class ActivityDetails {
     @SerializedName("time_since")
     public String timeSince;
 
+    @Nullable
     @SerializedName("with_user")
     public WithUser user;
 

@@ -15,7 +15,15 @@ import com.newsblur.R;
 import com.newsblur.domain.Story;
 import com.newsblur.util.FeedUtils;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class ReplyDialogFragment extends DialogFragment {
+
+    @Inject
+    FeedUtils feedUtils;
 
 	private static final String STORY = "story";
 	private static final String COMMENT_USER_ID = "comment_user_id";
@@ -53,7 +61,7 @@ public class ReplyDialogFragment extends DialogFragment {
         builder.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                FeedUtils.replyToComment(story.id, story.feedId, commentUserId, reply.getText().toString(), activity);
+                feedUtils.replyToComment(story.id, story.feedId, commentUserId, reply.getText().toString(), activity);
             }
         });
         builder.setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {

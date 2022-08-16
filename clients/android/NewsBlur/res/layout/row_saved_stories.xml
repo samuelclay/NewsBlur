@@ -13,17 +13,18 @@
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
         android:contentDescription="@string/description_row_folder_icon"
-        android:src="@drawable/ic_clock" />
+        android:src="@drawable/ic_saved" />
 
     <ImageView
         android:id="@+id/row_folder_indicator"
-        android:layout_width="34dp"
-        android:layout_height="30dp"
-        android:paddingLeft="6dp"
-        android:paddingRight="8dp"
+        android:layout_width="26dp"
+        android:layout_height="22dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="4dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/indicator_collapsed" />
+        android:src="@drawable/ic_arrow_up" />
 
     <TextView
         android:id="@+id/row_foldername"
@@ -31,10 +32,9 @@
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/row_saved_icon"
-        android:paddingBottom="9dp"
-        android:paddingTop="9dp"
         android:text="@string/saved_stories_title"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:letterSpacing="@dimen/extra_letter_spacing" />
 
     <TextView
         android:id="@+id/row_foldersum"
@@ -47,24 +47,10 @@
         android:gravity="center"
         android:paddingLeft="3dp"
         android:paddingRight="3dp"
-        android:paddingTop="1dp"
-        android:paddingBottom="2dp"
         android:shadowColor="@color/saved_drop_shadow"
         android:shadowDy="1"
         android:shadowRadius="1"
         android:textColor="@color/white"
-        android:textSize="14sp"
         android:textStyle="bold" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_alignParentTop="true"
-        style="?rowBorderTop" />
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_alignParentBottom="true"
-        style="?rowBorderBottom" />
 
 </RelativeLayout>

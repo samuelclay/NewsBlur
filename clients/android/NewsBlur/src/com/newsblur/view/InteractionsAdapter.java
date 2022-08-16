@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import com.newsblur.R;
 import com.newsblur.domain.ActivityDetails;
 import com.newsblur.domain.UserDetails;
+import com.newsblur.util.ImageLoader;
 
 /**
  * Created by mark on 17/06/15.
@@ -17,8 +18,8 @@ public class InteractionsAdapter extends ActivityDetailsAdapter {
 
     private final String nowFollowingYou, repliedToYour, comment, reply, favoritedComments, reshared, your, you;
 
-    public InteractionsAdapter(final Context context, UserDetails user) {
-        super(context, user);
+    public InteractionsAdapter(final Context context, UserDetails user, ImageLoader iconLoader) {
+        super(context, user, iconLoader);
 
         Resources resources = context.getResources();
         nowFollowingYou = resources.getString(R.string.profile_now_following);
@@ -59,28 +60,41 @@ public class InteractionsAdapter extends ActivityDetailsAdapter {
 
     private CharSequence getFollowContent(ActivityDetails activity, String userString) {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
-        stringBuilder.append(activity.user.username);
+        int usernameLength;
+        if (activity.user != null) {
+            usernameLength = activity.user.username.length();
+            stringBuilder.append(activity.user.username);
+        } else {
+            usernameLength = UNKNOWN_USERNAME.length();
+            stringBuilder.append(UNKNOWN_USERNAME);
+        }
         stringBuilder.append(" ");
         stringBuilder.append(String.format(nowFollowingYou, userString));
 
-        stringBuilder.setSpan(linkColor, 0, activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        stringBuilder.setSpan(contentColor, activity.user.username.length() + 1, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        stringBuilder.setSpan(linkColor, 0, usernameLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        stringBuilder.setSpan(contentColor, usernameLength + 1, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return stringBuilder;
     }
 
     private CharSequence getCommentLikeContent(ActivityDetails activity, String userString) {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
-        stringBuilder.append(activity.user.username);
+        int usernameLength;
+        if (activity.user != null) {
+            usernameLength = activity.user.username.length();
+            stringBuilder.append(activity.user.username);
+        } else {
+            usernameLength = UNKNOWN_USERNAME.length();
+            stringBuilder.append(UNKNOWN_USERNAME);
+        }
         stringBuilder.append(" ");
         String favoritedString = String.format(favoritedComments, userString);
-        stringBuilder.append(favoritedString );
+        stringBuilder.append(favoritedString);
         stringBuilder.append(" ");
         stringBuilder.append(activity.title);
         stringBuilder.append("\n\n\"");
         stringBuilder.append(activity.content);
         stringBuilder.append("\" ");
 
-        int usernameLength = activity.user.username.length();
         int titleSpanStart = usernameLength + 1 + favoritedString.length() + 1;
         int titleLength = activity.title.length();
         stringBuilder.setSpan(linkColor, 0, titleSpanStart + titleLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -93,11 +107,18 @@ public class InteractionsAdapter extends ActivityDetailsAdapter {
 
     private CharSequence getCommentReplyContent(ActivityDetails activity, String userString) {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
-        stringBuilder.append(activity.user.username);
+        int usernameLength;
+        if (activity.user != null) {
+            usernameLength = activity.user.username.length();
+            stringBuilder.append(activity.user.username);
+        } else {
+            usernameLength = UNKNOWN_USERNAME.length();
+            stringBuilder.append(UNKNOWN_USERNAME);
+        }
         stringBuilder.append(" ");
         stringBuilder.append(String.format(repliedToYour, userString));
         stringBuilder.append(" ");
-        int commentReplyLength = 0;
+        int commentReplyLength;
         if (activity.category == ActivityDetails.Category.COMMENT_REPLY) {
             stringBuilder.append(comment);
             commentReplyLength = comment.length();
@@ -109,7 +130,6 @@ public class InteractionsAdapter extends ActivityDetailsAdapter {
         stringBuilder.append(activity.content);
         stringBuilder.append("\"");
 
-        int usernameLength = activity.user.username.length();
         stringBuilder.setSpan(linkColor, 0, usernameLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         stringBuilder.setSpan(contentColor, usernameLength + 1, usernameLength + 1 + repliedToYour.length() + 1 + commentReplyLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         stringBuilder.setSpan(quoteColor, stringBuilder.length() - activity.content.length() - 2, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -118,7 +138,14 @@ public class InteractionsAdapter extends ActivityDetailsAdapter {
 
     private CharSequence getSharedStoryContent(ActivityDetails activity) {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
-        stringBuilder.append(activity.user.username);
+        int usernameLength;
+        if (activity.user != null) {
+            usernameLength = activity.user.username.length();
+            stringBuilder.append(activity.user.username);
+        } else {
+            usernameLength = UNKNOWN_USERNAME.length();
+            stringBuilder.append(UNKNOWN_USERNAME);
+        }
         stringBuilder.append(" ");
         stringBuilder.append(reshared);
         stringBuilder.append(" ");
@@ -130,7 +157,6 @@ public class InteractionsAdapter extends ActivityDetailsAdapter {
             stringBuilder.append("\"");
         }
 
-        int usernameLength = activity.user.username.length();
         int titleSpanStart = usernameLength + 1 + reshared.length() + 1;
         int titleLength = activity.title.length();
         stringBuilder.setSpan(linkColor, 0, titleSpanStart + titleLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

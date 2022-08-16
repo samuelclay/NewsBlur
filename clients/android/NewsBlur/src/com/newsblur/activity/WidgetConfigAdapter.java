@@ -8,14 +8,16 @@ import android.widget.ImageView;
 
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
+import com.newsblur.util.FeedUtils;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 
 import java.util.ArrayList;
 
 public class WidgetConfigAdapter extends FeedChooserAdapter {
 
-    WidgetConfigAdapter(Context context) {
-        super(context);
+    WidgetConfigAdapter(Context context, FeedUtils feedUtils, ImageLoader iconLoader) {
+        super(context, feedUtils, iconLoader);
     }
 
     @Override

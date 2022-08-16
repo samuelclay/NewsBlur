@@ -5,6 +5,7 @@ import android.content.Context;
 import com.newsblur.domain.ActivityDetails;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.network.domain.ActivitiesResponse;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.view.ActivitiesAdapter;
 import com.newsblur.view.ActivityDetailsAdapter;
 
@@ -14,8 +15,8 @@ import com.newsblur.view.ActivityDetailsAdapter;
 public class ProfileActivitiesFragment extends ProfileActivityDetailsFragment {
 
     @Override
-    protected ActivityDetailsAdapter createAdapter(Context context, UserDetails user) {
-        return new ActivitiesAdapter(context, user);
+    protected ActivityDetailsAdapter createAdapter(Context context, UserDetails user, ImageLoader imageLoader) {
+        return new ActivitiesAdapter(context, user, iconLoader);
     }
 
     @Override

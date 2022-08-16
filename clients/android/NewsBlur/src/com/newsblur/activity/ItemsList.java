@@ -14,40 +14,51 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.newsblur.R;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.ActivityItemslistBinding;
+import com.newsblur.di.IconLoader;
 import com.newsblur.fragment.ItemSetFragment;
-import com.newsblur.fragment.ReadFilterDialogFragment;
 import com.newsblur.fragment.SaveSearchFragment;
-import com.newsblur.fragment.StoryOrderDialogFragment;
-import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
-import com.newsblur.util.ReadFilterChangedListener;
+import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryContentPreviewStyle;
 import com.newsblur.util.StoryListStyle;
 import com.newsblur.util.StoryOrder;
-import com.newsblur.util.StoryOrderChangedListener;
+import com.newsblur.util.ListTextSize;
 import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
 
-public abstract class ItemsList extends NbActivity implements StoryOrderChangedListener, ReadFilterChangedListener, OnSeekBarChangeListener {
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
+public abstract class ItemsList extends NbActivity {
+
+    @Inject
+    BlurDatabaseHelper dbHelper;
+
+    @Inject
+    FeedUtils feedUtils;
+
+    @Inject
+    @IconLoader
+    ImageLoader iconLoader;
 
     public static final String EXTRA_FEED_SET = "feed_set";
     public static final String EXTRA_STORY_HASH = "story_hash";
     public static final String EXTRA_WIDGET_STORY = "widget_story";
-	private static final String STORY_ORDER = "storyOrder";
-	private static final String READ_FILTER = "readFilter";
-    private static final String DEFAULT_FEED_VIEW = "defaultFeedView";
+    public static final String EXTRA_VISIBLE_SEARCH = "visibleSearch";
     private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
     private ActivityItemslistBinding binding;
 
@@ -68,13 +79,12 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         // this is not strictly necessary, since our first refresh with the fs will swap in
         // the correct session, but that can be delayed by sync backup, so we try here to
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
-        FeedUtils.prepareReadingSession(fs, false);
-
+        feedUtils.prepareReadingSession(fs, false);
         if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false)) {
             String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
             UIUtils.startReadingActivity(fs, hash, this);
         } else if (PrefsUtils.isAutoOpenFirstUnread(this)) {
-            if (FeedUtils.dbHelper.getUnreadCount(fs, intelState) > 0) {
+            if (dbHelper.getUnreadCount(fs, intelState) > 0) {
                 UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this);
             }
         }
@@ -88,7 +98,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 		itemSetFragment = (ItemSetFragment) fragmentManager.findFragmentByTag(ItemSetFragment.class.getName());
 		if (itemSetFragment == null) {
             itemSetFragment = ItemSetFragment.newInstance();
-			itemSetFragment.setRetainInstance(true);
 			FragmentTransaction transaction = fragmentManager.beginTransaction();
 			transaction.add(R.id.activity_itemlist_container, itemSetFragment, ItemSetFragment.class.getName());
 			transaction.commit();
@@ -103,7 +112,9 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         if (activeSearchQuery != null) {
             binding.itemlistSearchQuery.setText(activeSearchQuery);
             binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
-            checkSearchQuery();
+        } else if (getIntent().getBooleanExtra(EXTRA_VISIBLE_SEARCH, false)){
+            binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
+            binding.itemlistSearchQuery.requestFocus();
         }
 
         binding.itemlistSearchQuery.setOnKeyListener(new OnKeyListener() {
@@ -214,6 +225,20 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 
+        StoryOrder storyOrder = PrefsUtils.getStoryOrder(this, fs);
+        if (storyOrder == StoryOrder.NEWEST) {
+            menu.findItem(R.id.menu_story_order_newest).setChecked(true);
+        } else if (storyOrder == StoryOrder.OLDEST) {
+            menu.findItem(R.id.menu_story_order_oldest).setChecked(true);
+        }
+
+        ReadFilter readFilter = PrefsUtils.getReadFilter(this, fs);
+        if (readFilter == ReadFilter.ALL) {
+            menu.findItem(R.id.menu_read_filter_all_stories).setChecked(true);
+        } else if (readFilter == ReadFilter.UNREAD) {
+            menu.findItem(R.id.menu_read_filter_unread_only).setChecked(true);
+        }
+
         StoryListStyle listStyle = PrefsUtils.getStoryListStyle(this, fs);
         if (listStyle == StoryListStyle.GRID_F) {
              menu.findItem(R.id.menu_list_style_grid_f).setChecked(true);
@@ -262,8 +287,30 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
             menu.findItem(R.id.menu_story_thumbnail_right_small).setChecked(true);
         } else if (thumbnailStyle == ThumbnailStyle.RIGHT_LARGE) {
             menu.findItem(R.id.menu_story_thumbnail_right_large).setChecked(true);
-        } else if (thumbnailStyle == ThumbnailStyle.OFF) {
+        } else if (thumbnailStyle.isOff()) {
             menu.findItem(R.id.menu_story_thumbnail_no_preview).setChecked(true);
+        }
+
+        SpacingStyle spacingStyle = PrefsUtils.getSpacingStyle(this);
+        if (spacingStyle == SpacingStyle.COMFORTABLE) {
+            menu.findItem(R.id.menu_spacing_comfortable).setChecked(true);
+        } else if (spacingStyle == SpacingStyle.COMPACT) {
+            menu.findItem(R.id.menu_spacing_compact).setChecked(true);
+        }
+
+        ListTextSize listTextSize = ListTextSize.fromSize(PrefsUtils.getListTextSize(this));
+        if (listTextSize == ListTextSize.XS) {
+            menu.findItem(R.id.menu_text_size_xs).setChecked(true);
+        } else if (listTextSize == ListTextSize.S) {
+            menu.findItem(R.id.menu_text_size_s).setChecked(true);
+        } else if (listTextSize == ListTextSize.M) {
+            menu.findItem(R.id.menu_text_size_m).setChecked(true);
+        } else if (listTextSize == ListTextSize.L) {
+            menu.findItem(R.id.menu_text_size_l).setChecked(true);
+        } else if (listTextSize == ListTextSize.XL) {
+            menu.findItem(R.id.menu_text_size_xl).setChecked(true);
+        } else if (listTextSize == ListTextSize.XXL) {
+            menu.findItem(R.id.menu_text_size_xxl).setChecked(true);
         }
 
         boolean isMarkReadOnScroll = PrefsUtils.isMarkReadOnFeedScroll(this);
@@ -282,22 +329,38 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 			finish();
 			return true;
 		} else if (item.getItemId() == R.id.menu_mark_all_as_read) {
-            FeedUtils.markRead(this, fs, null, null, R.array.mark_all_read_options, true);
+            feedUtils.markRead(this, fs, null, null, R.array.mark_all_read_options, true);
 			return true;
-		} else if (item.getItemId() == R.id.menu_story_order) {
-            StoryOrder currentValue = getStoryOrder();
-            StoryOrderDialogFragment storyOrder = StoryOrderDialogFragment.newInstance(currentValue);
-            storyOrder.show(getSupportFragmentManager(), STORY_ORDER);
+		} else if (item.getItemId() == R.id.menu_story_order_newest) {
+		    updateStoryOrder(StoryOrder.NEWEST);
             return true;
-        } else if (item.getItemId() == R.id.menu_read_filter) {
-            ReadFilter currentValue = getReadFilter();
-            ReadFilterDialogFragment readFilter = ReadFilterDialogFragment.newInstance(currentValue);
-            readFilter.show(getSupportFragmentManager(), READ_FILTER);
+        } else if (item.getItemId() == R.id.menu_story_order_oldest) {
+            updateStoryOrder(StoryOrder.OLDEST);
             return true;
-		} else if (item.getItemId() == R.id.menu_textsize) {
-			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getListTextSize(this), TextSizeDialogFragment.TextSizeType.ListText);
-			textSize.show(getSupportFragmentManager(), TextSizeDialogFragment.class.getName());
-			return true;
+        } else if (item.getItemId() == R.id.menu_read_filter_all_stories) {
+		    updateReadFilter(ReadFilter.ALL);
+            return true;
+		} else if (item.getItemId() == R.id.menu_read_filter_unread_only) {
+            updateReadFilter(ReadFilter.UNREAD);
+            return true;
+        } else if (item.getItemId() == R.id.menu_text_size_xs) {
+		    updateTextSizeStyle(ListTextSize.XS);
+            return true;
+        } else if (item.getItemId() == R.id.menu_text_size_s) {
+            updateTextSizeStyle(ListTextSize.S);
+            return true;
+        } else if (item.getItemId() == R.id.menu_text_size_m) {
+            updateTextSizeStyle(ListTextSize.M);
+            return true;
+        } else if (item.getItemId() == R.id.menu_text_size_l) {
+            updateTextSizeStyle(ListTextSize.L);
+            return true;
+        } else if (item.getItemId() == R.id.menu_text_size_xl) {
+            updateTextSizeStyle(ListTextSize.XL);
+            return true;
+        } else if (item.getItemId() == R.id.menu_text_size_xxl) {
+            updateTextSizeStyle(ListTextSize.XXL);
+            return true;
         } else if (item.getItemId() == R.id.menu_search_stories) {
             if (binding.itemlistSearchQuery.getVisibility() != View.VISIBLE) {
                 binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
@@ -318,18 +381,22 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         } else if (item.getItemId() == R.id.menu_theme_black) {
             PrefsUtils.setSelectedTheme(this, ThemeValue.BLACK);
             UIUtils.restartActivity(this);
+        } else if (item.getItemId() == R.id.menu_spacing_comfortable) {
+		    updateSpacingStyle(SpacingStyle.COMFORTABLE);
+        } else if (item.getItemId() == R.id.menu_spacing_compact) {
+		    updateSpacingStyle(SpacingStyle.COMPACT);
         } else if (item.getItemId() == R.id.menu_list_style_list) {
             PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.LIST);
-            itemSetFragment.updateStyle();
+            itemSetFragment.updateListStyle();
         } else if (item.getItemId() == R.id.menu_list_style_grid_f) {
             PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.GRID_F);
-            itemSetFragment.updateStyle();
+            itemSetFragment.updateListStyle();
         } else if (item.getItemId() == R.id.menu_list_style_grid_m) {
             PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.GRID_M);
-            itemSetFragment.updateStyle();
+            itemSetFragment.updateListStyle();
         } else if (item.getItemId() == R.id.menu_list_style_grid_c) {
             PrefsUtils.updateStoryListStyle(this, fs, StoryListStyle.GRID_C);
-            itemSetFragment.updateStyle();
+            itemSetFragment.updateListStyle();
         } else if (item.getItemId() == R.id.menu_save_search) {
             String feedId = getSaveSearchFeedId();
             if (feedId != null) {
@@ -372,22 +439,6 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 	
 		return false;
 	}
-	
-	public StoryOrder getStoryOrder() {
-        return PrefsUtils.getStoryOrder(this, fs);
-    }
-    
-	private void updateStoryOrderPreference(StoryOrder newOrder) {
-        PrefsUtils.updateStoryOrder(this, fs, newOrder);
-    }
-	
-	private ReadFilter getReadFilter() {
-        return PrefsUtils.getReadFilter(this, fs);
-    }
-
-    private void updateReadFilterPreference(ReadFilter newValue) {
-        PrefsUtils.updateReadFilter(this, fs, newValue);
-    }
 
     @Override
 	public void handleUpdate(int updateType) {
@@ -432,7 +483,7 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
         String oldQuery = fs.getSearchQuery();
         fs.setSearchQuery(q);
         if (!TextUtils.equals(q, oldQuery)) {
-            FeedUtils.prepareReadingSession(fs, true);
+            feedUtils.prepareReadingSession(fs, true);
             triggerSync();
             itemSetFragment.resetEmptyState();
             itemSetFragment.hasUpdated();
@@ -460,44 +511,34 @@ public abstract class ItemsList extends NbActivity implements StoryOrderChangedL
 	    transaction.commit();
     }
 
-	@Override
-    public void storyOrderChanged(StoryOrder newValue) {
-        updateStoryOrderPreference(newValue);
+    private void updateTextSizeStyle(ListTextSize listTextSize) {
+	    PrefsUtils.setListTextSize(this, listTextSize.getSize());
+        itemSetFragment.updateTextSize();
+    }
+
+    private void updateSpacingStyle(SpacingStyle spacingStyle) {
+        PrefsUtils.setSpacingStyle(this, spacingStyle);
+        itemSetFragment.updateSpacingStyle();
+    }
+
+    private void updateStoryOrder(StoryOrder storyOrder) {
+        PrefsUtils.updateStoryOrder(this, fs, storyOrder);
         restartReadingSession();
     }
 
-    @Override
-    public void readFilterChanged(ReadFilter newValue) {
-        updateReadFilterPreference(newValue);
+    private void updateReadFilter(ReadFilter readFilter) {
+        PrefsUtils.updateReadFilter(this, fs, readFilter);
         restartReadingSession();
     }
 
     protected void restartReadingSession() {
         NBSyncService.resetFetchState(fs);
-        FeedUtils.prepareReadingSession(fs, true);
+        feedUtils.prepareReadingSession(fs, true);
         triggerSync();
         itemSetFragment.resetEmptyState();
         itemSetFragment.hasUpdated();
         itemSetFragment.scrollToTop();
     }
-
-    // NB: this callback is for the text size slider
-	@Override
-	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        float size = AppConstants.LIST_FONT_SIZE[progress];
-	    PrefsUtils.setListTextSize(this, size);
-        if (itemSetFragment != null) itemSetFragment.setTextSize(size);
-	}
-
-    // unused OnSeekBarChangeListener method
-	@Override
-	public void onStartTrackingTouch(SeekBar seekBar) {
-	}
-
-    // unused OnSeekBarChangeListener method
-	@Override
-	public void onStopTrackingTouch(SeekBar seekBar) {
-	}
 
     @Override
     public void finish() {

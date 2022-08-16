@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="?selectorStoryBackground" >
+    style="?selectorStoryBackground">
 
 <!--
     This RelativeLayout really should be the top-most parent with a full width and wraped height. However,
@@ -54,28 +55,27 @@
         android:layout_marginBottom="1dp"
         android:visibility="gone" />
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/story_item_feedicon"
         android:layout_width="18dp"
         android:layout_height="18dp"
-        android:layout_marginTop="4dp"
-        android:layout_toRightOf="@id/story_item_inteldot_container" />
+        android:layout_toRightOf="@id/story_item_inteldot_container"
+        app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance" />
 
     <TextView
         android:id="@+id/story_item_feedtitle"
+        style="?storyFeedTitleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="6dp"
-        android:layout_marginTop="4dp"
-        android:layout_toRightOf="@id/story_item_feedicon"
+        android:layout_marginLeft="8dp"
         android:layout_toLeftOf="@id/story_item_thumbnail_right"
+        android:layout_toRightOf="@id/story_item_feedicon"
         android:ellipsize="end"
-        android:singleLine="true"
-        style="?storyFeedTitleText" />
+        android:singleLine="true" />
 
     <ImageView
         android:id="@+id/story_item_saved_icon"
-        android:src="@drawable/ic_clock"
+        android:src="@drawable/ic_saved"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_below="@id/story_item_feedtitle"
@@ -88,7 +88,7 @@
 
     <ImageView
         android:id="@+id/story_item_shared_icon"
-        android:src="@drawable/ic_shared"
+        android:src="@drawable/ic_share"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_below="@id/story_item_feedtitle"
@@ -99,19 +99,19 @@
         android:layout_marginRight="8dp"
         android:visibility="gone" />
 
+    <!--dynamic spacing-->
     <TextView
         android:id="@+id/story_item_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/story_item_feedicon"
         android:layout_toLeftOf="@id/story_item_shared_icon"
         android:layout_toRightOf="@id/story_item_inteldot_container"
-        android:layout_below="@id/story_item_feedicon"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        android:paddingRight="4dp"
+        android:ellipsize="end"
         android:maxLines="3"
-        android:ellipsize="end" />
+        android:textStyle="bold" />
 
+    <!--dynamic spacing-->
     <TextView
         android:id="@+id/story_item_content"
         android:layout_width="wrap_content"
@@ -119,34 +119,32 @@
         android:layout_toLeftOf="@id/story_item_thumbnail_right"
         android:layout_toRightOf="@id/story_item_inteldot_container"
         android:layout_below="@id/story_item_title"
-        android:paddingBottom="6dp"
-        android:paddingRight="4dp"
-        android:maxLines="2"
         android:ellipsize="end"
+        android:lineSpacingExtra="1dp"
         style="?storySnippetText" />
 
+    <!--dynamic spacing-->
     <TextView
+        style="?storySnippetText"
         android:id="@+id/story_item_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/story_item_thumbnail_right"
-        android:layout_alignWithParentIfMissing="true"
+        android:layout_toRightOf="@id/story_item_inteldot_container"
         android:layout_below="@id/story_item_content"
-        android:paddingBottom="2dp"
-        android:paddingRight="8dp"
-        style="?storyDateText" />
+        android:paddingRight="3dp" />
 
+    <!--dynamic spacing-->
     <TextView
+        style="?storySnippetText"
         android:id="@+id/story_item_author"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/story_item_content"
-        android:layout_toLeftOf="@id/story_item_date"
-        android:layout_toRightOf="@id/story_item_inteldot_container"
-        android:paddingBottom="2dp"
+        android:layout_toRightOf="@id/story_item_date"
+        android:layout_toLeftOf="@id/story_item_thumbnail_right"
+        android:layout_alignBaseline="@+id/story_item_date"
         android:ellipsize="end"
-        android:singleLine="true"
-        android:textColor="@color/story_author_text" />
+        android:singleLine="true" />
 
     <FrameLayout
         android:id="@+id/story_item_inteldot_container"
@@ -166,15 +164,15 @@
 
     </FrameLayout>
 
-    <View 
+    <View
         android:layout_height="0.5dp"
         android:layout_width="match_parent"
-        style="?rowBorderTop"
+        style="?rowBorder"
         android:layout_alignParentTop="true" />
-    <View 
+    <View
         android:layout_height="0.5dp"
         android:layout_width="match_parent"
-        style="?rowBorderBottom"
+        style="?rowBorder"
         android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

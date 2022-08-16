@@ -3,10 +3,11 @@ package com.newsblur.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
-import android.view.View;
 
 import com.newsblur.R;
 import com.newsblur.databinding.ActivityAddfeedexternalBinding;
@@ -34,11 +35,16 @@ public class AddFeedExternal extends NbActivity implements AddFeedFragment.AddFe
 
         Intent intent = getIntent();
         Uri uri = intent.getData();
-        
+
         com.newsblur.util.Log.d(this, "intent filter caught feed-like URI: " + uri);
 
-		DialogFragment addFeedFragment = AddFeedFragment.newInstance(uri.toString(), uri.toString());
-		addFeedFragment.show(getSupportFragmentManager(), "dialog");
+        if (uri != null) {
+            DialogFragment addFeedFragment = AddFeedFragment.newInstance(uri.toString(), uri.toString());
+            addFeedFragment.show(getSupportFragmentManager(), "dialog");
+        } else {
+            Toast.makeText(this, "NewsBlur invalid or missing URI!", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, InitActivity.class));
+        }
     }
 
     @Override
@@ -53,7 +59,7 @@ public class AddFeedExternal extends NbActivity implements AddFeedFragment.AddFe
     }
 
     @Override
-	public void handleUpdate(int updateType) {
+    public void handleUpdate(int updateType) {
         ; // we don't care about anything but completion
     }
 
