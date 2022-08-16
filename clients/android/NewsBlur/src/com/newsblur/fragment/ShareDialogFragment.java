@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.newsblur.R;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.domain.Comment;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
@@ -20,7 +21,18 @@ import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class ShareDialogFragment extends DialogFragment {
+
+    @Inject
+    FeedUtils feedUtils;
+
+    @Inject
+    BlurDatabaseHelper dbHelper;
 
 	private static final String STORY = "story";
     private static final String SOURCE_USER_ID = "sourceUserId";
@@ -55,11 +67,11 @@ public class ShareDialogFragment extends DialogFragment {
         }
 
         if (hasBeenShared) {
-            previousComment = FeedUtils.dbHelper.getComment(story.id, user.id);
+            previousComment = dbHelper.getComment(story.id, user.id);
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle(String.format(getResources().getString(R.string.share_newsblur), UIUtils.fromHtml(story.title)));
+        builder.setTitle(String.format(getResources().getString(R.string.share_save_newsblur), UIUtils.fromHtml(story.title)));
 
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
         View replyView = layoutInflater.inflate(R.layout.share_dialog, null);
@@ -80,7 +92,7 @@ public class ShareDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 String shareComment = commentEditText.getText().toString();
-                FeedUtils.shareStory(story, shareComment, sourceUserId, activity);
+                feedUtils.shareStory(story, shareComment, sourceUserId, activity);
                 ShareDialogFragment.this.dismiss();
             }
         });
@@ -89,7 +101,7 @@ public class ShareDialogFragment extends DialogFragment {
             builder.setNegativeButton(negativeButtonText, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    FeedUtils.unshareStory(story, activity);
+                    feedUtils.unshareStory(story, activity);
                     ShareDialogFragment.this.dismiss();
                 }
             });

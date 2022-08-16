@@ -21,6 +21,10 @@ import com.newsblur.util.Log
 import com.newsblur.util.NBScope
 import com.newsblur.util.PrefsUtils
 import com.newsblur.util.executeAsyncTask
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -77,6 +81,13 @@ interface SubscriptionsListener {
     fun onBillingConnectionReady() {}
 
     fun onBillingConnectionError(message: String? = null) {}
+}
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface SubscriptionManagerEntryPoint {
+
+    fun apiManager(): APIManager
 }
 
 class SubscriptionManagerImpl(
@@ -199,10 +210,11 @@ class SubscriptionManagerImpl(
 
     override fun saveReceipt(purchase: Purchase) {
         Log.d(this, "saveReceipt: ${purchase.orderId}")
-        val apiManager = APIManager(context)
+        val hiltEntryPoint = EntryPointAccessors
+                .fromApplication(context.applicationContext, SubscriptionManagerEntryPoint::class.java)
         scope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.saveReceipt(purchase.orderId, purchase.skus.first())
+                    hiltEntryPoint.apiManager().saveReceipt(purchase.orderId, purchase.skus.first())
                 },
                 onPostExecute = {
                     if (!it.isError) {

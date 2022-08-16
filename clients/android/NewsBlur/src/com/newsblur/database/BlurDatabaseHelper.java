@@ -1,5 +1,7 @@
 package com.newsblur.database;
 
+import static java.util.Collections.emptySet;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -30,6 +32,7 @@ import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.UIUtils;
 
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -1585,7 +1588,7 @@ public class BlurDatabaseHelper {
     }
 
     public void sendSyncUpdate(int updateType) {
-        FeedUtils.syncUpdateStatus(context, updateType);
+        UIUtils.syncUpdateStatus(context, updateType);
     }
 
     private static String conjoinSelections(CharSequence... args) {
@@ -1620,5 +1623,17 @@ public class BlurDatabaseHelper {
      */
     private Cursor query(boolean distinct, String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit, CancellationSignal cancellationSignal) {
         return dbRO.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy, limit, cancellationSignal);
+    }
+
+    public FeedSet feedSetFromFolderName(String folderName) {
+        return FeedSet.folder(folderName, getFeedIdsRecursive(folderName));
+    }
+
+    private Set<String> getFeedIdsRecursive(String folderName) {
+        Folder folder = getFolder(folderName);
+        if (folder == null) return emptySet();
+        Set<String> feedIds = new HashSet<>(folder.feedIds);
+        for (String child : folder.children) feedIds.addAll(getFeedIdsRecursive(child));
+        return feedIds;
     }
 }

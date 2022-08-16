@@ -3,29 +3,24 @@ package com.newsblur.network;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Build;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.newsblur.domain.Classifier;
-import com.newsblur.domain.Feed;
 import com.newsblur.domain.FeedResult;
-import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
 import static com.newsblur.network.APIConstants.buildUrl;
 import com.newsblur.network.domain.ActivitiesResponse;
@@ -43,11 +38,6 @@ import com.newsblur.network.domain.StoryChangesResponse;
 import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.network.domain.UnreadCountResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
-import com.newsblur.serialization.BooleanTypeAdapter;
-import com.newsblur.serialization.ClassifierMapTypeAdapter;
-import com.newsblur.serialization.DateStringTypeAdapter;
-import com.newsblur.serialization.FeedListTypeAdapter;
-import com.newsblur.serialization.StoryTypeAdapter;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.NetworkUtils;
@@ -65,37 +55,17 @@ import okhttp3.Response;
 
 public class APIManager {
 
-	private Context context;
-	private Gson gson;
+	private final Context context;
+	private final Gson gson;
+	private final OkHttpClient httpClient;
     private String customUserAgent;
-	private OkHttpClient httpClient;
 
-	public APIManager(final Context context) {
-		this.context = context;
-
+	public APIManager(final Context context, Gson gson, String customUserAgent, OkHttpClient httpClient) {
         APIConstants.setCustomServer(PrefsUtils.getCustomServer(context));
-
-        this.gson = new GsonBuilder()
-                .registerTypeAdapter(Date.class, new DateStringTypeAdapter())
-                .registerTypeAdapter(Boolean.class, new BooleanTypeAdapter())
-                .registerTypeAdapter(boolean.class, new BooleanTypeAdapter())
-                .registerTypeAdapter(Story.class, new StoryTypeAdapter())
-                .registerTypeAdapter(new TypeToken<List<Feed>>(){}.getType(), new FeedListTypeAdapter())
-                .registerTypeAdapter(new TypeToken<Map<String,Classifier>>(){}.getType(), new ClassifierMapTypeAdapter())
-                .create();
-
-        String appVersion = context.getSharedPreferences(PrefConstants.PREFERENCES, 0).getString(AppConstants.LAST_APP_VERSION, "unknown_version");
-        this.customUserAgent =  "NewsBlur Android app" +
-                                " (" + Build.MANUFACTURER + " " +
-                                Build.MODEL + " " +
-                                Build.VERSION.RELEASE + " " +
-                                appVersion + ")";
-
-        this.httpClient = new OkHttpClient.Builder()
-                          .connectTimeout(AppConstants.API_CONN_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                          .readTimeout(AppConstants.API_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                          .followSslRedirects(true)
-                          .build();
+        this.context = context;
+        this.gson = gson;
+        this.customUserAgent = customUserAgent;
+        this.httpClient = httpClient;
 	}
 
 	public LoginResponse login(final String username, final String password) {
@@ -393,6 +363,23 @@ public class APIManager {
 		}
 	}
 
+	public APIResponse saveExternalStory(@NonNull String storyTitle, @NonNull String storyUrl) {
+        ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_TITLE, storyTitle);
+        values.put(APIConstants.PARAMETER_STORY_URL, storyUrl);
+
+        return post(buildUrl(APIConstants.PATH_SAVE_EXTERNAL_STORY), values);
+    }
+
+	public APIResponse shareExternalStory(@NonNull String storyTitle, @NonNull String storyUrl, @NonNull String shareComments) {
+        ContentValues values = new ContentValues();
+        values.put(APIConstants.PARAMETER_TITLE, storyTitle);
+        values.put(APIConstants.PARAMETER_STORY_URL, storyUrl);
+        values.put(APIConstants.PARAMETER_SHARE_COMMENT, shareComments);
+
+        return post(buildUrl(APIConstants.PATH_SHARE_EXTERNAL_STORY), values);
+    }
+
     public StoriesResponse shareStory(String storyId, String feedId, String comment, String sourceUserId) {
         ContentValues values = new ContentValues();
         if (!TextUtils.isEmpty(comment)) {
@@ -684,6 +671,15 @@ public class APIManager {
         return response.getResponse(gson, NewsBlurResponse.class);
     }
 
+    public NewsBlurResponse importOpml(RequestBody requestBody) {
+        APIResponse response = post(buildUrl(APIConstants.PATH_IMPORT_OPML), requestBody);
+        return response.getResponse(gson, NewsBlurResponse.class);
+    }
+
+    public void updateCustomUserAgent(String customUserAgent) {
+        this.customUserAgent = customUserAgent;
+    }
+
     /* HTTP METHODS */
    
 	private APIResponse get(final String urlString) {
@@ -798,5 +794,4 @@ public class APIManager {
             com.newsblur.util.Log.w(this.getClass().getName(), "Abandoning API backoff due to interrupt.");
         }
     }
-
 }

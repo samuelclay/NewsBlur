@@ -24,28 +24,41 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.widget.AbsListView;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.newsblur.R;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.ActivityMainBinding;
 import com.newsblur.fragment.FeedIntelligenceSelectorFragment;
 import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.LoginAsDialogFragment;
 import com.newsblur.fragment.LogoutDialogFragment;
-import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.service.BootReceiver;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ShortcutUtils;
+import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StateFilter;
+import com.newsblur.util.ListTextSize;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 import com.newsblur.widget.WidgetUtils;
 
-public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, PopupMenu.OnMenuItemClickListener, OnSeekBarChangeListener {
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
+public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, PopupMenu.OnMenuItemClickListener {
+
+    @Inject
+    FeedUtils feedUtils;
+
+    @Inject
+    BlurDatabaseHelper dbHelper;
 
     public static final String EXTRA_FORCE_SHOW_FEED_ID = "force_show_feed_id";
 
@@ -110,13 +123,24 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
         });
 
-        FeedUtils.currentFolderName = null;
+        feedUtils.currentFolderName = null;
 
         binding.mainMenuButton.setOnClickListener(v -> onClickMenuButton());
         binding.mainAddButton.setOnClickListener(v -> onClickAddButton());
         binding.mainProfileButton.setOnClickListener(v -> onClickProfileButton());
         binding.mainUserImage.setOnClickListener(v -> onClickUserButton());
         binding.mainSearchFeedsButton.setOnClickListener(v -> onClickSearchFeedsButton());
+
+        // Check whether it's a shortcut intent
+        String shortcutExtra = getIntent().getStringExtra(ShortcutUtils.SHORTCUT_EXTRA);
+        if (shortcutExtra != null && shortcutExtra.startsWith(ShortcutUtils.SHORTCUT_ALL_STORIES)) {
+            Intent intent = new Intent(this, AllStoriesItemsList.class);
+            intent.putExtra(ItemsList.EXTRA_FEED_SET, FeedSet.allFeeds());
+            if (shortcutExtra.equals(ShortcutUtils.SHORTCUT_ALL_STORIES_SEARCH)) {
+                intent.putExtra(ItemsList.EXTRA_VISIBLE_SEARCH, true);
+            }
+            startActivity(intent);
+        }
 	}
 
     @Override
@@ -151,7 +175,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         // will be required, however inefficient
         folderFeedList.hasUpdated();
 
-        NBSyncService.resetReadingSession(FeedUtils.dbHelper);
+        NBSyncService.resetReadingSession(dbHelper);
         NBSyncService.flushRecounts();
 
         updateStatusIndicators();
@@ -275,6 +299,28 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         } else if (themeValue == ThemeValue.AUTO) {
             menu.findItem(R.id.menu_theme_auto).setChecked(true);
         }
+
+        SpacingStyle spacingStyle = PrefsUtils.getSpacingStyle(this);
+        if (spacingStyle == SpacingStyle.COMFORTABLE) {
+            menu.findItem(R.id.menu_spacing_comfortable).setChecked(true);
+        } else if (spacingStyle == SpacingStyle.COMPACT) {
+            menu.findItem(R.id.menu_spacing_compact).setChecked(true);
+        }
+
+        ListTextSize listTextSize = ListTextSize.fromSize(PrefsUtils.getListTextSize(this));
+        if (listTextSize == ListTextSize.XS) {
+            menu.findItem(R.id.menu_text_size_xs).setChecked(true);
+        } else if (listTextSize == ListTextSize.S) {
+            menu.findItem(R.id.menu_text_size_s).setChecked(true);
+        } else if (listTextSize == ListTextSize.M) {
+            menu.findItem(R.id.menu_text_size_m).setChecked(true);
+        } else if (listTextSize == ListTextSize.L) {
+            menu.findItem(R.id.menu_text_size_l).setChecked(true);
+        } else if (listTextSize == ListTextSize.XL) {
+            menu.findItem(R.id.menu_text_size_xl).setChecked(true);
+        } else if (listTextSize == ListTextSize.XXL) {
+            menu.findItem(R.id.menu_text_size_xxl).setChecked(true);
+        }
         
         menu.findItem(R.id.menu_widget).setVisible(WidgetUtils.hasActiveAppWidgets(this));
 
@@ -296,21 +342,41 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             startActivity(widgetIntent);
             return true;
 		} else if (item.getItemId() == R.id.menu_feedback_email) {
-            PrefsUtils.sendLogEmail(this);
+            PrefsUtils.sendLogEmail(this, dbHelper);
             return true;
         } else if (item.getItemId() == R.id.menu_feedback_post) {
             try {
                 Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(PrefsUtils.createFeedbackLink(this)));
+                i.setData(Uri.parse(PrefsUtils.createFeedbackLink(this, dbHelper)));
                 startActivity(i);
             } catch (Exception e) {
                 Log.wtf(this.getClass().getName(), "device cannot even open URLs to report feedback");
             }
             return true;
-		} else if (item.getItemId() == R.id.menu_textsize) {
-			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(PrefsUtils.getListTextSize(this), TextSizeDialogFragment.TextSizeType.ListText);
-			textSize.show(getSupportFragmentManager(), TextSizeDialogFragment.class.getName());
+		} else if (item.getItemId() == R.id.menu_text_size_xs) {
+		    folderFeedList.setListTextSize(ListTextSize.XS);
+		    return true;
+        } else if (item.getItemId() == R.id.menu_text_size_s) {
+            folderFeedList.setListTextSize(ListTextSize.S);
+            return true;
+        } else if (item.getItemId() == R.id.menu_text_size_m) {
+            folderFeedList.setListTextSize(ListTextSize.M);
+            return true;
+        } else if (item.getItemId() == R.id.menu_text_size_l) {
+            folderFeedList.setListTextSize(ListTextSize.L);
+            return true;
+        } else if (item.getItemId() == R.id.menu_text_size_xl) {
+            folderFeedList.setListTextSize(ListTextSize.XL);
+            return true;
+        } else if (item.getItemId() == R.id.menu_text_size_xxl) {
+            folderFeedList.setListTextSize(ListTextSize.XXL);
 			return true;
+        } else if (item.getItemId() == R.id.menu_spacing_comfortable) {
+		    folderFeedList.setSpacingStyle(SpacingStyle.COMFORTABLE);
+		    return true;
+        } else if (item.getItemId() == R.id.menu_spacing_compact) {
+            folderFeedList.setSpacingStyle(SpacingStyle.COMPACT);
+            return true;
         } else if (item.getItemId() == R.id.menu_loginas) {
             DialogFragment newFragment = new LoginAsDialogFragment();
             newFragment.show(getSupportFragmentManager(), "dialog");
@@ -335,6 +401,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		    Intent intent = new Intent(this, MuteConfig.class);
 		    startActivity(intent);
 		    return true;
+        } else if (item.getItemId() == R.id.menu_import_export) {
+		    Intent intent = new Intent(this, ImportExportActivity.class);
+		    startActivity(intent);
+            return true;
         }
 		return false;
     }
@@ -381,14 +451,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
     }
 
-    // NB: this callback is for the text size slider
-	@Override
-	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        float size = AppConstants.LIST_FONT_SIZE[progress];
-	    PrefsUtils.setListTextSize(this, size);
-        if (folderFeedList != null) folderFeedList.setTextSize(size);
-	}
-
     private void checkSearchQuery() {
         String q = binding.feedlistSearchQuery.getText().toString().trim();
         if (q.length() < 1) {
@@ -396,14 +458,4 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
         folderFeedList.setSearchQuery(q);
     }
-
-    // unused OnSeekBarChangeListener method
-	@Override
-	public void onStartTrackingTouch(SeekBar seekBar) {
-	}
-
-    // unused OnSeekBarChangeListener method
-	@Override
-	public void onStopTrackingTouch(SeekBar seekBar) {
-	}
 }

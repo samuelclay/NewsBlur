@@ -9,6 +9,9 @@ import androidx.fragment.app.DialogFragment;
 
 import com.newsblur.R;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class AlertDialogFragment extends DialogFragment {
     private static final String MESSAGE = "message";
 

@@ -12,6 +12,9 @@ import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class Settings extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override

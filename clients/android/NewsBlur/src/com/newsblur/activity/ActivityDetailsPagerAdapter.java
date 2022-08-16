@@ -10,6 +10,7 @@ import com.newsblur.domain.UserDetails;
 import com.newsblur.fragment.ProfileActivitiesFragment;
 import com.newsblur.fragment.ProfileActivityDetailsFragment;
 import com.newsblur.fragment.ProfileInteractionsFragment;
+import com.newsblur.util.ImageLoader;
 
 /**
  * Created by mark on 15/06/15.
@@ -26,9 +27,7 @@ public class ActivityDetailsPagerAdapter extends FragmentPagerAdapter {
         this.profile = profile;
 
         interactionsFragment = new ProfileInteractionsFragment();
-        interactionsFragment.setRetainInstance(true);
         activitiesFragment = new ProfileActivitiesFragment();
-        activitiesFragment.setRetainInstance(true);
     }
 
     @Override
@@ -55,8 +54,8 @@ public class ActivityDetailsPagerAdapter extends FragmentPagerAdapter {
         }
     }
 
-    public void setUser(UserDetails user) {
-        interactionsFragment.setUser(profile, user);
-        activitiesFragment.setUser(profile, user);
+    public void setUser(UserDetails user, ImageLoader iconLoader) {
+        interactionsFragment.setUser(profile, user, iconLoader);
+        activitiesFragment.setUser(profile, user, iconLoader);
     }
 }

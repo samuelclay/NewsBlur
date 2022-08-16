@@ -32,15 +32,39 @@
         <item name="fontFamily">@font/whitney</item>
     </style>
 
-    <style name="selectorFolderBackground">
+    <style name="delimiter">
+        <item name="android:background">@color/gray85</item>
+    </style>
+    <style name="delimiter.dark">
+        <item name="android:background">@color/gray30</item>
+    </style>
+
+    <style name="selectorFolderParent">
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingBottom">2dp</item>
+    </style>
+    <style name="selectorFolderBackground" parent="selectorFolderParent">
         <item name="android:background">@drawable/selector_folder_background</item>
     </style>
-    <style name="selectorFolderBackground.dark">
+    <style name="selectorFolderBackground.dark" parent="selectorFolderParent">
         <item name="android:background">@drawable/dark_selector_folder_background</item>
     </style>
-    <style name="selectorFolderBackground.black">
+    <style name="selectorFolderBackground.black" parent="selectorFolderParent">
         <item name="android:background">@drawable/black_selector_folder_background</item>
     </style>
+
+    <style name="selectorFeedAlmostBlueBackground" parent="selectorFeedBackground">
+        <item name="android:background">@drawable/selector_feed_almost_blue_background</item>
+    </style>
+    <style name="selectorFeedAlmostRedBackground" parent="selectorFeedBackground">
+        <item name="android:background">@drawable/selector_feed_almost_red_background</item>
+    </style>
+    <style name="selectorFeedAlmostGreenBackground" parent="selectorFeedBackground">
+        <item name="android:background">@drawable/selector_feed_almost_green_background</item>
+    </style>
+    <style name="selectorFeedAlmostBlueBackground.dark" parent="selectorFeedBackground.dark" />
+    <style name="selectorFeedAlmostRedBackground.dark" parent="selectorFeedBackground.dark" />
+    <style name="selectorFeedAlmostGreenBackground.dark" parent="selectorFeedBackground.dark" />
 
     <style name="selectorFeedBackground">
         <item name="android:background">@drawable/selector_feed_background</item>
@@ -83,6 +107,16 @@
         <item name="android:background">@color/black</item>
     </style>
 
+    <style name="layoutRoundedBackground">
+        <item name="android:background">@drawable/shape_rounded_corners_6dp_light</item>
+    </style>
+    <style name="layoutRoundedBackground.dark">
+        <item name="android:background">@drawable/shape_rounded_corners_6dp_dark</item>
+    </style>
+    <style name="layoutRoundedBackground.black">
+        <item name="android:background">@drawable/shape_rounded_corners_6dp_black</item>
+    </style>
+
     <style name="readingBackground">
         <item name="android:background">@color/white</item>
     </style>
@@ -116,13 +150,6 @@
     </style>
     <style name="storySnippetText.dark">
         <item name="android:textColor">@color/dark_story_content_text</item>
-    </style>
-
-    <style name="storyDateText">
-        <item name="android:textColor">@color/story_date_text</item>
-    </style>
-    <style name="storyDateText.dark">
-        <item name="android:textColor">@color/dark_story_date_text</item>
     </style>
 
     <style name="storyFeedTitleText">
@@ -182,21 +209,19 @@
         <item name="android:background">@drawable/button_background_dark</item>
     </style>
 
-    <style name="storyButtons" parent="Widget.MaterialComponents.Button.OutlinedButton">
+    <style name="storyButtons" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/gray75</item>
+        <item name="android:textColor">@color/gray55</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
-        <item name="strokeColor">@color/gray85</item>
-        <item name="iconTint">@color/gray85</item>
+        <item name="iconTint">@color/gray75</item>
         <item name="iconSize">16dp</item>
     </style>
-    <style name="storyButtons.dark" parent="Widget.MaterialComponents.Button.OutlinedButton">
+    <style name="storyButtons.dark" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/gray46</item>
+        <item name="android:textColor">@color/gray55</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
-        <item name="strokeColor">@color/gray46</item>
         <item name="iconTint">@color/gray46</item>
         <item name="iconSize">16dp</item>
     </style>
@@ -258,24 +283,11 @@
         <item name="android:textColor">@color/dark_text</item>
     </style>
 
-    <style name="rowBorderTop">
-        <item name="android:background">@color/row_border_top</item>
+    <style name="rowBorder">
+        <item name="android:background">@color/row_border</item>
     </style>
-    <style name="rowBorderTop.dark">
-        <item name="android:background">@color/dark_row_border_top</item>
-    </style>
-    <style name="rowBorderTop.black">
-        <item name="android:background">@color/black_row_border_top</item>
-    </style>
-
-    <style name="rowBorderBottom">
-        <item name="android:background">@color/row_border_bottom</item>
-    </style>
-    <style name="rowBorderBottom.dark">
-        <item name="android:background">@color/dark_row_border_bottom</item>
-    </style>
-    <style name="rowBorderBottom.black">
-        <item name="android:background">@color/black_row_border_bottom</item>
+    <style name="rowBorder.dark">
+        <item name="android:background">@color/dark_row_border</item>
     </style>
 
     <style name="profileCount">
@@ -302,16 +314,6 @@
     <style name="profileActivityList.black">
         <item name="android:background">@color/black</item>
         <item name="android:divider">@drawable/divider_dark</item>
-    </style>
-
-    <style name="itemHeaderDivider">
-        <item name="android:background">@drawable/divider_item_header</item>
-    </style>
-    <style name="itemHeaderDivider.dark">
-        <item name="android:background">@drawable/dark_divider_item_header</item>
-    </style>
-    <style name="itemHeaderDivider.black">
-        <item name="android:background">@drawable/black_divider_item_header</item>
     </style>
 
     <style name="storyCommentDivider">
@@ -432,6 +434,18 @@
         <item name="indicatorColor">@color/newsblur_blue</item>
         <item name="indicatorSize">24dp</item>
         <item name="trackThickness">3dp</item>
+    </style>
+
+    <style name="smallRoundImageShapeAppearance">
+        <item name="cornerSize">20%</item>
+    </style>
+
+    <style name="mediumRoundImageShapeAppearance">
+        <item name="cornerSize">15%</item>
+    </style>
+
+    <style name="largeRoundImageShapeAppearance">
+        <item name="cornerSize">10%</item>
     </style>
 
 </resources>

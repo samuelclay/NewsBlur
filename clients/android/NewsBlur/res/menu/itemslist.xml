@@ -3,16 +3,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_mark_all_as_read"
           android:title="@string/menu_mark_all_as_read"
-          app:showAsAction="ifRoom" android:icon="@drawable/ic_menu_markread_gray55" />
+          app:showAsAction="ifRoom" android:icon="@drawable/ic_mark_read" />
     <item android:id="@+id/menu_search_stories"
           android:title="@string/menu_search_stories"
-          app:showAsAction="ifRoom" android:icon="@drawable/ic_menu_search_gray55" />
+          app:showAsAction="ifRoom" android:icon="@drawable/ic_search" />
     <item android:id="@+id/menu_story_order"
-          android:title="@string/menu_story_order"
-          app:showAsAction="never" />
+          android:title="@string/menu_story_order">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_story_order_newest"
+                    android:title="@string/newest" />
+                <item android:id="@+id/menu_story_order_oldest"
+                    android:title="@string/oldest" />
+            </group>
+        </menu>
+    </item>
     <item android:id="@+id/menu_read_filter"
           android:title="@string/menu_read_filter"
-          app:showAsAction="never" />
+          app:showAsAction="never">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_read_filter_all_stories"
+                    android:title="@string/all_stories" />
+                <item android:id="@+id/menu_read_filter_unread_only"
+                    android:title="@string/unread_only" />
+            </group>
+        </menu>
+    </item>
     <item android:id="@+id/menu_mark_read_on_scroll"
           android:title="@string/menu_mark_read_on_scroll"
           app:showAsAction="never" >
@@ -74,9 +91,36 @@
             </group>
         </menu>
     </item>
-    <item android:id="@+id/menu_textsize"
-          app:showAsAction="never"
-          android:title="@string/menu_textsize"/>
+    <item android:id="@+id/menu_text_size"
+        android:title="@string/menu_text_size" >
+        <menu>
+            <group android:checkableBehavior="single" >
+                <item android:id="@+id/menu_text_size_xs"
+                    android:title="@string/menu_text_size_xs" />
+                <item android:id="@+id/menu_text_size_s"
+                    android:title="@string/menu_text_size_s" />
+                <item android:id="@+id/menu_text_size_m"
+                    android:title="@string/menu_text_size_m" />
+                <item android:id="@+id/menu_text_size_l"
+                    android:title="@string/menu_text_size_l" />
+                <item android:id="@+id/menu_text_size_xl"
+                    android:title="@string/menu_text_size_xl" />
+                <item android:id="@+id/menu_text_size_xxl"
+                    android:title="@string/menu_text_size_xxl" />
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/menu_spacing"
+        android:title="@string/menu_spacing" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_spacing_comfortable"
+                    android:title="@string/comfortable" />
+                <item android:id="@+id/menu_spacing_compact"
+                    android:title="@string/compact" />
+            </group>
+        </menu>
+    </item>
     <item android:id="@+id/menu_theme"
           android:title="@string/menu_theme_choose" >
         <menu>

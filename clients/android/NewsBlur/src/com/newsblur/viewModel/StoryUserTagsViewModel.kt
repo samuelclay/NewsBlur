@@ -6,11 +6,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.newsblur.util.FeedUtils
+import com.newsblur.database.BlurDatabaseHelper
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class StoryUserTagsViewModel : ViewModel() {
+@HiltViewModel
+class StoryUserTagsViewModel
+@Inject constructor(private val dbHelper: BlurDatabaseHelper): ViewModel() {
 
     private val cancellationSignal = CancellationSignal()
     private val _savedStoryCountsLiveData = MutableLiveData<Cursor>()
@@ -18,7 +22,7 @@ class StoryUserTagsViewModel : ViewModel() {
 
     fun getSavedStoryCounts() {
         viewModelScope.launch(Dispatchers.IO) {
-            val cursor = FeedUtils.dbHelper!!.getSavedStoryCountsCursor(cancellationSignal)
+            val cursor = dbHelper.getSavedStoryCountsCursor(cancellationSignal)
             _savedStoryCountsLiveData.postValue(cursor)
         }
     }

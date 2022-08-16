@@ -17,7 +17,6 @@ import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedIntelTrainerFragment;
 import com.newsblur.fragment.RenameDialogFragment;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
@@ -46,7 +45,7 @@ public class FeedItemsList extends ItemsList {
 
 		super.onCreate(bundle);
 
-        UIUtils.setupToolbar(this, feed.faviconUrl, feed.title, false);
+        UIUtils.setupToolbar(this, feed.faviconUrl, feed.title, iconLoader, false);
         checkInAppReview();
     }
 
@@ -79,19 +78,19 @@ public class FeedItemsList extends ItemsList {
             return true;
         }
         if (item.getItemId() == R.id.menu_notifications_disable) {
-            FeedUtils.disableNotifications(this, feed);
+            feedUtils.disableNotifications(this, feed);
             return true;
         }
         if (item.getItemId() == R.id.menu_notifications_focus) {
-            FeedUtils.enableFocusNotifications(this, feed);
+            feedUtils.enableFocusNotifications(this, feed);
             return true;
         }
         if (item.getItemId() == R.id.menu_notifications_unread) {
-            FeedUtils.enableUnreadNotifications(this, feed);
+            feedUtils.enableUnreadNotifications(this, feed);
             return true;
         }
         if (item.getItemId() == R.id.menu_instafetch_feed) {
-            FeedUtils.instaFetchFeed(this, feed.feedId);
+            feedUtils.instaFetchFeed(this, feed.feedId);
             this.finish();
             return true;
         }
@@ -108,21 +107,10 @@ public class FeedItemsList extends ItemsList {
             // the name change won't be reflected until the activity finishes.
         }
         if (item.getItemId() == R.id.menu_statistics) {
-            FeedUtils.openStatistics(this, feed.feedId);
+            feedUtils.openStatistics(this, feed.feedId);
             return true;
         }
         return false;
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-        if (!feed.active) {
-            // there is currently no way for a feed to be un-muted while in this activity, so
-            // don't bother creating the menu, which contains no valid options for a muted feed
-            return false;
-        }
-		super.onCreateOptionsMenu(menu);
-		return true;
 	}
 
 	@Override

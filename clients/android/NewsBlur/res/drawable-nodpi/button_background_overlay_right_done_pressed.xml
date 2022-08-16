@@ -13,7 +13,7 @@
 </item>
 
 <item
-    android:drawable="@drawable/ic_check_circle_gray46"
+    android:drawable="@drawable/ic_check"
     android:bottom="12dp"
     android:left="92dp"
     android:right="12dp"

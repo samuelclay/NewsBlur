@@ -16,6 +16,7 @@ import androidx.core.app.NotificationManagerCompat;
 import com.newsblur.R;
 import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.Reading;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Story;
 
@@ -30,8 +31,7 @@ public class NotificationUtils {
      * @param storiesFocus a cursor of unread, focus stories to notify, ordered newest to oldest
      * @param storiesUnread a cursor of unread, neutral stories to notify, ordered newest to oldest
      */
-    public static synchronized void notifyStories(Cursor storiesFocus, Cursor storiesUnread, Context context, FileCache iconCache) {
-        FeedUtils.offerInitContext(context);
+    public static synchronized void notifyStories(Context context, Cursor storiesFocus, Cursor storiesUnread, FileCache iconCache, BlurDatabaseHelper dbHelper) {
         NotificationManagerCompat nm = NotificationManagerCompat.from(context);
 
         int count = 0;
@@ -41,12 +41,12 @@ public class NotificationUtils {
                 nm.cancel(story.hashCode());
                 continue;
             }
-            if (FeedUtils.dbHelper.isStoryDismissed(story.storyHash)) {
+            if (dbHelper.isStoryDismissed(story.storyHash)) {
                 nm.cancel(story.hashCode());
                 continue;
             }
             if (StoryUtils.hasOldTimestamp(story.timestamp)) {
-                FeedUtils.dbHelper.putStoryDismissed(story.storyHash);
+                dbHelper.putStoryDismissed(story.storyHash);
                 nm.cancel(story.hashCode());
                 continue;
             }
@@ -55,7 +55,7 @@ public class NotificationUtils {
                 nm.notify(story.hashCode(), n);
             } else {
                 nm.cancel(story.hashCode());
-                FeedUtils.dbHelper.putStoryDismissed(story.storyHash);
+                dbHelper.putStoryDismissed(story.storyHash);
             }
             count++;
         }
@@ -65,12 +65,12 @@ public class NotificationUtils {
                 nm.cancel(story.hashCode());
                 continue;
             }
-            if (FeedUtils.dbHelper.isStoryDismissed(story.storyHash)) {
+            if (dbHelper.isStoryDismissed(story.storyHash)) {
                 nm.cancel(story.hashCode());
                 continue;
             }
             if (StoryUtils.hasOldTimestamp(story.timestamp)) {
-                FeedUtils.dbHelper.putStoryDismissed(story.storyHash);
+                dbHelper.putStoryDismissed(story.storyHash);
                 nm.cancel(story.hashCode());
                 continue;
             }
@@ -79,7 +79,7 @@ public class NotificationUtils {
                 nm.notify(story.hashCode(), n);
             } else {
                 nm.cancel(story.hashCode());
-                FeedUtils.dbHelper.putStoryDismissed(story.storyHash);
+                dbHelper.putStoryDismissed(story.storyHash);
             }
             count++;
         }
