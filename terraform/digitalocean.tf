@@ -264,8 +264,9 @@ resource "digitalocean_droplet" "node-socket" {
 }
 
 resource "digitalocean_droplet" "node-favicons" {
+  count    = 2
   image    = var.droplet_os
-  name     = "node-favicons"
+  name     = "node-favicons${count.index+1}"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
