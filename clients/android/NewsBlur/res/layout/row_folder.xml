@@ -14,17 +14,18 @@
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
         android:contentDescription="@string/description_row_folder_icon"
-        android:src="@drawable/g_icn_folder_rss" />
+        android:src="@drawable/ic_folder_closed" />
 
     <ImageView
         android:id="@+id/row_folder_indicator"
-        android:layout_width="34dp"
-        android:layout_height="30dp"
+        android:layout_width="26dp"
+        android:layout_height="22dp"
         android:paddingLeft="6dp"
         android:paddingRight="8dp"
+        android:layout_marginEnd="4dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/indicator_collapsed" />
+        android:src="@drawable/ic_arrow_up" />
     
     <LinearLayout
         android:id="@+id/row_foldersums"
@@ -43,13 +44,10 @@
             android:gravity="center"
             android:paddingLeft="3dp"
             android:paddingRight="3dp"
-            android:paddingTop="1dp"
-            android:paddingBottom="2dp"
             android:shadowColor="@color/neutral_drop_shadow"
             android:shadowDy="1"
             android:shadowRadius="1"
             style="?feedRowNeutCountText"
-            android:textSize="14sp"
             android:textStyle="bold" />
 
         <TextView
@@ -61,13 +59,10 @@
             android:gravity="center"
             android:paddingLeft="3dp"
             android:paddingRight="3dp"
-            android:paddingTop="1dp"
-            android:paddingBottom="2dp"
             android:shadowColor="@color/positive_drop_shadow"
             android:shadowDy="1"
             android:shadowRadius="1"
             android:textColor="@color/white"
-            android:textSize="14sp"
             android:textStyle="bold" />
     </LinearLayout>
     
@@ -78,12 +73,11 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/row_folder_icon"
         android:layout_toLeftOf="@+id/row_foldersums"
-        android:paddingBottom="9dp"
-    	android:paddingTop="9dp"
         android:textStyle="bold"
         android:shadowDy="1"
         android:shadowRadius="1"
         android:maxLines="1"
-        android:ellipsize="end" />
+        android:ellipsize="end"
+        android:letterSpacing="@dimen/extra_letter_spacing" />
    
 </RelativeLayout>

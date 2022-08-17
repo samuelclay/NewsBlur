@@ -16,7 +16,7 @@ public class SocialFeedItemsList extends ItemsList {
 	    socialFeed = (SocialFeed) getIntent().getSerializableExtra(EXTRA_SOCIAL_FEED);
 		super.onCreate(bundle);
 				
-        UIUtils.setupToolbar(this, socialFeed.photoUrl, socialFeed.feedTitle, false);
+        UIUtils.setupToolbar(this, socialFeed.photoUrl, socialFeed.feedTitle, iconLoader, false);
 	}
 
 	@Override

@@ -7,7 +7,7 @@
           app:showAsAction="never" />
 
     <item android:id="@+id/menu_mute_sites"
-        android:title="@string/mute_sites"
+        android:title="@string/menu_mute_sites"
         app:showAsAction="never" />
 
     <item android:id="@+id/menu_widget"
@@ -18,9 +18,41 @@
         android:title="@string/menu_premium_account"
         app:showAsAction="never" />
 
-    <item android:id="@+id/menu_textsize"
-        app:showAsAction="never"
-        android:title="@string/menu_textsize"/>
+    <item android:id="@+id/menu_import_export"
+        android:title="@string/import_export"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/menu_text_size"
+        android:title="@string/menu_text_size" >
+        <menu>
+            <group android:checkableBehavior="single" >
+                <item android:id="@+id/menu_text_size_xs"
+                    android:title="@string/menu_text_size_xs" />
+                <item android:id="@+id/menu_text_size_s"
+                    android:title="@string/menu_text_size_s" />
+                <item android:id="@+id/menu_text_size_m"
+                    android:title="@string/menu_text_size_m" />
+                <item android:id="@+id/menu_text_size_l"
+                    android:title="@string/menu_text_size_l" />
+                <item android:id="@+id/menu_text_size_xl"
+                    android:title="@string/menu_text_size_xl" />
+                <item android:id="@+id/menu_text_size_xxl"
+                    android:title="@string/menu_text_size_xxl" />
+            </group>
+        </menu>
+    </item>
+
+    <item android:id="@+id/menu_spacing"
+        android:title="@string/menu_spacing" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_spacing_comfortable"
+                    android:title="@string/comfortable" />
+                <item android:id="@+id/menu_spacing_compact"
+                    android:title="@string/compact" />
+            </group>
+        </menu>
+    </item>
 
     <item android:id="@+id/menu_theme"
           android:title="@string/menu_theme_choose" >

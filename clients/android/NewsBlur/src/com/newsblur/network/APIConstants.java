@@ -21,12 +21,13 @@ public class APIConstants {
     }
 
     public static boolean isCustomServer() {
-        return DEFAULT_NEWSBLUR_URL_BASE.equals(CurrentUrlBase);
+        return !DEFAULT_NEWSBLUR_URL_BASE.equals(CurrentUrlBase);
     }
 
     // TODO: make use of trailing slashes on URLs consistent or document why
     // they are not.
 
+    public static final String PATH_IMAGE_PROXY = "/imageproxy";
 	public static final String PATH_LOGIN = "/api/login";
     public static final String PATH_LOGINAS = "/reader/login_as";
 	public static final String PATH_FEEDS = "/reader/feeds/";
@@ -43,6 +44,8 @@ public class APIConstants {
 	public static final String PATH_FEED_UNREAD_COUNT = "/reader/feed_unread_count";
 	public static final String PATH_SOCIALFEED_STORIES = "/social/stories";
 	public static final String PATH_SIGNUP = "/api/signup";
+	public static final String PATH_SHARE_EXTERNAL_STORY = "/api/share_story/";
+	public static final String PATH_SAVE_EXTERNAL_STORY = "/api/save_story/";
 	public static final String PATH_MARK_FEED_AS_READ = "/reader/mark_feed_as_read/";
 	public static final String PATH_MARK_ALL_AS_READ = "/reader/mark_all_as_read/";
 	public static final String PATH_MARK_STORIES_READ = "/reader/mark_story_hashes_as_read/";
@@ -82,11 +85,14 @@ public class APIConstants {
     public static final String PATH_SAVE_RECEIPT = "/profile/save_android_receipt";
     public static final String PATH_FEED_STATISTICS = "/rss_feeds/statistics_embedded/";
     public static final String PATH_FEED_FAVICON_URL = "/rss_feeds/icon/";
+    public static final String PATH_EXPORT_OPML = "/import/opml_export";
+    public static final String PATH_IMPORT_OPML = "/import/opml_upload";
 
     public static String buildUrl(String path) {
         return CurrentUrlBase + path;
     }
 
+    public static final String PARAMETER_TITLE = "title";
 	public static final String PARAMETER_FEEDS = "f";
 	public static final String PARAMETER_H = "h";
 	public static final String PARAMETER_PASSWORD = "password";
@@ -96,6 +102,7 @@ public class APIConstants {
 	public static final String PARAMETER_EMAIL = "email";
 	public static final String PARAMETER_USERID = "user_id";
 	public static final String PARAMETER_STORYID = "story_id";
+	public static final String PARAMETER_STORY_URL = "story_url";
 	public static final String PARAMETER_STORY_HASH = "story_hash";
 	public static final String PARAMETER_FEEDS_STORIES = "feeds_stories";
 	public static final String PARAMETER_FEED_SEARCH_TERM = "term";
@@ -111,6 +118,7 @@ public class APIConstants {
 	public static final String PARAMETER_MARKSOCIAL_JSON = "users_feeds_stories";
 	public static final String PARAMETER_URL = "url";
 	public static final String PARAMETER_DAYS = "days";
+	public static final String PARAMETER_DATA = "data";
 	public static final String PARAMETER_UPDATE_COUNTS = "update_counts";
     public static final String PARAMETER_CUTOFF_TIME = "cutoff_timestamp";
 	public static final String PARAMETER_DIRECTION = "direction";

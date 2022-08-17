@@ -2901,8 +2901,11 @@ class MStory(mongo.Document):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         feed = Feed.get_by_id(story_feed_id)
         stories = cls.objects.filter(story_feed_id=story_feed_id, story_date__gte=feed.unread_cutoff)
-        r.delete('F:%s' % story_feed_id)
-        r.delete('zF:%s' % story_feed_id)
+
+        # Don't delete redis keys because they take time to rebuild and subs can
+        # be counted incorrectly during that time.
+        # r.delete('F:%s' % story_feed_id)
+        # r.delete('zF:%s' % story_feed_id)
 
         logging.info("   ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis" % (feed and feed.log_title[:30] or story_feed_id, stories.count()))
         p = r.pipeline()

@@ -1,21 +1,27 @@
 package com.newsblur.activity
 
 import android.content.IntentFilter
-import com.newsblur.util.FeedUtils.offerInitContext
-import com.newsblur.util.FeedUtils.triggerSync
 import androidx.appcompat.app.AppCompatActivity
 import com.newsblur.util.PrefConstants.ThemeValue
 import android.os.Bundle
+import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.service.NBSyncReceiver
+import com.newsblur.util.FeedUtils
 import com.newsblur.util.Log
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
  * The base class for all Activities in the NewsBlur app.  Handles enforcement of
  * login state and tracking of sync/update broadcasts.
  */
+@AndroidEntryPoint
 open class NbActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var dbHelper: BlurDatabaseHelper
 
     private var uniqueLoginKey: String? = null
     private var lastTheme: ThemeValue? = null
@@ -37,13 +43,12 @@ open class NbActivity : AppCompatActivity() {
         lastTheme = PrefsUtils.getSelectedTheme(this)
 
         super.onCreate(bundle)
-        offerInitContext(this)
 
         // in rare cases of process interruption or DB corruption, an activity can launch without valid
         // login creds.  redirect the user back to the loging workflow.
         if (PrefsUtils.getUserId(this) == null) {
             Log.e(this, "post-login activity launched without valid login.")
-            PrefsUtils.logout(this)
+            PrefsUtils.logout(this, dbHelper)
             finish()
         }
 
@@ -99,7 +104,7 @@ open class NbActivity : AppCompatActivity() {
      * Pokes the sync service to perform any pending sync actions.
      */
     protected fun triggerSync() {
-        triggerSync(this)
+        FeedUtils.triggerSync(this)
     }
 
     /**

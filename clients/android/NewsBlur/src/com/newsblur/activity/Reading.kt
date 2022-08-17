@@ -8,8 +8,6 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
-import android.widget.SeekBar
-import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
@@ -21,6 +19,7 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.newsblur.R
 import com.newsblur.database.ReadingAdapter
 import com.newsblur.databinding.ActivityReadingBinding
+import com.newsblur.di.IconLoader
 import com.newsblur.domain.Story
 import com.newsblur.fragment.ReadingItemFragment
 import com.newsblur.fragment.ReadingPagerFragment
@@ -32,11 +31,25 @@ import com.newsblur.util.*
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.view.ReadingScrollView.ScrollChangeListener
 import com.newsblur.viewModel.StoriesViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import java.lang.Runnable
+import javax.inject.Inject
 import kotlin.math.abs
 
-abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeListener,
-        ScrollChangeListener, ReadingFontChangedListener {
+@AndroidEntryPoint
+abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListener {
+
+    @Inject
+    lateinit var feedUtils: FeedUtils
+
+    @Inject
+    @IconLoader
+    lateinit var iconLoader: ImageLoader
 
     @JvmField
     var fs: FeedSet? = null
@@ -51,8 +64,10 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
     private var readingAdapter: ReadingAdapter? = null
     private var stopLoading = false
     private var unreadSearchActive = false
-    // marking a story as read immediately on reading page scroll
-    private var isMarkStoryReadImmediately = false
+
+    // mark story as read behavior
+    private var markStoryReadJob: Job? = null
+    private lateinit var markStoryReadBehavior: MarkStoryReadBehavior
 
     // unread count for the circular progress overlay. set to nonzero to activate the progress indicator overlay
     private var startingUnreadCount = 0
@@ -116,7 +131,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
 
         intelState = PrefsUtils.getStateFilter(this)
         volumeKeyNavigation = PrefsUtils.getVolumeKeyNavigation(this)
-        isMarkStoryReadImmediately = PrefsUtils.isMarkStoryReadImmediately(this)
+        markStoryReadBehavior = PrefsUtils.getMarkStoryReadBehavior(this)
 
         setupViews()
         setupListeners()
@@ -149,7 +164,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
         // this is not strictly necessary, since our first refresh with the fs will swap in
         // the correct session, but that can be delayed by sync backup, so we try here to
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
-        FeedUtils.prepareReadingSession(fs, false)
+        feedUtils.prepareReadingSession(fs, false)
     }
 
     override fun onPause() {
@@ -161,7 +176,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
         }
     }
 
-    override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration?) {
+    override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration) {
         super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig)
         isMultiWindowModeHack = isInMultiWindowMode
     }
@@ -216,7 +231,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
     }
 
     private fun setCursorData(cursor: Cursor) {
-        if (!FeedUtils.dbHelper!!.isFeedSetReady(fs)) {
+        if (!dbHelper.isFeedSetReady(fs)) {
             com.newsblur.util.Log.i(this.javaClass.name, "stale load")
             // the system can and will re-use activities, so during the initial mismatch of
             // data, don't show the old stories
@@ -317,7 +332,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
         if (fs!!.isSingleNormal) showFeedMetadata = false
         var sourceUserId: String? = null
         if (fs!!.singleSocialFeed != null) sourceUserId = fs!!.singleSocialFeed.key
-        readingAdapter = ReadingAdapter(childFragmentManager, sourceUserId, showFeedMetadata, this)
+        readingAdapter = ReadingAdapter(childFragmentManager, sourceUserId, showFeedMetadata, this, dbHelper)
 
         pager.adapter = readingAdapter
 
@@ -339,7 +354,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
         get() {
             // saved stories and global shared stories don't have unreads
             if (fs!!.isAllSaved || fs!!.isGlobalShared) return 0
-            val result = FeedUtils.dbHelper!!.getUnreadCount(fs, intelState)
+            val result = dbHelper.getUnreadCount(fs, intelState)
             return if (result < 0) 0 else result
         }
 
@@ -394,9 +409,8 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
                                     pageHistory.add(story)
                                 }
                             }
-                            if (isMarkStoryReadImmediately) {
-                                FeedUtils.markStoryAsRead(story, this@Reading)
-                            }
+
+                            triggerMarkStoryReadBehavior(story)
                         }
                         checkStoryCount(position)
                         updateOverlayText()
@@ -562,24 +576,6 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
         }
     }
 
-    // NB: this callback is for the text size slider
-    override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-        val size = AppConstants.READING_FONT_SIZE[progress]
-        PrefsUtils.setTextSize(this, size)
-        val data = Intent(ReadingItemFragment.TEXT_SIZE_CHANGED)
-        data.putExtra(ReadingItemFragment.TEXT_SIZE_VALUE, size)
-        sendBroadcast(data)
-    }
-
-    override fun onStartTrackingTouch(seekBar: SeekBar) {}
-
-    override fun onStopTrackingTouch(seekBar: SeekBar) {}
-
-    override fun readingFontChanged(newValue: String) {
-        PrefsUtils.setFontString(this, newValue)
-        sendBroadcast(Intent(ReadingItemFragment.READING_FONT_CHANGED))
-    }
-
     /**
      * Click handler for the righthand overlay nav button.
      */
@@ -712,7 +708,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
     private fun overlaySendClick() {
         if (readingAdapter == null || pager == null) return
         val story = readingAdapter!!.getStory(pager!!.currentItem)
-        FeedUtils.sendStoryUrl(story, this)
+        feedUtils.sendStoryUrl(story, this)
     }
 
     private fun overlayTextClick() {
@@ -782,6 +778,24 @@ abstract class Reading : NbActivity(), OnPageChangeListener, OnSeekBarChangeList
             super.onKeyUp(keyCode, event)
         }
     }
+
+    private fun triggerMarkStoryReadBehavior(story: Story) {
+        markStoryReadJob?.cancel()
+        if (story.read) return
+
+        val delayMillis = markStoryReadBehavior.getDelayMillis()
+        if (delayMillis >= 0) {
+            markStoryReadJob = createMarkStoryReadJob(story, delayMillis).also {
+                it.start()
+            }
+        }
+    }
+
+    private fun createMarkStoryReadJob(story: Story, delayMillis: Long): Job =
+            lifecycleScope.launch(Dispatchers.Default) {
+                if (isActive) delay(delayMillis)
+                if (isActive) feedUtils.markStoryAsRead(story, this@Reading)
+            }
 
     companion object {
         const val EXTRA_FEEDSET = "feed_set"

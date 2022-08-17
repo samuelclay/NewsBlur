@@ -28,6 +28,7 @@ import android.util.Log;
 
 import com.newsblur.R;
 import com.newsblur.activity.Login;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIConstants;
 import com.newsblur.service.SubscriptionSyncService;
@@ -87,10 +88,10 @@ public class PrefsUtils {
 
     }
 
-    public static void updateVersion(Context context) {
+    public static void updateVersion(Context context, String appVersion) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         // store the current version
-        prefs.edit().putString(AppConstants.LAST_APP_VERSION, getVersion(context)).commit();
+        prefs.edit().putString(AppConstants.LAST_APP_VERSION, appVersion).commit();
         // also make sure we auto-trigger an update, since all data are now gone
         prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, 0L).commit();
     }
@@ -104,18 +105,18 @@ public class PrefsUtils {
         }
     }
 
-    public static String createFeedbackLink(Context context) {
+    public static String createFeedbackLink(Context context, BlurDatabaseHelper dbHelper) {
         StringBuilder s = new StringBuilder(AppConstants.FEEDBACK_URL);
         s.append("<give us some feedback!>%0A%0A%0A");
-        String info = getDebugInfo(context);
+        String info = getDebugInfo(context, dbHelper);
         s.append(info.replace("\n", "%0A"));
         return s.toString();
     }
 
-    public static void sendLogEmail(Context context) {
+    public static void sendLogEmail(Context context, BlurDatabaseHelper dbHelper) {
         File f = com.newsblur.util.Log.getLogfile();
         if (f == null) return;
-        String debugInfo = "Tell us a bit about your problem:\n\n\n\n" + getDebugInfo(context);
+        String debugInfo = "Tell us a bit about your problem:\n\n\n\n" + getDebugInfo(context, dbHelper);
         android.net.Uri localPath = FileProvider.getUriForFile(context, "com.newsblur.fileprovider", f);
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("*/*");
@@ -128,7 +129,7 @@ public class PrefsUtils {
         }
     }
 
-    private static String getDebugInfo(Context context) {
+    private static String getDebugInfo(Context context, BlurDatabaseHelper dbHelper) {
         StringBuilder s = new StringBuilder();
         s.append("app version: ").append(getVersion(context));
         s.append("\n");
@@ -136,11 +137,11 @@ public class PrefsUtils {
         s.append("\n");
         s.append("device: ").append(Build.MANUFACTURER).append(" ").append(Build.MODEL).append(" (").append(Build.BOARD).append(")");
         s.append("\n");
-        s.append("sqlite version: ").append(FeedUtils.dbHelper.getEngineVersion());
+        s.append("sqlite version: ").append(dbHelper.getEngineVersion());
         s.append("\n");
         s.append("username: ").append(getUserDetails(context).username);
         s.append("\n");
-        s.append("server: ").append(APIConstants.isCustomServer() ? "default" : "custom");
+        s.append("server: ").append(APIConstants.isCustomServer() ? "custom" : "default");
         s.append("\n");
         s.append("speed: ").append(NBSyncService.getSpeedInfo());
         s.append("\n");
@@ -166,7 +167,7 @@ public class PrefsUtils {
         return s.toString();
     }
 
-    public static void logout(Context context) {
+    public static void logout(Context context, BlurDatabaseHelper dbHelper) {
         NBSyncService.softInterrupt();
         NBSyncService.clearState();
 
@@ -179,7 +180,7 @@ public class PrefsUtils {
         context.getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().clear().commit();
 
         // wipe the local DB
-        FeedUtils.dropAndRecreateTables();
+        dbHelper.dropAndRecreateTables();
 
         // disable widget
         WidgetUtils.disableWidgetUpdate(context);
@@ -193,7 +194,7 @@ public class PrefsUtils {
         context.startActivity(i);
     }
 
-    public static void clearPrefsAndDbForLoginAs(Context context) {
+    public static void clearPrefsAndDbForLoginAs(Context context, BlurDatabaseHelper dbHelper) {
         NBSyncService.softInterrupt();
         NBSyncService.clearState();
 
@@ -211,7 +212,7 @@ public class PrefsUtils {
         editor.commit();
 
         // wipe the local DB
-        FeedUtils.dropAndRecreateTables();
+        dbHelper.dropAndRecreateTables();
     }
 
 	/**
@@ -459,19 +460,12 @@ public class PrefsUtils {
         return prefs.getBoolean(PrefConstants.SHOW_PUBLIC_COMMENTS, true);
     }
     
-    public static float getTextSize(Context context) {
+    public static float getReadingTextSize(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        float storedValue = preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f);
-        // some users have wacky, pre-migration values stored that won't render.  If the value is below our
-        // minimum size, soft reset to the defaul size.
-        if (storedValue < AppConstants.READING_FONT_SIZE[0]) {
-            return 1.0f;
-        } else {
-            return storedValue;
-        }
+        return preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f);
     }
 
-    public static void setTextSize(Context context, float size) {
+    public static void setReadingTextSize(Context context, float size) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         Editor editor = prefs.edit();
         editor.putFloat(PrefConstants.PREFERENCE_TEXT_SIZE, size);
@@ -480,14 +474,7 @@ public class PrefsUtils {
 
     public static float getListTextSize(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        float storedValue = preferences.getFloat(PrefConstants.PREFERENCE_LIST_TEXT_SIZE, 1.0f);
-        // some users have wacky, pre-migration values stored that won't render.  If the value is below our
-        // minimum size, soft reset to the defaul size.
-        if (storedValue < AppConstants.LIST_FONT_SIZE[0]) {
-            return 1.0f;
-        } else {
-            return storedValue;
-        }
+        return preferences.getFloat(PrefConstants.PREFERENCE_LIST_TEXT_SIZE, 1.0f);
     }
 
     public static void setListTextSize(Context context, float size) {
@@ -833,6 +820,26 @@ public class PrefsUtils {
         }
     }
 
+    public static void applyTranslucentThemePreference(Activity activity) {
+        ThemeValue value = getSelectedTheme(activity);
+        if (value == ThemeValue.LIGHT) {
+            activity.setTheme(R.style.NewsBlurTheme_Translucent);
+        } else if (value == ThemeValue.DARK) {
+            activity.setTheme(R.style.NewsBlurDarkTheme_Translucent);
+        } else if (value == ThemeValue.BLACK) {
+            activity.setTheme(R.style.NewsBlurBlackTheme_Translucent);
+        } else if (value == ThemeValue.AUTO) {
+            int nightModeFlags = activity.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                activity.setTheme(R.style.NewsBlurDarkTheme_Translucent);
+            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
+                activity.setTheme(R.style.NewsBlurTheme_Translucent);
+            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_UNDEFINED) {
+                activity.setTheme(R.style.NewsBlurTheme_Translucent);
+            }
+        }
+    }
+
     public static ThemeValue getSelectedTheme(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         String value = prefs.getString(PrefConstants.THEME, ThemeValue.AUTO.name());
@@ -1031,6 +1038,18 @@ public class PrefsUtils {
         editor.commit();
     }
 
+    public static SpacingStyle getSpacingStyle(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return SpacingStyle.valueOf(preferences.getString(PrefConstants.SPACING_STYLE, SpacingStyle.COMFORTABLE.name()));
+    }
+
+    public static void setSpacingStyle(Context context, SpacingStyle spacingStyle) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = preferences.edit();
+        editor.putString(PrefConstants.SPACING_STYLE, spacingStyle.toString());
+        editor.commit();
+    }
+
     /**
      * Check for logged in user.
      * @return whether a cookie is stored on disk
@@ -1044,9 +1063,5 @@ public class PrefsUtils {
     public static MarkStoryReadBehavior getMarkStoryReadBehavior(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return MarkStoryReadBehavior.valueOf(preferences.getString(PrefConstants.STORY_MARK_READ_BEHAVIOR, MarkStoryReadBehavior.IMMEDIATELY.name()));
-    }
-
-    public static boolean isMarkStoryReadImmediately(Context context) {
-        return getMarkStoryReadBehavior(context).equals(MarkStoryReadBehavior.IMMEDIATELY);
     }
 }

@@ -964,7 +964,6 @@ class FeedFetcherWorker:
                                 '   ---> [%-30s] ~FBPerforming feed cleanup...' % (feed.log_title[:30],)
                             )
                             start_cleanup = time.time()
-                            feed.sync_redis()
                             feed.count_fs_size_bytes()
                             logging.debug(
                                 '   ---> [%-30s] ~FBDone with feed cleanup. Took ~SB%.4s~SN sec.'

@@ -6,13 +6,25 @@ import android.view.MenuItem
 import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.databinding.ActivityProfileBinding
+import com.newsblur.di.IconLoader
 import com.newsblur.fragment.ProfileDetailsFragment
 import com.newsblur.network.APIManager
+import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class Profile : NbActivity() {
+
+    @Inject
+    lateinit var apiManager: APIManager
+
+    @Inject
+    @IconLoader
+    lateinit var iconLoader: ImageLoader
 
     private val detailsTag = "details"
     private var detailsFragment: ProfileDetailsFragment? = null
@@ -20,7 +32,6 @@ class Profile : NbActivity() {
     private var userId: String? = null
 
     private lateinit var binding: ActivityProfileBinding
-    private lateinit var apiManager: APIManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,26 +39,25 @@ class Profile : NbActivity() {
         setContentView(binding.root)
         UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.profile), true)
 
-        apiManager = APIManager(this)
         userId = if (savedInstanceState == null) {
             intent.getStringExtra(USER_ID)
         } else {
             savedInstanceState.getString(USER_ID)
         }
 
+
         if (supportFragmentManager.findFragmentByTag(detailsTag) == null) {
             val detailsTransaction = supportFragmentManager.beginTransaction()
             detailsFragment = ProfileDetailsFragment()
-            detailsFragment!!.retainInstance = true
             detailsTransaction.add(R.id.profile_details, detailsFragment!!, detailsTag)
             detailsTransaction.commit()
 
             activityDetailsPagerAdapter = ActivityDetailsPagerAdapter(supportFragmentManager, this)
             binding.activityDetailsPager.adapter = activityDetailsPagerAdapter
-            loadUserDetails()
         } else {
             detailsFragment = supportFragmentManager.findFragmentByTag(detailsTag) as ProfileDetailsFragment
         }
+        loadUserDetails()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -84,7 +94,7 @@ class Profile : NbActivity() {
                 onPostExecute = { userDetails ->
                     if (userDetails != null && detailsFragment != null && activityDetailsPagerAdapter != null) {
                         detailsFragment!!.setUser(this, userDetails, TextUtils.isEmpty(userId))
-                        activityDetailsPagerAdapter!!.setUser(userDetails)
+                        activityDetailsPagerAdapter!!.setUser(userDetails, iconLoader)
                     }
                 }
         )

@@ -25,15 +25,13 @@
         android:id="@+id/story_item_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_alignStart="@+id/story_item_title"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="2dp"
-        android:layout_marginRight="4dp"
-        android:singleLine="true"
-        style="?storyDateText" 
-        />
+        android:layout_marginTop="5dp"
+        android:singleLine="true" />
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/story_item_feedicon"
         android:layout_width="15dp"
         android:layout_height="15dp"
@@ -42,6 +40,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginLeft="18dp"
         android:layout_marginBottom="2dp"
+        newsblur:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance"
         />
 
     <TextView
@@ -61,7 +60,7 @@
 
     <ImageView
         android:id="@+id/story_item_saved_icon"
-        android:src="@drawable/ic_clock"
+        android:src="@drawable/ic_saved"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_above="@id/story_item_feedtitle"
@@ -74,7 +73,7 @@
 
     <ImageView
         android:id="@+id/story_item_shared_icon"
-        android:src="@drawable/ic_shared"
+        android:src="@drawable/ic_share"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_above="@id/story_item_feedtitle"

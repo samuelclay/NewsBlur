@@ -9,7 +9,7 @@
     <RelativeLayout
         android:id="@+id/main_top_bar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="48dp"
         android:layout_alignParentTop="true"
         android:background="?colorPrimary" >
 
@@ -39,13 +39,13 @@
 
         <ImageView
             android:id="@+id/main_unread_count_neut_icon"
-            android:layout_width="11dp"
-            android:layout_height="11dp"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
             android:layout_below="@+id/main_user_name"
             android:layout_toRightOf="@id/main_user_image"
             android:layout_marginLeft="6dp"
-            android:layout_marginTop="5dp"
-            android:src="@drawable/g_icn_unread" />
+            android:layout_marginTop="3dp"
+            android:src="@drawable/ic_indicator_unread" />
 
         <TextView
             android:id="@+id/main_unread_count_neut_text"
@@ -58,13 +58,13 @@
 
         <ImageView
             android:id="@+id/main_unread_count_posi_icon"
-            android:layout_width="11dp"
-            android:layout_height="11dp"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
             android:layout_below="@+id/main_user_name"
             android:layout_toRightOf="@id/main_unread_count_neut_text"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="5dp"
-            android:src="@drawable/g_icn_focus" />
+            android:src="@drawable/ic_indicator_focus" />
 
         <TextView
             android:id="@+id/main_unread_count_posi_text"
@@ -77,9 +77,8 @@
 
         <ImageButton
             android:id="@+id/main_search_feeds_button"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:padding="2dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_alignParentTop="true"
             android:layout_margin="8dp"
             android:layout_toStartOf="@+id/main_profile_button"
@@ -112,20 +111,20 @@
 
     <ImageButton
         android:id="@+id/main_menu_button"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
-        android:layout_margin="5dp"
-        android:background="@drawable/ic_menu_moreoverflow"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_margin="6dp"
+        android:background="@drawable/ic_more_vertical"
         android:contentDescription="@string/description_menu"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true" />
 
     <ImageButton
         android:id="@+id/main_add_button"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_margin="4dp"
-        android:background="@drawable/ic_menu_add_gray55"
+        android:layout_width="27dp"
+        android:layout_height="27dp"
+        android:layout_margin="9dp"
+        android:background="@drawable/ic_add"
         android:contentDescription="@string/menu_add_feed"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true" />
@@ -155,7 +154,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:contentDescription="@string/description_empty_list_image"
-            android:src="@drawable/world_big"
+            android:src="@drawable/ic_world"
             android:layout_above="@id/empty_view_text"
             android:layout_marginBottom="15dp"
             android:layout_centerHorizontal="true"
@@ -183,8 +182,8 @@
         android:id="@+id/swipe_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/feedlist_search_query"
-        android:layout_above="@id/fragment_feedintelligenceselector" >
+        android:layout_above="@id/fragment_feedintelligenceselector"
+        android:layout_below="@id/feedlist_search_query">
 
         <fragment
             android:name="com.newsblur.fragment.FolderListFragment"
@@ -196,16 +195,16 @@
 
     <!-- top_bar_border -->
     <View
+        style="?delimiter"
         android:layout_width="fill_parent"
         android:layout_height="1dp"
-        android:background="@color/gray55"
         android:layout_above="@id/swipe_container" />
 
     <!-- feedintelligenceselector_border -->
     <View
+        style="?delimiter"
         android:layout_width="fill_parent"
         android:layout_height="1dp"
-        android:background="@color/gray55"
         android:layout_below="@id/swipe_container" />
 
     <TextView

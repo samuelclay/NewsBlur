@@ -15,7 +15,15 @@ import com.newsblur.R;
 import com.newsblur.domain.Story;
 import com.newsblur.util.FeedUtils;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class EditReplyDialogFragment extends DialogFragment {
+
+    @Inject
+    FeedUtils feedUtils;
 
 	private static final String STORY = "story";
     private static final String COMMENT_USER_ID = "comment_user_id";
@@ -54,14 +62,14 @@ public class EditReplyDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 String replyText = reply.getText().toString();
-                FeedUtils.updateReply(activity, story, commentUserId, replyId, replyText);
+                feedUtils.updateReply(activity, story, commentUserId, replyId, replyText);
                 EditReplyDialogFragment.this.dismiss();
             }
         });
         builder.setNegativeButton(R.string.edit_reply_delete, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                FeedUtils.deleteReply(activity, story, commentUserId, replyId);
+                feedUtils.deleteReply(activity, story, commentUserId, replyId);
                 EditReplyDialogFragment.this.dismiss();
             }
         });

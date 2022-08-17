@@ -14,7 +14,7 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="2dp"
         android:contentDescription="@string/description_row_folder_icon"
-        android:src="@drawable/g_icn_folder" />
+        android:src="@drawable/ic_folder" />
 
     <TextView
         android:id="@+id/text_folder_name"
