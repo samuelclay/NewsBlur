@@ -22,6 +22,7 @@ import static com.newsblur.service.NBSyncReceiver.UPDATE_STORY;
 import androidx.annotation.NonNull;
 
 import com.newsblur.database.DatabaseConstants;
+import com.newsblur.di.IconFileCache;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.SavedSearch;
@@ -59,6 +60,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * A background service to handle synchronisation with the NB servers.
  *
@@ -74,6 +79,7 @@ import java.util.concurrent.TimeUnit;
  * after sync operations are performed.  Activities can then refresh views and
  * query this class to see if progress indicators should be active.
  */
+@AndroidEntryPoint
 public class NBSyncService extends JobService {
 
     private static final Object COMPLETION_CALLBACKS_MUTEX = new Object();
@@ -147,8 +153,14 @@ public class NBSyncService extends JobService {
     ImagePrefetchService imagePrefetchService;
     private boolean forceHalted = false;
 
+    @Inject
 	APIManager apiManager;
+
+    @Inject
     BlurDatabaseHelper dbHelper;
+
+    @IconFileCache
+    @Inject
     FileCache iconCache;
 
     /** The time of the last hard API failure we encountered. Used to implement back-off so that the sync
@@ -170,10 +182,7 @@ public class NBSyncService extends JobService {
      * parts of construction in onCreate, but save them for when we are in our own thread.
      */
     private void finishConstruction() {
-        if ((apiManager == null) || (dbHelper == null)) {
-            apiManager = new APIManager(this);
-            dbHelper = new BlurDatabaseHelper(this);
-            iconCache = FileCache.asIconCache(this);
+        if (cleanupService == null || imagePrefetchService == null) {
             cleanupService = new CleanupService(this);
             starredService = new StarredService(this);
             originalTextService = new OriginalTextService(this);
@@ -356,7 +365,11 @@ public class NBSyncService extends JobService {
                 // v61+ is widely deployed
                 FileCache.cleanUpOldCache1(this);
                 FileCache.cleanUpOldCache2(this);
-                PrefsUtils.updateVersion(this);
+                String appVersion = PrefsUtils.getVersion(this);
+                PrefsUtils.updateVersion(this, appVersion);
+                // update user agent on api calls with latest app version
+                String customUserAgent = NetworkUtils.getCustomUserAgent(appVersion);
+                apiManager.updateCustomUserAgent(customUserAgent);
             }
 
             boolean autoVac = PrefsUtils.isTimeToVacuum(this);
@@ -516,7 +529,7 @@ public class NBSyncService extends JobService {
                 com.newsblur.util.Log.w(this.getClass().getName(), "Server ignored or rejected auth cookie.");
                 if (authFails >= AppConstants.MAX_API_TRIES) {
                     com.newsblur.util.Log.w(this.getClass().getName(), "too many auth fails, resetting cookie");
-                    PrefsUtils.logout(this);
+                    PrefsUtils.logout(this, dbHelper);
                 }
                 DoFeedsFolders = true;
                 return;
@@ -604,7 +617,7 @@ public class NBSyncService extends JobService {
             // saved searches table
             List<ContentValues> savedSearchesValues = new ArrayList<>();
             for (SavedSearch savedSearch : feedResponse.savedSearches) {
-                savedSearchesValues.add(savedSearch.getValues());
+                savedSearchesValues.add(savedSearch.getValues(dbHelper));
             }
             // the API vends the starred total as a different element, roll it into
             // the starred counts table using a special tag
@@ -951,7 +964,7 @@ public class NBSyncService extends JobService {
 
         Cursor cFocus = dbHelper.getNotifyFocusStoriesCursor();
         Cursor cUnread = dbHelper.getNotifyUnreadStoriesCursor();
-        NotificationUtils.notifyStories(cFocus, cUnread, this, iconCache);
+        NotificationUtils.notifyStories(this, cFocus, cUnread, iconCache, dbHelper);
         closeQuietly(cFocus);
         closeQuietly(cUnread);
     }
@@ -1221,10 +1234,6 @@ public class NBSyncService extends JobService {
                     primaryExecutor.shutdownNow();
                     Thread.currentThread().interrupt();
                 }
-            }
-            if (dbHelper != null) {
-                dbHelper.close();
-                dbHelper = null;
             }
             com.newsblur.util.Log.d(this, "onDestroy done");
         } catch (Exception ex) {

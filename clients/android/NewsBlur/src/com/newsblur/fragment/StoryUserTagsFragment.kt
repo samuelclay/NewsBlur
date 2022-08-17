@@ -20,12 +20,18 @@ import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.TagsAdapter
 import com.newsblur.viewModel.StoryUserTagsViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 
+@AndroidEntryPoint
 class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
+
+    @Inject
+    lateinit var feedUtils: FeedUtils
 
     private lateinit var story: Story
     private lateinit var fs: FeedSet
@@ -228,6 +234,6 @@ class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
     private fun saveTags() {
         val savedTagList = getSavedTagsList()
         NBSyncService.forceFeedsFolders()
-        FeedUtils.setStorySaved(story, true, requireContext(), savedTagList)
+        feedUtils.setStorySaved(story, true, requireContext(), savedTagList)
     }
 }

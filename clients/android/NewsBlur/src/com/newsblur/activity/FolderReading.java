@@ -11,7 +11,7 @@ public class FolderReading extends Reading {
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
 
-        UIUtils.setupToolbar(this, R.drawable.g_icn_folder_rss, fs.getFolderName(), false);
+        UIUtils.setupToolbar(this, R.drawable.ic_folder_closed, fs.getFolderName(), false);
     }
 
 }

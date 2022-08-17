@@ -18,6 +18,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedOrderFilter;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.FolderViewFilter;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.util.ListOrderFilter;
 import com.newsblur.util.PrefsUtils;
 
@@ -45,14 +46,18 @@ public class FeedChooserAdapter extends BaseExpandableListAdapter {
     protected FolderViewFilter folderViewFilter;
     protected ListOrderFilter listOrderFilter;
     protected FeedOrderFilter feedOrderFilter;
+    protected final FeedUtils feedUtils;
+    protected final ImageLoader iconLoader;
 
     protected float textSize;
 
-    FeedChooserAdapter(Context context) {
+    FeedChooserAdapter(Context context, FeedUtils feedUtils, ImageLoader iconLoader) {
         folderViewFilter = PrefsUtils.getFeedChooserFolderView(context);
         listOrderFilter = PrefsUtils.getFeedChooserListOrder(context);
         feedOrderFilter = PrefsUtils.getFeedChooserFeedOrder(context);
         textSize = PrefsUtils.getListTextSize(context);
+        this.feedUtils = feedUtils;
+        this.iconLoader = iconLoader;
     }
 
     @Override
@@ -141,7 +146,7 @@ public class FeedChooserAdapter extends BaseExpandableListAdapter {
             }
         }
 
-        FeedUtils.iconLoader.displayImage(feed.faviconUrl, img, img.getHeight(), true);
+        iconLoader.displayImage(feed.faviconUrl, img, img.getHeight(), true);
         return convertView;
     }
 

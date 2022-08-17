@@ -15,11 +15,16 @@ import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginProgress : FragmentActivity() {
 
+    @Inject
+    lateinit var apiManager: APIManager
+
     private lateinit var binding: ActivityLoginProgressBinding
-    private lateinit var apiManager: APIManager
 
     override fun onCreate(bundle: Bundle?) {
         PrefsUtils.applyThemePreference(this)
@@ -30,8 +35,6 @@ class LoginProgress : FragmentActivity() {
 
         val username = intent.getStringExtra("username")
         val password = intent.getStringExtra("password")
-
-        apiManager = APIManager(this)
 
         lifecycleScope.executeAsyncTask(
                 onPreExecute = {

@@ -15,11 +15,18 @@ import android.widget.Toast;
 import com.newsblur.R;
 import com.newsblur.databinding.DialogRenameBinding;
 import com.newsblur.domain.Feed;
-import com.newsblur.network.APIManager;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class RenameDialogFragment extends DialogFragment {
+
+    @Inject
+    FeedUtils feedUtils;
 
     private static final String FEED = "feed";
     private static final String FOLDER = "folder";
@@ -71,7 +78,7 @@ public class RenameDialogFragment extends DialogFragment {
             builder.setPositiveButton(R.string.feed_name_save, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    FeedUtils.renameFeed(activity, feed.feedId, binding.inputName.getText().toString());
+                    feedUtils.renameFeed(activity, feed.feedId, binding.inputName.getText().toString());
                     RenameDialogFragment.this.dismiss();
                 }
             });
@@ -95,7 +102,7 @@ public class RenameDialogFragment extends DialogFragment {
                     if (!TextUtils.isEmpty(folderParentName) && !folderParentName.equals(AppConstants.ROOT_FOLDER)) {
                         inFolder = folderParentName;
                     }
-                    FeedUtils.renameFolder(folderName, newFolderName, inFolder, activity, new APIManager(activity));
+                    feedUtils.renameFolder(folderName, newFolderName, inFolder, activity);
                     RenameDialogFragment.this.dismiss();
                 }
             });

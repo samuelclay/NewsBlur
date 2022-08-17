@@ -16,7 +16,7 @@ public class FolderItemsList extends ItemsList {
 
 		super.onCreate(bundle);
 
-        UIUtils.setupToolbar(this, R.drawable.g_icn_folder_rss, folderName, false);
+        UIUtils.setupToolbar(this, R.drawable.ic_folder_closed, folderName, false);
 	}
 
 	@Override

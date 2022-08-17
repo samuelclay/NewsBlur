@@ -31,7 +31,6 @@ import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,10 +44,12 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.color.MaterialColors;
+import com.newsblur.NbApplication;
 import com.newsblur.R;
 import com.newsblur.activity.*;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
+import com.newsblur.service.NBSyncReceiver;
 
 public class UIUtils {
 
@@ -178,9 +179,9 @@ public class UIUtils {
      * Set up our customised ActionBar view that features the specified icon and title, sized
      * away from system standard to meet the NewsBlur visual style.
      */
-    public static void setupToolbar(AppCompatActivity activity, String imageUrl, String title, boolean showHomeEnabled) {
+    public static void setupToolbar(AppCompatActivity activity, String imageUrl, String title, ImageLoader iconLoader, boolean showHomeEnabled) {
         ImageView iconView = setupCustomToolbar(activity, title, showHomeEnabled);
-        FeedUtils.iconLoader.displayImage(imageUrl, iconView);
+        iconLoader.displayImage(imageUrl, iconView);
     }
 
     public static void setupToolbar(AppCompatActivity activity, int imageId, String title, boolean showHomeEnabled) {
@@ -439,18 +440,18 @@ public class UIUtils {
 
     private static void colourIntelDialogRow(View row, Map<String,Integer> classifier, String key) {
         if (Integer.valueOf(Classifier.LIKE).equals(classifier.get(key))) {
-            row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_like_active);
-            row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_dislike_gray55);
-            row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear_gray55);
+            row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_thumb_up_green);
+            row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_thumb_down_yellow);
+            row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear);
         } else 
         if (Integer.valueOf(Classifier.DISLIKE).equals(classifier.get(key))) {
-            row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_like_gray55);
-            row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_dislike_active);
-            row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear_gray55);
+            row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_thumb_up_yellow);
+            row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_thumb_down_red);
+            row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear);
         } else {
-            row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_like_gray55);
-            row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_dislike_gray55);
-            row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear_gray55);
+            row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_thumb_up_yellow);
+            row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_thumb_down_yellow);
+            row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear);
         }
     }
 
@@ -588,6 +589,14 @@ public class UIUtils {
             return CustomTabsIntent.COLOR_SCHEME_LIGHT;
         } else {
             return CustomTabsIntent.COLOR_SCHEME_SYSTEM;
+        }
+    }
+
+    public static void syncUpdateStatus(Context context, int updateType) {
+        if (NbApplication.isAppForeground()) {
+            Intent intent = new Intent(NBSyncReceiver.NB_SYNC_ACTION);
+            intent.putExtra(NBSyncReceiver.NB_SYNC_UPDATE_TYPE, updateType);
+            context.sendBroadcast(intent);
         }
     }
 }

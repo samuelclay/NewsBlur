@@ -22,15 +22,51 @@
         app:showAsAction="never"
         android:title="@string/menu_send_story_full"/>
 
-    <item
-        android:id="@+id/menu_textsize"
-        app:showAsAction="never"
-        android:title="@string/menu_textsize"/>
+    <item android:id="@+id/menu_text_size"
+        android:title="@string/menu_text_size" >
+        <menu>
+            <group android:checkableBehavior="single" >
+                <item android:id="@+id/menu_text_size_xs"
+                    android:title="@string/menu_text_size_xs" />
+                <item android:id="@+id/menu_text_size_s"
+                    android:title="@string/menu_text_size_s" />
+                <item android:id="@+id/menu_text_size_m"
+                    android:title="@string/menu_text_size_m" />
+                <item android:id="@+id/menu_text_size_l"
+                    android:title="@string/menu_text_size_l" />
+                <item android:id="@+id/menu_text_size_xl"
+                    android:title="@string/menu_text_size_xl" />
+                <item android:id="@+id/menu_text_size_xxl"
+                    android:title="@string/menu_text_size_xxl" />
+            </group>
+        </menu>
+    </item>
 
     <item
         android:id="@+id/menu_font"
-        app:showAsAction="never"
-        android:title="@string/menu_font"/>
+        android:title="@string/menu_font"
+        app:showAsAction="never">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_font_anonymous"
+                    android:title="@string/anonymous_pro_font" />
+                <item android:id="@+id/menu_font_chronicle"
+                    android:title="@string/chronicle_font" />
+                <item android:id="@+id/menu_font_default"
+                    android:title="@string/default_font" />
+                <item android:id="@+id/menu_font_gotham"
+                    android:title="@string/gotham_narrow_font" />
+                <item android:id="@+id/menu_font_noto_sand"
+                    android:title="@string/noto_sans_font" />
+                <item android:id="@+id/menu_font_noto_serif"
+                    android:title="@string/noto_serif_font" />
+                <item android:id="@+id/menu_font_open_sans"
+                    android:title="@string/open_sans_condensed_font" />
+                <item android:id="@+id/menu_font_roboto"
+                    android:title="@string/roboto_font" />
+            </group>
+        </menu>
+    </item>
 
     <item
         android:id="@+id/menu_reading_save"

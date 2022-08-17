@@ -3,13 +3,13 @@
     android:id="@+id/container_row"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="?selectorFeedBackground" >
+    style="?selectorFeedAlmostRedBackground" >
 
     <ImageView
         android:id="@+id/row_tag_icon"
-        android:src="@drawable/tag"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:src="@drawable/ic_tag"
+        android:layout_width="19dp"
+        android:layout_height="19dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="12dp"
@@ -27,13 +27,11 @@
         android:gravity="center"
         android:paddingLeft="3dp"
         android:paddingRight="3dp"
-        android:paddingTop="1dp"
-        android:paddingBottom="2dp"
         android:shadowColor="@color/saved_drop_shadow"
         android:shadowDy="1"
         android:shadowRadius="1"
         android:textColor="@color/white"
-        android:textSize="14sp"
+        android:textSize="13sp"
         android:textStyle="bold" />
 
     <TextView
@@ -44,8 +42,6 @@
         android:textStyle="bold"
         android:layout_toLeftOf="@id/row_saved_tag_sum"
         android:layout_toRightOf="@id/row_tag_icon"
-        android:paddingBottom="7dp"
-    	android:paddingTop="7dp" 
         android:textSize="14sp" />
 
 </RelativeLayout>

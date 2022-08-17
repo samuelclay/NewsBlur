@@ -27,7 +27,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:contentDescription="@string/description_empty_list_image"
-            android:src="@drawable/world_big"
+            android:src="@drawable/ic_world"
             android:layout_below="@id/empty_view_text"
             android:layout_marginTop="15dp"
             android:layout_centerHorizontal="true"

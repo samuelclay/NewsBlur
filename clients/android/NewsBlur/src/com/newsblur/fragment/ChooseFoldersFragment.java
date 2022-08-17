@@ -22,12 +22,24 @@ import android.widget.CheckBox;
 import android.widget.ListAdapter;
 
 import com.newsblur.R;
+import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.DialogChoosefoldersBinding;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.util.FeedUtils;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class ChooseFoldersFragment extends DialogFragment {
+
+    @Inject
+    BlurDatabaseHelper dbHelper;
+
+    @Inject
+    FeedUtils feedUtils;
 
 	private Feed feed;
 
@@ -43,7 +55,7 @@ public class ChooseFoldersFragment extends DialogFragment {
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		feed = (Feed) getArguments().getSerializable("feed");
-        final List<Folder> folders = FeedUtils.dbHelper.getFolders();
+        final List<Folder> folders = dbHelper.getFolders();
         Collections.sort(folders, Folder.FolderComparator);
 
         final Set<String> newFolders = new HashSet<String>();
@@ -73,7 +85,7 @@ public class ChooseFoldersFragment extends DialogFragment {
         builder.setPositiveButton(R.string.dialog_folders_save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                FeedUtils.moveFeedToFolders(activity, feed.feedId, newFolders, oldFolders);
+                feedUtils.moveFeedToFolders(activity, feed.feedId, newFolders, oldFolders);
                 ChooseFoldersFragment.this.dismiss();
             }
         });

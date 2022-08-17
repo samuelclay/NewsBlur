@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import com.newsblur.R;
 import com.newsblur.domain.ActivityDetails;
 import com.newsblur.domain.UserDetails;
+import com.newsblur.util.ImageLoader;
 
 /**
  * Created by mark on 17/06/15.
@@ -17,8 +18,8 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
 
     private final String startedFollowing, repliedTo, favorited, subscribedTo, saved, signup, commentsOn, sharedStory, you;
 
-    public ActivitiesAdapter(final Context context, UserDetails user) {
-        super(context, user);
+    public ActivitiesAdapter(final Context context, UserDetails user, ImageLoader iconLoader) {
+        super(context, user, iconLoader);
 
         Resources resources = context.getResources();
         startedFollowing = resources.getString(R.string.profile_started_following);
@@ -94,25 +95,39 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
 
     private CharSequence getFollowContent(ActivityDetails activity, String userString) {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
+        int usernameLength;
         stringBuilder.append(userString);
         stringBuilder.append(" ");
         stringBuilder.append(startedFollowing);
         stringBuilder.append(" ");
-        stringBuilder.append(activity.user.username);
+        if (activity.user != null) {
+            stringBuilder.append(activity.user.username);
+            usernameLength = activity.user.username.length();
+        } else {
+            stringBuilder.append(UNKNOWN_USERNAME);
+            usernameLength = UNKNOWN_USERNAME.length();
+        }
 
         int contentColorLength = userString.length() + startedFollowing.length() + 1;
         stringBuilder.setSpan(contentColor, 0, contentColorLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        stringBuilder.setSpan(linkColor, contentColorLength + 1, contentColorLength + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        stringBuilder.setSpan(linkColor, contentColorLength + 1, contentColorLength + 1 + usernameLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return stringBuilder;
     }
 
     private CharSequence getCommentLikeContent(ActivityDetails activity, String userString) {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
+        int usernameLength;
         stringBuilder.append(userString);
         stringBuilder.append(" ");
         stringBuilder.append(favorited);
         stringBuilder.append(" ");
-        stringBuilder.append(activity.user.username);
+        if (activity.user != null) {
+            stringBuilder.append(activity.user.username);
+            usernameLength = activity.user.username.length();
+        } else {
+            stringBuilder.append(UNKNOWN_USERNAME);
+            usernameLength = UNKNOWN_USERNAME.length();
+        }
         stringBuilder.append(" ");
         stringBuilder.append(commentsOn);
         stringBuilder.append(" ");
@@ -121,7 +136,6 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
         stringBuilder.append(activity.content);
         stringBuilder.append("\" ");
 
-        int usernameLength = activity.user.username.length();
         stringBuilder.setSpan(contentColor, 0, userString.length() + favorited.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         int usernameSpanStart = userString.length() + favorited.length() + 2;
         stringBuilder.setSpan(linkColor, usernameSpanStart, usernameSpanStart + usernameLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -137,29 +151,40 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
 
     private CharSequence getCommentReplyContent(ActivityDetails activity, String userString) {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
+        int usernameLength;
         stringBuilder.append(userString);
         stringBuilder.append(" ");
         stringBuilder.append(repliedTo);
         stringBuilder.append(" ");
-        stringBuilder.append(activity.user.username);
+        if (activity.user != null) {
+            stringBuilder.append(activity.user.username);
+            usernameLength = activity.user.username.length();
+        } else {
+            stringBuilder.append(UNKNOWN_USERNAME);
+            usernameLength = UNKNOWN_USERNAME.length();
+        }
         stringBuilder.append("\n\n\"");
         stringBuilder.append(activity.content);
         stringBuilder.append("\"");
 
         stringBuilder.setSpan(contentColor, 0, userString.length() + repliedTo.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        stringBuilder.setSpan(linkColor, userString.length() + repliedTo.length() + 2, userString.length() + repliedTo.length() + 2 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        stringBuilder.setSpan(linkColor, userString.length() + repliedTo.length() + 2, userString.length() + repliedTo.length() + 2 + usernameLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         stringBuilder.setSpan(quoteColor, stringBuilder.length() - activity.content.length() - 2, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return stringBuilder;
     }
 
     private CharSequence getSharedStoryContent(ActivityDetails activity, String userString) {
+        int activityTitleLength = 0;
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
         stringBuilder.append(userString);
         stringBuilder.append(" ");
         stringBuilder.append(sharedStory);
         stringBuilder.append(" ");
-        stringBuilder.append(activity.title);
-        stringBuilder.append(" ");
+        if (!TextUtils.isEmpty(activity.title)) {
+            activityTitleLength = activity.title.length();
+            stringBuilder.append(activity.title);
+            stringBuilder.append(" ");
+        }
         if (!TextUtils.isEmpty(activity.content)) {
             stringBuilder.append("\n\n\"");
             stringBuilder.append(activity.content);
@@ -167,9 +192,9 @@ public class ActivitiesAdapter extends ActivityDetailsAdapter {
         }
 
         stringBuilder.setSpan(contentColor, 0, userString.length() + sharedStory.length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        stringBuilder.setSpan(linkColor, userString.length() + sharedStory.length() + 2, userString.length() + sharedStory.length() + 2 + activity.title.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        stringBuilder.setSpan(linkColor, userString.length() + sharedStory.length() + 2, userString.length() + sharedStory.length() + 2 + activityTitleLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         if (!TextUtils.isEmpty(activity.content)) {
-            stringBuilder.setSpan(quoteColor, userString.length() + sharedStory.length() + 3 + activity.title.length(), stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            stringBuilder.setSpan(quoteColor, userString.length() + sharedStory.length() + 3 + activityTitleLength, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         return stringBuilder;
     }
