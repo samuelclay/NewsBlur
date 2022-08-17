@@ -63,7 +63,7 @@ frontend public
     
     use_backend app_push if { hdr_end(host) -i push.newsblur.com }
     use_backend node_socket if { path_beg /v3/socket.io/ }
-    use_backend node_favicon if { path_beg /rss_feeds/icon/ }
+    use_backend node_favicons if { path_beg /rss_feeds/icon/ }
     use_backend node_text if { path_beg /rss_feeds/original_text_fetcher }
     use_backend node_images if { hdr_end(host) -i imageproxy.newsblur.com }
     use_backend node_images if { hdr_end(host) -i imageproxy2.newsblur.com }
@@ -174,7 +174,7 @@ backend node_socket
         server {{host}} {{host}}.node.nyc1.consul:8008
     {% endfor %}
 
-backend node_favicon
+backend node_favicons
     http-check expect rstatus 200|503
     option httpchk GET /rss_feeds/icon/1
     balance roundrobin
@@ -184,7 +184,10 @@ backend node_text
     http-check expect rstatus 200|503
     option httpchk GET /rss_feeds/original_text_fetcher?test=1
     balance roundrobin
-    server-template node-text 1 _node-text._tcp.service.nyc1.consul:8008 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.node_text %}
+        server {{host}} {{host}}.node.nyc1.consul:8008
+    {% endfor %}
 
 backend node_page
     http-check expect rstatus 200|503

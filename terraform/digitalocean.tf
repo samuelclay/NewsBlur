@@ -228,8 +228,9 @@ resource "digitalocean_droplet" "discovery" {
 }
 
 resource "digitalocean_droplet" "node-text" {
+  count    = 2
   image    = var.droplet_os
-  name     = "node-text"
+  name     = contains([0], count.index) ? "node-text" : "node-text${count.index+1}"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
