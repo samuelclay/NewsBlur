@@ -9,7 +9,7 @@
         "checks": [
             {
                 "id": "{{inventory_hostname}}-exporter-ping",
-                "http": "http://{{ ansible_ssh_host }}:9187",
+                "http": "http://{{ ansible_host }}:9187",
                 "interval": "15s",
                 "failures_before_critical": 4
             }
