@@ -171,7 +171,7 @@
     [separatorBarButton setEnabled:NO];
     separatorBarButton.isAccessibilityElement = NO;
     
-    UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
+    UIImage *settingsImage = [Utilities imageNamed:@"settings" sized:30];
     fontSettingsButton = [UIBarButtonItem barItemWithImage:settingsImage
                                                     target:self
                                                     action:@selector(toggleFontSize:)];

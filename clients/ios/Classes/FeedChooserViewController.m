@@ -52,7 +52,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     }
     
     UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
-    self.optionsItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"nav_icn_settings.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showOptionsMenu)];
+    self.optionsItem = [[UIBarButtonItem alloc] initWithImage:[Utilities imageNamed:@"settings" sized:30] style:UIBarButtonItemStylePlain target:self action:@selector(showOptionsMenu)];
     
     if (self.operation == FeedChooserOperationMuteSites) {
         UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel)];

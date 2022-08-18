@@ -81,8 +81,8 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
     return image;
 }
 
-+ (UIImage *)imageNamed:(NSString *)imageName withSize:(CGSize)size {
-    return [self imageWithImage:[UIImage imageNamed:imageName] convertToSize:size];
++ (UIImage *)imageNamed:(NSString *)imageName sized:(CGFloat)size {
+    return [self imageWithImage:[UIImage imageNamed:imageName] convertToSize:CGSizeMake(size, size)];
 }
 
 + (UIImage *)imageWithImage:(UIImage *)image convertToSize:(CGSize)size {

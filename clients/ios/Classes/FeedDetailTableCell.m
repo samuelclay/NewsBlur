@@ -103,9 +103,9 @@ static UIFont *indicatorFont = nil;
 - (void)setupGestures {
     NSString *unreadIcon;
     if (storyScore == -1) {
-        unreadIcon = @"g_icn_hidden.png";
+        unreadIcon = @"indicator-hidden";
     } else if (storyScore == 1) {
-        unreadIcon = @"g_icn_focus.png";
+        unreadIcon = @"indicator-focus";
     } else {
         unreadIcon = @"indicator-unread";
     }
@@ -293,7 +293,7 @@ static UIFont *indicatorFont = nil;
         }
     }
     
-    CGFloat feedOffset = isLeft ? 20 : 0;
+    CGFloat feedOffset = isLeft ? 23 : 0;
     UIColor *textColor;
     UIFont *font;
     UIFontDescriptor *fontDescriptor = [cell fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
@@ -317,7 +317,7 @@ static UIFont *indicatorFont = nil;
         }
         
         NSInteger siteTitleY = (20 + comfortMargin - font.pointSize/2)/2;
-        [cell.siteTitle drawInRect:CGRectMake(leftMargin - feedOffset + 22, siteTitleY, rect.size.width - 20, 20)
+        [cell.siteTitle drawInRect:CGRectMake(leftMargin - feedOffset + 24, siteTitleY, rect.size.width - 20, 20)
                     withAttributes:@{NSFontAttributeName: font,
                                      NSForegroundColorAttributeName: textColor,
                                      NSParagraphStyleAttributeName: paragraphStyle}];
@@ -345,7 +345,7 @@ static UIFont *indicatorFont = nil;
     if (isHighlighted) {
         textColor = UIColorFromLightDarkRGB(0x686868, 0xA0A0A0);
     }
-    CGFloat boundingRows = cell.isShort ? 1.5 : 3;
+    CGFloat boundingRows = cell.isShort ? 1.5 : 4;
     if (!cell.isShort && (self.cell.textSize == FeedDetailTextSizeMedium || self.cell.textSize == FeedDetailTextSizeLong)) {
         boundingRows = MIN(((r.size.height - 24) / font.pointSize) - 2, 4);
     }
@@ -521,15 +521,17 @@ static UIFont *indicatorFont = nil;
     CGFloat storyIndicatorY = storyTitleFrame.origin.y + (fontDescriptor.pointSize / 2);
     
     UIImage *unreadIcon;
+    CGFloat size = 12;
     if (cell.storyScore == -1) {
-        unreadIcon = [UIImage imageNamed:@"g_icn_hidden"];
+        unreadIcon = [UIImage imageNamed:@"indicator-hidden"];
     } else if (cell.storyScore == 1) {
-        unreadIcon = [UIImage imageNamed:@"g_icn_focus"];
+        unreadIcon = [UIImage imageNamed:@"indicator-focus"];
     } else {
         unreadIcon = [UIImage imageNamed:@"indicator-unread"];
+        size = 10;
     }
     
-    [unreadIcon drawInRect:CGRectMake(storyIndicatorX, storyIndicatorY - 3, 8, 8) blendMode:0 alpha:(cell.isRead ? .15 : 1)];
+    [unreadIcon drawInRect:CGRectMake(storyIndicatorX, storyIndicatorY - (size / 2), size, size) blendMode:0 alpha:(cell.isRead ? .15 : 1)];
 }
 
 @end
