@@ -443,8 +443,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !UIInterfaceOrientationIsLandscape(orientation)) {
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_yellow_icn.png"] forSegmentAtIndex:1];
-        [self.intelligenceControl setImage:[Utilities imageNamed:@"indicator-focus" withSize:CGSizeMake(14, 14)] forSegmentAtIndex:2];
-        [self.intelligenceControl setImage:[Utilities imageNamed:@"saved-stories" withSize:CGSizeMake(14, 14)] forSegmentAtIndex:3];
+        [self.intelligenceControl setImage:[Utilities imageNamed:@"indicator-focus" sized:14] forSegmentAtIndex:2];
+        [self.intelligenceControl setImage:[Utilities imageNamed:@"saved-stories" sized:14] forSegmentAtIndex:3];
         
         [self.intelligenceControl setWidth:45 forSegmentAtIndex:0];
         [self.intelligenceControl setWidth:40 forSegmentAtIndex:1];
@@ -452,8 +452,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self.intelligenceControl setWidth:40 forSegmentAtIndex:3];
     } else {
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_yellow.png"] forSegmentAtIndex:1];
-        [self.intelligenceControl setImage:[Utilities imageNamed:@"indicator-focus" withSize:CGSizeMake(14, 14)] forSegmentAtIndex:2];
-        [self.intelligenceControl setImage:[Utilities imageNamed:@"saved-stories" withSize:CGSizeMake(14, 14)] forSegmentAtIndex:3];
+        [self.intelligenceControl setImage:[Utilities imageNamed:@"indicator-focus" sized:14] forSegmentAtIndex:2];
+        [self.intelligenceControl setImage:[Utilities imageNamed:@"saved-stories" sized:14] forSegmentAtIndex:3];
         
         [self.intelligenceControl setWidth:40 forSegmentAtIndex:0];
         [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
@@ -670,10 +670,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //    settingsButton.accessibilityLabel = @"Settings";
 //    [settingsBarButton setCustomView:settingsButton];
     
-    UIImage *activityImage = [UIImage imageNamed:@"nav_icn_activity_hover.png"];
+    UIImage *activityImage = [Utilities templateImageNamed:@"dialog-notifications" sized:32];
     NBBarButtonItem *activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
     activityButton.accessibilityLabel = @"Activities";
     [activityButton setImage:activityImage forState:UIControlStateNormal];
+    activityButton.tintColor = UIColorFromRGB(0x8F918B);
     [activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 4, 4, 4)];
     [activityButton addTarget:self
                        action:@selector(showInteractionsPopover:)
@@ -1284,8 +1285,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     NBBarButtonItem *barButton = self.addBarButton.customView;
     [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_add.png"]] forState:UIControlStateNormal];
     
-    barButton = self.settingsBarButton.customView;
-    [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_settings.png"]] forState:UIControlStateNormal];
+    self.settingsBarButton.image = [Utilities imageNamed:@"settings" sized:30];
     
     [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
