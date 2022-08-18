@@ -34,7 +34,7 @@
 
 #define kTableViewRowHeight 70;
 #define kTableViewRiverRowHeight 90;
-#define kTableViewShortRowDifference 18;
+#define kTableViewShortRowDifference 14;
 
 typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 {
@@ -142,11 +142,11 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     self.feedsBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Sites" style:UIBarButtonItemStylePlain target:self action:@selector(doShowFeeds:)];
     self.feedsBarButton.accessibilityLabel = @"Show Sites";
     
-    UIImage *settingsImage = [UIImage imageNamed:@"nav_icn_settings.png"];
+    UIImage *settingsImage = [Utilities imageNamed:@"settings" sized:30];
     settingsBarButton = [UIBarButtonItem barItemWithImage:settingsImage target:self action:@selector(doOpenSettingsMenu:)];
     settingsBarButton.accessibilityLabel = @"Settings";
     
-    UIImage *markreadImage = [UIImage imageNamed:@"markread.png"];
+    UIImage *markreadImage = [Utilities imageNamed:@"mark-read" sized:30];
     feedMarkReadButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(doOpenMarkReadMenu:)];
     feedMarkReadButton.accessibilityLabel = @"Mark all as read";
     
@@ -1869,7 +1869,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         }
         
         UIFontDescriptor *fontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
-        UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize];
+        UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:fontDescriptor.pointSize + 1];
         if ([self isShortTitles] && self.textSize != FeedDetailTextSizeTitleOnly) {
             return height + font.pointSize * 3.25;
         } else if (self.textSize != FeedDetailTextSizeTitleOnly) {
@@ -1891,10 +1891,12 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             } else {
                 NSDictionary *story = [self getStoryAtRow:indexPath.row];
                 
-                if ([story[@"story_title"] length] < 40) {
+                if ([story[@"story_title"] length] < 30) {
                     return height + font.pointSize * 3;
-                } else {
+                } else if ([story[@"story_title"] length] < 50) {
                     return height + font.pointSize * 4;
+                } else {
+                    return height + font.pointSize * 5;
                 }
             }
         } else {
