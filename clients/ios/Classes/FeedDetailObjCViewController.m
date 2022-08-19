@@ -32,7 +32,7 @@
 #import "StoryTitleAttributedString.h"
 #import "NewsBlur-Swift.h"
 
-#define kTableViewRowHeight 70;
+#define kTableViewRowHeight 60;
 #define kTableViewRiverRowHeight 90;
 #define kTableViewShortRowDifference 14;
 
