@@ -26,7 +26,7 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
     NSString *storyAuthor;
     NSString *storyDate;
     NSString *storyContent;
-    NSString *storyImageUrl;
+    NSString *storyHash;
     UIImage *storyImage;
     NSInteger storyTimestamp;
     int storyScore;
@@ -56,7 +56,7 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 @property (nonatomic) NSString *storyAuthor;
 @property (nonatomic) NSString *storyDate;
 @property (nonatomic) NSString *storyContent;
-@property (nonatomic) NSString *storyImageUrl;
+@property (nonatomic) NSString *storyHash;
 @property (nonatomic) UIImage *storyImage;
 @property (nonatomic) NSInteger storyTimestamp;
 
