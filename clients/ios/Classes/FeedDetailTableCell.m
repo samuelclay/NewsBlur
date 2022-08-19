@@ -177,8 +177,8 @@ static UIFont *indicatorFont = nil;
     }
     
     BOOL isHighlighted = cell.highlighted || cell.selected;
-    CGFloat riverPadding = 0;
-    CGFloat riverPreview = 14;
+    CGFloat riverPadding = -10;
+    CGFloat riverPreview = 4;
     
     if (cell.isRiverOrSocial) {
         riverPadding = 20;
@@ -200,7 +200,7 @@ static UIFont *indicatorFont = nil;
     riverPreview += comfortMargin;
     
     CGFloat previewHorizMargin = isSmall ? 14 : 0;
-    CGFloat previewVertMargin = isSmall ? 36 : 0;
+    CGFloat previewVertMargin = isSmall ? 46 : 0;
     CGFloat imageWidth = isSmall ? 60 : 80;
     CGFloat imageHeight = r.size.height - previewVertMargin;
     CGFloat leftOffset = isLeft ? imageWidth : 0;
@@ -397,6 +397,7 @@ static UIFont *indicatorFont = nil;
     }
     
     if (cell.storyContent) {
+        CGFloat bottomOfTitle = storyTitleY + theSize.height;
         int storyContentWidth = rect.size.width;
         CGFloat boundingRows = cell.isShort ? 1.5 : 3;
         
@@ -414,6 +415,11 @@ static UIFont *indicatorFont = nil;
         int storyContentY = r.size.height - 16 - comfortMargin - 4 - ((font.pointSize * textRows + font.lineHeight) + contentSize.height) / 2;
         if (cell.isShort) {
             storyContentY = r.size.height - 10 - comfortMargin - 4 - ((font.pointSize + font.lineHeight) + contentSize.height)/2;
+        }
+        
+        if (storyContentY - bottomOfTitle > 20) {
+            storyContentY -= font.pointSize;
+            contentSize.height += font.lineHeight;
         }
         
         [cell.storyContent
@@ -531,7 +537,7 @@ static UIFont *indicatorFont = nil;
         size = 10;
     }
     
-    [unreadIcon drawInRect:CGRectMake(storyIndicatorX, storyIndicatorY - (size / 2), size, size) blendMode:0 alpha:(cell.isRead ? .15 : 1)];
+    [unreadIcon drawInRect:CGRectMake(storyIndicatorX, storyIndicatorY - (size / 2) + 1, size, size) blendMode:0 alpha:(cell.isRead ? .15 : 1)];
 }
 
 @end
