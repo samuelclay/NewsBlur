@@ -1169,7 +1169,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     feed_ids, folder_title = user_sub_folders.feed_ids_under_folder_slug(folder_slug)
     
     usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids)
-    if feed_ids and user.profile.is_archive and date_hack_2023:
+    if feed_ids and ((user.profile.is_archive and date_hack_2023) or (not date_hack_2023)):
         params = {
             "user_id": user.pk, 
             "feed_ids": feed_ids,
