@@ -700,37 +700,17 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     });
 }
 
-- (void)cacheStoryImages:(NSArray *)storyImageUrls {
+- (void)cacheImagesForStories:(NSArray *)stories {
     NSBlockOperation *cacheImagesOperation = [NSBlockOperation blockOperationWithBlock:^{
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         [manager.requestSerializer setTimeoutInterval:5];
         manager.responseSerializer = [AFImageResponseSerializer serializer];
-
-        for (NSString *storyImageUrl in storyImageUrls) {
-//            NSLog(@"Fetching image: %@", storyImageUrl);
-            [manager GET:storyImageUrl parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-                dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
-                dispatch_async(queue, ^{
-                    UIImage *image = (UIImage *)responseObject;
-                    
-                    if (!image || image.size.height < 50 || image.size.width < 50) {
-                        [self.appDelegate.cachedStoryImages setObject:[NSNull null]
-                                                          forKey:storyImageUrl];
-                        return;
-                    }
-                    
-                    CGSize maxImageSize = CGSizeMake(300, 300);
-                    image = [image imageByScalingAndCroppingForSize:maxImageSize];
-                    [self.appDelegate.cachedStoryImages setObject:image
-                                                      forKey:storyImageUrl];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [self.appDelegate.feedDetailViewController
-                            showStoryImage:storyImageUrl];
-                    });
-                });
-            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                
-            }];
+        
+        for (NSDictionary *story in stories) {
+            NSString *storyHash = story[@"story_hash"];
+            NSArray *imageURLs = story[@"image_urls"];
+            self.appDelegate.cachedStoryImages[storyHash] = [NSNull null];
+            [self getFirstImage:imageURLs forStoryHash:storyHash withManager:manager];
         }
     }];
     [cacheImagesOperation setQualityOfService:NSQualityOfServiceBackground];
@@ -738,32 +718,67 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     [appDelegate.cacheImagesOperationQueue addOperation:cacheImagesOperation];
 }
 
-- (void)showStoryImage:(NSString *)imageUrl {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.view.window == nil) {
-            NSLog(@"showStoryImage when not in a window: %@", imageUrl);  // log
-            return;
-        }
-        
-        for (FeedDetailTableCell *cell in [self.storyTitlesTable visibleCells]) {
-            if (![cell isKindOfClass:[FeedDetailTableCell class]]) return;
-            if ([cell.storyImageUrl isEqualToString:imageUrl]) {
-                NSIndexPath *indexPath = [self.storyTitlesTable indexPathForCell:cell];
-                NSInteger numberOfRows = [self.storyTitlesTable numberOfRowsInSection:0];
-                
-                NSLog(@"showStoryImage for row %@ of %@", @(indexPath.row), @(numberOfRows));  // log
-                
-                if (indexPath.row >= numberOfRows) {
-                    NSLog(@"⚠️ row %@ is greater than the number of rows: %@", @(indexPath.row), @(numberOfRows));  // log
-                    continue;
+- (void)getFirstImage:(NSArray *)storyImageUrls forStoryHash:(NSString *)storyHash withManager:(AFHTTPSessionManager *)manager {
+    NSString *storyImageUrl = [[storyImageUrls firstObject] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    
+    if (storyImageUrl == nil) {
+        return;
+    }
+    
+    [manager GET:storyImageUrl parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
+        dispatch_async(queue, ^{
+            UIImage *image = (UIImage *)responseObject;
+            
+            if (!image || image.size.height < 50 || image.size.width < 50) {
+                if (storyImageUrls.count > 1) {
+                    NSArray *remainingImageUrls = [storyImageUrls subarrayWithRange:NSMakeRange(1, storyImageUrls.count - 1)];
+                    [self getFirstImage:remainingImageUrls forStoryHash:storyHash withManager:manager];
                 }
-                
-                [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
-                                             withRowAnimation:UITableViewRowAnimationNone];
-                break;
+                return;
             }
+            
+            CGSize maxImageSize = CGSizeMake(300, 300);
+            image = [image imageByScalingAndCroppingForSize:maxImageSize];
+            self.appDelegate.cachedStoryImages[storyHash] = image;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self showImageForStoryHash:storyHash];
+            });
+        });
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"getFirstImage for %@ error: %@", storyHash, error);  // log
+        
+        if (storyImageUrls.count > 1) {
+            NSArray *remainingImageUrls = [storyImageUrls subarrayWithRange:NSMakeRange(1, storyImageUrls.count - 1)];
+            [self getFirstImage:remainingImageUrls forStoryHash:storyHash withManager:manager];
         }
-    });
+    }];
+}
+
+- (void)showImageForStoryHash:(NSString *)storyHash {
+    if (self.view.window == nil) {
+        NSLog(@"showImageForStoryHash when not in a window: %@", storyHash);  // log
+        return;
+    }
+    
+    for (FeedDetailTableCell *cell in [self.storyTitlesTable visibleCells]) {
+        if (![cell isKindOfClass:[FeedDetailTableCell class]]) return;
+        if ([cell.storyHash isEqualToString:storyHash]) {
+            NSIndexPath *indexPath = [self.storyTitlesTable indexPathForCell:cell];
+            NSInteger numberOfRows = [self.storyTitlesTable numberOfRowsInSection:0];
+            
+            NSLog(@"showImageForStoryHash for row %@ of %@", @(indexPath.row), @(numberOfRows));  // log
+            
+            if (indexPath.row >= numberOfRows) {
+                NSLog(@"⚠️ row %@ is greater than the number of rows: %@", @(indexPath.row), @(numberOfRows));  // log
+                continue;
+            }
+            
+            [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
+                                         withRowAnimation:UITableViewRowAnimationNone];
+            break;
+        }
+    }
 }
 
 - (void)flashInfrequentStories {
@@ -1321,22 +1336,14 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 
     [self.storyTitlesTable reloadData];
     
-    
     if (self.view.window && self.finishedAnimatingIn) {
         [self testForTryFeed];
     }
     
-    NSMutableArray *storyImageUrls = [NSMutableArray array];
-    for (NSDictionary *story in newStories) {
-        if ([story objectForKey:@"image_urls"] && [[story objectForKey:@"image_urls"] count]) {
-            [storyImageUrls addObject:[[[story objectForKey:@"image_urls"] objectAtIndex:0]
-                                       stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
-        }
-    }
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),
                    queue, ^(void) {
-        [self cacheStoryImages:storyImageUrls];
+        [self cacheImagesForStories:newStories];
     });
     
     self.pageFetching = NO;
@@ -1619,11 +1626,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     cell.storyTimestamp = [[story objectForKey:@"story_timestamp"] integerValue];
     cell.isSaved = [[story objectForKey:@"starred"] boolValue];
     cell.isShared = [[story objectForKey:@"shared"] boolValue];
-    cell.storyImageUrl = nil;
-    if (self.showImagePreview &&
-        [story objectForKey:@"image_urls"] && [[story objectForKey:@"image_urls"] count]) {
-        cell.storyImageUrl = [[story objectForKey:@"image_urls"] objectAtIndex:0];
-    }
+    cell.storyHash = story[@"story_hash"];
     
     if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
         cell.storyAuthor = [[story objectForKey:@"story_authors"] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
@@ -3044,8 +3047,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     UIImage *storyImage = nil;
 
     FeedDetailTableCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    if (cell.storyImageUrl) {
-        id cachedImage = appDelegate.cachedStoryImages[cell.storyImageUrl];
+    if (cell.storyHash) {
+        id cachedImage = appDelegate.cachedStoryImages[cell.storyHash];
         if (cachedImage && cachedImage != [NSNull null])
             storyImage = cachedImage;
     }
