@@ -28,7 +28,7 @@ static UIFont *indicatorFont = nil;
 @synthesize storyAuthor;
 @synthesize storyDate;
 @synthesize storyContent;
-@synthesize storyImageUrl;
+@synthesize storyHash;
 @synthesize storyTimestamp;
 @synthesize storyScore;
 @synthesize storyImage;
@@ -229,7 +229,7 @@ static UIFont *indicatorFont = nil;
     
     CGContextFillRect(context, r);
     
-    if (cell.storyImageUrl) {
+    if (cell.storyHash) {
         CGRect imageFrame = CGRectMake(r.size.width - imageWidth - previewHorizMargin, topMargin,
                                        imageWidth, imageHeight);
         
@@ -245,7 +245,8 @@ static UIFont *indicatorFont = nil;
             }
         }
         
-        UIImage *cachedImage = (UIImage *)[appDelegate.cachedStoryImages objectForKey:cell.storyImageUrl];
+        UIImage *cachedImage = (UIImage *)appDelegate.cachedStoryImages[cell.storyHash];
+        
         if (cachedImage && ![cachedImage isKindOfClass:[NSNull class]]) {
 //            NSLog(@"Found cached image: %@", cell.storyTitle);
             CGContextRef context = UIGraphicsGetCurrentContext();

@@ -75,8 +75,6 @@
 - (void)fetchRiver;
 - (void)fetchRiverPage:(int)page withCallback:(void(^)(void))callback;
 - (void)testForTryFeed;
-- (void)cacheStoryImages:(NSArray *)storyImageUrls;
-- (void)showStoryImage:(NSString *)imageUrl;
 - (void)flashInfrequentStories;
 - (void)gotoFolder:(NSString *)folder feedID:(NSString *)feedID;
 
