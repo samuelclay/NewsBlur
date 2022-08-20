@@ -35,6 +35,7 @@ class DetailViewController: BaseViewController {
         static let left = "titles_on_left"
         static let top = "titles_on_top"
         static let bottom = "titles_on_bottom"
+        static let grid = "titles_in_grid"
     }
     
     /// How the feed detail and story pages are laid out.
@@ -47,6 +48,9 @@ class DetailViewController: BaseViewController {
         
         /// The story pages are at the top, the feed detail at the bottom.
         case bottom
+        
+        /// Using a grid view for the story titles and story pages.
+        case grid
     }
     
     /// How the feed detail and story pages are laid out.
@@ -57,6 +61,8 @@ class DetailViewController: BaseViewController {
                 return .top
             case LayoutValue.bottom:
                 return .bottom
+            case LayoutValue.grid:
+                return .grid
             default:
                 return .left
             }
@@ -71,6 +77,8 @@ class DetailViewController: BaseViewController {
                 UserDefaults.standard.set(LayoutValue.top, forKey: Key.layout)
             case .bottom:
                 UserDefaults.standard.set(LayoutValue.bottom, forKey: Key.layout)
+            case .grid:
+                UserDefaults.standard.set(LayoutValue.grid, forKey: Key.layout)
             default:
                 UserDefaults.standard.set(LayoutValue.left, forKey: Key.layout)
             }
@@ -87,6 +95,11 @@ class DetailViewController: BaseViewController {
     /// Whether or not the feed detail is on the top; see also the previous property.
     @objc var storyTitlesOnTop: Bool {
         return layout == .top
+    }
+    
+    /// Whether or not using the grid layout; see also the previous property.
+    @objc var storyTitlesInGrid: Bool {
+        return layout == .grid
     }
     
     /// Preference values.
@@ -183,8 +196,11 @@ class DetailViewController: BaseViewController {
     /// The feed detail view controller in the supplementary pane, loaded from the storyboard.
     var supplementaryFeedDetailViewController: FeedDetailViewController?
     
-    /// The feed detail view controller, if using `top` or `bottom` layout. `nil` if using `left` layout.
+    /// The feed detail view controller, if using `top`, `bottom`, or `grid` layout. `nil` if using `left` layout.
     var feedDetailViewController: FeedDetailViewController?
+    
+    /// The grid detail view controller, if using `grid` layout. `nil` for other layouts.
+    var gridDetailViewController: GridDetailViewController?
     
     /// The horizontal page view controller. [Not currently used; might be used for #1351 (gestures in vertical scrolling).]
 //    var horizontalPageViewController: HorizontalPageViewController?
@@ -232,10 +248,6 @@ class DetailViewController: BaseViewController {
         navigationController?.navigationBar.barStyle = manager.isDarkTheme ? .black : .default
         
         tidyNavigationController()
-        
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-//            self.findSplitBackButton()
-//        }
     }
     
     /// Adjusts the container when autoscrolling. Only applies to iPhone.
@@ -243,46 +255,6 @@ class DetailViewController: BaseViewController {
         adjustTopConstraint()
         updateTheme()
     }
-    
-//    @objc func findSplitBackButton() {
-//        guard let navBar = navigationController?.navigationBar else {
-//            return
-//        }
-//
-//        let imageViews = recursiveImageSubviews(of: navBar)
-//
-//        for view in imageViews {
-//            if let imageView = view as? UIImageView, let image = imageView.image, image.description.contains("BackIndicator"), let button = recursiveButtonSuperview(of: imageView) {
-//                print("image view: \(imageView), image: \(String(describing: imageView.image)), button: \(button)")
-//            }
-//        }
-//    }
-//
-//    func recursiveImageSubviews(of view: UIView) -> [UIView] {
-//        var subviews = [UIView]()
-//
-//        for subview in view.subviews {
-//            if subview is UIImageView {
-//                subviews.append(subview)
-//            } else {
-//                subviews.append(contentsOf: recursiveImageSubviews(of: subview))
-//            }
-//        }
-//
-//        return subviews
-//    }
-//
-//    func recursiveButtonSuperview(of view: UIView) -> UIButton? {
-//        guard let superview = view.superview else {
-//            return nil
-//        }
-//
-//        if let button = superview as? UIButton {
-//            return button
-//        }
-//
-//        return recursiveButtonSuperview(of: superview)
-//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -359,6 +331,11 @@ private extension DetailViewController {
     func checkViewControllers() {
         let isTop = layout == .top
         
+        if layout != .grid, gridDetailViewController != nil {
+            remove(viewController: gridDetailViewController)
+            gridDetailViewController = nil
+        }
+        
         if layout == .left {
             if feedDetailViewController != nil {
                 remove(viewController: feedDetailViewController)
@@ -369,6 +346,28 @@ private extension DetailViewController {
                 appDelegate.splitViewController.setViewController(supplementaryFeedDetailNavigationController, for: .supplementary)
                 supplementaryFeedDetailNavigationController = nil
                 supplementaryFeedDetailViewController = nil
+            }
+            
+            dividerViewBottomConstraint.constant = -13
+        } else if layout == .grid {
+            if gridDetailViewController == nil {
+                gridDetailViewController = Storyboards.shared.controller(withIdentifier: .gridDetail) as? GridDetailViewController
+                feedDetailViewController = Storyboards.shared.controller(withIdentifier: .feedDetail) as? FeedDetailViewController
+                
+                add(viewController: gridDetailViewController, top: true)
+                add(viewController: feedDetailViewController, top: false)
+                
+                supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
+                supplementaryFeedDetailViewController = appDelegate.feedDetailViewController
+                appDelegate.feedDetailNavigationController = nil
+                appDelegate.feedDetailViewController = feedDetailViewController
+                appDelegate.splitViewController.setViewController(nil, for: .supplementary)
+            } else {
+                let appropriateSuperview = isTop ? topContainerView : bottomContainerView
+                
+                if feedDetailViewController?.view.superview != appropriateSuperview {
+                    add(viewController: feedDetailViewController, top: true)
+                }
             }
             
             dividerViewBottomConstraint.constant = -13
@@ -396,30 +395,19 @@ private extension DetailViewController {
             appDelegate.updateSplitBehavior()
         }
         
-        guard let storyPagesViewController = storyPagesViewController else {
-            return
-        }
-        
-        let appropriateSuperview = isTop ? bottomContainerView : topContainerView
-        
-        if storyPagesViewController.view.superview != appropriateSuperview {
-            add(viewController: storyPagesViewController, top: !isTop)
+        if layout != .grid {
+            guard let storyPagesViewController = storyPagesViewController else {
+                return
+            }
             
-            adjustForAutoscroll()
+            let appropriateSuperview = isTop ? bottomContainerView : topContainerView
             
-//            if isTop {
-//                bottomContainerView.addSubview(traverseView)
-//                bottomContainerView.addSubview(autoscrollView)
-//            } else {
-//                topContainerView.addSubview(traverseView)
-//                topContainerView.addSubview(autoscrollView)
-//            }
+            if storyPagesViewController.view.superview != appropriateSuperview {
+                add(viewController: storyPagesViewController, top: !isTop)
+                
+                adjustForAutoscroll()
+            }
         }
-//
-//        traverseTopContainerBottomConstraint.isActive = !isTop
-//        traverseBottomContainerBottomConstraint.isActive = isTop
-//        autoscrollTopContainerBottomConstraint.isActive = !isTop
-//        autoscrollBottomContainerBottomConstraint.isActive = isTop
     }
     
     func add(viewController: UIViewController?, top: Bool) {

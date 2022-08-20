@@ -2355,42 +2355,62 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [appDelegate addSplitControlToMenuController:viewController];
         
         NSString *preferenceKey = @"story_titles_position";
-        NSArray *titles = @[@"Left", @"Top", @"Bottom"];
-        NSArray *values = @[@"titles_on_left", @"titles_on_top", @"titles_on_bottom"];
+        NSArray *titles = @[@"Left", @"Top", @"Bottom", @"Grid"];
+        NSArray *values = @[@"titles_on_left", @"titles_on_top", @"titles_on_bottom", @"titles_in_grid"];
         
         [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
             [self.appDelegate.detailViewController updateLayoutWithReload:YES];
         }];
+        
+        if (self.appDelegate.detailViewController.storyTitlesInGrid) {
+            NSString *preferenceKey = @"grid_columns";
+            NSArray *titles = @[@"Auto Cols", @"2", @"3", @"4"];
+            NSArray *values = @[@"auto", @"2", @"3", @"4"];
+            
+            [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"auto" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+                [self.appDelegate.detailViewController updateLayoutWithReload:YES];
+            }];
+            
+            preferenceKey = @"grid_height";
+            titles = @[@"XS", @"Short", @"Medium", @"Tall", @"XL"];
+            values = @[@"xs", @"short", @"medium", @"tall", @"xl"];
+            
+            [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"medium" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+                [self.appDelegate.detailViewController updateLayoutWithReload:YES];
+            }];
+        }
     }
     
-    NSString *preferenceKey = @"story_list_preview_text_size";
-    NSArray *titles = @[@"Title", @"content_preview_small.png", @"content_preview_medium.png", @"content_preview_large.png"];
-    NSArray *values = @[@"title", @"short", @"medium", @"long"];
-    
-    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
-        [self.appDelegate resizePreviewSize];
-    }];
-    
-    // Upgrade the prefs; can remove these lines eventually, once most existing users are likely on version 11 or later.
-    NSString *preview = [[NSUserDefaults standardUserDefaults] stringForKey:@"story_list_preview_images_size"];
-    
-    if ([preview isEqualToString:@"small"]) {
-        [[NSUserDefaults standardUserDefaults] setObject:@"small_right" forKey:@"story_list_preview_images_size"];
-    } else if ([preview isEqualToString:@"large"]) {
-        [[NSUserDefaults standardUserDefaults] setObject:@"large_right" forKey:@"story_list_preview_images_size"];
+    if (!self.appDelegate.detailViewController.storyTitlesInGrid) {
+        NSString *preferenceKey = @"story_list_preview_text_size";
+        NSArray *titles = @[@"Title", @"content_preview_small.png", @"content_preview_medium.png", @"content_preview_large.png"];
+        NSArray *values = @[@"title", @"short", @"medium", @"long"];
+        
+        [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+            [self.appDelegate resizePreviewSize];
+        }];
+        
+        // Upgrade the prefs; can remove these lines eventually, once most existing users are likely on version 11 or later.
+        NSString *preview = [[NSUserDefaults standardUserDefaults] stringForKey:@"story_list_preview_images_size"];
+        
+        if ([preview isEqualToString:@"small"]) {
+            [[NSUserDefaults standardUserDefaults] setObject:@"small_right" forKey:@"story_list_preview_images_size"];
+        } else if ([preview isEqualToString:@"large"]) {
+            [[NSUserDefaults standardUserDefaults] setObject:@"large_right" forKey:@"story_list_preview_images_size"];
+        }
+        
+        preferenceKey = @"story_list_preview_images_size";
+        titles = @[@"No image", @"image_preview_small_left.png", @"image_preview_large_left.png", @"image_preview_large_right.png", @"image_preview_small_right.png"];
+        values = @[@"none", @"small_left", @"large_left", @"large_right", @"small_right"];
+        
+        [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+            [self.appDelegate resizePreviewSize];
+        }];
     }
     
-    preferenceKey = @"story_list_preview_images_size";
-    titles = @[@"No image", @"image_preview_small_left.png", @"image_preview_large_left.png", @"image_preview_large_right.png", @"image_preview_small_right.png"];
-    values = @[@"none", @"small_left", @"large_left", @"large_right", @"small_right"];
-    
-    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
-        [self.appDelegate resizePreviewSize];
-    }];
-    
-    preferenceKey = @"feed_list_font_size";
-    titles = @[@"XS", @"S", @"M", @"L", @"XL"];
-    values = @[@"xs", @"small", @"medium", @"large", @"xl"];
+    NSString *preferenceKey = @"feed_list_font_size";
+    NSArray *titles = @[@"XS", @"S", @"M", @"L", @"XL"];
+    NSArray *values = @[@"xs", @"small", @"medium", @"large", @"xl"];
     
     [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
         [self.appDelegate resizeFontSize];
