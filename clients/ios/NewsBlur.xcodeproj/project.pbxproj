@@ -80,6 +80,9 @@
 		177551D5238E228A00E27818 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 177551D4238E228A00E27818 /* NotificationCenter.framework */; platformFilter = ios; };
 		177551DB238E228A00E27818 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 177551D9238E228A00E27818 /* MainInterface.storyboard */; };
 		177551DF238E228A00E27818 /* Old NewsBlur Latest.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 177551D3238E228A00E27818 /* Old NewsBlur Latest.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		177D017828B056C600F2F2DB /* GridDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D017728B056C600F2F2DB /* GridDetailViewController.swift */; };
+		177D017B28B05D2500F2F2DB /* GridFeedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D017A28B05D2500F2F2DB /* GridFeedCell.swift */; };
+		177D017D28B05D9500F2F2DB /* GridStoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D017C28B05D9500F2F2DB /* GridStoryCell.swift */; };
 		17813FB723AC6E450057FB16 /* WidgetErrorTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17CE3F0523AC529B003152EF /* WidgetErrorTableViewCell.xib */; };
 		1787083024F8B3A50000C82B /* StoryDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1787082F24F8B3A50000C82B /* StoryDetailViewController.swift */; };
 		17876B9E1C9911D40055DD15 /* g_icn_folder_rss_sm.png in Resources */ = {isa = PBXBuildFile; fileRef = 17876B9A1C9911D40055DD15 /* g_icn_folder_rss_sm.png */; };
@@ -823,6 +826,9 @@
 		177551DA238E228A00E27818 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		177551DC238E228A00E27818 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		177551E3238E26BF00E27818 /* Widget Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Widget Extension.entitlements"; sourceTree = "<group>"; };
+		177D017728B056C600F2F2DB /* GridDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridDetailViewController.swift; sourceTree = "<group>"; };
+		177D017A28B05D2500F2F2DB /* GridFeedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridFeedCell.swift; sourceTree = "<group>"; };
+		177D017C28B05D9500F2F2DB /* GridStoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridStoryCell.swift; sourceTree = "<group>"; };
 		1787082F24F8B3A50000C82B /* StoryDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryDetailViewController.swift; sourceTree = "<group>"; };
 		17876B9A1C9911D40055DD15 /* g_icn_folder_rss_sm.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_folder_rss_sm.png; sourceTree = "<group>"; };
 		17876B9B1C9911D40055DD15 /* g_icn_folder_rss_sm@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "g_icn_folder_rss_sm@2x.png"; sourceTree = "<group>"; };
@@ -1691,6 +1697,7 @@
 				431B857315A131C300DCE497 /* Feeds */,
 				431B857215A131B200DCE497 /* Feed-Detail */,
 				431B857415A1324200DCE497 /* Story */,
+				177D017928B05CBF00F2F2DB /* Grid */,
 				431B857115A1317000DCE497 /* FTUX */,
 				431B857015A1315F00DCE497 /* Social */,
 				FF3FA8871BB26595001F7C32 /* Activities */,
@@ -1800,6 +1807,16 @@
 				17FB51D923AC81C500F5D5BF /* InfoPlist.strings */,
 			);
 			path = "Old Widget Extension";
+			sourceTree = "<group>";
+		};
+		177D017928B05CBF00F2F2DB /* Grid */ = {
+			isa = PBXGroup;
+			children = (
+				177D017728B056C600F2F2DB /* GridDetailViewController.swift */,
+				177D017A28B05D2500F2F2DB /* GridFeedCell.swift */,
+				177D017C28B05D9500F2F2DB /* GridStoryCell.swift */,
+			);
+			name = Grid;
 			sourceTree = "<group>";
 		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
@@ -3704,6 +3721,7 @@
 				FF2924E61E932D2900FCFA63 /* PINDiskCache.m in Sources */,
 				7843F50511EEB1A000675F64 /* FeedDetailTableCell.m in Sources */,
 				784B50ED127E3F68008F90EA /* LoginViewController.m in Sources */,
+				177D017D28B05D9500F2F2DB /* GridStoryCell.swift in Sources */,
 				FF5ACC241DE5F0C000FBD044 /* NotificationsViewController.m in Sources */,
 				FFCDD8FE17F6368F000C6483 /* MCSwipeTableViewCell.m in Sources */,
 				78095EC9128F30B500230C8E /* OriginalStoryViewController.m in Sources */,
@@ -3763,6 +3781,7 @@
 				17432C831C53438D003F8FD6 /* FeedChooserViewController.m in Sources */,
 				010EDEFA1B2386B7003B79DE /* OnePasswordExtension.m in Sources */,
 				43ABBCAA15B53A1400EA3111 /* InteractionCell.m in Sources */,
+				177D017828B056C600F2F2DB /* GridDetailViewController.swift in Sources */,
 				FF8D1ECF1BAA311000725D8A /* SBJson4StreamTokeniser.m in Sources */,
 				FF8D1ED81BAA33BA00725D8A /* NSObject+SBJSON.m in Sources */,
 				172AD274251D9F40000BB264 /* Storyboards.swift in Sources */,
@@ -3791,6 +3810,7 @@
 				176A5C7A24F8BD1B009E8DF9 /* DetailViewController.swift in Sources */,
 				17432C7F1C533FBC003F8FD6 /* MenuViewController.m in Sources */,
 				FFF8B3AF1F847505001AB95E /* NBDashboardNavigationBar.m in Sources */,
+				177D017B28B05D2500F2F2DB /* GridFeedCell.swift in Sources */,
 				17E635AF1C548C580075338E /* FeedChooserItem.m in Sources */,
 				FF6A233216448E0700E15989 /* StoryPagesObjCViewController.m in Sources */,
 				FF67D3B2168924C40057A7DA /* TrainerViewController.m in Sources */,

@@ -303,6 +303,46 @@
             </objects>
             <point key="canvasLocation" x="-546" y="1835"/>
         </scene>
+        <!--Grid Detail View Controller-->
+        <scene sceneID="OXZ-eV-qQz">
+            <objects>
+                <viewController storyboardIdentifier="GridDetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="QmF-fv-1Bp" customClass="GridDetailViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="JQ6-ZA-aZb">
+                        <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="vaf-JJ-7oP">
+                                <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Fmx-jr-pAt">
+                                    <size key="itemSize" width="128" height="128"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells/>
+                                <connections>
+                                    <outlet property="delegate" destination="QmF-fv-1Bp" id="UAX-33-p9U"/>
+                                </connections>
+                            </collectionView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="pwo-OK-kJk"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="vaf-JJ-7oP" firstAttribute="top" secondItem="JQ6-ZA-aZb" secondAttribute="top" id="7F9-cE-mjz"/>
+                            <constraint firstAttribute="trailing" secondItem="vaf-JJ-7oP" secondAttribute="trailing" id="Dp9-b5-7mR"/>
+                            <constraint firstAttribute="bottom" secondItem="vaf-JJ-7oP" secondAttribute="bottom" id="jin-ea-ii1"/>
+                            <constraint firstItem="vaf-JJ-7oP" firstAttribute="leading" secondItem="JQ6-ZA-aZb" secondAttribute="leading" id="uJn-0H-m3i"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="collectionView" destination="vaf-JJ-7oP" id="BkE-3h-foS"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5kV-BU-lYP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="181" y="2678"/>
+        </scene>
         <!--Horizontal Page View Controller-->
         <scene sceneID="Dnt-lB-G3h">
             <objects>
@@ -315,7 +355,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="y78-Tv-B24" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <customObject id="9g1-OD-yDA" customClass="HorizontalPageDelegate" customModule="NewsBlur" customModuleProvider="target"/>
             </objects>
-            <point key="canvasLocation" x="181" y="2603"/>
+            <point key="canvasLocation" x="181" y="3488"/>
         </scene>
         <!--Vertical Page View Controller-->
         <scene sceneID="jpJ-mR-ccR">
@@ -329,7 +369,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rdh-By-bOV" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <customObject id="aFI-Ht-5Fb" customClass="VerticalPageDelegate" customModule="NewsBlur" customModuleProvider="target"/>
             </objects>
-            <point key="canvasLocation" x="181" y="3363"/>
+            <point key="canvasLocation" x="181" y="4247"/>
         </scene>
         <!--Feed Detail View Controller-->
         <scene sceneID="P4B-M4-aIa">
