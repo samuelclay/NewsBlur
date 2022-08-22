@@ -16,7 +16,7 @@ public class ViewUtils {
 
     private ViewUtils() {} // util class - no instances
 
-	public static ImageView createSharebarImage(final Context context, final String photoUrl, final String userId, ImageLoader iconLoader) {
+	public static ShapeableImageView createSharebarImage(final Context context, final String photoUrl, final String userId, ImageLoader iconLoader) {
 		ShapeableImageView image = new ShapeableImageView(context);
 		int imageLength = UIUtils.dp2px(context, 15);
 		image.setMaxHeight(imageLength);
