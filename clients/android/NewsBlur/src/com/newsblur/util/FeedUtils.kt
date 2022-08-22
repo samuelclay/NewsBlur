@@ -16,6 +16,7 @@ import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_METADATA
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_SOCIAL
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_STORY
 import com.newsblur.util.UIUtils.syncUpdateStatus
+import java.lang.IllegalStateException
 import java.util.*
 
 class FeedUtils(
@@ -487,8 +488,13 @@ class FeedUtils(
             // NB: when our minSDKversion hits 28, it could be possible to start the service via the JobScheduler
             // with the setImportantWhileForeground() flag via an enqueue() and get rid of all legacy startService
             // code paths
-            val i = Intent(context, NBSyncService::class.java)
-            context.startService(i)
+            try {
+                val i = Intent(context, NBSyncService::class.java)
+                context.startService(i)
+            } catch (e: IllegalStateException) {
+                // BackgroundServiceStartNotAllowedException
+                Log.e(this, "triggerSync error: ${e.message}")
+            }
         }
 
         /**
