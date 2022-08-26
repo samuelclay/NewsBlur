@@ -24,9 +24,6 @@
                     <div class="NB-feeds-header-user-interactions-badge NB-hidden"></div>
                     <img src="{{ MEDIA_URL }}/img/icons/circular/nav_icn_activity_active.png">
                 </div>
-                <div class="NB-feeds-header-user-dashboard" role="button">
-                    <img src="{{ MEDIA_URL }}/img/icons/circular/nav_icn_dashboard_active.png">
-                </div>
                 <div class="NB-feeds-header-dashboard"></div>
             </div>
             <div class="NB-feeds-selector">
@@ -42,11 +39,54 @@
                     Something went wrong...
                     <div class="NB-button NB-feeds-list-retry">Retry</div>
                 </div>
+
                 <div class="NB-feeds-header-wrapper">
+
                     <div class="NB-feeds-header-container NB-feeds-header-tryfeed-container">
                         <div class="NB-feeds-header NB-feeds-header-tryfeed">
                             <img class="NB-feeds-header-icon" src="" />
                             <div class="NB-feeds-header-title"></div>
+                        </div>
+                    </div>
+
+                    <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-dashboard-container">
+                        <div class="NB-feeds-header NB-feeds-header-river-dashboard NB-empty" role="link">
+                            <img class="NB-feeds-header-icon" src="{{ MEDIA_URL }}img/icons/nouns/home.svg" />
+                            <div class="NB-feeds-header-title">
+                                NewsBlur Dashboard
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-infrequent-container">
+                        <div class="NB-feeds-header NB-feeds-header-river-infrequent NB-empty" role="link">
+                            <div class="NB-feeds-header-count unread_count"></div>
+                            <img class="NB-feeds-header-icon" src="" />
+                            <div class="NB-feeds-header-title">
+                                Infrequent Site Stories
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-sites-container">
+                        <div class="NB-feeds-header NB-feeds-header-river-sites NB-empty" role="link">
+                            <div class="NB-feeds-header-count unread_count"></div>
+                            <img class="NB-feeds-header-icon" src="" />
+                            <div class="NB-feeds-header-title">
+                                All Site Stories
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <ul class="folder NB-feedlist" id="feed_list"></ul>
+                
+                <div class="NB-feeds-header-container NB-feeds-header-read-container NB-hidden">
+                    <div class="NB-feeds-header NB-feeds-header-read" role="link">
+                        <img class="NB-feeds-header-icon" src="" />
+                        <div class="NB-feeds-header-title">
+                            Read Stories
                         </div>
                     </div>
                 </div>
@@ -74,37 +114,6 @@
 
                 <div class="NB-socialfeeds-folder">
                     <ul class="NB-socialfeeds NB-feedlist"></ul>
-                </div>
-
-                <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-infrequent-container">
-                    <div class="NB-feeds-header NB-feeds-header-river-infrequent NB-empty" role="link">
-                        <div class="NB-feeds-header-count unread_count"></div>
-                        <img class="NB-feeds-header-icon" src="" />
-                        <div class="NB-feeds-header-title">
-                            Infrequent Site Stories
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-sites-container">
-                    <div class="NB-feeds-header NB-feeds-header-river-sites NB-empty" role="link">
-                        <div class="NB-feeds-header-count unread_count"></div>
-                        <img class="NB-feeds-header-icon" src="" />
-                        <div class="NB-feeds-header-title">
-                            All Site Stories
-                        </div>
-                    </div>
-                </div>
-
-                <ul class="folder NB-feedlist" id="feed_list"></ul>
-                
-                <div class="NB-feeds-header-container NB-feeds-header-read-container NB-hidden">
-                    <div class="NB-feeds-header NB-feeds-header-read" role="link">
-                        <img class="NB-feeds-header-icon" src="" />
-                        <div class="NB-feeds-header-title">
-                            Read Stories
-                        </div>
-                    </div>
                 </div>
                 
                 
@@ -179,15 +188,15 @@
                                     All
                                 </li>
                                 <li class="NB-intelligence-slider-control NB-intelligence-slider-yellow" role="button">
-                                    <img src="{{ MEDIA_URL }}embed/icons/circular/g_icn_unread.png">
+                                    <img src="{{ MEDIA_URL }}embed/icons/nouns/indicator-unread.svg">
                                     <span class="NB-intelligence-label">Unread</span>
                                 </li>
                                 <li class="NB-intelligence-slider-control NB-intelligence-slider-green" role="button">
-                                    <img src="{{ MEDIA_URL }}embed/icons/circular/g_icn_focus.png">
+                                    <img src="{{ MEDIA_URL }}embed/icons/nouns/indicator-focus.svg">
                                     <span class="NB-intelligence-label">Focus</span>
                                 </li>
                                 <li class="NB-intelligence-slider-control NB-intelligence-slider-blue" role="button">
-                                    <img src="{{ MEDIA_URL }}embed/icons/circular/clock.png">
+                                    <img src="{{ MEDIA_URL }}embed/icons/nouns/saved-stories.svg">
                                     <span class="NB-intelligence-label">Saved</span>
                                 </li>
                             </ul>

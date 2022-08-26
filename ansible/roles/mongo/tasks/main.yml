@@ -3,7 +3,9 @@
   become: yes
   file:
     state: directory
-    mode: 0777
+    mode: 0755
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"
     path: /var/log/mongodb
 
 - name: Block for mongo volume
@@ -23,6 +25,8 @@
       file: 
         path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}"
         state: directory
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
 
     - name: Mount volume read-write
       become: yes
@@ -32,15 +36,6 @@
         fstype: xfs
         opts: defaults,discard
         state: mounted
-    
-    - name: Set permissions on volume
-      become: yes
-      file:
-        path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}"
-        state: directory
-        owner: 999
-        group: 999
-        recurse: yes
 
   when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo-secondary', 'db-mongo-analytics']
 
@@ -49,31 +44,44 @@
   copy:
     content: "{{ mongodb_keyfile }}"
     dest: /srv/newsblur/config/mongodb_keyfile.key
-    owner: 999
-    group: 999
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"
     mode: 0400
   tags:
     - keyfile
+
+- name: Set permissions on mongo volume
+  become: yes
+  file:
+    path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}"
+    state: directory
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"
+    recurse: yes
 
 - name: Make backup directory
   become: yes
   file:
     path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup/"
     state: directory
-    mode: 0777
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"
+    mode: 0755
 
 - name: Create symlink to mounted volume for backups to live
   file:
     state: link
     src: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup"
     path: /srv/newsblur/backup
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"
     force: yes
     
 - name: Start db-mongo docker container
   become: yes
   docker_container:
     name: mongo
-    image: mongo:3.6
+    image: mongo:4.0
     state: started
     container_default_behavior: no_defaults
     hostname: "{{ inventory_hostname }}"
@@ -88,6 +96,7 @@
     # ports:
     #   - "27017:27017"
     command: --config /etc/mongod.conf
+    user: 1000:1001
     volumes:
       - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
       - /srv/newsblur/ansible/roles/mongo/templates/mongo.conf:/etc/mongod.conf
@@ -100,7 +109,7 @@
   become: yes
   docker_container:
     name: mongo
-    image: mongo:3.6
+    image: mongo:4.0
     state: started
     container_default_behavior: no_defaults
     hostname: "{{ inventory_hostname }}"
@@ -115,7 +124,7 @@
     ports:
       - "27017:27017"
     command: --config /etc/mongod.conf
-    user: 999:999
+    user: 1000:1001
     volumes:
       - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
       - /srv/newsblur/ansible/roles/mongo/templates/mongo.analytics.conf:/etc/mongod.conf
@@ -204,15 +213,26 @@
     dest: /srv/newsblur/newsblur_web/local_settings.py
   register: app_changed
 
+- name: Add mongo backup log
+  become: yes
+  file:
+    path: /var/log/mongo_backup.log
+    state: touch
+    mode: 0755
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"
+  when: '"db-mongo-secondary1" in inventory_hostname'
+
 - name: Add mongo backup
   cron:
     name: mongo backup
     minute: "0"
     hour: "4"
-    job: /srv/newsblur/docker/mongo/backup_mongo.sh
+    job: /srv/newsblur/docker/mongo/backup_mongo.sh >> /var/log/mongo_backup.log 2>&1
   when: '"db-mongo-secondary1" in inventory_hostname'
   tags:
     - mongo-backup
+    - cron
 
 # - name: Add mongo starred_stories+stories backup
 #   cron:

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150px" height="150px" viewBox="0 0 150 150" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>indicator-read</title>
+    <g id="indicator-read" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="noun-dots-2561422-95978E" fill="#95968E" fill-rule="nonzero">
+            <path d="M75,150 C116.734859,150 150,116.164748 150,75 C150,33.2651413 116.164748,0 75,0 C33.8352523,0 0,33.8352523 0,75 C0,116.734859 33.2673442,150 75,150 Z M75,11.0289712 C110.685404,11.0289712 138.970588,39.3141551 138.970588,74.9995594 C138.970588,110.684964 110.685404,138.970148 75,138.970148 C39.3145956,138.970148 11.0294118,110.684964 11.0294118,74.9995594 C11.0294118,39.3141551 39.3145956,11.0289712 75,11.0289712 Z" id="Shape"></path>
+        </g>
+    </g>
+</svg>

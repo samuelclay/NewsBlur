@@ -87,11 +87,7 @@
                         </div>
                         <div>
                             <div class="NB-signup-optional">
-                                {% if login_form.errors and login_form.errors|length %}
-                                    <a href="{% url "profile-forgot-password" %}" class="NB-splash-link">Forgot?</a>
-                                {% else %}
-                                    Optional
-                                {% endif %}
+                                <a href="{% url "profile-forgot-password" %}" class="NB-splash-link">Forgot?</a>
                             </div>
                             {{ login_form.password.label_tag }}
                             {{ login_form.password }}
@@ -256,50 +252,62 @@
                 <tr>
                     <th></th>
                     <th>Free Account</th>
-                    <th class="NB-last">
+                    <th>
                         <div class="NB-price">$36 / year</div>
-                        Premium Account
+                        Premium Subscription
+                    </th>
+                    <th>
+                        <div class="NB-price">$99 / year</div>
+                        Premium Archive Subscription
                     </th>
                 </tr>
                 <tr>
                     <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-1"></div> Number of Sites</td>
                     <td>Up to 64 sites</td>
-                    <td class="NB-last">Unlimited sites</td>
+                    <td>1,000 sites</td>
+                    <td>Unlimited sites</td>
                 </tr>
                 <tr>
-                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-2"></div> River of News</td>
-                    <td>Only 5 stories at a time</td>
-                    <td class="NB-last">All stories at once</td>
-                </tr>
-                <tr>
-                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-3"></div> Site updates</td>
-                    <td>1X</td>
-                    <td class="NB-last">Up to 10X as often</td>
+                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-3"></div> River of News</td>
+                    <td>Only 3 stories at a time</td>
+                    <td>Every story from every site</td>
+                    <td>Plus every story ever published in the archive</td>
                 </tr>
                 <tr>
                     <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-4"></div> Search</td>
                     <td>-</td>
-                    <td class="NB-last">Search feeds, saved, and shared stories</td>
-                </tr>
-                <tr>
-                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-5"></div> Saved story tagging</td>
-                    <td>Only save stories</td>
-                    <td class="NB-last">Tag saved stories</td>
-                </tr>
-                <tr>
-                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-6"></div> Privacy</td>
-                    <td>Public shares only</td>
-                    <td class="NB-last">Public, protected, and private shares</td>
+                    <td>Search for recent stories, your saved stories, and shared stories</td>
+                    <td>Search the entire history of every site</td>
                 </tr>
                 <tr>
                     <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-7"></div> Custom RSS</td>
                     <td>-</td>
-                    <td class="NB-last">Folders (filtered), saved stories</td>
+                    <td>Only saved stories</td>
+                    <td>Saved stories + folders</td>
                 </tr>
                 <tr>
-                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-8"></div> Instant Access</td>
-                    <td>Wait in a queue</td>
-                    <td class="NB-last">Immediate</td>
+                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-2"></div> Site updates</td>
+                    <td>1X</td>
+                    <td>Up to 10X as often</td>
+                    <td>Same as premium</td>
+                </tr>
+                <tr>
+                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-5"></div> Saved story tagging</td>
+                    <td>Only save stories</td>
+                    <td>Tag saved stories</td>
+                    <td>Same as premium</td>
+                </tr>
+                <tr>
+                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-6"></div> Privacy</td>
+                    <td>Public shares only</td>
+                    <td>Public, protected, and private shares</td>
+                    <td>Same as premium</td>
+                </tr>
+                <tr>
+                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-8"></div> Full Text</td>
+                    <td>Only what's in the feed</td>
+                    <td>Full text of each story</td>
+                    <td>Same as premium</td>
                 </tr>
                 <tr>
                     <td class="NB-bold">
@@ -307,7 +315,7 @@
                         Feed poor Lyric
                     </td>
                     <td>She goes hungry</td>
-                    <td class="NB-last">
+                    <td colspan="2" class="NB-lyric-text">
                         <img src="{{ MEDIA_URL }}img/reader/lyric.jpg" class="NB-lyric">Home cooked meals of green beans, sweet potatoes, carrots, and brown rice</td>
                 </tr>
             </table>
@@ -357,7 +365,7 @@
                 <a href="http://twitter.com/newsblur" title="Twitter"><img src="{{ MEDIA_URL }}img/welcome/twitter_favicon.png"></a>
             </div>
             <a href="{% url "index" %}"><img src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" style="height: 32px;" class="NB-footer-logo" title="NewsBlur" alt="NewsBlur" /></a>
-            is built in New York City and San Francisco by 
+            is built in Cambridge, Massachusetts by 
             <a href="http://twitter.com/samuelclay" class="NB-splash-link">
                 <img src="{{ MEDIA_URL }}img/static/Samuel%20Clay.jpg" class="NB-twitter-avatar">
                 @samuelclay

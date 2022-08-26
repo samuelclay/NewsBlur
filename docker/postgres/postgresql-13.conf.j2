@@ -246,7 +246,7 @@ archive_command = 'test ! -f /var/lib/postgresql/archive/%f && cp -f %p /var/lib
 
 # These are only used in recovery mode.
 
-#restore_command = ''		# command to use to restore an archived logfile segment
+restore_command = 'cp /var/lib/postgresql/archive/%f %p'		# command to use to restore an archived logfile segment
 				# placeholders: %p = path of file to restore
 				#               %f = file name only
 				# e.g. 'cp /mnt/server/archivedir/%f %p'
@@ -317,10 +317,10 @@ archive_command = 'test ! -f /var/lib/postgresql/archive/%f && cp -f %p /var/lib
 #promote_trigger_file = ''		# file name whose presence ends recovery
 hot_standby = on			# "off" disallows queries during recovery
 					# (change requires restart)
-#max_standby_archive_delay = 30s	# max delay before canceling queries
+max_standby_archive_delay = 900s	# max delay before canceling queries
 					# when reading WAL from archive;
 					# -1 allows indefinite delay
-#max_standby_streaming_delay = 30s	# max delay before canceling queries
+max_standby_streaming_delay = 900s	# max delay before canceling queries
 					# when reading streaming WAL;
 					# -1 allows indefinite delay
 #wal_receiver_create_temp_slot = off	# create temp slot if primary_slot_name

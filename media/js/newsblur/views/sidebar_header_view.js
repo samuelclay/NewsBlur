@@ -5,7 +5,6 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
     },
     
     events: {
-        'click .NB-feeds-header-user-dashboard'    : 'show_splash_page',
         'click .NB-feeds-header-user-interactions' : 'show_interactions_popover',
         'click .NB-feeds-header-collapse-sidebar'  : 'collapse_sidebar'
     },
@@ -113,10 +112,6 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
     // ==========
     // = Events =
     // ==========
-    
-    show_splash_page: function() {
-        NEWSBLUR.reader.show_splash_page();
-    },
     
     show_interactions_popover: function() {
         NEWSBLUR.InteractionsPopover.create({});

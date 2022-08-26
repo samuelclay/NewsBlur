@@ -10,7 +10,8 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
         "click .NB-feeds-header-river-infrequent": "open_river_infrequent_stories",
         "click .NB-feeds-header-river-blurblogs .NB-feedlist-collapse-icon": "collapse_river_blurblog",
         "click .NB-feeds-header-river-blurblogs": "open_river_blurblogs_stories",
-        "click .NB-feeds-header-river-global": "open_river_global_stories"
+        "click .NB-feeds-header-river-global": "open_river_global_stories",
+        "click .NB-feeds-header-river-dashboard": "show_splash_page"
     },
     
     initialize: function() {},
@@ -162,6 +163,10 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
     // ==========
     // = Events =
     // ==========
+    
+    show_splash_page: function() {
+        NEWSBLUR.reader.show_splash_page();
+    },
     
     open_starred_stories: function() {
         return NEWSBLUR.reader.open_starred_stories();

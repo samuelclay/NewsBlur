@@ -146,10 +146,21 @@ backend sentry
         server {{host}} {{host}}.node.nyc1.consul:9000
     {% endfor %}
 
+backend staging
+    balance roundrobin
+    option httpchk GET /_haproxychk
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.staging %}
+        server {{host}} {{host}}.node.nyc1.consul:8000
+    {% endfor %}
+
 backend node_images
-    option httpchk HEAD /sc,sN1megONJiGNy-CCvqzVPTv-TWRhgSKhFlf61XAYESl4=/http:/samuelclay.com/static/images/2019%20-%20Cuba.jpg
+    option httpchk HEAD /sc,seLJDaKBog3LLEMDe8cjBefMhnVSibO4RA5boZhWcVZ0=/https://samuelclay.com/static/images/2019%20-%20Cuba.jpg
     http-check expect rstatus 200|301
-    server-template node-images 1 _node-images._tcp.service.nyc1.consul:8088 check inter 2000ms resolvers consul resolve-opts allow-dup-ip
+    default-server check inter 10000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.node_images %}
+        server {{host}} {{host}}.node.nyc1.consul:8088
+    {% endfor %}
 
 backend metrics
     option httpchk GET /_haproxychk
@@ -183,7 +194,10 @@ backend node_page
 
 backend postgres
     option httpchk GET /db_check/postgres
-    server db-postgres db-postgres.node.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.postgres %}
+        server {{host}} {{host}}.node.nyc1.consul:5579
+    {% endfor %}
 
 backend mongo
     option httpchk GET /db_check/mongo
@@ -205,7 +219,10 @@ backend db_redis_user
 
 backend db_redis_story
     option httpchk GET /db_check/redis_story
-    server db-redis-story db-redis-story.node.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.redis_story %}
+        server {{host}} {{host}}.node.nyc1.consul:5579
+    {% endfor %}
 
 backend db_redis_sessions
     option httpchk GET /db_check/redis_sessions
@@ -235,7 +252,7 @@ backend maintenance
     option httpchk HEAD /maintenance
     http-check expect status 404
     http-check send-state
-    server maintenance app-counts1.node.nyc1.consul:80 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    server maintenance app-django1.node.nyc1.consul:80 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 listen stats
 bind :1936 ssl crt {{ ssl_certificate }}

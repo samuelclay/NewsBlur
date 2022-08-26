@@ -5,6 +5,7 @@ urlpatterns = [
     url(r'^$', views.index),
     url(r'^buster', views.iframe_buster, name='iframe-buster'),
     url(r'^login_as', views.login_as, name='login_as'),
+    url(r'^welcome', views.welcome_req, name='welcome'),
     url(r'^logout', views.logout, name='welcome-logout'),
     url(r'^login', views.login, name='welcome-login'),
     url(r'^autologin/(?P<username>\w+)/(?P<secret>\w+)/?', views.autologin, name='autologin'),
@@ -63,4 +64,5 @@ urlpatterns = [
     url(r'^save_search', views.save_search, name='save-search'),
     url(r'^delete_search', views.delete_search, name='delete-search'),
     url(r'^save_dashboard_river', views.save_dashboard_river, name='save-dashboard-river'),
+    url(r'^remove_dashboard_river', views.remove_dashboard_river, name='remove-dashboard-river'),
 ]

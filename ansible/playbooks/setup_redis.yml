@@ -18,3 +18,4 @@
     - {role: 'redis', tags: 'redis'}
     - {role: 'flask_metrics', tags: ['flask-metrics', 'metrics', 'flask_metrics']}
     - {role: 'monitor', tags: 'monitor'}
+    - {role: 'benchmark', tags: 'benchmark'}

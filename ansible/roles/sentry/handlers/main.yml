@@ -1,7 +1,1 @@
 ---
-- name: reload sentry
-  become: yes
-  command:
-    chdir: /srv/sentry/
-    cmd: ./install.sh
-  listen: reload sentry

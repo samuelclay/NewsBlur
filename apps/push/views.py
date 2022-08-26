@@ -17,7 +17,7 @@ def push_callback(request, push_id):
     if request.method == 'GET':
         mode = request.GET['hub.mode']
         topic = request.GET['hub.topic']
-        challenge = request.GET['hub.challenge']
+        challenge = request.GET.get('hub.challenge', '')
         lease_seconds = request.GET.get('hub.lease_seconds')
         verify_token = request.GET.get('hub.verify_token', '')
 
@@ -61,7 +61,7 @@ def push_callback(request, push_id):
 
         # Don't give fat ping, just fetch.
         # subscription.feed.queue_pushed_feed_xml(request.body)
-        if subscription.feed.active_premium_subscribers >= 1:
+        if subscription.feed.active_subscribers >= 1:
             subscription.feed.queue_pushed_feed_xml("Fetch me", latest_push_date_delta=latest_push_date_delta)
             MFetchHistory.add(feed_id=subscription.feed_id, 
                               fetch_type='push')

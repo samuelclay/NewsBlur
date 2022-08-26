@@ -54,6 +54,7 @@ services:
   imageproxy:
     container_name: imageproxy
     image: ghcr.io/willnorris/imageproxy:latest
+    # image: yusukeito/imageproxy:v0.11.2 # Switch this with the willnorris/imageproxy above if you want arm64
     user: "${CURRENT_UID}:${CURRENT_GID}"
     entrypoint: /app/imageproxy -addr 0.0.0.0:8088 -cache /tmp/imageproxy -verbose
     restart: unless-stopped
@@ -112,7 +113,7 @@ services:
 
   db_elasticsearch:
     container_name: db_elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
     mem_limit: 512mb
     restart: unless-stopped
     environment:
@@ -130,7 +131,7 @@ services:
     restart: unless-stopped
     ports:
       - 29019:29019
-    command: mongod --smallfiles --port 29019
+    command: mongod --port 29019
     volumes:
       - ./docker/volumes/db_mongo:/data/db
 

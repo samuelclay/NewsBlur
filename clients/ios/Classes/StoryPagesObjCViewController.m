@@ -229,9 +229,9 @@
     
     _orientation = self.view.window.windowScene.interfaceOrientation;
     
-    [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story"];
+    [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story" wantPriority:YES];
     [self addKeyCommandWithInput:@"j" modifierFlags:0 action:@selector(changeToNextPage:) discoverabilityTitle:@"Next Story"];
-    [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:0 action:@selector(changeToPreviousPage:) discoverabilityTitle:@"Previous Story"];
+    [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:0 action:@selector(changeToPreviousPage:) discoverabilityTitle:@"Previous Story" wantPriority:YES];
     [self addKeyCommandWithInput:@"k" modifierFlags:0 action:@selector(changeToPreviousPage:) discoverabilityTitle:@"Previous Story"];
     [self addKeyCommandWithInput:@"\r" modifierFlags:UIKeyModifierShift action:@selector(toggleTextView:) discoverabilityTitle:@"Text View"];
     [self addKeyCommandWithInput:@" " modifierFlags:0 action:@selector(scrollPageDown:) discoverabilityTitle:@"Page Down"];
@@ -372,6 +372,8 @@
     if (frame.size.width != floor(frame.size.width)) {
         self.scrollView.frame = CGRectMake(frame.origin.x, frame.origin.y, floor(frame.size.width), floor(frame.size.height));
     }
+    
+    [self reorientPages];
     
     [super viewDidLayoutSubviews];
 }
@@ -636,18 +638,15 @@
 }
 
 - (void)reorientPages {
-    [self applyNewIndex:currentPage.pageIndex-1 pageController:previousPage supressRedraw:YES];
-    [self applyNewIndex:currentPage.pageIndex+1 pageController:nextPage supressRedraw:YES];
-    [self applyNewIndex:currentPage.pageIndex pageController:currentPage supressRedraw:YES];
-
     NSInteger currentIndex = currentPage.pageIndex;
     [self resizeScrollView]; // Will change currentIndex, so preserve
     
+    [self applyNewIndex:currentPage.pageIndex-1 pageController:previousPage supressRedraw:YES];
+    [self applyNewIndex:currentPage.pageIndex+1 pageController:nextPage supressRedraw:YES];
+    [self applyNewIndex:currentPage.pageIndex pageController:currentPage supressRedraw:YES];
+    
     // Scroll back to preserved index
     CGRect frame = self.scrollView.bounds;
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        frame = self.scrollView.bounds;
-    }
     
     if (self.isHorizontal) {
         frame.origin.x = frame.size.width * currentIndex;
@@ -661,6 +660,10 @@
 //    NSLog(@"---> Scrolling to story at: %@ %d-%d", NSStringFromCGRect(frame), currentPage.pageIndex, currentIndex);
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [self hideNotifier];
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        [currentPage realignScroll];
+    }
 }
 
 - (void)refreshHeaders {
@@ -1064,9 +1067,9 @@
         frame.origin.y = 0;
     } else {
         frame.origin.x = 0;
-        frame.origin.y = (frame.size.height * pageIndex) - self.view.safeAreaInsets.bottom;
+        frame.origin.y = (frame.size.height * pageIndex) - self.view.safeAreaInsets.bottom + self.view.safeAreaInsets.bottom;
     }
-
+    
     self.scrollingToPage = pageIndex;
     [self.currentPage hideNoStoryMessage];
     [self.nextPage hideNoStoryMessage];

@@ -126,6 +126,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.render_starred_tags();
         this.apply_starred_story_selections();
         this.watch_images_load();
+        this.attach_custom_handler();
+    },
+    
+    attach_custom_handler: function () {
+        // Use this to create your own story_content handler.
+        // Add this to your Manage > Account > Custom CSS:
+        // 
+        // NEWSBLUR.Views.StoryDetailView.prototype.attach_custom_handler = () => { console.log(['Story selected', NEWSBLUR.reader.active_story.get('story_title'), NEWSBLUR.reader.active_story.get('story_content').length + " bytes"]); }
     },
     
     watch_images_load: function () {
@@ -152,8 +160,17 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     largest = this.width;
                     $largest = $(this);
                 }
-                $(this).removeClass('NB-large-image').removeClass('NB-medium-image').removeClass('NB-small-image');
-                if (pane_width >= 900) return;
+                $(this)
+                    .removeClass('NB-large-image')
+                    .removeClass('NB-large-image-widen')
+                    .removeClass('NB-medium-image')
+                    .removeClass('NB-medium-image-widen')
+                    .removeClass('NB-small-image')
+                    .removeClass('NB-small-image-widen');
+                var auto_widen = true;
+                if (pane_width >= 900) {
+                    auto_widen = false;
+                }
 
                 if (has_tables) {
                     // Can't even calculate widths because with tables, nothing fits
@@ -161,10 +178,19 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 }
                 if (this.naturalWidth >= pane_width && this.naturalHeight >= 50) {
                     $(this).addClass('NB-large-image');
+                    if (auto_widen) {
+                        $(this).addClass('NB-large-image-widen');
+                    }
                 } else if (this.naturalWidth >= 100 && this.naturalHeight >= 50) {
                     $(this).addClass('NB-medium-image');
+                    if (auto_widen) {
+                        $(this).addClass('NB-medium-image-widen');
+                    }
                 } else {
                     $(this).addClass('NB-small-image');
+                    if (auto_widen) {
+                        $(this).addClass('NB-small-image-widen');
+                    }
                 }
             });
             if ($largest) {
@@ -280,20 +306,20 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             <div class="NB-feed-story-sideoptions-container">\
                 <div class="NB-sideoption NB-feed-story-email" role="button">\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
-                    <div class="NB-sideoption-title">Email <span>this story</span></div>\
+                    <div class="NB-sideoption-title">Email</div>\
                 </div>\
                 <div class="NB-sideoption NB-feed-story-train" role="button">\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
-                    <div class="NB-sideoption-title">Train <span>this story</span></div>\
+                    <div class="NB-sideoption-title">Train</div>\
                 </div>\
                 <div class="NB-sideoption NB-feed-story-save" role="button">\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
-                    <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save <span>this story</span>" %></div>\
+                    <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save" %></div>\
                 </div>\
                 <%= story_save_view %>\
                 <div class="NB-sideoption NB-feed-story-share" role="button">\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
-                    <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share <span>this story</span>" %></div>\
+                    <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share" %></div>\
                 </div>\
                 <%= story_share_view %>\
             </div>\
@@ -316,8 +342,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
         $header.css('background-image', NEWSBLUR.utils.generate_gradient(this.feed, 'webkit'));
         $header.css('background-image', NEWSBLUR.utils.generate_gradient(this.feed, 'moz'));
-        $header.css('borderTop',        NEWSBLUR.utils.generate_gradient(this.feed, 'border'));
-        $header.css('borderBottom',     NEWSBLUR.utils.generate_gradient(this.feed, 'border'));
+        // $header.css('borderTop',        NEWSBLUR.utils.generate_gradient(this.feed, 'border'));
+        // $header.css('borderBottom',     NEWSBLUR.utils.generate_gradient(this.feed, 'border'));
         $header.css('textShadow',       NEWSBLUR.utils.generate_shadow(this.feed));
     },
     
@@ -621,7 +647,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             $sideoption_title.one('mouseleave', function() {
                 _.delay(function() {
                     if (!story.get('starred')) {
-                        $sideoption_title.text('Save this story');
+                        $sideoption_title.text('Save');
                     }
                 }, 200);
             });        

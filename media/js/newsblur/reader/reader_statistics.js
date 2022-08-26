@@ -1,10 +1,14 @@
 NEWSBLUR.ReaderStatistics = function(feed_id, options) {
     var defaults = {
-      embedded: false
+        embedded: false,
+        width: 700
     };
     
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.assets;
+    if (!feed_id) {
+        feed_id = NEWSBLUR.assets.feeds.first().id;
+    }
     this.feed_id = feed_id;
     if (this.options.embedded) {
       this.feed = NEWSBLUR.stats_feed;
@@ -47,7 +51,11 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 this.make_feed_chooser({skip_starred: true, feed_id: this.feed.id})
             ])),
             $.make('div', { className: 'NB-modal-loading' }),
-            (!this.options.embedded && $.make('h2', { className: 'NB-modal-title' }, 'Statistics &amp; History')),
+            (!this.options.embedded && $.make('h2', { className: 'NB-modal-title' }, [
+                $.make('div', { className: 'NB-icon' }),
+                'Statistics &amp; History',
+                $.make('div', { className: 'NB-icon-dropdown' })
+            ])),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
@@ -135,6 +143,12 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 (data.active && $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['next_update'] && ('in ' + data['next_update'])))),
                 (!data.active && !data.loading && $.make('div', { className: 'NB-statistics-count' }, "Not active"))
               ]),
+
+              $.make('div', { className: 'NB-statistics-update'}, [
+                $.make('div', { className: 'NB-statistics-label' }, 'Stories in archive'),
+                (data['archive_count'] && $.make('div', { className: 'NB-statistics-count', title: Inflector.commas(data['fs_size_bytes']) + " bytes" }, '&nbsp;' + ((Inflector.commas(data['archive_count'])) + " " + Inflector.pluralize("story", data['archive_count']))))
+              ]),
+
               ((data.average_stories_per_month == 0 || data.stories_last_month == 0) &&
                data.update_interval_minutes > 60 &&
                   $.make('div', { className: 'NB-statistics-update-explainer' }, [
