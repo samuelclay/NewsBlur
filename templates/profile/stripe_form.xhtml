@@ -34,7 +34,8 @@
 float: right;">
     <div class="NB-feedchooser-info">
         <div class="NB-feedchooser-info-type">
-            <span class="NB-feedchooser-subtitle-type-prefix">Unlimited</span> Premium Account
+            Premium Subscription
+            <span class="NB-feedchooser-subtitle-type-price">$36/year</span>
         </div>
     </div>
     <ul class="NB-feedchooser-premium-bullets">
@@ -62,9 +63,9 @@ float: right;">
         <li class="NB-8">
             <div class="NB-feedchooser-premium-bullet-image"></div>Text view conveniently extracts the story
         </li>
-        <li class="NB-9">
+        <!-- <li class="NB-9">
             <div class="NB-feedchooser-premium-bullet-image"></div>You feed Lyric, my poor, hungry dog, for <span class="NB-feedchooser-hungry-dog">12 days</span><img src="/media//img/reader/lyric.jpg" class="NB-feedchooser-premium-poor-hungry-dog">
-        </li>
+        </li> -->
     </ul>
 </div>
 
@@ -109,21 +110,6 @@ float: right;">
             <div>
                 {{ zebra_form.email.label_tag }}
                 {{ zebra_form.email }}
-            </div>
-            
-            <div style="overflow: hidden;">
-                <style>
-                .NB-stripe-plan-choice label:first-child,
-                .NB-stripe-plan-choice label:nth-child(2) {
-                    display: none;
-                }
-                </style>
-                {{ zebra_form.plan.label_tag }}
-                <label for="payextra" class="payextra-label">
-                    <!-- <input type="checkbox" id="payextra" name="payextra" />
-                    I'm feeling generous -->
-                    {{ zebra_form.plan|safe }}
-                </label>
             </div>
             
             {{ zebra_form.last_4_digits }}

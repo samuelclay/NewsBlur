@@ -37,7 +37,7 @@ from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.models import apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
 from apps.profile.models import Profile, MCustomStyling, MDashboardRiver
-from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, Feature
+from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, RUserUnreadStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts, MSavedSearch
 from apps.notifications.models import MUserFeedNotification
@@ -79,6 +79,8 @@ ALLOWED_SUBDOMAINS = [
     'discovery', 
     'debug', 
     'debug3', 
+    'staging2', 
+    'staging3', 
     'nb',
 ]
 
@@ -116,9 +118,9 @@ def index(request, **kwargs):
 def dashboard(request, **kwargs):
     user              = request.user
     feed_count        = UserSubscription.objects.filter(user=request.user).count()
-    recommended_feeds = RecommendedFeed.objects.filter(is_public=True,
-                                                       approved_date__lte=datetime.datetime.now()
-                                                       ).select_related('feed')[:2]
+    # recommended_feeds = RecommendedFeed.objects.filter(is_public=True,
+    #                                                    approved_date__lte=datetime.datetime.now()
+    #                                                    ).select_related('feed')[:2]
     unmoderated_feeds = []
     if user.is_staff:
         unmoderated_feeds = RecommendedFeed.objects.filter(is_public=False,
@@ -144,13 +146,18 @@ def dashboard(request, **kwargs):
         'custom_styling'    : custom_styling,
         'dashboard_rivers'  : dashboard_rivers,
         'account_images'    : list(range(1, 4)),
-        'recommended_feeds' : recommended_feeds,
+        # 'recommended_feeds' : recommended_feeds,
         'unmoderated_feeds' : unmoderated_feeds,
         'statistics'        : statistics,
         'social_profile'    : social_profile,
         'debug'             : settings.DEBUG,
+        'debug_assets'      : settings.DEBUG_ASSETS,
     }, "reader/dashboard.xhtml"
-    
+
+@render_to('reader/dashboard.xhtml')
+def welcome_req(request, **kwargs):
+    return welcome(request, **kwargs)
+
 def welcome(request, **kwargs):
     user              = get_user(request)
     statistics        = MStatistics.all()
@@ -664,9 +671,9 @@ def load_single_feed(request, feed_id):
         # User must be subscribed to a newsletter in order to read it
         raise Http404
     
-    if page > 200:
-        logging.user(request, "~BR~FK~SBOver page 200 on single feed: %s" % page)
-        raise Http404
+    if page > 400:
+        logging.user(request, "~BR~FK~SBOver page 400 on single feed: %s" % page)
+        assert False
     
     if query:
         if user.profile.is_premium:
@@ -682,11 +689,10 @@ def load_single_feed(request, feed_id):
             story_feed_id=feed_id
         ).order_by('%sstarred_date' % ('-' if order == 'newest' else ''))[offset:offset+limit]
         stories = Feed.format_stories(mstories) 
-    elif usersub and (read_filter == 'unread' or order == 'oldest'):
-        stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit,
-                                      default_cutoff_date=user.profile.unread_cutoff)
+    elif usersub and read_filter == 'unread':
+        stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
     else:
-        stories = feed.get_stories(offset, limit)
+        stories = feed.get_stories(offset, limit, order=order)
     
     checkpoint1 = time.time()
     
@@ -722,7 +728,6 @@ def load_single_feed(request, feed_id):
             unread_story_hashes = UserSubscription.story_hashes(user.pk, read_filter='unread',
                                                       feed_ids=[usersub.feed_id],
                                                       usersubs=[usersub],
-                                                      group_by_feed=False,
                                                       cutoff_date=user.profile.unread_cutoff)
         story_hashes = [story['story_hash'] for story in stories if story['story_hash']]
         starred_stories = MStarredStory.objects(user_id=user.pk, 
@@ -753,7 +758,7 @@ def load_single_feed(request, feed_id):
         story['long_parsed_date'] = format_story_link_date__long(story_date, nowtz)
         if usersub:
             story['read_status'] = 1
-            if story['story_date'] < user.profile.unread_cutoff:
+            if not user.profile.is_archive and story['story_date'] < user.profile.unread_cutoff:
                 story['read_status'] = 1
             elif (read_filter == 'all' or query) and usersub:
                 story['read_status'] = 1 if story['story_hash'] not in unread_story_hashes else 0
@@ -765,7 +770,7 @@ def load_single_feed(request, feed_id):
                 starred_date = localtime_for_timezone(starred_story['starred_date'],
                                                       user.profile.timezone)
                 story['starred_date'] = format_story_link_date__long(starred_date, now)
-                story['starred_timestamp'] = starred_date.strftime('%s')
+                story['starred_timestamp'] = int(starred_date.timestamp())
                 story['user_tags'] = starred_story['user_tags']
                 story['user_notes'] = starred_story['user_notes']
                 story['highlights'] = starred_story['highlights']
@@ -1024,7 +1029,7 @@ def load_starred_stories(request):
         story['long_parsed_date']  = format_story_link_date__long(story_date, nowtz)
         starred_date               = localtime_for_timezone(story['starred_date'], user.profile.timezone)
         story['starred_date']      = format_story_link_date__long(starred_date, nowtz)
-        story['starred_timestamp'] = starred_date.strftime('%s')
+        story['starred_timestamp'] = int(starred_date.timestamp())
         story['read_status']       = 1
         story['starred']           = True
         story['intelligence']      = {
@@ -1164,7 +1169,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     feed_ids, folder_title = user_sub_folders.feed_ids_under_folder_slug(folder_slug)
     
     usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids)
-    if feed_ids and user.profile.is_premium:
+    if feed_ids and user.profile.is_archive:
         params = {
             "user_id": user.pk, 
             "feed_ids": feed_ids,
@@ -1261,12 +1266,13 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         if story['story_authors']:
             story_data['author_name'] = story['story_authors']
         rss.add_item(**story_data)
-    
-    if not user.profile.is_premium:
+
+    # TODO: Remove below date hack to accomodate users who paid for premium but want folder rss
+    if not user.profile.is_archive and (datetime.datetime.now() > datetime.datetime(2023, 7, 1)):
         story_data = {
-            'title': "You must have a premium account on NewsBlur to have RSS feeds for folders.",
-            'link': "https://%s" % domain,
-            'description': "You must have a premium account on NewsBlur to have RSS feeds for folders.",
+            'title': "You must have a premium archive subscription on NewsBlur to have RSS feeds for folders.",
+            'link': "https://%s/?next=premium" % domain,
+            'description': "You must have a premium archive subscription on NewsBlur to have RSS feeds for folders.",
             'unique_id': "https://%s/premium_only" % domain,
             'pubdate': localtime_for_timezone(datetime.datetime.now(), user.profile.timezone),
         }
@@ -1348,7 +1354,7 @@ def load_read_stories(request):
             starred_date = localtime_for_timezone(starred_story['starred_date'],
                                                   user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date, now)
-            story['starred_timestamp'] = starred_date.strftime('%s')
+            story['starred_timestamp'] = int(starred_date.timestamp())
         if story['story_hash'] in shared_stories:
             story['shared'] = True
             story['shared_comments'] = strip_tags(shared_stories[story['story_hash']]['comments'])
@@ -1420,7 +1426,6 @@ def load_river_stories__redis(request):
             mstories = stories
             unread_feed_story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
                                                                      read_filter="unread", order=order, 
-                                                                     group_by_feed=False, 
                                                                      cutoff_date=user.profile.unread_cutoff)
         else:
             stories = []
@@ -1528,7 +1533,7 @@ def load_river_stories__redis(request):
             starred_date = localtime_for_timezone(starred_stories[story['story_hash']]['starred_date'],
                                                   user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date, now)
-            story['starred_timestamp'] = starred_date.strftime('%s')
+            story['starred_timestamp'] = int(starred_date.timestamp())
             story['user_tags'] = starred_stories[story['story_hash']]['user_tags']
             story['user_notes'] = starred_stories[story['story_hash']]['user_notes']
             story['highlights'] = starred_stories[story['story_hash']]['highlights']
@@ -1674,50 +1679,10 @@ def complete_river(request):
     if feed_ids:
         stories_truncated = UserSubscription.truncate_river(user.pk, feed_ids, read_filter, cache_prefix="dashboard:")
     
-    if page > 1:
+    if page >= 1:
         logging.user(request, "~FC~BBRiver complete on page ~SB%s~SN, truncating ~SB%s~SN stories from ~SB%s~SN feeds" % (page, stories_truncated, len(feed_ids)))
     
     return dict(code=1, message="Truncated %s stories from %s" % (stories_truncated, len(feed_ids)))
-    
-@json.json_view
-def unread_story_hashes__old(request):
-    user              = get_user(request)
-    feed_ids          = request.GET.getlist('feed_id') or request.GET.getlist('feed_id[]')
-    feed_ids          = [int(feed_id) for feed_id in feed_ids if feed_id]
-    include_timestamps = is_true(request.GET.get('include_timestamps', False))
-    usersubs = {}
-    
-    if not feed_ids:
-        usersubs = UserSubscription.objects.filter(Q(unread_count_neutral__gt=0) |
-                                                   Q(unread_count_positive__gt=0),
-                                                   user=user, active=True)
-        feed_ids = [sub.feed_id for sub in usersubs]
-    else:
-        usersubs = UserSubscription.objects.filter(Q(unread_count_neutral__gt=0) |
-                                                   Q(unread_count_positive__gt=0),
-                                                   user=user, active=True, feed__in=feed_ids)
-    
-    unread_feed_story_hashes = {}
-    story_hash_count = 0
-    
-    usersubs = dict((sub.feed_id, sub) for sub in usersubs)
-    for feed_id in feed_ids:
-        if feed_id in usersubs:
-            us = usersubs[feed_id]
-        else:
-            continue
-        if not us.unread_count_neutral and not us.unread_count_positive:
-            continue
-        unread_feed_story_hashes[feed_id] = us.get_stories(read_filter='unread', limit=500,
-                                                           withscores=include_timestamps,
-                                                           hashes_only=True,
-                                                           default_cutoff_date=user.profile.unread_cutoff)
-        story_hash_count += len(unread_feed_story_hashes[feed_id])
-
-    logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
-                           (len(feed_ids), len(story_hash_count)))
-
-    return dict(unread_feed_story_hashes=unread_feed_story_hashes)
 
 @json.json_view
 def unread_story_hashes(request):
@@ -1731,6 +1696,7 @@ def unread_story_hashes(request):
     story_hashes = UserSubscription.story_hashes(user.pk, feed_ids=feed_ids, 
                                                  order=order, read_filter=read_filter,
                                                  include_timestamps=include_timestamps,
+                                                 group_by_feed=True,
                                                  cutoff_date=user.profile.unread_cutoff)
 
     logging.user(request, "~FYLoading ~FCunread story hashes~FY: ~SB%s feeds~SN (%s story hashes)" % 
@@ -1817,6 +1783,9 @@ def mark_story_hashes_as_read(request):
         return dict(code=-1, message="Missing `story_hash` list parameter.")
     
     feed_ids, friend_ids = RUserStory.mark_story_hashes_read(request.user.pk, story_hashes, username=request.user.username)
+
+    if request.user.profile.is_archive:
+        RUserUnreadStory.mark_read(request.user.pk, story_hashes)
     
     if friend_ids:
         socialsubs = MSocialSubscription.objects.filter(
@@ -1952,15 +1921,15 @@ def mark_story_as_unread(request):
     if not story:
         logging.user(request, "~FY~SBUnread~SN story in feed: %s (NOT FOUND)" % (feed))
         return dict(code=-1, message="Story not found.")
-    
-    if usersub:
-        data = usersub.invert_read_stories_after_unread_story(story, request)
 
-    message = RUserStory.story_can_be_marked_read_by_user(story, request.user)
+    message = RUserStory.story_can_be_marked_unread_by_user(story, request.user)
     if message:
         data['code'] = -1
         data['message'] = message
         return data
+    
+    if usersub:
+        data = usersub.invert_read_stories_after_unread_story(story, request)
     
     social_subs = MSocialSubscription.mark_dirty_sharing_story(user_id=request.user.pk, 
                                                                story_feed_id=feed_id, 
@@ -1993,7 +1962,7 @@ def mark_story_hash_as_unread(request):
                 return data
             else:
                 datas.append(data)
-        message = RUserStory.story_can_be_marked_read_by_user(story, request.user)
+        message = RUserStory.story_can_be_marked_unread_by_user(story, request.user)
         if message:
             data = dict(code=-1, message=message, story_hash=story_hash)
             if not is_list:
@@ -2870,11 +2839,27 @@ def delete_search(request):
 def save_dashboard_river(request):
     river_id = request.POST['river_id']
     river_side = request.POST['river_side']
-    river_order = request.POST['river_order']
+    river_order = int(request.POST['river_order'])
 
     logging.user(request, "~FCSaving dashboard river: ~SB%s~SN (%s %s)" % (river_id, river_side, river_order))
 
     MDashboardRiver.save_user(request.user.pk, river_id, river_side, river_order)
+    dashboard_rivers = MDashboardRiver.get_user_rivers(request.user.pk)
+
+    return {
+        'dashboard_rivers': dashboard_rivers,
+    }
+
+@required_params('river_id', 'river_side', 'river_order')
+@json.json_view
+def remove_dashboard_river(request):
+    river_id = request.POST['river_id']
+    river_side = request.POST['river_side']
+    river_order = int(request.POST['river_order'])
+
+    logging.user(request, "~FRRemoving~FC dashboard river: ~SB%s~SN (%s %s)" % (river_id, river_side, river_order))
+
+    MDashboardRiver.remove_river(request.user.pk, river_side, river_order)
     dashboard_rivers = MDashboardRiver.get_user_rivers(request.user.pk)
 
     return {

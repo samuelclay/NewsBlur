@@ -36,6 +36,7 @@ urlpatterns = [
     url(r'^notifications/?',   include('apps.notifications.urls')),
     url(r'^statistics/',       include('apps.statistics.urls')),
     url(r'^social/',           include('apps.social.urls')),
+    url(r'^search/',           include('apps.search.urls')),
     url(r'^oauth/',            include('apps.oauth.urls')),
     url(r'^mobile/',           include('apps.mobile.urls')),
     url(r'^m/',                include('apps.mobile.urls')),

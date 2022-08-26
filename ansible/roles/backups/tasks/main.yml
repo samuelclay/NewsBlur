@@ -1,8 +1,12 @@
 ---
   - name: Ensure backups directory
+    become: yes
     file:
-      path: /srv/newsblur/backups
+      path: /srv/newsblur/docker/volumes/postgres/backups/
       state: directory
+      owner: "{{ ansible_effective_user_id|int }}"
+      group: "{{ ansible_effective_group_id|int }}"  
+    tags: restore_postgres
     
   - name: Ensure pip installed
     become: yes
@@ -17,7 +21,7 @@
   - name: Set backup vars
     set_fact:
       redis_story_filename: backup_redis_story_2021-04-13-04-00.rdb.gz
-      postgres_filename: backup_postgresql_2022-02-03-04-00.sql.gz
+      postgres_filename: backup_postgresql_2022-05-03-04-00.sql.sql
       mongo_filename: backup_mongo_2021-03-15-04-00.tgz
       redis_filename: backup_redis_2021-03-15-04-00.rdb.gz
     tags: never, restore_postgres, restore_mongo, restore_redis, restore_redis_story
@@ -25,30 +29,34 @@
   - name: Download archives
     amazon.aws.aws_s3:
       bucket: "newsblur-backups"
-      object: "{{ item.dir }}{{ item.file }}"
-      dest: "/srv/newsblur/backups/{{ item.file }}"
+      object: "{{ item.s3_dir }}{{ item.file }}"
+      dest: "{{ item.backup_dir }}{{ item.file }}"
       mode: get
       overwrite: different
       aws_access_key: "{{ lookup('ini', 'aws_access_key_id section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
       aws_secret_key: "{{ lookup('ini', 'aws_secret_access_key section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
     with_items:
-      # - dir: /redis_story/
+      # - s3_dir: /redis_story/
+      #   backup_dir: /srv/newsblur/backups
       #   file: "{{ redis_story_filename }}"
-      - dir: /postgres/
+      - s3_dir: /backup_db_postgres2/
+        backup_dir: /srv/newsblur/docker/volumes/postgres/backups/
         file: "{{ postgres_filename }}"
-      # - dir: /mongo/
+      # - s3_dir: /mongo/
+      #   backup_dir: /srv/newsblur/backups
       #   file: "{{ mongo_filename }}"
-      # - dir: /backup_redis/
+      # - s3_dir: /backup_redis/
+      #   backup_dir: /srv/newsblur/backups
       #   file: "{{ redis_filename }}"
     tags: never, restore_postgres, restore_mongo, restore_redis, restore_redis_story
-  
+
   - name: Restore postgres
     block:
       - name: pg_restore
         become: yes
         command: |
           docker exec -i postgres bash -c 
-          "pg_restore -U newsblur --role=newsblur --dbname=newsblur /var/lib/postgresql/backup/{{ postgres_filename }}"
+          "pg_restore -U newsblur --role=newsblur --dbname=newsblur /var/lib/postgresql/backups/{{ postgres_filename }}"
     tags: never, restore_postgres
   
   - name: Restore mongo
@@ -76,3 +84,43 @@
         command: "mv -f /srv/newsblur/backups/{{ redis_story_filename }} /srv/newsblur/docker/volumes/redis/dump.rdb"
         ignore_errors: yes
     tags: never, restore_redis_story
+
+  - name: Start postgres basebackup on secondary
+    block:
+      - name: Stop existing postgres
+        become: yes
+        command:
+          docker stop postgres
+        ignore_errors: yes
+
+      - name: Move old data dir
+        become: yes
+        command:
+          mv -f /srv/newsblur/docker/volumes/postgres/data /srv/newsblur/docker/volumes/postgres/data.prebasebackup
+        ignore_errors: yes
+
+      - name: pg_basebackup
+        become: yes
+        command:
+          docker run --rm --name=pg_basebackup --network=host -e POSTGRES_PASSWORD=newsblur -v /srv/newsblur/docker/volumes/postgres/data:/var/lib/postgresql/data postgres:13 pg_basebackup -h db-postgres.service.nyc1.consul -p 5432 -U newsblur -D /var/lib/postgresql/data -Fp -R -Xs -P -c fast
+      
+      - name: start postgresql
+        become: yes
+        command:
+          docker start postgres
+    # when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-postgres-secondary']
+    tags:
+      - never
+      - pg_basebackup
+
+  - name: Promote secondary postgres to primary
+    block:
+      - name: pg_ctl promote
+        become: yes
+        command:
+          docker exec -it postgres su - postgres -c "/usr/lib/postgresql/13/bin/pg_ctl -D /var/lib/postgresql/data promote"
+    # when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-postgres-secondary']
+    tags:
+      - never
+      - pg_promote
+

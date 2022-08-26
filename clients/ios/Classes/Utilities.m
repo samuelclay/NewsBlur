@@ -263,3 +263,25 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
 */
 
 @end
+
+
+static __weak id currentFirstResponder;
+
+@implementation UIResponder (FirstResponder)
+
+/**
+ This is primarily as a debugging aid.
+*/
+
++(id)currentFirstResponder {
+    currentFirstResponder = nil;
+    [[UIApplication sharedApplication] sendAction:@selector(findFirstResponder:) to:nil from:nil forEvent:nil];
+    return currentFirstResponder;
+}
+
+-(void)findFirstResponder:(id)sender {
+    currentFirstResponder = self;
+}
+
+@end
+

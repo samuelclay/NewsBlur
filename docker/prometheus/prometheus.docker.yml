@@ -52,6 +52,13 @@ scrape_configs:
       scheme: https
       tls_config:
         insecure_skip_verify: true
+    - job_name: 'feed_sizes'
+      static_configs:
+        - targets: ['haproxy']
+      metrics_path: /monitor/feed-szies
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
     - job_name: 'feed_counts'
       static_configs:
         - targets: ['haproxy']

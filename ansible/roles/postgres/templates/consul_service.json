@@ -1,6 +1,10 @@
 {
     "service": {
-        "name": "db-postgres-staging",
+        {% if inventory_hostname.startswith('db-postgres3') %}
+        "name": "db-postgres",
+        {% else %}
+        "name": "db-postgres-secondary",
+        {% endif %}
         "tags": [
             "db"
         ],

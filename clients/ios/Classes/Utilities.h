@@ -24,3 +24,9 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
 + (NSString *)formatShortDateFromTimestamp:(NSInteger)timestamp;
 
 @end
+
+@interface UIResponder (FirstResponder)
+
++(id)currentFirstResponder;
+
+@end

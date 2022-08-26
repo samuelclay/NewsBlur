@@ -1,4 +1,22 @@
 ---
+- name: Install sysfsutils for disabling transparent huge pages
+  become: yes
+  package:
+    name: sysfsutils
+    state: latest
+
+- name: Disable transparent huge pages for redis performance - persistent change
+  become: yes
+  lineinfile:
+    path: /etc/sysfs.conf
+    create: true
+    regexp: '^kernel\/mm\/transparent\_hugepage\/enabled'
+    line: "kernel/mm/transparent_hugepage/enabled = never"
+
+- name: Disable transparent huge pages for redis performance - live change
+  become: yes
+  shell: echo never {{ ">" }} /sys/kernel/mm/transparent_hugepage/enabled
+  
 - name: Add a vm.overcommit_memory setting at the end of the sysctl.conf
   become: yes
   sysctl: name=vm.overcommit_memory value=1 state=present reload=yes
@@ -10,25 +28,19 @@
   notify: restart redis
   register: updated_config
 
-- name: Turning off secondary for redis by deleting redis_replica.conf
-  copy:
-    dest: /srv/newsblur/docker/redis/redis_replica.conf
-    content: ""
-  tags:
-    # - never
-    - replicaofnoone
+- name: Create Redis docker volume with correct permissions
+  file:
+    path: /srv/newsblur/docker/volumes/redis
+    state: directory
+    recurse: yes
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"  
 
-- name: Setting Redis REPLICAOF NO ONE
-  shell: docker exec redis redis-cli REPLICAOF NO ONE
-  tags:
-    # - never
-    - replicaofnoone
-    
 - name: Start redis docker containers
   become: yes
   docker_container:
     name: redis
-    image: redis:6.2.6
+    image: redis:6.2.7
     state: started
     command: /usr/local/etc/redis/redis_server.conf
     container_default_behavior: no_defaults

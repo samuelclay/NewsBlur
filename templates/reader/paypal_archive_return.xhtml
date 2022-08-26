@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% load typogrify_tags utils_tags %}
+
+{% block extra_head_js %}
+  {% include_stylesheets "common" %}
+  {% include_javascripts "payments" %}
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-paypal-return">
+  
+  <div class="NB-paypal-return-title">
+    Thank you for subscribing to NewsBlur Premium Archive
+  </div>
+
+  <div class="NB-paypal-return-subtitle">
+    Hold tight while your account is being upgraded...
+  </div>
+
+  <div class="NB-paypal-return-loading"></div>
+  
+</div>
+
+{% endblock %}

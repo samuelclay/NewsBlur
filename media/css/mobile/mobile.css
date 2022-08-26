@@ -52,13 +52,13 @@ body {
   opacity: .2;
 }
 .NB-story.NB-score-positive .NB-icon-score {
-    background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/indicator-focus.svg') no-repeat 0 0;
 }
 .NB-story.NB-score-neutral .NB-icon-score {
-    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/indicator-unread.svg') no-repeat 0 0;
 }
 .NB-story.NB-score-negative .NB-icon-score {
-    background: transparent url('/media/embed/icons/circular/g_icn_hidden.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/indicator-hidden.svg') no-repeat 0 0;
 }
 .NB-story .NB-story-title {
   clear: left;
@@ -287,11 +287,11 @@ body {
   top: 17px;
 }
 #NB-page-story.NB-score-positive .NB-icon-score {
-    background: transparent url('/media/embed/icons/circular/g_icn_focus.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/indicator-focus.svg') no-repeat 0 0;
 }
 #NB-page-story.NB-score-neutral .NB-icon-score {
-    background: transparent url('/media/embed/icons/circular/g_icn_unread.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/indicator-unread.svg') no-repeat 0 0;
 }
 #NB-page-story.NB-score-negative .NB-icon-score {
-    background: transparent url('/media/embed/icons/circular/g_icn_hidden.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/indicator-hidden.svg') no-repeat 0 0;
 }

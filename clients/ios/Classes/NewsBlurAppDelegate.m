@@ -261,6 +261,14 @@
             withCompletionHandler:nil];
     }
     
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSString *appOpening = [userPreferences stringForKey:@"app_opening"];
+    
+    if (![appOpening isEqualToString:@"feeds"]) {
+        self.pendingFolder = appOpening;
+//        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:appOpening];
+    }
+    
 	return YES;
 }
 
@@ -302,7 +310,7 @@
 }
 
 - (BOOL)application:(UIApplication *)application shouldRestoreSecureApplicationState:(NSCoder *)coder {
-    #warning hack: state restoration temporarily disabled due to iPhone issues
+    // state restoration disabled; doesn't work with split layout; need alternative approach
     return NO;
     
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
@@ -335,12 +343,18 @@
 - (UIViewController *)application:(UIApplication *)application viewControllerWithRestorationIdentifierPath:(NSArray<NSString *> *)identifierComponents coder:(NSCoder *)coder {
     NSString *identifier = identifierComponents.lastObject;
     
+    NSLog(@"restoring: %@", identifierComponents);  // log
+    
     if ([identifier isEqualToString:@"FeedsNavigationController"]) {
         return self.feedsNavigationController;
     } else if ([identifier isEqualToString:@"FeedsViewController"]) {
         return self.feedsViewController;
+    } else if ([identifier isEqualToString:@"FeedDetailNavigationController"]) {
+        return self.feedDetailNavigationController;
     } else if ([identifier isEqualToString:@"FeedDetailViewController"]) {
         return self.feedDetailViewController;
+    } else if ([identifier isEqualToString:@"DetailNavigationController"]) {
+        return self.detailNavigationController;
     } else if ([identifier isEqualToString:@"DetailViewController"]) {
         return self.detailViewController;
     } else if ([identifier isEqualToString:@"StoryPagesViewController"]) {
@@ -438,7 +452,8 @@
         return;
     }
     
-    NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Root.plist"]];
+    NSString *name = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad ? @"Root~ipad.plist" : @"Root.plist";
+    NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:name]];
     NSArray *preferences = [settings objectForKey:@"PreferenceSpecifiers"];
     
     NSMutableDictionary *defaultsToRegister = [[NSMutableDictionary alloc] initWithCapacity:[preferences count]];
@@ -814,18 +829,28 @@
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *behavior = [preferences stringForKey:@"split_behavior"];
     
-    if ([behavior isEqualToString:@"tile"]) {
-        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
-        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
-    } else if ([behavior isEqualToString:@"displace"]) {
-        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
-        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoDisplaceSecondary;
-    } else if ([behavior isEqualToString:@"overlay"]) {
-        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
-        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoOverSecondary;
+    if (self.detailViewController.storyTitlesOnLeft) {
+        if ([behavior isEqualToString:@"tile"]) {
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
+        } else if ([behavior isEqualToString:@"displace"]) {
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoDisplaceSecondary;
+        } else if ([behavior isEqualToString:@"overlay"]) {
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoOverSecondary;
+        } else {
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorAutomatic;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAutomatic;
+        }
     } else {
-        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorAutomatic;
-        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAutomatic;
+        if ([behavior isEqualToString:@"overlay"]) {
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
+        } else {
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoDisplaceSecondary;
+        }
     }
     
     [storyPagesViewController refreshPages];
@@ -840,6 +865,7 @@
         [UIView animateWithDuration:0.5 animations:^{
             [self updateSplitBehavior];
         }];
+        [self.detailViewController updateLayoutWithReload:NO];
     }];
 }
 
@@ -1130,7 +1156,6 @@
     }
     
     self.splitViewController.showsSecondaryOnlyButton = YES;
-    [self updateSplitBehavior];
     
     self.feedsNavigationController = (UINavigationController *)splitChildren[0];
     self.feedsViewController = self.feedsNavigationController.viewControllers.firstObject;
@@ -1157,9 +1182,15 @@
     self.firstTimeUserAddSitesViewController = [FirstTimeUserAddSitesViewController new];
     self.firstTimeUserAddFriendsViewController = [FirstTimeUserAddFriendsViewController new];
     self.firstTimeUserAddNewsBlurViewController = [FirstTimeUserAddNewsBlurViewController new];
+    
+    [self updateSplitBehavior];
 }
 
 - (void)showLogin {
+    if (self.loginViewController.view.window != nil) {
+        return;
+    }
+    
     self.dictFeeds = nil;
     self.dictSocialFeeds = nil;
     self.dictSavedStoryTags = nil;
@@ -1362,7 +1393,7 @@
     
     [self.userTagsViewController view]; // Force viewDidLoad
     CGRect frame = [sender CGRectValue];
-    [self showPopoverWithViewController:self.userTagsViewController contentSize:CGSizeMake(220, 382) sourceView:self.storyPagesViewController.view sourceRect:frame permittedArrowDirections:UIPopoverArrowDirectionUp];
+    [self showPopoverWithViewController:self.userTagsViewController contentSize:CGSizeMake(220, 382) sourceView:self.storyPagesViewController.view sourceRect:frame permittedArrowDirections:UIPopoverArrowDirectionDown];
 }
 
 #pragma mark - UIPopoverPresentationControllerDelegate
@@ -1591,7 +1622,9 @@
         [self adjustStoryDetailWebView];
         [self.feedDetailViewController.storyTitlesTable reloadData];
         
-        [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadFeedDetailView"];
+        if (detailViewController.storyTitlesOnLeft) {
+            [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadFeedDetailView"];
+        }
     }
     
     [self flushQueuedReadStories:NO withCallback:^{
@@ -1622,8 +1655,12 @@
     
     self.isTryFeedView = YES;
     self.inFindingStoryMode = YES;
+    self.findingStoryStartDate = [NSDate date];
     self.tryFeedStoryId = contentId;
-    self.tryFeedFeedId = nil;
+    self.tryFeedFeedId = feedId;
+    
+    [self.storiesCollection reset];
+    
     storiesCollection.isSocialView = NO;
     storiesCollection.activeFeed = feed;
     storiesCollection.activeFolder = nil;
@@ -1705,14 +1742,21 @@
             } else {
                 [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:self.widgetFolder];
             }
-        } else {
+        } else if (storiesCollection.activeFolder) {
             [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
+        } else {
+            NSString *folder = [self parentFoldersForFeed:self.tryFeedFeedId].firstObject;
+            [self loadFolder:folder feedID:self.tryFeedFeedId];
         }
     } else if (self.tryFeedFeedId && !self.isTryFeedView) {
         [self loadFeed:self.tryFeedFeedId withStory:self.tryFeedStoryId animated:NO];
     } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !self.isCompactWidth && self.storiesCollection == nil) {
         [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:storiesCollection.activeFolder];
+    } else if (self.pendingFolder != nil) {
+        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:self.pendingFolder];
     }
+    
+    self.pendingFolder = nil;
 }
 
 - (NSString *)widgetFolder {
@@ -1892,10 +1936,9 @@
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder {
     self.readStories = [NSMutableArray array];
     NSMutableArray *feeds = [NSMutableArray array];
-    BOOL isPlaceholder = [folder isEqualToString:@"placeholder"];
     
-    if (isPlaceholder) {
-        folder = @"everything";
+    if (self.loginViewController.view.window != nil) {
+        return;
     }
     
     self.inFeedDetail = YES;
@@ -1994,7 +2037,7 @@
     
     detailViewController.navigationItem.titleView = [self makeFeedTitle:storiesCollection.activeFeed];
     
-    if (self.isCompactWidth && !isPlaceholder && feedDetailView == feedDetailViewController && feedDetailView.view.window == nil) {
+    if (self.isCompactWidth && feedDetailView == feedDetailViewController && feedDetailView.view.window == nil) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All"
                                                                           style: UIBarButtonItemStylePlain
                                                                          target: nil
@@ -2139,7 +2182,12 @@
 //        [self showDetailViewController:detailViewController sender:self];
 //        feedsNavigationController.navigationItem.hidesBackButton = YES;
 //    }
-
+    
+    self.inFindingStoryMode = NO;
+    self.findingStoryStartDate = nil;
+    self.tryFeedStoryId = nil;
+    self.tryFeedFeedId = nil;
+    
     NSInteger activeStoryLocation = [storiesCollection locationOfActiveStory];
     if (activeStoryLocation >= 0) {
         BOOL animated = ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad &&
@@ -2147,6 +2195,8 @@
         [self.storyPagesViewController view];
         [self.storyPagesViewController.view setNeedsLayout];
         [self.storyPagesViewController.view layoutIfNeeded];
+        
+        self.feedDetailViewController.cameFromFeedsList = NO;
         
         NSDictionary *params = @{@"location" : @(activeStoryLocation), @"animated" : @(animated)};
         
@@ -2970,7 +3020,7 @@
         }
     }
     
-    [self.feedsViewController updateFeedTitlesTable];
+    [self.feedsViewController deferredUpdateFeedTitlesTable];
     
     [self.storyPagesViewController reloadWidget];
 }
@@ -3328,7 +3378,7 @@
     
     for (NSString *folderName in self.dictFoldersArray) {
         NSArray *folder = [self.dictFolders objectForKey:folderName];
-        if ([folder containsObject:feedId]) {
+        if ([folder containsObject:feedId] || [folder containsObject:@(feedId.integerValue)]) {
             [folderNames addObject:[self extractFolderName:folderName]];
             [folderNames addObject:[self extractParentFolderName:folderName]];
         }
@@ -4233,6 +4283,11 @@
 
 - (void)markScrollPosition:(NSInteger)position inStory:(NSDictionary *)story {
     if (position < 0) return;
+    
+    if (position == 0) {
+        position = 1;
+    }
+    
     __block NSNumber *positionNum = @(position);
     __block NSDictionary *storyDict = story;
     

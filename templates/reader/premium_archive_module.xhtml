@@ -1,0 +1,18 @@
+{% load utils_tags %}
+
+{% if user_profile.is_premium and not user_profile.is_archive %}
+<div class="NB-module NB-module-premium">
+    <h5 class="NB-module-header">
+        <div class="NB-module-header-text">Reason to upgrade</div>
+    </h5>
+    <div class="NB-module-item NB-module-item-intro">
+        <div class="NB-module-premium-icon NB-module-premium-archive-icon NB-{{ rand_int }}"></div>
+	    <p class="NB-module-premium-reason">
+            {{ reason|safe }}
+        </p>
+		<div class="NB-modal-submit-green NB-modal-submit-button NB-module-premium-button NB-javascript">
+            Upgrade to premium archive
+        </div>		
+    </div>
+</div>
+{% endif %}

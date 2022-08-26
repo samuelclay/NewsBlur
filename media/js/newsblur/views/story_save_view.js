@@ -159,6 +159,7 @@ NEWSBLUR.Views.StorySaveView = Backbone.View.extend({
         var sideoption_content_height = $save_clone.height();
         $save_clone.remove();
         var new_sideoptions_height = $sideoption_container.height() - $save_wrapper.height() + sideoption_content_height;
+        // console.log(['Save options height', new_sideoptions_height, $sideoption_container.height(), $save_wrapper.height(), sideoption_content_height])
         if (!options.close) {
             $sideoption.addClass('NB-active');
             $save_wrapper.addClass('NB-active');

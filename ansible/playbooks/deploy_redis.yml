@@ -1,0 +1,21 @@
+---
+- name: DEPLOY -> redis
+  hosts: redis
+  gather_facts: false
+  vars_files:
+    - ../env_vars/base.yml
+
+  tasks:
+    - name: Turning off secondary for redis by deleting redis_replica.conf
+      copy:
+        dest: /srv/newsblur/docker/redis/redis_replica.conf
+        content: ""
+      tags:
+        - never
+        - replicaofnoone
+
+    - name: Setting Redis REPLICAOF NO ONE
+      shell: docker exec redis redis-cli REPLICAOF NO ONE
+      tags:
+        - never
+        - replicaofnoone

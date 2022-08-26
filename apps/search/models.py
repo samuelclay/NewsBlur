@@ -431,6 +431,56 @@ class SearchStory:
         
         return result_ids
         
+    @classmethod
+    def more_like_this(cls, feed_ids, story_hash, order, offset, limit):
+        try:
+            cls.ES().indices.flush(cls.index_name())
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.debug(f" ***> ~FRNo search server available: {e}")
+            return []
+        
+        body = {
+            "query": {
+                "bool": {
+                    "filter": [{
+                        "more_like_this": {
+                            "fields": [ "title", "content" ],
+                            "like": [
+                                {
+                                    "_index": cls.index_name(),
+                                    "_id": story_hash,
+                                }
+                            ],
+                            "min_term_freq": 3,
+                            "min_doc_freq": 2,
+                            "min_word_length": 4,
+                        },
+                    },{
+                        "terms": { "feed_id": feed_ids[:2000] }
+                    }],
+                }
+            },
+            'sort': [{'date': {'order': 'desc' if order == "newest" else "asc"}}],
+            'from': offset,
+            'size': limit
+        }
+        try:
+            results  = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
+
+        logging.info(" ---> ~FG~SNMore like this ~FCstories~FG for: ~SB%s~SN, ~SB%s~SN results (across %s feed%s)" % 
+                     (story_hash, len(results['hits']['hits']), len(feed_ids), 's' if len(feed_ids) != 1 else ''))
+        
+        try:
+            result_ids = [r['_id'] for r in results['hits']['hits']]
+        except Exception as e:
+            logging.info(" ---> ~FRInvalid search query \"%s\": %s" % (query, e))
+            return []
+        
+        return result_ids
+
 
 class SearchFeed:
     

@@ -22,16 +22,21 @@
     NEWSBLUR.Globals = {
       'is_authenticated'        : {{ user.is_authenticated|yesno:"true,false" }},
       'is_anonymous'            : {{ user.is_anonymous|yesno:"true,false" }},
-      'is_premium'              : {{ user.profile.is_premium|yesno:"true,false" }},
+      'is_premium'              : {{ user_profile.is_premium|yesno:"true,false" }},
+      'is_archive'              : {{ user_profile.is_archive|yesno:"true,false" }},
+      'is_pro'                  : {{ user_profile.is_pro|yesno:"true,false" }},
       'is_admin'                : {{ user.is_staff|yesno:"true,false" }},
       'is_staff'                : {{ user.is_staff|yesno:"true,false" }},
-      'premium_expire'          : {% if user.profile.premium_expire %}new Date('{{ user.profile.premium_expire|date:"Y-m-d" }}'){% else %}null{% endif %},
-      'secret_token'            : "{{ user.profile.secret_token }}",
+      'premium_expire'          : {% if user_profile.premium_expire %}new Date('{{ user_profile.premium_expire|date:"Y-m-d" }}'){% else %}null{% endif %},
+      'premium_renewal'         : {{ user_profile.premium_renewal|yesno:"true,false" }},
+      'active_provider'         : {% if user_profile.active_provider %}"{{ user_profile.active_provider }}"{% else %}null{% endif %},
+      'secret_token'            : "{{ user_profile.secret_token }}",
       'username'                : "{{ user.username|safe }}",
       {% if user.pk %}'user_id'                 : {{ user.pk }},{% endif %}
       'email'                   : "{{ user.email|safe }}",
       'MEDIA_URL'               : "{{ MEDIA_URL }}",
-      'debug'                   : {{ debug|yesno:"true,false" }}
+      'debug'                   : {{ debug|yesno:"true,false" }},
+      'default_days_of_unread'  : {% settings_value "DAYS_OF_UNREAD" %}
     };
     NEWSBLUR.Flags = {
     };
@@ -43,12 +48,13 @@
       'has_setup_feeds'         : {{ user_profile.has_setup_feeds|yesno:"true,false" }},
       'has_found_friends'       : {{ user_profile.has_found_friends|yesno:"true,false" }},
       'has_trained_intelligence': {{ user_profile.has_trained_intelligence|yesno:"true,false" }},
-      'story_titles_pane_size'  : 368,
+      'story_titles_pane_size'  : 420,
       'story_pane_anchor'       : 'west',
       'new_window'              : 1,
       'default_view'            : 'feed',
       'default_order'           : 'newest',
       'default_read_filter'     : 'all',
+      'default_dashboard_count' : 5,
       'grid_columns'            : 0,
       'grid_height'             : 'm',
       'hide_read_feeds'         : 0,
@@ -81,6 +87,7 @@
       'story_line_spacing'      : 'm',
       'hide_public_comments'    : false,
       'story_button_placement'  : "right",
+      'days_of_unread'          : {% firstof user_profile.days_of_unread 30 %},
       'timezone'                : "{{ user_profile.timezone }}",
       'title_counts'            : true,
       'show_global_shared_stories': true,
@@ -113,7 +120,10 @@
       'domain'                  : "{% current_domain %}",
       'favicon'                 : "/rss_feeds/icon/{id}",
       'delete-account'          : "{% url "profile-delete-account" %}",
-      'folder_rss'              : "/reader/folder_rss/{user_id}/{secret_token}/{unread_filter}/{folder_title}"
+      'folder_rss'              : "/reader/folder_rss/{user_id}/{secret_token}/{unread_filter}/{folder_title}",
+      'paypal_checkout_js'      : 'https://www.paypal.com/sdk/js?vault=true&intent=subscription&client-id={% settings_value "PAYPAL_API_CLIENTID" %}',
+      'paypal_return'           : "https://{% current_domain %}{% url "paypal-return" %}",
+      'paypal_archive_return'   : "https://{% current_domain %}{% url "paypal-archive-return" %}"
     };
     NEWSBLUR.Models = {};
     NEWSBLUR.Collections = {};
@@ -123,7 +133,7 @@
   
   {% include_stylesheets "common" %}
   
-  {% if debug %}
+  {% if debug_assets %}
       <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" />
   {% else %}
       <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
