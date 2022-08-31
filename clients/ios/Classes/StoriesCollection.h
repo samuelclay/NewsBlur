@@ -7,7 +7,6 @@
 //
 
 #import "NewsBlurAppDelegate.h"
-#import "NewsBlur-Swift.h"
 
 @interface StoriesCollection : NSObject {
     NSDictionary * activeFeed;

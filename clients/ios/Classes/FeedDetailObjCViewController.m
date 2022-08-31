@@ -658,6 +658,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     [self.notifier hideIn:0];
     [self beginOfflineTimer];
     [appDelegate.cacheImagesOperationQueue cancelAllOperations];
+    [appDelegate.detailViewController reloadGrid];
 }
 
 - (void)reloadStories {
@@ -1339,6 +1340,8 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     if (self.view.window && self.finishedAnimatingIn) {
         [self testForTryFeed];
     }
+    
+    [appDelegate.detailViewController reloadGrid];
     
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),

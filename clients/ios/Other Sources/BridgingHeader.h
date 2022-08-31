@@ -10,7 +10,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "NewsBlurAppDelegate.h"
 #import "ThemeManager.h"
+#import "StoriesCollection.h"
+#import "BaseViewController.h"
 #import "FeedsObjCViewController.h"
 #import "FeedDetailObjCViewController.h"
 #import "StoryPagesObjCViewController.h"
