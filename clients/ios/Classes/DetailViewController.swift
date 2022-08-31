@@ -250,6 +250,13 @@ class DetailViewController: BaseViewController {
         tidyNavigationController()
     }
     
+    /// Reloads the grid view, if it is displayed.
+    @objc func reloadGrid() {
+        if layout == .grid {
+            gridDetailViewController?.reload()
+        }
+    }
+    
     /// Adjusts the container when autoscrolling. Only applies to iPhone.
     @objc func adjustForAutoscroll() {
         adjustTopConstraint()
@@ -271,7 +278,7 @@ class DetailViewController: BaseViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
-        if layout != .left {
+        if [.top, .bottom].contains(layout) {
             coordinator.animate { context in
                 self.dividerViewBottomConstraint.constant = self.dividerPosition
             }
