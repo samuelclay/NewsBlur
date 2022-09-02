@@ -71,6 +71,6 @@ favicons = (app) =>
                     if ENV_DEV or ENV_DOCKER
                         res.redirect '/media/img/icons/nouns/world.svg' 
                     else
-                        res.redirect 'https://beta.newsblur.com/media/img/icons/nouns/world.svg' 
+                        res.redirect 'https://newsblur.com/media/img/icons/nouns/world.svg' 
 
 exports.favicons = favicons
