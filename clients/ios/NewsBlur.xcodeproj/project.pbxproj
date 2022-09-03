@@ -322,7 +322,7 @@
 		78095E45128EF37E00230C8E /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78095E44128EF37E00230C8E /* SystemConfiguration.framework */; };
 		78095EC9128F30B500230C8E /* OriginalStoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095EC7128F30B500230C8E /* OriginalStoryViewController.m */; };
 		7842ECF811D44A530066CF9D /* StoryDetailObjCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7842ECF611D44A530066CF9D /* StoryDetailObjCViewController.m */; };
-		7843F50511EEB1A000675F64 /* FeedDetailTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7843F50411EEB1A000675F64 /* FeedDetailTableCell.m */; };
+		7843F50511EEB1A000675F64 /* FeedDetailCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7843F50411EEB1A000675F64 /* FeedDetailCollectionCell.m */; };
 		784B50ED127E3F68008F90EA /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 784B50EB127E3F68008F90EA /* LoginViewController.m */; };
 		788EF356127E5BC80088EDC5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 788EF355127E5BC80088EDC5 /* QuartzCore.framework */; };
 		E160F0571C9DAC2C00CB96DF /* UIViewController+HidePopover.m in Sources */ = {isa = PBXBuildFile; fileRef = E160F0561C9DAC2C00CB96DF /* UIViewController+HidePopover.m */; };
@@ -1106,8 +1106,8 @@
 		78095EC7128F30B500230C8E /* OriginalStoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = OriginalStoryViewController.m; sourceTree = "<group>"; };
 		7842ECF511D44A530066CF9D /* StoryDetailObjCViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryDetailObjCViewController.h; sourceTree = "<group>"; };
 		7842ECF611D44A530066CF9D /* StoryDetailObjCViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = StoryDetailObjCViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		7843F50311EEB1A000675F64 /* FeedDetailTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailTableCell.h; sourceTree = "<group>"; };
-		7843F50411EEB1A000675F64 /* FeedDetailTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailTableCell.m; sourceTree = "<group>"; };
+		7843F50311EEB1A000675F64 /* FeedDetailCollectionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailCollectionCell.h; sourceTree = "<group>"; };
+		7843F50411EEB1A000675F64 /* FeedDetailCollectionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailCollectionCell.m; sourceTree = "<group>"; };
 		784B50EA127E3F68008F90EA /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		784B50EB127E3F68008F90EA /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		788EF355127E5BC80088EDC5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -2027,8 +2027,8 @@
 				170E3CD624F8AB0D009CE819 /* FeedDetailViewController.swift */,
 				FF4D9074265BE13500792DB3 /* FeedDetailObjCViewController.h */,
 				FF4D9073265BE13500792DB3 /* FeedDetailObjCViewController.m */,
-				7843F50311EEB1A000675F64 /* FeedDetailTableCell.h */,
-				7843F50411EEB1A000675F64 /* FeedDetailTableCell.m */,
+				7843F50311EEB1A000675F64 /* FeedDetailCollectionCell.h */,
+				7843F50411EEB1A000675F64 /* FeedDetailCollectionCell.m */,
 				FF2D8CE214893BBF00057B80 /* MoveSiteViewController.h */,
 				FF2D8CE314893BBF00057B80 /* MoveSiteViewController.m */,
 				FF5ACC221DE5F0C000FBD044 /* NotificationsViewController.h */,
@@ -3719,7 +3719,7 @@
 				FFFF683D19D628000081904A /* NBURLCache.m in Sources */,
 				7842ECF811D44A530066CF9D /* StoryDetailObjCViewController.m in Sources */,
 				FF2924E61E932D2900FCFA63 /* PINDiskCache.m in Sources */,
-				7843F50511EEB1A000675F64 /* FeedDetailTableCell.m in Sources */,
+				7843F50511EEB1A000675F64 /* FeedDetailCollectionCell.m in Sources */,
 				784B50ED127E3F68008F90EA /* LoginViewController.m in Sources */,
 				177D017D28B05D9500F2F2DB /* GridStoryCell.swift in Sources */,
 				FF5ACC241DE5F0C000FBD044 /* NotificationsViewController.m in Sources */,

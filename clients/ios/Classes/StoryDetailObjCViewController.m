@@ -242,10 +242,10 @@
             [self fetchTextView];
         } else if (markUnread) {
             [appDelegate.storiesCollection toggleStoryUnread];
-            [appDelegate.feedDetailViewController reloadData];
+            [appDelegate.feedDetailViewController reloadWithSizing];
         } else if (saveStory) {
             [appDelegate.storiesCollection toggleStorySaved];
-            [appDelegate.feedDetailViewController reloadData];
+            [appDelegate.feedDetailViewController reloadWithSizing];
         }
         inDoubleTap = NO;
         [self performSelector:@selector(deferredEnableScrolling) withObject:nil afterDelay:0.0];
@@ -1383,10 +1383,9 @@
             [appDelegate.storiesCollection markStoryRead:activeStory];
             [appDelegate.storiesCollection syncStoryAsRead:activeStory];
             
-            NSIndexPath *reloadIndexPath = appDelegate.feedDetailViewController.storyTitlesTable.indexPathForSelectedRow;
+            NSIndexPath *reloadIndexPath = appDelegate.feedDetailViewController.feedCollectionView.indexPathsForSelectedItems.firstObject;
             if (reloadIndexPath != nil) {
-                [appDelegate.feedDetailViewController.storyTitlesTable reloadRowsAtIndexPaths:@[reloadIndexPath]
-                                                                             withRowAnimation:UITableViewRowAnimationNone];
+                [appDelegate.feedDetailViewController.feedCollectionView reloadItemsAtIndexPaths:@[reloadIndexPath]];
             }
         }
         

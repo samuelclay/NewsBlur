@@ -1,5 +1,5 @@
 //
-//  FeedDetailTableCell.h
+//  FeedDetailCollectionCell.h
 //  NewsBlur
 //
 //  Created by Samuel Clay on 7/14/10.
@@ -18,32 +18,11 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
     FeedDetailTextSizeLong
 };
 
-@interface FeedDetailTableCell : NBSwipeableCell {
-    NewsBlurAppDelegate *appDelegate;
-    
-    // All views
-    NSString *storyTitle;
-    NSString *storyAuthor;
-    NSString *storyDate;
-    NSString *storyContent;
-    NSString *storyHash;
-    UIImage *storyImage;
-    NSInteger storyTimestamp;
-    int storyScore;
-    BOOL isSaved;
-    BOOL isShared;
-    
-    // River view    
-    NSString *siteTitle;
-    UIImage *siteFavicon;
-    BOOL isRead;
-    BOOL isRiverOrSocial;
-    BOOL hasAlpha;
+@class FeedDetailSwipableCell, FeedDetailContentView;
 
-    UIColor *feedColorBar;
-    UIColor *feedColorBarTopBorder;
-    UIView *cellContent;
-}
+@interface FeedDetailCollectionCell : UICollectionViewCell
+
+@property (nonatomic) NewsBlurAppDelegate *appDelegate;
 
 @property (nonatomic) NSString *siteTitle;
 @property (nonatomic) UIImage *siteFavicon;
@@ -71,16 +50,21 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 
 @property (nonatomic) FeedDetailTextSize textSize;
 
+@property (nonatomic, strong) FeedDetailSwipableCell *swipableCell;
+@property (nonatomic, strong) FeedDetailContentView *cellContent;
+
 - (void)setupGestures;
 
 @end
 
-@interface FeedDetailTableCellView : UIView {
-    UIImage *storyImage;
-}
+@interface FeedDetailSwipableCell : NBSwipeableCell
+
+@end
+
+@interface FeedDetailContentView : UIView
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
-@property (nonatomic) FeedDetailTableCell *cell;
-@property (nonatomic) UIImage *storyImage;
+@property (nonatomic) FeedDetailCollectionCell *cell;
+@property (nonatomic, strong) UIImage *storyImage;
 
 @end

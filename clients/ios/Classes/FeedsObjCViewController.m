@@ -1104,7 +1104,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"comfortable" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
         [self reloadFeedTitlesTable];
-        [self.appDelegate.feedDetailViewController reloadData];
+        [self.appDelegate.feedDetailViewController reloadWithSizing];
     }];
     
     [viewController addThemeSegmentedControl];
@@ -1241,7 +1241,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (void)resizePreviewSize {
     [self reloadFeedTitlesTable];
     
-    [appDelegate.feedDetailViewController reloadData];
+    [appDelegate.feedDetailViewController reloadWithSizing];
 }
 
 - (void)resizeFontSize {
@@ -1249,7 +1249,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self reloadFeedTitlesTable];
     
     appDelegate.feedDetailViewController.invalidateFontCache = YES;
-    [appDelegate.feedDetailViewController reloadData];
+    [appDelegate.feedDetailViewController reloadWithSizing];
 }
 
 - (void)updateTheme {
