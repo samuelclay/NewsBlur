@@ -64,7 +64,7 @@
     
     UIView *urlPadding = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 24, 16)];
     UIImageView *urlImage = [[UIImageView alloc]
-                             initWithImage:[UIImage imageNamed:@"world.png"]];
+                             initWithImage:[Utilities imageNamed:@"world" sized:16]];
     urlImage.frame = CGRectMake(0, 0, 24, 16);
     [urlImage setContentMode:UIViewContentModeRight];
     [urlPadding addSubview:urlImage];
@@ -425,7 +425,7 @@
         NSData *imageData = [[NSData alloc] initWithBase64EncodedString:favicon options:NSDataBase64DecodingIgnoreUnknownCharacters];
         faviconImage = [UIImage imageWithData:imageData];
     } else {
-        faviconImage = [UIImage imageNamed:@"world.png"];
+        faviconImage = [Utilities imageNamed:@"world" sized:16];
     }
     
     cell.feedTitle.text = [result objectForKey:@"label"];

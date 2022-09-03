@@ -281,7 +281,7 @@
         allowLongPress = YES;
     }
     
-    folderImage = [folderImage imageWithTintColor:UIColorFromRGB(0x95968F)];
+    folderImage = [folderImage imageWithTintColor:UIColorFromLightDarkRGB(0x95968F, 0x95968F)];
     
     [folderImage drawInRect:CGRectMake(rect.origin.x + folderImageViewX, CGRectGetMidY(rect)-height/2, width, height)];
     
