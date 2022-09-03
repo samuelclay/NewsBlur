@@ -100,6 +100,24 @@
     [self tableView:tableView redisplayCellAtIndexPath:indexPath];
 }
 
+- (void)collectionView:(UICollectionView *)collectionView redisplayCellAtIndexPath:(NSIndexPath *)indexPath {
+    [[collectionView cellForItemAtIndexPath:indexPath] setNeedsDisplay];
+}
+
+- (void)collectionView:(UICollectionView *)collectionView selectItemAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated {
+    [self collectionView:collectionView selectItemAtIndexPath:indexPath animated:animated scrollPosition:UICollectionViewScrollPositionNone];
+}
+
+- (void)collectionView:(UICollectionView *)collectionView selectItemAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated scrollPosition:(UICollectionViewScrollPosition)scrollPosition {
+    [collectionView selectItemAtIndexPath:indexPath animated:animated scrollPosition:scrollPosition];
+    [self collectionView:collectionView redisplayCellAtIndexPath:indexPath];
+}
+
+- (void)collectionView:(UICollectionView *)collectionView deselectItemAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated {
+    [collectionView deselectItemAtIndexPath:indexPath animated:animated];
+    [self collectionView:collectionView redisplayCellAtIndexPath:indexPath];
+}
+
 #pragma mark -
 #pragma mark Keyboard support
 - (void)addKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)modifierFlags action:(SEL)action discoverabilityTitle:(NSString *)discoverabilityTitle {

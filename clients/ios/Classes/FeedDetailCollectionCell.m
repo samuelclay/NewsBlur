@@ -1,5 +1,5 @@
 //
-//  FeedDetailTableCell.m
+//  FeedDetailCollectionCell.m
 //  NewsBlur
 //
 //  Created by Samuel Clay on 7/14/10.
@@ -7,7 +7,7 @@
 //
 
 #import "NewsBlurAppDelegate.h"
-#import "FeedDetailTableCell.h"
+#import "FeedDetailCollectionCell.h"
 #import "DashboardViewController.h"
 #import "ABTableViewCell.h"
 #import "UIView+TKCategory.h"
@@ -22,42 +22,22 @@ static UIFont *indicatorFont = nil;
 
 @class FeedDetailViewController;
 
-@implementation FeedDetailTableCell
-
-@synthesize storyTitle;
-@synthesize storyAuthor;
-@synthesize storyDate;
-@synthesize storyContent;
-@synthesize storyHash;
-@synthesize storyTimestamp;
-@synthesize storyScore;
-@synthesize storyImage;
-@synthesize siteTitle;
-@synthesize siteFavicon;
-@synthesize isRead;
-@synthesize isShared;
-@synthesize isSaved;
-@synthesize textSize;
-@synthesize isRiverOrSocial;
-@synthesize feedColorBar;
-@synthesize feedColorBarTopBorder;
-@synthesize hasAlpha;
-
+@implementation FeedDetailCollectionCell
 
 #define rightMargin 18
 
 
 + (void) initialize {
-    if (self == [FeedDetailTableCell class]) {
+    if (self == [FeedDetailCollectionCell class]) {
         textFont = [UIFont boldSystemFontOfSize:18];
         indicatorFont = [UIFont boldSystemFontOfSize:12];
     }
 }
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
-    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
-        cellContent = [[FeedDetailTableCellView alloc] initWithFrame:self.frame];
-        cellContent.opaque = YES;
+- (instancetype)initWithFrame:(CGRect)frame {
+    if (self = [super initWithFrame:frame]) {
+        self.cellContent = [[FeedDetailContentView alloc] initWithFrame:self.frame];
+        self.cellContent.opaque = YES;
         self.isReadAvailable = YES;
         
         // Clear out half pixel border on top and bottom that the draw code can't touch
@@ -65,22 +45,25 @@ static UIFont *indicatorFont = nil;
         [selectedBackground setBackgroundColor:[UIColor clearColor]];
         self.selectedBackgroundView = selectedBackground;
         
-        [self.contentView addSubview:cellContent];
+        self.swipableCell = [[FeedDetailSwipableCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"FeedDetailCellIdentifier"];
+        
+        [self.swipableCell addSubview:self.cellContent];
+        [self.contentView addSubview:self.swipableCell];
     }
     
     return self;
 }
 
 - (void)drawRect:(CGRect)rect {
-    ((FeedDetailTableCellView *)cellContent).cell = self;
-    ((FeedDetailTableCellView *)cellContent).storyImage = nil;
-    ((FeedDetailTableCellView *)cellContent).appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
-    cellContent.frame = rect;
-    [cellContent setNeedsDisplay];
+    self.cellContent.cell = self;
+    self.cellContent.storyImage = nil;
+    self.cellContent.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+    self.cellContent.frame = rect;
+    [self.cellContent setNeedsDisplay];
 }
 
-- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
-    [super setHighlighted:highlighted animated:animated];
+- (void)setHighlighted:(BOOL)highlighted {
+    [super setHighlighted:highlighted];
     
     [self setNeedsDisplay];
 }
@@ -102,9 +85,9 @@ static UIFont *indicatorFont = nil;
 
 - (void)setupGestures {
     NSString *unreadIcon;
-    if (storyScore == -1) {
+    if (self.storyScore == -1) {
         unreadIcon = @"indicator-hidden";
-    } else if (storyScore == 1) {
+    } else if (self.storyScore == 1) {
         unreadIcon = @"indicator-focus";
     } else {
         unreadIcon = @"indicator-unread";
@@ -122,10 +105,10 @@ static UIFont *indicatorFont = nil;
         readColor = nil;
     }
     
-    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    [self setDelegate:(FeedDetailViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedDetailViewController];
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    [self.swipableCell setDelegate:(FeedDetailViewController <MCSwipeTableViewCellDelegate> *)self.appDelegate.feedDetailViewController];
     
-    [self setFirstStateIconName:@"saved-stories"
+    [self.swipableCell setFirstStateIconName:@"saved-stories"
                      firstColor:shareColor
             secondStateIconName:nil
                     secondColor:nil
@@ -134,13 +117,13 @@ static UIFont *indicatorFont = nil;
                  fourthIconName:nil
                     fourthColor:nil];
 
-    self.mode = MCSwipeTableViewCellModeSwitch;
-    self.shouldAnimatesIcons = NO;
+    self.swipableCell.mode = MCSwipeTableViewCellModeSwitch;
+    self.swipableCell.shouldAnimatesIcons = NO;
 }
 
 
 - (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
-    UIFontDescriptor *fontDescriptor = appDelegate.fontDescriptorTitleSize;
+    UIFontDescriptor *fontDescriptor = self.appDelegate.fontDescriptorTitleSize;
 
     if (fontDescriptor) return fontDescriptor;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -165,13 +148,11 @@ static UIFont *indicatorFont = nil;
 
 @end
 
-@implementation FeedDetailTableCellView
-
-@synthesize cell;
-@synthesize storyImage;
-@synthesize appDelegate;
+@implementation FeedDetailContentView
 
 - (void)drawRect:(CGRect)r {
+    FeedDetailCollectionCell *cell = self.cell;
+    
     if (!cell) {
         return;
     }
@@ -245,7 +226,7 @@ static UIFont *indicatorFont = nil;
             }
         }
         
-        UIImage *cachedImage = (UIImage *)appDelegate.cachedStoryImages[cell.storyHash];
+        UIImage *cachedImage = (UIImage *)self.appDelegate.cachedStoryImages[cell.storyHash];
         
         if (cachedImage && ![cachedImage isKindOfClass:[NSNull class]]) {
 //            NSLog(@"Found cached image: %@", cell.storyTitle);
@@ -326,7 +307,7 @@ static UIFont *indicatorFont = nil;
         // site favicon
         if (cell.isRead && !cell.hasAlpha) {
             if (cell.isRiverOrSocial) {
-                cell.siteFavicon = [cell imageByApplyingAlpha:cell.siteFavicon withAlpha:0.25];
+                cell.siteFavicon = [cell.swipableCell imageByApplyingAlpha:cell.siteFavicon withAlpha:0.25];
             }
             cell.hasAlpha = YES;
         }

@@ -379,17 +379,22 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="760"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="FeedDetailTable" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="HYy-Wb-YEm">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="nho-TY-qu5">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="760"/>
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="rpb-nU-kSS">
+                                    <size key="itemSize" width="128" height="128"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells/>
                                 <connections>
-                                    <outlet property="dataSource" destination="gfj-2g-i9p" id="CEi-md-lRK"/>
-                                    <outlet property="delegate" destination="gfj-2g-i9p" id="Doa-w9-NeE"/>
+                                    <outlet property="delegate" destination="gfj-2g-i9p" id="wZf-5i-eou"/>
                                 </connections>
-                            </tableView>
+                            </collectionView>
                             <view hidden="YES" opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZLP-oU-XR7">
-                                <rect key="frame" x="0.0" y="212.5" width="375" height="181"/>
+                                <rect key="frame" x="0.0" y="386.5" width="375" height="181"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" alpha="0.40000000596046448" contentMode="scaleToFill" image="big_world.png" translatesAutoresizingMaskIntoConstraints="NO" id="Lzk-2I-zT1">
                                         <rect key="frame" x="155.5" y="24" width="64" height="64"/>
@@ -420,20 +425,20 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="ZLP-oU-XR7" secondAttribute="trailing" id="0Uy-X6-3Iy"/>
-                            <constraint firstItem="KZB-W3-hzF" firstAttribute="leading" secondItem="HYy-Wb-YEm" secondAttribute="leading" id="Es2-t9-LuN"/>
-                            <constraint firstAttribute="bottom" secondItem="HYy-Wb-YEm" secondAttribute="bottom" id="Kda-gl-BBw"/>
-                            <constraint firstItem="HYy-Wb-YEm" firstAttribute="trailing" secondItem="KZB-W3-hzF" secondAttribute="trailing" id="Nz7-a8-EPm"/>
-                            <constraint firstItem="ZLP-oU-XR7" firstAttribute="centerY" secondItem="HYy-Wb-YEm" secondAttribute="centerYWithinMargins" constant="-67" id="TaK-Yv-kSt"/>
-                            <constraint firstItem="HYy-Wb-YEm" firstAttribute="top" secondItem="Qlc-Qa-4j4" secondAttribute="top" id="wTE-Rf-iSp"/>
+                            <constraint firstItem="KZB-W3-hzF" firstAttribute="trailing" secondItem="nho-TY-qu5" secondAttribute="trailing" id="4xg-EJ-PeG"/>
+                            <constraint firstItem="nho-TY-qu5" firstAttribute="centerY" secondItem="ZLP-oU-XR7" secondAttribute="centerY" constant="-97" id="O2C-aA-59X"/>
+                            <constraint firstAttribute="bottom" secondItem="nho-TY-qu5" secondAttribute="bottom" id="i9O-FL-bCH"/>
+                            <constraint firstItem="nho-TY-qu5" firstAttribute="top" secondItem="Qlc-Qa-4j4" secondAttribute="top" id="leK-Rf-e0Y"/>
+                            <constraint firstItem="nho-TY-qu5" firstAttribute="leading" secondItem="KZB-W3-hzF" secondAttribute="leading" id="xbD-E8-ID8"/>
                             <constraint firstItem="ZLP-oU-XR7" firstAttribute="leading" secondItem="Qlc-Qa-4j4" secondAttribute="leading" id="zG5-2m-YKf"/>
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" id="vc8-hL-CKx"/>
                     <connections>
+                        <outlet property="feedCollectionView" destination="nho-TY-qu5" id="2AT-iE-SyS"/>
                         <outlet property="messageLabel" destination="ugt-jY-ACR" id="KxV-ws-Fjm"/>
                         <outlet property="messageView" destination="ZLP-oU-XR7" id="0aY-ZP-6Rk"/>
-                        <outlet property="storyTitlesTable" destination="HYy-Wb-YEm" id="GOm-Pe-3tB"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rzy-lw-MYb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

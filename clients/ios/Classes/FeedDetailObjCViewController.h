@@ -12,17 +12,16 @@
 #import "Utilities.h"
 #import "NBNotifier.h"
 #import "MCSwipeTableViewCell.h"
-#import "FeedDetailTableCell.h"
+#import "FeedDetailCollectionCell.h"
 
 @class NewsBlurAppDelegate;
 @class MCSwipeTableViewCell;
 
 @interface FeedDetailObjCViewController : BaseViewController
-<UITableViewDelegate, UITableViewDataSource,
- UIPopoverControllerDelegate,
+<UIPopoverControllerDelegate,
  MCSwipeTableViewCellDelegate,
  UIGestureRecognizerDelegate, UISearchBarDelegate,
- UITableViewDragDelegate> {
+ UICollectionViewDelegate, UICollectionViewDragDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     BOOL pageFetching;
@@ -33,14 +32,14 @@
     BOOL inDoubleTap;
     BOOL invalidateFontCache;
      
-    UITableView * storyTitlesTable;
+    UICollectionView * feedCollectionView;
     UIBarButtonItem * feedMarkReadButton;
     Class popoverClass;
     NBNotifier *notifier;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic, strong) IBOutlet UITableView *storyTitlesTable;
+@property (nonatomic, strong) IBOutlet UICollectionView *feedCollectionView;
 @property (nonatomic) IBOutlet UIBarButtonItem * feedMarkReadButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * feedsBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * settingsBarButton;
@@ -66,7 +65,8 @@
 @property (nonatomic, readwrite) BOOL invalidateFontCache;
 @property (nonatomic, readwrite) BOOL cameFromFeedsList;
 
-- (void)reloadData;
+- (void)reload;
+- (void)reloadWithSizing;
 - (void)resetFeedDetail;
 - (void)reloadStories;
 - (void)fetchNextPage:(void(^)(void))callback;
@@ -78,6 +78,10 @@
 - (void)flashInfrequentStories;
 - (void)gotoFolder:(NSString *)folder feedID:(NSString *)feedID;
 
+- (void)prepareFeedCell:(FeedDetailCollectionCell *)cell indexPath:(NSIndexPath *)indexPath;
+- (void)prepareStoryCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath;
+- (void)prepareLoadingCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath;
+
 - (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
 - (void)changeIntelligence:(NSInteger)newLevel;
@@ -88,7 +92,7 @@
 
 - (void)fadeSelectedCell;
 - (void)fadeSelectedCell:(BOOL)deselect;
-- (void)loadStory:(FeedDetailTableCell *)cell atRow:(NSInteger)row;
+- (void)loadStory:(FeedDetailCollectionCell *)cell atRow:(NSInteger)row;
 - (void)redrawUnreadStory;
 - (IBAction)doOpenMarkReadMenu:(id)sender;
 - (IBAction)doOpenSettingsMenu:(id)sender;

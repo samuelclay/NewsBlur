@@ -285,7 +285,7 @@
         [storiesCollection syncStoryAsRead:activeStory];
         storyPagesViewController.temporarilyMarkedUnread = NO;
         
-        [self.feedDetailViewController reloadData];
+        [self.feedDetailViewController reloadWithSizing];
         [self.storyPagesViewController refreshHeaders];
     }
 }
@@ -1622,7 +1622,7 @@
         }
         
         [self adjustStoryDetailWebView];
-        [self.feedDetailViewController.storyTitlesTable reloadData];
+        [self.feedDetailViewController.feedCollectionView reloadData];
         
         if (detailViewController.storyTitlesOnLeft) {
             [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadFeedDetailView"];
@@ -3049,7 +3049,7 @@
         [feedDetailViewController failedMarkAsUnread:params];
         [storyPagesViewController failedMarkAsUnread:params];
     }
-    [feedDetailViewController reloadData];
+    [feedDetailViewController reloadWithSizing];
 }
 
 - (void)finishMarkAsSaved:(NSDictionary *)params {
@@ -3062,7 +3062,7 @@
         [feedDetailViewController failedMarkAsSaved:params];
         [storyPagesViewController failedMarkAsSaved:params];
     }
-    [feedDetailViewController reloadData];
+    [feedDetailViewController reloadWithSizing];
 }
 
 - (void)finishMarkAsUnsaved:(NSDictionary *)params {
@@ -3075,7 +3075,7 @@
         [feedDetailViewController failedMarkAsUnsaved:params];
         [storyPagesViewController failedMarkAsUnsaved:params];
     }
-    [feedDetailViewController reloadData];
+    [feedDetailViewController reloadWithSizing];
 }
 
 
@@ -3815,7 +3815,7 @@
     }];
 
     [self recalculateIntelligenceScores:feedId];
-    [self.feedDetailViewController.storyTitlesTable reloadData];
+    [self.feedDetailViewController.feedCollectionView reloadData];
 }
 
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId {
@@ -3859,7 +3859,7 @@
     }];
     
     [self recalculateIntelligenceScores:feedId];
-    [self.feedDetailViewController.storyTitlesTable reloadData];
+    [self.feedDetailViewController.feedCollectionView reloadData];
 }
 
 - (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(NSInteger)score {
@@ -3907,7 +3907,7 @@
     }];
 
     [self recalculateIntelligenceScores:feedId];
-    [self.feedDetailViewController.storyTitlesTable reloadData];
+    [self.feedDetailViewController.feedCollectionView reloadData];
 }
 
 - (void)toggleFeedClassifier:(NSString *)feedId {
@@ -3949,7 +3949,7 @@
     }];
 
     [self recalculateIntelligenceScores:feedId];
-    [self.feedDetailViewController.storyTitlesTable reloadData];
+    [self.feedDetailViewController.feedCollectionView reloadData];
 }
 
 - (void)failedRequest:(NSURLResponse *)response {
