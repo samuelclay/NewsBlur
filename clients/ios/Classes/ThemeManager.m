@@ -190,6 +190,10 @@ NSString * const ThemeStyleDark = @"dark";
     } else if ([theme isEqualToString:ThemeStyleMedium]) {
         if (rgbValue == 0x8F918B) {
             return [UIColor colorWithWhite:0.7 alpha:1.0];
+        } else if (rgbValue == NEWSBLUR_LINK_COLOR) {
+            return [UIColor colorWithRed:1.0 - red green:1.0 - green blue:1.0 - blue alpha:1.0];
+        } else if (rgbValue == 0x999999) {
+            return [UIColor colorWithWhite:0.6 alpha:1.0];
         } else if (red < 0.5 && green < 0.5 && blue < 0.5) {
             return [UIColor colorWithRed:1.2 - red green:1.2 - green blue:1.2 - blue alpha:1.0];
         } else {

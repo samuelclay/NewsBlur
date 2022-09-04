@@ -6,7 +6,7 @@
         ],
         "checks": [{
             "id": "consul-manager",
-            "http": "http://{{ ansible_ssh_host }}:8500",
+            "http": "http://{{ ansible_host }}:8500",
             "interval": "15s",
             "failures_before_critical": 4
           }],
