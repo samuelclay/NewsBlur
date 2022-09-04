@@ -1,5 +1,5 @@
 //
-//  GridStoryCell.swift
+//  StoryPagesCollectionCell.swift
 //  NewsBlur
 //
 //  Created by David Sinclair on 2022-08-19.
@@ -9,7 +9,7 @@
 import UIKit
 
 /// Collection view cell for a story.
-class GridStoryCell: UICollectionViewCell {
-    static let reuseIdentifier = "GridStoryCell"
+class StoryPagesCollectionCell: UICollectionViewCell {
+    static let reuseIdentifier = "StoryPagesCollectionCell"
     
 }
