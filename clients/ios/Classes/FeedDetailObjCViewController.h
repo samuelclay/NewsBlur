@@ -66,6 +66,7 @@
 @property (nonatomic, readwrite) BOOL cameFromFeedsList;
 
 - (void)reload;
+- (void)reloadIndexPath:(NSIndexPath *)indexPath;
 - (void)reloadWithSizing;
 - (void)resetFeedDetail;
 - (void)reloadStories;
@@ -77,6 +78,8 @@
 - (void)testForTryFeed;
 - (void)flashInfrequentStories;
 - (void)gotoFolder:(NSString *)folder feedID:(NSString *)feedID;
+
+- (CGFloat)heightForRowAtIndexPath:(NSIndexPath *)indexPath;
 
 - (void)prepareFeedCell:(FeedDetailCollectionCell *)cell indexPath:(NSIndexPath *)indexPath;
 - (void)prepareStoryCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath;
