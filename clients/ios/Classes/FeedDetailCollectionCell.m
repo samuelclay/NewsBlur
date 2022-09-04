@@ -148,6 +148,10 @@ static UIFont *indicatorFont = nil;
 
 @end
 
+@implementation FeedDetailSwipableCell
+
+@end
+
 @implementation FeedDetailContentView
 
 - (void)drawRect:(CGRect)r {

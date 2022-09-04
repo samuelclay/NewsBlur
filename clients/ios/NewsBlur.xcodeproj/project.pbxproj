@@ -82,7 +82,7 @@
 		177551DF238E228A00E27818 /* Old NewsBlur Latest.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 177551D3238E228A00E27818 /* Old NewsBlur Latest.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		177D017828B056C600F2F2DB /* GridDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D017728B056C600F2F2DB /* GridDetailViewController.swift */; };
 		177D017B28B05D2500F2F2DB /* GridFeedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D017A28B05D2500F2F2DB /* GridFeedCell.swift */; };
-		177D017D28B05D9500F2F2DB /* GridStoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D017C28B05D9500F2F2DB /* GridStoryCell.swift */; };
+		177D017D28B05D9500F2F2DB /* StoryPagesCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D017C28B05D9500F2F2DB /* StoryPagesCollectionCell.swift */; };
 		17813FB723AC6E450057FB16 /* WidgetErrorTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17CE3F0523AC529B003152EF /* WidgetErrorTableViewCell.xib */; };
 		1787083024F8B3A50000C82B /* StoryDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1787082F24F8B3A50000C82B /* StoryDetailViewController.swift */; };
 		17876B9E1C9911D40055DD15 /* g_icn_folder_rss_sm.png in Resources */ = {isa = PBXBuildFile; fileRef = 17876B9A1C9911D40055DD15 /* g_icn_folder_rss_sm.png */; };
@@ -828,7 +828,7 @@
 		177551E3238E26BF00E27818 /* Widget Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Widget Extension.entitlements"; sourceTree = "<group>"; };
 		177D017728B056C600F2F2DB /* GridDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridDetailViewController.swift; sourceTree = "<group>"; };
 		177D017A28B05D2500F2F2DB /* GridFeedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridFeedCell.swift; sourceTree = "<group>"; };
-		177D017C28B05D9500F2F2DB /* GridStoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridStoryCell.swift; sourceTree = "<group>"; };
+		177D017C28B05D9500F2F2DB /* StoryPagesCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPagesCollectionCell.swift; sourceTree = "<group>"; };
 		1787082F24F8B3A50000C82B /* StoryDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryDetailViewController.swift; sourceTree = "<group>"; };
 		17876B9A1C9911D40055DD15 /* g_icn_folder_rss_sm.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_folder_rss_sm.png; sourceTree = "<group>"; };
 		17876B9B1C9911D40055DD15 /* g_icn_folder_rss_sm@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "g_icn_folder_rss_sm@2x.png"; sourceTree = "<group>"; };
@@ -1814,7 +1814,6 @@
 			children = (
 				177D017728B056C600F2F2DB /* GridDetailViewController.swift */,
 				177D017A28B05D2500F2F2DB /* GridFeedCell.swift */,
-				177D017C28B05D9500F2F2DB /* GridStoryCell.swift */,
 			);
 			name = Grid;
 			sourceTree = "<group>";
@@ -2066,6 +2065,7 @@
 				171B6FFC25C4C7C8008638A9 /* StoryPagesViewController.swift */,
 				FF6A233016448E0700E15989 /* StoryPagesObjCViewController.h */,
 				FF6A233116448E0700E15989 /* StoryPagesObjCViewController.m */,
+				177D017C28B05D9500F2F2DB /* StoryPagesCollectionCell.swift */,
 				170E3CD224F8A89B009CE819 /* HorizontalPageViewController.swift */,
 				172AD263251D901D000BB264 /* HorizontalPageDelegate.swift */,
 				1787082F24F8B3A50000C82B /* StoryDetailViewController.swift */,
@@ -3721,7 +3721,7 @@
 				FF2924E61E932D2900FCFA63 /* PINDiskCache.m in Sources */,
 				7843F50511EEB1A000675F64 /* FeedDetailCollectionCell.m in Sources */,
 				784B50ED127E3F68008F90EA /* LoginViewController.m in Sources */,
-				177D017D28B05D9500F2F2DB /* GridStoryCell.swift in Sources */,
+				177D017D28B05D9500F2F2DB /* StoryPagesCollectionCell.swift in Sources */,
 				FF5ACC241DE5F0C000FBD044 /* NotificationsViewController.m in Sources */,
 				FFCDD8FE17F6368F000C6483 /* MCSwipeTableViewCell.m in Sources */,
 				78095EC9128F30B500230C8E /* OriginalStoryViewController.m in Sources */,

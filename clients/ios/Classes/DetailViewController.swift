@@ -199,9 +199,6 @@ class DetailViewController: BaseViewController {
     /// The feed detail view controller, if using `top`, `bottom`, or `grid` layout. `nil` if using `left` layout.
     var feedDetailViewController: FeedDetailViewController?
     
-    /// The grid detail view controller, if using `grid` layout. `nil` for other layouts.
-    var gridDetailViewController: GridDetailViewController?
-    
     /// The horizontal page view controller. [Not currently used; might be used for #1351 (gestures in vertical scrolling).]
 //    var horizontalPageViewController: HorizontalPageViewController?
     
@@ -248,13 +245,6 @@ class DetailViewController: BaseViewController {
         navigationController?.navigationBar.barStyle = manager.isDarkTheme ? .black : .default
         
         tidyNavigationController()
-    }
-    
-    /// Reloads the grid view, if it is displayed.
-    @objc func reloadGrid() {
-        if layout == .grid {
-            gridDetailViewController?.reload()
-        }
     }
     
     /// Adjusts the container when autoscrolling. Only applies to iPhone.
@@ -338,11 +328,6 @@ private extension DetailViewController {
     func checkViewControllers() {
         let isTop = layout == .top
         
-        if layout != .grid, gridDetailViewController != nil {
-            remove(viewController: gridDetailViewController)
-            gridDetailViewController = nil
-        }
-        
         if layout == .left {
             if feedDetailViewController != nil {
                 remove(viewController: feedDetailViewController)
@@ -357,12 +342,10 @@ private extension DetailViewController {
             
             dividerViewBottomConstraint.constant = -13
         } else if layout == .grid {
-            if gridDetailViewController == nil {
-                gridDetailViewController = Storyboards.shared.controller(withIdentifier: .gridDetail) as? GridDetailViewController
+            if feedDetailViewController == nil {
                 feedDetailViewController = Storyboards.shared.controller(withIdentifier: .feedDetail) as? FeedDetailViewController
                 
-                add(viewController: gridDetailViewController, top: true)
-                add(viewController: feedDetailViewController, top: false)
+                add(viewController: feedDetailViewController, top: true)
                 
                 supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
                 supplementaryFeedDetailViewController = appDelegate.feedDetailViewController

@@ -94,7 +94,7 @@ extension GridDetailViewController {
             //TODO: 🚧
         }
         
-        let storyCellRegistration = UICollectionView.CellRegistration<GridStoryCell, Int> { (cell, indexPath, identifier) in
+        let storyCellRegistration = UICollectionView.CellRegistration<StoryPagesCollectionCell, Int> { (cell, indexPath, identifier) in
             //TODO: 🚧
             cell.contentView.backgroundColor = UIColor.blue
         }
