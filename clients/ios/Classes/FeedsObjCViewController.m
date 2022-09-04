@@ -675,7 +675,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     activityButton.accessibilityLabel = @"Activities";
     [activityButton setImage:activityImage forState:UIControlStateNormal];
     activityButton.tintColor = UIColorFromRGB(0x8F918B);
-    [activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 4, 4, 4)];
+    [activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 12, 4, -12)];
     [activityButton addTarget:self
                        action:@selector(showInteractionsPopover:)
              forControlEvents:UIControlEventTouchUpInside];
@@ -2643,7 +2643,7 @@ heightForHeaderInSection:(NSInteger)section {
     typeof(self) __weak weakSelf = self;
     [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
         typeof(weakSelf) __strong strongSelf = weakSelf;
-        image = [Utilities roundCorneredImage:image radius:6 convertToSize:CGSizeMake(32, 32)];
+        image = [Utilities roundCorneredImage:image radius:6 convertToSize:CGSizeMake(40, 40)];
         image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         [(UIButton *)strongSelf.userAvatarButton setImage:image forState:UIControlStateNormal];
         
@@ -2653,7 +2653,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     [userInfoView addSubview:userAvatarButton];
     
-    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(48, yOffset, userInfoView.frame.size.width, 16)];
+    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(54, yOffset, userInfoView.frame.size.width, 16)];
     userLabel.text = appDelegate.activeUsername;
     userLabel.font = userLabelFont;
     userLabel.textColor = UIColorFromRGB(0x404040);
