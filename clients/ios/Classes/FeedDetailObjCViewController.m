@@ -325,6 +325,10 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     @throw [NSException exceptionWithName:@"Missing reload implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
 
+- (void)reloadIndexPath:(NSIndexPath *)indexPath {
+    @throw [NSException exceptionWithName:@"Missing reloadIndexPath implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
 - (void)reloadWithSizing {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
@@ -779,7 +783,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
                 continue;
             }
             
-            [self.feedCollectionView reloadItemsAtIndexPaths:@[indexPath]];
+            [self reloadIndexPath:indexPath];
             break;
         }
     }
@@ -1769,7 +1773,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
             if ([storiesCollection isStoryUnread:story]) {
                 [storiesCollection markStoryRead:story];
                 [storiesCollection syncStoryAsRead:story];
-                [self.feedCollectionView reloadItemsAtIndexPaths:@[indexPath]];
+                [self reloadIndexPath:indexPath];
             }
             [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"tap selected row"];
             return;
@@ -1799,8 +1803,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     }
 }
 
-- (CGFloat)tableView:(UITableView *)tableView
-heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     NSInteger storyCount = storiesCollection.storyLocationsCount;
     
@@ -1955,7 +1958,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                     [storiesCollection syncStoryAsRead:story];
                     NSIndexPath *reloadIndexPath = [NSIndexPath indexPathForRow:thisRow inSection:0];
                     NSLog(@" --> Reloading indexPath: %@", reloadIndexPath);
-                    [self.feedCollectionView reloadItemsAtIndexPaths:@[reloadIndexPath]];
+                    [self reloadIndexPath:indexPath];
                 }
             }
             
@@ -2017,11 +2020,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     if (state == MCSwipeTableViewCellState1) {
         // Saved
         [storiesCollection toggleStorySaved:story];
-        [self.feedCollectionView reloadItemsAtIndexPaths:@[indexPath]];
+        [self reloadIndexPath:indexPath];
     } else if (state == MCSwipeTableViewCellState3) {
         // Read
         [storiesCollection toggleStoryUnread:story];
-        [self.feedCollectionView reloadItemsAtIndexPaths:@[indexPath]];
+        [self reloadIndexPath:indexPath];
     }
 }
 
@@ -2051,10 +2054,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [appDelegate showSendTo:self sender:cell];
     } else if ([longPressStoryTitle isEqualToString:@"mark_unread"]) {
         [storiesCollection toggleStoryUnread:story];
-        [self.feedCollectionView reloadItemsAtIndexPaths:@[indexPath]];
+        [self reloadIndexPath:indexPath];
     } else if ([longPressStoryTitle isEqualToString:@"save_story"]) {
         [storiesCollection toggleStorySaved:story];
-        [self.feedCollectionView reloadItemsAtIndexPaths:@[indexPath]];
+        [self reloadIndexPath:indexPath];
     } else if ([longPressStoryTitle isEqualToString:@"train_story"]) {
         appDelegate.activeStory = story;
         [appDelegate openTrainStory:cell];

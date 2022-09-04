@@ -37,17 +37,40 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        feedCollectionView.collectionViewLayout = createLayout()
+        if appDelegate.detailViewController.layout == .grid {
+            feedCollectionView.collectionViewLayout = createGridLayout()
+        } else {
+            feedCollectionView.collectionViewLayout = createListLayout()
+        }
+        
         configureDataSource()
     }
     
     @objc override func reload() {
         configureDataSource()
     }
+    
+    @objc override func reload(_ indexPath: IndexPath) {
+        configureDataSource()
+    }
 }
 
 extension FeedDetailViewController {
-    func createLayout() -> UICollectionViewLayout {
+    func createListLayout() -> UICollectionViewLayout {
+        let size = NSCollectionLayoutSize(
+            widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
+            heightDimension: NSCollectionLayoutDimension.estimated(200)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: size)
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: 1)
+        
+        let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = 0
+        
+        return UICollectionViewCompositionalLayout(section: section)
+    }
+    
+    func createGridLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewCompositionalLayout { (sectionIndex: Int,
                                                             layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
             
@@ -83,10 +106,8 @@ extension FeedDetailViewController {
 extension FeedDetailViewController {
     func configureDataSource() {
         let feedCellRegistration = UICollectionView.CellRegistration<FeedDetailCollectionCell, Int> { (cell, indexPath, identifier) in
-            cell.contentView.backgroundColor = UIColor.red
-            cell.contentView.layer.borderColor = UIColor.black.cgColor
-            cell.contentView.layer.borderWidth = 1
-            //            cell.contentView.layer.cornerRadius = SectionLayoutKind(rawValue: indexPath.section)! == .feed ? 8 : 0
+            
+//            cell.frame.size.height = self.heightForRow(at: indexPath)
             
             self.prepareFeedCell(cell, indexPath: indexPath)
         }
@@ -107,13 +128,12 @@ extension FeedDetailViewController {
         
         var snapshot = NSDiffableDataSourceSnapshot<SectionLayoutKind, Int>()
         
-        // +1 for the loading cell.
-        let storyCount = Int(appDelegate.storiesCollection.storyLocationsCount) + 1
+        let storyCount = Int(appDelegate.storiesCollection.storyLocationsCount)
         
         snapshot.appendSections(SectionLayoutKind.allCases)
         
         if self.messageView.isHidden {
-            if storyCount > 1 {
+            if appDelegate.detailViewController.layout == .grid, storyCount > 0 {
                 let selectedIndex = max(appDelegate.storiesCollection.indexOfActiveStory(), 0)
                 
                 if selectedIndex > 0 {
@@ -122,9 +142,11 @@ extension FeedDetailViewController {
                 
                 snapshot.appendItems([selectedIndex], toSection: .selectedStory)
                 
-                if selectedIndex < storyCount - 1 {
+                if selectedIndex < storyCount {
                     snapshot.appendItems(Array(selectedIndex + 1..<storyCount), toSection: .feedAfterStory)
                 }
+            } else {
+                snapshot.appendItems(Array(0..<storyCount), toSection: .feedBeforeStory)
             }
             
             snapshot.appendItems([0], toSection: .loading)

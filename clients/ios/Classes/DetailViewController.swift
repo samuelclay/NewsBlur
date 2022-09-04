@@ -227,6 +227,12 @@ class DetailViewController: BaseViewController {
         } else {
             navigationItem.leftBarButtonItems = []
         }
+        
+        if reload {
+            DispatchQueue.main.async {
+                self.feedDetailViewController?.reload()
+            }
+        }
     }
     
     /// Update the theme.
