@@ -133,10 +133,16 @@ You got the downtime message either through email or SMS. This is the order of o
 When the new redis server is connected to the primary redis server:
 
    # db-redis-story2 = moving to new server
-   # db-redis-story = old server about to be shutdown
+   # db-redis-story1 = old server about to be shutdown
+   # Edit digitalocean.tf to change db-redis-story count to 2
+   make plan
+   make apply
+   make firewall
+   # Wait for redis to sync, takes 5-10 minutes
+   # Edit redis/consul_service.json to switch primary to db-redis-story2
    make celery_stop
    make maintenance_on
    apd -l db-redis-story2 -t replicaofnoone
-   aps -l db-redis-story,db-redis-story2 -t consul
+   aps -l db-redis-story1,db-redis-story2 -t consul
    make maintenance_off
    make task
