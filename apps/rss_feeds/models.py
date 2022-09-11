@@ -2353,7 +2353,7 @@ class Feed(models.Model):
                                                 self.archive_subscribers,
                                                 self.pro_subscribers,
                                                 spd))
-        return total*1.5
+        return total
         
     def set_next_scheduled_update(self, verbose=False, skip_scheduling=False):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
