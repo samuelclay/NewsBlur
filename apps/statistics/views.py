@@ -74,6 +74,7 @@ def slow(request):
     user_id_counts = {}
     path_counts = {}
     users = {}
+    
     for minutes_ago in range(60*6):
         dt_ago = now - datetime.timedelta(minutes=minutes_ago)
         dt_ago_str = dt_ago.strftime("%a %b %-d, %Y %H:%M")
@@ -105,6 +106,7 @@ def slow(request):
     user_counts = []
     for user_id, count in user_id_counts.items():
         user_counts.append({'user': users[user_id], 'count': count})
+    
     return render(request, 'statistics/slow.xhtml', {
         'all_queries': all_queries,
         'user_counts': user_counts,

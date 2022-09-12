@@ -10,6 +10,8 @@ IGNORE_PATHS = [
     "/_haproxychk",
 ]
 
+RECORD_SLOW_REQUESTS_ABOVE_SECONDS = 10
+
 class DumpRequestMiddleware:
     def process_request(self, request):
         if settings.DEBUG and request.path not in IGNORE_PATHS:
@@ -46,7 +48,7 @@ class DumpRequestMiddleware:
 
         if hasattr(request, 'start_time'):
             seconds = time.time() - request.start_time
-            if seconds > 10:
+            if seconds > RECORD_SLOW_REQUESTS_ABOVE_SECONDS:
                 r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
                 pipe = r.pipeline()
                 minute = round_time(round_to=60)
@@ -54,9 +56,9 @@ class DumpRequestMiddleware:
                 user_id = request.user.pk if request.user.is_authenticated else "0"
                 data_string = None
                 if request.method == "GET":
-                    data_string = ', '.join([f"{key}={value}" for key, value in request.GET.items()])
+                    data_string = ' '.join([f"{key}={value}" for key, value in request.GET.items()])
                 elif request.method == "GET":
-                    data_string = ', '.join([f"{key}={value}" for key, value in request.POST.items()])
+                    data_string = ' '.join([f"{key}={value}" for key, value in request.POST.items()])
                 data = {
                     "user_id": user_id,
                     "time": round(seconds, 2),
