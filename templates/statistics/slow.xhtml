@@ -12,7 +12,7 @@
         <table class="NB-status">
             {% for user_count in user_counts %}
                 <tr>
-                    {% if forloop.first %}<td rowspan={{user_counts|length}}><h2>Users</h2>{% endif %}
+                    {% if forloop.first %}<td rowspan={{user_counts|length}} valign=top><b>Users</b>{% endif %}
                     <td><b>{{ user_count.user }}</b></td>
                     <td>{{ user_count.count }}</td>
                 </tr>
@@ -23,7 +23,7 @@
         <table class="NB-status">
             {% for path, count in path_counts.items %}
             <tr>
-                {% if forloop.first %}<td rowspan={{user_counts|length}}><h2>Paths</h2>{% endif %}
+                {% if forloop.first %}<td rowspan={{path_counts|length}} valign=top><b>Paths</b>{% endif %}
                 <td><b>{{ path }}</b></td>
                 <td>{{ count }}</td>
             </tr>
