@@ -1404,7 +1404,11 @@ def load_river_stories__redis(request):
     user_search       = None
     offset            = (page-1) * limit
     story_date_order  = "%sstory_date" % ('' if order == 'oldest' else '-')
-    
+
+    if user.pk == 86178:
+        # Disable Michael_Novakhov account
+        return HttpResponse("Resource usage too high", status=429)
+
     if infrequent:
         feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
     
