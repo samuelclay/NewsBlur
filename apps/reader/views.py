@@ -1407,6 +1407,7 @@ def load_river_stories__redis(request):
 
     if user.pk == 86178:
         # Disable Michael_Novakhov account
+        logging.user(request, "~FCLoading ~FMMichael_Novakhov~SN's river, resource usage too high, ignoring.")
         return HttpResponse("Resource usage too high", status=429)
 
     if infrequent:
