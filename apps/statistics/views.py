@@ -77,8 +77,8 @@ def slow(request):
     
     for minutes_ago in range(60*6):
         dt_ago = now - datetime.timedelta(minutes=minutes_ago)
-        dt_ago_str = dt_ago.strftime("%a %b %-d, %Y %H:%M")
         minute = round_time(dt_ago, round_to=60)
+        dt_ago_str = minute.strftime("%a %b %-d, %Y %H:%M")
         name = f"SLOW:{minute.strftime('%s')}"
         minute_queries = r.lrange(name, 0, -1)
         for query_raw in minute_queries:
@@ -95,6 +95,7 @@ def slow(request):
                 user = AnonymousUser()
                 users[user_id] = user
             query['user'] = user
+            query['datetime'] = minute
             all_queries[dt_ago_str].append(query)
             if user_id not in user_id_counts:
                 user_id_counts[user_id] = 0
