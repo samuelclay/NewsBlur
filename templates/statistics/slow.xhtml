@@ -37,13 +37,15 @@
         {% for query in queries %}
             <tr>
                 {% if forloop.first %}
-                <td rowspan={{ queries|length }} valign=top> <b>{{ dt_str }}</b></td>
+                <td rowspan={{ queries|length }} valign=top> <b>
+                    {% localdatetime query.datetime "%a %b %d, %Y %H:%M" %}
+                </b></td>    
                 {% endif %}
                 <td>{{ query.user }}</td>
                 <td>{{ query.time }}</td>
                 <td>{{ query.method }}</td>
                 <td>{{ query.path }}</td>
-                <td>{{ query.data }}</td>
+                <td>{% if query.data %}{{ query.data }}{% endif %}</td>
             </tr>
         {% endfor %}
     {% endfor %}
