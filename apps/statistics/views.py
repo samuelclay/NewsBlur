@@ -89,7 +89,10 @@ def slow(request):
             if user_id in users:
                 user = users[user_id]
             elif int(user_id) != 0:
-                user = User.objects.get(pk=user_id)
+                try:
+                    user = User.objects.get(pk=user_id)
+                except User.DoesNotExist:
+                    continue
                 users[user_id] = user
             else:
                 user = AnonymousUser()
