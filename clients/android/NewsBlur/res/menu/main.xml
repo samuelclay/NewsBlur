@@ -22,6 +22,10 @@
         android:title="@string/import_export"
         app:showAsAction="never" />
 
+    <item android:id="@+id/menu_notifications"
+        android:title="@string/menu_notifications"
+        app:showAsAction="never" />
+
     <item android:id="@+id/menu_text_size"
         android:title="@string/menu_text_size" >
         <menu>
