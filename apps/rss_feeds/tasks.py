@@ -52,6 +52,7 @@ def TaskFeeds():
                     r.zcard('tasked_feeds'),
                     r.scard('queued_feeds'),
                     r.zcard('scheduled_updates')))
+    logging.debug(" ---> ~FBFeeds being tasked: ~SB%s" % feeds)
 
 @app.task(name='task-broken-feeds')
 def TaskBrokenFeeds():

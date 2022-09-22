@@ -1,7 +1,7 @@
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <!--   Keep in sync with ShortcutUtils-->
     <shortcut
-        android:icon="@drawable/ic_search"
+        android:icon="@drawable/ic_search_2"
         android:shortcutId="all_stories_search"
         android:shortcutShortLabel="@string/search">
         <intent
