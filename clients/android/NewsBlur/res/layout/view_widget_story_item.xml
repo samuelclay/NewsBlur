@@ -21,15 +21,14 @@
             android:layout_height="match_parent"
             android:layout_toRightOf="@id/story_item_favicon_borderbar_1" />
 
-        <com.google.android.material.imageview.ShapeableImageView
+        <ImageView
             android:id="@+id/story_item_feedicon"
             android:layout_width="19dp"
             android:layout_height="19dp"
             android:layout_alignParentLeft="true"
             android:layout_marginStart="18dp"
             android:layout_marginTop="2dp"
-            android:layout_toRightOf="@+id/story_item_favicon_borderbar_2"
-            app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance"/>
+            android:layout_toRightOf="@+id/story_item_favicon_borderbar_2" />
 
         <TextView
             android:id="@+id/story_item_feedtitle"

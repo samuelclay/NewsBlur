@@ -7,8 +7,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 
-import com.google.android.material.imageview.ShapeableImageView;
-import com.google.android.material.shape.ShapeAppearanceModel;
+import com.newsblur.R;
 import com.newsblur.activity.Profile;
 import com.newsblur.view.FlowLayout;
 
@@ -17,21 +16,21 @@ public class ViewUtils {
     private ViewUtils() {} // util class - no instances
 
 	public static ImageView createSharebarImage(final Context context, final String photoUrl, final String userId, ImageLoader iconLoader) {
-		ShapeableImageView image = new ShapeableImageView(context);
+		ImageView image = new ImageView(context);
 		int imageLength = UIUtils.dp2px(context, 15);
 		image.setMaxHeight(imageLength);
 		image.setMaxWidth(imageLength);
-		ShapeAppearanceModel shape = new ShapeAppearanceModel().withCornerSize(UIUtils.dp2px(context, 4));
-		image.setShapeAppearanceModel(shape);
-		
+		image.setClipToOutline(true);
+		image.setBackgroundResource(R.drawable.shape_rounded_corners_4dp);
+
 		FlowLayout.LayoutParams imageParameters = new FlowLayout.LayoutParams(5, 5);
-		
+
 		imageParameters.height = imageLength;
 		imageParameters.width = imageLength;
-		
+
 		image.setMaxHeight(imageLength);
 		image.setMaxWidth(imageLength);
-		
+
 		image.setLayoutParams(imageParameters);
 		iconLoader.displayImage(photoUrl, image);
 		image.setOnClickListener(new OnClickListener() {
