@@ -1880,8 +1880,12 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 NSDictionary *story = [self getStoryAtRow:indexPath.row];
                 NSString *content = [story[@"story_content"] convertHTML];
                 
-                if (content.length < 50 && [story[@"story_title"] length] < 30) {
+                if (content.length < 10 && [story[@"story_title"] length] < 30) {
+                    return height;
+                } else if (content.length < 50 && [story[@"story_title"] length] < 30) {
                     return height + font.pointSize * 2;
+                } else if (content.length < 50 && [story[@"story_title"] length] < 40) {
+                    return height + font.pointSize * 3;
                 } else if (content.length < 50 && [story[@"story_title"] length] >= 30) {
                     return height + font.pointSize * 5;
                 } else if (content.length < 100) {
