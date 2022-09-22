@@ -21,6 +21,13 @@
   become: yes
   sysctl: name=vm.overcommit_memory value=1 state=present reload=yes
 
+- name: Template redis.conf file
+  copy:
+    src: /srv/newsblur/docker/redis/redis.conf
+    dest: /srv/newsblur/docker/redis/redis.conf
+  notify: restart redis
+  register: updated_config
+
 - name: Template redis_replica.conf file
   template:
     src: /srv/newsblur/docker/redis/redis_replica.conf.j2
@@ -40,7 +47,7 @@
   become: yes
   docker_container:
     name: redis
-    image: redis:6.2.7
+    image: redis:7
     state: started
     command: /usr/local/etc/redis/redis_server.conf
     container_default_behavior: no_defaults
