@@ -362,7 +362,7 @@ static UIFont *indicatorFont = nil;
     }
     int storyTitleX = leftMargin;
     if (cell.isSaved) {
-        UIImage *savedIcon = [UIImage imageNamed:@"clock"];
+        UIImage *savedIcon = [UIImage imageNamed:@"saved-stories"];
         [savedIcon drawInRect:CGRectMake(storyTitleX, storyTitleY - 1, 16, 16) blendMode:0 alpha:1];
         storyTitleX += 22;
     }
