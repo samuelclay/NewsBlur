@@ -50,6 +50,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 @property (nonatomic) NSDate *leftAppDate;
 @property (nonatomic, strong) NSMutableDictionary<NSIndexPath *, NSNumber *> *rowHeights;
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, FolderTitleView *> *folderTitleViews;
+@property (nonatomic, strong) NSIndexPath *lastRowAtIndexPath;
+@property (nonatomic) NSInteger lastSection;
 
 @end
 
@@ -203,12 +205,18 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     self.currentRowAtIndexPath = nil;
     self.currentSection = NewsBlurTopSectionAllStories;
+    self.lastRowAtIndexPath = nil;
+    self.lastSection = NewsBlurTopSectionAllStories;
     
     userAvatarButton.hidden = YES;
     self.noFocusMessage.hidden = YES;
 
 //    [self.navigationController.interactivePopGestureRecognizer addTarget:self action:@selector(handleGesture:)];
     
+    [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:UIKeyModifierAlternate action:@selector(selectNextFeed:) discoverabilityTitle:@"Next Site" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierAlternate action:@selector(selectPreviousFeed:) discoverabilityTitle:@"Previous Site" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:UIKeyModifierShift action:@selector(selectNextFolder:) discoverabilityTitle:@"Next Folder" wantPriority:YES];
+    [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierShift action:@selector(selectPreviousFolder:) discoverabilityTitle:@"Previous Folder" wantPriority:YES];
     [self addKeyCommandWithInput:@"e" modifierFlags:UIKeyModifierCommand action:@selector(selectEverything:) discoverabilityTitle:@"Open All Stories"];
     [self addKeyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(selectPreviousIntelligence:) discoverabilityTitle:@"Switch Views"];
     [self addKeyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(selectNextIntelligence:) discoverabilityTitle:@"Switch Views"];
@@ -1588,6 +1596,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     // set the current row pointer
     self.currentRowAtIndexPath = indexPath;
     self.currentSection = -1;
+    self.lastRowAtIndexPath = indexPath;
+    self.lastSection = -1;
     
     NSString *folderName = appDelegate.dictFoldersArray[indexPath.section];
     id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
@@ -1876,6 +1886,8 @@ heightForHeaderInSection:(NSInteger)section {
     // reset pointer to the cells
     self.currentRowAtIndexPath = nil;
     self.currentSection = tag;
+    self.lastRowAtIndexPath = nil;
+    self.lastSection = tag;
     
     [self highlightSelection];
     
@@ -1888,6 +1900,124 @@ heightForHeaderInSection:(NSInteger)section {
     }
     
     [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
+}
+
+- (NSArray *)allIndexPaths {
+    NSMutableArray *array = [NSMutableArray array];
+    
+    for (NSInteger section = 0; section < self.feedTitlesTable.numberOfSections; section++) {
+        for (NSInteger row = 0; row < [self.feedTitlesTable numberOfRowsInSection:section]; row++) {
+            [array addObject:[NSIndexPath indexPathForRow:row inSection:section]];
+        }
+    }
+    
+    return array;
+}
+
+- (void)selectNextFolderOrFeed {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        if (self.lastRowAtIndexPath != nil) {
+            [self selectNextFeed:nil];
+        } else {
+            [self selectNextFolder:nil];
+        }
+    });
+}
+
+- (void)selectNextFeed:(id)sender {
+    NSArray *indexPaths = [self allIndexPaths];
+    NSIndexPath *indexPath = self.lastRowAtIndexPath;
+    
+    if (indexPath == nil) {
+        if (self.lastSection < 0) {
+            indexPath = indexPaths.firstObject;
+        } else {
+            indexPath = [NSIndexPath indexPathForRow:0 inSection:self.lastSection];
+        }
+    } else {
+        NSInteger index = [indexPaths indexOfObject:indexPath];
+        
+        if (index == NSNotFound) {
+            index = -1;
+        }
+        
+        index += 1;
+        
+        if (index >= indexPaths.count) {
+            index = 0;
+        }
+        
+        indexPath = indexPaths[index];
+    }
+    
+    [self.feedTitlesTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+    [self tableView:self.feedTitlesTable didSelectRowAtIndexPath:indexPath];
+}
+
+- (void)selectPreviousFeed:(id)sender {
+    NSArray *indexPaths = [self allIndexPaths];
+    NSIndexPath *indexPath = self.lastRowAtIndexPath;
+    
+    if (indexPath == nil) {
+        if (self.lastSection < 0) {
+            indexPath = indexPaths.firstObject;
+        } else {
+            indexPath = [NSIndexPath indexPathForRow:0 inSection:self.lastSection];
+        }
+    }
+    
+    NSInteger index = [indexPaths indexOfObject:indexPath];
+    
+    if (index == NSNotFound) {
+        index = 0;
+    }
+    
+    index -= 1;
+    
+    if (index < 0) {
+        index = indexPaths.count - 1;
+    }
+    
+    indexPath = indexPaths[index];
+    
+    [self.feedTitlesTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+    [self tableView:self.feedTitlesTable didSelectRowAtIndexPath:indexPath];
+}
+
+- (void)selectNextFolder:(id)sender {
+    NSInteger section = self.lastSection;
+    
+    if (section < self.feedTitlesTable.numberOfSections - 1) {
+        section += 1;
+    } else {
+        section = 0;
+    }
+    
+    [self didSelectSectionHeaderWithTag:section];
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:section];
+    
+    if ([self.feedTitlesTable numberOfRowsInSection:section] > 0) {
+        [self.feedTitlesTable scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
+    }
+}
+
+- (void)selectPreviousFolder:(id)sender {
+    NSInteger section = self.lastSection;
+    
+    if (section > 0) {
+        section -= 1;
+    } else {
+        section = self.feedTitlesTable.numberOfSections - 1;
+    }
+    
+    [self didSelectSectionHeaderWithTag:section];
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:section];
+    
+    if ([self.feedTitlesTable numberOfRowsInSection:section] > 0) {
+        [self.feedTitlesTable scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
+    }
 }
 
 - (void)selectEverything:(id)sender {
