@@ -2199,7 +2199,14 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
         // Don't do this, as it causes a race condition with the marking read call
 //        [self.appDelegate.feedsViewController refreshFeedList];
+        [self.appDelegate.feedsViewController reloadFeedTitlesTable];
         [self.appDelegate showFeedsListAnimated:YES];
+        
+        NSString *loadNextPref = [[NSUserDefaults standardUserDefaults] stringForKey:@"after_mark_read"];
+        
+        if (![loadNextPref isEqualToString:@"stay"]) {
+            [self.appDelegate.feedsViewController selectNextFolderOrFeed];
+        }
     };
     
     [storiesCollection calculateStoryLocations];
