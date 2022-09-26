@@ -42,7 +42,8 @@
     
     NSString *folderName = appDelegate.dictFoldersArray[section];
     NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
-    bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
+    BOOL isFolderCollapsed = [userPreferences boolForKey:collapseKey];
+    BOOL isSavedStoriesFeed = self.appDelegate.isSavedStoriesIntelligenceMode;
     NSInteger countWidth = 0;
     NSString *accessibilityCount = @"";
     NSArray *folderComponents = [folderName componentsSeparatedByString:@" ▸ "];
@@ -77,7 +78,7 @@
         [self addSubview:unreadCount];
         
         accessibilityCount = [NSString stringWithFormat:@", %@ searches", @(count)];
-    } else if (isFolderCollapsed) {
+    } else if (isFolderCollapsed && !isSavedStoriesFeed) {
         UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
         unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectMake(rect.origin.x, 0, CGRectGetWidth(rect), CGRectGetHeight(rect))];
         unreadCount.appDelegate = appDelegate;
@@ -287,7 +288,7 @@
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     
-    if (isFolderCollapsed) {
+    if (isFolderCollapsed && !isSavedStoriesFeed) {
         [self insertSubview:customView belowSubview:unreadCount];
     } else {
         [self addSubview:customView];

@@ -93,6 +93,7 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)finishLoadingFeedListWithDict:(NSDictionary *)results finished:(BOOL)finished;
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (void)didSelectSectionHeaderWithTag:(NSInteger)tag;
+- (void)selectNextFolderOrFeed;
 - (IBAction)selectIntelligence;
 - (void)markFeedRead:(NSString *)feedId cutoffDays:(NSInteger)days;
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days;
