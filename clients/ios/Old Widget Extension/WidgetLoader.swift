@@ -58,7 +58,7 @@ class Loader: NSObject, URLSessionDataDelegate {
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        if let error = error {
+        if let error {
             completion(.failure(error))
         } else {
             completion(.success(receivedData))
