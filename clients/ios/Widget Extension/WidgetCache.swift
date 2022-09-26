@@ -103,11 +103,11 @@ class WidgetCache {
     }
     
     func hostURL(with path: String) -> URL? {
-        guard let host = host else {
+        guard let host else {
             return nil
         }
         
-        if let token = token {
+        if let token {
             return URL(string: host + path + "&secret_token=\(token)")
         } else {
             return URL(string: host + path)
@@ -272,7 +272,7 @@ class WidgetCache {
     }
     
     func save(image: UIImage, to folderURL: URL?, for identifier: String) {
-        guard let folderURL = folderURL else {
+        guard let folderURL else {
             return
         }
         
@@ -340,7 +340,7 @@ class WidgetCache {
     }
     
     func loadCachedImage(folderURL: URL?, identifier: String) -> UIImage? {
-        guard let folderURL = folderURL else {
+        guard let folderURL else {
             return nil
         }
         

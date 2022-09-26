@@ -164,7 +164,7 @@ class WidgetExtensionViewController: UITableViewController, NCWidgetProviding {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         precondition(Thread.isMainThread, "Table access not on the main thread")
         
-        if let error = error {
+        if let error {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: WidgetErrorTableViewCell.reuseIdentifier, for: indexPath) as? WidgetErrorTableViewCell else {
                 preconditionFailure("Expected to dequeue a WidgetErrorTableViewCell")
             }
@@ -251,7 +251,7 @@ class WidgetExtensionViewController: UITableViewController, NCWidgetProviding {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let error = error {
+        if let error {
             if let appURL = URL(string: "newsblurwidget://?error=\(error.rawValue)") {
                 extensionContext?.open(appURL, completionHandler: nil)
             }
@@ -322,11 +322,11 @@ private extension WidgetExtensionViewController {
     }
     
     func hostURL(with path: String) -> URL? {
-        guard let host = host else {
+        guard let host else {
             return nil
         }
         
-        if let token = token {
+        if let token {
             return URL(string: host + path + "&secret_token=\(token)")
         } else {
             return URL(string: host + path)
@@ -478,7 +478,7 @@ private extension WidgetExtensionViewController {
     }
     
     func save(image: UIImage, to folderURL: URL?, for identifier: String) {
-        guard let folderURL = folderURL else {
+        guard let folderURL else {
             return
         }
         
@@ -626,7 +626,7 @@ private extension WidgetExtensionViewController {
     }
     
     func loadCachedImage(folderURL: URL?, identifier: String) -> UIImage? {
-        guard let folderURL = folderURL else {
+        guard let folderURL else {
             return nil
         }
         
