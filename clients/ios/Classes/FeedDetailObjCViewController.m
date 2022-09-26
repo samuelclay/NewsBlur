@@ -1844,8 +1844,12 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
                 NSDictionary *story = [self getStoryAtRow:indexPath.row];
                 NSString *content = [story[@"story_content"] convertHTML];
                 
-                if (content.length < 50 && [story[@"story_title"] length] < 30) {
+                if (content.length < 10 && [story[@"story_title"] length] < 30) {
+                    return height;
+                } else if (content.length < 50 && [story[@"story_title"] length] < 30) {
                     return height + font.pointSize * 2;
+                } else if (content.length < 50 && [story[@"story_title"] length] < 40) {
+                    return height + font.pointSize * 3;
                 } else if (content.length < 50 && [story[@"story_title"] length] >= 30) {
                     return height + font.pointSize * 5;
                 } else if (content.length < 100) {
@@ -2154,8 +2158,15 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             [self reloadStories];
         }
         // Don't do this, as it causes a race condition with the marking read call
-        //        [self.appDelegate.feedsViewController refreshFeedList];
+//        [self.appDelegate.feedsViewController refreshFeedList];
+        [self.appDelegate.feedsViewController reloadFeedTitlesTable];
         [self.appDelegate showFeedsListAnimated:YES];
+        
+        NSString *loadNextPref = [[NSUserDefaults standardUserDefaults] stringForKey:@"after_mark_read"];
+        
+        if (![loadNextPref isEqualToString:@"stay"]) {
+            [self.appDelegate.feedsViewController selectNextFolderOrFeed];
+        }
     };
     
     [storiesCollection calculateStoryLocations];

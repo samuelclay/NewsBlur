@@ -98,6 +98,26 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
+			<string>After mark read</string>
+			<key>Titles</key>
+			<array>
+				<string>Open the next site/folder</string>
+				<string>Stay on the feeds list</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>next</string>
+			<key>Values</key>
+			<array>
+				<string>next</string>
+				<string>stay</string>
+			</array>
+			<key>Key</key>
+			<string>after_mark_read</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
 			<string>When opening a site</string>
 			<key>Titles</key>
 			<array>
