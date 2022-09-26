@@ -364,7 +364,7 @@ extension ShareViewController: URLSessionTaskDelegate {
         
         content.title = "NewsBlur"
         
-        if let error = error {
+        if let error {
             print("task completed with error: \(error)")
             
             NSLog("⚾️ share error: \(error)")
@@ -399,7 +399,7 @@ extension ShareViewController: URLSessionTaskDelegate {
         let notificationCenter = UNUserNotificationCenter.current()
         
         notificationCenter.add(request) { (error) in
-            if let error = error {
+            if let error {
                 print("notification error: \(error)")
             }
         }
