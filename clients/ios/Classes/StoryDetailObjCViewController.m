@@ -1385,7 +1385,7 @@
             
             NSIndexPath *reloadIndexPath = appDelegate.feedDetailViewController.feedCollectionView.indexPathsForSelectedItems.firstObject;
             if (reloadIndexPath != nil) {
-                [appDelegate.feedDetailViewController.feedCollectionView reloadItemsAtIndexPaths:@[reloadIndexPath]];
+                [appDelegate.feedDetailViewController reloadIndexPath:reloadIndexPath];
             }
         }
         
