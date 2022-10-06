@@ -199,6 +199,9 @@ class DetailViewController: BaseViewController {
     /// The feed detail view controller, if using `top`, `bottom`, or `grid` layout. `nil` if using `left` layout.
     var feedDetailViewController: FeedDetailViewController?
     
+    /// Whether or not the grid layout was used the last time checking the view controllers.
+    private var wasGrid = false
+    
     /// The horizontal page view controller. [Not currently used; might be used for #1351 (gestures in vertical scrolling).]
 //    var horizontalPageViewController: HorizontalPageViewController?
     
@@ -339,6 +342,7 @@ private extension DetailViewController {
                 remove(viewController: feedDetailViewController)
                 
                 feedDetailViewController = nil
+                supplementaryFeedDetailViewController?.storiesCollection = appDelegate.storiesCollection
                 appDelegate.feedDetailNavigationController = supplementaryFeedDetailNavigationController
                 appDelegate.feedDetailViewController = supplementaryFeedDetailViewController
                 appDelegate.splitViewController.setViewController(supplementaryFeedDetailNavigationController, for: .supplementary)
@@ -347,33 +351,43 @@ private extension DetailViewController {
             }
             
             dividerViewBottomConstraint.constant = -13
+            wasGrid = false
         } else if layout == .grid {
-            if feedDetailViewController == nil {
+            if feedDetailViewController == nil || !wasGrid {
+                remove(viewController: feedDetailViewController)
+                
                 feedDetailViewController = Storyboards.shared.controller(withIdentifier: .feedDetail) as? FeedDetailViewController
+                feedDetailViewController?.storiesCollection = appDelegate.storiesCollection
                 
                 add(viewController: feedDetailViewController, top: true)
                 
-                supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
+                if appDelegate.feedDetailNavigationController != nil {
+                    supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
+                }
+                
                 supplementaryFeedDetailViewController = appDelegate.feedDetailViewController
                 appDelegate.feedDetailNavigationController = nil
                 appDelegate.feedDetailViewController = feedDetailViewController
                 appDelegate.splitViewController.setViewController(nil, for: .supplementary)
             } else {
-                let appropriateSuperview = isTop ? topContainerView : bottomContainerView
-                
-                if feedDetailViewController?.view.superview != appropriateSuperview {
-                    add(viewController: feedDetailViewController, top: true)
-                }
+                add(viewController: feedDetailViewController, top: true)
             }
             
             dividerViewBottomConstraint.constant = -13
+            wasGrid = true
         } else {
-            if feedDetailViewController == nil {
+            if feedDetailViewController == nil || wasGrid {
+                remove(viewController: feedDetailViewController)
+                
                 feedDetailViewController = Storyboards.shared.controller(withIdentifier: .feedDetail) as? FeedDetailViewController
+                feedDetailViewController?.storiesCollection = appDelegate.storiesCollection
                 
                 add(viewController: feedDetailViewController, top: isTop)
                 
-                supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
+                if appDelegate.feedDetailNavigationController != nil {
+                    supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
+                }
+                
                 supplementaryFeedDetailViewController = appDelegate.feedDetailViewController
                 appDelegate.feedDetailNavigationController = nil
                 appDelegate.feedDetailViewController = feedDetailViewController
@@ -389,6 +403,7 @@ private extension DetailViewController {
             dividerViewBottomConstraint.constant = dividerPosition
             
             appDelegate.updateSplitBehavior()
+            wasGrid = false
         }
         
         if layout != .grid {
