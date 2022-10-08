@@ -113,9 +113,6 @@ extension FeedDetailViewController {
         }
         
         let storyCellRegistration = UICollectionView.CellRegistration<StoryPagesCollectionCell, Int> { (cell, indexPath, identifier) in
-            //TODO: 🚧
-            cell.contentView.backgroundColor = UIColor.blue
-            
             self.prepareStoryCell(cell, indexPath: indexPath)
         }
         
@@ -137,7 +134,7 @@ extension FeedDetailViewController {
                 let selectedIndex = max(appDelegate.storiesCollection.indexOfActiveStory(), 0)
                 
                 if selectedIndex > 0 {
-                    snapshot.appendItems(Array(0..<selectedIndex - 1), toSection: .feedBeforeStory)
+                    snapshot.appendItems(Array(0..<selectedIndex), toSection: .feedBeforeStory)
                 }
                 
                 snapshot.appendItems([selectedIndex], toSection: .selectedStory)
