@@ -54,6 +54,7 @@
 @property (nonatomic) IBOutlet UIView *messageView;
 @property (nonatomic) IBOutlet UILabel *messageLabel;
 @property (nonatomic, strong) id standardInteractivePopGestureDelegate;
+@property (nonatomic, readonly) NSIndexPath *selectedIndexPath;
 
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
@@ -88,7 +89,10 @@
 - (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
 - (void)changeIntelligence:(NSInteger)newLevel;
-- (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow;
+- (NSDictionary *)getStoryAtLocation:(NSInteger)storyLocation;
+- (NSInteger)storyLocationForIndexPath:(NSIndexPath *)indexPath;
+- (NSIndexPath *)indexPathForStoryLocation:(NSInteger)location;
+
 - (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle;
 - (void)checkScroll;
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation;

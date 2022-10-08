@@ -256,6 +256,35 @@ class DetailViewController: BaseViewController {
         tidyNavigationController()
     }
     
+    /// Moves the story pages controller to a Grid layout cell content (automatically removing it from the previous parent).
+    @objc func moveStoriesToGridCell(_ cellContent: UIView) {
+        guard let storyPagesViewController else {
+            return
+        }
+        
+        print("🎈 moveStoriesToGridCell: \(storyPagesViewController.currentPage.activeStory["story_title"] ?? "none")")
+        
+        add(viewController: storyPagesViewController, to: cellContent, of: appDelegate.feedDetailViewController)
+        
+        adjustForAutoscroll()
+    }
+    
+    /// Moves the story pages controller to the detail controller (automatically removing it from the previous parent).
+    @objc func moveStoriesToDetail() {
+        guard let storyPagesViewController else {
+            return
+        }
+        
+        let isTop = layout == .top
+        let appropriateSuperview = isTop ? bottomContainerView : topContainerView
+        
+        if storyPagesViewController.view.superview != appropriateSuperview {
+            add(viewController: storyPagesViewController, top: !isTop)
+            
+            adjustForAutoscroll()
+        }
+    }
+    
     /// Adjusts the container when autoscrolling. Only applies to iPhone.
     @objc func adjustForAutoscroll() {
         adjustTopConstraint()
@@ -407,17 +436,7 @@ private extension DetailViewController {
         }
         
         if layout != .grid {
-            guard let storyPagesViewController else {
-                return
-            }
-            
-            let appropriateSuperview = isTop ? bottomContainerView : topContainerView
-            
-            if storyPagesViewController.view.superview != appropriateSuperview {
-                add(viewController: storyPagesViewController, top: !isTop)
-                
-                adjustForAutoscroll()
-            }
+            moveStoriesToDetail()
         }
     }
     
@@ -429,12 +448,14 @@ private extension DetailViewController {
         }
     }
     
-    func add(viewController: UIViewController?, to containerView: UIView) {
+    func add(viewController: UIViewController?, to containerView: UIView, of containerController: UIViewController? = nil) {
         guard let viewController else {
             return
         }
         
-        addChild(viewController)
+        let containerController = containerController ?? self
+        
+        containerController.addChild(viewController)
         
         containerView.addSubview(viewController.view)
         
@@ -444,7 +465,7 @@ private extension DetailViewController {
         viewController.view.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
         viewController.view.bottomAnchor.constraint(equalTo: containerView.bottomAnchor).isActive = true
         
-        viewController.didMove(toParent: self)
+        viewController.didMove(toParent: containerController)
     }
     
     func remove(viewController: UIViewController?) {

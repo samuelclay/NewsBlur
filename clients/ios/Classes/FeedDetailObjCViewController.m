@@ -43,6 +43,14 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     MarkReadShowMenuAlways
 };
 
+typedef NS_ENUM(NSUInteger, FeedSection)
+{
+    FeedSectionBefore = 0,
+    FeedSectionSelected,
+    FeedSectionAfter,
+    FeedSectionLoading
+};
+
 @interface FeedDetailObjCViewController ()
 
 @property (nonatomic) NSUInteger scrollingMarkReadRow;
@@ -199,7 +207,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded && inDoubleTap) {
         CGPoint p = [gestureRecognizer locationInView:self.feedCollectionView];
         NSIndexPath *indexPath = [self.feedCollectionView indexPathForItemAtPoint:p];
-        NSDictionary *story = [self getStoryAtRow:indexPath.row];
+        NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
         if (!story) return YES;
         NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
         BOOL openOriginal = NO;
@@ -543,7 +551,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 - (void)fadeSelectedCell:(BOOL)deselect {
     [self reload];
     NSInteger location = storiesCollection.locationOfActiveStory;
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:location inSection:0];
+    NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
     
     if (indexPath && location >= 0 && self.view.window != nil) {
         [self tableView:self.feedCollectionView selectRowAtIndexPath:indexPath animated:NO];
@@ -774,14 +782,8 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
         if (![cell isKindOfClass:[FeedDetailCollectionCell class]]) return;
         if ([cell.storyHash isEqualToString:storyHash]) {
             NSIndexPath *indexPath = [self.feedCollectionView indexPathForCell:cell];
-            NSInteger numberOfRows = [self.feedCollectionView numberOfItemsInSection:0];
             
-            NSLog(@"showImageForStoryHash for row %@ of %@", @(indexPath.row), @(numberOfRows));  // log
-            
-            if (indexPath.row >= numberOfRows) {
-                NSLog(@"⚠️ row %@ is greater than the number of rows: %@", @(indexPath.row), @(numberOfRows));  // log
-                continue;
-            }
+            NSLog(@"showImageForStoryHash for index path %@", indexPath);  // log
             
             [self reloadIndexPath:indexPath];
             break;
@@ -1420,7 +1422,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
                 NSLog(@"---> Could not find story: %@", storyHashStr);
                 return;
             }
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:locationOfStoryId inSection:0];
+            NSIndexPath *indexPath = [self indexPathForStoryLocation:locationOfStoryId];
             
             [self collectionView:self.feedCollectionView selectItemAtIndexPath:indexPath
                         animated:NO
@@ -1429,7 +1431,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 FeedDetailCollectionCell *cell = (FeedDetailCollectionCell *)[self.feedCollectionView cellForItemAtIndexPath:indexPath];
-                [self loadStory:cell atRow:indexPath.row];
+                [self loadStory:cell atRow:[self storyLocationForIndexPath:indexPath]];
             });
             
             [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -1467,7 +1469,12 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
             break;
         }
     }
-    NSDictionary *story = [self getStoryAtRow:indexPath.row];
+    
+    NSInteger active = [storiesCollection locationOfActiveStory];
+    NSInteger location = [self storyLocationForIndexPath:indexPath];
+    NSDictionary *story = [self getStoryAtLocation:location];
+    
+    NSLog(@"🎈 prepare feed cell: section: %@, row: %@, location: %@, active: %@: %@", @(indexPath.section), @(indexPath.row), @(location), @(active), story[@"story_title"]);  // log
     
     id feedId = [story objectForKey:@"story_feed_id"];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
@@ -1564,8 +1571,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     }
     
     if (!self.isPhoneOrCompact) {
-        NSInteger rowIndex = [storiesCollection locationOfActiveStory];
-        if (rowIndex == indexPath.row) {
+        if (location == active) {
             [self collectionView:feedCollectionView selectItemAtIndexPath:indexPath animated:NO];
         }
     }
@@ -1577,6 +1583,9 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 
 - (void)prepareStoryCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath {
     #warning *** to be implemented ***
+    
+    [appDelegate.detailViewController moveStoriesToGridCell:cell.contentView];
+    
 }
 
 - (void)prepareLoadingCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath {
@@ -1727,8 +1736,8 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 - (void)redrawUnreadStory {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
-    NSInteger rowIndex = [storiesCollection locationOfActiveStory];
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
+    NSInteger location = [storiesCollection locationOfActiveStory];
+    NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
     FeedDetailCollectionCell *cell = (FeedDetailCollectionCell*) [self.feedCollectionView cellForItemAtIndexPath:indexPath];
     
     if (![cell isKindOfClass:[FeedDetailCollectionCell class]]) {
@@ -1742,20 +1751,20 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
 }
 
 - (void)changeActiveStoryTitleCellLayout {
-    NSInteger rowIndex = [storiesCollection locationOfActiveStory];
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
+    NSInteger location = [storiesCollection locationOfActiveStory];
+    NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
     FeedDetailCollectionCell *cell = (FeedDetailCollectionCell*) [self.feedCollectionView cellForItemAtIndexPath:indexPath];
     cell.isRead = YES;
     [cell setNeedsLayout];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row < storiesCollection.storyLocationsCount) {
+    if ([self storyLocationForIndexPath:indexPath] < storiesCollection.storyLocationsCount) {
         // mark the cell as read
         //        appDelegate.feedsViewController.currentRowAtIndexPath = nil;
         
-        NSInteger location = storiesCollection.locationOfActiveStory;
-        NSIndexPath *oldIndexPath = [NSIndexPath indexPathForRow:location inSection:0];
+        NSInteger oldLocation = storiesCollection.locationOfActiveStory;
+        NSIndexPath *oldIndexPath = [self indexPathForStoryLocation:oldLocation];
         
         if (![oldIndexPath isEqual:indexPath]) {
             [self collectionView:collectionView deselectItemAtIndexPath:oldIndexPath animated:YES];
@@ -1764,8 +1773,11 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
         [self collectionView:collectionView redisplayCellAtIndexPath:indexPath];
         
         FeedDetailCollectionCell *cell = (FeedDetailCollectionCell*) [collectionView cellForItemAtIndexPath:indexPath];
-        NSInteger storyIndex = [storiesCollection indexFromLocation:indexPath.row];
+        NSInteger location = [self storyLocationForIndexPath:indexPath];
+        NSInteger storyIndex = [storiesCollection indexFromLocation:location];
         NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
+        BOOL isGrid = appDelegate.detailViewController.storyTitlesInGrid;
+        
         if (!self.isPhoneOrCompact &&
             appDelegate.activeStory &&
             [[story objectForKey:@"story_hash"]
@@ -1773,13 +1785,24 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
             if ([storiesCollection isStoryUnread:story]) {
                 [storiesCollection markStoryRead:story];
                 [storiesCollection syncStoryAsRead:story];
-                [self reloadIndexPath:indexPath];
+                
+                if (!isGrid) {
+                    [self reloadIndexPath:indexPath];
+                }
             }
             [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"tap selected row"];
-            return;
+            
+            if (!isGrid) {
+                return;
+            }
         }
-        [self loadStory:cell atRow:indexPath.row];
-    } else if (indexPath.row == storiesCollection.storyLocationsCount) {
+        [self loadStory:cell atRow:[self storyLocationForIndexPath:indexPath]];
+        
+        if (isGrid) {
+            [self reload];
+            [collectionView selectItemAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:FeedSectionSelected] animated:YES scrollPosition:UICollectionViewScrollPositionTop];
+        }
+    } else if ([self storyLocationForIndexPath:indexPath] == storiesCollection.storyLocationsCount) {
         if (!appDelegate.isPremium && storiesCollection.isRiverView) {
             [appDelegate showPremiumDialog];
         }
@@ -1807,7 +1830,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     
     NSInteger storyCount = storiesCollection.storyLocationsCount;
     
-    if (storyCount && indexPath.row == storyCount) {
+    if (storyCount && [self storyLocationForIndexPath:indexPath] == storyCount) {
         if (!self.pageFinished) return 40;
         
         BOOL markReadOnScroll = self.isMarkReadOnScroll;
@@ -1841,7 +1864,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
             return height + font.pointSize * 3.25;
         } else if (self.textSize != FeedDetailTextSizeTitleOnly) {
             if (self.textSize == FeedDetailTextSizeMedium || self.textSize == FeedDetailTextSizeLong) {
-                NSDictionary *story = [self getStoryAtRow:indexPath.row];
+                NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
                 NSString *content = [story[@"story_content"] convertHTML];
                 
                 if (content.length < 10 && [story[@"story_title"] length] < 30) {
@@ -1860,7 +1883,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
                     return height + font.pointSize * 9;
                 }
             } else {
-                NSDictionary *story = [self getStoryAtRow:indexPath.row];
+                NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
                 
                 if ([story[@"story_title"] length] < 30) {
                     return height + font.pointSize * 3;
@@ -1948,7 +1971,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     BOOL markReadOnScroll = self.isMarkReadOnScroll;
     
     if (indexPath && markReadOnScroll) {
-        NSUInteger topRow = indexPath.row;
+        NSUInteger topRow = [self storyLocationForIndexPath:indexPath];
         
         if (self.scrollingMarkReadRow == NSNotFound) {
             self.scrollingMarkReadRow = topRow;
@@ -1960,7 +1983,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
                 if ([storiesCollection isStoryUnread:story]) {
                     [storiesCollection markStoryRead:story];
                     [storiesCollection syncStoryAsRead:story];
-                    NSIndexPath *reloadIndexPath = [NSIndexPath indexPathForRow:thisRow inSection:0];
+                    NSIndexPath *reloadIndexPath = [self indexPathForStoryLocation:thisRow];
                     NSLog(@" --> Reloading indexPath: %@", reloadIndexPath);
                     [self reloadIndexPath:indexPath];
                 }
@@ -1988,12 +2011,34 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
     [self reload];
 }
 
-- (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow {
-    if (indexPathRow >= [[storiesCollection activeFeedStoryLocations] count]) return nil;
-    id location = [[storiesCollection activeFeedStoryLocations] objectAtIndex:indexPathRow];
+- (NSDictionary *)getStoryAtLocation:(NSInteger)storyLocation {
+    if (storyLocation >= [[storiesCollection activeFeedStoryLocations] count]) return nil;
+    id location = [[storiesCollection activeFeedStoryLocations] objectAtIndex:storyLocation];
     if (!location) return nil;
     NSInteger row = [location intValue];
     return [storiesCollection.activeFeedStories objectAtIndex:row];
+}
+
+- (NSInteger)storyLocationForIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == FeedSectionBefore) {
+        return indexPath.row;
+    } else {
+        return storiesCollection.indexOfActiveStory + indexPath.row + 1;
+    }
+}
+
+- (NSIndexPath *)indexPathForStoryLocation:(NSInteger)location {
+    NSInteger active = storiesCollection.indexOfActiveStory;
+    
+    if (active < 0 || location < active) {
+        return [NSIndexPath indexPathForRow:location inSection:FeedSectionBefore];
+    } else {
+        return [NSIndexPath indexPathForRow:location - active inSection:FeedSectionAfter];
+    }
+}
+
+- (NSIndexPath *)selectedIndexPath {
+    return feedCollectionView.indexPathsForSelectedItems.firstObject;
 }
 
 
@@ -2018,7 +2063,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         return;
     }
     
-    NSInteger storyIndex = [storiesCollection indexFromLocation:indexPath.row];
+    NSInteger storyIndex = [storiesCollection indexFromLocation:[self storyLocationForIndexPath:indexPath]];
     NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
     
     if (state == MCSwipeTableViewCellState1) {
@@ -2043,7 +2088,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
     if (indexPath == nil) return;
     
-    NSDictionary *story = [self getStoryAtRow:indexPath.row];
+    NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
     
     if (!story) return;
     
@@ -2820,16 +2865,16 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (void)changeActiveFeedDetailRow {
-    NSInteger rowIndex = [storiesCollection locationOfActiveStory];
+    NSInteger location = [storiesCollection locationOfActiveStory];
     NSInteger offset = 1;
     if ([[self.feedCollectionView visibleCells] count] <= 4) {
         offset = 0;
     }
-    if (offset > rowIndex) offset = rowIndex;
+    if (offset > location) offset = location;
     
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
-    NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:(rowIndex - offset) inSection:0];
-    NSIndexPath *oldIndexPath = feedCollectionView.indexPathsForSelectedItems.firstObject;
+    NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
+    NSIndexPath *offsetIndexPath = [self indexPathForStoryLocation:location - offset];
+    NSIndexPath *oldIndexPath = self.selectedIndexPath;
     
     if (![indexPath isEqual:oldIndexPath]) {
         [self collectionView:feedCollectionView deselectItemAtIndexPath:oldIndexPath animated:YES];
@@ -2843,7 +2888,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     cellRect = [feedCollectionView convertRect:cellRect toView:feedCollectionView.superview];
     
     BOOL completelyVisible = CGRectContainsRect(feedCollectionView.frame, cellRect);
-    if (!completelyVisible && [feedCollectionView numberOfItemsInSection:0] > 0) {
+    NSInteger numberOfItems = [feedCollectionView numberOfItemsInSection:offsetIndexPath.section];
+    
+    if (!completelyVisible && numberOfItems > 0 && offsetIndexPath.row < numberOfItems) {
         [feedCollectionView scrollToItemAtIndexPath:offsetIndexPath
                                    atScrollPosition:UICollectionViewScrollPositionTop
                                            animated:YES];
@@ -3030,7 +3077,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 #pragma mark - Drag Delegate
 
 - (NSArray<UIDragItem *> *)tableView:(UITableView *)tableView itemsForBeginningDragSession:(id<UIDragSession>)session atIndexPath:(NSIndexPath *)indexPath API_AVAILABLE(ios(11.0)) {
-    NSDictionary *story = [self getStoryAtRow:indexPath.row];
+    NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
     
     if (!story) return @[];
     
