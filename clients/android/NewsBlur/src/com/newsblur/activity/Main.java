@@ -268,7 +268,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        return contextMenuDelegate.onMenuItemClick(item, getSupportFragmentManager(), folderFeedList);
+        return contextMenuDelegate.onMenuItemClick(item, folderFeedList);
     }
 
     private void onClickAddButton() {
