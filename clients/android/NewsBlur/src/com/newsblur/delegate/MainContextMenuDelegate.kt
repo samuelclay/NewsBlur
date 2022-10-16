@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.FragmentManager
 import com.newsblur.R
 import com.newsblur.activity.*
 import com.newsblur.database.BlurDatabaseHelper
@@ -27,7 +26,7 @@ interface MainContextMenuDelegate {
 
     fun onMenuClick(anchor: View, listener: PopupMenu.OnMenuItemClickListener)
 
-    fun onMenuItemClick(item: MenuItem, fragmentManager: FragmentManager, fragment: FolderListFragment): Boolean
+    fun onMenuItemClick(item: MenuItem, fragment: FolderListFragment): Boolean
 }
 
 class MainContextMenuDelegateImpl(
@@ -76,10 +75,10 @@ class MainContextMenuDelegateImpl(
         pm.show()
     }
 
-    override fun onMenuItemClick(item: MenuItem, fragmentManager: FragmentManager, fragment: FolderListFragment): Boolean = when (item.itemId) {
+    override fun onMenuItemClick(item: MenuItem, fragment: FolderListFragment): Boolean = when (item.itemId) {
         R.id.menu_logout -> {
             val newFragment: DialogFragment = LogoutDialogFragment()
-            newFragment.show(fragmentManager, "dialog")
+            newFragment.show(activity.supportFragmentManager, "dialog")
             true
         }
         R.id.menu_settings -> {
@@ -140,7 +139,7 @@ class MainContextMenuDelegateImpl(
         }
         R.id.menu_loginas -> {
             val newFragment: DialogFragment = LoginAsDialogFragment()
-            newFragment.show(fragmentManager, "dialog")
+            newFragment.show(activity.supportFragmentManager, "dialog")
             true
         }
         R.id.menu_theme_auto -> {
