@@ -12,7 +12,8 @@
 
     <item android:id="@+id/menu_widget"
         android:title="@string/widget"
-        app:showAsAction="never" />
+        app:showAsAction="never"
+        android:visible="false"/>
 
     <item android:id="@+id/menu_premium_account"
         android:title="@string/menu_premium_account"
