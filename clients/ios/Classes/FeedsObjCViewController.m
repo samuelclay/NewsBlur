@@ -452,7 +452,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !UIInterfaceOrientationIsLandscape(orientation)) {
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_yellow_icn.png"] forSegmentAtIndex:1];
         [self.intelligenceControl setImage:[Utilities imageNamed:@"indicator-focus" sized:14] forSegmentAtIndex:2];
-        [self.intelligenceControl setImage:[Utilities imageNamed:@"saved-stories" sized:14] forSegmentAtIndex:3];
+        [self.intelligenceControl setImage:[Utilities imageNamed:@"unread_blue_icn.png" sized:14] forSegmentAtIndex:3];
         
         [self.intelligenceControl setWidth:45 forSegmentAtIndex:0];
         [self.intelligenceControl setWidth:40 forSegmentAtIndex:1];
@@ -460,8 +460,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self.intelligenceControl setWidth:40 forSegmentAtIndex:3];
     } else {
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_yellow.png"] forSegmentAtIndex:1];
-        [self.intelligenceControl setImage:[Utilities imageNamed:@"indicator-focus" sized:14] forSegmentAtIndex:2];
-        [self.intelligenceControl setImage:[Utilities imageNamed:@"saved-stories" sized:14] forSegmentAtIndex:3];
+        [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_green.png"] forSegmentAtIndex:2];
+        [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_blue.png"] forSegmentAtIndex:3];
         
         [self.intelligenceControl setWidth:40 forSegmentAtIndex:0];
         [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
