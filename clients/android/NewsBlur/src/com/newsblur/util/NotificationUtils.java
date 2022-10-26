@@ -128,6 +128,10 @@ public class NotificationUtils {
         markreadIntent.putExtra(Reading.EXTRA_STORY_HASH, story.storyHash);
         PendingIntent markreadPendingIntent = PendingIntentUtils.getImmutableBroadcast(context.getApplicationContext(), story.hashCode(), markreadIntent, 0);
 
+        Intent shareIntent = new Intent(context, NotifyShareReceiver.class);
+        shareIntent.putExtra(Reading.EXTRA_STORY, story);
+        PendingIntent sharePendingIntent = PendingIntentUtils.getImmutableBroadcast(context.getApplicationContext(), story.hashCode(), shareIntent, 0);
+
         String feedTitle = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
         StringBuilder title = new StringBuilder();
         title.append(feedTitle).append(": ").append(story.title);
@@ -144,8 +148,9 @@ public class NotificationUtils {
             .setAutoCancel(true)
             .setOnlyAlertOnce(true)
             .setWhen(story.timestamp)
-            .addAction(0, "Save", savePendingIntent)
             .addAction(0, "Mark Read", markreadPendingIntent)
+            .addAction(0, "Save", savePendingIntent)
+            .addAction(0, "Share", sharePendingIntent)
             .setColor(NOTIFY_COLOUR);
         if (feedIcon != null) {
             nb.setLargeIcon(feedIcon);

@@ -1,5 +1,13 @@
 package com.newsblur.database;
 
+import static com.newsblur.util.AppConstants.ALL_SHARED_STORIES_GROUP_KEY;
+import static com.newsblur.util.AppConstants.ALL_STORIES_GROUP_KEY;
+import static com.newsblur.util.AppConstants.GLOBAL_SHARED_STORIES_GROUP_KEY;
+import static com.newsblur.util.AppConstants.INFREQUENT_SITE_STORIES_GROUP_KEY;
+import static com.newsblur.util.AppConstants.READ_STORIES_GROUP_KEY;
+import static com.newsblur.util.AppConstants.SAVED_SEARCHES_GROUP_KEY;
+import static com.newsblur.util.AppConstants.SAVED_STORIES_GROUP_KEY;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,8 +43,10 @@ import com.newsblur.domain.Folder;
 import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.util.Session;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedListOrder;
+import com.newsblur.util.SessionDataSource;
 import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.ImageLoader;
@@ -51,21 +61,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     private enum GroupType { GLOBAL_SHARED_STORIES, ALL_SHARED_STORIES, INFREQUENT_STORIES, ALL_STORIES, FOLDER, READ_STORIES, SAVED_SEARCHES, SAVED_STORIES }
     private enum ChildType { SOCIAL_FEED, FEED, SAVED_BY_TAG, SAVED_SEARCH }
-
-    // The following keys are used to mark the position of the special meta-folders within
-    // the folders array.  Since the ExpandableListView doesn't handle collapsing of views
-    // set to View.GONE, we have to totally remove any hidden groups from the group count
-    // and adjust all folder indicies accordingly. Fake folders are created with these
-    // very unlikely names and layout methods check against them before assuming a row is
-    // a normal folder.  All the string comparison is a small price to pay to avoid the
-    // alternative of index-counting in a situation where some rows might be disabled.
-    private static final String GLOBAL_SHARED_STORIES_GROUP_KEY = "GLOBAL_SHARED_STORIES_GROUP_KEY";
-    private static final String ALL_SHARED_STORIES_GROUP_KEY = "ALL_SHARED_STORIES_GROUP_KEY";
-    private static final String ALL_STORIES_GROUP_KEY = "ALL_STORIES_GROUP_KEY";
-    private static final String INFREQUENT_SITE_STORIES_GROUP_KEY = "INFREQUENT_SITE_STORIES_GROUP_KEY";
-    private static final String READ_STORIES_GROUP_KEY = "READ_STORIES_GROUP_KEY";
-    private static final String SAVED_STORIES_GROUP_KEY = "SAVED_STORIES_GROUP_KEY";
-    private static final String SAVED_SEARCHES_GROUP_KEY = "SAVED_SEARCHES_GROUP_KEY";
 
     private final static float defaultTextSize_childName = 14;
     private final static float defaultTextSize_groupName = 13;
@@ -982,4 +977,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         this.spacingStyle = spacingStyle;
     }
 
+    public SessionDataSource buildSessionDataSource(Session activeSession) {
+        return new SessionDataSource(activeSession, activeFolderNames, activeFolderChildren);
+    }
 }

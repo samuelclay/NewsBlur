@@ -423,11 +423,11 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 return true;
 
             case R.id.menu_mark_older_stories_as_read:
-                feedUtils.markRead(context, fs, story.timestamp, null, R.array.mark_older_read_options, false);
+                feedUtils.markRead(context, fs, story.timestamp, null, R.array.mark_older_read_options);
                 return true;
 
             case R.id.menu_mark_newer_stories_as_read:
-                feedUtils.markRead(context, fs, null, story.timestamp, R.array.mark_newer_read_options, false);
+                feedUtils.markRead(context, fs, null, story.timestamp, R.array.mark_newer_read_options);
                 return true;
 
             case R.id.menu_send_story:
@@ -456,7 +456,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             case R.id.menu_go_to_feed:
                 FeedSet fs = FeedSet.singleFeed(story.feedId);
                 FeedItemsList.startActivity(context, fs,
-                        feedUtils.getFeed(story.feedId), null);
+                        feedUtils.getFeed(story.feedId), null, null);
                 return true;
             default:
                 return false;
