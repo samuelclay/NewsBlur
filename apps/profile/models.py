@@ -1028,7 +1028,9 @@ class Profile(models.Model):
         
         self.setup_premium_history()
                                       
-        if not self.is_premium:
+        if order_id == "nb.premium.archive.99":
+            self.activate_archive()
+        elif not self.is_premium:
             self.activate_premium()
         
         logging.user(self.user, "~FG~BBNew Android premium subscription: $%s~FW" % amount)

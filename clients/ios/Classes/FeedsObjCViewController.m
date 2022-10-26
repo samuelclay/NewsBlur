@@ -683,13 +683,14 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     activityButton.accessibilityLabel = @"Activities";
     [activityButton setImage:activityImage forState:UIControlStateNormal];
     activityButton.tintColor = UIColorFromRGB(0x8F918B);
-    [activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 12, 4, -12)];
+    [activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 0, 4, 0)];
     [activityButton addTarget:self
                        action:@selector(showInteractionsPopover:)
              forControlEvents:UIControlEventTouchUpInside];
     activitiesButton = [[UIBarButtonItem alloc]
                         initWithCustomView:activityButton];
     activitiesButton.width = 32;
+//    activityButton.backgroundColor = UIColor.redColor;
     self.navigationItem.rightBarButtonItem = activitiesButton;
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
@@ -2765,7 +2766,7 @@ heightForHeaderInSection:(NSInteger)section {
     userAvatarButton.pointerInteractionEnabled = YES;
     userAvatarButton.accessibilityLabel = @"User info";
     userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
-    UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, 10, 0);
+    UIEdgeInsets insets = UIEdgeInsetsMake(0, -10, 10, 0);
     userAvatarButton.contentEdgeInsets = insets;
     
     NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL];
@@ -2785,7 +2786,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     [userInfoView addSubview:userAvatarButton];
     
-    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(54, yOffset, userInfoView.frame.size.width, 16)];
+    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(50, yOffset, userInfoView.frame.size.width, 16)];
     userLabel.text = appDelegate.activeUsername;
     userLabel.font = userLabelFont;
     userLabel.textColor = UIColorFromRGB(0x404040);
@@ -2816,6 +2817,8 @@ heightForHeaderInSection:(NSInteger)section {
     [userInfoView addSubview:positiveCount];
     
     [userInfoView sizeToFit];
+    
+//    userInfoView.backgroundColor = UIColor.blueColor;
     
     self.navigationItem.titleView = userInfoView;
 }

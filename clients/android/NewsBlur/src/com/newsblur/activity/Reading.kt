@@ -800,6 +800,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
     companion object {
         const val EXTRA_FEEDSET = "feed_set"
         const val EXTRA_STORY_HASH = "story_hash"
+        const val EXTRA_STORY = "story"
         private const val BUNDLE_STARTING_UNREAD = "starting_unread"
 
         /** special value for starting story hash that jumps to the first unread.  */

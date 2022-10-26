@@ -1,17 +1,16 @@
 buildscript {
-    ext.kotlin_version = '1.6.21'
+    ext.kotlin_version = '1.7.10'
     repositories {
         mavenCentral()
         maven {
             url 'https://maven.google.com'
         }
-        jcenter()
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.2'
+        classpath 'com.android.tools.build:gradle:7.3.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.40.5'
+        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.43.2'
     }
 }
 
@@ -20,7 +19,6 @@ repositories {
     maven {
         url 'https://maven.google.com'
     }
-    jcenter()
     google()
 }
 
@@ -44,8 +42,10 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
     implementation 'androidx.lifecycle:lifecycle-process:2.5.1'
     implementation 'androidx.core:core-splashscreen:1.0.0'
-    implementation "com.google.dagger:hilt-android:2.40.5"
-    kapt "com.google.dagger:hilt-compiler:2.40.5"
+    implementation "com.google.dagger:hilt-android:2.43.2"
+    kapt "com.google.dagger:hilt-compiler:2.43.2"
+
+    testImplementation "junit:junit:4.13.2"
 }
 
 android {
@@ -54,14 +54,17 @@ android {
         applicationId "com.newsblur"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 205
-        versionName "12.0.1"
+        versionCode 207
+        versionName "12.1.1"
     }
     compileOptions.with {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    android.buildFeatures.viewBinding = true
+
+    buildFeatures {
+        viewBinding = true
+    }
 
     sourceSets {
         main {
@@ -69,6 +72,9 @@ android {
             java.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
+        }
+        test {
+            java.srcDirs = ['test']
         }
     }
 
