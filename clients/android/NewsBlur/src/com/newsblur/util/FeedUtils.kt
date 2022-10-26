@@ -7,17 +7,20 @@ import android.text.TextUtils
 import com.newsblur.R
 import com.newsblur.activity.NbActivity
 import com.newsblur.database.BlurDatabaseHelper
-import com.newsblur.domain.*
+import com.newsblur.domain.Classifier
+import com.newsblur.domain.Feed
+import com.newsblur.domain.Story
 import com.newsblur.fragment.ReadingActionConfirmationFragment
 import com.newsblur.network.APIConstants
 import com.newsblur.network.APIManager
-import com.newsblur.service.NBSyncService
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_METADATA
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_SOCIAL
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_STORY
+import com.newsblur.service.NBSyncService
+import com.newsblur.util.FeedExt.disableNotification
+import com.newsblur.util.FeedExt.setNotifyFocus
+import com.newsblur.util.FeedExt.setNotifyUnread
 import com.newsblur.util.UIUtils.syncUpdateStatus
-import java.lang.IllegalStateException
-import java.util.*
 
 class FeedUtils(
         private val dbHelper: BlurDatabaseHelper,
@@ -207,10 +210,13 @@ class FeedUtils(
         triggerSync(context)
     }
 
+    fun markRead(activity: NbActivity, fs: FeedSet, olderThan: Long?, newerThan: Long?, choicesRid: Int) =
+            markRead(activity, fs, olderThan, newerThan, choicesRid, null)
+
     /**
      * Marks some or all of the stories in a FeedSet as read for an activity, handling confirmation dialogues as necessary.
      */
-    fun markRead(activity: NbActivity, fs: FeedSet, olderThan: Long?, newerThan: Long?, choicesRid: Int, finishAfter: Boolean) {
+    fun markRead(activity: NbActivity, fs: FeedSet, olderThan: Long?, newerThan: Long?, choicesRid: Int, callback: ReadingActionListener?) {
         val ra: ReadingAction = if (fs.isAllNormal && (olderThan != null || newerThan != null)) {
             // the mark-all-read API doesn't support range bounding, so we need to pass each and every
             // feed ID to the API instead.
@@ -249,9 +255,7 @@ class FeedUtils(
         }
         if (doImmediate) {
             doAction(ra, activity)
-            if (finishAfter) {
-                activity.finish()
-            }
+            callback?.onReadingActionCompleted()
         } else {
             val title: String? = when {
                 fs.isAllNormal -> {
@@ -267,32 +271,29 @@ class FeedUtils(
                     dbHelper.getFeed(fs.singleFeed)?.title ?: ""
                 }
             }
-            val dialog = ReadingActionConfirmationFragment.newInstance(ra, title, optionalOverrideMessage, choicesRid, finishAfter)
+            val dialog = ReadingActionConfirmationFragment.newInstance(ra, title, optionalOverrideMessage, choicesRid, callback)
             dialog.show(activity.supportFragmentManager, "dialog")
         }
     }
 
     fun disableNotifications(context: Context, feed: Feed) {
-        updateFeedNotifications(context, feed, enable = false, focusOnly = false)
+        feed.disableNotification()
+        updateFeedNotifications(context, feed)
     }
 
     fun enableUnreadNotifications(context: Context, feed: Feed) {
-        updateFeedNotifications(context, feed, enable = true, focusOnly = false)
+        feed.setNotifyUnread()
+        updateFeedNotifications(context, feed)
     }
 
     fun enableFocusNotifications(context: Context, feed: Feed) {
-        updateFeedNotifications(context, feed, enable = true, focusOnly = true)
+        feed.setNotifyFocus()
+        updateFeedNotifications(context, feed)
     }
 
-    private fun updateFeedNotifications(context: Context, feed: Feed, enable: Boolean, focusOnly: Boolean) {
+    fun updateFeedNotifications(context: Context, feed: Feed) {
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    if (focusOnly) {
-                        feed.setNotifyFocus()
-                    } else {
-                        feed.setNotifyUnread()
-                    }
-                    feed.enableAndroidNotifications(enable)
                     dbHelper.updateFeed(feed)
                     val ra = ReadingAction.setNotify(feed.feedId, feed.notificationTypes, feed.notificationFilter)
                     doAction(ra, context)
@@ -507,6 +508,24 @@ class FeedUtils(
         fun inferFeedId(storyHash: String?): String? {
             val parts = TextUtils.split(storyHash, ":")
             return if (parts.size != 2) null else parts[0]
+        }
+
+        /**
+         * Copy of TextUtils.equals because of Java for unit tests
+         */
+        @JvmStatic
+        fun textUtilsEquals(a: CharSequence?, b: CharSequence?): Boolean {
+            if (a === b) return true
+            return if (a != null && b != null && a.length == b.length) {
+                if (a is String && b is String) {
+                    a == b
+                } else {
+                    for (i in a.indices) {
+                        if (a[i] != b[i]) return false
+                    }
+                    true
+                }
+            } else false
         }
     }
 }

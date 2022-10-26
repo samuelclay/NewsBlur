@@ -8,8 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.newsblur.R
 import com.newsblur.databinding.ViewFeedSearchRowBinding
 import com.newsblur.domain.FeedResult
-import com.newsblur.util.FeedUtils
 import com.newsblur.util.ImageLoader
+import com.newsblur.util.setViewGone
+import com.newsblur.util.setViewVisible
 
 class FeedSearchAdapter(
         private val onClickListener: OnFeedSearchResultClickListener,
@@ -30,12 +31,11 @@ class FeedSearchAdapter(
 
     override fun getItemCount(): Int = resultsList.size
 
-    fun replaceAll(results: Array<FeedResult>) {
-        val newResultsList: List<FeedResult> = results.toList()
-        val diffCallback = ResultDiffCallback(resultsList, newResultsList)
+    fun replaceAll(results: List<FeedResult>) {
+        val diffCallback = ResultDiffCallback(resultsList, results)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         resultsList.clear()
-        resultsList.addAll(newResultsList)
+        resultsList.addAll(results)
         diffResult.dispatchUpdatesTo(this)
     }
 
@@ -46,19 +46,25 @@ class FeedSearchAdapter(
         fun bind(result: FeedResult) {
             val resultFaviconUrl = result.faviconUrl
             if (resultFaviconUrl.isNotEmpty()) {
-               iconLoader.displayImage(resultFaviconUrl, binding.imgFeedIcon)
+                iconLoader.displayImage(resultFaviconUrl, binding.imgFeedIcon)
             }
 
             binding.textTitle.text = result.label
             binding.textTagline.text = result.tagline
-            val subscribersCountText = binding.root.context.getString(R.string.feed_subscribers, result.numberOfSubscriber)
-            binding.textSubscriptionCount.text = subscribersCountText
+
+            if (result.numberOfSubscriber > 0) {
+                val subscribersCountText = binding.root.context.getString(R.string.feed_subscribers, result.numberOfSubscriber)
+                binding.textSubscriptionCount.text = subscribersCountText
+                binding.textSubscriptionCount.setViewVisible()
+            } else {
+                binding.textSubscriptionCount.setViewGone()
+            }
 
             if (result.url.isNotEmpty()) {
                 binding.rowResultAddress.text = result.url
-                binding.rowResultAddress.visibility = View.VISIBLE
+                binding.rowResultAddress.setViewVisible()
             } else {
-                binding.rowResultAddress.visibility = View.GONE
+                binding.rowResultAddress.setViewGone()
             }
 
             itemView.setOnClickListener {

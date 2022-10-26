@@ -12,6 +12,7 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.util.FeedListOrder;
+import com.newsblur.util.FeedUtils;
 
 public class Feed implements Comparable<Feed>, Serializable {	
 
@@ -74,7 +75,6 @@ public class Feed implements Comparable<Feed>, Serializable {
     @SerializedName("notification_types")
     public List<String> notificationTypes;
 
-    // NB: only stored if notificationTypes was set to include android
     @SerializedName("notification_filter")
     public String notificationFilter;
 
@@ -102,9 +102,7 @@ public class Feed implements Comparable<Feed>, Serializable {
 		values.put(DatabaseConstants.FEED_TITLE, title);
 		values.put(DatabaseConstants.FEED_UPDATED_SECONDS, lastUpdated);
         values.put(DatabaseConstants.FEED_NOTIFICATION_TYPES, DatabaseConstants.flattenStringList(notificationTypes));
-        if (isNotifyAndroid()) {
-            values.put(DatabaseConstants.FEED_NOTIFICATION_FILTER, notificationFilter);
-        }
+        values.put(DatabaseConstants.FEED_NOTIFICATION_FILTER, notificationFilter);
         values.put(DatabaseConstants.FEED_FETCH_PENDING, fetchPending);
 		return values;
 	}
@@ -156,7 +154,7 @@ public class Feed implements Comparable<Feed>, Serializable {
 	public boolean equals(Object o) {
         if (! (o instanceof Feed)) return false;
 		Feed otherFeed = (Feed) o;
-		return (TextUtils.equals(feedId, otherFeed.feedId));
+		return (FeedUtils.textUtilsEquals(feedId, otherFeed.feedId));
 	}
 
     @Override
@@ -168,47 +166,6 @@ public class Feed implements Comparable<Feed>, Serializable {
         return title.compareToIgnoreCase(f.title);
     }
 
-    private boolean isNotifyAndroid() {
-        if (notificationTypes == null) return false;
-        for (String type : notificationTypes) {
-            if (type.equals(NOTIFY_TYPE_ANDROID)) return true;
-        }
-        return false;
-    }
-
-    public void enableAndroidNotifications(boolean enable) {
-        if (notificationTypes == null) notificationTypes = new ArrayList<String>();
-        if (enable && (!notificationTypes.contains(NOTIFY_TYPE_ANDROID))) {
-            notificationTypes.add(NOTIFY_TYPE_ANDROID);
-        }
-        if (!enable) {
-            notificationTypes.remove(NOTIFY_TYPE_ANDROID);
-            notificationFilter = null;
-        }
-    }
-
-    public boolean isNotifyUnread() {
-        if (!isNotifyAndroid()) return false;
-        return NOTIFY_FILTER_UNREAD.equals(notificationFilter);
-    }
-
-    public boolean isNotifyFocus() {
-        if (!isNotifyAndroid()) return false;
-        return NOTIFY_FILTER_FOCUS.equals(notificationFilter);
-    }
-
-    public void setNotifyUnread() {
-        this.notificationFilter = NOTIFY_FILTER_UNREAD;
-    }
-
-    public void setNotifyFocus() {
-        this.notificationFilter = NOTIFY_FILTER_FOCUS;
-    }
-
-    private static final String NOTIFY_TYPE_ANDROID = "android";
-    public static final String NOTIFY_FILTER_UNREAD = "unread";
-    public static final String NOTIFY_FILTER_FOCUS = "focus";
-
     public static Comparator<Feed> getFeedListOrderComparator(FeedListOrder feedListOrder) {
         return (o1, o2) -> {
             if (feedListOrder == FeedListOrder.MOST_USED_AT_TOP) {
@@ -218,4 +175,7 @@ public class Feed implements Comparable<Feed>, Serializable {
             }
         };
     }
+
+    public static String NOTIFY_FILTER_UNREAD = "unread";
+    public static String NOTIFY_FILTER_FOCUS = "focus";
 }

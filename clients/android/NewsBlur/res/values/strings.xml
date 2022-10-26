@@ -281,12 +281,14 @@
     <string name="menu_mute_sites">Mute Sites…</string>
     <string name="mute_sites">Mute Sites</string>
     <string name="menu_widget">Widget…</string>
+    <string name="menu_notifications">Notifications…</string>
     <string name="widget">Widget</string>
     <string name="title_widget_setup">Tap to setup in NewsBlur</string>
     <string name="title_no_subscriptions">No active subscriptions detected</string>
     <string name="title_widget_loading">Loading…</string>
 
     <string name="import_export_title">Import/Export OPML</string>
+    <string name="notifications_title">Notifications</string>
     
     <string name="premium_subscribers_folder">Reading by folder is only available to</string>
     <string name="premium_subscribers_search">Search is only available to</string>
@@ -577,6 +579,8 @@
         <item>DOWN_NEXT</item>
     </string-array>
     <string name="default_volume_key_navigation_value">OFF</string>
+    <string name="settings_load_next_on_mark_read">Open next feed/folder after read</string>
+    <string name="settings_load_next_on_mark_read_summary">Load the next feed/folder after marked as read</string>
 
     <string name="settings_confirm_mark_all_read">Confirm mark all read on…</string>
     <string name="none">Neither</string>
@@ -711,4 +715,10 @@
     <string name="add_feed">Add feed</string>
 
     <string name="story_author">• %s</string>
+
+    <string name="notification_email">Email</string>
+    <string name="notification_web">Web</string>
+    <string name="notification_ios">iOS</string>
+    <string name="notification_android">Android</string>
+    <string name="no_feed_notifications">No feed notifications</string>
 </resources>

@@ -12,10 +12,6 @@ annotation class IconFileCache
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class ThumbnailFileCache
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
 annotation class IconLoader
 
 @Qualifier

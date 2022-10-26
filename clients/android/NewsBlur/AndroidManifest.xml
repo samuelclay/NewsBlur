@@ -75,6 +75,7 @@
             android:label="@string/settings"/>
 
         <activity android:name=".activity.ImportExportActivity" />
+        <activity android:name=".activity.NotificationsActivity" />
         <activity
             android:name=".activity.WidgetConfig"
             android:launchMode="singleTask"
@@ -167,6 +168,7 @@
         <receiver android:name=".util.NotifyDismissReceiver" android:exported="false" />
         <receiver android:name=".util.NotifySaveReceiver" android:exported="false" />
         <receiver android:name=".util.NotifyMarkreadReceiver" android:exported="false" />
+        <receiver android:name=".util.NotifyShareReceiver" android:exported="false" />
         <receiver android:name=".widget.WidgetProvider"
             android:exported="false">
             <intent-filter>

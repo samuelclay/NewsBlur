@@ -18,4 +18,13 @@ data class FeedResult(
 
     val faviconUrl: String
         get() = "${APIConstants.buildUrl(APIConstants.PATH_FEED_FAVICON_URL)}$id"
+
+    companion object {
+        fun createFeedResultForUrl(url: String) = FeedResult(
+                id = -1,
+                tagline = "Add feed manually by URL",
+                label = url,
+                url = url
+        )
+    }
 }

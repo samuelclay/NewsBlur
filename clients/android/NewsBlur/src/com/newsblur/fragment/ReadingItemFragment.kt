@@ -419,7 +419,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             true
         }
         R.id.menu_go_to_feed -> {
-            FeedItemsList.startActivity(context, fs, dbHelper.getFeed(story!!.feedId), null)
+            FeedItemsList.startActivity(context, fs, dbHelper.getFeed(story!!.feedId), null, null)
             true
         }
         else -> {
