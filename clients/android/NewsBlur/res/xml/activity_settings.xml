@@ -148,6 +148,11 @@
             android:entries="@array/volume_key_navigation_entries"
             android:entryValues="@array/volume_key_navigation_values"
             android:defaultValue="@string/default_volume_key_navigation_value" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="load_next_on_mark_read"
+            android:title="@string/settings_load_next_on_mark_read"
+            android:summary="@string/settings_load_next_on_mark_read_summary" />
     </PreferenceCategory>
 
     <PreferenceCategory 

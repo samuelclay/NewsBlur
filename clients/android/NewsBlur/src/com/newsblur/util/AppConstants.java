@@ -95,4 +95,19 @@ public class AppConstants {
     // Free standard account sites limit
     public final static int FREE_ACCOUNT_SITE_LIMIT = 64;
 
+    // The following keys are used to mark the position of the special meta-folders within
+    // the folders array.  Since the ExpandableListView doesn't handle collapsing of views
+    // set to View.GONE, we have to totally remove any hidden groups from the group count
+    // and adjust all folder indicies accordingly. Fake folders are created with these
+    // very unlikely names and layout methods check against them before assuming a row is
+    // a normal folder.  All the string comparison is a small price to pay to avoid the
+    // alternative of index-counting in a situation where some rows might be disabled.
+    public static final String GLOBAL_SHARED_STORIES_GROUP_KEY = "GLOBAL_SHARED_STORIES_GROUP_KEY";
+    public static final String ALL_SHARED_STORIES_GROUP_KEY = "ALL_SHARED_STORIES_GROUP_KEY";
+    public static final String ALL_STORIES_GROUP_KEY = "ALL_STORIES_GROUP_KEY";
+    public static final String INFREQUENT_SITE_STORIES_GROUP_KEY = "INFREQUENT_SITE_STORIES_GROUP_KEY";
+    public static final String READ_STORIES_GROUP_KEY = "READ_STORIES_GROUP_KEY";
+    public static final String SAVED_STORIES_GROUP_KEY = "SAVED_STORIES_GROUP_KEY";
+    public static final String SAVED_SEARCHES_GROUP_KEY = "SAVED_SEARCHES_GROUP_KEY";
+
 }

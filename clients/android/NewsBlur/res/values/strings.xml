@@ -579,6 +579,8 @@
         <item>DOWN_NEXT</item>
     </string-array>
     <string name="default_volume_key_navigation_value">OFF</string>
+    <string name="settings_load_next_on_mark_read">Open next feed/folder after read</string>
+    <string name="settings_load_next_on_mark_read_summary">Load the next feed/folder after marked as read</string>
 
     <string name="settings_confirm_mark_all_read">Confirm mark all read on…</string>
     <string name="none">Neither</string>

@@ -27,7 +27,7 @@ interface ItemListContextMenuDelegate {
 open class ItemListContextMenuDelegateImpl(
         private val activity: ItemsList,
         private val feedUtils: FeedUtils,
-) : ItemListContextMenuDelegate {
+) : ItemListContextMenuDelegate, ReadingActionListener by activity {
 
     override fun onCreateMenuOptions(menu: Menu, menuInflater: MenuInflater, fs: FeedSet): Boolean {
         menuInflater.inflate(R.menu.itemslist, menu)
@@ -171,7 +171,7 @@ open class ItemListContextMenuDelegateImpl(
             activity.finish()
             return true
         } else if (item.itemId == R.id.menu_mark_all_as_read) {
-            feedUtils.markRead(activity, fs, null, null, R.array.mark_all_read_options, true)
+            feedUtils.markRead(activity, fs, null, null, R.array.mark_all_read_options, this)
             return true
         } else if (item.itemId == R.id.menu_story_order_newest) {
             updateStoryOrder(fragment, fs, StoryOrder.NEWEST)
