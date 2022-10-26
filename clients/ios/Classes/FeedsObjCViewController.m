@@ -452,7 +452,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !UIInterfaceOrientationIsLandscape(orientation)) {
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_yellow_icn.png"] forSegmentAtIndex:1];
         [self.intelligenceControl setImage:[Utilities imageNamed:@"indicator-focus" sized:14] forSegmentAtIndex:2];
-        [self.intelligenceControl setImage:[Utilities imageNamed:@"saved-stories" sized:14] forSegmentAtIndex:3];
+        [self.intelligenceControl setImage:[Utilities imageNamed:@"unread_blue_icn.png" sized:14] forSegmentAtIndex:3];
         
         [self.intelligenceControl setWidth:45 forSegmentAtIndex:0];
         [self.intelligenceControl setWidth:40 forSegmentAtIndex:1];
@@ -460,8 +460,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self.intelligenceControl setWidth:40 forSegmentAtIndex:3];
     } else {
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_yellow.png"] forSegmentAtIndex:1];
-        [self.intelligenceControl setImage:[Utilities imageNamed:@"indicator-focus" sized:14] forSegmentAtIndex:2];
-        [self.intelligenceControl setImage:[Utilities imageNamed:@"saved-stories" sized:14] forSegmentAtIndex:3];
+        [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_green.png"] forSegmentAtIndex:2];
+        [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_blue.png"] forSegmentAtIndex:3];
         
         [self.intelligenceControl setWidth:40 forSegmentAtIndex:0];
         [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
@@ -2765,6 +2765,8 @@ heightForHeaderInSection:(NSInteger)section {
     userAvatarButton.pointerInteractionEnabled = YES;
     userAvatarButton.accessibilityLabel = @"User info";
     userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
+    UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, 10, 0);
+    userAvatarButton.contentEdgeInsets = insets;
     
     NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL];
     [avatarRequest addValue:@"image/*" forHTTPHeaderField:@"Accept"];
@@ -2773,7 +2775,7 @@ heightForHeaderInSection:(NSInteger)section {
     typeof(self) __weak weakSelf = self;
     [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
         typeof(weakSelf) __strong strongSelf = weakSelf;
-        image = [Utilities roundCorneredImage:image radius:6 convertToSize:CGSizeMake(40, 40)];
+        image = [Utilities roundCorneredImage:image radius:6 convertToSize:CGSizeMake(38, 38)];
         image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         [(UIButton *)strongSelf.userAvatarButton setImage:image forState:UIControlStateNormal];
         
