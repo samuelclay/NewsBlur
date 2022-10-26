@@ -12,7 +12,8 @@
 
     <item android:id="@+id/menu_widget"
         android:title="@string/widget"
-        app:showAsAction="never" />
+        app:showAsAction="never"
+        android:visible="false"/>
 
     <item android:id="@+id/menu_premium_account"
         android:title="@string/menu_premium_account"
@@ -20,6 +21,10 @@
 
     <item android:id="@+id/menu_import_export"
         android:title="@string/import_export"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/menu_notifications"
+        android:title="@string/menu_notifications"
         app:showAsAction="never" />
 
     <item android:id="@+id/menu_text_size"

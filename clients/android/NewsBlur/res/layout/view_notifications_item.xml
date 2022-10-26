@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="8dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/img_icon"
+            android:layout_width="19dp"
+            android:layout_height="19dp"
+            app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/text_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="28dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+    </FrameLayout>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/group_filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:orientation="horizontal"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_unread"
+            style="?toggleButton"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/state_unread"
+            app:icon="@drawable/ic_indicator_unread"
+            app:iconGravity="textStart"
+            app:iconSize="19dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_focus"
+            style="?toggleButton"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/state_focus"
+            app:icon="@drawable/ic_indicator_focus"
+            app:iconGravity="textStart"
+            app:iconSize="16dp"
+            app:iconTint="#FF6BBF7A" />
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/group_platform"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_email"
+            style="?toggleButton"
+            android:layout_width="wrap_content"
+            android:layout_marginEnd="2dp"
+            android:layout_weight="1"
+            android:checkable="true"
+            android:gravity="center"
+            android:text="@string/notification_email" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_web"
+            style="?toggleButton"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/notification_web" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_ios"
+            style="?toggleButton"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/notification_ios" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_android"
+            style="?toggleButton"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/notification_android" />
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
