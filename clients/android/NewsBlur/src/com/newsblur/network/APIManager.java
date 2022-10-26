@@ -570,6 +570,7 @@ public class APIManager {
 		return response.getResponse(gson, AddFeedResponse.class);
 	}
 
+    @Nullable
 	public FeedResult[] searchForFeed(String searchTerm) {
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_FEED_SEARCH_TERM, searchTerm);

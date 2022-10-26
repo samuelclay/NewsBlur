@@ -20,7 +20,6 @@ import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
 import java.net.MalformedURLException
 import java.net.URL
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -86,13 +85,9 @@ class FeedSearchActivity : NbActivity(), OnFeedSearchResultClickListener, AddFee
             override fun afterTextChanged(s: Editable) {
                 searchQueryRunnable?.let { handler.removeCallbacks(it) }
                 searchQueryRunnable = Runnable {
-                    if (tryAddByURL(s.toString())) {
-                        return@Runnable
-                    }
-
                     syncClearIconVisibility(s)
                     if (s.isNotEmpty()) searchQuery(s)
-                    else syncSearchResults(arrayOf())
+                    else syncSearchResults(emptyList())
                 }
                 handler.postDelayed(searchQueryRunnable!!, 350)
             }
@@ -111,7 +106,12 @@ class FeedSearchActivity : NbActivity(), OnFeedSearchResultClickListener, AddFee
                 onPostExecute = {
                     binding.loadingCircle.visibility = View.GONE
                     binding.clearText.visibility = View.VISIBLE
-                    syncSearchResults(it ?: arrayOf())
+                    syncSearchResults(buildList {
+                        if (matchesUrl(query.toString())) {
+                            add(FeedResult.createFeedResultForUrl(query.toString().lowercase()))
+                        }
+                        addAll(it ?: arrayOf())
+                    })
                 }
         )
     }
@@ -120,15 +120,20 @@ class FeedSearchActivity : NbActivity(), OnFeedSearchResultClickListener, AddFee
         binding.clearText.visibility = if (query.isNotEmpty()) View.VISIBLE else View.GONE
     }
 
-    private fun syncSearchResults(results: Array<FeedResult>) {
+    private fun syncSearchResults(results: List<FeedResult>) {
         adapter.replaceAll(results)
     }
 
+    private fun showAddFeedDialog(feedUrl: String, feedLabel: String) {
+        val addFeedFragment: DialogFragment = AddFeedFragment.newInstance(feedUrl, feedLabel)
+        addFeedFragment.show(supportFragmentManager, "dialog")
+    }
+
     /**
-     * See if the text entered in the query field was actually a URL so we can skip the
-     * search step and just let users who know feed URLs directly subscribe.
+     * See if the text entered in the query field was actually a URL
+     * to let users who know feed URLs directly subscribe.
      */
-    private fun tryAddByURL(s: String): Boolean {
+    private fun matchesUrl(s: String): Boolean {
         var u: URL? = null
         try {
             u = URL(s)
@@ -144,12 +149,6 @@ class FeedSearchActivity : NbActivity(), OnFeedSearchResultClickListener, AddFee
         if (u.host == null || u.host.trim().isEmpty()) {
             return false
         }
-        showAddFeedDialog(s, s)
         return true
-    }
-
-    private fun showAddFeedDialog(feedUrl: String, feedLabel: String) {
-        val addFeedFragment: DialogFragment = AddFeedFragment.newInstance(feedUrl, feedLabel)
-        addFeedFragment.show(supportFragmentManager, "dialog")
     }
 }

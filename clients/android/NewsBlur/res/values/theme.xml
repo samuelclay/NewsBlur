@@ -54,6 +54,7 @@
         <item name="preferenceTheme">@style/preferenceTheme</item>
         <item name="fontFamily">@font/whitney</item>
         <item name="circleProgressIndicator">@style/circleProgressIndicator</item>
+        <item name="toggleButton">@style/toggleButton</item>
     </style>
 
     <style name="NewsBlurDarkTheme" parent="Theme.MaterialComponents.NoActionBar">
@@ -111,6 +112,7 @@
         <item name="android:navigationBarColor">@android:color/black</item>
         <item name="fontFamily">@font/whitney</item>
         <item name="circleProgressIndicator">@style/circleProgressIndicator</item>
+        <item name="toggleButton">@style/toggleButton.dark</item>
     </style>
 
     <style name="NewsBlurBlackTheme" parent="Theme.MaterialComponents.NoActionBar" >
@@ -168,6 +170,7 @@
         <item name="android:navigationBarColor">@android:color/black</item>
         <item name="fontFamily">@font/whitney</item>
         <item name="circleProgressIndicator">@style/circleProgressIndicator</item>
+        <item name="toggleButton">@style/toggleButton.dark</item>
     </style>
 
     <style name="NewsBlurTheme.Translucent" parent="NewsBlurTheme">
