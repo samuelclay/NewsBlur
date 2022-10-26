@@ -5,8 +5,12 @@ import static com.newsblur.service.NBSyncReceiver.UPDATE_STATUS;
 import static com.newsblur.service.NBSyncReceiver.UPDATE_STORY;
 
 import android.os.Bundle;
+
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
+
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -19,23 +23,25 @@ import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.ActivityItemslistBinding;
 import com.newsblur.delegate.ItemListContextMenuDelegate;
 import com.newsblur.delegate.ItemListContextMenuDelegateImpl;
-import com.newsblur.di.IconLoader;
 import com.newsblur.fragment.ItemSetFragment;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.ImageLoader;
+import com.newsblur.util.ReadingActionListener;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.Session;
+import com.newsblur.util.SessionDataSource;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
+import com.newsblur.viewModel.ItemListViewModel;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public abstract class ItemsList extends NbActivity {
+public abstract class ItemsList extends NbActivity implements ReadingActionListener {
 
     @Inject
     BlurDatabaseHelper dbHelper;
@@ -43,21 +49,21 @@ public abstract class ItemsList extends NbActivity {
     @Inject
     FeedUtils feedUtils;
 
-    @Inject
-    @IconLoader
-    ImageLoader iconLoader;
-
     public static final String EXTRA_FEED_SET = "feed_set";
     public static final String EXTRA_STORY_HASH = "story_hash";
     public static final String EXTRA_WIDGET_STORY = "widget_story";
     public static final String EXTRA_VISIBLE_SEARCH = "visibleSearch";
+    public static final String EXTRA_SESSION_DATA = "session_data";
     private static final String BUNDLE_ACTIVE_SEARCH_QUERY = "activeSearchQuery";
-    private ActivityItemslistBinding binding;
 
-    protected ItemListContextMenuDelegate contextMenuDelegate;
-	protected ItemSetFragment itemSetFragment;
-	protected StateFilter intelState;
+    protected ItemListViewModel viewModel;
     protected FeedSet fs;
+
+    private ItemSetFragment itemSetFragment;
+    private ActivityItemslistBinding binding;
+    private ItemListContextMenuDelegate contextMenuDelegate;
+    @Nullable
+    private SessionDataSource sessionDataSource;
 	
 	@Override
     protected void onCreate(Bundle bundle) {
@@ -66,8 +72,9 @@ public abstract class ItemsList extends NbActivity {
         overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 
         contextMenuDelegate = new ItemListContextMenuDelegateImpl(this, feedUtils);
+        viewModel = new ViewModelProvider(this).get(ItemListViewModel.class);
 		fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
-		intelState = PrefsUtils.getStateFilter(this);
+        sessionDataSource = (SessionDataSource) getIntent().getSerializableExtra(EXTRA_SESSION_DATA);
 
         // this is not strictly necessary, since our first refresh with the fs will swap in
         // the correct session, but that can be delayed by sync backup, so we try here to
@@ -77,6 +84,7 @@ public abstract class ItemsList extends NbActivity {
             String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
             UIUtils.startReadingActivity(fs, hash, this);
         } else if (PrefsUtils.isAutoOpenFirstUnread(this)) {
+            StateFilter intelState = PrefsUtils.getStateFilter(this);
             if (dbHelper.getUnreadCount(fs, intelState) > 0) {
                 UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this);
             }
@@ -168,7 +176,7 @@ public abstract class ItemsList extends NbActivity {
         return contextMenuDelegate.onPrepareMenuOptions(menu, fs, showSavedSearch);
     }
 
-	@Override
+    @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
         return contextMenuDelegate.onOptionsItemSelected(item, itemSetFragment, fs, binding.itemlistSearchQuery, getSaveSearchFeedId());
 	}
@@ -186,6 +194,27 @@ public abstract class ItemsList extends NbActivity {
 			    itemSetFragment.hasUpdated();
             }
         }
+    }
+
+    @Override
+    public void onReadingActionCompleted() {
+        if (sessionDataSource != null) {
+            Session session = sessionDataSource.getNextSession();
+            if (session != null) {
+                // set the next session on the parent activity
+                fs = session.getFeedSet();
+                feedUtils.prepareReadingSession(fs, false);
+                triggerSync();
+
+                // set the next session on the child activity
+                viewModel.updateSession(session);
+
+                // update item set fragment
+                itemSetFragment.resetEmptyState();
+                itemSetFragment.hasUpdated();
+                itemSetFragment.scrollToTop();
+            } else finish();
+        } else finish();
     }
 
     private void updateStatusIndicators() {
@@ -266,4 +295,5 @@ public abstract class ItemsList extends NbActivity {
     }
 
     abstract String getSaveSearchFeedId();
+
 }

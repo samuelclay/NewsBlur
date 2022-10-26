@@ -12,6 +12,7 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.util.FeedListOrder;
+import com.newsblur.util.FeedUtils;
 
 public class Feed implements Comparable<Feed>, Serializable {	
 
@@ -153,7 +154,7 @@ public class Feed implements Comparable<Feed>, Serializable {
 	public boolean equals(Object o) {
         if (! (o instanceof Feed)) return false;
 		Feed otherFeed = (Feed) o;
-		return (TextUtils.equals(feedId, otherFeed.feedId));
+		return (FeedUtils.textUtilsEquals(feedId, otherFeed.feedId));
 	}
 
     @Override

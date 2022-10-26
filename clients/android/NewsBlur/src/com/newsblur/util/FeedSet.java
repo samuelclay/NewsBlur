@@ -330,8 +330,8 @@ public class FeedSet implements Serializable {
         if (!( o instanceof FeedSet)) return false;
         FeedSet s = (FeedSet) o;
 
-        if ( !TextUtils.equals(searchQuery, s.searchQuery)) return false;
-        if ( !TextUtils.equals(folderName, s.folderName)) return false;
+        if ( !FeedUtils.textUtilsEquals(searchQuery, s.searchQuery)) return false;
+        if ( !FeedUtils.textUtilsEquals(folderName, s.folderName)) return false;
         if ( isFilterSaved != s.isFilterSaved ) return false;
         if ( (feeds != null) && (s.feeds != null) && s.feeds.equals(feeds) ) return true;
         if ( (socialFeeds != null) && (s.socialFeeds != null) && s.socialFeeds.equals(socialFeeds) ) return true;
