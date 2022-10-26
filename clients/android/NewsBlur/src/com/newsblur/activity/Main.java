@@ -7,19 +7,15 @@ import static com.newsblur.service.NBSyncReceiver.UPDATE_STATUS;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import androidx.appcompat.widget.PopupMenu;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
@@ -28,24 +24,20 @@ import android.widget.AbsListView;
 import com.newsblur.R;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.ActivityMainBinding;
+import com.newsblur.delegate.MainContextMenuDelegate;
+import com.newsblur.delegate.MainContextMenuDelegateImpl;
 import com.newsblur.fragment.FeedIntelligenceSelectorFragment;
 import com.newsblur.fragment.FolderListFragment;
-import com.newsblur.fragment.LoginAsDialogFragment;
-import com.newsblur.fragment.LogoutDialogFragment;
 import com.newsblur.service.BootReceiver;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.PrefConstants.ThemeValue;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ShortcutUtils;
-import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StateFilter;
-import com.newsblur.util.ListTextSize;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
-import com.newsblur.widget.WidgetUtils;
 
 import javax.inject.Inject;
 
@@ -63,10 +55,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     public static final String EXTRA_FORCE_SHOW_FEED_ID = "force_show_feed_id";
 
 	private FolderListFragment folderFeedList;
-	private FragmentManager fragmentManager;
-    private SwipeRefreshLayout swipeLayout;
     private boolean wasSwipeEnabled = false;
     private ActivityMainBinding binding;
+    private MainContextMenuDelegate contextMenuDelegate;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -75,6 +66,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		super.onCreate(savedInstanceState);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
+        contextMenuDelegate = new MainContextMenuDelegateImpl(this, dbHelper);
 		setContentView(binding.getRoot());
 
         // set the status bar to an generic loading message when the activity is first created so
@@ -82,12 +74,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         binding.mainSyncStatus.setText(R.string.loading);
         binding.mainSyncStatus.setVisibility(View.VISIBLE);
 
-        swipeLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_container);
-        swipeLayout.setColorSchemeResources(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
-        swipeLayout.setProgressBackgroundColorSchemeResource(UIUtils.getThemedResource(this, R.attr.actionbarBackground, android.R.attr.background));
-        swipeLayout.setOnRefreshListener(this);
+        binding.swipeContainer.setColorSchemeResources(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
+        binding.swipeContainer.setProgressBackgroundColorSchemeResource(UIUtils.getThemedResource(this, R.attr.actionbarBackground, android.R.attr.background));
+        binding.swipeContainer.setOnRefreshListener(this);
 
-		fragmentManager = getSupportFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
 		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
         ((FeedIntelligenceSelectorFragment) fragmentManager.findFragmentByTag("feedIntelligenceSelector")).setState(folderFeedList.currentState);
 
@@ -196,7 +187,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
 		folderFeedList.changeState(state);
 	}
-	
+
     @Override
 	public void handleUpdate(int updateType) {
         if ((updateType & UPDATE_REBUILD) != 0) {
@@ -250,23 +241,17 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void updateStatusIndicators() {
-        if (NBSyncService.isFeedFolderSyncRunning()) {
-            swipeLayout.setRefreshing(true);
-        } else {
-            swipeLayout.setRefreshing(false);
-        }
+        binding.swipeContainer.setRefreshing(NBSyncService.isFeedFolderSyncRunning());
 
-        if (binding.mainSyncStatus != null) {
-            String syncStatus = NBSyncService.getSyncStatusMessage(this, false);
-            if (syncStatus != null)  {
-                if (AppConstants.VERBOSE_LOG) {
-                    syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
-                }
-                binding.mainSyncStatus.setText(syncStatus);
-                binding.mainSyncStatus.setVisibility(View.VISIBLE);
-            } else {
-                binding.mainSyncStatus.setVisibility(View.GONE);
+        String syncStatus = NBSyncService.getSyncStatusMessage(this, false);
+        if (syncStatus != null)  {
+            if (AppConstants.VERBOSE_LOG) {
+                syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
             }
+            binding.mainSyncStatus.setText(syncStatus);
+            binding.mainSyncStatus.setVisibility(View.VISIBLE);
+        } else {
+            binding.mainSyncStatus.setVisibility(View.GONE);
         }
     }
 
@@ -278,139 +263,12 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void onClickMenuButton() {
-        PopupMenu pm = new PopupMenu(this, binding.mainMenuButton);
-        Menu menu = pm.getMenu();
-        pm.getMenuInflater().inflate(R.menu.main, menu);
-
-        MenuItem loginAsItem = menu.findItem(R.id.menu_loginas);
-        if (NBSyncService.isStaff == Boolean.TRUE) {
-            loginAsItem.setVisible(true);
-        } else {
-            loginAsItem.setVisible(false);
-        }
-
-        ThemeValue themeValue = PrefsUtils.getSelectedTheme(this);
-        if (themeValue == ThemeValue.LIGHT) {
-            menu.findItem(R.id.menu_theme_light).setChecked(true);
-        } else if (themeValue == ThemeValue.DARK) {
-            menu.findItem(R.id.menu_theme_dark).setChecked(true);
-        } else if (themeValue == ThemeValue.BLACK) {
-            menu.findItem(R.id.menu_theme_black).setChecked(true);
-        } else if (themeValue == ThemeValue.AUTO) {
-            menu.findItem(R.id.menu_theme_auto).setChecked(true);
-        }
-
-        SpacingStyle spacingStyle = PrefsUtils.getSpacingStyle(this);
-        if (spacingStyle == SpacingStyle.COMFORTABLE) {
-            menu.findItem(R.id.menu_spacing_comfortable).setChecked(true);
-        } else if (spacingStyle == SpacingStyle.COMPACT) {
-            menu.findItem(R.id.menu_spacing_compact).setChecked(true);
-        }
-
-        ListTextSize listTextSize = ListTextSize.fromSize(PrefsUtils.getListTextSize(this));
-        if (listTextSize == ListTextSize.XS) {
-            menu.findItem(R.id.menu_text_size_xs).setChecked(true);
-        } else if (listTextSize == ListTextSize.S) {
-            menu.findItem(R.id.menu_text_size_s).setChecked(true);
-        } else if (listTextSize == ListTextSize.M) {
-            menu.findItem(R.id.menu_text_size_m).setChecked(true);
-        } else if (listTextSize == ListTextSize.L) {
-            menu.findItem(R.id.menu_text_size_l).setChecked(true);
-        } else if (listTextSize == ListTextSize.XL) {
-            menu.findItem(R.id.menu_text_size_xl).setChecked(true);
-        } else if (listTextSize == ListTextSize.XXL) {
-            menu.findItem(R.id.menu_text_size_xxl).setChecked(true);
-        }
-        
-        menu.findItem(R.id.menu_widget).setVisible(WidgetUtils.hasActiveAppWidgets(this));
-
-        pm.setOnMenuItemClickListener(this);
-        pm.show();
+        contextMenuDelegate.onMenuClick(binding.mainMenuButton, this);
     }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-		if (item.getItemId() == R.id.menu_logout) {
-			DialogFragment newFragment = new LogoutDialogFragment();
-			newFragment.show(getSupportFragmentManager(), "dialog");
-		} else if (item.getItemId() == R.id.menu_settings) {
-            Intent settingsIntent = new Intent(this, Settings.class);
-            startActivity(settingsIntent);
-            return true;
-        } else if (item.getItemId() == R.id.menu_widget) {
-            Intent widgetIntent = new Intent(this, WidgetConfig.class);
-            startActivity(widgetIntent);
-            return true;
-		} else if (item.getItemId() == R.id.menu_feedback_email) {
-            PrefsUtils.sendLogEmail(this, dbHelper);
-            return true;
-        } else if (item.getItemId() == R.id.menu_feedback_post) {
-            try {
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(PrefsUtils.createFeedbackLink(this, dbHelper)));
-                startActivity(i);
-            } catch (Exception e) {
-                Log.wtf(this.getClass().getName(), "device cannot even open URLs to report feedback");
-            }
-            return true;
-		} else if (item.getItemId() == R.id.menu_text_size_xs) {
-		    folderFeedList.setListTextSize(ListTextSize.XS);
-		    return true;
-        } else if (item.getItemId() == R.id.menu_text_size_s) {
-            folderFeedList.setListTextSize(ListTextSize.S);
-            return true;
-        } else if (item.getItemId() == R.id.menu_text_size_m) {
-            folderFeedList.setListTextSize(ListTextSize.M);
-            return true;
-        } else if (item.getItemId() == R.id.menu_text_size_l) {
-            folderFeedList.setListTextSize(ListTextSize.L);
-            return true;
-        } else if (item.getItemId() == R.id.menu_text_size_xl) {
-            folderFeedList.setListTextSize(ListTextSize.XL);
-            return true;
-        } else if (item.getItemId() == R.id.menu_text_size_xxl) {
-            folderFeedList.setListTextSize(ListTextSize.XXL);
-			return true;
-        } else if (item.getItemId() == R.id.menu_spacing_comfortable) {
-		    folderFeedList.setSpacingStyle(SpacingStyle.COMFORTABLE);
-		    return true;
-        } else if (item.getItemId() == R.id.menu_spacing_compact) {
-            folderFeedList.setSpacingStyle(SpacingStyle.COMPACT);
-            return true;
-        } else if (item.getItemId() == R.id.menu_loginas) {
-            DialogFragment newFragment = new LoginAsDialogFragment();
-            newFragment.show(getSupportFragmentManager(), "dialog");
-            return true;
-        } else if (item.getItemId() == R.id.menu_theme_auto) {
-            PrefsUtils.setSelectedTheme(this, ThemeValue.AUTO);
-		    UIUtils.restartActivity(this);
-        } else if (item.getItemId() == R.id.menu_theme_light) {
-            PrefsUtils.setSelectedTheme(this, ThemeValue.LIGHT);
-            UIUtils.restartActivity(this);
-        } else if (item.getItemId() == R.id.menu_theme_dark) {
-            PrefsUtils.setSelectedTheme(this, ThemeValue.DARK);
-            UIUtils.restartActivity(this);
-        } else if (item.getItemId() == R.id.menu_theme_black) {
-            PrefsUtils.setSelectedTheme(this, ThemeValue.BLACK);
-            UIUtils.restartActivity(this);
-        } else if (item.getItemId() == R.id.menu_premium_account) {
-            Intent intent = new Intent(this, Premium.class);
-            startActivity(intent);
-            return true;
-        } else if (item.getItemId() == R.id.menu_mute_sites) {
-		    Intent intent = new Intent(this, MuteConfig.class);
-		    startActivity(intent);
-		    return true;
-        } else if (item.getItemId() == R.id.menu_import_export) {
-		    Intent intent = new Intent(this, ImportExportActivity.class);
-		    startActivity(intent);
-            return true;
-        } else if (item.getItemId() == R.id.menu_notifications) {
-            Intent intent = new Intent(this, NotificationsActivity.class);
-            startActivity(intent);
-            return true;
-        }
-		return false;
+        return contextMenuDelegate.onMenuItemClick(item, folderFeedList);
     }
 
     private void onClickAddButton() {
@@ -446,10 +304,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        if (swipeLayout != null) {
+        if (binding != null) {
             boolean enable = (firstVisibleItem == 0);
             if (wasSwipeEnabled != enable) {
-                swipeLayout.setEnabled(enable);
+                binding.swipeContainer.setEnabled(enable);
                 wasSwipeEnabled = enable;
             }
         }

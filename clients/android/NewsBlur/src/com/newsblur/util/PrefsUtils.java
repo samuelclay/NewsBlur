@@ -1064,4 +1064,9 @@ public class PrefsUtils {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return MarkStoryReadBehavior.valueOf(preferences.getString(PrefConstants.STORY_MARK_READ_BEHAVIOR, MarkStoryReadBehavior.IMMEDIATELY.name()));
     }
+
+    public static boolean loadNextOnMarkRead(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.LOAD_NEXT_ON_MARK_READ, false);
+    }
 }

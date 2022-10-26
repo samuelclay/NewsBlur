@@ -51,8 +51,10 @@ import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.util.Session;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedExt;
+import com.newsblur.util.SessionDataSource;
 import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
@@ -392,7 +394,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	}
 
     private void markFeedsAsRead(FeedSet fs) {
-        feedUtils.markRead(((NbActivity) getActivity()), fs, null, null, R.array.mark_all_read_options, false);
+        feedUtils.markRead(((NbActivity) getActivity()), fs, null, null, R.array.mark_all_read_options);
         adapter.lastFeedViewedId = fs.getSingleFeed();
         adapter.lastFolderViewed = fs.getFolderName();
     }
@@ -437,7 +439,13 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 	@Override
     public boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
-        Intent i = null;
+        if (adapter.isRowSavedSearches(groupPosition)) {
+            // group not clickable
+            return true;
+        }
+
+        FeedSet fs = adapter.getGroup(groupPosition);
+        Intent i;
         if (adapter.isRowAllStories(groupPosition)) {
             if (currentState == StateFilter.SAVED) {
                 // the existence of this row in saved mode is something of a framework artifact and may
@@ -456,17 +464,15 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             i = new Intent(getActivity(), ReadStoriesItemsList.class);
         } else if (adapter.isRowSavedStories(groupPosition)) {
             i = new Intent(getActivity(), SavedStoriesItemsList.class);
-        } else if (adapter.isRowSavedSearches(groupPosition)) {
-            // group not clickable
-            return true;
         } else {
             i = new Intent(getActivity(), FolderItemsList.class);
             String canonicalFolderName = adapter.getGroupFolderName(groupPosition);
+            SessionDataSource sessionDataSource = getSessionData(fs, canonicalFolderName, null);
             i.putExtra(FolderItemsList.EXTRA_FOLDER_NAME, canonicalFolderName);
+            i.putExtra(ItemsList.EXTRA_SESSION_DATA, sessionDataSource);
             adapter.lastFeedViewedId = null;
             adapter.lastFolderViewed = canonicalFolderName;
         }
-        FeedSet fs = adapter.getGroup(groupPosition);
         i.putExtra(ItemsList.EXTRA_FEED_SET, fs);
         startActivity(i);
 
@@ -541,7 +547,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
                 feedUtils.currentFolderName = folderName;
             }
-			FeedItemsList.startActivity(getActivity(), fs, feed, folderName);
+            SessionDataSource sessionDataSource = getSessionData(fs, folderName, feed);
+			FeedItemsList.startActivity(getActivity(), fs, feed, folderName, sessionDataSource);
             adapter.lastFeedViewedId = feed.feedId;
             adapter.lastFolderViewed = null;
 		}
@@ -618,5 +625,14 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
             adapter.setSpacingStyle(spacingStyle);
             adapter.notifyDataSetChanged();
         }
+    }
+
+    @Nullable
+    private SessionDataSource getSessionData(FeedSet fs, String folderName, @Nullable Feed feed) {
+        if (PrefsUtils.loadNextOnMarkRead(requireContext())) {
+            Session activeSession = new Session(fs, folderName, feed);
+            return adapter.buildSessionDataSource(activeSession);
+        }
+        return null;
     }
 }

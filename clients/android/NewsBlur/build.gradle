@@ -44,6 +44,8 @@ dependencies {
     implementation 'androidx.core:core-splashscreen:1.0.0'
     implementation "com.google.dagger:hilt-android:2.43.2"
     kapt "com.google.dagger:hilt-compiler:2.43.2"
+
+    testImplementation "junit:junit:4.13.2"
 }
 
 android {
@@ -70,6 +72,9 @@ android {
             java.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
+        }
+        test {
+            java.srcDirs = ['test']
         }
     }
 
