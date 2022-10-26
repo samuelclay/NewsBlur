@@ -2,6 +2,7 @@ package com.newsblur.activity
 
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.databinding.ActivityNotificationsBinding
 import com.newsblur.di.IconLoader
@@ -12,6 +13,7 @@ import com.newsblur.util.setViewGone
 import com.newsblur.util.setViewVisible
 import com.newsblur.viewModel.NotificationsViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -43,16 +45,18 @@ class NotificationsActivity : NbActivity(), NotificationsAdapter.Listener {
     }
 
     private fun setupListeners() {
-        viewModel.feeds.observe(this) {
-            val feeds = it.values
-            if (feeds.isNotEmpty()) {
-                binding.recyclerViewFeeds.setViewVisible()
-                binding.txtNoNotifications.setViewGone()
-            } else {
-                binding.recyclerViewFeeds.setViewGone()
-                binding.txtNoNotifications.setViewVisible()
+        lifecycleScope.launchWhenStarted {
+            viewModel.feeds.collectLatest {
+                val feeds = it.values
+                if (feeds.isNotEmpty()) {
+                    binding.recyclerViewFeeds.setViewVisible()
+                    binding.txtNoNotifications.setViewGone()
+                } else {
+                    binding.recyclerViewFeeds.setViewGone()
+                    binding.txtNoNotifications.setViewVisible()
+                }
+                adapter.refreshFeeds(feeds)
             }
-            adapter.refreshFeeds(feeds)
         }
     }
 

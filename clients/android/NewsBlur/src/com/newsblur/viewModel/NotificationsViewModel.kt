@@ -3,8 +3,6 @@ package com.newsblur.viewModel
 import android.content.Context
 import android.database.Cursor
 import android.os.CancellationSignal
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.newsblur.database.BlurDatabaseHelper
@@ -12,6 +10,9 @@ import com.newsblur.domain.Feed
 import com.newsblur.util.FeedUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,12 +21,12 @@ class NotificationsViewModel
 @Inject constructor(
         private val dbHelper: BlurDatabaseHelper,
         private val feedUtils: FeedUtils,
-        ) : ViewModel() {
+) : ViewModel() {
 
     private val cancellationSignal = CancellationSignal()
 
-    private val _feeds = MutableLiveData<Map<String, Feed>>()
-    val feeds: LiveData<Map<String, Feed>> = _feeds
+    private val _feeds = MutableStateFlow<Map<String, Feed>>(emptyMap())
+    val feeds: StateFlow<Map<String, Feed>> = _feeds.asStateFlow()
 
     init {
         loadFeeds()
@@ -39,11 +40,9 @@ class NotificationsViewModel
 
     private fun loadFeeds() {
         viewModelScope.launch(Dispatchers.IO) {
-            launch {
-                val cursor = dbHelper.getFeedsCursor(cancellationSignal)
-                val feeds = extractFeeds(cursor).filterValues(notificationFeedFilter)
-                _feeds.postValue(feeds)
-            }
+            val cursor = dbHelper.getFeedsCursor(cancellationSignal)
+            val feeds = extractFeeds(cursor).filterValues(notificationFeedFilter)
+            _feeds.emit(feeds)
         }
     }
 
