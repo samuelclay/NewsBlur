@@ -7,17 +7,20 @@ import android.text.TextUtils
 import com.newsblur.R
 import com.newsblur.activity.NbActivity
 import com.newsblur.database.BlurDatabaseHelper
-import com.newsblur.domain.*
+import com.newsblur.domain.Classifier
+import com.newsblur.domain.Feed
+import com.newsblur.domain.Story
 import com.newsblur.fragment.ReadingActionConfirmationFragment
 import com.newsblur.network.APIConstants
 import com.newsblur.network.APIManager
-import com.newsblur.service.NBSyncService
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_METADATA
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_SOCIAL
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_STORY
+import com.newsblur.service.NBSyncService
+import com.newsblur.util.FeedExt.disableNotification
+import com.newsblur.util.FeedExt.setNotifyFocus
+import com.newsblur.util.FeedExt.setNotifyUnread
 import com.newsblur.util.UIUtils.syncUpdateStatus
-import java.lang.IllegalStateException
-import java.util.*
 
 class FeedUtils(
         private val dbHelper: BlurDatabaseHelper,
@@ -273,26 +276,23 @@ class FeedUtils(
     }
 
     fun disableNotifications(context: Context, feed: Feed) {
-        updateFeedNotifications(context, feed, enable = false, focusOnly = false)
+        feed.disableNotification()
+        updateFeedNotifications(context, feed)
     }
 
     fun enableUnreadNotifications(context: Context, feed: Feed) {
-        updateFeedNotifications(context, feed, enable = true, focusOnly = false)
+        feed.setNotifyUnread()
+        updateFeedNotifications(context, feed)
     }
 
     fun enableFocusNotifications(context: Context, feed: Feed) {
-        updateFeedNotifications(context, feed, enable = true, focusOnly = true)
+        feed.setNotifyFocus()
+        updateFeedNotifications(context, feed)
     }
 
-    private fun updateFeedNotifications(context: Context, feed: Feed, enable: Boolean, focusOnly: Boolean) {
+    fun updateFeedNotifications(context: Context, feed: Feed) {
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    if (focusOnly) {
-                        feed.setNotifyFocus()
-                    } else {
-                        feed.setNotifyUnread()
-                    }
-                    feed.enableAndroidNotifications(enable)
                     dbHelper.updateFeed(feed)
                     val ra = ReadingAction.setNotify(feed.feedId, feed.notificationTypes, feed.notificationFilter)
                     doAction(ra, context)
