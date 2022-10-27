@@ -47,18 +47,6 @@
             android:name=".activity.RegisterProgress"
             android:noHistory="true"
             android:label="@string/get_started" />
-		
-		<activity
-            android:name=".activity.AddTwitter"
-            android:label="@string/add_twitter" />
-		
-			<activity
-            android:name=".activity.AddFacebook"
-            android:label="@string/add_facebook" />
-		
-		<activity
-            android:name=".activity.AddSocial"
-            android:label="@string/add_friends" />
         
         <activity
             android:name=".activity.Main"

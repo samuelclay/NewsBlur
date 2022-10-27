@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.databinding.ActivityRegisterProgressBinding
 import com.newsblur.network.APIManager
+import com.newsblur.network.domain.RegisterResponse
 import com.newsblur.util.PrefsUtils
 import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,24 +45,22 @@ class RegisterProgress : FragmentActivity() {
                     apiManager.signup(username, password, email)
                 },
                 onPostExecute = {
-                    if (it.authenticated) {
-                        binding.viewSwitcher.showNext()
-                    } else {
-                        var errorMessage = it.errorMessage
-                        if (errorMessage == null) {
-                            errorMessage = resources.getString(R.string.register_message_error)
-                        }
-                        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
-                        startActivity(Intent(this, Login::class.java))
-                    }
+                    if (it.authenticated) showAuth()
+                    else showError(it)
                 }
         )
-
-        binding.buttonNext.setOnClickListener { next() }
     }
 
-    private operator fun next() {
-        val i = Intent(this, AddSocial::class.java)
-        startActivity(i)
+    private fun showAuth() {
+        startActivity(Intent(this, Main::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        })
+    }
+
+    private fun showError(response: RegisterResponse) {
+        val errorMessage = response.errorMessage
+                ?: resources.getString(R.string.register_message_error)
+        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
+        startActivity(Intent(this, Login::class.java))
     }
 }
