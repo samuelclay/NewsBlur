@@ -1584,7 +1584,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 }
 
 - (void)prepareStoryCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath {
-    #warning *** to be implemented ***
+    [appDelegate.storyPagesViewController updatePageWithActiveStory:appDelegate.storiesCollection.locationOfActiveStory updateFeedDetail:NO];
     
     [appDelegate.detailViewController moveStoriesToGridCell:cell.contentView];
     
@@ -1766,7 +1766,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         //        appDelegate.feedsViewController.currentRowAtIndexPath = nil;
         
         self.oldLocation = storiesCollection.locationOfActiveStory;
-        NSIndexPath *oldIndexPath = [self indexPathForStoryLocation:self.oldLocation];
+        NSIndexPath *oldIndexPath = self.selectedIndexPath;
         
         if (![oldIndexPath isEqual:indexPath]) {
             [self collectionView:collectionView deselectItemAtIndexPath:oldIndexPath animated:YES];
@@ -1801,7 +1801,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         [self loadStory:cell atRow:[self storyLocationForIndexPath:indexPath]];
         
         [self reload];
-        [collectionView selectItemAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:FeedSectionSelected] animated:YES scrollPosition:UICollectionViewScrollPositionNone];
+        [collectionView selectItemAtIndexPath:self.selectedIndexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
     } else if ([self storyLocationForIndexPath:indexPath] == storiesCollection.storyLocationsCount) {
         if (!appDelegate.isPremium && storiesCollection.isRiverView) {
             [appDelegate showPremiumDialog];
