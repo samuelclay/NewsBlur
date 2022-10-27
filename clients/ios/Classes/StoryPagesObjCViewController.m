@@ -1174,7 +1174,7 @@
         }
         
         appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:storyIndex];
-        [self updatePageWithActiveStory:currentPage.pageIndex];
+        [self updatePageWithActiveStory:currentPage.pageIndex updateFeedDetail:YES];
         if ([appDelegate.storiesCollection isStoryUnread:appDelegate.activeStory]) {
             [appDelegate.storiesCollection markStoryRead:appDelegate.activeStory];
             [appDelegate.storiesCollection syncStoryAsRead:appDelegate.activeStory];
@@ -1201,7 +1201,7 @@
     [self doNextUnreadStory:nil];
 }
 
-- (void)updatePageWithActiveStory:(NSInteger)location {
+- (void)updatePageWithActiveStory:(NSInteger)location updateFeedDetail:(BOOL)updateFeedDetail {
     [appDelegate.storiesCollection pushReadStory:[appDelegate.activeStory objectForKey:@"story_hash"]];
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
@@ -1222,7 +1222,9 @@
     
     [self setNextPreviousButtons];
     
-    [appDelegate changeActiveFeedDetailRow];
+    if (updateFeedDetail) {
+        [appDelegate changeActiveFeedDetailRow];
+    }
     
     if (self.currentPage.pageIndex != location) {
 //        NSLog(@"Updating Current: from %d to %d", currentPage.pageIndex, location);
