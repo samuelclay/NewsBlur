@@ -381,7 +381,9 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
-    appDelegate.detailViewController.navigationItem.leftBarButtonItem = nil;
+    if (!appDelegate.detailViewController.storyTitlesInGrid) {
+        appDelegate.detailViewController.navigationItem.leftBarButtonItem = nil;
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

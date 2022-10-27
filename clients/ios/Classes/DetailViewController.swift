@@ -435,6 +435,8 @@ private extension DetailViewController {
             wasGrid = false
         }
         
+        appDelegate.feedDetailViewController.changedLayout()
+        
         if layout != .grid {
             moveStoriesToDetail()
         }

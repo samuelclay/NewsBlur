@@ -66,6 +66,7 @@
 @property (nonatomic, readwrite) BOOL invalidateFontCache;
 @property (nonatomic, readwrite) BOOL cameFromFeedsList;
 
+- (void)changedLayout;
 - (void)reload;
 - (void)reloadIndexPath:(NSIndexPath *)indexPath;
 - (void)reloadWithSizing;

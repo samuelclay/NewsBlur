@@ -40,14 +40,18 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        changedLayout()
+        configureDataSource()
+    }
+    
+    @objc override func changedLayout() {
         if isGrid {
             feedCollectionView.collectionViewLayout = createGridLayout()
         } else {
             feedCollectionView.collectionViewLayout = createListLayout()
         }
         
-        configureDataSource()
+        feedCollectionView.setNeedsLayout()
     }
     
     @objc override func reload() {

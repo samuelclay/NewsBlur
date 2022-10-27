@@ -330,6 +330,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }
 }
 
+- (void)changedLayout {
+    @throw [NSException exceptionWithName:@"Missing changedLayout implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
 - (void)reload {
     @throw [NSException exceptionWithName:@"Missing reload implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
