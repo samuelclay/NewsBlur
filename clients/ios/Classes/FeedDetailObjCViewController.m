@@ -53,6 +53,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 
 @interface FeedDetailObjCViewController ()
 
+@property (nonatomic) NSInteger oldLocation;
 @property (nonatomic) NSUInteger scrollingMarkReadRow;
 @property (nonatomic, readonly) BOOL isMarkReadOnScroll;
 @property (nonatomic, readonly) BOOL canPullToRefresh;
@@ -554,7 +555,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
     
     if (indexPath && location >= 0 && self.view.window != nil) {
-        [self tableView:self.feedCollectionView selectRowAtIndexPath:indexPath animated:NO];
+        [feedCollectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
         if (deselect) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^(void) {
@@ -659,6 +660,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.isOnline = YES;
     self.isShowingFetching = NO;
     self.cameFromFeedsList = YES;
+    self.oldLocation = -1;
     self.scrollingMarkReadRow = NSNotFound;
     appDelegate.activeStory = nil;
     [storiesCollection setStories:nil];
@@ -1426,7 +1428,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             
             [self collectionView:self.feedCollectionView selectItemAtIndexPath:indexPath
                         animated:NO
-                  scrollPosition:UITableViewScrollPositionMiddle];
+                  scrollPosition:UICollectionViewScrollPositionNone];
             [[self.feedCollectionView cellForItemAtIndexPath:indexPath] setNeedsDisplay];
             
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -1763,8 +1765,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         // mark the cell as read
         //        appDelegate.feedsViewController.currentRowAtIndexPath = nil;
         
-        NSInteger oldLocation = storiesCollection.locationOfActiveStory;
-        NSIndexPath *oldIndexPath = [self indexPathForStoryLocation:oldLocation];
+        self.oldLocation = storiesCollection.locationOfActiveStory;
+        NSIndexPath *oldIndexPath = [self indexPathForStoryLocation:self.oldLocation];
         
         if (![oldIndexPath isEqual:indexPath]) {
             [self collectionView:collectionView deselectItemAtIndexPath:oldIndexPath animated:YES];
@@ -1798,10 +1800,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         }
         [self loadStory:cell atRow:[self storyLocationForIndexPath:indexPath]];
         
-        if (isGrid) {
-            [self reload];
-            [collectionView selectItemAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:FeedSectionSelected] animated:YES scrollPosition:UICollectionViewScrollPositionTop];
-        }
+        [self reload];
+        [collectionView selectItemAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:FeedSectionSelected] animated:YES scrollPosition:UICollectionViewScrollPositionNone];
     } else if ([self storyLocationForIndexPath:indexPath] == storiesCollection.storyLocationsCount) {
         if (!appDelegate.isPremium && storiesCollection.isRiverView) {
             [appDelegate showPremiumDialog];
@@ -2022,6 +2022,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 - (NSInteger)storyLocationForIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == FeedSectionBefore) {
         return indexPath.row;
+    } else if (indexPath.section == FeedSectionSelected) {
+        return storiesCollection.indexOfActiveStory;
     } else {
         return storiesCollection.indexOfActiveStory + indexPath.row + 1;
     }
@@ -2032,13 +2034,19 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     
     if (active < 0 || location < active) {
         return [NSIndexPath indexPathForRow:location inSection:FeedSectionBefore];
+    } else if (location == active) {
+        return [NSIndexPath indexPathForRow:0 inSection:FeedSectionSelected];
     } else {
-        return [NSIndexPath indexPathForRow:location - active inSection:FeedSectionAfter];
+        return [NSIndexPath indexPathForRow:location - active - 1 inSection:FeedSectionAfter];
     }
 }
 
 - (NSIndexPath *)selectedIndexPath {
-    return feedCollectionView.indexPathsForSelectedItems.firstObject;
+    if (feedCollectionView.indexPathsForSelectedItems.count > 0) {
+        return [NSIndexPath indexPathForRow:0 inSection:FeedSectionSelected];
+    } else {
+        return nil;
+    }
 }
 
 
@@ -2865,6 +2873,12 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (void)changeActiveFeedDetailRow {
+    if (feedCollectionView == nil) {
+        return;
+    }
+    
+    [self reload];
+    
     NSInteger location = [storiesCollection locationOfActiveStory];
     NSInteger offset = 1;
     if ([[self.feedCollectionView visibleCells] count] <= 4) {
@@ -2874,12 +2888,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
     NSIndexPath *offsetIndexPath = [self indexPathForStoryLocation:location - offset];
-    NSIndexPath *oldIndexPath = self.selectedIndexPath;
     
-    if (![indexPath isEqual:oldIndexPath]) {
-        [self collectionView:feedCollectionView deselectItemAtIndexPath:oldIndexPath animated:YES];
-        [self collectionView:feedCollectionView selectItemAtIndexPath:indexPath animated:YES];
-    }
+    [self collectionView:feedCollectionView selectItemAtIndexPath:indexPath animated:YES];
     
     // check to see if the cell is completely visible
     UICollectionViewLayoutAttributes * attributes = [self.feedCollectionView layoutAttributesForItemAtIndexPath:indexPath];
