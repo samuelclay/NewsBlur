@@ -24,6 +24,10 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         case loading
     }
     
+    var isGrid: Bool {
+        return appDelegate.detailViewController.layout == .grid
+    }
+    
     var feedColumns: Int {
         guard let pref = UserDefaults.standard.string(forKey: "grid_columns"), let columns = Int(pref) else {
             return 4
@@ -37,7 +41,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if appDelegate.detailViewController.layout == .grid {
+        if isGrid {
             feedCollectionView.collectionViewLayout = createGridLayout()
         } else {
             feedCollectionView.collectionViewLayout = createListLayout()
@@ -116,11 +120,28 @@ extension FeedDetailViewController {
             self.prepareStoryCell(cell, indexPath: indexPath)
         }
         
+        let loadingCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Int> { (cell, indexPath, identifier) in
+            self.prepareLoading(cell, indexPath: indexPath)
+        }
+        
         dataSource = UICollectionViewDiffableDataSource<SectionLayoutKind, Int>(collectionView: feedCollectionView) {
             (collectionView: UICollectionView, indexPath: IndexPath, identifier: Int) -> UICollectionViewCell? in
-            return SectionLayoutKind(rawValue: indexPath.section)! == .selectedStory ?
-            collectionView.dequeueConfiguredReusableCell(using: storyCellRegistration, for: indexPath, item: identifier) : collectionView.dequeueConfiguredReusableCell(using: feedCellRegistration, for: indexPath, item: identifier)
+            guard let sectionKind = SectionLayoutKind(rawValue: indexPath.section) else {
+                return nil
+            }
             
+            switch sectionKind {
+            case .feedBeforeStory, .feedAfterStory:
+                return collectionView.dequeueConfiguredReusableCell(using: feedCellRegistration, for: indexPath, item: identifier)
+            case .selectedStory:
+                if self.isGrid {
+                    return collectionView.dequeueConfiguredReusableCell(using: storyCellRegistration, for: indexPath, item: identifier)
+                } else {
+                    return collectionView.dequeueConfiguredReusableCell(using: feedCellRegistration, for: indexPath, item: identifier)
+                }
+            case .loading:
+                return collectionView.dequeueConfiguredReusableCell(using: loadingCellRegistration, for: indexPath, item: identifier)
+            }
         }
         
         var snapshot = NSDiffableDataSourceSnapshot<SectionLayoutKind, Int>()
@@ -130,23 +151,22 @@ extension FeedDetailViewController {
         snapshot.appendSections(SectionLayoutKind.allCases)
         
         if self.messageView.isHidden {
-            if appDelegate.detailViewController.layout == .grid, storyCount > 0 {
-                let selectedIndex = max(appDelegate.storiesCollection.indexOfActiveStory(), 0)
+            if storyCount > 0 {
+                let selectedIndex = appDelegate.storiesCollection.indexOfActiveStory()
                 
-                if selectedIndex > 0 {
+                if selectedIndex < 0 {
+                    snapshot.appendItems(Array(0..<storyCount), toSection: .feedBeforeStory)
+                } else {
                     snapshot.appendItems(Array(0..<selectedIndex), toSection: .feedBeforeStory)
+                    snapshot.appendItems([selectedIndex], toSection: .selectedStory)
+                    
+                    if selectedIndex + 1 < storyCount {
+                        snapshot.appendItems(Array(selectedIndex + 1..<storyCount), toSection: .feedAfterStory)
+                    }
                 }
-                
-                snapshot.appendItems([selectedIndex], toSection: .selectedStory)
-                
-                if selectedIndex < storyCount {
-                    snapshot.appendItems(Array(selectedIndex + 1..<storyCount), toSection: .feedAfterStory)
-                }
-            } else {
-                snapshot.appendItems(Array(0..<storyCount), toSection: .feedBeforeStory)
             }
             
-            snapshot.appendItems([0], toSection: .loading)
+            snapshot.appendItems([-1], toSection: .loading)
         }
         
         dataSource.apply(snapshot, animatingDifferences: false)
