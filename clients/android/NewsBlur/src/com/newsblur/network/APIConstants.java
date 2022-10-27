@@ -35,7 +35,6 @@ public class APIConstants {
 	public static final String PATH_MY_PROFILE = "/social/load_user_profile";
 	public static final String PATH_FOLLOW = "/social/follow";
 	public static final String PATH_UNFOLLOW = "/social/unfollow";
-    public static final String PATH_AUTOFOLLOW_PREF = "/profile/set_preference";
 	public static final String PATH_USER_ACTIVITIES = "/social/activities";
 	public static final String PATH_USER_INTERACTIONS = "/social/interactions";
 	public static final String PATH_RIVER_STORIES = "/reader/river_stories";
@@ -72,8 +71,6 @@ public class APIConstants {
     public static final String PATH_READ_STORIES = "/reader/read_stories";
     public static final String PATH_MOVE_FEED_TO_FOLDERS = "/reader/move_feed_to_folders";
     public static final String PATH_SAVE_FEED_CHOOSER = "/reader/save_feed_chooser";
-    public static final String PATH_CONNECT_FACEBOOK = "/oauth/facebook_connect/";
-    public static final String PATH_CONNECT_TWITTER = "/oauth/twitter_connect/";
     public static final String PATH_SET_NOTIFICATIONS = "/notifications/feed/";
     public static final String PATH_INSTA_FETCH = "/rss_feeds/exception_retry";
     public static final String PATH_RENAME_FEED = "/reader/rename_feed";

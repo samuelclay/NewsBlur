@@ -106,13 +106,6 @@ public class APIManager {
         return true;
     }
 
-	public boolean setAutoFollow(boolean autofollow) {
-		ContentValues values = new ContentValues();
-		values.put("autofollow_friends", autofollow ? "true" : "false");
-		final APIResponse response = post(buildUrl(APIConstants.PATH_AUTOFOLLOW_PREF), values);
-		return (!response.isError());
-	}
-
 	public NewsBlurResponse markFeedsAsRead(FeedSet fs, Long includeOlder, Long includeNewer) {
 		ValueMultimap values = new ValueMultimap();
 
