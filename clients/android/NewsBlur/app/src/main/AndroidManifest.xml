@@ -14,7 +14,7 @@
         android:hardwareAccelerated="true"
         android:fullBackupContent="@xml/backupscheme"
         android:name=".NbApplication">
-        
+
         <activity
             android:name=".activity.InitActivity"
             android:label="@string/newsblur"
@@ -37,27 +37,27 @@
             android:noHistory="true"
             android:windowSoftInputMode="adjustResize">
         </activity>
-        
+
         <activity
             android:name=".activity.LoginProgress"
             android:noHistory="true"
             android:label="@string/newsblur" />
-       	
-		<activity
+
+        <activity
             android:name=".activity.RegisterProgress"
             android:noHistory="true"
             android:label="@string/get_started" />
-        
+
         <activity
             android:name=".activity.Main"
             android:label="@string/newsblur"
             android:launchMode="singleTask"
             android:alwaysRetainTaskState="true" />
-        
+
         <activity
             android:name=".activity.Profile"
             android:label="@string/profile"/>
-        
+
         <activity
             android:name=".activity.Settings"
             android:label="@string/settings"/>
@@ -68,10 +68,10 @@
             android:name=".activity.WidgetConfig"
             android:launchMode="singleTask"
             android:label="@string/menu_widget" />
-        
+
         <activity
             android:name=".activity.FeedItemsList" />
-        
+
         <activity
             android:name=".activity.AllStoriesItemsList"
             android:launchMode="singleTask"/>
@@ -84,22 +84,22 @@
 
         <activity
             android:name=".activity.SavedStoriesItemsList" />
-         
+
         <activity
             android:name=".activity.AllSharedStoriesItemsList" />
 
         <activity
             android:name=".activity.GlobalSharedStoriesItemsList" />
-        
+
         <activity
             android:name=".activity.FolderItemsList" />
-        
+
         <activity
             android:name=".activity.SocialFeedItemsList" />
-        
+
         <activity
             android:name=".activity.FeedReading"/>
-        
+
         <activity
             android:name=".activity.AllStoriesReading"/>
 
@@ -111,13 +111,13 @@
 
         <activity
             android:name=".activity.SavedStoriesReading"/>
-        
+
         <activity
             android:name=".activity.AllSharedStoriesReading"/>
 
         <activity
             android:name=".activity.GlobalSharedStoriesReading"/>
-        
+
         <activity
             android:name=".activity.FolderReading"/>
 

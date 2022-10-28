@@ -1,0 +1,68 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.kapt'
+    id 'com.google.dagger.hilt.android'
+}
+
+android {
+    namespace 'com.newsblur'
+    compileSdk 31
+
+    defaultConfig {
+        applicationId "com.newsblur"
+        minSdk 23
+        targetSdk 31
+        versionCode 205
+        versionName "12.0.1"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            shrinkResources false
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+    packagingOptions {
+        resources.excludes.add("META-INF/*")
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures.viewBinding = true
+}
+
+dependencies {
+    implementation 'androidx.fragment:fragment-ktx:1.5.2'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.2'
+    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.android.billingclient:billing:4.0.0'
+    implementation 'nl.dionsegijn:konfetti:1.2.2'
+    implementation 'com.google.android.play:core:1.10.3'
+    implementation "com.google.android.material:material:1.6.1"
+    implementation "androidx.preference:preference-ktx:1.2.0"
+    implementation "androidx.browser:browser:1.4.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
+    implementation 'androidx.lifecycle:lifecycle-process:2.5.1'
+    implementation 'androidx.core:core-splashscreen:1.0.0'
+    implementation "com.google.dagger:hilt-android:2.44"
+    kapt "com.google.dagger:hilt-compiler:2.44"
+
+    testImplementation "junit:junit:4.13.2"
+
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+}

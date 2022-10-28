@@ -522,7 +522,7 @@ public class UIUtils {
     }
 
     private static void openInAppBrowser(Context context, Uri uri) {
-        int colorPrimary = MaterialColors.getColor(context, R.attr.colorPrimary, ContextCompat.getColor(context, R.color.primary_dark));
+        int colorPrimary = MaterialColors.getColor(context, androidx.appcompat.R.attr.colorPrimary, ContextCompat.getColor(context, R.color.primary_dark));
         CustomTabColorSchemeParams schemeParams = new CustomTabColorSchemeParams.Builder()
                 .setToolbarColor(colorPrimary)
                 .build();

@@ -55,38 +55,11 @@ docker/prometheus/prometheus.yml
 docker/redis/redis_replica.conf
 docker/postgres/postgres.conf
 
-# ----------------------
-# Android
-# ----------------------
-# built application files
-*.apk
-*.ap_
-
-# files for the dex VM
-*.dex
-
-# Java class files
-*.class
-
-# generated files
-clients/android/NewsBlur/bin/
-clients/android/NewsBlur/gen/
-clients/android/NewsBlur/app/
-clients/android/NewsBlurTest/bin/
-clients/android/NewsBlurTest/gen/
-
 # Local configuration file (sdk path, etc)
-clients/android/NewsBlur/local.properties
-clients/android/NewsBlurTest/local.properties
 /originals
 media/safari/NewsBlur.safariextz
 
 # IDE files
-clients/android/NewsBlur/.idea
-clients/android/NewsBlur/.gradle
-clients/android/NewsBlur/build.gradle
-clients/android/NewsBlur/gradlew*
-clients/android/NewsBlur/settings.gradle
 /docker/volumes/*
 
 **/node_modules
