@@ -16,6 +16,9 @@ groups:
   node: inventory_hostname.startswith('node')
   node_socket: inventory_hostname.startswith('node-socket')
   node_images: inventory_hostname.startswith('node-images')
+  node_text: inventory_hostname.startswith('node-text')
+  node_page: inventory_hostname.startswith('node-page')
+  node_favicons: inventory_hostname.startswith('node-favicons')
 
   # debugs: inventory_hostname.startswith('debug')
 

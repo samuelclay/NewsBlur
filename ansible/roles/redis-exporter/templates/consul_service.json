@@ -9,7 +9,7 @@
         "checks": [
             {
                 "id": "{{ item.redis_target }}-exporter-ping",
-                "http": "http://{{ ansible_ssh_host }}:{{ item.port }}",
+                "http": "http://{{ ansible_host }}:{{ item.port }}",
                 "interval": "15s",
                 "failures_before_critical": 4
             }

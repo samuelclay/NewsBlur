@@ -1159,7 +1159,7 @@ def starred_stories_rss_feed_tag(request, user_id, secret_token, tag_slug):
 
 def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     domain = Site.objects.get_current().domain
-    
+    date_hack_2023 = (datetime.datetime.now() > datetime.datetime(2023, 7, 1))
     try:
         user = User.objects.get(pk=user_id)
     except User.DoesNotExist:
@@ -1169,7 +1169,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     feed_ids, folder_title = user_sub_folders.feed_ids_under_folder_slug(folder_slug)
     
     usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids)
-    if feed_ids and user.profile.is_archive:
+    if feed_ids and ((user.profile.is_archive and date_hack_2023) or (not date_hack_2023)):
         params = {
             "user_id": user.pk, 
             "feed_ids": feed_ids,
@@ -1268,7 +1268,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         rss.add_item(**story_data)
 
     # TODO: Remove below date hack to accomodate users who paid for premium but want folder rss
-    if not user.profile.is_archive and (datetime.datetime.now() > datetime.datetime(2023, 7, 1)):
+    if not user.profile.is_archive and date_hack_2023:
         story_data = {
             'title': "You must have a premium archive subscription on NewsBlur to have RSS feeds for folders.",
             'link': "https://%s/?next=premium" % domain,
@@ -1404,7 +1404,12 @@ def load_river_stories__redis(request):
     user_search       = None
     offset            = (page-1) * limit
     story_date_order  = "%sstory_date" % ('' if order == 'oldest' else '-')
-    
+
+    if user.pk == 86178:
+        # Disable Michael_Novakhov account
+        logging.user(request, "~FCLoading ~FMMichael_Novakhov~SN's river, resource usage too high, ignoring.")
+        return HttpResponse("Resource usage too high", status=429)
+
     if infrequent:
         feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
     
