@@ -55,6 +55,7 @@
 @property (nonatomic) IBOutlet UILabel *messageLabel;
 @property (nonatomic, strong) id standardInteractivePopGestureDelegate;
 @property (nonatomic, readonly) NSIndexPath *selectedIndexPath;
+@property (nonatomic) CGFloat storyHeight;
 
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;

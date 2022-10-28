@@ -36,6 +36,45 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         return columns
     }
     
+    var gridHeight: CGFloat {
+        guard let pref = UserDefaults.standard.string(forKey: "grid_height") else {
+            return 400
+        }
+        
+        switch pref {
+        case "xs":
+            return 250
+        case "short":
+            return 300
+        case "tall":
+            return 400
+        case "xl":
+            return 450
+        default:
+            return 350
+        }
+    }
+    
+//    var storyHeight: CGFloat {
+//        if let pagesController = appDelegate.storyPagesViewController, let webView = pagesController.currentPage.webView {
+//            let frame = pagesController.view.frame
+//
+//            print("Story pages frame: \(pagesController.view.frame), web height \(webView.scrollView.contentSize.height)")
+//
+//            pagesController.view.frame = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.size.width, height: 500)
+//            pagesController.currentPage.view.frame = CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.size.width, height: 500)
+//            pagesController.view.layoutIfNeeded()
+//
+//            let height = webView.scrollView.contentSize.height + 50
+//
+//            print("... frame now: \(pagesController.view.frame), height: \(height)")
+//
+//            return height
+//        } else {
+//            return 1000
+//        }
+//    }
+    
     var dataSource: UICollectionViewDiffableDataSource<SectionLayoutKind, Int>! = nil
     
     override func viewDidLoad() {
@@ -87,16 +126,15 @@ extension FeedDetailViewController {
             }
             
             let isStory = sectionLayoutKind == .selectedStory
-            let columns = isStory ? 1 : self.feedColumns
+            let isLoading = sectionLayoutKind == .loading
+            let columns = isStory || isLoading ? 1 : self.feedColumns
             
             let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
                                                   heightDimension: .fractionalHeight(1.0))
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
             item.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
             
-            let groupHeight = isStory ?
-            NSCollectionLayoutDimension.absolute(1000) :
-            NSCollectionLayoutDimension.fractionalWidth(0.4)
+            let groupHeight = isStory ? NSCollectionLayoutDimension.absolute(self.storyHeight) : isLoading ? NSCollectionLayoutDimension.absolute(100) : NSCollectionLayoutDimension.absolute(self.gridHeight)
             let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
                                                    heightDimension: groupHeight)
             let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: columns)

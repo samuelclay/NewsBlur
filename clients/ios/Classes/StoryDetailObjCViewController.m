@@ -1830,6 +1830,13 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         self.webView.hidden = NO;
         [self.webView setNeedsDisplay];
+        
+        if (self == self.appDelegate.storyPagesViewController.currentPage && self.appDelegate.detailViewController.storyTitlesInGrid) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                self.appDelegate.feedDetailViewController.storyHeight = self.webView.scrollView.contentSize.height + 50;
+                [self.appDelegate.feedDetailViewController changedLayout];
+            });
+        }
     });
 }
 
