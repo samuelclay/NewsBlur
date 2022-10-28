@@ -1588,6 +1588,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 }
 
 - (void)prepareStoryCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath {
+    self.storyHeight = 180;
+    
     [appDelegate.storyPagesViewController updatePageWithActiveStory:appDelegate.storiesCollection.locationOfActiveStory updateFeedDetail:NO];
     
     [appDelegate.detailViewController moveStoriesToGridCell:cell.contentView];
@@ -1805,7 +1807,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         [self loadStory:cell atRow:[self storyLocationForIndexPath:indexPath]];
         
         [self reload];
-        [collectionView selectItemAtIndexPath:self.selectedIndexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
+        [collectionView selectItemAtIndexPath:self.selectedIndexPath animated:YES scrollPosition:UICollectionViewScrollPositionTop];
     } else if ([self storyLocationForIndexPath:indexPath] == storiesCollection.storyLocationsCount) {
         if (!appDelegate.isPremium && storiesCollection.isRiverView) {
             [appDelegate showPremiumDialog];

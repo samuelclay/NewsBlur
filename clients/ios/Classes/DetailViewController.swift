@@ -267,6 +267,8 @@ class DetailViewController: BaseViewController {
         add(viewController: storyPagesViewController, to: cellContent, of: appDelegate.feedDetailViewController)
         
         adjustForAutoscroll()
+        
+        storyPagesViewController.currentPage.webView.scrollView.isScrollEnabled = false
     }
     
     /// Moves the story pages controller to the detail controller (automatically removing it from the previous parent).
@@ -282,6 +284,8 @@ class DetailViewController: BaseViewController {
             add(viewController: storyPagesViewController, top: !isTop)
             
             adjustForAutoscroll()
+            
+            storyPagesViewController.currentPage.webView.scrollView.isScrollEnabled = true
         }
     }
     
