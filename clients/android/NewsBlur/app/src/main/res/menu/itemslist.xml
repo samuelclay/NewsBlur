@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/menu_mark_all_as_read"
+          android:title="@string/menu_mark_all_as_read"
+          app:showAsAction="ifRoom" android:icon="@drawable/ic_mark_read" />
+    <item android:id="@+id/menu_search_stories"
+          android:title="@string/menu_search_stories"
+          app:showAsAction="ifRoom" android:icon="@drawable/ic_search" />
+    <item android:id="@+id/menu_story_order"
+          android:title="@string/menu_story_order">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_story_order_newest"
+                    android:title="@string/newest" />
+                <item android:id="@+id/menu_story_order_oldest"
+                    android:title="@string/oldest" />
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/menu_read_filter"
+          android:title="@string/menu_read_filter"
+          app:showAsAction="never">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_read_filter_all_stories"
+                    android:title="@string/all_stories" />
+                <item android:id="@+id/menu_read_filter_unread_only"
+                    android:title="@string/unread_only" />
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/menu_mark_read_on_scroll"
+          android:title="@string/menu_mark_read_on_scroll"
+          app:showAsAction="never" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_mark_read_on_scroll_disabled"
+                    android:title="@string/mark_read_on_scroll_disabled" />
+                <item android:id="@+id/menu_mark_read_on_scroll_enabled"
+                    android:title="@string/mark_read_on_scroll_enabled" />
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/menu_story_content_preview_style"
+          android:title="@string/menu_story_content_preview"
+          app:showAsAction="never">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_story_content_preview_none"
+                      android:title="@string/story_content_preview_none" />
+                <item android:id="@+id/menu_story_content_preview_small"
+                      android:title="@string/story_content_preview_small" />
+                <item android:id="@+id/menu_story_content_preview_medium"
+                      android:title="@string/story_content_preview_medium" />
+                <item android:id="@+id/menu_story_content_preview_large"
+                      android:title="@string/story_content_preview_large" />
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/menu_story_thumbnail_style"
+        android:title="@string/menu_story_thumbnail_preview"
+        app:showAsAction="never">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_story_thumbnail_left_small"
+                    android:title="@string/story_thumbnail_left_hand_small" />
+                <item android:id="@+id/menu_story_thumbnail_left_large"
+                    android:title="@string/story_thumbnail_left_hand_large" />
+                <item android:id="@+id/menu_story_thumbnail_right_small"
+                    android:title="@string/story_thumbnail_right_hand_small" />
+                <item android:id="@+id/menu_story_thumbnail_right_large"
+                    android:title="@string/story_thumbnail_right_hand_large" />
+                <item android:id="@+id/menu_story_thumbnail_no_preview"
+                    android:title="@string/story_thumbnail_no_image_preview" />
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/menu_story_list_style"
+          android:title="@string/menu_story_list_style_choose" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_list_style_list"
+                      android:title="@string/list_style_list" />
+                <item android:id="@+id/menu_list_style_grid_c"
+                      android:title="@string/list_style_grid_c" />
+                <item android:id="@+id/menu_list_style_grid_m"
+                      android:title="@string/list_style_grid_m" />
+                <item android:id="@+id/menu_list_style_grid_f"
+                      android:title="@string/list_style_grid_f" />
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/menu_text_size"
+        android:title="@string/menu_text_size" >
+        <menu>
+            <group android:checkableBehavior="single" >
+                <item android:id="@+id/menu_text_size_xs"
+                    android:title="@string/menu_text_size_xs" />
+                <item android:id="@+id/menu_text_size_s"
+                    android:title="@string/menu_text_size_s" />
+                <item android:id="@+id/menu_text_size_m"
+                    android:title="@string/menu_text_size_m" />
+                <item android:id="@+id/menu_text_size_l"
+                    android:title="@string/menu_text_size_l" />
+                <item android:id="@+id/menu_text_size_xl"
+                    android:title="@string/menu_text_size_xl" />
+                <item android:id="@+id/menu_text_size_xxl"
+                    android:title="@string/menu_text_size_xxl" />
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/menu_spacing"
+        android:title="@string/menu_spacing" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_spacing_comfortable"
+                    android:title="@string/comfortable" />
+                <item android:id="@+id/menu_spacing_compact"
+                    android:title="@string/compact" />
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/menu_theme"
+          android:title="@string/menu_theme_choose" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_theme_auto"
+                    android:title="@string/auto" />
+                <item android:id="@+id/menu_theme_light"
+                      android:title="@string/light" />
+                <item android:id="@+id/menu_theme_dark"
+                      android:title="@string/dark" />
+                <item android:id="@+id/menu_theme_black"
+                      android:title="@string/black" />
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/menu_intel"
+          android:title="@string/menu_intel" />
+    <item android:id="@+id/menu_notifications"
+          android:title="@string/menu_notifications_choose" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_notifications_disable"
+                      android:title="@string/menu_notifications_disable"
+                      android:checkable="true" />
+                <item android:id="@+id/menu_notifications_focus"
+                      android:title="@string/menu_notifications_focus"
+                      android:checkable="true" />
+                <item android:id="@+id/menu_notifications_unread"
+                      android:title="@string/menu_notifications_unread"
+                      android:checkable="true" />
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/menu_statistics"
+        android:title="@string/menu_statistics"
+        app:showAsAction="never" />
+    <item android:id="@+id/menu_delete_feed"
+          android:title="@string/menu_delete_feed"
+          app:showAsAction="never" />
+    <item android:id="@+id/menu_rename_feed"
+          android:title="@string/menu_rename_feed"
+          app:showAsAction="never" />
+    <item android:id="@+id/menu_instafetch_feed"
+          android:title="@string/menu_instafetch_feed" />
+    <item android:id="@+id/menu_infrequent_cutoff"
+          android:title="@string/menu_infrequent_cutoff"
+          app:showAsAction="never" />
+    <item android:id="@+id/menu_save_search"
+        android:title="@string/menu_save_search"
+        app:showAsAction="never"
+        android:visible="false"/>
+</menu>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="selectorFeedAlmostBlueBackground" format="string" />
+    <attr name="selectorFeedAlmostRedBackground" format="string" />
+    <attr name="selectorFeedAlmostGreenBackground" format="string" />
+    <attr name="selectorFolderBackground" format="string" />
+    <attr name="selectorFeedBackground" format="string" />
+    <attr name="feedRowNeutCountText" format="string" />
+    <attr name="actionbarBackground" format="string" />
+    <attr name="listBackground" format="string" />
+    <attr name="layoutBackground" format="string" />
+    <attr name="layoutRoundedBackground" format="string" />
+    <attr name="readingBackground" format="string" />
+    <attr name="defaultText" format="string" />
+    <attr name="linkText" format="string" />
+    <attr name="storySnippetText" format="string" />
+    <attr name="storyFeedTitleText" format="string" />
+    <attr name="selectorStoryBackground" format="string" />
+    <attr name="rowItemHeaderBackground" format="string" />
+    <attr name="readingItemMetadata" format="string" />
+    <attr name="chip" format="string" />
+    <attr name="actionButtons" format="string" />
+    <attr name="storyButtons" format="string" />
+    <attr name="storyButtonsDimmed" format="string" />
+    <attr name="shareBarBackground" format="string" />
+    <attr name="shareBarText" format="string" />
+    <attr name="commentsHeader" format="string" />
+    <attr name="rowBorder" format="string" />
+    <attr name="profileCount" format="string" />
+    <attr name="profileActivityList" format="string" />
+    <attr name="storyCommentDivider" format="string" />
+    <attr name="activityDetailsPager" format="string" />
+    <attr name="explainerText" format="string" />
+    <attr name="toggleText" format="string" />
+    <attr name="selectorOverlayBackgroundLeft" format="string" />
+    <attr name="selectorOverlayBackgroundRight" format="string" />
+    <attr name="selectorOverlayBackgroundRightDone" format="string" />
+    <attr name="selectorOverlayBackgroundSend" format="string" />
+    <attr name="selectorOverlayBackgroundStory" format="string" />
+    <attr name="selectorOverlayBackgroundText" format="string" />
+    <attr name="muteicon" format="string" />
+    <attr name="circleProgressIndicator" format="string" />
+    <attr name="delimiter" format="string" />
+    <attr name="toggleButton" format="string" />
+    
+    <attr name="flow" format="string" />
+    <attr name="imageViewSize" format="integer" />
+    <declare-styleable name="FlowLayout">
+        <attr name="flow" />
+        <attr name="imageViewSize" />
+    </declare-styleable>
+
+    <attr name="addedHeight" format="integer" />
+    <declare-styleable name="SquaredRelativeLayout">
+        <attr name="addedHeight" />
+    </declare-styleable>
+</resources>

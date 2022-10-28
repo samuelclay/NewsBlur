@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <item android:id="@+id/menu_mark_folder_as_read"
+          android:title="@string/menu_mark_folder_as_read" />
+
+    <item android:id="@+id/menu_mute_folder"
+          android:title="@string/menu_mute_folder" />
+
+    <item android:id="@+id/menu_unmute_folder"
+          android:title="@string/menu_unmute_folder" />
+
+    <item android:id="@+id/menu_delete_folder"
+        android:title="@string/menu_delete_folder" />
+
+    <item android:id="@+id/menu_rename_folder"
+        android:title="@string/menu_rename_folder" />
+
+</menu>

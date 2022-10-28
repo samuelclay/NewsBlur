@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+<item>
+    <shape android:shape="rectangle">
+        <corners 
+            android:bottomRightRadius="2dp"
+            android:bottomLeftRadius="20dp"
+            android:topLeftRadius="20dp"
+            android:topRightRadius="2dp"/>
+        <solid android:color="@color/col_button_background_dark" />
+    </shape>
+</item>
+
+<item
+    android:drawable="@drawable/ic_story_text_gray74"
+    android:bottom="12dp"
+    android:left="12dp"
+    android:right="82dp"
+    android:top="12dp"/>
+
+</layer-list>

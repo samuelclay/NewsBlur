@@ -1,0 +1,43 @@
+body, html {
+	background-color: #FFF;
+}
+
+a {
+	color: #405BA8;
+}
+
+a:visited {
+	color: #405BA8;
+}
+
+code {
+    background-color: #F2F2F2;
+}
+
+pre, blockquote {
+    background-color: #F2F2F2;
+    color: rgba(10, 12, 38, .8);
+}
+/* do not adhere to Chromium's color scheme settings */
+@media(prefers-color-scheme: dark){
+    body, html {
+        background-color: #FFF;
+    }
+}
+
+ins {
+    background-color: #BEE8BC;
+    text-decoration: none;
+}
+
+del {
+    background-color: #f5c3c3
+}
+.NB-story ins {
+    background-color: #BEE8BC;
+    text-decoration: none
+}
+
+.NB-story del {
+    background-color: #f5c3c3;
+}

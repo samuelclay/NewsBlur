@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="?selectorStoryBackground">
+
+<!--
+    This RelativeLayout really should be the top-most parent with a full width and wraped height. However,
+    due to this being used in a scrollable ListView, the height of the favicon_borderbar would never be
+    set, since the height of each row is calculated very lazily.  Wrapping the whole thing in an otherwise
+    useless LinearLayout forces the heights to be calculated correctly every time.  If the lazy layout
+    bug in scrolling ListViews can ever be fixed, the extra layout can be removed.
+-->
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <View
+        android:id="@+id/story_item_favicon_borderbar_1"
+        android:layout_width="5dp"
+        android:layout_height="match_parent" />
+
+    <View
+        android:id="@+id/story_item_favicon_borderbar_2"
+        android:layout_width="5dp"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@id/story_item_favicon_borderbar_1" />
+
+    <!--
+        The next item to the right is actually the intel dot, but it has vertical bounds set relative to
+        the story title height, so it cannot be declared until after the title row and associated bits.
+        To prevent a cyclic layout dependency, we hard-code the left margin of everything to the right
+        of the dot by assuming the width of it. In fact, much of the remaining layout is done from the
+        right to the left.
+    -->
+
+    <com.newsblur.view.StoryThumbnailView
+        android:id="@+id/story_item_thumbnail_right"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="1dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:visibility="gone" />
+
+    <com.newsblur.view.StoryThumbnailView
+        android:id="@+id/story_item_thumbnail_left"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/story_item_favicon_borderbar_2"
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="1dp"
+        android:visibility="gone" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/story_item_feedicon"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_toRightOf="@id/story_item_inteldot_container"
+        app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance" />
+
+    <TextView
+        android:id="@+id/story_item_feedtitle"
+        style="?storyFeedTitleText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_toLeftOf="@id/story_item_thumbnail_right"
+        android:layout_toRightOf="@id/story_item_feedicon"
+        android:ellipsize="end"
+        android:singleLine="true" />
+
+    <ImageView
+        android:id="@+id/story_item_saved_icon"
+        android:src="@drawable/ic_saved"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_below="@id/story_item_feedtitle"
+        android:layout_toLeftOf="@id/story_item_thumbnail_right"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="8dp"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/story_item_shared_icon"
+        android:src="@drawable/ic_share"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_below="@id/story_item_feedtitle"
+        android:layout_toLeftOf="@id/story_item_saved_icon"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="8dp"
+        android:visibility="gone" />
+
+    <!--dynamic spacing-->
+    <TextView
+        android:id="@+id/story_item_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/story_item_feedicon"
+        android:layout_toLeftOf="@id/story_item_shared_icon"
+        android:layout_toRightOf="@id/story_item_inteldot_container"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:textStyle="bold" />
+
+    <!--dynamic spacing-->
+    <TextView
+        android:id="@+id/story_item_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/story_item_thumbnail_right"
+        android:layout_toRightOf="@id/story_item_inteldot_container"
+        android:layout_below="@id/story_item_title"
+        android:ellipsize="end"
+        android:lineSpacingExtra="1dp"
+        style="?storySnippetText" />
+
+    <!--dynamic spacing-->
+    <TextView
+        style="?storySnippetText"
+        android:id="@+id/story_item_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/story_item_inteldot_container"
+        android:layout_below="@id/story_item_content"
+        android:paddingRight="3dp" />
+
+    <!--dynamic spacing-->
+    <TextView
+        style="?storySnippetText"
+        android:id="@+id/story_item_author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/story_item_content"
+        android:layout_toRightOf="@id/story_item_date"
+        android:layout_toLeftOf="@id/story_item_thumbnail_right"
+        android:layout_alignBaseline="@+id/story_item_date"
+        android:ellipsize="end"
+        android:singleLine="true" />
+
+    <FrameLayout
+        android:id="@+id/story_item_inteldot_container"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_alignTop="@id/story_item_title"
+        android:layout_alignBottom="@id/story_item_title"
+        android:layout_toRightOf="@id/story_item_thumbnail_left" >
+
+        <ImageView
+            android:id="@+id/story_item_inteldot"
+            android:layout_width="9dp"
+            android:layout_height="9dp"
+            android:layout_gravity="center_vertical" />
+
+    </FrameLayout>
+
+    <View
+        android:layout_height="0.5dp"
+        android:layout_width="match_parent"
+        style="?rowBorder"
+        android:layout_alignParentTop="true" />
+    <View
+        android:layout_height="0.5dp"
+        android:layout_width="match_parent"
+        style="?rowBorder"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    >
+
+    <ImageButton
+        android:id="@+id/intel_row_clear"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="4dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@drawable/ic_clear"
+    />
+
+    <ImageButton
+        android:id="@+id/intel_row_dislike"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@id/intel_row_clear"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginLeft="6dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@drawable/ic_thumb_down_yellow"
+    />
+
+    <ImageButton
+        android:id="@+id/intel_row_like"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@id/intel_row_dislike"
+        android:layout_margin="4dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@drawable/ic_thumb_up_yellow"
+    />
+        
+    <TextView
+        android:id="@+id/intel_row_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/intel_row_like"
+        android:layout_marginLeft="8dp"
+        android:textSize="16sp"
+        style="?defaultText"
+    />
+
+</RelativeLayout>
+

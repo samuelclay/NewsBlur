@@ -1,0 +1,76 @@
+body {
+    overflow: hidden;
+    line-height: 1.5em;
+    width: auto;
+    max-width: 100%;
+    /* note that even with 0 margins, most Android WebViews still have a thin margin that cannot be removed */
+    margin: 0px !important;
+    padding: 12px !important;
+}
+
+.NB-story, .NB-youtube-player {
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0;
+}
+
+.NB-story .NB-large-image {
+    margin-left: -12px !important;
+    max-width: calc(100% + 24px) !important;
+    height: auto !important;
+    margin-bottom: 8px !important;
+}
+
+.NB-story .NB-small-image {
+    display: inline-block;
+    margin: 2px;
+}
+
+p, div, table {
+    clear: both;
+	line-height: 1.5em;
+}
+
+p, a, table, video, embed, object, iframe, div, figure, dl, dt, center {
+    /* virtually all story content wants to be the wrong size for our viewport, so try to fit them horizontally, as we
+       can only scroll in vertical. however, do not auto-set height for these, as they tend to ratio down to something
+       tiny before dynamic content is done loading. these types will resize well, but exclude images, which distort. */
+	width: auto !important;
+    max-width: 100% !important;
+    margin: 0px !important;
+    min-width: 0px !important;
+}
+
+img {
+    /* in addition to the tweaks for other media, set image height to auto, so aspect ratios are correct */
+	width: auto !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+}
+
+p {
+    margin-bottom: 0.9em !important;
+}
+
+iframe {
+    /* 100% width can cause minor clipping, but iframes tend not to respect the auto/max-100 properties */
+	width: 100% !important;
+}
+
+a {
+	text-decoration: none;
+}
+
+code {
+    word-wrap: break-word !important;
+}
+
+pre, blockquote {
+    border-left: 1px solid #C2C5BE;
+    padding: 0.6em;
+    margin: 0.6em;
+    word-wrap: break-word !important;
+    white-space: pre-wrap !important;
+}

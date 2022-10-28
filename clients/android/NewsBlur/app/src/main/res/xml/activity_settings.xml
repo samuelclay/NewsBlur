@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory 
+        android:title="@string/settings_cat_offline">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_offline"
+            android:title="@string/settings_enable_offline" 
+            android:summary="@string/settings_enable_offline_sum" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_image_prefetch"
+            android:title="@string/settings_enable_image_prefetch" 
+            android:summary="@string/settings_enable_image_prefetch_sum" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_text_prefetch"
+            android:title="@string/settings_enable_text_prefetch"
+            android:summary="@string/settings_enable_text_prefetch_sum" />
+        <ListPreference
+            android:key="offline_network_select"
+            android:title="@string/menu_network_select"
+            android:dialogTitle="@string/menu_network_select"
+            android:summary="@string/menu_network_select_sum"
+            android:entries="@array/default_network_select_entries"
+            android:entryValues="@array/default_network_select_values"
+            android:defaultValue="@string/default_network_select_value" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="keep_old_stories"
+            android:title="@string/settings_keep_old_stories" 
+            android:summary="@string/settings_keep_old_stories_sum" />
+        <ListPreference
+            android:key="cache_age_select"
+            android:title="@string/menu_cache_age_select"
+            android:dialogTitle="@string/menu_cache_age_select"
+            android:summary="@string/menu_cache_age_select_sum"
+            android:entries="@array/cache_age_select_entries"
+            android:entryValues="@array/cache_age_select_values"
+            android:defaultValue="@string/default_cache_age_select_value" />
+        <Preference
+            android:title="@string/menu_delete_offline_stories"
+            android:key="@string/menu_delete_offline_stories_key"
+            android:summary="@string/menu_delete_offline_stories_sum" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_cat_feed_list">
+        <ListPreference
+            android:key="feed_list_order"
+            android:title="@string/setting_feed_list_order"
+            android:dialogTitle="@string/setting_feed_list_order"
+            android:entries="@array/default_feed_list_order_entries"
+            android:entryValues="@array/default_feed_list_order_values"
+            android:defaultValue="@string/default_feed_list_order_value" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_row_global_shared"
+            android:title="@string/settings_enable_row_global_shared" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_row_infrequent_stories"
+            android:title="@string/settings_enable_row_infrequent_stories" />
+    </PreferenceCategory>
+
+    <PreferenceCategory 
+        android:title="@string/settings_cat_story_list">
+        <ListPreference
+            android:key="default_story_order"
+            android:title="@string/settings_story_order"
+            android:dialogTitle="@string/menu_story_order"
+            android:entries="@array/default_story_order_entries"
+            android:entryValues="@array/default_story_order_values"
+            android:defaultValue="@string/default_story_order_value" />
+        <ListPreference
+            android:key="default_read_filter"
+            android:title="@string/settings_read_filter"
+            android:dialogTitle="@string/menu_read_filter"
+            android:entries="@array/default_read_filter_entries"
+            android:entryValues="@array/default_read_filter_values"
+            android:defaultValue="@string/default_read_filter_value" />
+        <ListPreference
+            android:key="pref_confirm_mark_all_read"
+            android:title="@string/settings_confirm_mark_all_read"
+            android:dialogTitle="@string/settings_confirm_mark_all_read"
+            android:entries="@array/confirm_mark_all_read_entries"
+            android:entryValues="@array/confirm_mark_all_read_values"
+            android:defaultValue="@string/confirm_mark_all_read_value" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_confirm_mark_range_read"
+             android:title="@string/settings_confirm_mark_range_read" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_auto_open_first_unread"
+            android:title="@string/settings_auto_open_first_unread"
+            android:summary="@string/settings_auto_open_first_unread_sum" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_mark_read_on_scroll"
+            android:title="@string/settings_mark_read_on_feed_scroll"
+            android:summary="@string/settings_mark_read_on_feed_scroll_sum" />
+        <ListPreference
+            android:key="pref_show_content_preview_style"
+            android:title="@string/settings_content_preview"
+            android:dialogTitle="@string/settings_content_preview"
+            android:entries="@array/show_content_preview_entries"
+            android:entryValues="@array/show_content_preview_values"
+            android:defaultValue="@string/show_content_preview_default_value"/>
+        <ListPreference
+            android:key="pref_thumbnail_style"
+            android:title="@string/settings_thumbnails_style"
+            android:dialogTitle="@string/settings_thumbnails_style"
+            android:entries="@array/thumbnail_style_entries"
+            android:entryValues="@array/thumbnail_style_values"
+            android:defaultValue="@string/thumbnail_style_default_value" />
+        <ListPreference
+            android:key="pref_story_mark_read_behavior"
+            android:title="@string/settings_mark_story_read"
+            android:dialogTitle="@string/settings_mark_story_read"
+            android:entries="@array/mark_story_read_entries"
+            android:entryValues="@array/mark_story_read_values"
+            android:defaultValue="@string/mark_story_read_default_value" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_reading"
+        android:key="reading">
+        <ListPreference
+            android:key="default_browser"
+            android:title="@string/default_browser"
+            android:dialogTitle="@string/default_browser"
+            android:entries="@array/default_browser_entries"
+            android:entryValues="@array/default_browser_values"
+            android:defaultValue="@string/default_default_browser" />
+        <ListPreference
+            android:key="reading_font"
+            android:title="@string/font"
+            android:dialogTitle="@string/font"
+            android:entries="@array/default_font_entries"
+            android:entryValues="@array/default_font_values"
+            android:defaultValue="@string/default_font_value" />
+        <ListPreference
+            android:key="volume_key_navigation"
+            android:title="@string/volume_key_navigation"
+            android:dialogTitle="@string/volume_key_navigation"
+            android:entries="@array/volume_key_navigation_entries"
+            android:entryValues="@array/volume_key_navigation_values"
+            android:defaultValue="@string/default_volume_key_navigation_value" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="load_next_on_mark_read"
+            android:title="@string/settings_load_next_on_mark_read"
+            android:summary="@string/settings_load_next_on_mark_read_summary" />
+    </PreferenceCategory>
+
+    <PreferenceCategory 
+        android:title="@string/settings_social">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="show_public_comments"
+            android:title="@string/settings_show_public_comments" >
+        </CheckBoxPreference>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_gestures">
+        <ListPreference
+            android:key="ltr_gesture_action"
+            android:title="@string/settings_ltr_gesture_action"
+            android:dialogTitle="@string/settings_ltr_gesture_action"
+            android:entries="@array/ltr_gesture_action_entries"
+            android:entryValues="@array/ltr_gesture_action_values"
+            android:defaultValue="@string/ltr_gesture_action_value" />
+        <ListPreference
+            android:key="rtl_gesture_action"
+            android:title="@string/settings_rtl_gesture_action"
+            android:dialogTitle="@string/settings_rtl_gesture_action"
+            android:entries="@array/rtl_gesture_action_entries"
+            android:entryValues="@array/rtl_gesture_action_values"
+            android:defaultValue="@string/rtl_gesture_action_value" />
+    </PreferenceCategory>
+
+    <PreferenceCategory 
+        android:title="@string/settings_notifications">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enable_notifications"
+            android:title="@string/settings_enable_notifications" >
+        </CheckBoxPreference>
+    </PreferenceCategory>
+
+</PreferenceScreen>

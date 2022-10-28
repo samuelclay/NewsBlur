@@ -1,0 +1,47 @@
+body, span, table, td, p, div, li {
+	background-color: #000000 !important;
+	color: #CCC !important;
+}
+
+a, a span {
+	color: #277D9D !important;
+	background-color: #000000 !important;
+}
+
+a:visited, a:visited span {
+	color: #277D9D !important;
+	background-color: #000000 !important;
+}
+
+pre, blockquote, code {
+    background-color: #1A1A1A;
+}
+
+blockquote *, pre *, code * {
+    background-color: #1A1A1A !important;
+}
+
+blockquote a, blockquote a span {
+    background-color: #1A1A1A !important;
+}
+
+.NB-story > table {
+    background-color: #1A1A1A !important;
+}
+
+ins {
+    background-color: #069000;
+    text-decoration: none;
+}
+
+del {
+    background-color: #920000;
+}
+.NB-story ins {
+    background-color: #069000;
+    text-decoration: none;
+}
+
+.NB-story del {
+    background-color: #920000;
+}

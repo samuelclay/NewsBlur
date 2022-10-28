@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <item android:id="@+id/menu_send_story"
+        android:title="@string/menu_send_story"/>
+
+    <item android:id="@+id/menu_send_story_full"
+        android:title="@string/menu_send_story_full"/>
+
+    <item android:id="@+id/menu_mark_story_as_unread"
+          android:title="@string/menu_mark_unread" />
+
+    <item android:id="@+id/menu_mark_story_as_read"
+          android:title="@string/menu_mark_story_as_read" />
+    
+    <item android:id="@+id/menu_mark_newer_stories_as_read"
+          android:title="@string/menu_newest_mark_newer_stories_as_read" />
+
+    <item android:id="@+id/menu_mark_older_stories_as_read"
+          android:title="@string/menu_newest_mark_older_stories_as_read" />
+
+    <item android:id="@+id/menu_save_story"
+          android:title="@string/menu_save_story" />
+
+    <item android:id="@+id/menu_unsave_story"
+        android:title="@string/menu_unsave_story" />
+
+    <item android:id="@+id/menu_go_to_feed"
+        android:title="@string/go_to_feed"/>
+
+    <item android:id="@+id/menu_intel"
+        android:title="@string/menu_intel" />
+
+</menu>

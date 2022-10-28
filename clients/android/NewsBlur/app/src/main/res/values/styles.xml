@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="dialogButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <style name="dialogButton.dark" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <style name="splashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/black</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_screen</item>
+        <item name="postSplashScreenTheme">@style/NewsBlurTheme</item>
+    </style>
+
+    <style name="actionbar" parent="ThemeOverlay.MaterialComponents.Light">
+        <item name="colorControlNormal">@color/gray55</item>
+        <item name="fontFamily">@font/whitney</item>
+    </style>
+
+    <style name="actionbar.dark" parent="ThemeOverlay.MaterialComponents">
+        <item name="android:background">@color/dark_bar_background</item>
+        <item name="colorControlNormal">@color/gray55</item>
+        <item name="fontFamily">@font/whitney</item>
+    </style>
+
+    <style name="actionbar.black" parent="ThemeOverlay.MaterialComponents">
+        <item name="android:background">@color/black</item>
+        <item name="colorControlNormal">@color/gray55</item>
+        <item name="fontFamily">@font/whitney</item>
+    </style>
+
+    <style name="delimiter">
+        <item name="android:background">@color/gray85</item>
+    </style>
+
+    <style name="delimiter.dark">
+        <item name="android:background">@color/gray30</item>
+    </style>
+
+    <style name="selectorFolderParent">
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingBottom">2dp</item>
+    </style>
+
+    <style name="selectorFolderBackground" parent="selectorFolderParent">
+        <item name="android:background">@drawable/selector_folder_background</item>
+    </style>
+
+    <style name="selectorFolderBackground.dark" parent="selectorFolderParent">
+        <item name="android:background">@drawable/dark_selector_folder_background</item>
+    </style>
+
+    <style name="selectorFolderBackground.black" parent="selectorFolderParent">
+        <item name="android:background">@drawable/black_selector_folder_background</item>
+    </style>
+
+    <style name="selectorFeedAlmostBlueBackground" parent="selectorFeedBackground">
+        <item name="android:background">@drawable/selector_feed_almost_blue_background</item>
+    </style>
+
+    <style name="selectorFeedAlmostRedBackground" parent="selectorFeedBackground">
+        <item name="android:background">@drawable/selector_feed_almost_red_background</item>
+    </style>
+
+    <style name="selectorFeedAlmostGreenBackground" parent="selectorFeedBackground">
+        <item name="android:background">@drawable/selector_feed_almost_green_background</item>
+    </style>
+
+    <style name="selectorFeedAlmostBlueBackground.dark" parent="selectorFeedBackground.dark" />
+
+    <style name="selectorFeedAlmostRedBackground.dark" parent="selectorFeedBackground.dark" />
+
+    <style name="selectorFeedAlmostGreenBackground.dark" parent="selectorFeedBackground.dark" />
+
+    <style name="selectorFeedBackground">
+        <item name="android:background">@drawable/selector_feed_background</item>
+    </style>
+
+    <style name="selectorFeedBackground.dark">
+        <item name="android:background">@drawable/dark_selector_feed_background</item>
+    </style>
+
+    <style name="feedRowNeutCountText">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="feedRowNeutCountText.dark">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="actionbarBackground">
+        <item name="android:background">@color/bar_background</item>
+    </style>
+
+    <style name="actionbarBackground.dark">
+        <item name="android:background">@color/dark_bar_background</item>
+    </style>
+
+    <style name="actionbarBackground.black">
+        <item name="android:background">@color/black</item>
+    </style>
+
+    <style name="listBackground">
+        <item name="android:background">@drawable/list_background</item>
+    </style>
+
+    <style name="listBackground.dark">
+        <item name="android:background">@drawable/dark_list_background</item>
+    </style>
+
+    <style name="layoutBackground">
+        <item name="android:background">@color/item_background</item>
+    </style>
+
+    <style name="layoutBackground.dark">
+        <item name="android:background">@color/dark_item_background</item>
+    </style>
+
+    <style name="layoutBackground.black">
+        <item name="android:background">@color/black</item>
+    </style>
+
+    <style name="layoutRoundedBackground">
+        <item name="android:background">@drawable/shape_rounded_corners_6dp_light</item>
+    </style>
+
+    <style name="layoutRoundedBackground.dark">
+        <item name="android:background">@drawable/shape_rounded_corners_6dp_dark</item>
+    </style>
+
+    <style name="layoutRoundedBackground.black">
+        <item name="android:background">@drawable/shape_rounded_corners_6dp_black</item>
+    </style>
+
+    <style name="readingBackground">
+        <item name="android:background">@color/white</item>
+    </style>
+
+    <style name="readingBackground.dark">
+        <item name="android:background">@color/dark_item_background</item>
+    </style>
+
+    <style name="readingBackground.black">
+        <item name="android:background">@color/black</item>
+    </style>
+
+    <style name="defaultText">
+        <item name="android:textColorLink">@color/linkblue</item>
+        <item name="android:textColor">@color/text</item>
+    </style>
+
+    <style name="defaultText.dark">
+        <item name="android:textColorLink">@color/dark_linkblue</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="linkText">
+        <item name="android:textColorLink">@color/linkblue</item>
+        <item name="android:textColor">@color/linkblue</item>
+    </style>
+
+    <style name="linkText.dark">
+        <item name="android:textColorLink">@color/dark_linkblue</item>
+        <item name="android:textColor">@color/dark_linkblue</item>
+    </style>
+
+    <style name="storySnippetText">
+        <item name="android:textColor">@color/story_content_text</item>
+    </style>
+
+    <style name="storySnippetText.dark">
+        <item name="android:textColor">@color/dark_story_content_text</item>
+    </style>
+
+    <style name="storyFeedTitleText">
+        <item name="android:textColor">@color/story_feed_title_text</item>
+    </style>
+
+    <style name="storyFeedTitleText.dark">
+        <item name="android:textColor">@color/dark_story_feed_title_text</item>
+    </style>
+
+    <style name="selectorStoryBackground">
+        <item name="android:background">@drawable/selector_story_background</item>
+    </style>
+
+    <style name="selectorStoryBackground.dark">
+        <item name="android:background">@drawable/dark_selector_story_background</item>
+    </style>
+
+    <style name="selectorStoryBackground.black">
+        <item name="android:background">@drawable/black_selector_story_background</item>
+    </style>
+
+    <style name="rowItemHeaderBackground">
+        <item name="android:background">@drawable/row_item_header_background</item>
+    </style>
+
+    <style name="rowItemHeaderBackground.dark">
+        <item name="android:background">@drawable/dark_row_item_header_background</item>
+    </style>
+
+    <style name="rowItemHeaderBackground.black">
+        <item name="android:background">@drawable/black_row_item_header_background</item>
+    </style>
+
+    <style name="readingItemMetadata">
+        <item name="android:textColor">@color/half_darkgray</item>
+    </style>
+
+    <style name="readingItemMetadata.dark">
+        <item name="android:textColor">@color/half_white</item>
+    </style>
+
+    <style name="chip">
+        <item name="android:textColor">@color/gray55</item>
+        <item name="chipBackgroundColor">@color/tag_gray</item>
+        <item name="android:fontFamily">@font/whitney</item>
+    </style>
+
+    <style name="chip.dark">
+        <item name="android:textColor">@color/tag_gray</item>
+        <item name="chipBackgroundColor">@color/tag_bg_dark</item>
+        <item name="android:fontFamily">@font/whitney</item>
+    </style>
+
+    <style name="actionButtons">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/button_text</item>
+        <item name="android:background">@color/gray90</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <style name="actionButtons.dark">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/button_text_dark</item>
+        <item name="android:background">@drawable/button_background_dark</item>
+    </style>
+
+    <style name="storyButtons" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/gray55</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="iconTint">@color/gray75</item>
+        <item name="iconSize">16dp</item>
+    </style>
+
+    <style name="storyButtons.dark" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/gray55</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="iconTint">@color/gray46</item>
+        <item name="iconSize">16dp</item>
+    </style>
+
+    <style name="storyButtonsDimmed" parent="storyButtons">
+        <item name="android:textColor">@color/gray85</item>
+    </style>
+
+    <style name="storyButtonsDimmed.dark" parent="storyButtons.dark">
+        <item name="android:textColor">@color/gray30</item>
+    </style>
+
+    <style name="shareBarBackground">
+        <item name="android:background">@color/share_bar_background</item>
+    </style>
+
+    <style name="shareBarBackground.dark">
+        <item name="android:background">@color/dark_share_bar_background</item>
+    </style>
+
+    <style name="shareBarBackground.black">
+        <item name="android:background">@color/black</item>
+    </style>
+
+    <style name="shareBarText">
+        <item name="android:textColor">@color/gray55</item>
+        <item name="android:shadowColor">@color/white</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">1</item>
+    </style>
+
+    <style name="shareBarText.dark">
+        <item name="android:textColor">@color/gray55</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">0</item>
+    </style>
+
+    <style name="commentsHeader">
+        <item name="android:background">@drawable/gradient_background_default</item>
+        <item name="android:textColor">@color/text</item>
+    </style>
+
+    <style name="commentsHeader.dark">
+        <item name="android:background">@drawable/dark_gradient_background_default</item>
+        <item name="android:textColor">@color/gray55</item>
+    </style>
+
+    <style name="commentsHeader.black">
+        <item name="android:background">@drawable/black_gradient_background_default</item>
+        <item name="android:textColor">@color/gray55</item>
+    </style>
+
+    <style name="activityDetailsPager">
+        <item name="android:background">@drawable/gradient_background_default</item>
+        <item name="android:textColor">@color/text</item>
+    </style>
+
+    <style name="activityDetailsPager.dark">
+        <item name="android:background">@drawable/dark_gradient_background_default</item>
+        <item name="android:textColor">@color/dark_text</item>
+    </style>
+
+    <style name="activityDetailsPager.black">
+        <item name="android:background">@drawable/black_gradient_background_default</item>
+        <item name="android:textColor">@color/dark_text</item>
+    </style>
+
+    <style name="rowBorder">
+        <item name="android:background">@color/row_border</item>
+    </style>
+
+    <style name="rowBorder.dark">
+        <item name="android:background">@color/dark_row_border</item>
+    </style>
+
+    <style name="profileCount">
+        <item name="android:background">@color/item_background</item>
+        <item name="android:textColor">@color/text</item>
+    </style>
+
+    <style name="profileCount.dark">
+        <item name="android:background">@color/dark_item_background</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="profileCount.black">
+        <item name="android:background">@color/black</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="profileActivityList">
+        <item name="android:background">@color/item_background</item>
+        <item name="android:divider">@drawable/divider_light</item>
+    </style>
+
+    <style name="profileActivityList.dark">
+        <item name="android:background">@color/dark_item_background</item>
+        <item name="android:divider">@drawable/divider_dark</item>
+    </style>
+
+    <style name="profileActivityList.black">
+        <item name="android:background">@color/black</item>
+        <item name="android:divider">@drawable/divider_dark</item>
+    </style>
+
+    <style name="storyCommentDivider">
+        <item name="android:background">@color/story_comment_divider</item>
+    </style>
+
+    <style name="storyCommentDivider.dark">
+        <item name="android:background">@color/dark_story_comment_divider</item>
+    </style>
+
+    <style name="storyCommentDivider.black">
+        <item name="android:background">@color/gray07</item>
+    </style>
+
+    <style name="explainerText">
+        <item name="android:textColor">@color/gray55</item>
+    </style>
+
+    <style name="explainerText.dark">
+        <item name="android:textColor">@color/dark_text</item>
+    </style>
+
+    <style name="toggleText">
+        <item name="android:textColor">@color/gray55</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="toggleText.dark">
+        <item name="android:textColor">@color/gray55</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="selectorOverlayBackgroundLeft">
+        <item name="android:background">@drawable/selector_overlay_bg_left</item>
+    </style>
+
+    <style name="selectorOverlayBackgroundLeft.dark">
+        <item name="android:background">@drawable/selector_overlay_bg_dark_left</item>
+    </style>
+
+    <style name="selectorOverlayBackgroundRight">
+        <item name="android:background">@drawable/selector_overlay_bg_right</item>
+        <item name="android:textColor">@color/button_text</item>
+    </style>
+
+    <style name="selectorOverlayBackgroundRight.dark">
+        <item name="android:background">@drawable/selector_overlay_bg_dark_right</item>
+        <item name="android:textColor">@color/button_text_dark</item>
+    </style>
+
+    <style name="selectorOverlayBackgroundRightDone">
+        <item name="android:background">@drawable/selector_overlay_bg_right_done</item>
+        <item name="android:textColor">@color/button_text</item>
+    </style>
+
+    <style name="selectorOverlayBackgroundRightDone.dark">
+        <item name="android:background">@drawable/selector_overlay_bg_dark_right_done</item>
+        <item name="android:textColor">@color/button_text_dark</item>
+    </style>
+
+    <style name="selectorOverlayBackgroundSend">
+        <item name="android:background">@drawable/selector_overlay_bg_send</item>
+    </style>
+
+    <style name="selectorOverlayBackgroundSend.dark">
+        <item name="android:background">@drawable/selector_overlay_bg_dark_send</item>
+    </style>
+
+    <style name="selectorOverlayBackgroundStory">
+        <item name="android:background">@drawable/selector_overlay_bg_story</item>
+        <item name="android:textColor">@color/button_text</item>
+    </style>
+
+    <style name="selectorOverlayBackgroundStory.dark">
+        <item name="android:background">@drawable/selector_overlay_bg_dark_story</item>
+        <item name="android:textColor">@color/button_text_dark</item>
+    </style>
+
+    <style name="selectorOverlayBackgroundText">
+        <item name="android:background">@drawable/selector_overlay_bg_text</item>
+        <item name="android:textColor">@color/button_text</item>
+    </style>
+
+    <style name="selectorOverlayBackgroundText.dark">
+        <item name="android:background">@drawable/selector_overlay_bg_dark_text</item>
+        <item name="android:textColor">@color/button_text_dark</item>
+    </style>
+
+    <style name="muteicon">
+        <item name="android:src">@drawable/mute_white</item>
+    </style>
+
+    <style name="muteicon.dark">
+        <item name="android:src">@drawable/mute_black</item>
+    </style>
+
+    <style name="actionBarPopup" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="android:background">@color/transparent</item>
+        <item name="popupMenuBackground">@color/primary</item>
+    </style>
+
+    <style name="actionBarPopup.dark" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="android:background">@color/transparent</item>
+        <item name="popupMenuBackground">@color/gray13</item>
+    </style>
+
+    <style name="preferenceTheme" parent="@style/PreferenceThemeOverlay">
+        <item name="preferenceCategoryStyle">@style/preferenceCategory</item>
+        <item name="checkBoxPreferenceStyle">@style/checkBoxPreference</item>
+        <item name="dialogPreferenceStyle">@style/dialogPreference</item>
+        <item name="preferenceStyle">@style/dialogPreference</item>
+    </style>
+
+    <style name="preferenceCategory" parent="Preference.Category.Material">
+        <item name="iconSpaceReserved">false</item>
+    </style>
+
+    <style name="checkBoxPreference" parent="Preference.CheckBoxPreference.Material">
+        <item name="iconSpaceReserved">false</item>
+    </style>
+
+    <style name="dialogPreference" parent="Preference.DialogPreference.Material">
+        <item name="iconSpaceReserved">false</item>
+    </style>
+
+    <style name="circleProgressIndicator" parent="Widget.MaterialComponents.CircularProgressIndicator">
+        <item name="indicatorColor">@color/newsblur_blue</item>
+        <item name="indicatorSize">24dp</item>
+        <item name="trackThickness">3dp</item>
+    </style>
+
+    <style name="smallRoundImageShapeAppearance">
+        <item name="cornerSize">20%</item>
+    </style>
+
+    <style name="mediumRoundImageShapeAppearance">
+        <item name="cornerSize">15%</item>
+    </style>
+
+    <style name="largeRoundImageShapeAppearance">
+        <item name="cornerSize">10%</item>
+    </style>
+
+    <style name="toggleButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="backgroundTint">@color/mtrl_btn_bg_color_selector_light</item>
+        <item name="android:textColor">@color/mtrl_btn_text_color_selector_light</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_height">40dp</item>
+    </style>
+
+    <style name="toggleButton.dark" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="backgroundTint">@color/mtrl_btn_bg_color_selector_dark</item>
+        <item name="android:textColor">@color/mtrl_btn_text_color_selector_dark</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_height">40dp</item>
+    </style>
+
+</resources>

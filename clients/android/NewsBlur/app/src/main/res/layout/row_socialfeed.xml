@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    style="?selectorFeedAlmostGreenBackground">
+
+    <LinearLayout
+        android:id="@+id/row_foldersums"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="5dp" >
+
+        <TextView
+            android:id="@+id/row_socialsumneu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/neutral_count_rect"
+            android:gravity="center"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:shadowColor="@color/neutral_drop_shadow"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            style="?feedRowNeutCountText"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/row_socialsumpos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/positive_count_rect"
+            android:gravity="center"
+            android:shadowColor="@color/positive_drop_shadow"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            android:textColor="@color/white"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/row_socialfeed_icon"
+        android:layout_width="19dp"
+        android:layout_height="19dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:contentDescription="@string/description_row_folder_icon"
+        app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance"/>
+
+    <TextView
+        android:id="@+id/row_socialfeed_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:textStyle="bold"
+        android:layout_toLeftOf="@id/row_foldersums"
+        android:layout_toRightOf="@id/row_socialfeed_icon"
+        android:textSize="14sp" />
+
+</RelativeLayout>

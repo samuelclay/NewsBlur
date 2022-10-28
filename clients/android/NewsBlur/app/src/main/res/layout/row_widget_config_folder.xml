@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container_folder"
+    style="?selectorFolderBackground"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp">
+
+    <ImageView
+        android:id="@+id/img_folder"
+        android:layout_width="19dp"
+        android:layout_height="19dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="2dp"
+        android:contentDescription="@string/description_row_folder_icon"
+        android:src="@drawable/ic_folder" />
+
+    <TextView
+        android:id="@+id/text_folder_name"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="32dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingTop="9dp"
+        android:paddingBottom="9dp"
+        android:textStyle="bold" />
+
+</FrameLayout>

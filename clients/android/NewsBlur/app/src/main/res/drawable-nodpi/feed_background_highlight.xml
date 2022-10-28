@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape
+                android:shape="rectangle">
+            <solid android:color="@color/feed_background_selected_start"/>
+        </shape>
+    </item>
+    <item
+            android:top="0.5dp"
+            android:bottom="0.5dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/feed_background_selected_end"/>
+        </shape>
+    </item>
+</layer-list>

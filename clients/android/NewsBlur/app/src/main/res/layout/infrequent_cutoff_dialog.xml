@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:text="@string/infrequent_choice_title"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        android:paddingLeft="25dip"
+        android:paddingTop="10dip"
+        android:paddingRight="25dip"
+        android:paddingBottom="10dip">
+
+        <RadioButton
+            android:id="@+id/radio_5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/infrequent_5" />
+
+        <RadioButton
+            android:id="@+id/radio_15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/infrequent_15" />
+
+        <RadioButton
+            android:id="@+id/radio_30"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/infrequent_30" />
+
+        <RadioButton
+            android:id="@+id/radio_60"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/infrequent_60" />
+
+        <RadioButton
+            android:id="@+id/radio_90"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/infrequent_90" />
+
+    </RadioGroup>
+</LinearLayout>

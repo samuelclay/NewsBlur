@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!-- Drop Shadow -->
+    <item>
+        <shape>
+            <padding android:bottom="1dp" />
+            <solid android:color="@color/neutral_drop_shadow" />
+            <corners android:radius="5dp" />
+        </shape>
+    </item>
+
+    <!-- Background -->
+    <item>
+        <shape>
+            <solid android:color="@color/neutral" />
+            <corners android:radius="5dp" />
+        </shape>
+    </item>
+
+</layer-list>

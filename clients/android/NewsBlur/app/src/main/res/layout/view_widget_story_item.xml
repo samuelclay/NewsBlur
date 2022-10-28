@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:id="@+id/view_widget_item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingRight="8dp">
+
+        <ImageView
+            android:id="@+id/story_item_favicon_borderbar_1"
+            android:layout_width="5dp"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/story_item_favicon_borderbar_2"
+            android:layout_width="5dp"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/story_item_favicon_borderbar_1" />
+
+        <ImageView
+            android:id="@+id/story_item_feedicon"
+            android:layout_width="19dp"
+            android:layout_height="19dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@+id/story_item_favicon_borderbar_2" />
+
+        <TextView
+            android:id="@+id/story_item_feedtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@id/story_item_feedicon"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="@color/widget_feed_title"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/story_item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/story_item_feedtitle"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginRight="8dp"
+            android:layout_toLeftOf="@+id/story_item_thumbnail"
+            android:layout_toRightOf="@id/story_item_favicon_borderbar_2"
+            android:ellipsize="end"
+            android:lines="2"
+            android:maxLines="2"
+            android:textColor="@color/widget_story_title"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/story_item_content"
+            style="?storySnippetText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/story_item_title"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_toLeftOf="@+id/story_item_thumbnail"
+            android:layout_toRightOf="@id/story_item_favicon_borderbar_2"
+            android:ellipsize="end"
+            android:lines="2"
+            android:maxLines="2"
+            android:textColor="@color/widget_story_content"
+            android:textSize="13sp" />
+
+        <ImageView
+            android:id="@+id/story_item_thumbnail"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_below="@+id/story_item_feedtitle"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="2dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/story_item_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/story_item_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="2dp"
+            android:layout_toLeftOf="@id/story_item_date"
+            android:layout_toRightOf="@id/story_item_favicon_borderbar_2"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAllCaps="true"
+            android:textColor="@color/widget_story_author"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/story_item_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/story_item_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="2dp"
+            android:gravity="end"
+            android:maxLines="1"
+            android:textColor="@color/widget_story_date_time"
+            android:textSize="12sp" />
+
+    </RelativeLayout>
+</LinearLayout>

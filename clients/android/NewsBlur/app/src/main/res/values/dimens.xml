@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="thumbnails_small_size">54dp</dimen>
+    <dimen name="thumbnails_size">120dp</dimen>
+    <dimen name="rounded_corner_radius_4dp">4dp</dimen>
+    <dimen name="rounded_corner_radius_6dp">6dp</dimen>
+    <dimen name="extra_line_spacing">4dp</dimen>
+    <dimen name="extra_letter_spacing">0.06</dimen>
+</resources>

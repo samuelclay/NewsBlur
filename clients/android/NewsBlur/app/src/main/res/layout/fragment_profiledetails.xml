@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    style="?layoutBackground"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/profile_picture"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_margin="20dp"
+                android:contentDescription="@string/description_profile_picture"
+                android:scaleType="fitCenter"
+                android:src="@drawable/logo"
+                app:shapeAppearanceOverlay="@style/largeRoundImageShapeAppearance"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/profile_follow_button"
+                android:layout_height="36dp"
+                android:layout_width="wrap_content"
+                android:contentDescription="@string/description_follow_button"
+                android:text="@string/profile_button_follow"
+                style="?actionButtons"
+                android:letterSpacing="0"
+                android:visibility="gone" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/profile_unfollow_button"
+                android:layout_height="36dp"
+                android:layout_width="wrap_content"
+                android:contentDescription="@string/description_follow_button"
+                android:text="@string/profile_button_unfollow"
+                style="?actionButtons"
+                android:letterSpacing="0"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical" >
+
+            <TextView
+                android:id="@+id/profile_username"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/profile_bio"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/profile_username"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/text"
+                android:textSize="12sp"
+                android:textStyle="italic" />
+
+            <ImageView
+                android:id="@+id/profile_location_icon"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_below="@id/profile_bio"
+                android:layout_marginRight="2dp"
+                android:contentDescription="@string/profile_location_icon"
+                android:scaleType="fitCenter"
+                android:src="@drawable/location_icon" />
+
+            <TextView
+                android:id="@+id/profile_location"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/profile_location_icon"
+                android:layout_below="@id/profile_bio"
+                android:layout_marginBottom="5dp"
+                android:layout_toRightOf="@id/profile_location_icon"
+                android:textColor="@color/text"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/profile_website"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/profile_location"
+                android:autoLink="web"
+                android:clickable="true"
+                android:textColor="@color/newsblur_blue"
+                android:textSize="12sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1px"
+        android:background="@color/gray80" />
+
+    <include
+        android:id="@+id/profile_user_statistics"
+        layout="@layout/profile_user_statistics" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1px"
+        android:background="@color/gray80" />
+
+</LinearLayout>

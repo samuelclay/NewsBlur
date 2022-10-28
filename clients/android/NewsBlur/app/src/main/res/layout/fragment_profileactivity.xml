@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    style="?layoutBackground" >
+
+    <RelativeLayout
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <TextView
+            android:id="@+id/empty_view_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="@string/empty_list_view_loading"
+            style="?defaultText"
+            android:textSize="13sp"
+            android:textStyle="italic" />
+
+        <com.newsblur.view.ProgressThrobber
+            android:id="@+id/empty_view_loading_throb"
+            android:layout_width="fill_parent"
+            android:layout_alignParentTop="true"
+            android:layout_height="6dp" />
+
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/profile_details_activitylist"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        style="?profileActivityList"
+        android:dividerHeight="3dp" />
+
+</LinearLayout>

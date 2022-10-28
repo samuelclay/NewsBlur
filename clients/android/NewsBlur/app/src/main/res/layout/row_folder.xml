@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    style="?selectorFeedBackground"
+    android:addStatesFromChildren="true" >
+
+    <ImageView
+        android:id="@+id/row_folder_icon"
+        android:layout_width="19dp"
+        android:layout_height="19dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:contentDescription="@string/description_row_folder_icon"
+        android:src="@drawable/ic_folder_closed" />
+
+    <ImageView
+        android:id="@+id/row_folder_indicator"
+        android:layout_width="26dp"
+        android:layout_height="22dp"
+        android:paddingLeft="6dp"
+        android:paddingRight="8dp"
+        android:layout_marginEnd="4dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_arrow_up" />
+    
+    <LinearLayout
+        android:id="@+id/row_foldersums"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/row_folder_indicator"
+        android:layout_marginRight="2dp"
+        android:layout_centerVertical="true" >
+
+        <TextView
+            android:id="@+id/row_foldersumneu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            android:background="@drawable/neutral_count_rect"
+            android:gravity="center"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:shadowColor="@color/neutral_drop_shadow"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            style="?feedRowNeutCountText"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/row_foldersumpos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            android:background="@drawable/positive_count_rect"
+            android:gravity="center"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:shadowColor="@color/positive_drop_shadow"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/row_foldername"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/row_folder_icon"
+        android:layout_toLeftOf="@+id/row_foldersums"
+        android:textStyle="bold"
+        android:shadowDy="1"
+        android:shadowRadius="1"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:letterSpacing="@dimen/extra_letter_spacing" />
+   
+</RelativeLayout>

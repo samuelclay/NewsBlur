@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    style="?actionbarBackground"
+    android:gravity="center"
+    android:orientation="horizontal" >
+
+    <com.newsblur.view.StateToggleButton
+        android:id="@+id/fragment_intelligence_statebutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+     />
+
+</LinearLayout>

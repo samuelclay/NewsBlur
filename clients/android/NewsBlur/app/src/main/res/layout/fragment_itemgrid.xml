@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    style="?layoutBackground"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <TextView
+            android:id="@+id/empty_view_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="50dp"
+            android:gravity="center_horizontal"
+            android:text="@string/empty_list_view_loading"
+            android:textSize="16sp"
+        />
+
+        <ImageView
+            android:id="@+id/empty_view_image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/description_empty_list_image"
+            android:src="@drawable/ic_world"
+            android:layout_below="@id/empty_view_text"
+            android:layout_marginTop="15dp"
+            android:layout_centerHorizontal="true"
+            android:scaleType="fitCenter"
+            android:visibility="invisible"
+        />
+
+    </RelativeLayout>
+
+    <com.newsblur.view.ProgressThrobber
+        android:id="@+id/top_loading_throb"
+        android:layout_width="fill_parent"
+        android:layout_alignParentTop="true"
+        android:layout_height="6dp"
+    />
+    
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/itemgridfragment_grid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+    />
+    
+</RelativeLayout>

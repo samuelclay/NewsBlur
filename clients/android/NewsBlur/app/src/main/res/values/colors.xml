@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="primary">@color/nb_green_gray91</color>
+    <color name="primaryDark">@color/black</color>
+    <color name="secondary">@color/newsblur_blue</color>
+
+    <color name="primary.dark">@color/gray13</color>
+    <color name="primaryDark.dark">@color/black</color>
+    <color name="secondary.dark">@color/newsblur_blue</color>
+
+    <color name="primary.black">@color/black</color>
+    <color name="primaryDark.black">@color/black</color>
+    <color name="secondary.black">@color/newsblur_blue</color>
+
+    <color name="black">#000000</color>
+    <color name="gray07">#121212</color>
+    <color name="gray10">#1A1A1A</color>
+    <color name="gray13">#212121</color>
+    <color name="gray20">#333333</color>
+    <color name="gray30">#4D4D4D</color>
+    <color name="gray46">#757575</color>
+    <color name="gray55">#8C8C8C</color>
+    <color name="gray65">#A6A6A6</color>
+    <color name="gray75">#BFBFBF</color>
+    <color name="gray80">#CCCCCC</color>
+    <color name="gray85">#D9D9D9</color>
+    <color name="gray90">#E6E6E6</color>
+    <color name="gray95">#F2F2F2</color>
+    <color name="gray96">#F4F4F4</color>
+    <color name="white">#FFF</color>
+    <color name="transparent">#00000000</color>
+
+    <color name="nb_green_gray91">#E4E7E1</color>
+
+    <color name="bar_background">@color/nb_green_gray91</color>
+    <color name="dark_bar_background">@color/gray13</color>
+
+    <color name="text">@color/gray20</color>
+    <color name="dark_text">@color/gray85</color>
+    <color name="button_text">@color/gray46</color>
+    <color name="button_text_dark">@color/gray75</color>
+
+    <color name="col_button_background">@color/gray90</color>
+    <color name="col_button_background_dark">@color/gray20</color>
+    <color name="col_button_background_pressed">@color/gray65</color>
+    <color name="col_button_background_pressed_dark">@color/gray30</color>
+
+    <color name="folder_background">#E9EBE4</color>
+    <color name="dark_folder_background">@color/gray13</color>
+    <color name="black_folder_background">@color/gray07</color>
+    <color name="folder_background_selected">#CDD0C7</color>
+    <color name="dark_folder_background_selected">#4C4C4C</color>
+    <color name="row_border">@color/gray95</color>
+    <color name="dark_row_border">@color/gray10</color>
+    <color name="feed_background_selected_end">#FFFFD2</color>
+    <color name="feed_background_selected_start">#E3D0AE</color>
+    <color name="dark_feed_background_selected_end">#4C4C4C</color>
+    <color name="dark_feed_background_selected_start">#1A1A1A</color>
+    <color name="story_background">@color/gray96</color>
+    <color name="story_background_selected">#FFFDEF</color>
+    <color name="dark_story_background">@color/gray07</color>
+    <color name="dark_story_background_selected">#4C4C4C</color>
+
+    <color name="story_feed_title_text">#606060</color>
+    <color name="dark_story_feed_title_text">@color/gray55</color>
+    <color name="story_content_text">#404040</color>
+    <color name="dark_story_content_text">#CECECE</color>
+
+    <color name="widget_title">#8C8C8C</color>
+    <color name="widget_divider">#42453E</color>
+    <color name="widget_feed_title">#8C8C8C</color>
+    <color name="widget_story_title">#CECECE</color>
+    <color name="widget_story_content">#8C8C8C</color>
+    <color name="widget_story_author">#404040</color>
+    <color name="widget_story_date_time">#BDBDBD</color>
+
+    <color name="story_comment_divider">#F0F0F0</color>
+    <color name="dark_story_comment_divider">#42453E</color>
+    
+    <color name="twitter_blue">#4099FF</color>
+    <color name="facebook_blue">#3B5998</color>
+    
+    <color name="item_header_background_start">#FEFEFE</color>
+    <color name="item_header_background_end">#F3F4EF</color>
+    <color name="dark_item_header_background_start">#505050</color>
+    <color name="dark_item_header_background_end">#303030</color>
+    <color name="black_item_header_background_start">@color/gray07</color>
+    <color name="black_item_header_background_end">@color/black</color>
+    <color name="item_header_border">#C2C5BE</color>
+    <color name="dark_item_header_border">#42453E</color>
+    <color name="item_background">#F4F4F4</color>
+    <color name="dark_item_background">#1A1A1A</color>
+    <color name="share_bar_background">#F5F5EF</color>
+    <color name="dark_share_bar_background">#303030</color>
+    
+    <color name="half_black">#7000</color>
+    
+    <color name="half_darkgray">#77434343</color>
+    <color name="half_lightgray">#77dddddd</color>
+    <color name="half_white">#7fff</color>
+    
+    <color name="positive">#6EA74A</color>
+    <color name="positive_drop_shadow">#417E53</color>
+    
+    <color name="neutral">#B3B6AD</color>
+    <color name="neutral_drop_shadow">#93968D</color>
+
+    <color name="saved">#11448B</color>
+    <color name="saved_drop_shadow">#0E366f</color>
+    
+    <color name="linkblue">#405BA8</color>
+    <color name="dark_linkblue">#319DC5</color>
+    
+    <color name="negative">#CC2A2E</color>
+
+    <color name="tag_red">#D89595</color>
+    <color name="tag_red_text">#FFFFFF</color>
+    <color name="tag_green">#AACFA6</color>
+    <color name="tag_green_text">#FFFFFF</color>
+    <color name="tag_gray">#E0E0DE</color>
+    <color name="tag_bg_dark">#757575</color>
+
+    <color name="newsblur_blue">#319DC5</color>
+
+    <color name="progress_circle_complete">@color/gray46</color>
+    <color name="progress_circle_remaining">@color/gray75</color>
+
+    <color name="status_overlay_text">#CCFFFFFF</color>
+    <color name="status_overlay_background">#AA777777</color>
+
+    <color name="bg_midgray">#55898989</color>
+
+    <color name="refresh_1">#c56125</color>
+    <color name="refresh_2">#db8d36</color>
+    <color name="refresh_3">#e9a941</color>
+    <color name="refresh_4">#fae576</color>
+
+    <color name="widget_background">#C8000000</color>
+
+    <color name="almost_green">#D6E3DA</color>
+    <color name="almost_blue">#DADFE7</color>
+    <color name="almost_red">#DFDCD5</color>
+
+</resources>

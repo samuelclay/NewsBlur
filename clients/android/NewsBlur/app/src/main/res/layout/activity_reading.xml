@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/toolbar_newsblur" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <TextView
+            android:id="@+id/reading_empty_view_text"
+            style="?explainerText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:gravity="center_horizontal"
+            android:text="@string/loading"
+            android:textSize="16sp" />
+
+        <FrameLayout
+            android:id="@+id/activity_reading_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:id="@+id/reading_overlay_text"
+            style="?selectorOverlayBackgroundText"
+            android:layout_width="110dp"
+            android:layout_height="40dp"
+            android:layout_gravity="start"
+            android:layout_marginStart="8dp"
+            android:gravity="center"
+            android:paddingStart="8dp"
+            android:text="@string/overlay_text"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/reading_overlay_send"
+            style="?selectorOverlayBackgroundSend"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:layout_gravity="start"
+            android:layout_marginStart="120dp" />
+
+        <TextView
+            android:id="@+id/reading_overlay_right"
+            style="?selectorOverlayBackgroundRight"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_gravity="end"
+            android:layout_marginRight="8dp"
+            android:gravity="center"
+            android:text="@string/overlay_next"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/reading_overlay_left"
+            style="?selectorOverlayBackgroundLeft"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="130dp" />
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/reading_overlay_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginRight="98dp"
+            app:indicatorColor="@color/progress_circle_remaining"
+            app:indicatorSize="20dp"
+            app:trackColor="@color/progress_circle_complete"
+            app:trackThickness="2dp" />
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/reading_overlay_progress_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginRight="100dp"
+            android:indeterminate="true"
+            app:indicatorColor="@color/newsblur_blue"
+            app:indicatorSize="16dp"
+            app:trackThickness="2dp" />
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/reading_overlay_progress_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="90dp"
+            android:indeterminate="true"
+            app:indicatorColor="@color/newsblur_blue"
+            app:indicatorSize="20dp"
+            app:trackThickness="2dp" />
+
+        <TextView
+            android:id="@+id/reading_sync_status"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:background="@color/status_overlay_background"
+            android:gravity="center"
+            android:padding="1dp"
+            android:textColor="@color/status_overlay_text"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
+    </FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

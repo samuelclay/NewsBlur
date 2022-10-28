@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_sort_by"
+        app:showAsAction="never"
+        android:title="@string/menu_sort_by">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/menu_sort_by_name"
+                    android:title="@string/menu_sort_by_name" />
+                <item
+                    android:id="@+id/menu_sort_by_subs"
+                    android:title="@string/menu_sort_by_subs" />
+                <item
+                    android:id="@+id/menu_sort_by_stories_month"
+                    android:title="@string/menu_sort_by_stories_month" />
+                <item
+                    android:id="@+id/menu_sort_by_recent_story"
+                    android:title="@string/menu_sort_by_recent_story" />
+                <item
+                    android:id="@+id/menu_sort_by_number_opens"
+                    android:title="@string/menu_sort_by_number_opens" />
+            </group>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/menu_sort_order"
+        app:showAsAction="never"
+        android:title="@string/menu_sort_order">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/menu_sort_order_ascending"
+                    android:title="@string/menu_sort_order_ascending" />
+                <item
+                    android:id="@+id/menu_sort_order_descending"
+                    android:title="@string/menu_sort_order_descending" />
+            </group>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/menu_folder_view"
+        app:showAsAction="never"
+        android:title="@string/menu_folder_view">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/menu_folder_view_nested"
+                    android:title="@string/menu_folder_view_nested" />
+                <item
+                    android:id="@+id/menu_folder_view_flat"
+                    android:title="@string/menu_folder_view_flat" />
+            </group>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/menu_mute_all"
+        android:title="@string/menu_mute_all" />
+    <item
+        android:id="@+id/menu_mute_none"
+        android:title="@string/menu_mute_none" />
+    <item
+        android:id="@+id/menu_select_all"
+        android:title="@string/menu_select_all" />
+    <item
+        android:id="@+id/menu_select_none"
+        android:title="@string/menu_select_none" />
+    <item
+        android:id="@+id/menu_widget_background"
+        app:showAsAction="never"
+        android:title="@string/menu_widget_background">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/menu_widget_background_default"
+                    android:title="@string/menu_widget_background_default" />
+                <item
+                    android:id="@+id/menu_widget_background_transparent"
+                    android:title="@string/menu_widget_background_transparent" />
+            </group>
+        </menu>
+    </item>
+</menu>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/reading_share_bar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:paddingBottom="4dp"
+    android:paddingTop="4dp"
+    android:visibility="gone"
+    style="?shareBarBackground">
+
+    <View
+        android:id="@+id/center_filler"
+        android:layout_width="8dp"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
+    <TextView
+        android:id="@+id/comment_by"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="5dp"
+        style="?shareBarText"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/shared_by"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="8dp"
+        style="?shareBarText"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+
+    <com.newsblur.view.FlowLayout
+        android:id="@+id/reading_social_commentimages"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/center_filler"
+        android:layout_toRightOf="@id/comment_by" />
+
+    <com.newsblur.view.FlowLayout
+        xmlns:newsblur="http://schemas.android.com/apk/res/com.newsblur"
+        android:id="@+id/reading_social_shareimages"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/shared_by"
+        android:layout_toRightOf="@+id/center_filler"
+        newsblur:flow="left" />
+
+</RelativeLayout>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="bottom|center_horizontal" >
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <TextView
+        android:id="@+id/intel_title_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentTop="true"
+        android:textSize="16sp"
+        android:singleLine="true"
+        android:text="@string/feed_intel_title_header"
+    />
+
+    <LinearLayout
+        android:id="@+id/existing_title_intel_container"
+        android:layout_below="@id/intel_title_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="14dp"
+        android:orientation="vertical"
+    />
+    
+    <TextView
+        android:id="@+id/intel_tag_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/existing_title_intel_container"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="10dp"
+        android:textSize="16sp"
+        android:singleLine="true"
+        android:text="@string/feed_intel_tag_header"
+    />
+
+    <LinearLayout
+        android:id="@+id/existing_tag_intel_container"
+        android:layout_below="@id/intel_tag_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="14dp"
+        android:orientation="vertical"
+    />
+
+    <TextView
+        android:id="@+id/intel_author_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/existing_tag_intel_container"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="10dp"
+        android:textSize="16sp"
+        android:singleLine="true"
+        android:text="@string/feed_intel_author_header"
+    />
+
+    <LinearLayout
+        android:id="@+id/existing_author_intel_container"
+        android:layout_below="@id/intel_author_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="14dp"
+        android:orientation="vertical"
+    />
+
+    <TextView
+        android:id="@+id/intel_feed_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/existing_author_intel_container"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="10dp"
+        android:textSize="16sp"
+        android:singleLine="true"
+        android:text="@string/intel_feed_header"
+    />
+
+    <LinearLayout
+        android:id="@+id/existing_feed_intel_container"
+        android:layout_below="@id/intel_feed_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="14dp"
+        android:orientation="vertical"
+    />
+
+</RelativeLayout>
+
+</ScrollView>

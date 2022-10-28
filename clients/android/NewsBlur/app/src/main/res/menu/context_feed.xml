@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <item android:id="@+id/menu_mark_feed_as_read"
+          android:title="@string/menu_mark_feed_as_read" />
+    
+    <item android:id="@+id/menu_delete_feed"
+          android:title="@string/menu_delete_feed" />
+
+    <item android:id="@+id/menu_unfollow"
+          android:title="@string/menu_unfollow" />
+
+    <item android:id="@+id/menu_choose_folders"
+          android:title="@string/menu_choose_folders" />
+
+    <item android:id="@+id/menu_rename_feed"
+          android:title="@string/menu_rename_feed" />
+
+    <item android:id="@+id/menu_notifications"
+          android:title="@string/menu_notifications_choose" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_notifications_disable"
+                      android:title="@string/menu_notifications_disable"
+                      android:checkable="true" />
+                <item android:id="@+id/menu_notifications_focus"
+                      android:title="@string/menu_notifications_focus"
+                      android:checkable="true" />
+                <item android:id="@+id/menu_notifications_unread"
+                      android:title="@string/menu_notifications_unread"
+                      android:checkable="true" />
+            </group>
+        </menu>
+    </item>
+
+    <item android:id="@+id/menu_mute_feed"
+          android:title="@string/menu_mute_feed" />
+
+    <item android:id="@+id/menu_unmute_feed"
+          android:title="@string/menu_unmute_feed" />
+
+    <item android:id="@+id/menu_instafetch_feed"
+          android:title="@string/menu_instafetch_feed" />
+
+    <item android:id="@+id/menu_intel"
+          android:title="@string/menu_intel" />
+
+    <item android:id="@+id/menu_delete_saved_search"
+        android:title="@string/menu_delete_saved_search" />
+</menu>

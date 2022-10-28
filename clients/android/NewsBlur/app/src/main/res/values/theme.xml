@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+	<style name="NewsBlurTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primaryDark</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="actionBarTheme">@style/actionbar</item>
+        <item name="actionBarPopupTheme">@style/actionBarPopup</item>
+        <item name="popupMenuBackground">@color/primary</item>
+        <item name="buttonBarPositiveButtonStyle">@style/dialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/dialogButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/dialogButton</item>
+        <item name="selectorFolderBackground">@style/selectorFolderBackground</item>
+        <item name="selectorFeedBackground">@style/selectorFeedBackground</item>
+        <item name="selectorFeedAlmostBlueBackground">@style/selectorFeedAlmostBlueBackground</item>
+        <item name="selectorFeedAlmostRedBackground">@style/selectorFeedAlmostRedBackground</item>
+        <item name="selectorFeedAlmostGreenBackground">@style/selectorFeedAlmostGreenBackground</item>
+        <item name="feedRowNeutCountText">@style/feedRowNeutCountText</item>
+        <item name="actionbarBackground">@style/actionbarBackground</item>
+        <item name="listBackground">@style/listBackground</item>
+        <item name="layoutBackground">@style/layoutBackground</item>
+        <item name="layoutRoundedBackground">@style/layoutRoundedBackground</item>
+        <item name="readingBackground">@style/readingBackground</item>
+        <item name="defaultText">@style/defaultText</item>
+        <item name="linkText">@style/linkText</item>
+        <item name="storySnippetText">@style/storySnippetText</item>
+        <item name="storyFeedTitleText">@style/storyFeedTitleText</item>
+        <item name="selectorStoryBackground">@style/selectorStoryBackground</item>
+        <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground</item>
+        <item name="readingItemMetadata">@style/readingItemMetadata</item>
+        <item name="chip">@style/chip</item>
+        <item name="actionButtons">@style/actionButtons</item>
+        <item name="storyButtons">@style/storyButtons</item>
+        <item name="storyButtonsDimmed">@style/storyButtonsDimmed</item>
+        <item name="shareBarBackground">@style/shareBarBackground</item>
+        <item name="shareBarText">@style/shareBarText</item>
+        <item name="commentsHeader">@style/commentsHeader</item>
+        <item name="rowBorder">@style/rowBorder</item>
+        <item name="profileCount">@style/profileCount</item>
+        <item name="profileActivityList">@style/profileActivityList</item>
+        <item name="storyCommentDivider">@style/storyCommentDivider</item>
+        <item name="activityDetailsPager">@style/activityDetailsPager</item>
+        <item name="explainerText">@style/explainerText</item>
+        <item name="toggleText">@style/toggleText</item>
+        <item name="delimiter">@style/delimiter</item>
+        <item name="selectorOverlayBackgroundLeft">@style/selectorOverlayBackgroundLeft</item>
+        <item name="selectorOverlayBackgroundRight">@style/selectorOverlayBackgroundRight</item>
+        <item name="selectorOverlayBackgroundRightDone">@style/selectorOverlayBackgroundRightDone</item>
+        <item name="selectorOverlayBackgroundSend">@style/selectorOverlayBackgroundSend</item>
+        <item name="selectorOverlayBackgroundStory">@style/selectorOverlayBackgroundStory</item>
+        <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText</item>
+        <item name="muteicon">@style/muteicon</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="preferenceTheme">@style/preferenceTheme</item>
+        <item name="fontFamily">@font/whitney</item>
+        <item name="circleProgressIndicator">@style/circleProgressIndicator</item>
+        <item name="toggleButton">@style/toggleButton</item>
+    </style>
+
+    <style name="NewsBlurDarkTheme" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="colorPrimary">@color/primary.dark</item>
+        <item name="colorPrimaryDark">@color/primaryDark.dark</item>
+        <item name="colorSecondary">@color/secondary.dark</item>
+        <item name="actionBarTheme">@style/actionbar.dark</item>
+        <item name="actionBarPopupTheme">@style/actionBarPopup.dark</item>
+        <item name="popupMenuBackground">@color/gray13</item>
+        <item name="buttonBarPositiveButtonStyle">@style/dialogButton.dark</item>
+        <item name="buttonBarNegativeButtonStyle">@style/dialogButton.dark</item>
+        <item name="buttonBarNeutralButtonStyle">@style/dialogButton.dark</item>
+        <item name="selectorFolderBackground">@style/selectorFolderBackground.dark</item>
+        <item name="selectorFeedBackground">@style/selectorFeedBackground.dark</item>
+        <item name="selectorFeedAlmostBlueBackground">@style/selectorFeedBackground.dark</item>
+        <item name="selectorFeedAlmostRedBackground">@style/selectorFeedBackground.dark</item>
+        <item name="selectorFeedAlmostGreenBackground">@style/selectorFeedBackground.dark</item>
+        <item name="feedRowNeutCountText">@style/feedRowNeutCountText.dark</item>
+        <item name="actionbarBackground">@style/actionbarBackground.dark</item>
+        <item name="listBackground">@style/listBackground.dark</item>
+        <item name="layoutBackground">@style/layoutBackground.dark</item>
+        <item name="layoutRoundedBackground">@style/layoutRoundedBackground.dark</item>
+        <item name="readingBackground">@style/readingBackground.dark</item>
+        <item name="defaultText">@style/defaultText.dark</item>
+        <item name="linkText">@style/linkText.dark</item>
+        <item name="storySnippetText">@style/storySnippetText.dark</item>
+        <item name="storyFeedTitleText">@style/storyFeedTitleText.dark</item>
+        <item name="selectorStoryBackground">@style/selectorStoryBackground.dark</item>
+        <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground.dark</item>
+        <item name="readingItemMetadata">@style/readingItemMetadata.dark</item>
+        <item name="chip">@style/chip.dark</item>
+        <item name="actionButtons">@style/actionButtons.dark</item>
+        <item name="storyButtons">@style/storyButtons.dark</item>
+        <item name="storyButtonsDimmed">@style/storyButtonsDimmed.dark</item>
+        <item name="shareBarBackground">@style/shareBarBackground.dark</item>
+        <item name="shareBarText">@style/shareBarText.dark</item>
+        <item name="commentsHeader">@style/commentsHeader.dark</item>
+        <item name="rowBorder">@style/rowBorder.dark</item>
+        <item name="profileCount">@style/profileCount.dark</item>
+        <item name="profileActivityList">@style/profileActivityList.dark</item>
+        <item name="storyCommentDivider">@style/storyCommentDivider.dark</item>
+        <item name="activityDetailsPager">@style/activityDetailsPager.dark</item>
+        <item name="explainerText">@style/explainerText.dark</item>
+        <item name="toggleText">@style/toggleText.dark</item>
+        <item name="delimiter">@style/delimiter.dark</item>
+        <item name="selectorOverlayBackgroundLeft">@style/selectorOverlayBackgroundLeft.dark</item>
+        <item name="selectorOverlayBackgroundRight">@style/selectorOverlayBackgroundRight.dark</item>
+        <item name="selectorOverlayBackgroundRightDone">@style/selectorOverlayBackgroundRightDone.dark</item>
+        <item name="selectorOverlayBackgroundSend">@style/selectorOverlayBackgroundSend.dark</item>
+        <item name="selectorOverlayBackgroundStory">@style/selectorOverlayBackgroundStory.dark</item>
+        <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText.dark</item>
+        <item name="muteicon">@style/muteicon.dark</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="preferenceTheme">@style/preferenceTheme</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+        <item name="fontFamily">@font/whitney</item>
+        <item name="circleProgressIndicator">@style/circleProgressIndicator</item>
+        <item name="toggleButton">@style/toggleButton.dark</item>
+    </style>
+
+    <style name="NewsBlurBlackTheme" parent="Theme.MaterialComponents.NoActionBar" >
+        <item name="colorPrimary">@color/primary.black</item>
+        <item name="colorPrimaryDark">@color/primaryDark.black</item>
+        <item name="colorSecondary">@color/secondary.black</item>
+        <item name="actionBarTheme">@style/actionbar.black</item>
+        <item name="actionBarPopupTheme">@style/actionBarPopup.dark</item>
+        <item name="popupMenuBackground">@color/gray13</item>
+        <item name="buttonBarPositiveButtonStyle">@style/dialogButton.dark</item>
+        <item name="buttonBarNegativeButtonStyle">@style/dialogButton.dark</item>
+        <item name="buttonBarNeutralButtonStyle">@style/dialogButton.dark</item>
+        <item name="selectorFolderBackground">@style/selectorFolderBackground.black</item>
+        <item name="selectorFeedBackground">@style/selectorFeedBackground.dark</item>
+        <item name="selectorFeedAlmostBlueBackground">@style/selectorFeedBackground.dark</item>
+        <item name="selectorFeedAlmostRedBackground">@style/selectorFeedBackground.dark</item>
+        <item name="selectorFeedAlmostGreenBackground">@style/selectorFeedBackground.dark</item>
+        <item name="feedRowNeutCountText">@style/feedRowNeutCountText.dark</item>
+        <item name="actionbarBackground">@style/actionbarBackground.black</item>
+        <item name="listBackground">@style/listBackground.dark</item>
+        <item name="layoutBackground">@style/layoutBackground.black</item>
+        <item name="layoutRoundedBackground">@style/layoutRoundedBackground.black</item>
+        <item name="readingBackground">@style/readingBackground.black</item>
+        <item name="defaultText">@style/defaultText.dark</item>
+        <item name="linkText">@style/linkText.dark</item>
+        <item name="storySnippetText">@style/storySnippetText.dark</item>
+        <item name="storyFeedTitleText">@style/storyFeedTitleText.dark</item>
+        <item name="selectorStoryBackground">@style/selectorStoryBackground.black</item>
+        <item name="rowItemHeaderBackground">@style/rowItemHeaderBackground.black</item>
+        <item name="readingItemMetadata">@style/readingItemMetadata.dark</item>
+        <item name="chip">@style/chip.dark</item>
+        <item name="actionButtons">@style/actionButtons.dark</item>
+        <item name="storyButtons">@style/storyButtons.dark</item>
+        <item name="storyButtonsDimmed">@style/storyButtonsDimmed.dark</item>
+        <item name="shareBarBackground">@style/shareBarBackground.black</item>
+        <item name="shareBarText">@style/shareBarText.dark</item>
+        <item name="commentsHeader">@style/commentsHeader.black</item>
+        <item name="rowBorder">@style/rowBorder.dark</item>
+        <item name="profileCount">@style/profileCount.black</item>
+        <item name="profileActivityList">@style/profileActivityList.black</item>
+        <item name="storyCommentDivider">@style/storyCommentDivider.black</item>
+        <item name="activityDetailsPager">@style/activityDetailsPager.black</item>
+        <item name="explainerText">@style/explainerText.dark</item>
+        <item name="toggleText">@style/toggleText.dark</item>
+        <item name="delimiter">@style/delimiter.dark</item>
+        <item name="selectorOverlayBackgroundLeft">@style/selectorOverlayBackgroundLeft.dark</item>
+        <item name="selectorOverlayBackgroundRight">@style/selectorOverlayBackgroundRight.dark</item>
+        <item name="selectorOverlayBackgroundRightDone">@style/selectorOverlayBackgroundRightDone.dark</item>
+        <item name="selectorOverlayBackgroundSend">@style/selectorOverlayBackgroundSend.dark</item>
+        <item name="selectorOverlayBackgroundStory">@style/selectorOverlayBackgroundStory.dark</item>
+        <item name="selectorOverlayBackgroundText">@style/selectorOverlayBackgroundText.dark</item>
+        <item name="muteicon">@style/muteicon.dark</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="preferenceTheme">@style/preferenceTheme</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+        <item name="fontFamily">@font/whitney</item>
+        <item name="circleProgressIndicator">@style/circleProgressIndicator</item>
+        <item name="toggleButton">@style/toggleButton.dark</item>
+    </style>
+
+    <style name="NewsBlurTheme.Translucent" parent="NewsBlurTheme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    </style>
+
+    <style name="NewsBlurBlackTheme.Translucent" parent="NewsBlurBlackTheme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    </style>
+
+    <style name="NewsBlurDarkTheme.Translucent" parent="NewsBlurDarkTheme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    </style>
+
+    <style name="Theme.Translucent" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    </style>
+</resources>

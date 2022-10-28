@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_reading_sharenewsblur"
+        app:showAsAction="never"
+        android:title="@string/menu_sharenewsblur"/>
+
+    <item
+        android:id="@+id/menu_reading_original"
+        app:showAsAction="never"
+        android:title="@string/menu_original"/>
+
+    <item
+        android:id="@+id/menu_send_story"
+        app:showAsAction="never"
+        android:title="@string/menu_send_story"/>
+
+    <item
+        android:id="@+id/menu_send_story_full"
+        app:showAsAction="never"
+        android:title="@string/menu_send_story_full"/>
+
+    <item android:id="@+id/menu_text_size"
+        android:title="@string/menu_text_size" >
+        <menu>
+            <group android:checkableBehavior="single" >
+                <item android:id="@+id/menu_text_size_xs"
+                    android:title="@string/menu_text_size_xs" />
+                <item android:id="@+id/menu_text_size_s"
+                    android:title="@string/menu_text_size_s" />
+                <item android:id="@+id/menu_text_size_m"
+                    android:title="@string/menu_text_size_m" />
+                <item android:id="@+id/menu_text_size_l"
+                    android:title="@string/menu_text_size_l" />
+                <item android:id="@+id/menu_text_size_xl"
+                    android:title="@string/menu_text_size_xl" />
+                <item android:id="@+id/menu_text_size_xxl"
+                    android:title="@string/menu_text_size_xxl" />
+            </group>
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/menu_font"
+        android:title="@string/menu_font"
+        app:showAsAction="never">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_font_anonymous"
+                    android:title="@string/anonymous_pro_font" />
+                <item android:id="@+id/menu_font_chronicle"
+                    android:title="@string/chronicle_font" />
+                <item android:id="@+id/menu_font_default"
+                    android:title="@string/default_font" />
+                <item android:id="@+id/menu_font_gotham"
+                    android:title="@string/gotham_narrow_font" />
+                <item android:id="@+id/menu_font_noto_sand"
+                    android:title="@string/noto_sans_font" />
+                <item android:id="@+id/menu_font_noto_serif"
+                    android:title="@string/noto_serif_font" />
+                <item android:id="@+id/menu_font_open_sans"
+                    android:title="@string/open_sans_condensed_font" />
+                <item android:id="@+id/menu_font_roboto"
+                    android:title="@string/roboto_font" />
+            </group>
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/menu_reading_save"
+        app:showAsAction="never"
+        android:title="@string/menu_save_story"/>
+
+    <item
+        android:id="@+id/menu_reading_markunread"
+        app:showAsAction="never"
+        android:title="@string/menu_mark_unread"/>
+
+    <item android:id="@+id/menu_go_to_feed"
+        android:title="@string/go_to_feed"/>
+    <item
+        android:id="@+id/menu_intel"
+        app:showAsAction="never"
+        android:title="@string/menu_intel"/>
+
+    <item android:id="@+id/menu_theme"
+          android:title="@string/menu_theme_choose" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/menu_theme_auto"
+                    android:title="@string/auto" />
+                <item android:id="@+id/menu_theme_light"
+                      android:title="@string/light" />
+                <item android:id="@+id/menu_theme_dark"
+                      android:title="@string/dark" />
+                <item android:id="@+id/menu_theme_black"
+                      android:title="@string/black" />
+            </group>
+        </menu>
+    </item>
+
+</menu>
