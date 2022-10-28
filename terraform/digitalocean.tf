@@ -228,8 +228,9 @@ resource "digitalocean_droplet" "discovery" {
 }
 
 resource "digitalocean_droplet" "node-text" {
+  count    = 2
   image    = var.droplet_os
-  name     = "node-text"
+  name     = contains([0], count.index) ? "node-text" : "node-text${count.index+1}"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -263,8 +264,9 @@ resource "digitalocean_droplet" "node-socket" {
 }
 
 resource "digitalocean_droplet" "node-favicons" {
+  count    = 2
   image    = var.droplet_os
-  name     = "node-favicons"
+  name     = "node-favicons${count.index+1}"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -378,11 +380,12 @@ resource "digitalocean_droplet" "db-redis-sessions" {
 }
 
 resource "digitalocean_droplet" "db-redis-story" {
-  count    = 1
+  count    = 2
   image    = var.droplet_os
   name     = "db-redis-story${count.index+1}"
   region   = var.droplet_region
   size     = contains([1], count.index) ? "m-8vcpu-64gb" : var.redis_story_droplet_size
+  # size     = var.redis_story_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -464,12 +467,13 @@ resource "digitalocean_droplet" "db-postgres" {
 # servers=$(for i in {1..9}; do echo -n "-target=\"digitalocean_droplet.db-mongo-primary[$i]\" " ; done); tf plan -refresh=false `eval echo $servers`
 # 
 resource "digitalocean_droplet" "db-mongo-primary" {
-  count    = 1
+  count    = 2
   backups  = contains([0], count.index) ? false : true
   image    = var.droplet_os
   name     = "db-mongo-primary${count.index+1}"
   region   = var.droplet_region
-  size     = contains([1], count.index) ? "m3-8vcpu-64gb" : var.mongo_primary_droplet_size
+  # size     = contains([1], count.index) ? "m3-8vcpu-64gb" : var.mongo_primary_droplet_size
+  size     = var.mongo_primary_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"

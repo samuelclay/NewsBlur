@@ -54,7 +54,7 @@ variable "droplet_os" {
 
 variable "sentry_droplet_size" {
   type = string
-  default = "s-4vcpu-8gb"
+  default = "s-8vcpu-16gb"
 }
 
 variable "metrics_droplet_size" {
@@ -89,5 +89,5 @@ variable "elasticsearch_droplet_size" {
 
 variable "redis_story_droplet_size" {
   type = string
-  default = "m-8vcpu-64gb"
+  default = "m-4vcpu-32gb"
 }

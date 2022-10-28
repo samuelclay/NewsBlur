@@ -1,10 +1,16 @@
 from django.conf import settings
 from utils import log as logging
+from apps.statistics.rstats import round_time
+import pickle
+import base64
 import time
+import redis
 
 IGNORE_PATHS = [
     "/_haproxychk",
 ]
+
+RECORD_SLOW_REQUESTS_ABOVE_SECONDS = 10
 
 class DumpRequestMiddleware:
     def process_request(self, request):
@@ -40,22 +46,31 @@ class DumpRequestMiddleware:
                 redis_log
             ))
 
-        return response
-
-    def elapsed_time(self, request):
-        time_elapsed = ""
         if hasattr(request, 'start_time'):
             seconds = time.time() - request.start_time
-            color = '~FB'
-            if seconds >= 1:
-                color = '~FR'
-            elif seconds > .2:
-                color = '~SB~FK'
-            time_elapsed = "[%s%.4ss~SB] " % (
-                color,
-                seconds,
-            )
-        return time_elapsed
+            if seconds > RECORD_SLOW_REQUESTS_ABOVE_SECONDS:
+                r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+                pipe = r.pipeline()
+                minute = round_time(round_to=60)
+                name = f"SLOW:{minute.strftime('%s')}"
+                user_id = request.user.pk if request.user.is_authenticated else "0"
+                data_string = None
+                if request.method == "GET":
+                    data_string = ' '.join([f"{key}={value}" for key, value in request.GET.items()])
+                elif request.method == "GET":
+                    data_string = ' '.join([f"{key}={value}" for key, value in request.POST.items()])
+                data = {
+                    "user_id": user_id,
+                    "time": round(seconds, 2),
+                    "path": request.path,
+                    "method": request.method,
+                    "data": data_string,
+                }
+                pipe.lpush(name, base64.b64encode(pickle.dumps(data)).decode('utf-8'))
+                pipe.expire(name, 60*60*12) # 12 hours
+                pipe.execute()
+                
+        return response
     
     def color_db(self, seconds, default):
         color = default

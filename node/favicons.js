@@ -88,7 +88,7 @@
             if (ENV_DEV || ENV_DOCKER) {
               return res.redirect('/media/img/icons/nouns/world.svg');
             } else {
-              return res.redirect('https://beta.newsblur.com/media/img/icons/nouns/world.svg');
+              return res.redirect('https://newsblur.com/media/img/icons/nouns/world.svg');
             }
           }
         });

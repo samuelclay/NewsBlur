@@ -6,7 +6,7 @@
         ],
         "checks": [{
             "id": "prometheus-ping",
-            "http": "http://{{ ansible_ssh_host }}:9090/metrics",
+            "http": "http://{{ ansible_host }}:9090/metrics",
             "interval": "15s",
             "failures_before_critical": 4
           }],

@@ -13,13 +13,13 @@
         "checks": [{
             "id": "{{inventory_hostname}}-ping",
             {% if item.target_host == "node-images" %}
-            "http": "http://{{ ansible_ssh_host }}:{{ item.port }}/sc,seLJDaKBog3LLEMDe8cjBefMhnVSibO4RA5boZhWcVZ0=/https://samuelclay.com/static/images/2019%20-%20Cuba.jpg",
+            "http": "http://{{ ansible_host }}:{{ item.port }}/sc,seLJDaKBog3LLEMDe8cjBefMhnVSibO4RA5boZhWcVZ0=/https://samuelclay.com/static/images/2019%20-%20Cuba.jpg",
             {% elif item.target_host == "node-favicons" %}
-            "http": "http://{{ ansible_ssh_host }}:{{ item.port }}/rss_feeds/icon/1",
+            "http": "http://{{ ansible_host }}:{{ item.port }}/rss_feeds/icon/1",
             {% elif item.target_host == "node-text" %}
-            "http": "http://{{ ansible_ssh_host }}:{{ item.port }}/rss_feeds/original_text_fetcher?test=1",
+            "http": "http://{{ ansible_host }}:{{ item.port }}/rss_feeds/original_text_fetcher?test=1",
             {% elif item.target_host == "node-page" %}
-            "http": "http://{{ ansible_ssh_host }}:{{ item.port }}/original_page/1?test=1",
+            "http": "http://{{ ansible_host }}:{{ item.port }}/original_page/1?test=1",
             {% endif %}
             "interval": "15s"
         }]

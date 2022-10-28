@@ -8,6 +8,7 @@ from django.views.decorators.http import condition
 from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse, Http404
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 # from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, merge_feeds
 from apps.rss_feeds.models import MFetchHistory
@@ -510,19 +511,21 @@ def status(request):
         return HttpResponseForbidden()
     minutes  = int(request.GET.get('minutes', 1))
     now      = datetime.datetime.now()
+    hour_ago = now + datetime.timedelta(minutes=minutes)
     username = request.GET.get('user', '') or request.GET.get('username', '')
-    if username:
-        user = User.objects.get(username=username)
+    if username == "all":
+        feeds = Feed.objects.filter(next_scheduled_update__lte=hour_ago).order_by('next_scheduled_update')
     else:
-        user = request.user
-    usersubs = UserSubscription.objects.filter(user=user)
-    feed_ids = usersubs.values('feed_id')
-    if minutes > 0:
-        hour_ago = now + datetime.timedelta(minutes=minutes)
-        feeds    = Feed.objects.filter(pk__in=feed_ids, next_scheduled_update__lte=hour_ago).order_by('next_scheduled_update')
-    else:
-        hour_ago = now + datetime.timedelta(minutes=minutes)
-        feeds    = Feed.objects.filter(pk__in=feed_ids, last_update__gte=hour_ago).order_by('-last_update')
+        if username:
+            user = User.objects.get(username=username)
+        else:
+            user = request.user
+        usersubs = UserSubscription.objects.filter(user=user)
+        feed_ids = usersubs.values('feed_id')
+        if minutes > 0:
+            feeds = Feed.objects.filter(pk__in=feed_ids, next_scheduled_update__lte=hour_ago).order_by('next_scheduled_update')
+        else:
+            feeds = Feed.objects.filter(pk__in=feed_ids, last_update__gte=hour_ago).order_by('-last_update')
     
     r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
     queues = {
