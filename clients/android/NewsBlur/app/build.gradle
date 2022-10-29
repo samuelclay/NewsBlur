@@ -24,6 +24,11 @@ android {
             minifyEnabled false
             shrinkResources false
         }
+        benchmark {
+            signingConfig signingConfigs.debug
+            matchingFallbacks = ['release']
+            debuggable false
+        }
         release {
             minifyEnabled true
             shrinkResources true

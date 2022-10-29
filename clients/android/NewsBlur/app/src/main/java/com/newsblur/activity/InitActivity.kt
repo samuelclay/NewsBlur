@@ -7,8 +7,14 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.service.SubscriptionSyncService
-import com.newsblur.util.*
+import com.newsblur.util.Log
+import com.newsblur.util.NBScope
+import com.newsblur.util.NotificationUtils
+import com.newsblur.util.PrefsUtils
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -29,24 +35,20 @@ class InitActivity : AppCompatActivity() {
         // Keep the splash screen visible for this Activity
         splashScreen.setKeepOnScreenCondition { true }
 
-        lifecycleScope.executeAsyncTask(doInBackground = { start() })
-        Log.i(this, "cold launching version " + PrefsUtils.getVersion(this))
-    }
-
-    private fun start() {
         // it is safe to call repeatedly because creating an existing notification performs
         // no operation
         NotificationUtils.createNotificationChannel(this)
 
-        // now before there is any chance at all of an activity hitting the DB and crashing when it
-        // cannot find new tables or columns right after an app upgrade, check to see if the DB
-        // needs an upgrade
-        upgradeCheck()
-
-        // see if a user is already logged in; if so, jump to the Main activity
-        userAuthCheck()
+        lifecycleScope.launch(Dispatchers.IO) {
+            upgradeCheck()
+            withContext(Dispatchers.Main) {
+                userAuthCheck()
+            }
+        }
+        Log.i(this, "cold launching version " + PrefsUtils.getVersion(this))
     }
 
+    // see if a user is already logged in; if so, jump to the Main activity
     private fun userAuthCheck() {
         if (PrefsUtils.hasCookie(this)) {
             SubscriptionSyncService.schedule(this)
@@ -58,12 +60,17 @@ class InitActivity : AppCompatActivity() {
         }
     }
 
+    // now before there is any chance at all of an activity hitting the DB and crashing when it
+    // cannot find new tables or columns right after an app upgrade, check to see if the DB
+    // needs an upgrade
     private fun upgradeCheck() {
         val upgrade = PrefsUtils.checkForUpgrade(this)
         if (upgrade) {
-            dbHelper.dropAndRecreateTables()
-            // don't actually unset the upgrade flag, the sync service will do this same check and
-            // update everything
+            NBScope.launch {
+                dbHelper.dropAndRecreateTables()
+                // don't actually unset the upgrade flag, the sync service will do this same check and
+                // update everything
+            }
         }
     }
 }

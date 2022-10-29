@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.newsblur">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -14,6 +15,10 @@
         android:hardwareAccelerated="true"
         android:fullBackupContent="@xml/backupscheme"
         android:name=".NbApplication">
+
+        <profileable
+            android:shell="true"
+            tools:targetApi="29" />
 
         <activity
             android:name=".activity.InitActivity"

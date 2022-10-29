@@ -7,3 +7,4 @@ pluginManagement {
 }
 rootProject.name = "NewsBlur"
 include ':app'
+include ':app:benchmark'
