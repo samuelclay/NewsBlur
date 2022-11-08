@@ -46,16 +46,19 @@
    [See the complete list](https://github.com/samuelclay/NewsBlur/tree/master/media/js).
 
 
-### Prerequisites
-    * Docker
-    * Docker-compose
+## Prerequisites
+  * Docker
+  * Docker-compose
+  * [Docker-compose-plugin](https://docs.docker.com/compose/install/linux/)
 
 ## Installation Instructions
  1. Clone this repo
  2. Run `make nb` to build all of the NewsBlur containers. This will set up all necessary databases, front-end django apps, celery tasks, node apps, flask database monitor and metrics, nginx, and a haproxy load balancer.
  7. Navigate to: 
 
-         https://localhost
+    ```
+    https://localhost
+    ```
 
     Note: You will be warned that you are using a self signed certificate. In order to get around this warning you must type "thisisunsafe" as per [this blog post](https://dblazeski.medium.com/chrome-bypass-net-err-cert-invalid-for-development-daefae43eb12).
 
@@ -108,11 +111,11 @@ To make docker-compose work with an older database version, change the image ver
     1. Add your new site-packages to config/requirements.txt.
     2. Add the following lines of code to your docker-compose.yml file to replace anywhere where it says `image: newsblur/newsblur_python3`
 
-    <code>
-        build:
-          context: .
-          dockerfile: docker/newsblur_base_image.Dockerfile
-    </code>
+    ```
+    build:
+      context:
+      dockerfile: docker/newsblur_base_image.dockerfile
+    ```
 
     3. Run the `make nb` command to rebuild your docker-compose containers
 
@@ -124,14 +127,15 @@ To make docker-compose work with an older database version, change the image ver
     * Make sure your docker containers are up and run `make shell` to open
     the Django shell within the newsblur_web container.
 
-### Running unit and integration tests
+## Running unit and integration tests
 
 NewsBlur comes complete with a test suite that tests the functionality of the rss_feeds,
 reader, and feed importer. To run the test suite:
 
-    `make test`
-
-### Running a performance test
+```
+make test
+```
+## Running a performance test
 
 Performance tests use the locust performance testing tool. To run performance tests via CLI, use
 `make perf-cli users=1 rate=1 host=https://localhost`. Feel free to change the users, rate, and host
