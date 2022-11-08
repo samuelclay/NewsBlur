@@ -1953,6 +1953,15 @@ heightForHeaderInSection:(NSInteger)section {
     
     [self.feedTitlesTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
     [self tableView:self.feedTitlesTable didSelectRowAtIndexPath:indexPath];
+    
+    if (sender == nil) {
+        FeedTableCell *cell = (FeedTableCell *)[self tableView:feedTitlesTable cellForRowAtIndexPath:indexPath];
+        BOOL hasUnread = cell.positiveCount > 0 || cell.neutralCount > 0 || cell.negativeCount > 0;
+        
+        if ([cell.reuseIdentifier isEqualToString:@"BlankCellIdentifier"] || !hasUnread) {
+            [self selectNextFolderOrFeed];
+        }
+    }
 }
 
 - (void)selectPreviousFeed:(id)sender {
@@ -2000,6 +2009,16 @@ heightForHeaderInSection:(NSInteger)section {
     
     if ([self.feedTitlesTable numberOfRowsInSection:section] > 0) {
         [self.feedTitlesTable scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
+    }
+    
+    if (sender == nil) {
+        NSString *folderName = appDelegate.dictFoldersArray[section];
+        UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
+        BOOL hasUnread = counts.ps > 0 || counts.nt > 0;
+        
+        if (!hasUnread) {
+            [self selectNextFolderOrFeed];
+        }
     }
 }
 
