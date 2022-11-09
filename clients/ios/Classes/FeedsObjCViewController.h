@@ -17,10 +17,8 @@
 // indices in appDelegate.dictFoldersArray and button tags
 // keep in sync with NewsBlurTopSectionNames
 static enum {
-    NewsBlurTopSectionGlobalSharedStories = 0,
-    NewsBlurTopSectionAllSharedStories = 1,
-    NewsBlurTopSectionInfrequentSiteStories = 2,
-    NewsBlurTopSectionAllStories = 3
+    NewsBlurTopSectionInfrequentSiteStories = 0,
+    NewsBlurTopSectionAllStories = 1
 } NewsBlurTopSection;
 
 @class NewsBlurAppDelegate;
@@ -95,6 +93,7 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)finishLoadingFeedListWithDict:(NSDictionary *)results finished:(BOOL)finished;
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (void)didSelectSectionHeaderWithTag:(NSInteger)tag;
+- (void)selectNextFolderOrFeed;
 - (IBAction)selectIntelligence;
 - (void)markFeedRead:(NSString *)feedId cutoffDays:(NSInteger)days;
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days;
@@ -125,6 +124,7 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 
 - (void)selectWidgetStories;
 
+- (void)reloadFeedTitlesTable;
 - (void)resetToolbar;
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation;
 - (void)refreshHeaderCounts;

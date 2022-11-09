@@ -9,20 +9,21 @@
 import UIKit
 import QuartzCore
 
-public class SAConfettiView: UIView, CAAnimationDelegate {
+public class SAConfettiView: UIView {
     
     public enum ConfettiType {
-        case Confetti
-        case Triangle
-        case Star
-        case Diamond
-        case Image(UIImage)
+        case confetti
+        case triangle
+        case star
+        case diamond
+        case image(UIImage)
     }
     
     var emitter: CAEmitterLayer!
     public var colors: [UIColor]!
     public var intensity: Float!
     public var type: ConfettiType!
+    private var active :Bool!
     
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -41,15 +42,16 @@ public class SAConfettiView: UIView, CAAnimationDelegate {
                   UIColor(red:0.30, green:0.76, blue:0.85, alpha:1.0),
                   UIColor(red:0.58, green:0.39, blue:0.55, alpha:1.0)]
         intensity = 0.5
-        type = .Confetti
+        type = .confetti
+        active = false
     }
     
-    @objc public func startConfetti() -> Void {
+    @objc public func startConfetti() {
         emitter = CAEmitterLayer()
         
-        emitter.emitterPosition = CGPoint(x: self.center.x, y: 0)
+        emitter.emitterPosition = CGPoint(x: frame.size.width / 2.0, y: 0)
         emitter.emitterShape = CAEmitterLayerEmitterShape.line
-        emitter.emitterSize = CGSize(width: 40.0, height: 1)
+        emitter.emitterSize = CGSize(width: frame.size.width, height: 1)
         
         var cells = [CAEmitterCell]()
         for color in colors {
@@ -58,24 +60,12 @@ public class SAConfettiView: UIView, CAAnimationDelegate {
         
         emitter.emitterCells = cells
         layer.addSublayer(emitter)
-        
-        let animation = CAKeyframeAnimation(keyPath: "birthRate")
-        animation.duration = 1
-        animation.keyTimes = [0.5, 2.0]
-        animation.values = [2.0, 0.0]
-        animation.repeatCount = MAXFLOAT
-        animation.delegate = self
-        emitter.add(animation, forKey: "confettis")
-    }
-    
-    override public func layoutSubviews() {
-        super.layoutSubviews()
-        
-        emitter.emitterPosition = CGPoint(x: self.center.x, y: 0)
+        active = true
     }
     
     @objc public func stopConfetti() {
         emitter?.birthRate = 0
+        active = false
     }
     
     func imageForType(type: ConfettiType) -> UIImage? {
@@ -83,18 +73,17 @@ public class SAConfettiView: UIView, CAAnimationDelegate {
         var fileName: String!
         
         switch type {
-        case .Confetti:
+        case .confetti:
             fileName = "confetti"
-        case .Triangle:
+        case .triangle:
             fileName = "triangle"
-        case .Star:
+        case .star:
             fileName = "star"
-        case .Diamond:
+        case .diamond:
             fileName = "diamond"
-        case let .Image(customImage):
+        case let .image(customImage):
             return customImage
         }
-        
         
         return UIImage(imageLiteralResourceName: fileName)
     }
@@ -108,7 +97,7 @@ public class SAConfettiView: UIView, CAAnimationDelegate {
         confetti.velocity = CGFloat(350.0 * intensity)
         confetti.velocityRange = CGFloat(80.0 * intensity)
         confetti.emissionLongitude = CGFloat(Double.pi)
-        confetti.emissionRange = CGFloat(Double.pi / 4.0)
+        confetti.emissionRange = CGFloat(Double.pi)
         confetti.spin = CGFloat(3.5 * intensity)
         confetti.spinRange = CGFloat(4.0 * intensity)
         confetti.scaleRange = CGFloat(intensity)
@@ -117,6 +106,7 @@ public class SAConfettiView: UIView, CAAnimationDelegate {
         return confetti
     }
     
+    public func isActive() -> Bool {
+        return self.active
+    }
 }
-
-

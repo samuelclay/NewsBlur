@@ -11,6 +11,7 @@
 
 NSString * const MenuTitle = @"title";
 NSString * const MenuIcon = @"icon";
+NSString * const MenuIconColor = @"iconColor";
 NSString * const MenuDestructive = @"destructive";
 NSString * const MenuThemeSegment = @"theme";
 NSString * const MenuSegmentTitles = @"segmentTitles";
@@ -89,8 +90,18 @@ NSString * const MenuHandler = @"handler";
     [self.items addObject:@{MenuTitle: title, MenuIcon: image, MenuDestructive: @(isDestructive), MenuSelectionShouldDismiss: @(selectionShouldDismiss), MenuHandler: handler}];
 }
 
+- (void)addTitle:(NSString *)title iconImage:(UIImage *)image iconColor:(UIColor *)iconColor destructive:(BOOL)isDestructive selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
+    [self.items addObject:@{MenuTitle: title, MenuIcon: image, MenuIconColor: iconColor, MenuDestructive: @(isDestructive), MenuSelectionShouldDismiss: @(selectionShouldDismiss), MenuHandler: handler}];
+}
+
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
     [self addTitle:title iconImage:[UIImage imageNamed:iconName] destructive:NO selectionShouldDismiss:selectionShouldDismiss handler:handler];
+}
+
+- (void)addTitle:(NSString *)title iconName:(NSString *)iconName iconColor:(UIColor *)iconColor selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
+    UIImage *image = [Utilities imageWithImage:[UIImage imageNamed:iconName] convertToSize:CGSizeMake(20.0, 20.0)];
+    image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [self addTitle:title iconImage:image iconColor:iconColor destructive:NO selectionShouldDismiss:selectionShouldDismiss handler:handler];
 }
 
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName destructive:(BOOL)isDestructive selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
@@ -315,8 +326,13 @@ NSString * const MenuHandler = @"handler";
         cell.tintColor = UIColorFromFixedRGB(0x303030);
         cell.textLabel.text = title;
         cell.imageView.image = item[MenuIcon];
-        cell.imageView.tintColor = UIColorFromRGB(0x303030);
-
+        
+        if (item[MenuIconColor]) {
+            cell.imageView.tintColor = item[MenuIconColor];
+        } else {
+            cell.imageView.tintColor = UIColorFromRGB(0x303030);
+        }
+        
         if (self.checkedRow == indexPath.row) {
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
         } else {

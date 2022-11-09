@@ -14,7 +14,7 @@ static UIFont *indicatorFont = nil;
 
 @implementation UnreadCountView
 
-const int COUNT_HEIGHT = 15;
+const int COUNT_HEIGHT = 18;
 @synthesize appDelegate;
 @synthesize psWidth, psPadding, ntWidth, ntPadding;
 @synthesize psCount, ntCount, blueCount;
@@ -55,23 +55,15 @@ const int COUNT_HEIGHT = 15;
         
         if (listType == NBFeedListSocial) {
             if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-                rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2-1, psWidth, COUNT_HEIGHT);
+                rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2, psWidth, COUNT_HEIGHT);
             } else {
-                rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2-1, psWidth, COUNT_HEIGHT);
+                rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2, psWidth, COUNT_HEIGHT);
             }
         } else if (listType == NBFeedListFolder) {
-            rr = CGRectMake(rect.size.width + rect.origin.x - psOffset - 22, CGRectGetMidY(r)-COUNT_HEIGHT/2-2, psWidth, COUNT_HEIGHT);
+            rr = CGRectMake(rect.size.width + rect.origin.x - psOffset - 22, CGRectGetMidY(r)-COUNT_HEIGHT/2-1, psWidth, COUNT_HEIGHT);
         } else {
-            rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2-1, psWidth, COUNT_HEIGHT);
+            rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2, psWidth, COUNT_HEIGHT);
         }
-        
-        if (blueCount) {
-            [UIColorFromFixedRGB(0x01346B) set];
-        } else {
-            [UIColorFromFixedRGB(0x4E872A) set];
-        }
-        CGRect rrShadow = CGRectMake(rr.origin.x, rr.origin.y+1, rr.size.width, rr.size.height);
-        [UIView drawRoundRectangleInRect:rrShadow withRadius:4];
         
         if (blueCount) {
             [UIColorFromFixedRGB(0x11448B) set];
@@ -107,23 +99,19 @@ const int COUNT_HEIGHT = 15;
         CGRect rr;
         if (listType == NBFeedListSocial) {
             if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-                rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2-1, ntWidth, COUNT_HEIGHT);
+                rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2, ntWidth, COUNT_HEIGHT);
             } else {
-                rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2-1, ntWidth, COUNT_HEIGHT);
+                rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2, ntWidth, COUNT_HEIGHT);
             }
         } else if (listType == NBFeedListFolder) {
-            rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset - 22, CGRectGetMidY(r)-COUNT_HEIGHT/2-2, ntWidth, COUNT_HEIGHT);
+            rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset - 22, CGRectGetMidY(r)-COUNT_HEIGHT/2-1, ntWidth, COUNT_HEIGHT);
         } else {
-            rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2-1, ntWidth, COUNT_HEIGHT);
+            rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2, ntWidth, COUNT_HEIGHT);
         }
         
         if (rr.origin.x > CGFLOAT_MAX) {
             return;
         }
-        
-        [UIColorFromLightDarkRGB(0x93968D, 0x53564D) set];
-        CGRect rrShadow = CGRectMake(rr.origin.x, rr.origin.y+1, rr.size.width, rr.size.height);
-        [UIView drawRoundRectangleInRect:rrShadow withRadius:4];
         
         [UIColorFromLightDarkRGB(0xB3B6AD, 0xA3A69D) set];
         [UIView drawRoundRectangleInRect:rr withRadius:4];        
@@ -146,8 +134,8 @@ const int COUNT_HEIGHT = 15;
 }
 
 - (void)calculateOffsets:(NSInteger)ps nt:(NSInteger)nt {
-    psWidth = ps == 0 ? 0 : ps < 10 ? 14 : ps < 100 ? 22 : ps < 1000 ? 28 : ps < 10000 ? 34 : 40;
-    ntWidth = nt == 0 ? 0 : nt < 10 ? 14 : nt < 100 ? 22 : nt < 1000 ? 28 : nt < 10000 ? 34 : 40;
+    psWidth = ps == 0 ? 0 : ps < 10 ? 16 : ps < 100 ? 24 : ps < 1000 ? 30 : ps < 10000 ? 36 : 42;
+    ntWidth = nt == 0 ? 0 : nt < 10 ? 16 : nt < 100 ? 24 : nt < 1000 ? 30 : nt < 10000 ? 36 : 42;
     
     psPadding = ps == 0 ? 0 : 2;
     ntPadding = nt == 0 ? 0 : 2;

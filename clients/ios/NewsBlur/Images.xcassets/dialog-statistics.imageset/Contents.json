@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "dialog-statistics.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
