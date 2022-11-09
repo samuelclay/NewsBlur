@@ -1956,9 +1956,13 @@ heightForHeaderInSection:(NSInteger)section {
     
     if (sender == nil) {
         FeedTableCell *cell = (FeedTableCell *)[self tableView:feedTitlesTable cellForRowAtIndexPath:indexPath];
+        NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+        id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
         BOOL hasUnread = cell.positiveCount > 0 || cell.neutralCount > 0 || cell.negativeCount > 0;
+        BOOL isInactive = appDelegate.dictInactiveFeeds[feedIdStr] != nil;
         
-        if ([cell.reuseIdentifier isEqualToString:@"BlankCellIdentifier"] || !hasUnread) {
+        if ([cell.reuseIdentifier isEqualToString:@"BlankCellIdentifier"] || !hasUnread || isInactive) {
             [self selectNextFolderOrFeed];
         }
     }
