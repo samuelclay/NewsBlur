@@ -76,7 +76,7 @@
                     forControlEvents:UIControlEventTouchUpInside];
     [customView addSubview:self.invisibleHeaderButton];
     
-    UIImage *folderImage = [UIImage imageNamed:@"g_icn_folder"];
+    UIImage *folderImage = [UIImage imageNamed:@"folder-open"];
     CGFloat folderImageViewX = 10.0;
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad) {

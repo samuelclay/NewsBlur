@@ -519,9 +519,8 @@ div + p {
 }
 
 .NB-header {
-    line-height: 1.4em;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F3F4EF));
-    border-bottom: 1px solid #C2C5BE;
+    line-height: 1.7em;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F9F9F7));
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
     overflow: hidden;
     max-width: none;
@@ -836,7 +835,7 @@ a.NB-show-profile {
     background: transparent;
     color: rgba(0, 0, 0, 0.25);
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-    border: 1px solid rgb(0, 0, 0, 0.25);
+    border: 0px;
     border-radius: 4px;
     line-height: 18px;
 }
@@ -879,8 +878,8 @@ a.NB-show-profile {
     background-size: 16px;
     width: 25px;
     display: inline-block;
-    height: 16px;
-    margin: 0 2px 0 -12px;
+    height: 18px;
+    margin: 0 2px 0 12px;
     vertical-align: text-bottom;
     opacity: .7;
 }
@@ -891,12 +890,12 @@ a.NB-show-profile {
 }
 
 .NB-button.NB-save-button .NB-icon {
-    background: url("clock@2x.png") no-repeat 0 0;
+    background: url("saved-stories@2x.png") no-repeat 0 0;
     background-size: 16px;
 }
 
 .NB-iphone .NB-button.NB-share-button .NB-icon {
-    background-position-y: 1px;
+    background-position-y: bottom;
     width: 20px;
     margin-left: -2px;
 }

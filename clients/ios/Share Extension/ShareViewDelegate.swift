@@ -111,7 +111,7 @@ private extension ShareViewDelegate {
         let components = viewController.folders[indexPath.item].components(separatedBy: " ▸ ")
         
         if components.first == "everything" {
-            cell.folderImageView.image = UIImage(named: "ak-icon-allstories.png")
+            cell.folderImageView.image = UIImage(named: "all-stories")
             cell.folderLabel.text = "Top Level"
             cell.folderImageLeadingConstraint.constant = 20
         } else {
