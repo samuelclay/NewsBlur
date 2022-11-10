@@ -32,7 +32,7 @@
 		173CB31126BCE94700BA872A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 173CB31026BCE94700BA872A /* SwiftUI.framework */; };
 		173CB31426BCE94700BA872A /* WidgetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 173CB31326BCE94700BA872A /* WidgetExtension.swift */; };
 		173CB31626BCE94A00BA872A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 173CB31526BCE94A00BA872A /* Assets.xcassets */; };
-		173CB31A26BCE94A00BA872A /* NewsBlur Widget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 173CB30D26BCE94700BA872A /* NewsBlur Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		173CB31A26BCE94A00BA872A /* NewsBlur Widget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 173CB30D26BCE94700BA872A /* NewsBlur Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1740C6881C10FD75005EA453 /* theme_color_dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6841C10FD75005EA453 /* theme_color_dark.png */; };
 		1740C6891C10FD75005EA453 /* theme_color_light.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6851C10FD75005EA453 /* theme_color_light.png */; };
 		1740C68A1C10FD75005EA453 /* theme_color_medium.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C6861C10FD75005EA453 /* theme_color_medium.png */; };
@@ -57,7 +57,7 @@
 		17432C891C534BC6003F8FD6 /* FeedChooserViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 17432C881C534BC6003F8FD6 /* FeedChooserViewCell.m */; };
 		1745FABB217E7FD400336F24 /* storyDetailViewLight.css in Resources */ = {isa = PBXBuildFile; fileRef = 1745FABA217E7FD400336F24 /* storyDetailViewLight.css */; };
 		174939171C251BFE003D98AA /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 174939151C251BFE003D98AA /* MainInterface.storyboard */; };
-		1749391B1C251BFE003D98AA /* Share Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 174939101C251BFE003D98AA /* Share Extension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		1749391B1C251BFE003D98AA /* Share Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 174939101C251BFE003D98AA /* Share Extension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		17495166260ED61A003E900B /* ak-icon-infrequent.png in Resources */ = {isa = PBXBuildFile; fileRef = 17495165260ED619003E900B /* ak-icon-infrequent.png */; };
 		1749516E260ED640003E900B /* content_preview_medium.png in Resources */ = {isa = PBXBuildFile; fileRef = 1749516B260ED63F003E900B /* content_preview_medium.png */; };
 		1749516F260ED640003E900B /* content_preview_small.png in Resources */ = {isa = PBXBuildFile; fileRef = 1749516C260ED63F003E900B /* content_preview_small.png */; };
@@ -79,7 +79,7 @@
 		17731A9D23DFAD3D00759A7D /* ImportExportPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17731A9C23DFAD3D00759A7D /* ImportExportPreferences.swift */; };
 		177551D5238E228A00E27818 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 177551D4238E228A00E27818 /* NotificationCenter.framework */; platformFilter = ios; };
 		177551DB238E228A00E27818 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 177551D9238E228A00E27818 /* MainInterface.storyboard */; };
-		177551DF238E228A00E27818 /* Old NewsBlur Latest.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 177551D3238E228A00E27818 /* Old NewsBlur Latest.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		177551DF238E228A00E27818 /* Old NewsBlur Latest.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 177551D3238E228A00E27818 /* Old NewsBlur Latest.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		177D017828B056C600F2F2DB /* GridDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D017728B056C600F2F2DB /* GridDetailViewController.swift */; };
 		177D017B28B05D2500F2F2DB /* GridFeedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D017A28B05D2500F2F2DB /* GridFeedCell.swift */; };
 		177D017D28B05D9500F2F2DB /* StoryPagesCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D017C28B05D9500F2F2DB /* StoryPagesCollectionCell.swift */; };
@@ -534,7 +534,7 @@
 		FF88F10D1811BAEC007FEE78 /* unread_green@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF88F10B1811BAEC007FEE78 /* unread_green@2x.png */; };
 		FF88F10E1811BAEC007FEE78 /* unread_green.png in Resources */ = {isa = PBXBuildFile; fileRef = FF88F10C1811BAEC007FEE78 /* unread_green.png */; };
 		FF8A949B1DE3BB77000A4C31 /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8A949A1DE3BB77000A4C31 /* NotificationService.m */; };
-		FF8A949F1DE3BB77000A4C31 /* Story Notification Service Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FF8A94971DE3BB77000A4C31 /* Story Notification Service Extension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FF8A949F1DE3BB77000A4C31 /* Story Notification Service Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = FF8A94971DE3BB77000A4C31 /* Story Notification Service Extension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		FF8AFE571CAC73C9005D9B40 /* unread_blue@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF8AFE561CAC73C9005D9B40 /* unread_blue@3x.png */; };
 		FF8D1EA71BAA304E00725D8A /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EA61BAA304E00725D8A /* Reachability.m */; };
 		FF8D1ECC1BAA311000725D8A /* SBJson4Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EBF1BAA311000725D8A /* SBJson4Parser.m */; };
@@ -713,28 +713,28 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		FF8A94A31DE3BB77000A4C31 /* Embed App Extensions */ = {
+		FF8A94A31DE3BB77000A4C31 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				FF8A949F1DE3BB77000A4C31 /* Story Notification Service Extension.appex in Embed App Extensions */,
+				FF8A949F1DE3BB77000A4C31 /* Story Notification Service Extension.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FF8C49911BBC893B0010D894 /* Embed App Extensions */ = {
+		FF8C49911BBC893B0010D894 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				177551DF238E228A00E27818 /* Old NewsBlur Latest.appex in Embed App Extensions */,
-				1749391B1C251BFE003D98AA /* Share Extension.appex in Embed App Extensions */,
-				173CB31A26BCE94A00BA872A /* NewsBlur Widget.appex in Embed App Extensions */,
+				177551DF238E228A00E27818 /* Old NewsBlur Latest.appex in Embed Foundation Extensions */,
+				1749391B1C251BFE003D98AA /* Share Extension.appex in Embed Foundation Extensions */,
+				173CB31A26BCE94A00BA872A /* NewsBlur Widget.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -3017,8 +3017,8 @@
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
-				FF8C49911BBC893B0010D894 /* Embed App Extensions */,
-				FF8A94A31DE3BB77000A4C31 /* Embed App Extensions */,
+				FF8C49911BBC893B0010D894 /* Embed Foundation Extensions */,
+				FF8A94A31DE3BB77000A4C31 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
@@ -3057,7 +3057,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1120;
-				LastUpgradeCheck = 1340;
+				LastUpgradeCheck = 1410;
 				ORGANIZATIONNAME = NewsBlur;
 				TargetAttributes = {
 					173CB30C26BCE94700BA872A = {
@@ -4348,6 +4348,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -4401,6 +4402,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -4443,6 +4445,7 @@
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

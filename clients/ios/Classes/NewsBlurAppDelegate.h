@@ -52,6 +52,7 @@
 @class PremiumManager;
 @class PremiumViewController;
 @class WKWebView;
+@class BGAppRefreshTask;
 
 @interface NewsBlurAppDelegate : BaseViewController
 <UIApplicationDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate,
@@ -287,7 +288,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, readonly) BOOL isCompactWidth;
 //@property (nonatomic) CGFloat compactWidth;
 
-@property (nonatomic, strong) void (^backgroundCompletionHandler)(UIBackgroundFetchResult);
+@property (nonatomic, strong) BGAppRefreshTask *backgroundAppRefreshTask;
 
 + (instancetype)sharedAppDelegate;
 
