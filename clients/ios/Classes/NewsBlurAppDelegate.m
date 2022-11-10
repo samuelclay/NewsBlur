@@ -65,6 +65,7 @@
 #import <Intents/Intents.h>
 #import <CoreSpotlight/CoreSpotlight.h>
 #import <CoreServices/CoreServices.h>
+#import <BackgroundTasks/BackgroundTasks.h>
 
 @interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate, UNUserNotificationCenterDelegate>
 
@@ -181,7 +182,7 @@
 @synthesize hasQueuedReadStories;
 @synthesize offlineQueue;
 @synthesize offlineCleaningQueue;
-@synthesize backgroundCompletionHandler;
+@synthesize backgroundAppRefreshTask;
 @synthesize cacheImagesOperationQueue;
 
 @synthesize totalUnfetchedStoryCount;
@@ -247,6 +248,8 @@
     // Uncomment below line to test image caching
 //    [[NSURLCache sharedURLCache] removeAllCachedResponses];
     
+    [self registerBackgroundTask];
+    
     return YES;
 }
 
@@ -300,6 +303,7 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     [self.feedsViewController refreshHeaderCounts];
+    [self scheduleAppRefresh];
 }
 
 - (BOOL)application:(UIApplication *)application shouldSaveSecureApplicationState:(NSCoder *)coder {
@@ -312,34 +316,34 @@
 }
 
 - (BOOL)application:(UIApplication *)application shouldRestoreSecureApplicationState:(NSCoder *)coder {
-    // state restoration disabled; doesn't work with split layout; need alternative approach
+    // state restoration disabled; uses other options now
     return NO;
     
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    NSString *option = [preferences stringForKey:@"restore_state"];
-    
-    if ([option isEqualToString:@"never"]) {
-        return NO;
-    } else if ([option isEqualToString:@"always"]) {
-        return YES;
-    }
-    
-    NSTimeInterval daysInterval = 60 * 60;
-    NSTimeInterval limitInterval = option.doubleValue * daysInterval;
-    NSInteger version = [coder decodeIntegerForKey:@"version"];
-    NSDate *lastSavedDate = [coder decodeObjectOfClass:[NSDate class] forKey:@"last_saved_state_date"];
-    
-    if (limitInterval == 0) {
-        limitInterval = 24 * daysInterval;
-    }
-    
-    if (version > CURRENT_STATE_VERSION || lastSavedDate == nil) {
-        return NO;
-    }
-    
-    NSTimeInterval savedInterval = -[lastSavedDate timeIntervalSinceNow];
-    
-    return savedInterval < limitInterval;
+//    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+//    NSString *option = [preferences stringForKey:@"restore_state"];
+//
+//    if ([option isEqualToString:@"never"]) {
+//        return NO;
+//    } else if ([option isEqualToString:@"always"]) {
+//        return YES;
+//    }
+//
+//    NSTimeInterval daysInterval = 60 * 60;
+//    NSTimeInterval limitInterval = option.doubleValue * daysInterval;
+//    NSInteger version = [coder decodeIntegerForKey:@"version"];
+//    NSDate *lastSavedDate = [coder decodeObjectOfClass:[NSDate class] forKey:@"last_saved_state_date"];
+//
+//    if (limitInterval == 0) {
+//        limitInterval = 24 * daysInterval;
+//    }
+//
+//    if (version > CURRENT_STATE_VERSION || lastSavedDate == nil) {
+//        return NO;
+//    }
+//
+//    NSTimeInterval savedInterval = -[lastSavedDate timeIntervalSinceNow];
+//
+//    return savedInterval < limitInterval;
 }
 
 - (UIViewController *)application:(UIApplication *)application viewControllerWithRestorationIdentifierPath:(NSArray<NSString *> *)identifierComponents coder:(NSCoder *)coder {
@@ -426,25 +430,41 @@
     self.title = @"All";
 }
 
-//TODO: replace this with a BGAppRefreshTask in the BackgroundTasks framework
-- (void)application:(UIApplication *)application
-    performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+- (void)registerBackgroundTask {
+    [BGTaskScheduler.sharedScheduler registerForTaskWithIdentifier:@"com.newsblur.NewsBlur.refresh" usingQueue:nil launchHandler:^(__kindof BGTask * _Nonnull task) {
+        [self handleAppRefresh:task];
+    }];
+}
+
+- (void)scheduleAppRefresh {
+    BGAppRefreshTaskRequest *request = [[BGAppRefreshTaskRequest alloc] initWithIdentifier:@"com.newsblur.NewsBlur.refresh"];
+    NSError *error = nil;
+    
+    #warning hack
+//    request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:15 * 60];
+    
+    [BGTaskScheduler.sharedScheduler submitTaskRequest:request error:&error];
+}
+
+- (void)handleAppRefresh:(BGAppRefreshTask *)task {
     [self createDatabaseConnection];
     [self.feedsViewController fetchFeedList:NO];
-    backgroundCompletionHandler = completionHandler;
+    
+    [self scheduleAppRefresh];
 }
 
 - (void)finishBackground {
-    if (!backgroundCompletionHandler) return;
+    if (!backgroundAppRefreshTask) return;
     
     NSLog(@"Background fetch complete. Found data: %ld/%ld = %d",
           (long)self.totalUnfetchedStoryCount, (long)self.totalUncachedImagesCount,
           self.totalUnfetchedStoryCount || self.totalUncachedImagesCount);
     if (self.totalUnfetchedStoryCount || self.totalUncachedImagesCount) {
-        backgroundCompletionHandler(UIBackgroundFetchResultNewData);
+        [backgroundAppRefreshTask setTaskCompletedWithSuccess:YES];
     } else {
-        backgroundCompletionHandler(UIBackgroundFetchResultNoData);
+        [backgroundAppRefreshTask setTaskCompletedWithSuccess:NO];
     }
+    backgroundAppRefreshTask = nil;
 }
 
 - (void)registerDefaultsFromSettingsBundle {

@@ -526,7 +526,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
                        self.appDelegate.url];
     }
     
-    if (appDelegate.backgroundCompletionHandler) {
+    if (appDelegate.backgroundAppRefreshTask) {
         urlFeedList = [urlFeedList stringByAppendingString:@"&background_ios=true"];
     }
     
