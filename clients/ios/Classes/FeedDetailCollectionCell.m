@@ -173,6 +173,7 @@ static UIFont *indicatorFont = nil;
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     NSString *preview = [[NSUserDefaults standardUserDefaults] stringForKey:@"story_list_preview_images_size"];
+    BOOL isPreviewShown = ![preview isEqualToString:@"none"];
     BOOL isSmall = [preview isEqualToString:@"small"] || [preview isEqualToString:@"small_left"] || [preview isEqualToString:@"small_right"];
     BOOL isLeft = [preview isEqualToString:@"small_left"] || [preview isEqualToString:@"large_left"];
     NSString *spacing = [[NSUserDefaults standardUserDefaults] objectForKey:@"feed_list_spacing"];
@@ -214,7 +215,7 @@ static UIFont *indicatorFont = nil;
     
     CGContextFillRect(context, r);
     
-    if (cell.storyHash) {
+    if (cell.storyHash && isPreviewShown) {
         CGRect imageFrame = CGRectMake(r.size.width - imageWidth - previewHorizMargin, topMargin,
                                        imageWidth, imageHeight);
         
