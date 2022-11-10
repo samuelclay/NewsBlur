@@ -3960,7 +3960,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 138;
+				CURRENT_PROJECT_VERSION = 141;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = HR7P97SD72;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -3979,7 +3979,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 11.2.1;
+				MARKETING_VERSION = 12.0.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur.widget;
@@ -4012,7 +4012,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 138;
+				CURRENT_PROJECT_VERSION = 141;
 				DEVELOPMENT_TEAM = HR7P97SD72;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -4025,7 +4025,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 11.2.1;
+				MARKETING_VERSION = 12.0.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur.widget;
@@ -4060,7 +4060,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Share Extension/Share Extension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 138;
+				CURRENT_PROJECT_VERSION = 141;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = HR7P97SD72;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -4084,7 +4084,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 11.2.1;
+				MARKETING_VERSION = 12.0.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Share-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4116,7 +4116,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Share Extension/Share Extension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 138;
+				CURRENT_PROJECT_VERSION = 141;
 				DEVELOPMENT_TEAM = HR7P97SD72;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -4134,7 +4134,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 11.2.1;
+				MARKETING_VERSION = 12.0.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Share-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4167,7 +4167,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 138;
+				CURRENT_PROJECT_VERSION = 141;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = HR7P97SD72;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -4186,7 +4186,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 11.2.1;
+				MARKETING_VERSION = 12.0.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.old-widget";
@@ -4220,7 +4220,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 138;
+				CURRENT_PROJECT_VERSION = 141;
 				DEVELOPMENT_TEAM = HR7P97SD72;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -4233,7 +4233,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 11.2.1;
+				MARKETING_VERSION = 12.0.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.old-widget";
@@ -4256,7 +4256,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 138;
+				CURRENT_PROJECT_VERSION = 141;
 				DEVELOPMENT_TEAM = HR7P97SD72;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4277,7 +4277,7 @@
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Other Sources\"",
 				);
-				MARKETING_VERSION = 11.2.1;
+				MARKETING_VERSION = 12.0.2;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
 					"-lsqlite3.0",
@@ -4307,7 +4307,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 138;
+				CURRENT_PROJECT_VERSION = 141;
 				DEVELOPMENT_TEAM = HR7P97SD72;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4327,7 +4327,7 @@
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Other Sources\"",
 				);
-				MARKETING_VERSION = 11.2.1;
+				MARKETING_VERSION = 12.0.2;
 				OTHER_LDFLAGS = (
 					"-lsqlite3.0",
 					"-ObjC",
@@ -4465,7 +4465,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 138;
+				CURRENT_PROJECT_VERSION = 141;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = HR7P97SD72;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -4484,7 +4484,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 11.2.1;
+				MARKETING_VERSION = 12.0.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Story-Notification-Service-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4511,7 +4511,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 138;
+				CURRENT_PROJECT_VERSION = 141;
 				DEVELOPMENT_TEAM = HR7P97SD72;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -4524,7 +4524,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 11.2.1;
+				MARKETING_VERSION = 12.0.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NewsBlur.Story-Notification-Service-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";

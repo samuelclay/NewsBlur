@@ -1206,9 +1206,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     } else if ([longPressTitle isEqualToString:@"mark_read_immediate"]) {
         [self markFeedRead:feedId cutoffDays:0];
         
-//        if ([preferences boolForKey:@"show_feeds_after_being_read"]) {
+        if ([preferences boolForKey:@"show_feeds_after_being_read"]) {
             [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
-//        }
+        }
         [self.feedTitlesTable beginUpdates];
         [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
                                     withRowAnimation:UITableViewRowAnimationFade];
@@ -1608,9 +1608,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
     
     // If all feeds are already showing, no need to remember this one.
-//    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    if (!self.viewShowingAllFeeds) {
-//        [preferences boolForKey:@"show_feeds_after_being_read"]) {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    if (!self.viewShowingAllFeeds && [preferences boolForKey:@"show_feeds_after_being_read"]) {
         [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
     }
     
@@ -1953,6 +1952,19 @@ heightForHeaderInSection:(NSInteger)section {
     
     [self.feedTitlesTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
     [self tableView:self.feedTitlesTable didSelectRowAtIndexPath:indexPath];
+    
+    if (sender == nil) {
+        FeedTableCell *cell = (FeedTableCell *)[self tableView:feedTitlesTable cellForRowAtIndexPath:indexPath];
+        NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+        id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+        BOOL hasUnread = cell.positiveCount > 0 || cell.neutralCount > 0 || cell.negativeCount > 0;
+        BOOL isInactive = appDelegate.dictInactiveFeeds[feedIdStr] != nil;
+        
+        if ([cell.reuseIdentifier isEqualToString:@"BlankCellIdentifier"] || !hasUnread || isInactive) {
+            [self selectNextFolderOrFeed];
+        }
+    }
 }
 
 - (void)selectPreviousFeed:(id)sender {
@@ -2000,6 +2012,16 @@ heightForHeaderInSection:(NSInteger)section {
     
     if ([self.feedTitlesTable numberOfRowsInSection:section] > 0) {
         [self.feedTitlesTable scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
+    }
+    
+    if (sender == nil) {
+        NSString *folderName = appDelegate.dictFoldersArray[section];
+        UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
+        BOOL hasUnread = counts.ps > 0 || counts.nt > 0;
+        
+        if (!hasUnread) {
+            [self selectNextFolderOrFeed];
+        }
     }
 }
 
