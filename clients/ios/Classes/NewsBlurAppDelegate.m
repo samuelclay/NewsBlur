@@ -440,8 +440,7 @@
     BGAppRefreshTaskRequest *request = [[BGAppRefreshTaskRequest alloc] initWithIdentifier:@"com.newsblur.NewsBlur.refresh"];
     NSError *error = nil;
     
-    #warning hack
-//    request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:15 * 60];
+    request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:15 * 60];
     
     [BGTaskScheduler.sharedScheduler submitTaskRequest:request error:&error];
 }
