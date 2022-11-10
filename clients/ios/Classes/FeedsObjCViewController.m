@@ -1206,9 +1206,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     } else if ([longPressTitle isEqualToString:@"mark_read_immediate"]) {
         [self markFeedRead:feedId cutoffDays:0];
         
-//        if ([preferences boolForKey:@"show_feeds_after_being_read"]) {
+        if ([preferences boolForKey:@"show_feeds_after_being_read"]) {
             [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
-//        }
+        }
         [self.feedTitlesTable beginUpdates];
         [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
                                     withRowAnimation:UITableViewRowAnimationFade];
@@ -1608,9 +1608,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
     
     // If all feeds are already showing, no need to remember this one.
-//    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    if (!self.viewShowingAllFeeds) {
-//        [preferences boolForKey:@"show_feeds_after_being_read"]) {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    if (!self.viewShowingAllFeeds && [preferences boolForKey:@"show_feeds_after_being_read"]) {
         [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
     }
     
