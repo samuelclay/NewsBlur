@@ -20,7 +20,6 @@ class Storyboards {
     /// Main storyboard identifiers.
     enum Main: String {
         case feedDetail = "FeedDetailViewController"
-        case gridDetail = "GridDetailViewController"
         case horizontalPages = "HorizontalPageViewController"
         case verticalPages = "VerticalPageViewController"
 //        case storyDetail = "StoryDetailViewController" // loading from XIB currently
