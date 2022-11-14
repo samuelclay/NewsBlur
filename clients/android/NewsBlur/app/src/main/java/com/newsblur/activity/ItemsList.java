@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.os.Trace;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -67,6 +68,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 	
 	@Override
     protected void onCreate(Bundle bundle) {
+        Trace.beginSection("ItemsListOnCreate");
 		super.onCreate(bundle);
 
         overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
@@ -133,6 +135,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 return false;
             }
         });
+        Trace.endSection();
 	}
 
     @Override

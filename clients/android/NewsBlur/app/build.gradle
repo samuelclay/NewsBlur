@@ -28,6 +28,7 @@ android {
             signingConfig signingConfigs.debug
             matchingFallbacks = ['release']
             debuggable false
+            proguardFiles('benchmark-rules.pro')
         }
         release {
             minifyEnabled true
@@ -65,6 +66,7 @@ dependencies {
     implementation 'androidx.core:core-splashscreen:1.0.0'
     implementation "com.google.dagger:hilt-android:2.44"
     kapt "com.google.dagger:hilt-compiler:2.44"
+    implementation "androidx.profileinstaller:profileinstaller:1.2.0"
 
     testImplementation "junit:junit:4.13.2"
 
