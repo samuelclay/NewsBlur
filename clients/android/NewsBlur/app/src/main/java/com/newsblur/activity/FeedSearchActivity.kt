@@ -101,17 +101,18 @@ class FeedSearchActivity : NbActivity(), OnFeedSearchResultClickListener, AddFee
                     binding.clearText.visibility = View.GONE
                 },
                 doInBackground = {
-                    apiManager.searchForFeed(query.toString())
+                    buildList {
+                        val feedResults = apiManager.searchForFeed(query.toString()) ?: emptyArray()
+                        if (matchesUrl(query.toString())) {
+                            add(FeedResult.createFeedResultForUrl(query.toString().lowercase()))
+                        }
+                        addAll(feedResults)
+                    }
                 },
                 onPostExecute = {
                     binding.loadingCircle.visibility = View.GONE
                     binding.clearText.visibility = View.VISIBLE
-                    syncSearchResults(buildList {
-                        if (matchesUrl(query.toString())) {
-                            add(FeedResult.createFeedResultForUrl(query.toString().lowercase()))
-                        }
-                        addAll(it ?: arrayOf())
-                    })
+                    syncSearchResults(it)
                 }
         )
     }
