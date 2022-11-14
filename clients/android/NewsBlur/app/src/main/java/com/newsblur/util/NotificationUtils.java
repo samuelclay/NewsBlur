@@ -1,17 +1,20 @@
 package com.newsblur.util;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.fragment.app.Fragment;
 
 import com.newsblur.R;
 import com.newsblur.activity.FeedReading;
@@ -25,10 +28,11 @@ public class NotificationUtils {
     private static final int NOTIFY_COLOUR = 0xFFDA8A35;
     private static final int MAX_CONCUR_NOTIFY = 5;
 
-    private NotificationUtils() {} // util class - no instances
+    private NotificationUtils() {
+    } // util class - no instances
 
     /**
-     * @param storiesFocus a cursor of unread, focus stories to notify, ordered newest to oldest
+     * @param storiesFocus  a cursor of unread, focus stories to notify, ordered newest to oldest
      * @param storiesUnread a cursor of unread, neutral stories to notify, ordered newest to oldest
      */
     public static synchronized void notifyStories(Context context, Cursor storiesFocus, Cursor storiesUnread, FileCache iconCache, BlurDatabaseHelper dbHelper) {
@@ -88,7 +92,7 @@ public class NotificationUtils {
     /**
      * creates notification channels necessary for 26+, if applicable
      */
-    public static void createNotificationChannel(Context context){
+    public static void createNotificationChannel(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = context.getString(R.string.story_notification_channel_name);
             String id = context.getString(R.string.story_notification_channel_id);
@@ -140,18 +144,18 @@ public class NotificationUtils {
         Bitmap feedIcon = ImageLoader.getCachedImageSynchro(iconCache, faviconUrl);
 
         NotificationCompat.Builder nb = new NotificationCompat.Builder(context, context.getString(R.string.story_notification_channel_id))
-            .setContentTitle(title.toString())
-            .setContentText(story.shortContent)
-            .setSmallIcon(R.drawable.logo_monochrome)
-            .setContentIntent(pendingIntent)
-            .setDeleteIntent(dismissPendingIntent)
-            .setAutoCancel(true)
-            .setOnlyAlertOnce(true)
-            .setWhen(story.timestamp)
-            .addAction(0, "Mark Read", markreadPendingIntent)
-            .addAction(0, "Save", savePendingIntent)
-            .addAction(0, "Share", sharePendingIntent)
-            .setColor(NOTIFY_COLOUR);
+                .setContentTitle(title.toString())
+                .setContentText(story.shortContent)
+                .setSmallIcon(R.drawable.logo_monochrome)
+                .setContentIntent(pendingIntent)
+                .setDeleteIntent(dismissPendingIntent)
+                .setAutoCancel(true)
+                .setOnlyAlertOnce(true)
+                .setWhen(story.timestamp)
+                .addAction(0, "Mark Read", markreadPendingIntent)
+                .addAction(0, "Save", savePendingIntent)
+                .addAction(0, "Share", sharePendingIntent)
+                .setColor(NOTIFY_COLOUR);
         if (feedIcon != null) {
             nb.setLargeIcon(feedIcon);
         }
@@ -167,5 +171,17 @@ public class NotificationUtils {
     public static void cancel(Context context, int nid) {
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         nm.cancel(nid);
+    }
+
+    public static boolean hasPermissions(Context context) {
+        if (Build.VERSION.SDK_INT >= 33) {
+            return context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
+        } else return true;
+    }
+
+    public static boolean shouldShowRationale(Fragment fragment) {
+        if (Build.VERSION.SDK_INT >= 33) {
+            return fragment.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS);
+        } else return false;
     }
 }

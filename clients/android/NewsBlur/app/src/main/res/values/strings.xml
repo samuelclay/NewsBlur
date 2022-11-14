@@ -480,6 +480,7 @@
     <string name="settings_thumbnails_style">Image preview thumbnails…</string>
     <string name="settings_notifications">Notifications</string>
     <string name="settings_enable_notifications">Enable notifications</string>
+    <string name="settings_enable_notifications_key">enable_notifications</string>
 
     <string-array name="show_content_preview_entries">
         <item>@string/story_content_preview_none</item>
@@ -714,4 +715,7 @@
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">No feed notifications</string>
+
+    <string name="notification_permissions_context">Permissions is required for posting notifications</string>
+    <string name="notification_permissions_rationale">Notifications permission must be added manually in the app\'s settings before trying again to enable notifications</string>
 </resources>

@@ -45,9 +45,7 @@ public class NewsblurWebview extends WebView {
 		getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 		getSettings().setDomStorageEnabled(true);
 		getSettings().setSupportZoom(true);
-		getSettings().setAppCachePath(context.getCacheDir().getAbsolutePath());
 		getSettings().setAllowFileAccess(true);
-		getSettings().setAppCacheEnabled(true);
 
         // Explicitly remove the system default web search menu item in case it's available
         // to add a custom web search menu item to ensure menu item availability

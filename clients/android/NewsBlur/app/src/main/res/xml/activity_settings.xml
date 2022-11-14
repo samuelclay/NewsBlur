@@ -186,7 +186,7 @@
         android:title="@string/settings_notifications">
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="enable_notifications"
+            android:key="@string/settings_enable_notifications_key"
             android:title="@string/settings_enable_notifications" >
         </CheckBoxPreference>
     </PreferenceCategory>
