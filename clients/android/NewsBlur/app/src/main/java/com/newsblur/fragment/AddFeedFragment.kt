@@ -42,12 +42,11 @@ class AddFeedFragment : DialogFragment() {
     private lateinit var binding: DialogAddFeedBinding
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val v = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_feed, null)
-        binding = DialogAddFeedBinding.bind(v)
+        binding = DialogAddFeedBinding.inflate(layoutInflater)
 
         val builder = AlertDialog.Builder(requireActivity())
         builder.setTitle("Choose folder for " + requireArguments().getString(FEED_NAME))
-        builder.setView(v)
+        builder.setView(binding.root)
         val adapter = AddFeedAdapter(object : OnFolderClickListener {
             override fun onItemClick(folder: Folder) {
                 addFeed(requireActivity(), apiManager, folder.name)
@@ -116,7 +115,6 @@ class AddFeedFragment : DialogFragment() {
                     }
                     activity.startActivity(intent)
                     activity.finish()
-                    dismiss()
                 }
         )
     }
