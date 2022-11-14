@@ -8,6 +8,7 @@ import static com.newsblur.service.NBSyncReceiver.UPDATE_STATUS;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Trace;
 import android.preference.PreferenceManager;
 
 import androidx.appcompat.widget.PopupMenu;
@@ -61,6 +62,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
+        Trace.beginSection("MainOnCreate");
         PreferenceManager.setDefaultValues(this, R.xml.activity_settings, false);
 
 		super.onCreate(savedInstanceState);
@@ -132,6 +134,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             }
             startActivity(intent);
         }
+
+        Trace.endSection();
+        reportFullyDrawn();
 	}
 
     @Override
