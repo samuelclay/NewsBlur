@@ -103,18 +103,73 @@ class FeedDetailViewController: FeedDetailObjCViewController {
 }
 
 extension FeedDetailViewController {
+    func accessoriesForListCellItem(_ item: Int) -> [UICellAccessory] {
+        let isStarred = false //self.starredEmojis.contains(item)
+        var accessories = [UICellAccessory.disclosureIndicator()]
+        if isStarred {
+            let star = UIImageView(image: UIImage(systemName: "star.fill"))
+            accessories.append(.customView(configuration: .init(customView: star, placement: .trailing())))
+        }
+        return accessories
+    }
+    
+    func leadingSwipeActionConfigurationForListCellItem(_ item: Int) -> UISwipeActionsConfiguration? {
+        let isStarred = false //self.starredEmojis.contains(item)
+        let starAction = UIContextualAction(style: .normal, title: nil) {
+            [weak self] (_, _, completion) in
+            guard let self = self else {
+                completion(false)
+                return
+            }
+            
+            // Don't check again for the starred state. We promised in the UI what this action will do.
+            // If the starred state has changed by now, we do nothing, as the set will not change.
+//            if isStarred {
+//                self.starredEmojis.remove(item)
+//            } else {
+//                self.starredEmojis.insert(item)
+//            }
+            
+            // Reconfigure the cell of this item
+            // Make sure we get the current index path of the item.
+            if let currentIndexPath = self.dataSource.indexPath(for: item) {
+                if let cell = self.feedCollectionView.cellForItem(at: currentIndexPath) as? UICollectionViewListCell {
+                    UIView.animate(withDuration: 0.2) {
+                        cell.accessories = self.accessoriesForListCellItem(item)
+                    }
+                }
+            }
+            
+            completion(true)
+        }
+        starAction.image = UIImage(systemName: isStarred ? "star.slash" : "star.fill")
+        starAction.backgroundColor = .systemBlue
+        return UISwipeActionsConfiguration(actions: [starAction])
+    }
+    
     func createListLayout() -> UICollectionViewLayout {
-        let size = NSCollectionLayoutSize(
-            widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
-            heightDimension: NSCollectionLayoutDimension.estimated(200)
-        )
-        let item = NSCollectionLayoutItem(layoutSize: size)
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: 1)
+//        let size = NSCollectionLayoutSize(
+//            widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
+//            heightDimension: NSCollectionLayoutDimension.estimated(200)
+//        )
+//        let item = NSCollectionLayoutItem(layoutSize: size)
+//        let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: 1)
+//
+//        let section = NSCollectionLayoutSection(group: group)
+//        section.interGroupSpacing = 0
+//
+//        return UICollectionViewCompositionalLayout(section: section)
         
-        let section = NSCollectionLayoutSection(group: group)
-        section.interGroupSpacing = 0
         
-        return UICollectionViewCompositionalLayout(section: section)
+        
+        var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
+        configuration.leadingSwipeActionsConfigurationProvider = { [weak self] (indexPath) in
+            guard let self else { return nil }
+            guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return nil }
+            return self.leadingSwipeActionConfigurationForListCellItem(item)
+        }
+        
+        return UICollectionViewCompositionalLayout.list(using: configuration)
     }
     
     func createGridLayout() -> UICollectionViewLayout {
