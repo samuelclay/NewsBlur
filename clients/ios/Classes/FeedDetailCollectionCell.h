@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
-#import "NBSwipeableCell.h"
 
 typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 {
@@ -17,8 +16,6 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
     FeedDetailTextSizeMedium,
     FeedDetailTextSizeLong
 };
-
-@class FeedDetailSwipableCell, FeedDetailContentView;
 
 @interface FeedDetailCollectionCell : UICollectionViewCell
 
@@ -36,7 +33,6 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 @property (nonatomic) NSString *storyDate;
 @property (nonatomic) NSString *storyContent;
 @property (nonatomic) NSString *storyHash;
-@property (nonatomic) UIImage *storyImage;
 @property (nonatomic) NSInteger storyTimestamp;
 
 @property (nonatomic) UIColor *feedColorBar;
@@ -50,21 +46,6 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 
 @property (nonatomic) FeedDetailTextSize textSize;
 
-@property (nonatomic, strong) FeedDetailSwipableCell *swipableCell;
-@property (nonatomic, strong) FeedDetailContentView *cellContent;
-
 - (void)setupGestures;
-
-@end
-
-@interface FeedDetailSwipableCell : NBSwipeableCell
-
-@end
-
-@interface FeedDetailContentView : UIView
-
-@property (nonatomic) NewsBlurAppDelegate *appDelegate;
-@property (nonatomic) FeedDetailCollectionCell *cell;
-@property (nonatomic, strong) UIImage *storyImage;
 
 @end
