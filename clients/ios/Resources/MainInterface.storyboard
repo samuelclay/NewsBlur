@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r">
     <device id="ipad11_0rounded" orientation="landscape" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -432,14 +432,14 @@
         </scene>
     </scenes>
     <resources>
-        <image name="all.png" width="19.5" height="12.5"/>
+        <image name="all.png" width="14" height="13"/>
         <image name="big_world.png" width="30.719999313354492" height="30.719999313354492"/>
         <image name="drag_icon.png" width="96" height="24"/>
         <image name="nav_icn_add.png" width="49.454544067382812" height="64"/>
         <image name="nav_icn_settings.png" width="15.359999656677246" height="12.239999771118164"/>
-        <image name="unread_blue.png" width="49.5" height="12.5"/>
-        <image name="unread_green.png" width="49" height="12.5"/>
-        <image name="unread_yellow.png" width="58" height="12.5"/>
+        <image name="unread_blue.png" width="44" height="13"/>
+        <image name="unread_green.png" width="43" height="13"/>
+        <image name="unread_yellow.png" width="51" height="13"/>
         <systemColor name="lightTextColor">
             <color white="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
