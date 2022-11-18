@@ -2050,9 +2050,9 @@
         if (navController.viewControllers.count > 1) {
             [navController popToRootViewControllerAnimated:NO];
         }
-        
-        [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadRiverFeedDetailView"];
     }
+    
+    [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadRiverFeedDetailView"];
     
     [self flushQueuedReadStories:NO withCallback:^{
         [self flushQueuedSavedStories:NO withCallback:^{
