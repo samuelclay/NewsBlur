@@ -128,9 +128,36 @@ You got the downtime message either through email or SMS. This is the order of o
 
 ## Python 3
 
+### Switching to a new mongo server
+
+Provision a new mongo server, replicate the data, take newsblur down for maintenance, and then switch to new server.
+
+   # db-mongo-primary2 = new server
+   # db-mongo-primary1 = old and busted server
+   make plan
+   make apply
+   make firewall
+   # Wait for mongo to synbc, takes 4-5 hours
+   make celery_stop
+   make maintenance_on
+   ./utils/ssh.sh db-mongo-primary1
+      docker exec -it mongo mongo
+      mongo> rs.config()
+      # Edit configuration from above rs.config(), adding in new server with higher priority, 
+      # lowering priority on old server
+         [
+            {server: 'db-mongo-primary1': priority: 1},
+            {server: 'db-mongo-primary2': priority: 10},
+            {server: 'db-mongo-secondary1': priority: 1},
+            ...
+         ]
+      mongo> rs.reconfig({ ... })
+   make maintenance_off
+   make task
+
 ### Switching to a new redis server
 
-When the new redis server is connected to the primary redis server:
+Provision a new redis server, replicate the data, take newsblur down for maintenance, and then switch to new server.
 
    # db-redis-story2 = moving to new server
    # db-redis-story1 = old server about to be shutdown
