@@ -2615,6 +2615,7 @@ class MStory(mongo.Document):
     RE_RS_KEY = re.compile(r"^RS:(\d+):(\d+)$")
 
     def __str__(self):
+        content = self.story_content_z if self.story_content_z else ""
         return f"{self.story_hash}: {self.story_title[:20]} ({len(self.story_content_z)} bytes)"
     
     @property
