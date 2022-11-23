@@ -23,5 +23,5 @@ A few other small changes have been added to this feature. You can also save sto
 
 <figure class="tmblr-full" data-orig-height="985" data-orig-width="1300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight4.jpg"><img width="650" height="auto" data-orig-height="985" data-orig-width="1300" src="https://s3.amazonaws.com/static.newsblur.com/blog/highlight4.jpg"></figure>
 
-Lots to live in this release! Keep [posting good ideas to the forum](https://forum.newsblur.com).
+Lots to love in this release! Keep [posting good ideas to the forum](https://forum.newsblur.com).
 
