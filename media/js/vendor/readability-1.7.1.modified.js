@@ -25,7 +25,7 @@
  * @param {HTMLDocument} doc     The document to parse.
  * @param {Object}       options The options object.
  */
- function Readability(doc, options) {
+ window.Readability = function(doc, options) {
     // In some older versions, people passed a URI as the first argument. Cope:
     if (options && options.documentElement) {
       doc = options;
@@ -94,7 +94,7 @@
     }
   }
   
-  Readability.prototype = {
+  window.Readability.prototype = {
     FLAG_STRIP_UNLIKELYS: 0x1,
     FLAG_WEIGHT_CLASSES: 0x2,
     FLAG_CLEAN_CONDITIONALLY: 0x4,
