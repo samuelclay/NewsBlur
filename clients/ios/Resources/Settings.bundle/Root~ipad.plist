@@ -668,10 +668,10 @@
 				<string>Do nothing</string>
 			</array>
 			<key>DefaultValue</key>
-			<string>nothing</string>
+			<string>open_original_story</string>
 			<key>Values</key>
 			<array>
-				<string>show_original_story</string>
+				<string>open_original_story</string>
 				<string>show_original_text</string>
 				<string>mark_unread</string>
 				<string>save_story</string>
@@ -696,10 +696,10 @@
 				<string>Do nothing</string>
 			</array>
 			<key>DefaultValue</key>
-			<string>nothing</string>
+			<string>show_original_text</string>
 			<key>Values</key>
 			<array>
-				<string>show_original_story</string>
+				<string>open_original_story</string>
 				<string>show_original_text</string>
 				<string>mark_unread</string>
 				<string>save_story</string>
