@@ -16,7 +16,7 @@
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launch_gradient.png" translatesAutoresizingMaskIntoConstraints="NO" id="xvc-Dc-4wh">
                     <rect key="frame" x="0.0" y="0.0" width="480" height="533"/>
                 </imageView>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_newsblur_512.png" translatesAutoresizingMaskIntoConstraints="NO" id="F6J-Zv-31D">
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_newsblur_512-dev.png" translatesAutoresizingMaskIntoConstraints="NO" id="F6J-Zv-31D">
                     <rect key="frame" x="112" y="138.66666666666663" width="256" height="256"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="256" id="obj-C4-yj7"/>
@@ -48,6 +48,6 @@
     </objects>
     <resources>
         <image name="launch_gradient.png" width="750" height="1334"/>
-        <image name="logo_newsblur_512.png" width="512" height="512"/>
+        <image name="logo_newsblur_512-dev.png" width="512" height="512"/>
     </resources>
 </document>

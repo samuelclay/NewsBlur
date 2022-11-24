@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "1D6058900D05DD3D006BFB54"
-               BuildableName = "NewsBlur.app"
-               BlueprintName = "NewsBlur"
+               BlueprintIdentifier = "1783AC1D292F06E100BED388"
+               BuildableName = "NewsBlur Dev.app"
+               BlueprintName = "NewsBlur Dev"
                ReferencedContainer = "container:NewsBlur.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -44,9 +44,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1D6058900D05DD3D006BFB54"
-            BuildableName = "NewsBlur.app"
-            BlueprintName = "NewsBlur"
+            BlueprintIdentifier = "1783AC1D292F06E100BED388"
+            BuildableName = "NewsBlur Dev.app"
+            BlueprintName = "NewsBlur Dev"
             ReferencedContainer = "container:NewsBlur.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -64,16 +64,6 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1D6058900D05DD3D006BFB54"
-            BuildableName = "NewsBlur.app"
-            BlueprintName = "NewsBlur"
-            ReferencedContainer = "container:NewsBlur.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
