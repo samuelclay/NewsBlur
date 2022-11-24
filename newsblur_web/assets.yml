@@ -106,7 +106,6 @@ javascripts:
         - js/newsblur/payments/stripe_form.js
     bookmarklet:
         - js/vendor/jquery-3.6.0.min.js
-        # - js/vendor/jquery.migrate-*.js
         - js/vendor/jquery.noConflict.js
         - js/vendor/jquery.browser.js
         - js/vendor/jquery.newsblur.js
@@ -121,7 +120,6 @@ javascripts:
         - js/vendor/readability-*.js
     blurblog:
         - js/vendor/jquery-3.6.0.js
-        # - js/vendor/jquery.migrate-*.js
         - js/vendor/jquery.browser.js
         - js/vendor/jquery.color.js
         - js/vendor/underscore-*.js
