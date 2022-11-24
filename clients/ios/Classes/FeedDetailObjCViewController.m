@@ -208,7 +208,7 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
         BOOL saveStory = NO;
         if (gestureRecognizer.numberOfTouches == 2) {
             NSString *twoFingerTap = [preferences stringForKey:@"two_finger_double_tap"];
-            if ([twoFingerTap isEqualToString:@"show_original_story"]) {
+            if ([twoFingerTap isEqualToString:@"open_original_story"]) {
                 openOriginal = YES;
             } else if ([twoFingerTap isEqualToString:@"show_original_text"]) {
                 showText = YES;
@@ -217,9 +217,9 @@ typedef NS_ENUM(NSUInteger, MarkReadShowMenu)
             } else if ([twoFingerTap isEqualToString:@"save_story"]) {
                 saveStory = YES;
             }
-        } else {
+        } else if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
             NSString *doubleTap = [preferences stringForKey:@"double_tap_story"];
-            if ([doubleTap isEqualToString:@"show_original_story"]) {
+            if ([doubleTap isEqualToString:@"open_original_story"]) {
                 openOriginal = YES;
             } else if ([doubleTap isEqualToString:@"show_original_text"]) {
                 showText = YES;
