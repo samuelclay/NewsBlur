@@ -589,7 +589,7 @@
                 console.log(["content selected", this.story_title, this.story_content]);
             } else {
                 var documentClone = document.cloneNode(true);
-                var article = new Readability(documentClone).parse();
+                var article = new window.NB_Readability(documentClone).parse();
                 
                 this.story_title = article.title;
                 this.story_content = article.content;
