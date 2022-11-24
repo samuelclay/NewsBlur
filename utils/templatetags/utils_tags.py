@@ -3,6 +3,7 @@ import re
 import struct
 import datetime
 import random
+from utils import log as logging
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django import template
@@ -299,12 +300,13 @@ def include_javascripts(parser, token):
 class RawJSNode(JavascriptNode):
     def render(self, context):
         output = super(RawJSNode, self).render(context)
-        path = re.search(r"src=\"/(.*?)\"", output)
-        assert path
-        filename = path.group(1)
-        abs_filename = os.path.join(settings.NEWSBLUR_DIR, filename)
-        f = open(abs_filename, 'r')
-        output = f.read()
+        paths = re.findall(r"src=\"/(.*?)\"", output, re.MULTILINE)
+        assert paths
+        output = ""
+        for filename in paths:
+            abs_filename = os.path.join(settings.NEWSBLUR_DIR, filename)
+            f = open(abs_filename, 'r')
+            output += f.read()
         return output
     
 @register.tag
@@ -317,12 +319,13 @@ def include_javascripts_raw(parser, token):
 class RawStylesheetNode(StylesheetNode):
     def render(self, context):
         output = super(RawStylesheetNode, self).render(context)
-        path = re.search(r"href=\"/(.*?)\"", output)
-        assert path
-        filename = path.group(1)
-        abs_filename = os.path.join(settings.NEWSBLUR_DIR, filename)
-        f = open(abs_filename, 'r')
-        output = f.read().replace('"', '\\"').replace('\n', '')
+        paths = re.findall(r"href=\"/(.*?)\"", output, re.MULTILINE)
+        assert paths
+        output = ""
+        for filename in paths:
+            abs_filename = os.path.join(settings.NEWSBLUR_DIR, filename)
+            f = open(abs_filename, 'r')
+            output += f.read().replace('"', '\\"').replace('\n', '')
         return output
     
 @register.tag
