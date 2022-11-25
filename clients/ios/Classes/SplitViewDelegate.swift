@@ -12,7 +12,15 @@ import UIKit
 class SplitViewDelegate: NSObject, UISplitViewControllerDelegate {
     
     func splitViewController(_ svc: UISplitViewController, topColumnForCollapsingToProposedTopColumn proposedTopColumn: UISplitViewController.Column) -> UISplitViewController.Column {
-        return .primary
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            if let navController = svc.viewController(for: .secondary) as? UINavigationController, let detailController = navController.viewControllers[0] as? DetailViewController, let storyController = detailController.currentStoryController, storyController.hasStory {
+                return .secondary
+            } else {
+                return .primary
+            }
+        } else {
+            return .primary
+        }
     }
     
     func splitViewController(_ svc: UISplitViewController, displayModeForExpandingToProposedDisplayMode proposedDisplayMode: UISplitViewController.DisplayMode) -> UISplitViewController.DisplayMode {
