@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "1783AC1D292F06E100BED388"
+               BlueprintIdentifier = "175790592930605500490924"
                BuildableName = "NewsBlur Dev.app"
                BlueprintName = "NewsBlur Dev"
                ReferencedContainer = "container:NewsBlur.xcodeproj">
@@ -44,7 +44,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1783AC1D292F06E100BED388"
+            BlueprintIdentifier = "175790592930605500490924"
             BuildableName = "NewsBlur Dev.app"
             BlueprintName = "NewsBlur Dev"
             ReferencedContainer = "container:NewsBlur.xcodeproj">
