@@ -193,7 +193,7 @@
 		<string>audio</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
+	<string>$(LAUNCH_SCREEN_NAME)</string>
 	<key>UIMainStoryboardFile</key>
 	<string>MainInterface</string>
 	<key>UIPrerenderedIcon</key>

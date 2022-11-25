@@ -416,7 +416,6 @@ SFSafariViewControllerDelegate>  {
 - (UnreadCounts *)splitUnreadCountForFeed:(NSString *)feedId;
 - (UnreadCounts *)splitUnreadCountForFolder:(NSString *)folderName;
 - (NSDictionary *)markVisibleStoriesRead;
-- (BOOL)isFolderCollapsed:(NSString *)folderName;
 
 - (void)markActiveFolderAllRead;
 - (void)markFeedAllRead:(id)feedId;
@@ -452,6 +451,9 @@ SFSafariViewControllerDelegate>  {
 + (int)computeStoryScore:(NSDictionary *)intelligence;
 - (NSString *)extractFolderName:(NSString *)folderName;
 - (NSString *)extractParentFolderName:(NSString *)folderName;
+- (BOOL)hasParentFolder:(NSString *)folderName;
+- (BOOL)isFolderCollapsed:(NSString *)folderName;
+- (BOOL)isFolderOrParentCollapsed:(NSString *)folderName;
 - (NSArray *)parentFoldersForFeed:(NSString *)feedId;
 - (NSString *)feedIdWithoutSearchQuery:(NSString *)feedId;
 - (NSString *)searchQueryForFeedId:(NSString *)feedId;
