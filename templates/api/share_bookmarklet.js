@@ -588,10 +588,11 @@
                 this.story_content = selected;
                 console.log(["content selected", this.story_title, this.story_content]);
             } else {
-                var $readability = $(window.readability.init());
-            
-                this.story_title = $readability.children("h1").text();
-                this.story_content = $("#readability-content", $readability).html();
+                var documentClone = document.cloneNode(true);
+                var article = new window.NB_Readability(documentClone).parse();
+                
+                this.story_title = article.title;
+                this.story_content = article.content;
             }
             
             this.find_video_embeds();

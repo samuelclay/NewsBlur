@@ -320,16 +320,12 @@
     margin-left: 0;
     width: 220px;
 }
-.NB-bookmarklet .NB-bookmarklet-comment-submit.NB-disabled,
-.NB-bookmarklet .NB-bookmarklet-save.NB-disabled {
-    padding: 14px 0 0;
-}
 .NB-bookmarklet .NB-bookmarklet-comment-submit .NB-bookmarklet-accept,
-.NB-bookmarklet .NB-bookmarklet-save .NB-bookmarklet-accept {
+.NB-bookmarklet .NB-bookmarklet-save-button .NB-bookmarklet-accept {
     padding: 0 12px;
 }
 .NB-bookmarklet .NB-bookmarklet-comment-submit .NB-bookmarklet-accept img,
-.NB-bookmarklet .NB-bookmarklet-save .NB-bookmarklet-accept img {
+.NB-bookmarklet .NB-bookmarklet-save-button .NB-bookmarklet-accept img {
     vertical-align: top;
     margin: 0;
 }
