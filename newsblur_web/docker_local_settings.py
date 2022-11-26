@@ -138,6 +138,11 @@ REDIS_STORY = {
     'host': 'db_redis',
     'port': 6579
 }
+# REDIS_STORY_SECONDARY = {
+#     'host': 'db_redis_secondary',
+#     'port': 6679
+# }
+REDIS_STORY_SECONDARY = REDIS_STORY
 REDIS_SESSIONS = {
     'host': 'db_redis',
     'port': 6579

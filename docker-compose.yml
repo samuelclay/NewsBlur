@@ -111,6 +111,19 @@ services:
       - ./docker/volumes/redis:/data
     command: redis-server /etc/redis/redis.conf --port 6579
 
+  # Only used to test REDIS_STORY_HASH_SECONDARY_POOL
+  # db_redis_secondary:
+  #   container_name: db_redis_secondary
+  #   image: redis:latest
+  #   ports:
+  #     - 6679:6679
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./docker/redis/redis.conf:/etc/redis/redis.conf
+  #     - ./docker/redis/redis_docker_secondary.conf:/usr/local/etc/redis/redis_replica.conf
+  #     - redissecondarydata:/data
+  #   command: redis-server /etc/redis/redis.conf --port 6679
+
   db_elasticsearch:
     container_name: db_elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3

@@ -113,7 +113,8 @@ class UserSubscription(models.Model):
     def story_hashes(cls, user_id, feed_ids=None, usersubs=None, read_filter="unread", order="newest", 
                      include_timestamps=False, group_by_feed=False, cutoff_date=None,
                      across_all_feeds=True, store_stories_key=None, offset=0, limit=500):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        # r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_SECONDARY_POOL)
         pipeline = r.pipeline()
         user = User.objects.get(pk=user_id)
         story_hashes = {} if group_by_feed else []
@@ -254,7 +255,7 @@ class UserSubscription(models.Model):
             return story_hashes
         
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', cutoff_date=None):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_SECONDARY_POOL)
         unread_ranked_stories_key  = 'zU:%s:%s' % (self.user_id, self.feed_id)
 
         if offset and r.exists(unread_ranked_stories_key):
@@ -277,7 +278,7 @@ class UserSubscription(models.Model):
     def feed_stories(cls, user_id, feed_ids=None, offset=0, limit=6, 
                      order='newest', read_filter='all', usersubs=None, cutoff_date=None,
                      all_feed_ids=None, cache_prefix=""):
-        rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_SECONDARY_POOL)
         across_all_feeds = False
         
         if order == 'oldest':
@@ -337,7 +338,7 @@ class UserSubscription(models.Model):
     
     def oldest_manual_unread_story_date(self, r=None):
         if not r:
-            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_SECONDARY_POOL)
         
         user_manual_unread_stories_feed_key = f"uU:{self.user_id}:{self.feed_id}"
         oldest_manual_unread = r.zrevrange(user_manual_unread_stories_feed_key, -1, -1, withscores=True)

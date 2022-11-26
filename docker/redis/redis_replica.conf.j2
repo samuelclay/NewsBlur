@@ -1,1 +1,2 @@
 replicaof {{ inventory_hostname|regex_replace('\d+', '') }}.service.nyc1.consul 6379
+replica-read-only no
