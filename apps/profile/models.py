@@ -669,7 +669,7 @@ class Profile(models.Model):
         elif (active_plan == Profile.plan_to_stripe_price('archive') and not self.is_archive):
             self.activate_archive()
         elif (active_plan == Profile.plan_to_paypal_plan_id('pro') and not self.is_pro):
-            self.activate_premium()
+            self.activate_pro()
         elif (active_plan == Profile.plan_to_paypal_plan_id('archive') and not self.is_archive):
             self.activate_archive()
         
