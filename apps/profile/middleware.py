@@ -166,7 +166,7 @@ class SQLLogToConsoleMiddleware:
                 elif query.get('redis_story'):
                     query['sql'] = "~FC%s" % (query['redis_story']['query'])
                 elif query.get('redis_story_secondary'):
-                    query['sql'] = "~FC%s" % (query['redis_story_seconary']['query'])
+                    query['sql'] = "~FC%s" % (query['redis_story_secondary']['query'])
                 elif query.get('redis_sessions'):
                     query['sql'] = "~FC%s" % (query['redis_sessions']['query'])
                 elif query.get('redis_pubsub'):
