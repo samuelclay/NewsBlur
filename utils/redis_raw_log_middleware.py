@@ -88,16 +88,16 @@ class RedisDumpMiddleware(object):
             if isinstance(arg, Redis):
                 redis_connection = arg
                 redis_server_name = redis_connection.connection_pool.connection_kwargs['host']
-                if 'db-redis-user' in redis_server_name:
-                    redis_server_name = 'redis_user'
-                elif 'db-redis-session' in redis_server_name:
-                    redis_server_name = 'redis_session'
-                elif 'db-redis-story' in redis_server_name:
-                    redis_server_name = 'redis_story'
-                elif 'db-redis-pubsub' in redis_server_name:
-                    redis_server_name = 'redis_pubsub'
-                elif 'db_redis' in redis_server_name:
-                    redis_server_name = 'redis_user'
+                # if 'db-redis-user' in redis_server_name:
+                #     redis_server_name = 'redis_user'
+                # elif 'db-redis-session' in redis_server_name:
+                #     redis_server_name = 'redis_session'
+                # elif 'db-redis-story' in redis_server_name:
+                #     redis_server_name = 'redis_story'
+                # elif 'db-redis-pubsub' in redis_server_name:
+                #     redis_server_name = 'redis_pubsub'
+                # elif 'db_redis' in redis_server_name:
+                #     redis_server_name = 'redis_user'
                 continue
             if len(str(arg)) > 100:
                 arg = "[%s bytes]" % len(str(arg))
