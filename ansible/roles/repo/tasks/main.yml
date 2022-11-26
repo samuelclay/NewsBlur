@@ -12,4 +12,4 @@
   git:
     repo: https://github.com/samuelclay/NewsBlur.git
     dest: /srv/newsblur/
-    version: redis-secondary
+    version: master
