@@ -350,8 +350,11 @@ class UserSubscription(models.Model):
         
     @classmethod
     def truncate_river(cls, user_id, feed_ids, read_filter, cache_prefix=""):
-        rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
-        
+        if cache_prefix:
+            rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_SECONDARY_POOL)
+        else:
+            rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+
         feeds_string = ','.join(str(f) for f in sorted(feed_ids))[:30]
         ranked_stories_keys         = '%szU:%s:feeds:%s'  % (cache_prefix, user_id, feeds_string)
         unread_ranked_stories_keys  = '%szhU:%s:feeds:%s' % (cache_prefix, user_id, feeds_string)

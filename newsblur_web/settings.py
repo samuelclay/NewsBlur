@@ -795,7 +795,6 @@ REDIS_POOL                 = redis.ConnectionPool(host=REDIS_USER['host'], port=
 REDIS_ANALYTICS_POOL       = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=2, decode_responses=True)
 REDIS_STATISTICS_POOL      = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=3, decode_responses=True)
 REDIS_FEED_UPDATE_POOL     = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=4, decode_responses=True)
-REDIS_STORY_HASH_TEMP_POOL = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=10, decode_responses=True)
 # REDIS_CACHE_POOL         = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=6) # Duped in CACHES
 REDIS_STORY_HASH_POOL      = redis.ConnectionPool(host=REDIS_STORY['host'], port=REDIS_PORT, db=1, decode_responses=True)
 REDIS_STORY_HASH_SECONDARY_POOL = redis.ConnectionPool(host=REDIS_STORY_SECONDARY['host'], port=REDIS_STORY_SECONDARY['port'], db=1, decode_responses=True)

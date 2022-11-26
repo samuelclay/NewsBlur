@@ -1112,7 +1112,7 @@ class MSocialSubscription(mongo.Document):
     def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, 
                      order='newest', read_filter='all', relative_user_id=None, cache=True,
                      socialsubs=None, cutoff_date=None, dashboard_global=False):
-        rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
+        rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
         if not relative_user_id:
             relative_user_id = user_id
