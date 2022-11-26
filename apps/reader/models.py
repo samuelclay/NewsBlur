@@ -112,9 +112,9 @@ class UserSubscription(models.Model):
     @classmethod
     def story_hashes(cls, user_id, feed_ids=None, usersubs=None, read_filter="unread", order="newest", 
                      include_timestamps=False, group_by_feed=False, cutoff_date=None,
-                     across_all_feeds=True, store_stories_key=None, offset=0, limit=500):
-        # r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_SECONDARY_POOL)
+                     across_all_feeds=True, store_stories_key=None, offset=0, limit=500, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         pipeline = r.pipeline()
         user = User.objects.get(pk=user_id)
         story_hashes = {} if group_by_feed else []
@@ -255,7 +255,7 @@ class UserSubscription(models.Model):
             return story_hashes
         
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', cutoff_date=None):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_SECONDARY_POOL)
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         unread_ranked_stories_key  = 'zU:%s:%s' % (self.user_id, self.feed_id)
 
         if offset and r.exists(unread_ranked_stories_key):
@@ -278,7 +278,10 @@ class UserSubscription(models.Model):
     def feed_stories(cls, user_id, feed_ids=None, offset=0, limit=6, 
                      order='newest', read_filter='all', usersubs=None, cutoff_date=None,
                      all_feed_ids=None, cache_prefix=""):
-        rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_SECONDARY_POOL)
+        if cache_prefix:
+            rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_SECONDARY_POOL)
+        else:
+            rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         across_all_feeds = False
         
         if order == 'oldest':
@@ -317,7 +320,7 @@ class UserSubscription(models.Model):
                                         usersubs=usersubs,
                                         cutoff_date=cutoff_date,
                                         across_all_feeds=across_all_feeds,
-                                        store_stories_key=ranked_stories_keys)
+                                        store_stories_key=ranked_stories_keys, r=rt)
         story_hashes = range_func(ranked_stories_keys, offset, limit)
 
         if read_filter == "unread":
@@ -328,7 +331,7 @@ class UserSubscription(models.Model):
                                                    read_filter="unread", order=order, 
                                                    include_timestamps=True,
                                                    cutoff_date=cutoff_date,
-                                                   store_stories_key=unread_ranked_stories_keys)
+                                                   store_stories_key=unread_ranked_stories_keys, r=rt)
             unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, limit)
         
         rt.expire(ranked_stories_keys, 60*60)
