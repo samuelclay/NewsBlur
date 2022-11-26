@@ -88,6 +88,7 @@ class RedisDumpMiddleware(object):
             if isinstance(arg, Redis):
                 redis_connection = arg
                 redis_server_name = redis_connection.connection_pool.connection_kwargs['host']
+                redis_server_name = redis_server_name.split('.')[0].replace("db-", "").replace("-", "_")
                 # if 'db-redis-user' in redis_server_name:
                 #     redis_server_name = 'redis_user'
                 # elif 'db-redis-session' in redis_server_name:
@@ -113,6 +114,7 @@ class RedisDumpMiddleware(object):
             if isinstance(arg, Pipeline):
                 redis_connection = arg
                 redis_server_name = redis_connection.connection_pool.connection_kwargs['host']
+                redis_server_name = redis_server_name.split('.')[0].replace("db-", "").replace("-", "_")
                 # if 'db-redis-user' in redis_server_name:
                 #     redis_server_name = 'redis_user'
                 # elif 'db-redis-session' in redis_server_name:
