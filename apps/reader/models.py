@@ -338,7 +338,7 @@ class UserSubscription(models.Model):
     
     def oldest_manual_unread_story_date(self, r=None):
         if not r:
-            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_SECONDARY_POOL)
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         
         user_manual_unread_stories_feed_key = f"uU:{self.user_id}:{self.feed_id}"
         oldest_manual_unread = r.zrevrange(user_manual_unread_stories_feed_key, -1, -1, withscores=True)
