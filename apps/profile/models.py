@@ -104,10 +104,10 @@ class Profile(models.Model):
             price = "P-5JM46230U31841226MHZOMZY"
             if settings.DEBUG:
                 price = "P-2EG40290653242115MHZROQQ"
-        # elif plan == "pro":
-        #     price = "price_0KK5cvwdsmP8XBlaZDq068bA"
-        #     if settings.DEBUG:
-        #         price = "price_0KK5twwdsmP8XBlasifbX56Z"
+        elif plan == "pro":
+            price = "price_0KK5cvwdsmP8XBlaZDq068bA"
+            if settings.DEBUG:
+                price = "price_0KK5twwdsmP8XBlasifbX56Z"
         return price
 
     @property
