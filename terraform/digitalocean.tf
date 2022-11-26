@@ -1,15 +1,15 @@
 terraform {
   required_providers {
     digitalocean = {
-      source = "digitalocean/digitalocean"
+      source  = "digitalocean/digitalocean"
       version = "~> 2.0"
     }
   }
 
   backend "s3" {
-    bucket = "newsblur.terraform"
-    key    = "newsblur.terraform.tfstate"
-    region = "us-east-1"
+    bucket                  = "newsblur.terraform"
+    key                     = "newsblur.terraform.tfstate"
+    region                  = "us-east-1"
     shared_credentials_file = "/srv/secrets-newsblur/keys/aws.s3.token"
   }
 }
@@ -69,7 +69,7 @@ resource "digitalocean_ssh_key" "default" {
 resource "digitalocean_droplet" "db-consul" {
   count    = 3
   image    = var.droplet_os
-  name     = "db-consul${count.index+1}"
+  name     = "db-consul${count.index + 1}"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -87,7 +87,7 @@ resource "digitalocean_droplet" "db-consul" {
 resource "digitalocean_droplet" "www" {
   count    = 1
   image    = var.droplet_os
-  name     = "www${count.index+2}"
+  name     = "www${count.index + 2}"
   region   = var.droplet_region
   size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -105,7 +105,7 @@ resource "digitalocean_droplet" "www" {
 resource "digitalocean_droplet" "app-django" {
   count    = 9
   image    = var.droplet_os
-  name     = "app-django${count.index+1}"
+  name     = "app-django${count.index + 1}"
   region   = var.droplet_region
   size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -123,7 +123,7 @@ resource "digitalocean_droplet" "app-django" {
 resource "digitalocean_droplet" "app-counts" {
   count    = 2
   image    = var.droplet_os
-  name     = "app-counts${count.index+1}"
+  name     = "app-counts${count.index + 1}"
   region   = var.droplet_region
   size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -141,7 +141,7 @@ resource "digitalocean_droplet" "app-counts" {
 resource "digitalocean_droplet" "app-push" {
   count    = 2
   image    = var.droplet_os
-  name     = "app-push${count.index+1}"
+  name     = "app-push${count.index + 1}"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -159,7 +159,7 @@ resource "digitalocean_droplet" "app-push" {
 resource "digitalocean_droplet" "app-refresh" {
   count    = 8
   image    = var.droplet_os
-  name     = "app-refresh${count.index+1}"
+  name     = "app-refresh${count.index + 1}"
   region   = var.droplet_region
   size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -194,7 +194,7 @@ resource "digitalocean_droplet" "blog" {
 resource "digitalocean_droplet" "staging-web" {
   count    = 3
   image    = var.droplet_os
-  name     = count.index == 0 ? "staging-web" : "staging-web${count.index+1}"
+  name     = count.index == 0 ? "staging-web" : "staging-web${count.index + 1}"
   region   = var.droplet_region
   size     = var.droplet_size_20
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -210,7 +210,7 @@ resource "digitalocean_droplet" "staging-web" {
 }
 
 resource "digitalocean_droplet" "discovery" {
-  count    = 0 
+  count    = 0
   image    = var.droplet_os
   name     = "discovery"
   region   = var.droplet_region
@@ -230,7 +230,7 @@ resource "digitalocean_droplet" "discovery" {
 resource "digitalocean_droplet" "node-text" {
   count    = 2
   image    = var.droplet_os
-  name     = contains([0], count.index) ? "node-text" : "node-text${count.index+1}"
+  name     = contains([0], count.index) ? "node-text" : "node-text${count.index + 1}"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -248,7 +248,7 @@ resource "digitalocean_droplet" "node-text" {
 resource "digitalocean_droplet" "node-socket" {
   count    = 2
   image    = var.droplet_os
-  name     = "node-socket${count.index+1}"
+  name     = "node-socket${count.index + 1}"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -266,7 +266,7 @@ resource "digitalocean_droplet" "node-socket" {
 resource "digitalocean_droplet" "node-favicons" {
   count    = 2
   image    = var.droplet_os
-  name     = "node-favicons${count.index+1}"
+  name     = "node-favicons${count.index + 1}"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -284,7 +284,7 @@ resource "digitalocean_droplet" "node-favicons" {
 resource "digitalocean_droplet" "node-images" {
   count    = 2
   image    = var.droplet_os
-  name     = "node-images${count.index+1}"
+  name     = "node-images${count.index + 1}"
   region   = var.droplet_region
   size     = var.droplet_size_15
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -380,11 +380,11 @@ resource "digitalocean_droplet" "db-redis-sessions" {
 }
 
 resource "digitalocean_droplet" "db-redis-story" {
-  count    = 2
-  image    = var.droplet_os
-  name     = "db-redis-story${count.index+1}"
-  region   = var.droplet_region
-  size     = contains([1], count.index) ? "m-8vcpu-64gb" : var.redis_story_droplet_size
+  count  = 2
+  image  = var.droplet_os
+  name   = "db-redis-story${count.index + 1}"
+  region = var.droplet_region
+  size   = contains([1], count.index) ? "m-8vcpu-64gb" : var.redis_story_droplet_size
   # size     = var.redis_story_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
@@ -399,8 +399,9 @@ resource "digitalocean_droplet" "db-redis-story" {
 }
 
 resource "digitalocean_droplet" "db-redis-pubsub" {
+  count    = 1
   image    = var.droplet_os
-  name     = "db-redis-pubsub"
+  name     = contains([0], count.index) ? "db-redis-pubsub" : "db-redis-pubsub{count.index+1}"
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -416,11 +417,11 @@ resource "digitalocean_droplet" "db-redis-pubsub" {
 }
 
 resource "digitalocean_droplet" "db-postgres" {
-  count    = 2
-  image    = var.droplet_os
-  name     = contains([0], count.index) ? "db-postgres${count.index+1}" : "db-postgres${count.index+2}"
-  region   = var.droplet_region
-  size     = contains([0], count.index) ? var.droplet_size_160 : var.droplet_size_320
+  count  = 2
+  image  = var.droplet_os
+  name   = contains([0], count.index) ? "db-postgres${count.index + 1}" : "db-postgres${count.index + 2}"
+  region = var.droplet_region
+  size   = contains([0], count.index) ? var.droplet_size_160 : var.droplet_size_320
   # size     = var.droplet_size_240
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
@@ -467,11 +468,11 @@ resource "digitalocean_droplet" "db-postgres" {
 # servers=$(for i in {1..9}; do echo -n "-target=\"digitalocean_droplet.db-mongo-primary[$i]\" " ; done); tf plan -refresh=false `eval echo $servers`
 # 
 resource "digitalocean_droplet" "db-mongo-primary" {
-  count    = 2
-  backups  = contains([0], count.index) ? false : true
-  image    = var.droplet_os
-  name     = "db-mongo-primary${count.index+1}"
-  region   = var.droplet_region
+  count   = 2
+  backups = true
+  image   = var.droplet_os
+  name    = "db-mongo-primary${count.index + 1}"
+  region  = var.droplet_region
   # size     = contains([1], count.index) ? "m3-8vcpu-64gb" : var.mongo_primary_droplet_size
   size     = var.mongo_primary_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -490,20 +491,20 @@ resource "digitalocean_droplet" "db-mongo-primary" {
 resource "digitalocean_volume" "mongo_secondary_volume" {
   count                   = 3
   region                  = "nyc1"
-  name                    = "mongosecondary${count.index+1}"
+  name                    = "mongosecondary${count.index + 1}"
   size                    = 400
   initial_filesystem_type = "xfs"
   description             = "Storage for NewsBlur MongoDB"
 }
 
 resource "digitalocean_droplet" "db-mongo-secondary" {
-  count    = 3
+  count = 3
   # backups  = contains([0], count.index) ? true : false
-  image    = var.droplet_os
-  name     = "db-mongo-secondary${count.index+1}"
-  region   = var.droplet_region
-  size     = var.mongo_secondary_droplet_size
-  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  image      = var.droplet_os
+  name       = "db-mongo-secondary${count.index + 1}"
+  region     = var.droplet_region
+  size       = var.mongo_secondary_droplet_size
+  ssh_keys   = [digitalocean_ssh_key.default.fingerprint]
   volume_ids = [element(digitalocean_volume.mongo_secondary_volume.*.id, count.index)]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -519,20 +520,20 @@ resource "digitalocean_droplet" "db-mongo-secondary" {
 resource "digitalocean_volume" "mongo_analytics_volume" {
   count                   = 1
   region                  = "nyc1"
-  name                    = "mongoanalytics${count.index+2}"
+  name                    = "mongoanalytics${count.index + 2}"
   size                    = 100
   initial_filesystem_type = "xfs"
   description             = "Storage for NewsBlur MongoDB Analytics"
 }
 
 resource "digitalocean_droplet" "db-mongo-analytics" {
-  count    = 1
-  image    = var.droplet_os
-  name     = "db-mongo-analytics${count.index+2}"
-  region   = var.droplet_region
-  size     = var.mongo_analytics_droplet_size
+  count      = 1
+  image      = var.droplet_os
+  name       = "db-mongo-analytics${count.index + 2}"
+  region     = var.droplet_region
+  size       = var.mongo_analytics_droplet_size
   volume_ids = [element(digitalocean_volume.mongo_analytics_volume.*.id, count.index)]
-  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  ssh_keys   = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
@@ -554,13 +555,13 @@ resource "digitalocean_volume" "metrics_volume" {
 }
 
 resource "digitalocean_droplet" "db-metrics" {
-  image    = var.droplet_os
-  name     = "db-metrics"
-  region   = var.droplet_region
-  size     = var.metrics_droplet_size
+  image  = var.droplet_os
+  name   = "db-metrics"
+  region = var.droplet_region
+  size   = var.metrics_droplet_size
   # volume_ids = [digitalocean_volume.metrics_volume.0.id] 
   volume_ids = ["f815908f-e1b7-11eb-a10f-0a58ac145428"] # 100GB volume created outside TF. Remove when upgrading to 200GB
-  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
+  ssh_keys   = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
   }
@@ -594,7 +595,7 @@ resource "digitalocean_droplet" "db-sentry" {
 resource "digitalocean_droplet" "task-celery" {
   count    = 79
   image    = var.droplet_os
-  name     = format("task-celery%02v", count.index+1)
+  name     = format("task-celery%02v", count.index + 1)
   region   = var.droplet_region
   size     = var.droplet_size_10
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -613,7 +614,7 @@ resource "digitalocean_droplet" "task-celery" {
 resource "digitalocean_droplet" "task-work" {
   count    = 3
   image    = var.droplet_os
-  name     = "task-work${count.index+1}"
+  name     = "task-work${count.index + 1}"
   region   = var.droplet_region
   size     = var.droplet_size_10
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
