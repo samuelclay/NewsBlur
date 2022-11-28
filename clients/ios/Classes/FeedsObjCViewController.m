@@ -1467,7 +1467,16 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
 
-    return [[appDelegate.dictFolders objectForKey:folderName] count];
+    NSInteger count = [[appDelegate.dictFolders objectForKey:folderName] count];
+    NSInteger limit = 5000;
+    
+    if (count > limit) {
+        NSLog(@"Folder %@ contains %@ feeds; limiting to %@", folderName, @(count), @(limit));  // log
+        
+        count = limit;
+    }
+    
+    return count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
