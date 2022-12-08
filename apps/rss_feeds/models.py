@@ -454,6 +454,10 @@ class Feed(models.Model):
             without_rss = True
         if url and re.match(r'(https?://)?(www\.)?facebook.com/\w+/?$', url):
             without_rss = True
+        # Turn url @username@domain.com into domain.com/users/username.rss
+        if url and url.startswith('@') and '@' in url[1:]:
+            username, domain = url[1:].split('@')
+            url = f"https://{domain}/users/{username}.rss"
         if url and 'youtube.com/user/' in url:
             username = re.search('youtube.com/user/(\w+)', url).group(1)
             url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
