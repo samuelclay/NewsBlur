@@ -9,7 +9,6 @@
 #import <QuartzCore/QuartzCore.h>
 #import "FeedDetailObjCViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "FeedDetailCollectionCell.h"
 #import "UserProfileViewController.h"
 #import "NSString+HTML.h"
 #import "MBProgressHUD.h"
@@ -60,6 +59,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (readwrite) BOOL inPullToRefresh_;
 @property (nonatomic, strong) NSString *restoringFolder;
 @property (nonatomic, strong) NSString *restoringFeedID;
+@property (nonatomic) FeedDetailTextSize textSize;
 
 @end
 
@@ -1505,6 +1505,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     
     cell.storyDate = [story objectForKey:@"short_parsed_date"];
     cell.storyTimestamp = [[story objectForKey:@"story_timestamp"] integerValue];
+    cell.isGrid = appDelegate.detailViewController.storyTitlesInGrid;
     cell.isSaved = [[story objectForKey:@"starred"] boolValue];
     cell.isShared = [[story objectForKey:@"shared"] boolValue];
     cell.storyHash = story[@"story_hash"];
@@ -2909,7 +2910,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     if (!completelyVisible && numberOfItems > 0 && offsetIndexPath.row < numberOfItems) {
         [feedCollectionView scrollToItemAtIndexPath:offsetIndexPath
                                    atScrollPosition:UICollectionViewScrollPositionTop
-                                           animated:YES];
+                                           animated:NO];
     }
 }
 

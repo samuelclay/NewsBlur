@@ -42,6 +42,8 @@ extern NSString * const ThemeStyleDark;
 - (UIColor *)colorFromLightRGB:(NSInteger)lightRGBValue sepiaRGB:(NSUInteger)sepiaRGBValue mediumRGB:(NSUInteger)mediumRGBValue darkRGB:(NSUInteger)darkRGBValue;
 - (UIColor *)themedColorFromRGB:(NSInteger)rgbValue;
 
++ (UIColor *)colorFromRGB:(NSArray<NSNumber *> *)rgbValues;
+
 - (UIImage *)themedImage:(UIImage *)image;
 
 - (void)updateNavigationController:(UINavigationController *)navigationController;

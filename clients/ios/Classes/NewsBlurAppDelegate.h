@@ -498,6 +498,7 @@ SFSafariViewControllerDelegate>  {
 - (void)queueSavedStory:(NSDictionary *)story;
 - (void)fetchTextForStory:(NSString *)storyHash inFeed:(NSString *)feedId checkCache:(BOOL)checkCache withCallback:(void(^)(NSString *))callback;
 - (void)prepareActiveCachedImages:(FMDatabase *)db;
+- (UIImage *)cachedImageForStoryHash:(NSString *)storyHash;
 - (void)cleanImageCache;
 - (void)deleteAllCachedImages;
 

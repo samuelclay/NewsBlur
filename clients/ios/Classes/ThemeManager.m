@@ -210,6 +210,18 @@ NSString * const ThemeStyleDark = @"dark";
     }
 }
 
++ (UIColor *)colorFromRGB:(NSArray<NSNumber *> *)rgbValues {
+    if (rgbValues.count == 1) {
+        return [ThemeManager.shared themedColorFromRGB:rgbValues[0].integerValue];
+    } else if (rgbValues.count == 2) {
+        return [ThemeManager.shared colorFromLightRGB:rgbValues[0].integerValue darkRGB:rgbValues[1].integerValue];
+    } else if (rgbValues.count == 4) {
+        return [ThemeManager.shared colorFromLightRGB:rgbValues[0].integerValue sepiaRGB:rgbValues[1].integerValue mediumRGB:rgbValues[2].integerValue darkRGB:rgbValues[3].integerValue];
+    } else {
+        @throw [NSException exceptionWithName:@"Invalid parameter to Theme Manager" reason:@"Should be an array of 1, 2, or 4 RGB colors." userInfo:nil];
+    }
+}
+
 - (UIImage *)themedImage:(UIImage *)image {
     if (self.isDarkTheme) {
         CIImage *coreImage = [CIImage imageWithCGImage:image.CGImage];

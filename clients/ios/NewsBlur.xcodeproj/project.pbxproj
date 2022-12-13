@@ -55,6 +55,8 @@
 		17432C831C53438D003F8FD6 /* FeedChooserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17432C821C53438D003F8FD6 /* FeedChooserViewController.m */; };
 		17432C861C5343C0003F8FD6 /* FeedChooserTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 17432C851C5343C0003F8FD6 /* FeedChooserTitleView.m */; };
 		17432C891C534BC6003F8FD6 /* FeedChooserViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 17432C881C534BC6003F8FD6 /* FeedChooserViewCell.m */; };
+		17435D312942DBBA002C126C /* FeedDetailCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17435D302942DBBA002C126C /* FeedDetailCollectionCell.swift */; };
+		17435D322942DBBA002C126C /* FeedDetailCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17435D302942DBBA002C126C /* FeedDetailCollectionCell.swift */; };
 		1745FABB217E7FD400336F24 /* storyDetailViewLight.css in Resources */ = {isa = PBXBuildFile; fileRef = 1745FABA217E7FD400336F24 /* storyDetailViewLight.css */; };
 		174939171C251BFE003D98AA /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 174939151C251BFE003D98AA /* MainInterface.storyboard */; };
 		1749391B1C251BFE003D98AA /* Share Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 174939101C251BFE003D98AA /* Share Extension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -542,7 +544,7 @@
 		1757923C2930605500490924 /* NBURLCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFF683C19D628000081904A /* NBURLCache.m */; };
 		1757923D2930605500490924 /* StoryDetailObjCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7842ECF611D44A530066CF9D /* StoryDetailObjCViewController.m */; };
 		1757923E2930605500490924 /* PINDiskCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2924E21E932D2900FCFA63 /* PINDiskCache.m */; };
-		1757923F2930605500490924 /* FeedDetailCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7843F50411EEB1A000675F64 /* FeedDetailCollectionCell.m */; };
+		1757923F2930605500490924 /* FeedDetailCollectionCellObsoleteObjCEdition.m in Sources */ = {isa = PBXBuildFile; fileRef = 7843F50411EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.m */; };
 		175792402930605500490924 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 784B50EB127E3F68008F90EA /* LoginViewController.m */; };
 		175792412930605500490924 /* StoryPagesCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D017C28B05D9500F2F2DB /* StoryPagesCollectionCell.swift */; };
 		175792422930605500490924 /* NotificationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5ACC231DE5F0C000FBD044 /* NotificationsViewController.m */; };
@@ -952,7 +954,7 @@
 		78095E45128EF37E00230C8E /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78095E44128EF37E00230C8E /* SystemConfiguration.framework */; };
 		78095EC9128F30B500230C8E /* OriginalStoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095EC7128F30B500230C8E /* OriginalStoryViewController.m */; };
 		7842ECF811D44A530066CF9D /* StoryDetailObjCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7842ECF611D44A530066CF9D /* StoryDetailObjCViewController.m */; };
-		7843F50511EEB1A000675F64 /* FeedDetailCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7843F50411EEB1A000675F64 /* FeedDetailCollectionCell.m */; };
+		7843F50511EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.m in Sources */ = {isa = PBXBuildFile; fileRef = 7843F50411EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.m */; };
 		784B50ED127E3F68008F90EA /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 784B50EB127E3F68008F90EA /* LoginViewController.m */; };
 		788EF356127E5BC80088EDC5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 788EF355127E5BC80088EDC5 /* QuartzCore.framework */; };
 		E160F0571C9DAC2C00CB96DF /* UIViewController+HidePopover.m in Sources */ = {isa = PBXBuildFile; fileRef = E160F0561C9DAC2C00CB96DF /* UIViewController+HidePopover.m */; };
@@ -1427,6 +1429,7 @@
 		17432C851C5343C0003F8FD6 /* FeedChooserTitleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedChooserTitleView.m; sourceTree = "<group>"; };
 		17432C871C534BC6003F8FD6 /* FeedChooserViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedChooserViewCell.h; sourceTree = "<group>"; };
 		17432C881C534BC6003F8FD6 /* FeedChooserViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedChooserViewCell.m; sourceTree = "<group>"; };
+		17435D302942DBBA002C126C /* FeedDetailCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailCollectionCell.swift; sourceTree = "<group>"; };
 		1745FABA217E7FD400336F24 /* storyDetailViewLight.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailViewLight.css; path = static/storyDetailViewLight.css; sourceTree = SOURCE_ROOT; };
 		174939101C251BFE003D98AA /* Share Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Share Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		174939161C251BFE003D98AA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -1737,8 +1740,8 @@
 		78095EC7128F30B500230C8E /* OriginalStoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = OriginalStoryViewController.m; sourceTree = "<group>"; };
 		7842ECF511D44A530066CF9D /* StoryDetailObjCViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryDetailObjCViewController.h; sourceTree = "<group>"; };
 		7842ECF611D44A530066CF9D /* StoryDetailObjCViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = StoryDetailObjCViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		7843F50311EEB1A000675F64 /* FeedDetailCollectionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailCollectionCell.h; sourceTree = "<group>"; };
-		7843F50411EEB1A000675F64 /* FeedDetailCollectionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailCollectionCell.m; sourceTree = "<group>"; };
+		7843F50311EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailCollectionCellObsoleteObjCEdition.h; sourceTree = "<group>"; };
+		7843F50411EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailCollectionCellObsoleteObjCEdition.m; sourceTree = "<group>"; };
 		784B50EA127E3F68008F90EA /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		784B50EB127E3F68008F90EA /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		788EF355127E5BC80088EDC5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -2680,8 +2683,9 @@
 				170E3CD624F8AB0D009CE819 /* FeedDetailViewController.swift */,
 				FF4D9074265BE13500792DB3 /* FeedDetailObjCViewController.h */,
 				FF4D9073265BE13500792DB3 /* FeedDetailObjCViewController.m */,
-				7843F50311EEB1A000675F64 /* FeedDetailCollectionCell.h */,
-				7843F50411EEB1A000675F64 /* FeedDetailCollectionCell.m */,
+				17435D302942DBBA002C126C /* FeedDetailCollectionCell.swift */,
+				7843F50311EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.h */,
+				7843F50411EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.m */,
 				FF2D8CE214893BBF00057B80 /* MoveSiteViewController.h */,
 				FF2D8CE314893BBF00057B80 /* MoveSiteViewController.m */,
 				FF5ACC221DE5F0C000FBD044 /* NotificationsViewController.h */,
@@ -4838,7 +4842,7 @@
 				1757923C2930605500490924 /* NBURLCache.m in Sources */,
 				1757923D2930605500490924 /* StoryDetailObjCViewController.m in Sources */,
 				1757923E2930605500490924 /* PINDiskCache.m in Sources */,
-				1757923F2930605500490924 /* FeedDetailCollectionCell.m in Sources */,
+				1757923F2930605500490924 /* FeedDetailCollectionCellObsoleteObjCEdition.m in Sources */,
 				175792402930605500490924 /* LoginViewController.m in Sources */,
 				175792412930605500490924 /* StoryPagesCollectionCell.swift in Sources */,
 				175792422930605500490924 /* NotificationsViewController.m in Sources */,
@@ -4857,6 +4861,7 @@
 				1757924F2930605500490924 /* BaseViewController.m in Sources */,
 				175792502930605500490924 /* IASKSwitch.m in Sources */,
 				175792512930605500490924 /* NBBarButtonItem.m in Sources */,
+				17435D322942DBBA002C126C /* FeedDetailCollectionCell.swift in Sources */,
 				175792522930605500490924 /* MoveSiteViewController.m in Sources */,
 				175792532930605500490924 /* FirstTimeUserViewController.m in Sources */,
 				175792542930605500490924 /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
@@ -5014,7 +5019,7 @@
 				FFFF683D19D628000081904A /* NBURLCache.m in Sources */,
 				7842ECF811D44A530066CF9D /* StoryDetailObjCViewController.m in Sources */,
 				FF2924E61E932D2900FCFA63 /* PINDiskCache.m in Sources */,
-				7843F50511EEB1A000675F64 /* FeedDetailCollectionCell.m in Sources */,
+				7843F50511EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.m in Sources */,
 				784B50ED127E3F68008F90EA /* LoginViewController.m in Sources */,
 				177D017D28B05D9500F2F2DB /* StoryPagesCollectionCell.swift in Sources */,
 				FF5ACC241DE5F0C000FBD044 /* NotificationsViewController.m in Sources */,
@@ -5033,6 +5038,7 @@
 				FFD1D7311459B63500E46F89 /* BaseViewController.m in Sources */,
 				FF34FD6D1E9D93CB0062F8ED /* IASKSwitch.m in Sources */,
 				FF9B8BB217F2351A0036A41C /* NBBarButtonItem.m in Sources */,
+				17435D312942DBBA002C126C /* FeedDetailCollectionCell.swift in Sources */,
 				FF2D8CE514893BC000057B80 /* MoveSiteViewController.m in Sources */,
 				433323CD158968ED0025064D /* FirstTimeUserViewController.m in Sources */,
 				FF34FD6B1E9D93CB0062F8ED /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
