@@ -6,8 +6,14 @@
 //  Copyright 2010 NewsBlur. All rights reserved.
 //
 
+
+//
+// ⚠️ Note:this code is obsolete; it is in the process of being replaced by Swift code. ⚠️
+//
+
+
 #import "NewsBlurAppDelegate.h"
-#import "FeedDetailCollectionCell.h"
+#import "FeedDetailCollectionCellObsoleteObjCEdition.h"
 #import "DashboardViewController.h"
 #import "ABTableViewCell.h"
 #import "UIView+TKCategory.h"
@@ -21,7 +27,7 @@ static UIFont *indicatorFont = nil;
 
 @class FeedDetailViewController;
 
-@interface FeedDetailCollectionCell ()
+@interface FeedDetailCollectionCellObsoleteObjCEdition ()
 
 @property (nonatomic, strong) UIImageView *siteImageView;
 
@@ -41,26 +47,26 @@ static UIFont *indicatorFont = nil;
 
 @end
 
-@implementation FeedDetailCollectionCell
+@implementation FeedDetailCollectionCellObsoleteObjCEdition
 
 #define rightMargin 18
 
 + (void)initialize {
-    if (self == [FeedDetailCollectionCell class]) {
+    if (self == [FeedDetailCollectionCellObsoleteObjCEdition class]) {
         textFont = [UIFont boldSystemFontOfSize:18];
         indicatorFont = [UIFont boldSystemFontOfSize:12];
     }
 }
 
-- (instancetype)initWithFrame:(CGRect)frame {
-    if (self = [super initWithFrame:frame]) {
-        self.isReadAvailable = YES;
-        
-        // Clear out half pixel border on top and bottom that the draw code can't touch
-        UIView *selectedBackground = [[UIView alloc] init];
-        [selectedBackground setBackgroundColor:[UIColor clearColor]];
-        self.selectedBackgroundView = selectedBackground;
+- (void)setupViewsIfNeeded {
+    if (self.titleLabel != nil) {
+        return;
     }
+    
+    // Clear out half pixel border on top and bottom that the draw code can't touch
+    UIView *selectedBackground = [[UIView alloc] init];
+    [selectedBackground setBackgroundColor:[UIColor clearColor]];
+    self.selectedBackgroundView = selectedBackground;
     
     self.siteImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
     self.siteLabel = [[UILabel alloc] initWithFrame:CGRectZero];
@@ -92,14 +98,16 @@ static UIFont *indicatorFont = nil;
     self.authorLabel.translatesAutoresizingMaskIntoConstraints = false;
     self.dateLabel.translatesAutoresizingMaskIntoConstraints = false;
     
+    NSLayoutConstraint *imageHeight = [self.previewImageView.heightAnchor constraintEqualToConstant:100];
+    
     [NSLayoutConstraint activateConstraints:@[
-        [self.previewImageView.heightAnchor constraintEqualToConstant:100],
+        imageHeight,
         [self.previewImageView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor],
         [self.previewImageView.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor],
         [self.previewImageView.trailingAnchor constraintEqualToAnchor: self.contentView.trailingAnchor]]];
     
     [NSLayoutConstraint activateConstraints:@[
-        [self.titleLabel.topAnchor constraintEqualToAnchor:self.previewImageView.bottomAnchor constant:10],
+        [self.titleLabel.topAnchor constraintEqualToAnchor:self.previewImageView.bottomAnchor constant:1],
         [self.titleLabel.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor constant:10],
         [self.titleLabel.trailingAnchor constraintEqualToAnchor: self.contentView.trailingAnchor constant:-10]]];
     
@@ -108,8 +116,6 @@ static UIFont *indicatorFont = nil;
         [self.contentLabel.bottomAnchor constraintEqualToAnchor:self.self.contentView.bottomAnchor constant:-10],
         [self.contentLabel.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor constant:10],
         [self.contentLabel.trailingAnchor constraintEqualToAnchor: self.contentView.trailingAnchor constant:-10]]];
-    
-    return self;
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -197,6 +203,10 @@ static UIFont *indicatorFont = nil;
 }
 
 - (void)updateConfigurationUsingState:(UICellConfigurationState *)state {
+    [self setupViewsIfNeeded];
+    
+    self.isReadAvailable = YES;
+    
     CGRect contentFrame = self.contentView.frame;
     BOOL isHighlighted = self.highlighted || self.selected;
     CGFloat riverPadding = -10;
@@ -368,9 +378,9 @@ static UIFont *indicatorFont = nil;
         textColor = UIColorFromLightDarkRGB(0x686868, 0xA0A0A0);
     }
     CGFloat boundingRows = self.isShort ? 1.5 : 4;
-    if (!self.isShort && (self.textSize == FeedDetailTextSizeMedium || self.textSize == FeedDetailTextSizeLong)) {
-        boundingRows = MIN(((contentFrame.size.height - 24) / font.pointSize) - 2, 4);
-    }
+//    if (!self.isShort && (self.textSize == FeedDetailTextSizeMedium || self.textSize == FeedDetailTextSizeLong)) {
+//        boundingRows = MIN(((contentFrame.size.height - 24) / font.pointSize) - 2, 4);
+//    }
     CGSize theSize = [self.storyTitle
                       boundingRectWithSize:CGSizeMake(rect.size.width, font.pointSize * boundingRows)
                       options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
@@ -427,9 +437,9 @@ static UIFont *indicatorFont = nil;
         int storyContentWidth = rect.size.width;
         CGFloat boundingRows = self.isShort ? 1.5 : 3;
         
-        if (!self.isShort && (self.textSize == FeedDetailTextSizeMedium || self.textSize == FeedDetailTextSizeLong)) {
-            boundingRows = (contentFrame.size.height - 30 - comfortMargin - CGRectGetMaxY(storyTitleFrame)) / font.pointSize;
-        }
+//        if (!self.isShort && (self.textSize == FeedDetailTextSizeMedium || self.textSize == FeedDetailTextSizeLong)) {
+//            boundingRows = (contentFrame.size.height - 30 - comfortMargin - CGRectGetMaxY(storyTitleFrame)) / font.pointSize;
+//        }
         
         CGSize contentSize = [self.storyContent
                               boundingRectWithSize:CGSizeMake(storyContentWidth, font.pointSize * boundingRows)
@@ -463,7 +473,7 @@ static UIFont *indicatorFont = nil;
         self.contentLabel.text = self.storyContent;
         self.contentLabel.textColor = textColor;
         self.contentLabel.font = font;
-        self.contentLabel.numberOfLines = self.textSize == FeedDetailTextSizeShort ? 2 : self.textSize == FeedDetailTextSizeMedium ? 4 : 0;
+//        self.contentLabel.numberOfLines = self.textSize == FeedDetailTextSizeShort ? 2 : self.textSize == FeedDetailTextSizeMedium ? 4 : 0;
     }
     
     // story date

@@ -211,14 +211,17 @@ extension FeedDetailViewController {
 //            cell.frame.size.height = self.heightForRow(at: indexPath)
             
             self.prepareFeedCell(cell, indexPath: indexPath)
+            cell.setNeedsUpdateConfiguration()
         }
         
         let storyCellRegistration = UICollectionView.CellRegistration<StoryPagesCollectionCell, Int> { (cell, indexPath, identifier) in
             self.prepareStoryCell(cell, indexPath: indexPath)
+            cell.setNeedsUpdateConfiguration()
         }
         
         let loadingCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Int> { (cell, indexPath, identifier) in
             self.prepareLoading(cell, indexPath: indexPath)
+            cell.setNeedsUpdateConfiguration()
         }
         
         dataSource = UICollectionViewDiffableDataSource<SectionLayoutKind, Int>(collectionView: feedCollectionView) {

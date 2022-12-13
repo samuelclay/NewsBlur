@@ -4670,6 +4670,10 @@
 //    NSLog(@"Pre-cached %d images", cached);
 }
 
+- (UIImage *)cachedImageForStoryHash:(NSString *)storyHash {
+    return self.cachedStoryImages[storyHash];
+}
+
 - (void)cleanImageCache {
     OfflineCleanImages *operationCleanImages = [[OfflineCleanImages alloc] init];
     if (!offlineCleaningQueue) {

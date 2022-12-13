@@ -9,15 +9,21 @@
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
 
-typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
-{
-    FeedDetailTextSizeTitleOnly = 0,
-    FeedDetailTextSizeShort,
-    FeedDetailTextSizeMedium,
-    FeedDetailTextSizeLong
-};
+//typedef NS_ENUM(NSUInteger, FeedDetailTextSizeObjC)
+//{
+//    FeedDetailTextSizeTitleOnly = 0,
+//    FeedDetailTextSizeShort,
+//    FeedDetailTextSizeMedium,
+//    FeedDetailTextSizeLong
+//};
 
-@interface FeedDetailCollectionCell : UICollectionViewCell
+
+//
+// ⚠️ Note:this code is obsolete; it is in the process of being replaced by Swift code. ⚠️
+//
+
+
+@interface FeedDetailCollectionCellObsoleteObjCEdition : UICollectionViewCell
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
 
@@ -44,7 +50,7 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 @property (readwrite) BOOL isRiverOrSocial;
 @property (readwrite) BOOL hasAlpha;
 
-@property (nonatomic) FeedDetailTextSize textSize;
+//@property (nonatomic) FeedDetailTextSizeSwift textSize;
 
 - (void)setupGestures;
 

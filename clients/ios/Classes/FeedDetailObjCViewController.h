@@ -12,10 +12,10 @@
 #import "Utilities.h"
 #import "NBNotifier.h"
 #import "MCSwipeTableViewCell.h"
-#import "FeedDetailCollectionCell.h"
 
 @class NewsBlurAppDelegate;
 @class MCSwipeTableViewCell;
+@class FeedDetailCollectionCell;
 
 @interface FeedDetailObjCViewController : BaseViewController
 <UIPopoverControllerDelegate,
@@ -62,7 +62,6 @@
 @property (nonatomic, readwrite) BOOL finishedAnimatingIn;
 @property (nonatomic, readwrite) BOOL isOnline;
 @property (nonatomic, readwrite) BOOL isShowingFetching;
-@property (nonatomic) FeedDetailTextSize textSize;
 @property (nonatomic, readwrite) BOOL showImagePreview;
 @property (nonatomic, readwrite) BOOL invalidateFontCache;
 @property (nonatomic, readwrite) BOOL cameFromFeedsList;
