@@ -4331,8 +4331,7 @@ body {
     background-image: linear-gradient(center top , #D6D9D0, #C7CABF);
 }
 .NB-story-comments-public-teaser b {
-    padding: 0 1px;
-    font-size: 12px;
+    padding: 0 6px;
 }
 .NB-story-comments-expand-icon {
     background: transparent url("/media/embed/icons/circular/folder_expand.png") no-repeat center center;
