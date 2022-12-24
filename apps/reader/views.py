@@ -86,7 +86,7 @@ ALLOWED_SUBDOMAINS = [
 
 def get_subdomain(request):
     host = request.META.get('HTTP_HOST')
-    if host and host.count(".") == 2:
+    if host and host.count(".") >= 2:
         return host.split(".")[0]
     else:
         return None
