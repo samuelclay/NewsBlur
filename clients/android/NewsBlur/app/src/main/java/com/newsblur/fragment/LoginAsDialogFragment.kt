@@ -29,9 +29,8 @@ class LoginAsDialogFragment : DialogFragment() {
     lateinit var dbHelper: BlurDatabaseHelper
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(requireActivity())
+        val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(R.string.loginas_title)
-        val layoutInflater = LayoutInflater.from(requireActivity())
         val view = layoutInflater.inflate(R.layout.loginas_dialog, null)
         val binding: LoginasDialogBinding = LoginasDialogBinding.bind(view)
 
@@ -42,15 +41,15 @@ class LoginAsDialogFragment : DialogFragment() {
                     doInBackground = {
                         val result = apiManager.loginAs(username)
                         if (result) {
-                            PrefsUtils.clearPrefsAndDbForLoginAs(requireActivity(), dbHelper)
+                            PrefsUtils.clearPrefsAndDbForLoginAs(requireContext(), dbHelper)
                             apiManager.updateUserProfile()
                         }
                         result
                     },
                     onPostExecute = {
                         if (it) {
-                            val startMain = Intent(requireActivity(), Main::class.java)
-                            requireActivity().startActivity(startMain)
+                            val startMain = Intent(requireContext(), Main::class.java)
+                            requireContext().startActivity(startMain)
                         } else {
                             UIUtils.safeToast(requireActivity(), "Login as $username failed", Toast.LENGTH_LONG)
                         }
