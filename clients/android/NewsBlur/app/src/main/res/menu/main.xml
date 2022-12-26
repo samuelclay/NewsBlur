@@ -27,6 +27,11 @@
         android:title="@string/menu_notifications"
         app:showAsAction="never" />
 
+    <item android:id="@+id/menu_newsletters"
+        android:title="@string/menu_newsletters"
+        app:showAsAction="never"
+        android:visible="false" />
+
     <item android:id="@+id/menu_text_size"
         android:title="@string/menu_text_size" >
         <menu>
