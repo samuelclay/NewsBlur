@@ -233,7 +233,7 @@
     <string name="menu_feedback_email">Email a bug report</string>
     <string name="menu_theme_choose">Theme</string>
     <string name="menu_spacing">Spacing</string>
-    <string name="menu_premium_account">Premium subscription…</string>
+    <string name="menu_subscription">Subscription…</string>
 
     <string name="description_add_new_folder_icon">Add new folder icon</string>
 
@@ -286,25 +286,40 @@
     <string name="premium_subscribers_folder">Reading by folder is only available to</string>
     <string name="premium_subscribers_search">Search is only available to</string>
     <string name="premium_subscribers">premium subscribers</string>
-    <string name="premium_toolbar_title">NewsBlur Premium</string>
-    <string name="premium_title_going_premium">Thank you so much for going premium!</string>
-    <string name="premium_title_gone_premium">Thank you for going premium!</string>
-    <string name="premium_subscription_renewal">Your premium subscription is set to\nrenew on %s</string>
-    <string name="premium_subscription_expiration">Your premium subscription is set\nto expire on %s</string>
-    <string name="premium_subscription_no_expiration">Your premium subscription is set\nto never expire. Whoa!</string>
-    <string name="premium_subtitle">Upgrading to a NewsBlur premium subscription gives you all of these features. Payments will be charged to your Play Store account at confirmation of purchase. Subscription renew unless auto-renew is turned off at least 24 hours before the end of the current period. Cancel at any time from Account Settings in Play Store.</string>
+    <string name="subscription_toolbar_title">NewsBlur Subscription</string>
+<!--    <string name="premium_title_going_premium">Thank you so much for going premium!</string>-->
+    <string name="thank_you_for_subscribing">Thank you for subscribing!</string>
+    <string name="premium_subscription_renewal">Your subscription is set to\nrenew on %s</string>
+    <string name="premium_subscription_expiration">Your subscription is set\nto expire on %s</string>
+    <string name="premium_subscription_no_expiration">Your subscription is set\nto never expire. Whoa!</string>
+<!--    <string name="premium_subtitle">Upgrading to a NewsBlur premium subscription gives you all of these features. Payments will be charged to your Play Store account at confirmation of purchase. Subscription renew unless auto-renew is turned off at least 24 hours before the end of the current period. Cancel at any time from Account Settings in Play Store.</string>-->
     <string name="premium_policies"><![CDATA[See NewsBlur\'s <a href="https://newsblur.com/privacy">privacy policy</a> and <a href="https://newsblur.com/tos">terms of use</a> for details.]]></string>
+    <string name="premium_subscription_header">Premium Subscription</string>
+    <string name="archive_subscription_header">Premium Archive Subscription</string>
     <string name="premium_subscription_title">NewsBlur Premium Subscription</string>
+    <string name="archive_subscription_title">NewsBlur Premium Archive</string>
     <string name="premium_subscription_price">$35.99 per year ($3.00/month)</string>
-    <string name="premium_subscription_details_error">Error retrieving subscription details</string>
-    <string name="premium_sync">Sites updated up to 10x more often</string>
+    <string name="premium_subscription_active">Your premium subscription is active</string>
+    <string name="subscription_details_error">Error retrieving subscription details</string>
+    <string name="no_subscription_available">No subscription available</string>
+
+    <string name="premium_enable_sites">Enable every site by going premium</string>
+    <string name="premium_sync">Sites updated up to 5x more often</string>
     <string name="premium_read_by_folder">River of News (reading by folder)</string>
     <string name="premium_search">Search sites and folders</string>
     <string name="premium_searchable_tags">Save stories with searchable tags</string>
     <string name="premium_privacy_options">Privacy options for your blurblog</string>
-    <string name="premium_custom_rss">Custom RSS feeds for folders and saves stories</string>
+    <string name="premium_custom_rss">Custom RSS feeds for saved stories</string>
     <string name="premium_text_view">Text view conveniently extracts the story</string>
-    <string name="premium_shiloh">You feed Shiloh, my poor, hungry dog, for a month</string>
+    <string name="premium_shiloh">You feed Lyric, NewsBlur\'s hungry hound, for 6 days</string>
+
+    <string name="archive_everything_premium">Everything in the premium subscription, of course</string>
+    <string name="archive_marked_as_read">Choose when stories are automatically marked as read</string>
+    <string name="archive_story_searchable_forever">Every story from every site is archived and searchable forever</string>
+    <string name="archive_back_filled">Feeds that support paging are back-filled in for a complete archive</string>
+    <string name="archive_export_trained_stories">Export trained stories from folders as RSS feeds</string>
+    <string name="archive_stories_unread_forever">Stories can stay unread forever</string>
+    <string name="archive_subscription_active">Your archive subscription is active</string>
 
     <string name="settings_cat_offline">Offline reading</string>
     <string name="settings_enable_offline">Download stories</string>

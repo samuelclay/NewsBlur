@@ -42,6 +42,22 @@
         <item name="android:background">@color/gray30</item>
     </style>
 
+    <style name="subscriptionHeader">
+        <item name="android:background">@color/bar_background</item>
+        <item name="android:textColor">@color/gray30</item>
+    </style>
+    <style name="subscriptionHeader.dark">
+        <item name="android:background">@color/dark_bar_background</item>
+        <item name="android:textColor">@color/gray55</item>
+    </style>
+
+    <style name="subscriptionIcon">
+        <item name="tint">@color/gray30</item>
+    </style>
+    <style name="subscriptionIcon.dark">
+        <item name="tint">@color/gray55</item>
+    </style>
+
     <style name="selectorFolderParent">
         <item name="android:paddingTop">2dp</item>
         <item name="android:paddingBottom">2dp</item>

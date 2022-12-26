@@ -240,7 +240,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (q.length() < 1) {
             updateFleuron(false);
             q = null;
-        } else if (!PrefsUtils.getIsPremium(this)) {
+        } else if (!PrefsUtils.hasSubscription(this)) {
             updateFleuron(true);
             return;
         }
@@ -266,7 +266,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             binding.footerFleuron.textSubscription.setText(R.string.premium_subscribers_search);
             binding.footerFleuron.containerSubscribe.setVisibility(View.VISIBLE);
             binding.footerFleuron.getRoot().setVisibility(View.VISIBLE);
-            binding.footerFleuron.containerSubscribe.setOnClickListener(view -> UIUtils.startPremiumActivity(this));
+            binding.footerFleuron.containerSubscribe.setOnClickListener(view -> UIUtils.startSubscriptionActivity(this));
         } else {
 	        transaction.show(itemSetFragment);
             binding.footerFleuron.containerSubscribe.setVisibility(View.GONE);

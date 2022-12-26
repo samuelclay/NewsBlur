@@ -162,7 +162,7 @@ public class ItemSetFragment extends NbFragment {
         bottomProgressView.setColors(colorsArray);
 
         fleuronBinding.getRoot().setVisibility(View.INVISIBLE);
-        fleuronBinding.containerSubscribe.setOnClickListener(view -> UIUtils.startPremiumActivity(requireContext()));
+        fleuronBinding.containerSubscribe.setOnClickListener(view -> UIUtils.startSubscriptionActivity(requireContext()));
 
         binding.itemgridfragmentGrid.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
             @Override
@@ -311,7 +311,7 @@ public class ItemSetFragment extends NbFragment {
     private void updateLoadingIndicators() {
         calcFleuronPadding();
 
-        if (cursorSeenYet && adapter.getRawStoryCount() > 0 && UIUtils.needsPremiumAccess(requireContext(), getFeedSet())) {
+        if (cursorSeenYet && adapter.getRawStoryCount() > 0 && UIUtils.needsSubscriptionAccess(requireContext(), getFeedSet())) {
             fleuronBinding.getRoot().setVisibility(View.VISIBLE);
             fleuronBinding.containerSubscribe.setVisibility(View.VISIBLE);
             binding.topLoadingThrob.setVisibility(View.INVISIBLE);
@@ -447,7 +447,7 @@ public class ItemSetFragment extends NbFragment {
         if (dy < 1) return;
 
         // skip fetching more stories if premium access is required
-        if (UIUtils.needsPremiumAccess(requireContext(), getFeedSet()) && adapter.getItemCount() >= 3) return;
+        if (UIUtils.needsSubscriptionAccess(requireContext(), getFeedSet()) && adapter.getItemCount() >= 3) return;
 
         ensureSufficientStories();
 

@@ -163,7 +163,7 @@ class MainContextMenuDelegateImpl(
             false
         }
         R.id.menu_premium_account -> {
-            val intent = Intent(activity, Premium::class.java)
+            val intent = Intent(activity, SubscriptionActivity::class.java)
             activity.startActivity(intent)
             true
         }

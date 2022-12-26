@@ -128,7 +128,7 @@
             android:name=".activity.FolderReading"/>
 
         <activity
-            android:name=".activity.Premium" />
+            android:name=".activity.SubscriptionActivity" />
 
         <activity
             android:name=".activity.MuteConfig"

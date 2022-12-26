@@ -100,6 +100,7 @@ public class NBSyncService extends JobService {
 
     public volatile static int authFails = 0;
     public volatile static Boolean isPremium = null;
+    public volatile static Boolean isArchive = null;
     public volatile static Boolean isStaff = null;
 
     private static long lastFeedCount = 0L;
@@ -552,9 +553,11 @@ public class NBSyncService extends JobService {
             long startTime = System.currentTimeMillis();
 
             isPremium = feedResponse.isPremium;
+            isArchive = feedResponse.isArchive;
             isStaff = feedResponse.isStaff;
 
             PrefsUtils.setPremium(this, feedResponse.isPremium, feedResponse.premiumExpire);
+            PrefsUtils.setArchive(this, feedResponse.isArchive, feedResponse.premiumExpire);
 
             // note all feeds that belong to some folder so we can find orphans
             for (Folder folder : feedResponse.folders) {
