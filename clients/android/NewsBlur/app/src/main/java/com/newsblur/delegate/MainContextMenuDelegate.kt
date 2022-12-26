@@ -13,6 +13,7 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.fragment.FolderListFragment
 import com.newsblur.fragment.LoginAsDialogFragment
 import com.newsblur.fragment.LogoutDialogFragment
+import com.newsblur.fragment.NewslettersFragment
 import com.newsblur.service.NBSyncService
 import com.newsblur.util.ListTextSize
 import com.newsblur.util.ListTextSize.Companion.fromSize
@@ -180,6 +181,11 @@ class MainContextMenuDelegateImpl(
         R.id.menu_notifications -> {
             val intent = Intent(activity, NotificationsActivity::class.java)
             activity.startActivity(intent)
+            true
+        }
+        R.id.menu_newsletters -> {
+            val newFragment: DialogFragment = NewslettersFragment()
+            newFragment.show(activity.supportFragmentManager, NewslettersFragment::class.java.name)
             true
         }
         else -> false

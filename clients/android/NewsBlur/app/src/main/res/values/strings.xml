@@ -269,6 +269,11 @@
     <string name="feed_opens">%d opens</string>
     <string name="feed_stories_per_month">%d stories/month</string>
 
+    <string name="forwarding_email_address">Forwarding email address</string>
+    <string name="setup_instructions">Setup instructions \u25bc</string>
+    <string name="setup_instructions_details">To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown above.\n\nIn Gmail, go to Settings > Forwarding and click on Add a forwarding address. Add your custom NewsBlur email address.\n\nGmail will walk you through confirming the email address. You\'ll want to come back to NewsBlur and look for the confirmation email under the "Newsletters" folder.\n\nNext, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur.</string>
+    <string name="copy_email">Copy email</string>
+
     <string name="import_export">Import/Export…</string>
     <string name="settings">Preferences…</string>
     <string name="menu_mute_sites">Mute Sites…</string>
@@ -279,6 +284,7 @@
     <string name="title_widget_setup">Tap to setup in NewsBlur</string>
     <string name="title_no_subscriptions">No active subscriptions detected</string>
     <string name="title_widget_loading">Loading…</string>
+    <string name="menu_newsletters">Newsletters…</string>
 
     <string name="import_export_title">Import/Export OPML</string>
     <string name="notifications_title">Notifications</string>
