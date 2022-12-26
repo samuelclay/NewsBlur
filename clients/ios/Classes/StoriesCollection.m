@@ -13,6 +13,12 @@
 #import "FMDatabase.h"
 #import "Utilities.h"
 
+@interface StoriesCollection ()
+
+@property (nonatomic, strong) NSMutableDictionary *recentlyReadHashes;
+
+@end
+
 @implementation StoriesCollection
 
 @synthesize appDelegate;
@@ -46,6 +52,7 @@
         self.visibleUnreadCount = 0;
         self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
         self.activeClassifiers = [NSMutableDictionary dictionary];
+        self.recentlyReadHashes = [NSMutableDictionary dictionary];
     }
 
     return self;
@@ -317,7 +324,7 @@
         } else if ([activeFolder isEqualToString:@"river_global"]) {
             return @"Global Shared Stories";
         } else if ([activeFolder isEqualToString:@"everything"]) {
-            return @"All Stories";
+            return @"All Site Stories";
         } else if ([activeFolder isEqualToString:@"infrequent"]) {
             return @"Infrequent Site Stories";
         } else if (isSavedView && activeSavedStoryTag) {
@@ -388,17 +395,28 @@
         NSLog(@" ***> ERROR: No story found for syncStoryAsRead!");
         return;
     }
+    NSString *hash = story[@"story_hash"];
+    NSString *title = story[@"story_title"];
+    
+    if (self.recentlyReadHashes[hash]) {
+        NSLog(@"🔧 trying to sync as read when already read: %@: %@", hash, title);  // log
+        return;
+    }
+    self.recentlyReadHashes[hash] = [NSString stringWithFormat:@"IN PROGRESS - %@", title];
+    
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
                            self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    [params setObject:[story objectForKey:@"story_hash"]
+    [params setObject:hash
                forKey:@"story_hash"];
     [params setObject:[story objectForKey:@"story_feed_id"]
                forKey:@"story_feed_id"];
     
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        self.recentlyReadHashes[hash] = [NSString stringWithFormat:@"SYNCED - %@", title];
         [self finishMarkAsRead:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        self.recentlyReadHashes[hash] = nil;
         [self failedMarkAsRead:params];
     }];
 }
@@ -415,17 +433,19 @@
 }
 
 - (void)syncStoryAsUnread:(NSDictionary *)story {
+    NSString *hash = story[@"story_hash"];
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unread",
                            self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     
-    [params setObject:[story objectForKey:@"story_hash"]
+    [params setObject:hash
                    forKey:@"story_id"];
     [params setObject:[story objectForKey:@"story_feed_id"]
                    forKey:@"feed_id"];
     
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAsUnread:responseObject];
+        self.recentlyReadHashes[hash] = nil;
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedMarkAsUnread:params];
     }];

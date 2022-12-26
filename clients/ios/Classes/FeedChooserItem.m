@@ -58,7 +58,7 @@
 - (UIImage *)icon {
     if (!_icon) {
         if (!self.identifier) {
-            self.icon = [UIImage imageNamed:@"g_icn_folder.png"];
+            self.icon = [UIImage imageNamed:@"folder-open"];
         } else {
             self.icon = [self.appDelegate getFavicon:[self.identifier description] isSocial:NO isSaved:NO];
         }

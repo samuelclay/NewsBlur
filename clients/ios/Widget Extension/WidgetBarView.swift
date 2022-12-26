@@ -35,7 +35,7 @@ struct WidgetBarView: View {
     }
     
 //    override func draw(_ rect: CGRect) {
-//        guard let leftColor = leftColor, let rightColor = rightColor, let context = UIGraphicsGetCurrentContext() else {
+//        guard let leftColor, let rightColor = rightColor, let context = UIGraphicsGetCurrentContext() else {
 //            return
 //        }
 //

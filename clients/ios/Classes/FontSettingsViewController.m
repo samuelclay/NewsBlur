@@ -268,9 +268,9 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        return 13;
-    } else {
         return 12;
+    } else {
+        return 11;
     }
 }
 
@@ -280,17 +280,17 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
     NSUInteger iPadOffset = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? 0 : 1;
     
-    if (indexPath.row == 7) {
+    if (indexPath.row == 6) {
         return [self makeFontSizeTableCell];
-    } else if (indexPath.row == 8) {
+    } else if (indexPath.row == 7) {
         return [self makeLineSpacingTableCell];
-    } else if (indexPath.row == 9 && iPadOffset == 0) {
+    } else if (indexPath.row == 8 && iPadOffset == 0) {
         return [self makeFullScreenTableCell];
-    } else if (indexPath.row == 10 - iPadOffset) {
+    } else if (indexPath.row == 9 - iPadOffset) {
         return [self makeAutoscrollTableCell];
-    } else if (indexPath.row == 11 - iPadOffset) {
+    } else if (indexPath.row == 10 - iPadOffset) {
         return [self makeScrollOrientationTableCell];
-    } else if (indexPath.row == 12 - iPadOffset) {
+    } else if (indexPath.row == 11 - iPadOffset) {
         return [self makeThemeTableCell];
     }
     
@@ -314,7 +314,8 @@
         } else {
             cell.textLabel.text = @"Save this story";
         }
-        cell.imageView.image = [UIImage imageNamed:@"clock.png"];
+        cell.imageView.image = [Utilities templateImageNamed:@"saved-stories" sized:20];
+        cell.imageView.tintColor = UIColorFromRGB(0x95968F);
     } else if (indexPath.row == 1) {
         bool isRead = [[self.appDelegate.activeStory objectForKey:@"read_status"] boolValue];
         if (isRead) {
@@ -322,20 +323,21 @@
         } else {
             cell.textLabel.text = @"Mark as read";
         }
-        cell.imageView.image = [UIImage imageNamed:@"g_icn_unread.png"];
+        cell.imageView.image = [Utilities templateImageNamed:@"indicator-unread" sized:16];
+        cell.imageView.tintColor = UIColorFromRGB(0x6A6659);
     } else if (indexPath.row == 2) {
         cell.textLabel.text = @"Send to...";
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_mail.png"];
+        cell.imageView.image = [Utilities templateImageNamed:@"sendto" sized:20];
+        cell.imageView.tintColor = UIColorFromRGB(0xBD9146);
     } else if (indexPath.row == 3) {
         cell.textLabel.text = @"Train this story";
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_train.png"];
+        cell.imageView.image = [Utilities templateImageNamed:@"dialog-trainer" sized:20];
+        cell.imageView.tintColor = UIColorFromRGB(0x689ED7);
     } else if (indexPath.row == 4) {
         cell.textLabel.text = @"Share this story";
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_share.png"];
+        cell.imageView.image = [Utilities templateImageNamed:@"share" sized:20];
+        cell.imageView.tintColor = UIColorFromRGB(0x94968E);
     } else if (indexPath.row == 5) {
-        cell.textLabel.text = @"Delete this site";
-        cell.imageView.image = [UIImage imageNamed:@"menu_icn_delete.png"];
-    } else if (indexPath.row == 6) {
         NSString *fontStyle = [[NSUserDefaults standardUserDefaults] stringForKey:@"fontStyle"];
         if (!fontStyle) {
             fontStyle = @"GothamNarrow-Book";
@@ -361,14 +363,14 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row >= 7) {
+    if (indexPath.row >= 6) {
         return nil;
     }
     return indexPath;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row != 5 && indexPath.row != 6) {
+    if (indexPath.row != 5) {
         [self dismissViewControllerAnimated:indexPath.row != 3 && indexPath.row != 4 completion:nil];
     }
     
@@ -387,34 +389,8 @@
     } else if (indexPath.row == 4) {
         [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
     } else if (indexPath.row == 5) {
-        [self confirmDeleteSite:self.navigationController];
-    } else if (indexPath.row == 6) {
         [self showFontList];
     }
-    
-    
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-//        if (indexPath.row != 2 && indexPath.row != 3) {
-//            // if we're opening another popover, then don't animate out - it looks strange
-//            [self.appDelegate.masterContainerViewController hidePopover];
-//        }
-//    } else {
-//        [self.appDelegate.storyPagesViewController.popoverController dismissPopoverAnimated:YES];
-//        self.appDelegate.storyPagesViewController.popoverController = nil;
-//    }
-//    
-//    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-
-- (void)confirmDeleteSite:(UINavigationController *)menuNavigationController {
-    MenuViewController *controller = [MenuViewController new];
-    controller.title = @"Positive?";
-    
-    [controller addTitle:@"Delete this site" iconName:@"menu_icn_delete.png" destructive:YES selectionShouldDismiss:YES handler:^{
-        [self deleteSite];
-    }];
-    
-    [self.navigationController showViewController:controller sender:self];
 }
 
 - (void)deleteSite {

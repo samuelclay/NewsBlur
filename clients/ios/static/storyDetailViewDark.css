@@ -18,7 +18,6 @@ body {
 .NB-header {
     color: #bbbbbb;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#333333), to(#111111));
-    border-bottom: 1px solid #333532;
     text-shadow: 0 1px 0 rgba(28, 28, 28, .1);
 
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);

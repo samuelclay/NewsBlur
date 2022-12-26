@@ -73,8 +73,20 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
     return result;
 }
 
++ (UIImage *)templateImageNamed:(NSString *)imageName sized:(CGFloat)size {
+    UIImage *image = [self imageWithImage:[UIImage imageNamed:imageName] convertToSize:CGSizeMake(size, size)];
+    
+    image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    
+    return image;
+}
+
++ (UIImage *)imageNamed:(NSString *)imageName sized:(CGFloat)size {
+    return [self imageWithImage:[UIImage imageNamed:imageName] convertToSize:CGSizeMake(size, size)];
+}
+
 + (UIImage *)imageWithImage:(UIImage *)image convertToSize:(CGSize)size {
-    UIGraphicsBeginImageContext(size);
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0);
     [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
     UIImage *destImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();

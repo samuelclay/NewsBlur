@@ -37,12 +37,17 @@
         [subview removeFromSuperview];
     }
     
+    [UIColorFromRGB(0xF7F8F5) set];
+    CGContextFillRect(context, rect);
+    
     NSString *folderName = appDelegate.dictFoldersArray[section];
     NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
-    bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
+    BOOL isFolderCollapsed = [userPreferences boolForKey:collapseKey];
+    BOOL isSavedStoriesFeed = self.appDelegate.isSavedStoriesIntelligenceMode;
     NSInteger countWidth = 0;
     NSString *accessibilityCount = @"";
     NSArray *folderComponents = [folderName componentsSeparatedByString:@" ▸ "];
+    folderName = folderComponents.lastObject;
     
     CGFloat indentationOffset = (folderComponents.count - 1) * 28;
     rect.origin.x += indentationOffset;
@@ -73,7 +78,7 @@
         [self addSubview:unreadCount];
         
         accessibilityCount = [NSString stringWithFormat:@", %@ searches", @(count)];
-    } else if (isFolderCollapsed) {
+    } else if (isFolderCollapsed && !isSavedStoriesFeed) {
         UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
         unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectMake(rect.origin.x, 0, CGRectGetWidth(rect), CGRectGetHeight(rect))];
         unreadCount.appDelegate = appDelegate;
@@ -94,57 +99,38 @@
     
     // create the parent view that will hold header Label
     UIView* customView = [[UIView alloc] initWithFrame:rect];
-
-    // Background
-    [NewsBlurAppDelegate fillGradient:rect
-                           startColor:UIColorFromLightSepiaMediumDarkRGB(0xEAECE5, 0xffffc6, 0x6A6A6A, 0x444444)
-                             endColor:UIColorFromLightSepiaMediumDarkRGB(0xDCDFD6, 0xffffc0, 0x666666, 0x333333)];
-//    UIColor *backgroundColor = UIColorFromRGB(0xD7DDE6);
-//    [backgroundColor set];
-//    CGContextFillRect(context, rect);
-    
-    // Borders
-    UIColor *topColor = UIColorFromLightSepiaMediumDarkRGB(0xFDFDFD, 0xFDFDF6, 0x878B8A, 0x474B4A);
-    CGContextSetStrokeColor(context, CGColorGetComponents([topColor CGColor]));
-    
-    CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 0, 0.25f);
-    CGContextAddLineToPoint(context, rect.size.width, 0.25f);
-    CGContextStrokePath(context);
-    
-    // bottom border
-    UIColor *bottomColor = UIColorFromLightSepiaMediumDarkRGB(0xB7BBAA, 0xe0e0a6, 0x404040, 0x0D0D0D);
-    CGContextSetStrokeColor(context, CGColorGetComponents([bottomColor CGColor]));
-    CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 0, rect.size.height-0.25f);
-    CGContextAddLineToPoint(context, rect.size.width, rect.size.height-0.25f);
-    CGContextStrokePath(context);
     
     // Folder title
+    UIColor *backgroundColor = UIColorFromRGB(0xEAECE6);
     UIColor *textColor = UIColorFromRGB(0x4C4D4A);
     UIFontDescriptor *boldFontDescriptor = [self fontDescriptorUsingPreferredSize:UIFontTextStyleCaption1];
     UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
     NSInteger titleOffsetY = ((rect.size.height - font.pointSize) / 2) - 1;
     NSString *folderTitle;
-    if (section == NewsBlurTopSectionGlobalSharedStories) {
-        folderTitle = @"Global Shared Stories";
-    } else if (section == NewsBlurTopSectionAllSharedStories) {
-        folderTitle = @"All Shared Stories";
-    } else if (section == NewsBlurTopSectionInfrequentSiteStories) {
+    if (section == NewsBlurTopSectionInfrequentSiteStories) {
         folderTitle = @"Infrequent Site Stories";
     } else if (section == NewsBlurTopSectionAllStories) {
-        folderTitle = @"All Stories";
+        folderTitle = @"All Site Stories";
     } else if ([folderName isEqual:@"widget_stories"]) {
         folderTitle = @"Widget Site Stories";
     } else if ([folderName isEqual:@"read_stories"]) {
         folderTitle = @"Read Stories";
+    } else if ([folderName isEqual:@"river_global"]) {
+        folderTitle = @"Global Shared Stories";
+    } else if ([folderName isEqual:@"river_blurblogs"]) {
+        folderTitle = @"All Shared Stories";
     } else if ([folderName isEqual:@"saved_stories"]) {
         folderTitle = @"Saved Stories";
     } else if ([folderName isEqual:@"saved_searches"]) {
         folderTitle = @"Saved Searches";
     } else {
-        folderTitle = [appDelegate.dictFoldersArray objectAtIndex:section];
+        folderTitle = folderName;
+        backgroundColor = UIColorFromRGB(0xF7F8F5);
     }
+    
+    [backgroundColor set];
+    CGContextFillRect(context, rect);
+    
     UIColor *shadowColor = UIColorFromRGB(0xF0F2E9);
     CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 0, [shadowColor CGColor]);
 
@@ -159,6 +145,8 @@
         
     invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
     invisibleHeaderButton.frame = CGRectMake(rect.origin.x, 0, customView.frame.size.width, customView.frame.size.height);
+    invisibleHeaderButton.layer.cornerRadius = 10;
+    invisibleHeaderButton.clipsToBounds = YES;
     invisibleHeaderButton.alpha = .1;
     invisibleHeaderButton.tag = section;
     invisibleHeaderButton.accessibilityLabel = [NSString stringWithFormat:@"%@ folder%@", folderTitle, accessibilityCount];
@@ -191,7 +179,7 @@
         disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2-1, disclosureHeight, disclosureHeight);
 
         // Add collapse button to all folders except Everything
-        if (section != NewsBlurTopSectionGlobalSharedStories && section != NewsBlurTopSectionInfrequentSiteStories && section != NewsBlurTopSectionAllStories && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"widget_stories"]) {
+        if (section != NewsBlurTopSectionInfrequentSiteStories && section != NewsBlurTopSectionAllStories && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"river_global"] && ![folderName isEqual:@"widget_stories"]) {
             if (!isFolderCollapsed) {
                 UIImage *disclosureImage = [UIImage imageNamed:@"disclosure_down.png"];
                 [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
@@ -223,21 +211,7 @@
     int width = 20;
     int height = 20;
     
-    if (section == 0) {
-        folderImage = [UIImage imageNamed:@"ak-icon-global.png"];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            folderImageViewX = 10;
-        } else {
-            folderImageViewX = 8;
-        }
-    } else if (section == 1) {
-        folderImage = [UIImage imageNamed:@"ak-icon-blurblogs.png"];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            folderImageViewX = 10;
-        } else {
-            folderImageViewX = 8;
-        }
-    } else if (section == 2) {
+    if (section == NewsBlurTopSectionInfrequentSiteStories) {
         folderImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
@@ -245,30 +219,44 @@
             folderImageViewX = 7;
         }
         allowLongPress = YES;
-    } else if (section == 3) {
-        folderImage = [UIImage imageNamed:@"ak-icon-allstories.png"];
+    } else if (section == NewsBlurTopSectionAllStories) {
+        folderImage = [UIImage imageNamed:@"all-stories"];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;
         }
         allowLongPress = NO;
+    } else if ([folderName isEqual:@"river_global"]) {
+        folderImage = [UIImage imageNamed:@"global-shares"];
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 8;
+        }
+    } else if ([folderName isEqual:@"river_blurblogs"]) {
+        folderImage = [UIImage imageNamed:@"all-shares"];
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 8;
+        }
     } else if ([folderName isEqual:@"saved_searches"]) {
-        folderImage = [UIImage imageNamed:@"g_icn_search.png"];
+        folderImage = [UIImage imageNamed:@"search"];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;
         }
     } else if ([folderName isEqual:@"saved_stories"]) {
-        folderImage = [UIImage imageNamed:@"clock.png"];
+        folderImage = [UIImage imageNamed:@"saved-stories"];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;
         }
     } else if ([folderName isEqual:@"read_stories"]) {
-        folderImage = [UIImage imageNamed:@"g_icn_folder_read.png"];
+        folderImage = [UIImage imageNamed:@"indicator-unread"];
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
@@ -283,9 +271,9 @@
         }
     } else {
         if (isFolderCollapsed) {
-            folderImage = [UIImage imageNamed:@"g_icn_folder_rss"];
+            folderImage = [UIImage imageNamed:@"folder-closed"];
         } else {
-            folderImage = [UIImage imageNamed:@"g_icn_folder"];
+            folderImage = [UIImage imageNamed:@"folder-open"];
         }
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         } else {
@@ -293,11 +281,14 @@
         }
         allowLongPress = YES;
     }
+    
+    folderImage = [folderImage imageWithTintColor:UIColorFromLightDarkRGB(0x95968F, 0x95968F)];
+    
     [folderImage drawInRect:CGRectMake(rect.origin.x + folderImageViewX, CGRectGetMidY(rect)-height/2, width, height)];
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     
-    if (isFolderCollapsed) {
+    if (isFolderCollapsed && !isSavedStoriesFeed) {
         [self insertSubview:customView belowSubview:unreadCount];
     } else {
         [self addSubview:customView];

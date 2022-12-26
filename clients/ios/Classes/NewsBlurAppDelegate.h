@@ -254,6 +254,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, strong) NSMutableDictionary *dictFeeds;
 @property (nonatomic, strong) NSMutableDictionary *dictInactiveFeeds;
 @property (nonatomic) NSMutableDictionary *dictActiveFeeds;
+@property (nonatomic, strong) NSDictionary *dictSubfolders;
 @property (nonatomic) NSDictionary *dictSocialFeeds;
 @property (nonatomic) NSDictionary *dictSavedStoryTags;
 @property (nonatomic, strong) NSDictionary *dictSavedStoryFeedCounts;
@@ -261,6 +262,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) NSDictionary *dictUserProfile;
 @property (nonatomic) NSDictionary *dictSocialServices;
 @property (nonatomic) BOOL isPremium;
+@property (nonatomic) BOOL isPremiumArchive;
 @property (nonatomic) NSInteger premiumExpire;
 @property (nonatomic, strong) NSMutableDictionary *dictUnreadCounts;
 @property (nonatomic, strong) NSMutableDictionary *dictTextFeeds;

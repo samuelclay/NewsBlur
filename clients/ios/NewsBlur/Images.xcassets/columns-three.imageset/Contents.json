@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "columns-three.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

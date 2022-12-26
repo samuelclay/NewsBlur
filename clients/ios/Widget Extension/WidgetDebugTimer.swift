@@ -72,7 +72,7 @@ class WidgetDebugTimer {
         
         let totalDuration = date.timeIntervalSince(currentInfo.start)
         
-        guard let step = step else {
+        guard let step else {
             NSLog("\(String(repeating: " ", count: currentInfo.level * 2))\(operation) took \(shared.formatter.string(from: NSNumber(value: totalDuration)) ?? "?") seconds")
             return
         }
