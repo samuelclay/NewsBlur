@@ -14,8 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface PremiumManager : NSObject
 
-@property (nonatomic, strong) NSArray<SKProduct *> *products;
-@property (nonatomic, strong) NSArray<NSArray<NSString *> *> *reasons;
+@property (nonatomic, strong) SKProduct * _Nullable premiumProduct;
+@property (nonatomic, strong) SKProduct * _Nullable premiumArchiveProduct;
+@property (nonatomic, strong) NSArray<NSArray<NSString *> *> *premiumReasons;
+@property (nonatomic, strong) NSArray<NSArray<NSString *> *> *premiumArchiveReasons;
 
 - (void)loadProducts;
 - (void)purchase:(SKProduct *)product;

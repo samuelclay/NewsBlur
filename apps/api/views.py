@@ -206,6 +206,11 @@ def check_share_on_site(request, token):
     usersub    = None
     message    = None
     user       = None
+    users = {}
+    your_story = None
+    same_stories = None
+    other_stories = None
+    previous_stories = None
     
     if not story_url:
         code = -1
@@ -239,34 +244,34 @@ def check_share_on_site(request, token):
             usersub = UserSubscription.objects.filter(user=user, feed=feed)
         except UserSubscription.DoesNotExist:
             usersub = None
-    feed_id = feed and feed.pk
-    your_story, same_stories, other_stories = MSharedStory.get_shared_stories_from_site(feed_id,
-                                              user_id=user_profile.user.pk, story_url=story_url)
-    previous_stories = MSharedStory.objects.filter(user_id=user_profile.user.pk).order_by('-shared_date').limit(3)
-    previous_stories = [{
-        "user_id": story.user_id,
-        "story_title": story.story_title,
-        "comments": story.comments,
-        "shared_date": story.shared_date,
-        "relative_date": relative_timesince(story.shared_date),
-        "blurblog_permalink": story.blurblog_permalink(),
-    } for story in previous_stories]
+    if user:
+        feed_id = feed and feed.pk
+        your_story, same_stories, other_stories = MSharedStory.get_shared_stories_from_site(feed_id,
+                                                user_id=user.pk, story_url=story_url)
+        previous_stories = MSharedStory.objects.filter(user_id=user.pk).order_by('-shared_date').limit(3)
+        previous_stories = [{
+            "user_id": story.user_id,
+            "story_title": story.story_title,
+            "comments": story.comments,
+            "shared_date": story.shared_date,
+            "relative_date": relative_timesince(story.shared_date),
+            "blurblog_permalink": story.blurblog_permalink(),
+        } for story in previous_stories]
     
-    user_ids = set([user_profile.user.pk])
-    for story in same_stories:
-        user_ids.add(story['user_id'])
-    for story in other_stories:
-        user_ids.add(story['user_id'])
-    
-    users = {}
-    profiles = MSocialProfile.profiles(user_ids)
-    for profile in profiles:
-        users[profile.user_id] = {
-            "username": profile.username,
-            "photo_url": profile.photo_url,
-        }
-        
-    logging.user(user_profile.user, "~BM~FCChecking share from site: ~SB%s" % (story_url),
+        user_ids = set([user_profile.user.pk])
+        for story in same_stories:
+            user_ids.add(story['user_id'])
+        for story in other_stories:
+            user_ids.add(story['user_id'])
+
+        profiles = MSocialProfile.profiles(user_ids)
+        for profile in profiles:
+            users[profile.user_id] = {
+                "username": profile.username,
+                "photo_url": profile.photo_url,
+            }
+            
+    logging.user(user, "~BM~FCChecking share from site: ~SB%s" % (story_url),
                  request=request)
     
     response = HttpResponse(callback + '(' + json.encode({
@@ -285,12 +290,12 @@ def check_share_on_site(request, token):
     
     return response
 
-@required_params('story_url', 'comments', 'title')
+@required_params('story_url')
 def share_story(request, token=None):
     code      = 0
     story_url = request.POST['story_url']
-    comments  = request.POST['comments']
-    title     = request.POST['title']
+    comments  = request.POST.get('comments', "")
+    title     = request.POST.get('title', None)
     content   = request.POST.get('content', None)
     rss_url   = request.POST.get('rss_url', None)
     feed_id   = request.POST.get('feed_id', None) or 0
@@ -333,10 +338,12 @@ def share_story(request, token=None):
         content = lxml.html.fromstring(content)
         content.make_links_absolute(story_url)
         content = lxml.html.tostring(content)
-    else:
+
+    if not content or not title:
         importer = TextImporter(story=None, story_url=story_url, request=request, debug=settings.DEBUG)
         document = importer.fetch(skip_save=True, return_document=True)
-        content = document['content']
+        if not content:
+            content = document['content']
         if not title:
             title = document['title']
     

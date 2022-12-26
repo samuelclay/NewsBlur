@@ -396,7 +396,7 @@ private extension DetailViewController {
             appDelegate.updateSplitBehavior()
         }
         
-        guard let storyPagesViewController = storyPagesViewController else {
+        guard let storyPagesViewController else {
             return
         }
         
@@ -431,7 +431,7 @@ private extension DetailViewController {
     }
     
     func add(viewController: UIViewController?, to containerView: UIView) {
-        guard let viewController = viewController else {
+        guard let viewController else {
             return
         }
         
@@ -449,7 +449,7 @@ private extension DetailViewController {
     }
     
     func remove(viewController: UIViewController?) {
-        guard let viewController = viewController else {
+        guard let viewController else {
             return
         }
         

@@ -225,9 +225,9 @@ class TextImporter:
         
         content = str(soup)
         
-        images = set([img['src'] for img in soup.findAll('img') if 'src' in img])
+        images = set([img.attrs['src'] for img in soup.findAll('img') if 'src' in img.attrs])
         for image_url in images:
-            abs_image_url = urljoin(self.story.story_permalink, image_url)
+            abs_image_url = urljoin(self.story_url, image_url)
             content = content.replace(image_url, abs_image_url)
         
         return content
@@ -242,9 +242,11 @@ class TextImporter:
             headers["content-type"] = "application/json"
             headers["x-api-key"] = mercury_api_key
             domain = Site.objects.get_current().domain
+            protocol = "https"
             if settings.DOCKERBUILD:
                 domain = 'haproxy'
-            url = f"https://{domain}/rss_feeds/original_text_fetcher?url={url}"
+                protocol = "http"
+            url = f"{protocol}://{domain}/rss_feeds/original_text_fetcher?url={url}"
             
         try:
             r = requests.get(url, headers=headers, timeout=15)

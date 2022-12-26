@@ -65,6 +65,8 @@
 		_selection.tableView = _tableView;
     }
 	self.didFirstLayout = NO;
+    self.overrideUserInterfaceStyle = ThemeManager.shared.isDarkTheme ? UIUserInterfaceStyleDark : UIUserInterfaceStyleLight;
+    
 	[super viewWillAppear:animated];
 }
 
