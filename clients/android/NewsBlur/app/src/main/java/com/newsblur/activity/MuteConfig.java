@@ -149,8 +149,8 @@ public class MuteConfig extends FeedChooser implements MuteConfigAdapter.FeedSta
 
     private void syncActiveFeedCount() {
         // free standard accounts can follow up to 64 sites
-        boolean isPremium = PrefsUtils.getIsPremium(this);
-        if (!isPremium && feeds != null) {
+        boolean hasSubscription = PrefsUtils.hasSubscription(this);
+        if (!hasSubscription && feeds != null) {
             int activeSites = 0;
             for (Feed feed : feeds) {
                 if (feed.active) {
@@ -232,7 +232,7 @@ public class MuteConfig extends FeedChooser implements MuteConfigAdapter.FeedSta
     }
 
     private void openUpgradeToPremium() {
-        Intent intent = new Intent(this, Premium.class);
+        Intent intent = new Intent(this, SubscriptionActivity.class);
         startActivity(intent);
         finish();
     }

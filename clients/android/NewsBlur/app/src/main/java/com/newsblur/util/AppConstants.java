@@ -87,10 +87,11 @@ public class AppConstants {
     public final static String FORGOT_PASWORD_URL = "http://www.newsblur.com/folder_rss/forgot_password";
 
     // Shiloh photo
-    public final static String SHILOH_PHOTO_URL = "https://newsblur.com/media//img/reader/shiloh.jpg";
+    public final static String LYRIC_PHOTO_URL = "https://newsblur.com/media//img/reader/lyric.jpg";
 
-    // Premium subscription SKU
-    public final static String PREMIUM_SKU = "nb.premium.36";
+    // Subscription SKU
+    public final static String PREMIUM_SUB_ID = "nb.premium.36";
+    public final static String PREMIUM_ARCHIVE_SUB_ID = "nb.premium.archive.99";
 
     // Free standard account sites limit
     public final static int FREE_ACCOUNT_SITE_LIMIT = 64;
