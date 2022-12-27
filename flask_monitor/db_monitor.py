@@ -239,6 +239,9 @@ def db_check_elasticsearch():
     except:
         abort(Response("Can't connect to db", 503))
     
+    if request.args.get('consul') == '1':
+        return str(1)
+    
     if conn.indices.exists('feeds-index'):
         return str("Index exists, but didn't try search")
         # query = pyes.query.TermQuery("title", "daring fireball")
