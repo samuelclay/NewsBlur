@@ -1262,7 +1262,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
             story['story_feed_id'],
             feed_title,
         )
-        # story_content = re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F]', '', story_content)
+        story_content = re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F]', '', story_content)
         story_title = "%s%s" % (("%s: " % feed_title) if feed_title else "", story['story_title'])
         story_data = {
             'title': story_title,
