@@ -100,6 +100,15 @@
       sudo find /srv/newsblur/docker/volumes/postgres/archive -type f -mmin +180 -delete
   tags: cron
 
+- name: Add postgresql backup cleaner cronjob
+  cron:
+    name: postgres_backup_cleaner
+    minute: "0"
+    hour: "5"
+    job: >-
+      sudo find /srv/newsblur/docker/volumes/postgres/backups -type f -mmin +18000 -delete
+  tags: cron
+
 - name: Add postgres backup log
   become: yes
   file:
