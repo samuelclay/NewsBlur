@@ -91,7 +91,7 @@ def load_feed_favicon(request, feed_id):
 def feed_autocomplete(request):
     query = request.GET.get('term') or request.GET.get('query')
     version = int(request.GET.get('v', 1))
-    format = request.GET.get('format', 'autocomplete')
+    autocomplete_format = request.GET.get('format', 'autocomplete')
     
     # user = get_user(request)
     # if True or not user.profile.is_premium:
@@ -126,7 +126,7 @@ def feed_autocomplete(request):
     feeds = [feed for feed in feeds if feed and not feed.branch_from_feed]
     feeds = [feed for feed in feeds if all([x not in feed.feed_address for x in IGNORE_AUTOCOMPLETE])]
     
-    if format == 'autocomplete':
+    if autocomplete_format == 'autocomplete':
         feeds = [{
             'id': feed.pk,
             'value': feed.feed_address,
