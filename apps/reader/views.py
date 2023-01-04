@@ -363,7 +363,8 @@ def load_feeds(request):
         'starred_counts': starred_counts,
         'saved_searches': saved_searches,
         'dashboard_rivers': dashboard_rivers,
-        'categories': categories
+        'categories': categories,
+        'share_ext_token': user.profile.secret_token,
     }
     return data
 
