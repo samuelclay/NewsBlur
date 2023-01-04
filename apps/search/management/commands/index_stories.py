@@ -19,7 +19,7 @@ class Command(BaseCommand):
         if not options['user']:
             print("Missing user. Did you want to reindex everything? Use -R.")
             return
-        print(options)
+        
         if re.match(r"([0-9]+)", options['user']):
             user = User.objects.get(pk=int(options['user']))
         else:
