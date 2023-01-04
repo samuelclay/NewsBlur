@@ -1,0 +1,6 @@
+---
+
+- name: reload haproxy
+  become: yes
+  command: docker kill --signal HUP haproxy
+  listen: reload haproxy
