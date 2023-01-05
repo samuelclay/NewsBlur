@@ -36,7 +36,12 @@ class NewslettersFragment : DialogFragment() {
 
     private fun generateEmail(): String {
         val userDetails = PrefsUtils.getUserDetails(requireContext())
-        return "${userDetails.username}-12345678@newsletters.newsblur.com"
+        val extToken = PrefsUtils.getExtToken(requireContext())
+        return if (userDetails.username.isNullOrBlank() && extToken.isNullOrBlank()) {
+            "Error generating forwarding email address"
+        } else {
+            "${userDetails.username}-$extToken@newsletters.newsblur.com"
+        }
     }
 
     private fun copyToClipboard(message: String) {

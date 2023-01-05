@@ -1088,4 +1088,17 @@ public class PrefsUtils {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.LOAD_NEXT_ON_MARK_READ, false);
     }
+
+    public static void setExtToken(Context context, String token) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        Editor editor = prefs.edit();
+        editor.putString(PrefConstants.EXT_TOKEN, token);
+        editor.commit();
+    }
+
+    @Nullable
+    public static String getExtToken(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getString(PrefConstants.EXT_TOKEN, null);
+    }
 }
