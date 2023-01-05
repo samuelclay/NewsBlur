@@ -558,6 +558,7 @@ public class NBSyncService extends JobService {
 
             PrefsUtils.setPremium(this, feedResponse.isPremium, feedResponse.premiumExpire);
             PrefsUtils.setArchive(this, feedResponse.isArchive, feedResponse.premiumExpire);
+            PrefsUtils.setExtToken(this, feedResponse.shareExtToken);
 
             // note all feeds that belong to some folder so we can find orphans
             for (Folder folder : feedResponse.folders) {

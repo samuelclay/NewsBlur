@@ -30,6 +30,8 @@ public class PrefConstants {
 	public static final String IS_ARCHIVE = "is_archive";
     // don't update key value for backward compat
 	public static final String SUBSCRIPTION_EXPIRE = "premium_expire";
+
+    public static final String EXT_TOKEN = "ext_token";
 	
 	public static final String PREFERENCE_TEXT_SIZE = "default_reading_text_size";
 	public static final String PREFERENCE_LIST_TEXT_SIZE = "list_text_size";

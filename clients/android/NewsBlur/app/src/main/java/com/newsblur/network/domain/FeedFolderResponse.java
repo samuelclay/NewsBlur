@@ -39,6 +39,8 @@ public class FeedFolderResponse {
     public long premiumExpire;
     public boolean isStaff;
 	public int starredCount;
+
+    public String shareExtToken;
 	
 	public FeedFolderResponse(String json, Gson gson) {
         long startTime = System.currentTimeMillis();
@@ -48,6 +50,9 @@ public class FeedFolderResponse {
         this.isAuthenticated = asJsonObject.get("authenticated").getAsBoolean();
         if (asJsonObject.has("is_staff")) {
             this.isStaff = asJsonObject.get("is_staff").getAsBoolean();
+        }
+        if (asJsonObject.has("share_ext_token")) {
+            this.shareExtToken = asJsonObject.get("share_ext_token").getAsString();
         }
 
         JsonElement userProfile = asJsonObject.get("user_profile");
