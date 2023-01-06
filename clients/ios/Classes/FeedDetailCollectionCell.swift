@@ -59,6 +59,7 @@ class FeedDetailCollectionCell: UICollectionViewCell {
     var dateAndAuthorLabel = UILabel()
     var unreadImageView = UIImageView()
     
+    var noPreviewConstraints = [NSLayoutConstraint]()
     var topPreviewConstraints = [NSLayoutConstraint]()
     var leftPreviewConstraints = [NSLayoutConstraint]()
     var rightPreviewConstraints = [NSLayoutConstraint]()
@@ -80,7 +81,7 @@ class FeedDetailCollectionCell: UICollectionViewCell {
         contentLabel.lineBreakMode = .byWordWrapping
         contentLabel.numberOfLines = 0
         
-        let topViews = [previewImageView, containerView]
+        let topViews = [previewImageView, containerView, dateAndAuthorLabel]
         
         for view in topViews {
             contentView.addSubview(view)
@@ -88,7 +89,7 @@ class FeedDetailCollectionCell: UICollectionViewCell {
             view.clipsToBounds = true
         }
         
-        let subviews = [siteImageView, siteLabel, savedImageView, titleLabel, contentLabel, dateAndAuthorLabel, unreadImageView]
+        let subviews = [siteImageView, siteLabel, savedImageView, titleLabel, contentLabel, unreadImageView]
         
         for view in subviews {
             containerView.addSubview(view)
@@ -99,12 +100,19 @@ class FeedDetailCollectionCell: UICollectionViewCell {
         let imageHeightConstraint = previewImageView.heightAnchor.constraint(equalToConstant: 100)
         imageHeightConstraint.priority = .required - 1
         
+        noPreviewConstraints = [
+            previewImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            previewImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            previewImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            previewImageView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0)
+        ]
+        
         topPreviewConstraints = [
             imageHeightConstraint,
             previewImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             previewImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             previewImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            previewImageView.bottomAnchor.constraint(equalTo: containerView.topAnchor, constant: 1)
+            previewImageView.bottomAnchor.constraint(equalTo: containerView.topAnchor, constant: -10)
         ]
         
         leftPreviewConstraints = [
@@ -126,22 +134,22 @@ class FeedDetailCollectionCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(greaterThanOrEqualTo: contentView.topAnchor, constant: 10),
             containerView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: 10),
-            containerView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -10),
-            containerView.bottomAnchor.constraint(greaterThanOrEqualTo: contentView.bottomAnchor, constant: -10)])
+            containerView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -10)])
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(greaterThanOrEqualTo: containerView.topAnchor),
+            titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor),
             titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             titleLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor)])
         
         NSLayoutConstraint.activate([
             contentLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            contentLabel.bottomAnchor.constraint(greaterThanOrEqualTo: containerView.bottomAnchor),
             contentLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             contentLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor)])
         
         NSLayoutConstraint.activate([
-            dateAndAuthorLabel.topAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 10),
-            dateAndAuthorLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+            dateAndAuthorLabel.topAnchor.constraint(greaterThanOrEqualTo: containerView.bottomAnchor, constant: 10),
+            dateAndAuthorLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             dateAndAuthorLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             dateAndAuthorLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor)])
         
@@ -152,17 +160,26 @@ class FeedDetailCollectionCell: UICollectionViewCell {
         setupViewsIfNeeded()
         
         let preview = UserDefaults.standard.string(forKey: "story_list_preview_images_size")
+        let wantImage = isGrid || preview != "none"
         let isLeft = preview == "small_left" || preview == "large_left"
         
-        if isGrid {
+        if !wantImage || previewImage == nil {
+            NSLayoutConstraint.activate(noPreviewConstraints)
+            NSLayoutConstraint.deactivate(leftPreviewConstraints)
+            NSLayoutConstraint.deactivate(rightPreviewConstraints)
+            NSLayoutConstraint.deactivate(topPreviewConstraints)
+        } else if isGrid {
+            NSLayoutConstraint.deactivate(noPreviewConstraints)
             NSLayoutConstraint.deactivate(leftPreviewConstraints)
             NSLayoutConstraint.deactivate(rightPreviewConstraints)
             NSLayoutConstraint.activate(topPreviewConstraints)
         } else if isLeft {
+            NSLayoutConstraint.deactivate(noPreviewConstraints)
             NSLayoutConstraint.deactivate(topPreviewConstraints)
             NSLayoutConstraint.activate(leftPreviewConstraints)
             NSLayoutConstraint.deactivate(rightPreviewConstraints)
         } else {
+            NSLayoutConstraint.deactivate(noPreviewConstraints)
             NSLayoutConstraint.deactivate(topPreviewConstraints)
             NSLayoutConstraint.deactivate(leftPreviewConstraints)
             NSLayoutConstraint.activate(rightPreviewConstraints)
@@ -188,6 +205,14 @@ class FeedDetailCollectionCell: UICollectionViewCell {
         //TODO: 🚧
     }
     
+    var previewImage: UIImage? {
+        guard let image = appDelegate.cachedImage(forStoryHash: storyHash), image.isKind(of: UIImage.self) else {
+            return nil
+        }
+        
+        return image
+    }
+    
     func updatePreview() {
         if isHighlighted {
             previewImageView.alpha = isRead ? 0.5 : 0.85
@@ -195,11 +220,7 @@ class FeedDetailCollectionCell: UICollectionViewCell {
             previewImageView.alpha = isRead ? 0.34 : 1
         }
         
-        guard let image = appDelegate.cachedImage(forStoryHash: storyHash), image.isKind(of: UIImage.self) else {
-            return
-        }
-        
-        previewImageView.image = image
+        previewImageView.image = previewImage
     }
     
     func updateStoryTitle() {
@@ -236,7 +257,7 @@ class FeedDetailCollectionCell: UICollectionViewCell {
         dateAndAuthorLabel.font = UIFont(name: "WhitneySSm-Medium", size:11)
         dateAndAuthorLabel.textColor = contentLabel.textColor
         
-        let date = Utilities.formatLongDate(fromTimestamp: storyTimestamp) ?? ""
+        let date = Utilities.formatShortDate(fromTimestamp: storyTimestamp) ?? ""
         
         dateAndAuthorLabel.text = storyAuthor.isEmpty ? date : "\(date) · \(storyAuthor)"
     }
