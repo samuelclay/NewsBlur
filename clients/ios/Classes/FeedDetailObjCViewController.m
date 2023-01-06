@@ -2320,7 +2320,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
     }
     
-    if (!everything && !infrequent && !saved && !read && !social && !widget) {
+    if ((!everything || !appDelegate.storiesCollection.isRiverView) && !infrequent && !saved && !read && !social && !widget) {
         NSString *manageText = [NSString stringWithFormat:@"Manage this %@", appDelegate.storiesCollection.isRiverView ? @"folder" : @"site"];
         
         [viewController addTitle:manageText iconName:@"menu_icn_move.png" selectionShouldDismiss:NO handler:^{
@@ -2529,7 +2529,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     __weak MenuViewController *weakViewController = viewController;
     viewController.title = manageText;
     
-    if (!everything) {
+    if (!everything || !appDelegate.storiesCollection.isRiverView) {
         NSString *deleteText = [NSString stringWithFormat:@"Delete %@",
                                 appDelegate.storiesCollection.isRiverView ?
                                 @"this entire folder" :

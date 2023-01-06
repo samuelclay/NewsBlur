@@ -1476,13 +1476,21 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         count = limit;
     }
     
+//    NSLog(@"Folder %@ contains %@ feeds", folderName, @(count));  // log
+    
     return count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
                      cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
-    id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
+    NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
+    
+    if (indexPath.row >= folder.count) {
+        NSLog(@"Detected attempt to access row %@ of %@ when there are only %@; this will crash!", @(indexPath.row), folderName, @(folder.count));  // log
+    }
+    
+    id feedId = [folder objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     BOOL isSavedSearch = [appDelegate isSavedSearch:feedIdStr];
     NSString *searchQuery = [appDelegate searchQueryForFeedId:feedIdStr];

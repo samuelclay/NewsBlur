@@ -608,6 +608,34 @@
 		</dict>
 		<dict>
 			<key>FooterText</key>
+			<string></string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Double tap story</string>
+			<key>Titles</key>
+			<array>
+				<string>Open original story</string>
+				<string>Show original text</string>
+				<string>Mark as unread</string>
+				<string>Save story</string>
+				<string>Do nothing</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>open_original_story</string>
+			<key>Values</key>
+			<array>
+				<string>open_original_story</string>
+				<string>show_original_text</string>
+				<string>mark_unread</string>
+				<string>save_story</string>
+				<string>nothing</string>
+			</array>
+			<key>Key</key>
+			<string>double_tap_story</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
 			<string>Double tap with two fingers to use this gesture.</string>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
