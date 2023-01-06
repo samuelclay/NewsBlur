@@ -104,7 +104,8 @@ class FeedDetailCollectionCell: UICollectionViewCell {
             previewImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             previewImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             previewImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            previewImageView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 0)
+            previewImageView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            containerView.topAnchor.constraint(equalTo: contentView.topAnchor)
         ]
         
         topPreviewConstraints = [
@@ -116,19 +117,23 @@ class FeedDetailCollectionCell: UICollectionViewCell {
         ]
         
         leftPreviewConstraints = [
+            previewImageView.heightAnchor.constraint(greaterThanOrEqualToConstant: 80),
             previewImageView.widthAnchor.constraint(equalToConstant: 80),
             previewImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: -10),
             previewImageView.trailingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: -10),
             previewImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            previewImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            previewImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            containerView.topAnchor.constraint(equalTo: contentView.topAnchor)
         ]
         
         rightPreviewConstraints = [
+            previewImageView.heightAnchor.constraint(greaterThanOrEqualToConstant: 80),
             previewImageView.widthAnchor.constraint(equalToConstant: 80),
             previewImageView.leadingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: 10),
             previewImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             previewImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            previewImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            previewImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            containerView.topAnchor.constraint(equalTo: contentView.topAnchor)
         ]
         
         NSLayoutConstraint.activate([
@@ -162,6 +167,7 @@ class FeedDetailCollectionCell: UICollectionViewCell {
         let preview = UserDefaults.standard.string(forKey: "story_list_preview_images_size")
         let wantImage = isGrid || preview != "none"
         let isLeft = preview == "small_left" || preview == "large_left"
+        let previewImage = wantImage ? previewImage : nil
         
         if !wantImage || previewImage == nil {
             NSLayoutConstraint.activate(noPreviewConstraints)
@@ -193,7 +199,7 @@ class FeedDetailCollectionCell: UICollectionViewCell {
         backgroundColor = isHighlighted ? ThemeManager.color(fromRGB: [0xFFFDEF, 0xEEECCD, 0x303A40, 0x303030]) : ThemeManager.color(fromRGB: [0xF4F4F4, 0xFFFDEF, 0x4F4F4F, 0x101010])
         
         updateSiteTitle()
-        updatePreview()
+        updatePreview(image: previewImage)
         updateStoryTitle()
         updateStoryContent()
         updateStoryDateAndAuthor()
@@ -213,14 +219,15 @@ class FeedDetailCollectionCell: UICollectionViewCell {
         return image
     }
     
-    func updatePreview() {
+    func updatePreview(image: UIImage?) {
+        
         if isHighlighted {
             previewImageView.alpha = isRead ? 0.5 : 0.85
         } else {
             previewImageView.alpha = isRead ? 0.34 : 1
         }
         
-        previewImageView.image = previewImage
+        previewImageView.image = image
     }
     
     func updateStoryTitle() {
