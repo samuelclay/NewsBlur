@@ -163,6 +163,7 @@ extension FeedDetailViewController {
         
         
         var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
+        
         configuration.leadingSwipeActionsConfigurationProvider = { [weak self] (indexPath) in
             guard let self else { return nil }
             guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return nil }
