@@ -53,16 +53,21 @@ class FeedDetailCollectionCell: UICollectionViewCell {
     var siteImageView = UIImageView()
     var siteLabel = UILabel()
     var previewImageView = UIImageView()
+    var unreadImageView = UIImageView()
     var savedImageView = UIImageView()
+    var sharedImageView = UIImageView()
     var titleLabel = UILabel()
     var contentLabel = UILabel()
+    var contentGradient = CAGradientLayer()
     var dateAndAuthorLabel = UILabel()
-    var unreadImageView = UIImageView()
     
     var noPreviewConstraints = [NSLayoutConstraint]()
     var topPreviewConstraints = [NSLayoutConstraint]()
     var leftPreviewConstraints = [NSLayoutConstraint]()
     var rightPreviewConstraints = [NSLayoutConstraint]()
+    
+    var savedConstraints = [NSLayoutConstraint]()
+    var sharedConstraints = [NSLayoutConstraint]()
     
     @objc func setupGestures() {
         //TODO: 🚧 
@@ -81,7 +86,7 @@ class FeedDetailCollectionCell: UICollectionViewCell {
         contentLabel.lineBreakMode = .byWordWrapping
         contentLabel.numberOfLines = 0
         
-        let topViews = [previewImageView, containerView, dateAndAuthorLabel]
+        let topViews = [previewImageView, containerView, dateAndAuthorLabel, unreadImageView]
         
         for view in topViews {
             contentView.addSubview(view)
@@ -89,7 +94,7 @@ class FeedDetailCollectionCell: UICollectionViewCell {
             view.clipsToBounds = true
         }
         
-        let subviews = [siteImageView, siteLabel, savedImageView, titleLabel, contentLabel, unreadImageView]
+        let subviews = [siteImageView, siteLabel, savedImageView, sharedImageView, titleLabel, contentLabel]
         
         for view in subviews {
             containerView.addSubview(view)
@@ -97,15 +102,20 @@ class FeedDetailCollectionCell: UICollectionViewCell {
             view.clipsToBounds = true
         }
         
-        let imageHeightConstraint = previewImageView.heightAnchor.constraint(equalToConstant: 100)
+//        contentGradient.colors = [UIColor.white.cgColor, UIColor.clear.cgColor]
+//        contentLabel.layer.mask = contentGradient
+        
+        let imageHeightConstraint = previewImageView.heightAnchor.constraint(equalToConstant: 150)
         imageHeightConstraint.priority = .required - 1
         
         noPreviewConstraints = [
             previewImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             previewImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            previewImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            previewImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             previewImageView.topAnchor.constraint(equalTo: containerView.topAnchor),
-            containerView.topAnchor.constraint(equalTo: contentView.topAnchor)
+            containerView.heightAnchor.constraint(greaterThanOrEqualToConstant: 200),
+            containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 30),
+            containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10)
         ]
         
         topPreviewConstraints = [
@@ -136,9 +146,17 @@ class FeedDetailCollectionCell: UICollectionViewCell {
             containerView.topAnchor.constraint(equalTo: contentView.topAnchor)
         ]
         
+        sharedConstraints = [
+            sharedImageView.topAnchor.constraint(equalTo: titleLabel.topAnchor),
+            sharedImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            sharedImageView.trailingAnchor.constraint(equalTo: titleLabel.leadingAnchor, constant: -6),
+            sharedImageView.widthAnchor.constraint(equalToConstant: 16),
+            sharedImageView.heightAnchor.constraint(equalToConstant: 16)
+        ]
+        
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(greaterThanOrEqualTo: contentView.topAnchor, constant: 10),
-            containerView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: 10),
+            containerView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: 30),
             containerView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -10)])
         
         NSLayoutConstraint.activate([
@@ -153,12 +171,18 @@ class FeedDetailCollectionCell: UICollectionViewCell {
             contentLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor)])
         
         NSLayoutConstraint.activate([
+            unreadImageView.topAnchor.constraint(equalTo: titleLabel.topAnchor),
+            unreadImageView.trailingAnchor.constraint(equalTo: sharedImageView.leadingAnchor, constant: -6),
+            unreadImageView.widthAnchor.constraint(equalToConstant: 16),
+            unreadImageView.heightAnchor.constraint(equalToConstant: 16)])
+        
+        NSLayoutConstraint.activate([
             dateAndAuthorLabel.topAnchor.constraint(greaterThanOrEqualTo: containerView.bottomAnchor, constant: 10),
             dateAndAuthorLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             dateAndAuthorLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             dateAndAuthorLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor)])
         
-        //TODO: 🚧 feed bar, site image & title, unread indicator, saved indicator
+        //TODO: 🚧 feed bar, site image & title, saved indicator
     }
     
     override func updateConfiguration(using state: UICellConfigurationState) {
@@ -191,20 +215,36 @@ class FeedDetailCollectionCell: UICollectionViewCell {
             NSLayoutConstraint.activate(rightPreviewConstraints)
         }
         
+        if isShared {
+            NSLayoutConstraint.activate(sharedConstraints)
+        } else {
+            NSLayoutConstraint.deactivate(sharedConstraints)
+        }
+        
         let author = storyAuthor.isEmpty ? "" : " by \(storyAuthor)"
         let content = storyContent ?? "no content"
         
         accessibilityLabel = "\(siteTitle), \"\(storyTitle)\"\(author), at \(storyDate). \(content)"
         
-        backgroundColor = isHighlighted ? ThemeManager.color(fromRGB: [0xFFFDEF, 0xEEECCD, 0x303A40, 0x303030]) : ThemeManager.color(fromRGB: [0xF4F4F4, 0xFFFDEF, 0x4F4F4F, 0x101010])
+        layer.cornerRadius = isGrid ? 4 : 0
+        backgroundColor = isGrid ? ThemeManager.color(fromRGB: [0xFDFCFA, 0xFFFDEF, 0x4F4F4F, 0x292B2C]) :
+                    isHighlighted ? ThemeManager.color(fromRGB: [0xFFFDEF, 0xEEECCD, 0x303A40, 0x303030]) :
+                    ThemeManager.color(fromRGB: [0xF4F4F4, 0xFFFDEF, 0x4F4F4F, 0x101010])
         
         updateSiteTitle()
         updatePreview(image: previewImage)
         updateStoryTitle()
         updateStoryContent()
+        updateIndicators()
         updateStoryDateAndAuthor()
         
         //TODO: 🚧 feed bar as a custom image
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        contentGradient.frame = contentLabel.bounds // CGRect(x: 0, y: rect.maxY - 10, width: rect.width, height: 10)
     }
     
     func updateSiteTitle() {
@@ -227,6 +267,7 @@ class FeedDetailCollectionCell: UICollectionViewCell {
             previewImageView.alpha = isRead ? 0.34 : 1
         }
         
+        previewImageView.contentMode = .scaleAspectFill
         previewImageView.image = image
     }
     
@@ -258,6 +299,23 @@ class FeedDetailCollectionCell: UICollectionViewCell {
         }
         
         contentLabel.text = storyContent
+    }
+    
+    func updateIndicators() {
+        let unreadIcon: UIImage?
+        
+        switch storyScore {
+        case -1:
+            unreadIcon = UIImage(named: "indicator-hidden")
+        case 1:
+            unreadIcon = UIImage(named: "indicator-focus")
+        default:
+            unreadIcon = UIImage(named: "indicator-unread")
+        }
+        
+        unreadImageView.image = unreadIcon
+        
+        sharedImageView.image = isShared ? UIImage(named: "menu_icn_share") : nil
     }
     
     func updateStoryDateAndAuthor() {
@@ -316,5 +374,4 @@ class FeedDetailCollectionCell: UICollectionViewCell {
             setNeedsDisplay()
         }
     }
-    
 }
