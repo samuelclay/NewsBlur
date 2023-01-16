@@ -12,10 +12,11 @@
     <application
         android:icon="@drawable/logo"
         android:label="@string/newsblur"
-        android:theme="@style/NewsBlurTheme"
-        android:hardwareAccelerated="true"
+        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
         android:fullBackupContent="@xml/backupscheme"
-        android:name=".NbApplication">
+        android:name=".NbApplication"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        tools:targetApi="31">
 
         <profileable
             android:shell="true"
@@ -23,7 +24,6 @@
 
         <activity
             android:name=".activity.InitActivity"
-            android:label="@string/newsblur"
             android:theme="@style/splashScreen"
             android:noHistory="true"
             android:exported="true">
@@ -39,15 +39,12 @@
 
         <activity
             android:name=".activity.Login"
-            android:label="@string/newsblur"
             android:noHistory="true"
-            android:windowSoftInputMode="adjustResize">
-        </activity>
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".activity.LoginProgress"
-            android:noHistory="true"
-            android:label="@string/newsblur" />
+            android:noHistory="true" />
 
         <activity
             android:name=".activity.RegisterProgress"
@@ -56,7 +53,6 @@
 
         <activity
             android:name=".activity.Main"
-            android:label="@string/newsblur"
             android:launchMode="singleTask"
             android:alwaysRetainTaskState="true" />
 
