@@ -12,17 +12,16 @@ import android.widget.RemoteViews
 import android.widget.RemoteViewsService.RemoteViewsFactory
 import com.newsblur.R
 import com.newsblur.database.BlurDatabaseHelper
-import com.newsblur.di.IconLoader
-import com.newsblur.di.ThumbnailLoader
 import com.newsblur.domain.Feed
 import com.newsblur.domain.Story
 import com.newsblur.network.APIManager
 import com.newsblur.util.*
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
-import java.util.*
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 import kotlin.math.min
 
 class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFactory {
@@ -32,14 +31,15 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
     private val dbHelper: BlurDatabaseHelper
     private val iconLoader: ImageLoader
     private val thumbnailLoader: ImageLoader
-    private var fs: FeedSet? = null
     private val appWidgetId: Int
-    private var dataCompleted = false
-    private val storyItems: MutableList<Story> = ArrayList()
+
+    private val storyItems: MutableList<Story> = mutableListOf()
     private val cancellationSignal = CancellationSignal()
 
+    private val storiesLock = ReentrantLock()
+
     init {
-        Log.d(TAG, "Constructor")
+        Log.d(this.javaClass.name, "init")
         val hiltEntryPoint = EntryPointAccessors
                 .fromApplication(context.applicationContext, WidgetRemoteViewsFactoryEntryPoint::class.java)
         this.context = context
@@ -54,22 +54,14 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
     /**
      * The system calls onCreate() when creating your factory for the first time.
      * This is where you set up any connections and/or cursors to your data source.
-     *
-     *
-     * Heavy lifting,
-     * for example downloading or creating content etc, should be deferred to onDataSetChanged()
-     * or getViewAt(). Taking more than 20 seconds in this call will result in an ANR.
      */
     override fun onCreate() {
-        Log.d(TAG, "onCreate")
+        Log.d(this.javaClass.name, "onCreate")
         WidgetUtils.enableWidgetUpdate(context)
     }
 
-    /**
-     * Allowed to run synchronous calls
-     */
-    override fun getViewAt(position: Int): RemoteViews {
-        Log.d(TAG, "getViewAt $position")
+    override fun getViewAt(position: Int): RemoteViews = storiesLock.withLock {
+        Log.d(this.javaClass.name, "getViewAt $position")
         val story = storyItems[position]
         val rv = WidgetRemoteViews(context.packageName, R.layout.view_widget_story_item)
         rv.setTextViewText(R.id.story_item_title, story.title)
@@ -117,39 +109,53 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
      * @param position The position of the item within the data set whose row id we want.
      * @return The id of the item at the specified position.
      */
-    override fun getItemId(position: Int): Long = storyItems[position].hashCode().toLong()
+    override fun getItemId(position: Int): Long = storiesLock.withLock {
+        storyItems[position].hashCode().toLong()
+    }
 
     /**
      * @return True if the same id always refers to the same object.
      */
     override fun hasStableIds(): Boolean = true
 
-    override fun onDataSetChanged() {
-        Log.d(TAG, "onDataSetChanged")
+    /**
+     * Heavy lifting like downloading or creating content etc, should be deferred to onDataSetChanged()
+     */
+    override fun onDataSetChanged() = storiesLock.withLock {
+        Log.d(this.javaClass.name, "onDataSetChanged")
         // if user logged out don't try to update widget
         if (!WidgetUtils.isLoggedIn(context)) {
-            Log.d(TAG, "onDataSetChanged - not logged in")
-            return
+            Log.d(this.javaClass.name, "onDataSetChanged - not logged in")
+            return@withLock
         }
-        if (dataCompleted) {
-            // we have all the stories data, just let the widget redraw
-            Log.d(TAG, "onDataSetChanged - redraw widget")
-            dataCompleted = false
-        } else {
-            setFeedSet()
-            if (fs == null) {
-                Log.d(TAG, "onDataSetChanged - null feed set. Show empty view")
-                setStories(arrayOf(), HashMap(0))
-                return
-            }
-            Log.d(TAG, "onDataSetChanged - fetch stories")
-            val response = apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL)
-            if (response?.stories == null) {
-                Log.d(TAG, "Error fetching widget stories")
-            } else {
-                Log.d(TAG, "Fetched widget stories")
-                processStories(response.stories)
-                dbHelper.insertStories(response, true)
+
+        // get fs based on pref widget feed ids
+        val feedIds = PrefsUtils.getWidgetFeedIds(context)
+        val fs = if (feedIds == null || feedIds.isNotEmpty()) {
+            // null feed ids get all feeds
+            FeedSet.widgetFeeds(feedIds)
+        } else null // intentionally no feeds selected.
+
+        if (fs == null) {
+            Log.d(this.javaClass.name, "onDataSetChanged - null fs cleared stories")
+            storyItems.clear()
+            return@withLock
+        }
+
+        runBlocking {
+            try {
+                // Taking more than 20 seconds in this method will result in an ANR.
+                withTimeout(18000) {
+                    Log.d(this.javaClass.name, "onDataSetChanged - get remote stories")
+                    val response = apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL)
+                    response.stories?.let {
+                        Log.d(this.javaClass.name, "onDataSetChanged - got ${it.size} remote stories")
+                        processStories(response.stories)
+                        dbHelper.insertStories(response, true)
+                    } ?: Log.d(this.javaClass.name, "onDataSetChanged - null remote stories")
+                }
+            } catch (e: TimeoutCancellationException) {
+                Log.d(this.javaClass.name, "onDataSetChanged - timeout")
             }
         }
     }
@@ -159,7 +165,7 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
      * unbound.
      */
     override fun onDestroy() {
-        Log.d(TAG, "onDestroy")
+        Log.d(this.javaClass.name, "onDestroy")
         cancellationSignal.cancel()
         WidgetUtils.disableWidgetUpdate(context)
         PrefsUtils.removeWidgetData(context)
@@ -168,81 +174,39 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
     /**
      * @return Count of items.
      */
-    override fun getCount(): Int = min(storyItems.size, WidgetUtils.STORIES_LIMIT)
-
-    private fun processStories(stories: Array<Story>) {
-        Log.d(TAG, "processStories")
-        val feedMap = HashMap<String, Feed>()
-        NBScope.executeAsyncTask(
-                doInBackground = {
-                    dbHelper.getFeedsCursor(cancellationSignal)
-                },
-                onPostExecute = {
-                    while (it != null && it.moveToNext()) {
-                        val feed = Feed.fromCursor(it)
-                        if (feed.active) {
-                            feedMap[feed.feedId] = feed
-                        }
-                    }
-                    setStories(stories, feedMap)
-                }
-        )
+    override fun getCount(): Int = storiesLock.withLock {
+        min(storyItems.size, WidgetUtils.STORIES_LIMIT)
     }
 
-    private fun setStories(stories: Array<Story>, feedMap: HashMap<String, Feed>) {
-        Log.d(TAG, "setStories")
+    /**
+     * Widget will show tap to config view when
+     * empty stories and feeds maps are used
+     */
+    private fun processStories(stories: Array<Story>) = storiesLock.withLock {
+        Log.d(this.javaClass.name, "processStories")
+        val feedMap = mutableMapOf<String, Feed>()
+        val cursor = dbHelper.getFeedsCursor(cancellationSignal)
+        while (cursor != null && cursor.moveToNext()) {
+            val feed = Feed.fromCursor(cursor)
+            if (feed.active) {
+                feedMap[feed.feedId] = feed
+            }
+        }
+
         for (story in stories) {
             val storyFeed = feedMap[story.feedId]
             storyFeed?.let { bindStoryValues(story, it) }
         }
         storyItems.clear()
-        storyItems.addAll(mutableListOf(*stories))
-        // we have the data, notify data set changed
-        dataCompleted = true
-        invalidate()
+        storyItems.addAll(stories.toList())
     }
 
-    private fun bindStoryValues(story: Story, feed: Feed) {
-        story.thumbnailUrl = Story.guessStoryThumbnailURL(story)
-        story.extern_faviconBorderColor = feed.faviconBorder
-        story.extern_faviconUrl = feed.faviconUrl
-        story.extern_feedTitle = feed.title
-        story.extern_feedFade = feed.faviconFade
-        story.extern_feedColor = feed.faviconColor
-    }
-
-    private fun invalidate() {
-        Log.d(TAG, "Invalidate app widget with id: $appWidgetId")
-        val appWidgetManager = AppWidgetManager.getInstance(context)
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list)
-    }
-
-    private fun setFeedSet() {
-        val feedIds = PrefsUtils.getWidgetFeedIds(context)
-        fs = if (feedIds == null || feedIds.isNotEmpty()) {
-            FeedSet.widgetFeeds(feedIds)
-        } else {
-            // no feeds selected. Widget will show tap to config view
-            null
-        }
-    }
-
-    companion object {
-        private const val TAG = "WidgetRemoteViewsFactory"
-    }
-
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface WidgetRemoteViewsFactoryEntryPoint {
-
-        fun apiManager(): APIManager
-
-        fun dbHelper(): BlurDatabaseHelper
-
-        @IconLoader
-        fun iconLoader(): ImageLoader
-
-        @ThumbnailLoader
-        fun thumbnailLoader(): ImageLoader
+    private fun bindStoryValues(story: Story, feed: Feed) = story.apply {
+        thumbnailUrl = Story.guessStoryThumbnailURL(story)
+        extern_faviconBorderColor = feed.faviconBorder
+        extern_faviconUrl = feed.faviconUrl
+        extern_feedTitle = feed.title
+        extern_feedFade = feed.faviconFade
+        extern_feedColor = feed.faviconColor
     }
 }
