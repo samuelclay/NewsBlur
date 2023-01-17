@@ -77,18 +77,13 @@
 
     <color name="story_comment_divider">#F0F0F0</color>
     <color name="dark_story_comment_divider">#42453E</color>
-    
-    <color name="twitter_blue">#4099FF</color>
-    <color name="facebook_blue">#3B5998</color>
-    
+
     <color name="item_header_background_start">#FEFEFE</color>
     <color name="item_header_background_end">#F3F4EF</color>
     <color name="dark_item_header_background_start">#505050</color>
     <color name="dark_item_header_background_end">#303030</color>
     <color name="black_item_header_background_start">@color/gray07</color>
     <color name="black_item_header_background_end">@color/black</color>
-    <color name="item_header_border">#C2C5BE</color>
-    <color name="dark_item_header_border">#42453E</color>
     <color name="item_background">#F4F4F4</color>
     <color name="dark_item_background">#1A1A1A</color>
     <color name="share_bar_background">#F5F5EF</color>
