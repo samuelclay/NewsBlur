@@ -688,14 +688,14 @@ public class APIManager {
 
 	private APIResponse get_single(final String urlString, int expectedReturnCode) {
 		if (!NetworkUtils.isOnline(context)) {
-			return new APIResponse(context);
+			return new APIResponse();
 		}
 
 		Request.Builder requestBuilder = new Request.Builder().url(urlString);
 		addCookieHeader(requestBuilder);
 		requestBuilder.header("User-Agent", this.customUserAgent);
 
-		return new APIResponse(context, httpClient, requestBuilder.build(), expectedReturnCode);
+		return new APIResponse(httpClient, requestBuilder.build(), expectedReturnCode);
 	}
 
 	private void addCookieHeader(Request.Builder requestBuilder) {
@@ -738,7 +738,7 @@ public class APIManager {
 
 	private APIResponse post_single(String urlString, RequestBody formBody) {
 		if (!NetworkUtils.isOnline(context)) {
-			return new APIResponse(context);
+			return new APIResponse();
 		}
 
 		if (AppConstants.VERBOSE_LOG_NET) {
@@ -758,7 +758,7 @@ public class APIManager {
 		addCookieHeader(requestBuilder);
 		requestBuilder.post(formBody);
 
-		return new APIResponse(context, httpClient, requestBuilder.build());
+		return new APIResponse(httpClient, requestBuilder.build());
 	}
 
 	private APIResponse post(final String urlString, final ContentValues values) {
