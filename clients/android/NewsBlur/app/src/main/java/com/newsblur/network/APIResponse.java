@@ -37,15 +37,15 @@ public class APIResponse {
      * Construct an online response.  Will test the response for errors and extract all the
      * info we might need.
      */
-    public APIResponse(Context context, OkHttpClient httpClient, Request request) {
-        this(context, httpClient, request, HttpURLConnection.HTTP_OK);
+    public APIResponse(OkHttpClient httpClient, Request request) {
+        this(httpClient, request, HttpURLConnection.HTTP_OK);
     }
 
     /**
      * Construct an online response.  Will test the response for errors and extract all the
      * info we might need.
      */
-    public APIResponse(Context context, OkHttpClient httpClient, Request request, int expectedReturnCode) {
+    public APIResponse(OkHttpClient httpClient, Request request, int expectedReturnCode) {
 
         try {
             long startTime = System.currentTimeMillis();
@@ -95,7 +95,7 @@ public class APIResponse {
     /**
      * Construct and empty/offline response.  Signals that the call was not made.
      */
-    public APIResponse(Context context) {
+    public APIResponse() {
         com.newsblur.util.Log.w(this.getClass().getName(), "failing an offline API response");
         this.isError = true;
     }
