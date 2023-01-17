@@ -3,7 +3,6 @@ package com.newsblur.fragment
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment

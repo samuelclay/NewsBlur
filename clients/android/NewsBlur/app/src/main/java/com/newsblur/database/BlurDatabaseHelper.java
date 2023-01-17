@@ -892,7 +892,7 @@ public class BlurDatabaseHelper {
         ArrayList<String> selArgs = new ArrayList<String>();
         getLocalStorySelectionAndArgs(sel, selArgs, fs, stateFilter, ReadFilter.UNREAD);
 
-        Cursor c = dbRO.rawQuery(sel.toString(), selArgs.toArray(new String[selArgs.size()]));
+        Cursor c = dbRO.rawQuery(sel.toString(), selArgs.toArray(new String[0]));
         int count = c.getCount();
         c.close();
         return count;
@@ -1207,7 +1207,7 @@ public class BlurDatabaseHelper {
         q.append(" (" + DatabaseConstants.READING_SESSION_STORY_HASH + ") ");
         q.append(sel);
 
-        synchronized (RW_MUTEX) {dbRW.execSQL(q.toString(), selArgs.toArray(new String[selArgs.size()]));}
+        synchronized (RW_MUTEX) {dbRW.execSQL(q.toString(), selArgs.toArray(new String[0]));}
     }
 
     /**

@@ -3,7 +3,6 @@ package com.newsblur.activity;
 import android.os.Bundle;
 
 import com.newsblur.domain.SocialFeed;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.UIUtils;
 
 public class SocialFeedReading extends Reading {
