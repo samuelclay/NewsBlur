@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
@@ -1040,11 +1039,5 @@ private fun MaterialButton.setStoryReadState(context: Context, isRead: Boolean) 
     }
     val stringResId: Int = if (isRead) R.string.story_mark_unread_state else R.string.story_mark_read_state
     this.text = context.getString(stringResId)
-
-    @Suppress("DEPRECATION")
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        this.setTextAppearance(styleResId)
-    } else {
-        this.setTextAppearance(context, styleResId)
-    }
+    this.setTextAppearance(styleResId)
 }

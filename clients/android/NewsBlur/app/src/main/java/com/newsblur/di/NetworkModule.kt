@@ -2,21 +2,16 @@ package com.newsblur.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
 import com.newsblur.domain.Classifier
-import com.newsblur.domain.Feed
 import com.newsblur.domain.Story
-import com.newsblur.network.APIConstants
 import com.newsblur.network.APIManager
 import com.newsblur.network.domain.StoriesResponse
 import com.newsblur.serialization.*
 import com.newsblur.util.AppConstants
 import com.newsblur.util.NetworkUtils
-import com.newsblur.util.PrefConstants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -92,7 +92,6 @@ public class NBSyncService extends JobService {
     private volatile static boolean RecountsRunning = false;
 
     private volatile static boolean DoFeedsFolders = false;
-    private volatile static boolean DoUnreads = false;
     private volatile static boolean HaltNow = false;
 
     /** Informational flag only, as to whether we were offline last time we cycled. */
@@ -117,14 +116,11 @@ public class NBSyncService extends JobService {
     private static FeedSet LastFeedSet;
 
     /** Feed sets that the API has said to have no more pages left. */
-    private static Set<FeedSet> ExhaustedFeeds;
-    static { ExhaustedFeeds = new HashSet<FeedSet>(); }
+    private static final Set<FeedSet> ExhaustedFeeds = new HashSet<>();
     /** The number of pages we have collected for the given feed set. */
-    private static Map<FeedSet,Integer> FeedPagesSeen;
-    static { FeedPagesSeen = new HashMap<FeedSet,Integer>(); }
+    private static final Map<FeedSet,Integer> FeedPagesSeen = new HashMap<>();
     /** The number of stories we have collected for the given feed set. */
-    private static Map<FeedSet,Integer> FeedStoriesSeen;
-    static { FeedStoriesSeen = new HashMap<FeedSet,Integer>(); }
+    private static final Map<FeedSet,Integer> FeedStoriesSeen = new HashMap<>();
 
     /** Feed to reset to zero-state, so it is fetched fresh, presumably with new filters. */
     private static FeedSet ResetFeed;
@@ -132,27 +128,24 @@ public class NBSyncService extends JobService {
     private static final Object MUTEX_ResetFeed = new Object();
 
     /** Actions that may need to be double-checked locally due to overlapping API calls. */
-    private static List<ReadingAction> FollowupActions;
-    static { FollowupActions = new ArrayList<ReadingAction>(); }
+    private static final List<ReadingAction> FollowupActions = new ArrayList<>();
 
     /** Feed IDs (API stype) that have been acted upon and need a double-check for counts. */
-    private static Set<FeedSet> RecountCandidates;
-    static { RecountCandidates = new HashSet<FeedSet>(); }
+    private static final Set<FeedSet> RecountCandidates = new HashSet<>();
     private volatile static boolean FlushRecounts = false;
 
-    Set<String> orphanFeedIds = new HashSet<String>();
-    Set<String> disabledFeedIds = new HashSet<String>();
+    protected final Set<String> orphanFeedIds = new HashSet<>();
+    protected final Set<String> disabledFeedIds = new HashSet<>();
 
     private ExecutorService primaryExecutor;
-    private List<Integer> outstandingStartIds = new ArrayList<Integer>();
-    private List<JobParameters> outstandingStartParams = new ArrayList<JobParameters>();
+    private final List<Integer> outstandingStartIds = new ArrayList<>();
+    private final List<JobParameters> outstandingStartParams = new ArrayList<>();
     private boolean mainSyncRunning = false;
-    CleanupService cleanupService;
-    StarredService starredService;
-    OriginalTextService originalTextService;
-    UnreadsService unreadsService;
-    ImagePrefetchService imagePrefetchService;
-    private boolean forceHalted = false;
+    private CleanupService cleanupService;
+    private StarredService starredService;
+    private OriginalTextService originalTextService;
+    private UnreadsService unreadsService;
+    protected ImagePrefetchService imagePrefetchService;
 
     @Inject
 	APIManager apiManager;
@@ -512,8 +505,8 @@ public class NBSyncService extends JobService {
         // there is an issue with feeds that have no folder or folders that list feeds that do not exist.  capture them for workarounds.
         Set<String> debugFeedIdsFromFolders = new HashSet<String>();
         Set<String> debugFeedIdsFromFeeds = new HashSet<String>();
-        orphanFeedIds = new HashSet<String>();
-        disabledFeedIds = new HashSet<String>();
+        orphanFeedIds.clear();
+        disabledFeedIds.clear();
 
         try {
             FeedFolderResponse feedResponse = apiManager.getFolderFeedMapping(true);
@@ -933,7 +926,7 @@ public class NBSyncService extends JobService {
             DefaultFeedView mode = PrefsUtils.getDefaultViewModeForFeed(this, story.feedId);
             if (mode == DefaultFeedView.TEXT) {
                 if (dbHelper.getStoryText(story.storyHash) == null) {
-                    originalTextService.addHash(story.storyHash);
+                    OriginalTextService.addHash(story.storyHash);
                 }
             }
         }
@@ -962,7 +955,7 @@ public class NBSyncService extends JobService {
         if (! PrefsUtils.isEnableNotifications(this)) return;
 
         // don't notify stories until the queue is flushed so they don't churn
-        if (unreadsService.StoryHashQueue.size() > 0) return;
+        if (UnreadsService.StoryHashQueue.size() > 0) return;
         // don't slow down active story loading
         if (PendingFeed != null) return;
 
@@ -989,7 +982,7 @@ public class NBSyncService extends JobService {
         // iff all threads have finished, mark all received work as completed
         synchronized (COMPLETION_CALLBACKS_MUTEX) {
             for (JobParameters params : outstandingStartParams) {
-                jobFinished(params, forceHalted);
+                jobFinished(params, false);
             }
             for (Integer startId : outstandingStartIds) {
                 stopSelf(startId);
@@ -1057,8 +1050,7 @@ public class NBSyncService extends JobService {
     public static boolean isFeedSetStoriesFresh(FeedSet fs) {
         Integer count = FeedStoriesSeen.get(fs);
         if (count == null) return false;
-        if (count < 1) return false;
-        return true;
+        return count >= 1;
     }
 
     public static String getSyncStatusMessage(Context context, boolean brief) {

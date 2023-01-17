@@ -13,7 +13,6 @@ import com.newsblur.databinding.FragmentProfiledetailsBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.UserDetails
 import com.newsblur.network.APIManager
-import com.newsblur.util.FeedUtils
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
