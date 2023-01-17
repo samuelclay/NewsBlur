@@ -2,10 +2,8 @@ package com.newsblur.domain;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.text.TextUtils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 

@@ -1,7 +1,6 @@
 package com.newsblur.util;
 
 import androidx.annotation.Nullable;
-import android.text.TextUtils;
 
 import java.io.Serializable;
 import java.util.Collections;
