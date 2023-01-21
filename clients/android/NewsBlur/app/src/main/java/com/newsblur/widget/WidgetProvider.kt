@@ -15,6 +15,7 @@ import com.newsblur.activity.ItemsList
 import com.newsblur.activity.WidgetConfig
 import com.newsblur.util.FeedSet
 import com.newsblur.util.PendingIntentUtils.getImmutableBroadcast
+import com.newsblur.util.PendingIntentUtils.getMutableBroadcast
 import com.newsblur.util.PrefsUtils
 import com.newsblur.util.WidgetBackground
 import com.newsblur.widget.WidgetUtils.checkWidgetUpdateAlarm
@@ -104,7 +105,7 @@ class WidgetProvider : AppWidgetProvider() {
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
             }
 
-            val touchIntentTemplate = getImmutableBroadcast(context, WidgetUtils.RC_WIDGET_STORY, touchIntent,
+            val touchIntentTemplate = getMutableBroadcast(context, WidgetUtils.RC_WIDGET_STORY, touchIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT)
             rv.setPendingIntentTemplate(R.id.widget_list, touchIntentTemplate)
             appWidgetManager.updateAppWidget(appWidgetId, rv)
