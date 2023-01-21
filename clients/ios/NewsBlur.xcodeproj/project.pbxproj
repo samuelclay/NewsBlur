@@ -28,6 +28,8 @@
 		172AD264251D901D000BB264 /* HorizontalPageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172AD263251D901D000BB264 /* HorizontalPageDelegate.swift */; };
 		172AD274251D9F40000BB264 /* Storyboards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172AD273251D9F40000BB264 /* Storyboards.swift */; };
 		17362ADD23639B4E00A0FCCC /* OfflineFetchText.m in Sources */ = {isa = PBXBuildFile; fileRef = 17362ADC23639B4E00A0FCCC /* OfflineFetchText.m */; };
+		1737A9E22979EA8700E84348 /* FeedDetailGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1737A9E12979EA8700E84348 /* FeedDetailGridView.swift */; };
+		1737A9E32979EA8700E84348 /* FeedDetailGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1737A9E12979EA8700E84348 /* FeedDetailGridView.swift */; };
 		173CB30F26BCE94700BA872A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 173CB30E26BCE94700BA872A /* WidgetKit.framework */; };
 		173CB31126BCE94700BA872A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 173CB31026BCE94700BA872A /* SwiftUI.framework */; };
 		173CB31426BCE94700BA872A /* WidgetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 173CB31326BCE94700BA872A /* WidgetExtension.swift */; };
@@ -1396,6 +1398,7 @@
 		172AD273251D9F40000BB264 /* Storyboards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storyboards.swift; sourceTree = "<group>"; };
 		17362ADB23639B4E00A0FCCC /* OfflineFetchText.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OfflineFetchText.h; path = offline/OfflineFetchText.h; sourceTree = "<group>"; };
 		17362ADC23639B4E00A0FCCC /* OfflineFetchText.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OfflineFetchText.m; path = offline/OfflineFetchText.m; sourceTree = "<group>"; };
+		1737A9E12979EA8700E84348 /* FeedDetailGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailGridView.swift; sourceTree = "<group>"; };
 		173CB30D26BCE94700BA872A /* NewsBlur Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "NewsBlur Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		173CB30E26BCE94700BA872A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		173CB31026BCE94700BA872A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -2683,6 +2686,7 @@
 				170E3CD624F8AB0D009CE819 /* FeedDetailViewController.swift */,
 				FF4D9074265BE13500792DB3 /* FeedDetailObjCViewController.h */,
 				FF4D9073265BE13500792DB3 /* FeedDetailObjCViewController.m */,
+				1737A9E12979EA8700E84348 /* FeedDetailGridView.swift */,
 				17435D302942DBBA002C126C /* FeedDetailCollectionCell.swift */,
 				7843F50311EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.h */,
 				7843F50411EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.m */,
@@ -4895,6 +4899,7 @@
 				175792702930605500490924 /* THCircularProgressView.m in Sources */,
 				175792712930605500490924 /* IASKSpecifier.m in Sources */,
 				175792722930605500490924 /* UIView+ViewController.m in Sources */,
+				1737A9E32979EA8700E84348 /* FeedDetailGridView.swift in Sources */,
 				175792732930605500490924 /* PINCache.m in Sources */,
 				175792742930605500490924 /* FeedChooserViewCell.m in Sources */,
 				175792752930605500490924 /* UIView+TKCategory.m in Sources */,
@@ -5072,6 +5077,7 @@
 				FFD6604C1BACA45D006E4B8D /* THCircularProgressView.m in Sources */,
 				FF34FD681E9D93CB0062F8ED /* IASKSpecifier.m in Sources */,
 				FFA0484419CA73B700618DC4 /* UIView+ViewController.m in Sources */,
+				1737A9E22979EA8700E84348 /* FeedDetailGridView.swift in Sources */,
 				FF2924E51E932D2900FCFA63 /* PINCache.m in Sources */,
 				17432C891C534BC6003F8FD6 /* FeedChooserViewCell.m in Sources */,
 				43A4C3E515B00966008787B5 /* UIView+TKCategory.m in Sources */,

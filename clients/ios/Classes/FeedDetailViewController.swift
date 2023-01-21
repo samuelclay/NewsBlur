@@ -7,9 +7,14 @@
 //
 
 import UIKit
+import SwiftUI
 
 /// List of stories for a feed.
 class FeedDetailViewController: FeedDetailObjCViewController {
+    lazy var gridViewController = makeGridViewController()
+    
+    lazy var storyCache = StoryCache()
+    
     enum SectionLayoutKind: Int, CaseIterable {
         /// Feed cells before the story.
         case feedBeforeStory
@@ -77,10 +82,32 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     
     var dataSource: UICollectionViewDiffableDataSource<SectionLayoutKind, Int>! = nil
     
+    private func makeGridViewController() -> UIHostingController<FeedDetailGridView> {
+//        let headerView = FeedDetailGridView(isGrid: isGrid, storyCache: storyCache)
+        let gridView = FeedDetailGridView(feedDetailInteraction: self, cache: storyCache)
+        let gridViewController = UIHostingController(rootView: gridView)
+        gridViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        return gridViewController
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         changedLayout()
         configureDataSource()
+        
+        feedCollectionView.isHidden = true
+        
+        addChild(gridViewController)
+        view.addSubview(gridViewController.view)
+        gridViewController.didMove(toParent: self)
+        
+        NSLayoutConstraint.activate([
+            gridViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            gridViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            gridViewController.view.widthAnchor.constraint(equalTo: view.widthAnchor),
+            gridViewController.view.heightAnchor.constraint(equalTo: view.heightAnchor)
+        ])
     }
     
     @objc override func changedLayout() {
@@ -248,28 +275,64 @@ extension FeedDetailViewController {
         var snapshot = NSDiffableDataSourceSnapshot<SectionLayoutKind, Int>()
         
         let storyCount = Int(appDelegate.storiesCollection.storyLocationsCount)
+        var beforeSelection = [Int]()
+        var selectedIndex = -999
+        var afterSelection = [Int]()
         
         snapshot.appendSections(SectionLayoutKind.allCases)
         
         if self.messageView.isHidden {
             if storyCount > 0 {
-                let selectedIndex = appDelegate.storiesCollection.indexOfActiveStory()
+                selectedIndex = appDelegate.storiesCollection.indexOfActiveStory()
                 
                 if selectedIndex < 0 {
-                    snapshot.appendItems(Array(0..<storyCount), toSection: .feedBeforeStory)
+                    beforeSelection = Array(0..<storyCount)
+                    snapshot.appendItems(beforeSelection, toSection: .feedBeforeStory)
                 } else {
-                    snapshot.appendItems(Array(0..<selectedIndex), toSection: .feedBeforeStory)
+                    beforeSelection = Array(0..<selectedIndex)
+                    
+                    snapshot.appendItems(beforeSelection, toSection: .feedBeforeStory)
                     snapshot.appendItems([selectedIndex], toSection: .selectedStory)
                     
                     if selectedIndex + 1 < storyCount {
-                        snapshot.appendItems(Array(selectedIndex + 1..<storyCount), toSection: .feedAfterStory)
+                        afterSelection = Array(selectedIndex + 1..<storyCount)
+                        snapshot.appendItems(afterSelection, toSection: .feedAfterStory)
                     }
                 }
             }
             
             snapshot.appendItems([-1], toSection: .loading)
+            
+            //TODO: 🚧 move the above logic into StoryCache
+            storyCache.appendStories(beforeSelection: beforeSelection, selectedIndex: selectedIndex, afterSelection: afterSelection)
         }
         
         dataSource.apply(snapshot, animatingDifferences: false)
     }
+}
+
+extension FeedDetailViewController: FeedDetailInteraction {
+    func storyAppeared(_ story: Story) {
+        print("\(story.title) appeared")
+        
+        //TODO: 🚧: this logic is from checkScroll; some more stuff there that may be needed
+        if story.index >= storyCache.before.count + storyCache.after.count - 5 {
+            if storiesCollection.isRiverView, storiesCollection.activeFolder != nil {
+                fetchRiverPage(storiesCollection.feedPage + 1, withCallback: nil)
+            } else {
+                fetchFeedDetail(storiesCollection.feedPage + 1, withCallback: nil)
+            }
+        }
+    }
+    
+    func storyTapped(_ story: Story) {
+        print("tapped \(story.title)")
+        
+        let indexPath = IndexPath(row: story.index, section: 0)
+        
+        //TODO: 🚧 change this function to work better with the grid view
+        collectionView(feedCollectionView, didSelectItemAt: indexPath)
+    }
+    
+    
 }

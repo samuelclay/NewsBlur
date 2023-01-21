@@ -196,6 +196,10 @@
 	return (NewsBlurAppDelegate *)[UIApplication sharedApplication].delegate;
 }
 
++ (instancetype)shared {
+    return (NewsBlurAppDelegate *)[UIApplication sharedApplication].delegate;
+}
+
 - (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [self registerDefaultsFromSettingsBundle];
     
