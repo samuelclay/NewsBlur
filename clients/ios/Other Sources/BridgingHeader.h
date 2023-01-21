@@ -10,6 +10,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "NSString+HTML.h"
 #import "NewsBlurAppDelegate.h"
 #import "ThemeManager.h"
 #import "StoriesCollection.h"
