@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="?layoutBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -7,7 +8,6 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/item_background"
         android:contentDescription="@string/description_login_logo"
         android:paddingVertical="16dp"
         android:src="@drawable/logo_newsblur_blur" />
