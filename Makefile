@@ -197,6 +197,10 @@ mongodump:
 mongorestore:
 	- cp -fr docker/volumes/mongodump docker/volumes/db_mongo/
 	- docker exec -it db_mongo mongorestore --port 29019 -d newsblur /data/db/mongodump/newsblur
+index_feeds:
+	- docker exec -it newsblur_web ./manage.py index_feeds
+index_stories:
+	- docker exec -it newsblur_web ./manage.py index_stories -R
 
 # performance tests
 perf-cli:
