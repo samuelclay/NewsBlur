@@ -47,7 +47,7 @@
     NSInteger countWidth = 0;
     NSString *accessibilityCount = @"";
     NSArray *folderComponents = [folderName componentsSeparatedByString:@" ▸ "];
-    folderName = folderComponents.lastObject;
+    NSString *folderDisplayName = folderComponents.lastObject;
     
     CGFloat indentationOffset = (folderComponents.count - 1) * 28;
     rect.origin.x += indentationOffset;
@@ -124,7 +124,7 @@
     } else if ([folderName isEqual:@"saved_searches"]) {
         folderTitle = @"Saved Searches";
     } else {
-        folderTitle = folderName;
+        folderTitle = folderDisplayName;
         backgroundColor = UIColorFromRGB(0xF7F8F5);
     }
     

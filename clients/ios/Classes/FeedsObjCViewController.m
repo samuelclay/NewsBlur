@@ -1206,9 +1206,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     } else if ([longPressTitle isEqualToString:@"mark_read_immediate"]) {
         [self markFeedRead:feedId cutoffDays:0];
         
-//        if ([preferences boolForKey:@"show_feeds_after_being_read"]) {
+        if ([preferences boolForKey:@"show_feeds_after_being_read"]) {
             [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
-//        }
+        }
         [self.feedTitlesTable beginUpdates];
         [self.feedTitlesTable reloadRowsAtIndexPaths:@[indexPath]
                                     withRowAnimation:UITableViewRowAnimationFade];
@@ -1467,13 +1467,30 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
 
-    return [[appDelegate.dictFolders objectForKey:folderName] count];
+    NSInteger count = [[appDelegate.dictFolders objectForKey:folderName] count];
+    NSInteger limit = 5000;
+    
+    if (count > limit) {
+        NSLog(@"Folder %@ contains %@ feeds; limiting to %@", folderName, @(count), @(limit));  // log
+        
+        count = limit;
+    }
+    
+//    NSLog(@"Folder %@ contains %@ feeds", folderName, @(count));  // log
+    
+    return count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
                      cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
-    id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
+    NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
+    
+    if (indexPath.row >= folder.count) {
+        NSLog(@"Detected attempt to access row %@ of %@ when there are only %@; this will crash!", @(indexPath.row), folderName, @(folder.count));  // log
+    }
+    
+    id feedId = [folder objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     BOOL isSavedSearch = [appDelegate isSavedSearch:feedIdStr];
     NSString *searchQuery = [appDelegate searchQueryForFeedId:feedIdStr];
@@ -1608,9 +1625,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
     
     // If all feeds are already showing, no need to remember this one.
-//    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    if (!self.viewShowingAllFeeds) {
-//        [preferences boolForKey:@"show_feeds_after_being_read"]) {
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    if (!self.viewShowingAllFeeds && [preferences boolForKey:@"show_feeds_after_being_read"]) {
         [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
     }
     
@@ -1928,40 +1944,62 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)selectNextFeed:(id)sender {
     NSArray *indexPaths = [self allIndexPaths];
     NSIndexPath *indexPath = self.lastRowAtIndexPath;
+    NSIndexPath *stopAtIndexPath = indexPath;
+    BOOL foundNext;
     
-    if (indexPath == nil) {
-        if (self.lastSection < 0) {
-            indexPath = indexPaths.firstObject;
+    do {
+        foundNext = YES;
+        
+        if (indexPath == nil) {
+            if (self.lastSection < 0) {
+                indexPath = indexPaths.firstObject;
+            } else {
+                indexPath = [NSIndexPath indexPathForRow:0 inSection:self.lastSection];
+            }
+            
+            stopAtIndexPath = indexPath;
         } else {
-            indexPath = [NSIndexPath indexPathForRow:0 inSection:self.lastSection];
+            NSInteger index = [indexPaths indexOfObject:indexPath];
+            
+            if (index == NSNotFound) {
+                index = -1;
+            }
+            
+            index += 1;
+            
+            if (index >= indexPaths.count) {
+                index = 0;
+            }
+            
+            indexPath = indexPaths[index];
         }
-    } else {
-        NSInteger index = [indexPaths indexOfObject:indexPath];
         
-        if (index == NSNotFound) {
-            index = -1;
+        if (sender == nil) {
+            NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+            id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+            BOOL isInactive = appDelegate.dictInactiveFeeds[feedIdStr] != nil;
+            
+            if (isInactive || [appDelegate isFolderOrParentCollapsed:folderName]) {
+                foundNext = NO;
+            } else {
+                FeedTableCell *cell = (FeedTableCell *)[self tableView:feedTitlesTable cellForRowAtIndexPath:indexPath];
+                
+                if ([cell.reuseIdentifier isEqualToString:@"BlankCellIdentifier"]) {
+                    foundNext = NO;
+                } else {
+                    BOOL hasUnread = cell.positiveCount > 0 || cell.neutralCount > 0 || cell.negativeCount > 0;
+                    
+                    if (!hasUnread) {
+                        foundNext = NO;
+                    }
+                }
+            }
         }
-        
-        index += 1;
-        
-        if (index >= indexPaths.count) {
-            index = 0;
-        }
-        
-        indexPath = indexPaths[index];
-    }
+    } while (!foundNext && ![indexPath isEqual:stopAtIndexPath]);
     
     [self.feedTitlesTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
     [self tableView:self.feedTitlesTable didSelectRowAtIndexPath:indexPath];
-    
-    if (sender == nil) {
-        FeedTableCell *cell = (FeedTableCell *)[self tableView:feedTitlesTable cellForRowAtIndexPath:indexPath];
-        BOOL hasUnread = cell.positiveCount > 0 || cell.neutralCount > 0 || cell.negativeCount > 0;
-        
-        if ([cell.reuseIdentifier isEqualToString:@"BlankCellIdentifier"] || !hasUnread) {
-            [self selectNextFolderOrFeed];
-        }
-    }
 }
 
 - (void)selectPreviousFeed:(id)sender {
@@ -1996,12 +2034,28 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (void)selectNextFolder:(id)sender {
     NSInteger section = self.lastSection;
+    NSInteger stopAtSection = section;
+    BOOL foundNext;
     
-    if (section < self.feedTitlesTable.numberOfSections - 1) {
-        section += 1;
-    } else {
-        section = 0;
-    }
+    do {
+        foundNext = YES;
+        
+        if (section < self.feedTitlesTable.numberOfSections - 1) {
+            section += 1;
+        } else {
+            section = 0;
+        }
+        
+        if (sender == nil) {
+            NSString *folderName = appDelegate.dictFoldersArray[section];
+            UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
+            BOOL hasUnread = counts.ps > 0 || counts.nt > 0;
+            
+            if (!hasUnread) {
+                foundNext = NO;
+            }
+        }
+    } while (!foundNext && section != stopAtSection);
     
     [self didSelectSectionHeaderWithTag:section];
     
@@ -2009,16 +2063,6 @@ heightForHeaderInSection:(NSInteger)section {
     
     if ([self.feedTitlesTable numberOfRowsInSection:section] > 0) {
         [self.feedTitlesTable scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
-    }
-    
-    if (sender == nil) {
-        NSString *folderName = appDelegate.dictFoldersArray[section];
-        UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
-        BOOL hasUnread = counts.ps > 0 || counts.nt > 0;
-        
-        if (!hasUnread) {
-            [self selectNextFolderOrFeed];
-        }
     }
 }
 
