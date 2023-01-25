@@ -444,7 +444,8 @@ class Feed(models.Model):
         feed = None
         without_rss = False
         original_url = url
-        
+        change_ua_youtube = False
+
         if url and url.startswith('newsletter:'):
             try:
                 return cls.objects.get(feed_address=url)
@@ -461,16 +462,13 @@ class Feed(models.Model):
         if url and 'youtube.com/user/' in url:
             username = re.search('youtube.com/user/(\w+)', url).group(1)
             url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
-            without_rss = True
         if url and 'youtube.com/channel/' in url:
             channel_id = re.search('youtube.com/channel/([-_\w]+)', url).group(1)
             url = "https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id
-            without_rss = True
-        if url and 'youtube.com/feeds' in url:
-            without_rss = True
-        if url and 'youtube.com/playlist' in url:
-            without_rss = True
-            
+        # when loading youtube frontend pages a cookie wall interferes NewsBlur's default User Agent
+        if url and 'youtube.com/' in url:
+            change_ua_youtube = True
+
         def criteria(key, value):
             if aggressive:
                 return {'%s__icontains' % key: value}
@@ -489,31 +487,34 @@ class Feed(models.Model):
                 feed = cls.objects.filter(
                     branch_from_feed=None
                 ).filter(**criteria('feed_link', address)).order_by('-num_subscribers')
-                
             return feed
-        
+
         @timelimit(10)
         def _feedfinder_forman(url):
-            found_feed_urls = feedfinder_forman.find_feeds(url)
+            nonlocal change_ua_youtube
+            if change_ua_youtube:
+                found_feed_urls = feedfinder_forman.find_feeds(url, user_agent='curl/7.29.0')
+            else:
+                found_feed_urls = feedfinder_forman.find_feeds(url)
             return found_feed_urls
 
         @timelimit(10)
         def _feedfinder_pilgrim(url):
             found_feed_urls = feedfinder_pilgrim.feeds(url)
             return found_feed_urls
-        
+
         # Normalize and check for feed_address, dupes, and feed_link
         url = urlnorm.normalize(url)
         if not url:
             logging.debug(" ---> ~FRCouldn't normalize url: ~SB%s" % url)
             return
-        
+
         feed = by_url(url)
         found_feed_urls = []
-        
+
         if interactive:
             import pdb; pdb.set_trace()
-        
+
         # Create if it looks good
         if feed and len(feed) > offset:
             feed = feed[offset]
@@ -529,7 +530,7 @@ class Feed(models.Model):
                 except TimeoutError:
                     logging.debug('   ---> Feed finder old timed out...')
                     found_feed_urls = []
-                
+
             if len(found_feed_urls):
                 feed_finder_url = found_feed_urls[0]
                 logging.debug(" ---> Found feed URLs for %s: %s" % (url, found_feed_urls))
