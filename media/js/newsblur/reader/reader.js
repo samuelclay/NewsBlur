@@ -7268,6 +7268,7 @@
             });
             $document.bind('keydown', 'esc', function(e) {
                 e.preventDefault();
+                if (NEWSBLUR.assets.preference("keyboard-ignore-esc")) return;
                 if (!_.keys($.modal.impl.d).length && 
                     !NEWSBLUR.ReaderPopover.is_open() && 
                     !self.flags['feed_list_showing_manage_menu']) {

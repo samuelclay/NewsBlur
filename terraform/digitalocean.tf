@@ -329,8 +329,10 @@ resource "digitalocean_droplet" "node-page" {
 }
 
 resource "digitalocean_droplet" "db-elasticsearch" {
+  count    = 1
   image    = var.droplet_os
-  name     = "db-elasticsearch"
+  # name     = "db-elasticsearch"
+  name     = "db-elasticsearch${count.index+1}"
   region   = var.droplet_region
   size     = var.elasticsearch_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]

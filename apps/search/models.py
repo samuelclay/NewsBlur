@@ -496,6 +496,7 @@ class SearchFeed:
     
     @classmethod
     def index_name(cls):
+        # feeds-index
         return "%s-index" % cls.name
         
     @classmethod
