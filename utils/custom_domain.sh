@@ -15,6 +15,7 @@ if [ $# -eq 0 ]
      echo "$(tput setaf 1)Changinging config/fixtures/bootstrap.json:$(tput setaf 2) localhost to $1$(tput sgr 0)"
      sed -i'.bak' "/domain/ s/localhost/$1/" './config/fixtures/bootstrap.json'
      head -10 './config/fixtures/bootstrap.json'
+     sed -i'.bak' "s/server\ app_django\ nb.com:8000/server\ app_django\ $1:8000/g" './docker/haproxy/haproxy.docker-compose.cfg'
     else
       if [ $# -eq 2 ]
       then
@@ -24,6 +25,7 @@ if [ $# -eq 0 ]
        echo "$(tput setaf 1)Changinging config/fixtures/bootstrap.json: $(tput setaf 2)$1 to $2$(tput sgr 0)"
        sed -i'bak' -e "/domain/ s/$1/$2/" './config/fixtures/bootstrap.json'
        head -10 './config/fixtures/bootstrap.json'
+       sed -i'.bak' "s/server\ app_django\ $1:8000/server\ app_django\ $2:8000/g" './docker/haproxy/haproxy.docker-compose.cfg'
       fi
     fi
 fi
