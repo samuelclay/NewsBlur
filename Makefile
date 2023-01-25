@@ -3,12 +3,18 @@ CURRENT_UID := $(shell id -u)
 CURRENT_GID := $(shell id -g)
 newsblur := $(shell docker ps -qf "name=newsblur_web")
 
+# in case podman is used, there is no podman compose equivalent command available
+DOCKER_COMPOSE := $(shell which podman-compose || echo docker compose)
+
+# mitigate error binding on privileged ports
+UNPRIVILEGED_PORT_FIX := ${UNPRIVILEGED_PORT_FIX}
+
 .PHONY: node
 
 nb: pull bounce migrate bootstrap collectstatic
 
 metrics:
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose -f docker-compose.yml -f docker-compose.metrics.yml up -d
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} ${DOCKER_COMPOSE} --podman-run-args ${UNPRIVILEGED_PORT_FIX} -f docker-compose.yml -f docker-compose.metrics.yml up -d
 
 collectstatic: 
 	- rm -fr static
@@ -17,15 +23,15 @@ collectstatic:
 
 #creates newsblur, builds new images, and creates/refreshes SSL keys
 bounce:
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose down
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} ${DOCKER_COMPOSE} --podman-run-args ${UNPRIVILEGED_PORT_FIX} down
 	- [[ -d config/certificates ]] && echo "keys exist" || make keys
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose up -d --build --remove-orphans
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} ${DOCKER_COMPOSE} --podman-run-args ${UNPRIVILEGED_PORT_FIX} up -d --build --remove-orphans
 
 bootstrap:
 	- docker exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
 
 nbup:
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose up -d --build --remove-orphans
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} ${DOCKER_COMPOSE} --podman-run-args ${UNPRIVILEGED_PORT_FIX} up -d --build --remove-orphans
 coffee:
 	- coffee -c -w **/*.coffee
 migrations:
@@ -44,15 +50,15 @@ bash:
 debug:
 	- docker attach ${newsblur}
 log:
-	- RUNWITHMAKEBUILD=True docker compose logs -f --tail 20 newsblur_web newsblur_node
+	- RUNWITHMAKEBUILD=True ${DOCKER_COMPOSE} --podman-run-args ${UNPRIVILEGED_PORT_FIX} logs -f --tail 20 newsblur_web newsblur_node
 logweb: log
 logcelery:
-	- RUNWITHMAKEBUILD=True docker compose logs -f --tail 20 task_celery
+	- RUNWITHMAKEBUILD=True ${DOCKER_COMPOSE} --podman-run-args ${UNPRIVILEGED_PORT_FIX} logs -f --tail 20 task_celery
 logtask: logcelery
 logmongo:
-	- RUNWITHMAKEBUILD=True docker compose logs -f db_mongo
+	- RUNWITHMAKEBUILD=True ${DOCKER_COMPOSE} --podman-run-args ${UNPRIVILEGED_PORT_FIX} logs -f db_mongo
 alllogs: 
-	- RUNWITHMAKEBUILD=True docker compose logs -f --tail 20
+	- RUNWITHMAKEBUILD=True ${DOCKER_COMPOSE} --podman-run-args ${UNPRIVILEGED_PORT_FIX} logs -f --tail 20
 logall: alllogs
 mongo:
 	- docker exec -it db_mongo mongo --port 29019
@@ -63,7 +69,7 @@ postgres:
 stripe:
 	- stripe listen --forward-to localhost/zebra/webhooks/v2/
 down:
-	- RUNWITHMAKEBUILD=True docker compose -f docker-compose.yml -f docker-compose.metrics.yml down
+	- RUNWITHMAKEBUILD=True ${DOCKER_COMPOSE} --podman-run-args ${UNPRIVILEGED_PORT_FIX} -f docker-compose.yml -f docker-compose.metrics.yml down
 nbdown: down
 jekyll:
 	- cd blog && bundle exec jekyll serve
@@ -72,8 +78,8 @@ jekyll_drafts:
 
 # runs tests
 test:
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} TEST=True docker compose -f docker-compose.yml up -d newsblur_web
-	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose exec newsblur_web bash -c "NOSE_EXCLUDE_DIRS=./vendor DJANGO_SETTINGS_MODULE=newsblur_web.test_settings python3 manage.py test -v 3 --failfast"
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} TEST=True ${DOCKER_COMPOSE} --podman-run-args ${UNPRIVILEGED_PORT_FIX} -f docker-compose.yml up -d newsblur_web
+	- RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} ${DOCKER_COMPOSE} --podman-run-args ${UNPRIVILEGED_PORT_FIX} exec newsblur_web bash -c "NOSE_EXCLUDE_DIRS=./vendor DJANGO_SETTINGS_MODULE=newsblur_web.test_settings python3 manage.py test -v 3 --failfast"
 
 keys:
 	- mkdir config/certificates
