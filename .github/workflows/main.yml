@@ -8,6 +8,6 @@ jobs:
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/python-3.7@master
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_TOKEN: 130a6db3-8fef-4bbb-82c0-345252128c84
         with:
           args: --severity-threshold=high
