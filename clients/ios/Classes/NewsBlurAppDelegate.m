@@ -1608,7 +1608,9 @@
     [storiesCollection setActiveFeed:feed];
     [storiesCollection setActiveFolder:folder];
     readStories = [NSMutableArray array];
-    [folderCountCache removeObjectForKey:folder];
+    if (folder != nil) {
+        [folderCountCache removeObjectForKey:folder];
+    }
     storiesCollection.activeClassifiers = [NSMutableDictionary dictionary];
     
     [self loadFeedDetailView];
