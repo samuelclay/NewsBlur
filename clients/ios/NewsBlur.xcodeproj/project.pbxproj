@@ -27,6 +27,14 @@
 		1723389426C3775B00610784 /* WidgetBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1723389326C3775A00610784 /* WidgetBarView.swift */; };
 		172AD264251D901D000BB264 /* HorizontalPageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172AD263251D901D000BB264 /* HorizontalPageDelegate.swift */; };
 		172AD274251D9F40000BB264 /* Storyboards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172AD273251D9F40000BB264 /* Storyboards.swift */; };
+		172ECBF7298B1239006371BC /* Story.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172ECBF6298B1239006371BC /* Story.swift */; };
+		172ECBF8298B1239006371BC /* Story.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172ECBF6298B1239006371BC /* Story.swift */; };
+		172ECBFA298B1481006371BC /* FeedDetailCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172ECBF9298B1481006371BC /* FeedDetailCardView.swift */; };
+		172ECBFB298B1481006371BC /* FeedDetailCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172ECBF9298B1481006371BC /* FeedDetailCardView.swift */; };
+		172ECBFD298B14B1006371BC /* FeedDetailStoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172ECBFC298B14B1006371BC /* FeedDetailStoryView.swift */; };
+		172ECBFE298B14B1006371BC /* FeedDetailStoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172ECBFC298B14B1006371BC /* FeedDetailStoryView.swift */; };
+		172ECC00298B156D006371BC /* SwiftUIUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172ECBFF298B156D006371BC /* SwiftUIUtilities.swift */; };
+		172ECC01298B156D006371BC /* SwiftUIUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172ECBFF298B156D006371BC /* SwiftUIUtilities.swift */; };
 		17362ADD23639B4E00A0FCCC /* OfflineFetchText.m in Sources */ = {isa = PBXBuildFile; fileRef = 17362ADC23639B4E00A0FCCC /* OfflineFetchText.m */; };
 		1737A9E22979EA8700E84348 /* FeedDetailGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1737A9E12979EA8700E84348 /* FeedDetailGridView.swift */; };
 		1737A9E32979EA8700E84348 /* FeedDetailGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1737A9E12979EA8700E84348 /* FeedDetailGridView.swift */; };
@@ -1396,6 +1404,10 @@
 		1723389326C3775A00610784 /* WidgetBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBarView.swift; sourceTree = "<group>"; };
 		172AD263251D901D000BB264 /* HorizontalPageDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalPageDelegate.swift; sourceTree = "<group>"; };
 		172AD273251D9F40000BB264 /* Storyboards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storyboards.swift; sourceTree = "<group>"; };
+		172ECBF6298B1239006371BC /* Story.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Story.swift; sourceTree = "<group>"; };
+		172ECBF9298B1481006371BC /* FeedDetailCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailCardView.swift; sourceTree = "<group>"; };
+		172ECBFC298B14B1006371BC /* FeedDetailStoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailStoryView.swift; sourceTree = "<group>"; };
+		172ECBFF298B156D006371BC /* SwiftUIUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIUtilities.swift; sourceTree = "<group>"; };
 		17362ADB23639B4E00A0FCCC /* OfflineFetchText.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OfflineFetchText.h; path = offline/OfflineFetchText.h; sourceTree = "<group>"; };
 		17362ADC23639B4E00A0FCCC /* OfflineFetchText.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OfflineFetchText.m; path = offline/OfflineFetchText.m; sourceTree = "<group>"; };
 		1737A9E12979EA8700E84348 /* FeedDetailGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailGridView.swift; sourceTree = "<group>"; };
@@ -2687,6 +2699,8 @@
 				FF4D9074265BE13500792DB3 /* FeedDetailObjCViewController.h */,
 				FF4D9073265BE13500792DB3 /* FeedDetailObjCViewController.m */,
 				1737A9E12979EA8700E84348 /* FeedDetailGridView.swift */,
+				172ECBF9298B1481006371BC /* FeedDetailCardView.swift */,
+				172ECBFC298B14B1006371BC /* FeedDetailStoryView.swift */,
 				17435D302942DBBA002C126C /* FeedDetailCollectionCell.swift */,
 				7843F50311EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.h */,
 				7843F50411EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.m */,
@@ -3200,6 +3214,7 @@
 		43D8189F15B9404D00733444 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				172ECBF6298B1239006371BC /* Story.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -3251,6 +3266,7 @@
 				FFE5322E144C8AC300ACFDE0 /* Utilities.m */,
 				43D818A115B940C200733444 /* DataUtilities.h */,
 				43D818A215B940C200733444 /* DataUtilities.m */,
+				172ECBFF298B156D006371BC /* SwiftUIUtilities.swift */,
 				172AD273251D9F40000BB264 /* Storyboards.swift */,
 				170E3CCE24F8A5D8009CE819 /* SplitViewController.swift */,
 				170E3CD024F8A664009CE819 /* SplitViewDelegate.swift */,
@@ -4904,8 +4920,10 @@
 				175792742930605500490924 /* FeedChooserViewCell.m in Sources */,
 				175792752930605500490924 /* UIView+TKCategory.m in Sources */,
 				175792762930605500490924 /* FeedDetailViewController.swift in Sources */,
+				172ECBF8298B1239006371BC /* Story.swift in Sources */,
 				175792772930605500490924 /* IASKSpecifierValuesViewController.m in Sources */,
 				175792782930605500490924 /* ActivityCell.m in Sources */,
+				172ECBFB298B1481006371BC /* FeedDetailCardView.swift in Sources */,
 				175792792930605500490924 /* NBCopyLinkActivity.m in Sources */,
 				1757927A2930605500490924 /* FeedChooserViewController.m in Sources */,
 				1757927B2930605500490924 /* OnePasswordExtension.m in Sources */,
@@ -4938,6 +4956,7 @@
 				175792962930605500490924 /* DetailViewController.swift in Sources */,
 				175792972930605500490924 /* MenuViewController.m in Sources */,
 				175792982930605500490924 /* NBDashboardNavigationBar.m in Sources */,
+				172ECBFE298B14B1006371BC /* FeedDetailStoryView.swift in Sources */,
 				175792992930605500490924 /* FeedChooserItem.m in Sources */,
 				1757929A2930605500490924 /* StoryPagesObjCViewController.m in Sources */,
 				1757929B2930605500490924 /* TrainerViewController.m in Sources */,
@@ -4947,6 +4966,7 @@
 				1757929F2930605500490924 /* UIBarButtonItem+Image.m in Sources */,
 				175792A02930605500490924 /* StoryDetailViewController.swift in Sources */,
 				175792A12930605500490924 /* SBJson4StreamWriterState.m in Sources */,
+				172ECC01298B156D006371BC /* SwiftUIUtilities.swift in Sources */,
 				175792A22930605500490924 /* NotificationFeedCell.m in Sources */,
 				175792A32930605500490924 /* SSWDirectionalPanGestureRecognizer.m in Sources */,
 				175792A42930605500490924 /* Underscore+Functional.m in Sources */,
@@ -5082,8 +5102,10 @@
 				17432C891C534BC6003F8FD6 /* FeedChooserViewCell.m in Sources */,
 				43A4C3E515B00966008787B5 /* UIView+TKCategory.m in Sources */,
 				170E3CD724F8AB0D009CE819 /* FeedDetailViewController.swift in Sources */,
+				172ECBF7298B1239006371BC /* Story.swift in Sources */,
 				FF34FD631E9D93CB0062F8ED /* IASKSpecifierValuesViewController.m in Sources */,
 				43F6A79D15B0CDC60092EE91 /* ActivityCell.m in Sources */,
+				172ECBFA298B1481006371BC /* FeedDetailCardView.swift in Sources */,
 				FF3FA88D1BB2677C001F7C32 /* NBCopyLinkActivity.m in Sources */,
 				17432C831C53438D003F8FD6 /* FeedChooserViewController.m in Sources */,
 				010EDEFA1B2386B7003B79DE /* OnePasswordExtension.m in Sources */,
@@ -5116,6 +5138,7 @@
 				176A5C7A24F8BD1B009E8DF9 /* DetailViewController.swift in Sources */,
 				17432C7F1C533FBC003F8FD6 /* MenuViewController.m in Sources */,
 				FFF8B3AF1F847505001AB95E /* NBDashboardNavigationBar.m in Sources */,
+				172ECBFD298B14B1006371BC /* FeedDetailStoryView.swift in Sources */,
 				17E635AF1C548C580075338E /* FeedChooserItem.m in Sources */,
 				FF6A233216448E0700E15989 /* StoryPagesObjCViewController.m in Sources */,
 				FF67D3B2168924C40057A7DA /* TrainerViewController.m in Sources */,
@@ -5125,6 +5148,7 @@
 				FF4151C016DED9660013E84B /* UIBarButtonItem+Image.m in Sources */,
 				1787083024F8B3A50000C82B /* StoryDetailViewController.swift in Sources */,
 				FF8D1ED11BAA311000725D8A /* SBJson4StreamWriterState.m in Sources */,
+				172ECC00298B156D006371BC /* SwiftUIUtilities.swift in Sources */,
 				FF5ACC271DE5FA3E00FBD044 /* NotificationFeedCell.m in Sources */,
 				FFA045B619CA49D700618DC4 /* SSWDirectionalPanGestureRecognizer.m in Sources */,
 				FF22FE5E16E53ADC0046165A /* Underscore+Functional.m in Sources */,

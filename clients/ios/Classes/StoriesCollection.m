@@ -97,6 +97,10 @@
     self.savedSearchQuery = fromCollection.savedSearchQuery;
 }
 
+- (BOOL)isRiverOrSocial {
+    return self.isRiverView || self.isSavedView || self.isReadView || self.isWidgetView || self.isSocialView || self.isSocialRiverView;
+}
+
 #pragma mark - Story Traversal
 
 - (BOOL)isStoryUnread:(NSDictionary *)story {

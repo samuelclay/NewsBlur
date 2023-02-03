@@ -59,6 +59,7 @@
 @property (nonatomic, readwrite) BOOL transferredFromDashboard;
 @property (nonatomic, readwrite) BOOL showHiddenStories;
 @property (nonatomic, readwrite) BOOL inSearch;
+@property (nonatomic, readonly) BOOL isRiverOrSocial;
 @property (nonatomic) NSString *searchQuery;
 @property (nonatomic) NSString *savedSearchQuery;
 
