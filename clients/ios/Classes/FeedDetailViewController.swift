@@ -334,5 +334,12 @@ extension FeedDetailViewController: FeedDetailInteraction {
         collectionView(feedCollectionView, didSelectItemAt: indexPath)
     }
     
-    
+    func storyHidden(_ story: Story) {
+        print("hiding \(story.title)")
+        
+        let indexPath = IndexPath(row: story.index, section: 0)
+        
+        appDelegate.activeStory = nil
+        reload()
+    }
 }

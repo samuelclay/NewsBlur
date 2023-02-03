@@ -1204,6 +1204,10 @@
 }
 
 - (void)updatePageWithActiveStory:(NSInteger)location updateFeedDetail:(BOOL)updateFeedDetail {
+    if (appDelegate.activeStory == nil) {
+        return;
+    }
+    
     [appDelegate.storiesCollection pushReadStory:[appDelegate.activeStory objectForKey:@"story_hash"]];
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
