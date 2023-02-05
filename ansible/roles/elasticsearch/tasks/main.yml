@@ -23,7 +23,6 @@
     state: present
     
 - name: Start Elasticsearch Docker container
-  become: yes
   docker_container:
     name: elasticsearch
     image: elasticsearch:7.14.0
@@ -41,7 +40,6 @@
       - name: newsblurnet
         aliases: 
           - elasticsearch
-    user: 1000:1001
     volumes:
       - /srv/newsblur/docker/volumes/elasticsearch:/usr/share/elasticsearch/data
       - /var/log/elasticsearch/:/var/log/elasticsearch/

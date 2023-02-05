@@ -1585,7 +1585,9 @@
     [storiesCollection setActiveFeed:feed];
     [storiesCollection setActiveFolder:folder];
     readStories = [NSMutableArray array];
-    [folderCountCache removeObjectForKey:folder];
+    if (folder != nil) {
+        [folderCountCache removeObjectForKey:folder];
+    }
     storiesCollection.activeClassifiers = [NSMutableDictionary dictionary];
     
     [self loadFeedDetailView];
@@ -2050,9 +2052,9 @@
         if (navController.viewControllers.count > 1) {
             [navController popToRootViewControllerAnimated:NO];
         }
-        
-        [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadRiverFeedDetailView"];
     }
+    
+    [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadRiverFeedDetailView"];
     
     [self flushQueuedReadStories:NO withCallback:^{
         [self flushQueuedSavedStories:NO withCallback:^{
@@ -2798,6 +2800,20 @@
     return !![self.collapsedFolders objectForKey:folderName];
 }
 
+- (BOOL)isFolderOrParentCollapsed:(NSString *)folderName {
+    if ([self isFolderCollapsed:folderName]) {
+        return YES;
+    }
+    
+    if (![self hasParentFolder:folderName]) {
+        return NO;
+    }
+    
+    NSString *parentFolder = [self extractParentFolderName:folderName];
+    
+    return [self isFolderOrParentCollapsed:parentFolder];
+}
+
 #pragma mark - Story Management
 
 - (NSDictionary *)markVisibleStoriesRead {
@@ -3341,6 +3357,10 @@
 }
 
 #pragma mark - Feed Management
+
+- (BOOL)hasParentFolder:(NSString *)folderName {
+    return [folderName containsString:@" ▸ "];
+}
 
 - (NSString *)extractParentFolderName:(NSString *)folderName {
     if ([folderName containsString:@"Top Level"] ||
