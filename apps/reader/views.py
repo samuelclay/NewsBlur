@@ -363,7 +363,8 @@ def load_feeds(request):
         'starred_counts': starred_counts,
         'saved_searches': saved_searches,
         'dashboard_rivers': dashboard_rivers,
-        'categories': categories
+        'categories': categories,
+        'share_ext_token': user.profile.secret_token,
     }
     return data
 
@@ -1248,15 +1249,24 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
 
     for story in stories:
         feed = Feed.get_by_id(story['story_feed_id'])
+        feed_title = feed.feed_title if feed else ""
+        try:
+            usersub = UserSubscription.objects.get(user=user, feed=feed)
+            if usersub.user_title:
+                feed_title = usersub.user_title
+        except UserSubscription.DoesNotExist:
+            usersub = None
+            
         story_content = """%s<br><br><img src="//%s/rss_feeds/icon/%s" width="16" height="16"> %s""" % (
             smart_str(story['story_content']),
             Site.objects.get_current().domain,
             story['story_feed_id'],
-            feed.feed_title if feed else ""
+            feed_title,
         )
         story_content = re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F]', '', story_content)
+        story_title = "%s%s" % (("%s: " % feed_title) if feed_title else "", story['story_title'])
         story_data = {
-            'title': "%s%s" % (("%s: " % feed.feed_title) if feed else "", story['story_title']),
+            'title': story_title,
             'link': story['story_permalink'],
             'description': story_content,
             'categories': story['story_tags'],

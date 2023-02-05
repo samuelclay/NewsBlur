@@ -7,7 +7,7 @@ from apps.reader.models import UserSubscription
 class Command(BaseCommand):
 
     def add_arguments(self, parser):
-        parser.add_argument("-u", "--user", dest="user", nargs=1, help="Specify user id or username")
+        parser.add_argument("-u", "--user", dest="user", type=str, help="Specify user id or username")
         parser.add_argument("-R", "--reindex", dest="reindex", action="store_true", help="Drop index and reindex all stories.")
 
 
@@ -19,7 +19,7 @@ class Command(BaseCommand):
         if not options['user']:
             print("Missing user. Did you want to reindex everything? Use -R.")
             return
-            
+        
         if re.match(r"([0-9]+)", options['user']):
             user = User.objects.get(pk=int(options['user']))
         else:

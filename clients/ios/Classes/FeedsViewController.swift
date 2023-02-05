@@ -65,17 +65,23 @@ class FeedsViewController: FeedsObjCViewController {
             return
         }
         
-        guard let childFeeds = appDelegate.dictFolders[folderTitle] as? [AnyObject],
-            let parentFeeds = appDelegate.dictFolders[parentTitle] as? [AnyObject] else {
+        guard let childFeeds = appDelegate.dictFolders[folderTitle] as? [AnyHashable],
+            let parentFeeds = appDelegate.dictFolders[parentTitle] as? [AnyHashable] else {
             return
         }
         
-        let existingSubfolders = appDelegate.dictSubfolders[parentTitle] as? [AnyObject] ?? []
+        let existingSubfolders = appDelegate.dictSubfolders[parentTitle] as? [AnyHashable] ?? []
         
-        appDelegate.dictFolders[parentTitle] = parentFeeds + childFeeds
-        appDelegate.dictSubfolders[parentTitle] = existingSubfolders + childFeeds
+        appDelegate.dictFolders[parentTitle] = unique(parentFeeds + childFeeds)
+        appDelegate.dictSubfolders[parentTitle] = unique(existingSubfolders + childFeeds)
         
         addSubfolderFeeds(for: parentTitle)
+    }
+    
+    private func unique(_ array: [AnyHashable]) -> [AnyHashable] {
+        var seen: Set<AnyHashable> = []
+        
+        return array.filter { seen.insert($0).inserted }
     }
     
     @objc(parentTitleForFolderTitle:) func parentTitle(for folderTitle: String) -> String? {
