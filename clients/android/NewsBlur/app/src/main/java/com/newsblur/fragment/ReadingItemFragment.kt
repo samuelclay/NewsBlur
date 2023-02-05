@@ -298,13 +298,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
         R.id.menu_reading_original -> {
-            val i = Intent(Intent.ACTION_VIEW)
-            i.data = Uri.parse(story!!.permalink)
-            try {
-                startActivity(i)
-            } catch (e: Exception) {
-                com.newsblur.util.Log.e(this, "device cannot open URLs")
-            }
+            val uri = Uri.parse(story!!.permalink)
+            UIUtils.handleUri(requireContext(), uri)
             true
         }
         R.id.menu_reading_sharenewsblur -> {
