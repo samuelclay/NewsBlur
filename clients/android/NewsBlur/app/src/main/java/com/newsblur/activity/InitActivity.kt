@@ -6,9 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.newsblur.database.BlurDatabaseHelper
+import com.newsblur.service.NBSyncService
 import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.util.Log
-import com.newsblur.util.NBScope
 import com.newsblur.util.NotificationUtils
 import com.newsblur.util.PrefsUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,11 +66,12 @@ class InitActivity : AppCompatActivity() {
     private fun upgradeCheck() {
         val upgrade = PrefsUtils.checkForUpgrade(this)
         if (upgrade) {
-            NBScope.launch {
-                dbHelper.dropAndRecreateTables()
-                // don't actually unset the upgrade flag, the sync service will do this same check and
-                // update everything
-            }
+            dbHelper.dropAndRecreateTables()
+            // don't actually unset the upgrade flag, the sync service will do this same check and
+            // update everything
+
+            // force full sync after recreating tables
+            NBSyncService.forceFeedsFolders()
         }
     }
 }
