@@ -17,14 +17,16 @@ class ImageModule {
     @Singleton
     @Provides
     @IconLoader
-    fun provideIconLoader(@ApplicationContext context: Context): ImageLoader =
-            ImageLoader.asIconLoader(context)
+    fun provideIconLoader(
+            @ApplicationContext context: Context,
+            @IconFileCache iconCache: FileCache,
+    ): ImageLoader = ImageLoader.asIconLoader(context, iconCache)
 
     @Singleton
     @Provides
     @ThumbnailLoader
     fun provideThumbnailLoader(
             @ApplicationContext context: Context,
-            @StoryFileCache fileCache: FileCache,
-    ): ImageLoader = ImageLoader.asThumbnailLoader(context, fileCache)
+            @ThumbnailCache thumbnailFileCache: FileCache,
+    ): ImageLoader = ImageLoader.asThumbnailLoader(context, thumbnailFileCache)
 }

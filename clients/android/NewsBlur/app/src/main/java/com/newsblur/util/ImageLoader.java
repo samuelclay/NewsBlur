@@ -46,14 +46,12 @@ public class ImageLoader {
 		executorService = Executors.newFixedThreadPool(threadCount);
 	}
 
-    public static ImageLoader asIconLoader(Context context) {
-        return new ImageLoader(FileCache.asIconCache(context), R.drawable.ic_world, UIUtils.dp2px(context, 4), false, (Runtime.getRuntime().maxMemory()/20));
+    public static ImageLoader asIconLoader(Context context, FileCache iconCache) {
+        return new ImageLoader(iconCache, R.drawable.ic_world, UIUtils.dp2px(context, 4), false, (Runtime.getRuntime().maxMemory()/20));
     }
 
-    public static ImageLoader asThumbnailLoader(Context context, FileCache chainCache) {
-        FileCache cache = FileCache.asThumbnailCache(context);
-        cache.addChain(chainCache);
-        return new ImageLoader(cache, android.R.color.transparent, UIUtils.dp2px(context, 32), false, (Runtime.getRuntime().maxMemory()/8));
+    public static ImageLoader asThumbnailLoader(Context context, FileCache chainedCache) {
+        return new ImageLoader(chainedCache, android.R.color.transparent, UIUtils.dp2px(context, 32), false, (Runtime.getRuntime().maxMemory()/8));
     }
 	
     public PhotoToLoad displayImage(String url, ImageView imageView) {

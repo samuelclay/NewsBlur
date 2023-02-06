@@ -28,7 +28,7 @@ class StorageModule {
 
     @Singleton
     @Provides
-    @StoryFileCache
+    @StoryImageCache
     fun provideStoryCache(@ApplicationContext context: Context): FileCache =
             FileCache.asStoryImageCache(context)
 
@@ -37,4 +37,16 @@ class StorageModule {
     @IconFileCache
     fun provideIconCache(@ApplicationContext context: Context): FileCache =
             FileCache.asIconCache(context)
+
+    @Singleton
+    @Provides
+    @ThumbnailCache
+    fun provideThumbnailCache(
+            @ApplicationContext context: Context,
+            @StoryImageCache storyImageCache: FileCache,
+    ): FileCache {
+        val thumbnailCache = FileCache.asThumbnailCache(context)
+        thumbnailCache.addChain(storyImageCache)
+        return thumbnailCache
+    }
 }

@@ -26,7 +26,7 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.databinding.FragmentReadingitemBinding
 import com.newsblur.databinding.ReadingItemActionsBinding
 import com.newsblur.di.IconLoader
-import com.newsblur.di.StoryFileCache
+import com.newsblur.di.StoryImageCache
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
 import com.newsblur.domain.UserDetails
@@ -60,7 +60,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     lateinit var iconLoader: ImageLoader
 
     @Inject
-    @StoryFileCache
+    @StoryImageCache
     lateinit var storyImageCache: FileCache
 
     @JvmField
