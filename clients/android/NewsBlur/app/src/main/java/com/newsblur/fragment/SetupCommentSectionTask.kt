@@ -54,7 +54,7 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
     }
 
     private fun doInBackground() {
-        if (context == null || story == null) return
+        if (context == null || story == null || story.id.isNullOrEmpty()) return
         comments = fragment.dbHelper.getComments(story.id)
         topCommentViews = ArrayList()
         topShareViews = ArrayList()
