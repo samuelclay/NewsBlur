@@ -23,6 +23,8 @@ import androidx.annotation.NonNull;
 
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.di.IconFileCache;
+import com.newsblur.di.StoryImageCache;
+import com.newsblur.di.ThumbnailCache;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.SavedSearch;
@@ -156,6 +158,14 @@ public class NBSyncService extends JobService {
     @IconFileCache
     @Inject
     FileCache iconCache;
+
+    @StoryImageCache
+    @Inject
+    FileCache storyImageCache;
+
+    @ThumbnailCache
+    @Inject
+    FileCache thumbnailCache;
 
     /** The time of the last hard API failure we encountered. Used to implement back-off so that the sync
         service doesn't spin in the background chewing up battery when the API is unavailable. */

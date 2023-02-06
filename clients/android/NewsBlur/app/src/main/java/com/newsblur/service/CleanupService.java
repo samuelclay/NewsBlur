@@ -1,6 +1,5 @@
 package com.newsblur.service;
 
-import com.newsblur.util.FileCache;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 
@@ -33,16 +32,13 @@ public class CleanupService extends SubService {
         parent.dbHelper.cleanupDismissals();
 
         com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up story image cache");
-        FileCache imageCache = FileCache.asStoryImageCache(parent);
-        imageCache.cleanupUnusedAndOld(parent.dbHelper.getAllStoryImages(), PrefsUtils.getMaxCachedAgeMillis(parent));
+        parent.storyImageCache.cleanupUnusedAndOld(parent.dbHelper.getAllStoryImages(), PrefsUtils.getMaxCachedAgeMillis(parent));
 
         com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up icon cache");
-        FileCache iconCache = FileCache.asIconCache(parent);
-        iconCache.cleanupOld(PrefConstants.CACHE_AGE_VALUE_30D);
+        parent.iconCache.cleanupOld(PrefConstants.CACHE_AGE_VALUE_30D);
 
         com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up thumbnail cache");
-        FileCache thumbCache = FileCache.asThumbnailCache(parent);
-        thumbCache.cleanupUnusedAndOld(parent.dbHelper.getAllStoryThumbnails(), PrefsUtils.getMaxCachedAgeMillis(parent));
+        parent.thumbnailCache.cleanupUnusedAndOld(parent.dbHelper.getAllStoryThumbnails(), PrefsUtils.getMaxCachedAgeMillis(parent));
 
         activelyRunning = false;
     }
