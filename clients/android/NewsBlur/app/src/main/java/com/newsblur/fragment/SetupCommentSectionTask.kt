@@ -25,11 +25,13 @@ import java.util.*
 
 class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: View, inflater: LayoutInflater, story: Story?, iconLoader: ImageLoader) {
 
-    private var topCommentViews: ArrayList<View>? = null
-    private var topShareViews: ArrayList<View>? = null
-    private var publicCommentViews: ArrayList<View>? = null
-    private var friendCommentViews: ArrayList<View>? = null
-    private var friendShareViews: ArrayList<View>? = null
+    private val topCommentViews: MutableList<View> = mutableListOf()
+    private val topShareViews: MutableList<View> = mutableListOf()
+    private val publicCommentViews: MutableList<View> = mutableListOf()
+    private val friendCommentViews: MutableList<View> = mutableListOf()
+    private val friendShareViews: MutableList<View> = mutableListOf()
+    private val comments: MutableList<Comment> = mutableListOf()
+
     private val story: Story?
     private val inflater: LayoutInflater
     private val viewHolder: WeakReference<View>
@@ -37,7 +39,6 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
     private val user: UserDetails
     private val manager: FragmentManager
     private val iconLoader: ImageLoader
-    private var comments: MutableList<Comment>? = null
 
     /**
      * Do all the DB access and image view creation in the async portion of the task, saving the views in local members.
@@ -55,18 +56,13 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
 
     private fun doInBackground() {
         if (context == null || story == null || story.id.isNullOrEmpty()) return
-        comments = fragment.dbHelper.getComments(story.id)
-        topCommentViews = ArrayList()
-        topShareViews = ArrayList()
-        publicCommentViews = ArrayList()
-        friendCommentViews = ArrayList()
-        friendShareViews = ArrayList()
+        comments.addAll(fragment.dbHelper.getComments(story.id))
 
         // users by whom we saw non-pseudo comments
         val commentingUserIds: MutableSet<String> = HashSet()
         // users by whom we saw shares
         val sharingUserIds: MutableSet<String> = HashSet()
-        for (comment in comments!!) {
+        for (comment in comments) {
             // skip public comments if they are disabled
             if (!comment.byFriend && !PrefsUtils.showPublicComments(context)) {
                 continue
@@ -191,18 +187,18 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
                 context.startActivity(i)
             }
             if (comment.isPseudo) {
-                friendShareViews!!.add(commentView)
+                friendShareViews.add(commentView)
                 sharingUserIds.add(comment.userId)
             } else if (comment.byFriend) {
-                friendCommentViews!!.add(commentView)
+                friendCommentViews.add(commentView)
             } else {
-                publicCommentViews!!.add(commentView)
+                publicCommentViews.add(commentView)
             }
 
             // for actual comments, also populate the upper icon bar
             if (!comment.isPseudo) {
                 val image = ViewUtils.createSharebarImage(context, commentUser.photoUrl, commentUser.userId, iconLoader)
-                topCommentViews!!.add(image)
+                topCommentViews.add(image)
                 commentingUserIds.add(comment.userId)
             }
         }
@@ -223,7 +219,7 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
                 continue
             }
             val image = ViewUtils.createSharebarImage(context, user.photoUrl, user.userId, iconLoader)
-            topShareViews!!.add(image)
+            topShareViews.add(image)
         }
     }
 
@@ -241,11 +237,11 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
         val friendCommentTotal = view.findViewById<View>(R.id.reading_friend_comment_total) as TextView
         val friendShareTotal = view.findViewById<View>(R.id.reading_friend_emptyshare_total) as TextView
         val publicCommentTotal = view.findViewById<View>(R.id.reading_public_comment_total) as TextView
-        val publicCommentCount = publicCommentViews!!.size
-        val friendCommentCount = friendCommentViews!!.size
-        val friendShareCount = friendShareViews!!.size
-        val allCommentCount = topCommentViews!!.size
-        val allShareCount = topShareViews!!.size
+        val publicCommentCount = publicCommentViews.size
+        val friendCommentCount = friendCommentViews.size
+        val friendShareCount = friendShareViews.size
+        val allCommentCount = topCommentViews.size
+        val allShareCount = topShareViews.size
         if (allCommentCount > 0 || allShareCount > 0) {
             view.findViewById<View>(R.id.reading_share_bar).visibility = View.VISIBLE
             view.findViewById<View>(R.id.share_bar_underline).visibility = View.VISIBLE
@@ -254,11 +250,11 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
             view.findViewById<View>(R.id.share_bar_underline).visibility = View.GONE
         }
         sharedGrid.removeAllViews()
-        for (image in topShareViews!!) {
+        for (image in topShareViews) {
             sharedGrid.addView(image)
         }
         commentGrid.removeAllViews()
-        for (image in topCommentViews!!) {
+        for (image in topCommentViews) {
             commentGrid.addView(image)
         }
         if (allCommentCount > 0) {
@@ -313,27 +309,27 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
         }
         val publicCommentListContainer = view.findViewById<View>(R.id.reading_public_comment_container) as LinearLayout
         publicCommentListContainer.removeAllViews()
-        for (i in publicCommentViews!!.indices) {
-            if (i == publicCommentViews!!.size - 1) {
-                publicCommentViews!![i].findViewById<View>(R.id.comment_divider).visibility = View.GONE
+        for (i in publicCommentViews.indices) {
+            if (i == publicCommentViews.size - 1) {
+                publicCommentViews[i].findViewById<View>(R.id.comment_divider).visibility = View.GONE
             }
-            publicCommentListContainer.addView(publicCommentViews!![i])
+            publicCommentListContainer.addView(publicCommentViews[i])
         }
         val friendCommentListContainer = view.findViewById<View>(R.id.reading_friend_comment_container) as LinearLayout
         friendCommentListContainer.removeAllViews()
-        for (i in friendCommentViews!!.indices) {
-            if (i == friendCommentViews!!.size - 1) {
-                friendCommentViews!![i].findViewById<View>(R.id.comment_divider).visibility = View.GONE
+        for (i in friendCommentViews.indices) {
+            if (i == friendCommentViews.size - 1) {
+                friendCommentViews[i].findViewById<View>(R.id.comment_divider).visibility = View.GONE
             }
-            friendCommentListContainer.addView(friendCommentViews!![i])
+            friendCommentListContainer.addView(friendCommentViews[i])
         }
         val friendShareListContainer = view.findViewById<View>(R.id.reading_friend_emptyshare_container) as LinearLayout
         friendShareListContainer.removeAllViews()
-        for (i in friendShareViews!!.indices) {
-            if (i == friendShareViews!!.size - 1) {
-                friendShareViews!![i].findViewById<View>(R.id.comment_divider).visibility = View.GONE
+        for (i in friendShareViews.indices) {
+            if (i == friendShareViews.size - 1) {
+                friendShareViews[i].findViewById<View>(R.id.comment_divider).visibility = View.GONE
             }
-            friendShareListContainer.addView(friendShareViews!![i])
+            friendShareListContainer.addView(friendShareViews[i])
         }
         fragment.onSocialLoadFinished()
     }

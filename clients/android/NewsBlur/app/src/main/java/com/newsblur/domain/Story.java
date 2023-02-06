@@ -10,6 +10,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 import com.newsblur.database.DatabaseConstants;
@@ -19,6 +21,7 @@ public class Story implements Serializable {
 
 	private static final long serialVersionUID = 7629596752129163308L;
 
+    @Nullable
 	public String id;
 
 	@SerializedName("story_permalink")
