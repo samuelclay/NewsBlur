@@ -139,6 +139,8 @@ public class InteractionsAdapter extends ActivityDetailsAdapter {
     private CharSequence getSharedStoryContent(ActivityDetails activity) {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
         int usernameLength;
+        int reSharedLength = 0;
+        int titleLength = 0;
         if (activity.user != null) {
             usernameLength = activity.user.username.length();
             stringBuilder.append(activity.user.username);
@@ -147,20 +149,25 @@ public class InteractionsAdapter extends ActivityDetailsAdapter {
             stringBuilder.append(UNKNOWN_USERNAME);
         }
         stringBuilder.append(" ");
-        stringBuilder.append(reshared);
-        stringBuilder.append(" ");
-        stringBuilder.append(activity.title);
-        stringBuilder.append(" ");
+        if (!TextUtils.isEmpty(reshared)) {
+            stringBuilder.append(reshared);
+            stringBuilder.append(" ");
+            reSharedLength = reshared.length();
+        }
+        if (!TextUtils.isEmpty(activity.title)) {
+            stringBuilder.append(activity.title);
+            stringBuilder.append(" ");
+            titleLength = activity.title.length();
+        }
         if (!TextUtils.isEmpty(activity.content)) {
             stringBuilder.append("\n\n\"");
             stringBuilder.append(activity.content);
             stringBuilder.append("\"");
         }
 
-        int titleSpanStart = usernameLength + 1 + reshared.length() + 1;
-        int titleLength = activity.title.length();
+        int titleSpanStart = usernameLength + 1 + reSharedLength + 1;
         stringBuilder.setSpan(linkColor, 0, titleSpanStart + titleLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        stringBuilder.setSpan(contentColor, usernameLength + 1, usernameLength + 1 + reshared.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        stringBuilder.setSpan(contentColor, usernameLength + 1, usernameLength + 1 + reSharedLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         if (!TextUtils.isEmpty(activity.content)) {
             stringBuilder.setSpan(quoteColor, stringBuilder.length() - activity.content.length() - 2, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
