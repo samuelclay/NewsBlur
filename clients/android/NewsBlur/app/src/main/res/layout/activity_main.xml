@@ -103,7 +103,7 @@
          to be defined first so that other things can be placed above it. -->
     <fragment
         android:id="@+id/fragment_feedintelligenceselector"
-        android:name="com.newsblur.fragment.FeedIntelligenceSelectorFragment"
+        android:name="com.newsblur.fragment.FeedSelectorFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

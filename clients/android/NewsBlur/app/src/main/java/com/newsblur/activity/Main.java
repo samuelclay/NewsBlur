@@ -6,14 +6,11 @@ import static com.newsblur.service.NBSyncReceiver.UPDATE_REBUILD;
 import static com.newsblur.service.NBSyncReceiver.UPDATE_STATUS;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Trace;
 import android.preference.PreferenceManager;
-
-import androidx.appcompat.widget.PopupMenu;
-import androidx.fragment.app.FragmentManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -22,13 +19,21 @@ import android.view.View;
 import android.view.View.OnKeyListener;
 import android.widget.AbsListView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.fragment.app.FragmentManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.newsblur.R;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.ActivityMainBinding;
 import com.newsblur.delegate.MainContextMenuDelegate;
 import com.newsblur.delegate.MainContextMenuDelegateImpl;
-import com.newsblur.fragment.FeedIntelligenceSelectorFragment;
+import com.newsblur.fragment.FeedSelectorFragment;
 import com.newsblur.fragment.FolderListFragment;
+import com.newsblur.keyboard.KeyboardEvent;
+import com.newsblur.keyboard.KeyboardListener;
+import com.newsblur.keyboard.KeyboardManager;
 import com.newsblur.service.BootReceiver;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
@@ -45,7 +50,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, PopupMenu.OnMenuItemClickListener {
+public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, PopupMenu.OnMenuItemClickListener, KeyboardListener {
 
     @Inject
     FeedUtils feedUtils;
@@ -55,10 +60,12 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     public static final String EXTRA_FORCE_SHOW_FEED_ID = "force_show_feed_id";
 
-	private FolderListFragment folderFeedList;
+    private FolderListFragment folderFeedList;
+    private FeedSelectorFragment feedSelectorFragment;
     private boolean wasSwipeEnabled = false;
     private ActivityMainBinding binding;
     private MainContextMenuDelegate contextMenuDelegate;
+    private KeyboardManager keyboardManager;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -69,7 +76,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         contextMenuDelegate = new MainContextMenuDelegateImpl(this, dbHelper);
-		setContentView(binding.getRoot());
+        keyboardManager = new KeyboardManager();
+        setContentView(binding.getRoot());
 
         // set the status bar to an generic loading message when the activity is first created so
         // that something is displayed while the service warms up
@@ -82,7 +90,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
-        ((FeedIntelligenceSelectorFragment) fragmentManager.findFragmentByTag("feedIntelligenceSelector")).setState(folderFeedList.currentState);
+        feedSelectorFragment = ((FeedSelectorFragment) fragmentManager.findFragmentByTag("feedIntelligenceSelector"));
+        feedSelectorFragment.setState(folderFeedList.currentState);
 
         // make sure the interval sync is scheduled, since we are the root Activity
         BootReceiver.scheduleSyncService(this);
@@ -127,12 +136,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         // Check whether it's a shortcut intent
         String shortcutExtra = getIntent().getStringExtra(ShortcutUtils.SHORTCUT_EXTRA);
         if (shortcutExtra != null && shortcutExtra.startsWith(ShortcutUtils.SHORTCUT_ALL_STORIES)) {
-            Intent intent = new Intent(this, AllStoriesItemsList.class);
-            intent.putExtra(ItemsList.EXTRA_FEED_SET, FeedSet.allFeeds());
-            if (shortcutExtra.equals(ShortcutUtils.SHORTCUT_ALL_STORIES_SEARCH)) {
-                intent.putExtra(ItemsList.EXTRA_VISIBLE_SEARCH, true);
-            }
-            startActivity(intent);
+            boolean isAllStoriesSearch = shortcutExtra.equals(ShortcutUtils.SHORTCUT_ALL_STORIES_SEARCH);
+            openAllStories(isAllStoriesSearch);
         }
 
         Trace.endSection();
@@ -177,6 +182,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         updateStatusIndicators();
         folderFeedList.pushUnreadCounts();
         folderFeedList.checkOpenFolderPreferences();
+        keyboardManager.addListener(this);
         triggerSync();
     }
 
@@ -211,7 +217,15 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		if ((updateType & UPDATE_METADATA) != 0) {
             folderFeedList.hasUpdated();
         }
-	}
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
+            // TODO check if overrides BACK action
+            return keyboardManager.onKeyUp(keyCode, event);
+        } else return super.onKeyUp(keyCode, event);
+    }
 
     public void updateUnreadCounts(int neutCount, int posiCount) {
         binding.mainUnreadCountNeutText.setText(Integer.toString(neutCount));
@@ -324,5 +338,47 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             q = null;
         }
         folderFeedList.setSearchQuery(q);
+    }
+
+    private void openAllStories(boolean isAllStoriesSearch) {
+        Intent intent = new Intent(this, AllStoriesItemsList.class);
+        intent.putExtra(ItemsList.EXTRA_FEED_SET, FeedSet.allFeeds());
+        intent.putExtra(ItemsList.EXTRA_VISIBLE_SEARCH, isAllStoriesSearch);
+        startActivity(intent);
+    }
+
+    private void switchViewStateLeft() {
+        StateFilter currentState = folderFeedList.currentState;
+        if (currentState.equals(StateFilter.SAVED)) {
+            feedSelectorFragment.setState(StateFilter.BEST);
+        } else if (currentState.equals(StateFilter.BEST)) {
+            feedSelectorFragment.setState(StateFilter.SOME);
+        } else if (currentState.equals(StateFilter.SOME)) {
+            feedSelectorFragment.setState(StateFilter.ALL);
+        }
+    }
+
+    private void switchViewStateRight() {
+        StateFilter currentState = folderFeedList.currentState;
+        if (currentState.equals(StateFilter.ALL)) {
+            feedSelectorFragment.setState(StateFilter.SOME);
+        } else if (currentState.equals(StateFilter.SOME)) {
+            feedSelectorFragment.setState(StateFilter.BEST);
+        } else if (currentState.equals(StateFilter.BEST)) {
+            feedSelectorFragment.setState(StateFilter.SAVED);
+        }
+    }
+
+    @Override
+    public void onKeyboardEvent(@NonNull KeyboardEvent event) {
+        if (event instanceof KeyboardEvent.AddFeed) {
+            onClickAddButton();
+        } else if (event instanceof KeyboardEvent.OpenAllStories) {
+            openAllStories(false);
+        } else if (event instanceof KeyboardEvent.SwitchViewLeft) {
+            switchViewStateLeft();
+        } else if (event instanceof KeyboardEvent.SwitchViewRight) {
+            switchViewStateRight();
+        }
     }
 }
