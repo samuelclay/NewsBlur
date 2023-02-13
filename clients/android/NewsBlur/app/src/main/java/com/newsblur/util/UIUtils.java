@@ -44,6 +44,7 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.color.MaterialColors;
+import com.google.android.material.snackbar.Snackbar;
 import com.newsblur.NbApplication;
 import com.newsblur.R;
 import com.newsblur.activity.*;
@@ -598,5 +599,9 @@ public class UIUtils {
             intent.putExtra(NBSyncReceiver.NB_SYNC_UPDATE_TYPE, updateType);
             context.sendBroadcast(intent);
         }
+    }
+
+    public static void showSnackBar(View view, String message) {
+        Snackbar.make(view, message, 750).show();
     }
 }
