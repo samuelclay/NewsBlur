@@ -6,7 +6,6 @@ import static com.newsblur.service.NBSyncReceiver.UPDATE_REBUILD;
 import static com.newsblur.service.NBSyncReceiver.UPDATE_STATUS;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Trace;
@@ -186,7 +185,13 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         triggerSync();
     }
 
-	@Override
+    @Override
+    protected void onPause() {
+        keyboardManager.removeListener();
+        super.onPause();
+    }
+
+    @Override
 	public void changedState(StateFilter state) {
         if ( !( (state == StateFilter.ALL) ||
                 (state == StateFilter.SOME) ||
@@ -220,11 +225,23 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (KeyboardManager.hasHardwareKeyboard(this)) {
+            boolean isKnownKeyCode = keyboardManager.isKnownKeyCode(keyCode, true);
+            if (isKnownKeyCode) return true;
+            else return super.onKeyDown(keyCode, event);
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
-            // TODO check if overrides BACK action
-            return keyboardManager.onKeyUp(keyCode, event);
-        } else return super.onKeyUp(keyCode, event);
+        if (KeyboardManager.hasHardwareKeyboard(this)) {
+            boolean handledKeyCode = keyboardManager.onKeyUp(keyCode, event);
+            if (handledKeyCode) return true;
+            else return super.onKeyUp(keyCode, event);
+        }
+        return super.onKeyUp(keyCode, event);
     }
 
     public void updateUnreadCounts(int neutCount, int posiCount) {
