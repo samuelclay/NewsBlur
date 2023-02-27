@@ -23,7 +23,7 @@ class ReadingKeyboardShortcutsTest {
     @Test
     fun previousStoryTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.PreviousStory) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val handled = manager.onKeyUp(KeyEvent.KEYCODE_J, mockk())
@@ -34,7 +34,7 @@ class ReadingKeyboardShortcutsTest {
     @Test
     fun previousStoryArrowTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.PreviousStory) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val handled = manager.onKeyUp(KeyEvent.KEYCODE_DPAD_DOWN, mockk())
@@ -45,7 +45,7 @@ class ReadingKeyboardShortcutsTest {
     @Test
     fun nextStoryTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.NextStory) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val handled = manager.onKeyUp(KeyEvent.KEYCODE_K, mockk())
@@ -56,7 +56,7 @@ class ReadingKeyboardShortcutsTest {
     @Test
     fun nextStoryArrowTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.NextStory) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val handled = manager.onKeyUp(KeyEvent.KEYCODE_DPAD_UP, mockk())
@@ -67,7 +67,7 @@ class ReadingKeyboardShortcutsTest {
     @Test
     fun toggleTextViewTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.ToggleTextView) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val keyEvent = mockk<KeyEvent>()
@@ -90,7 +90,7 @@ class ReadingKeyboardShortcutsTest {
     @Test
     fun pageDownTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.PageDown) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val keyEvent = mockk<KeyEvent>()
@@ -104,7 +104,7 @@ class ReadingKeyboardShortcutsTest {
     @Test
     fun pageUpTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.PageUp) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val keyEvent = mockk<KeyEvent>()
@@ -118,7 +118,7 @@ class ReadingKeyboardShortcutsTest {
     @Test
     fun nextUnreadStoryTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.NextUnreadStory) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val handled = manager.onKeyUp(KeyEvent.KEYCODE_N, mockk())
@@ -129,7 +129,7 @@ class ReadingKeyboardShortcutsTest {
     @Test
     fun toggleReadUnreadUTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.ToggleReadUnread) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val handled = manager.onKeyUp(KeyEvent.KEYCODE_U, mockk())
@@ -140,7 +140,7 @@ class ReadingKeyboardShortcutsTest {
     @Test
     fun toggleReadUnreadMTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.ToggleReadUnread) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val handled = manager.onKeyUp(KeyEvent.KEYCODE_M, mockk())
@@ -151,7 +151,7 @@ class ReadingKeyboardShortcutsTest {
     @Test
     fun saveUnsaveStoryTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.SaveUnsaveStory) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val keyEvent = mockk<KeyEvent>()
@@ -165,7 +165,7 @@ class ReadingKeyboardShortcutsTest {
     @Test
     fun shareStoryTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.ShareStory) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val keyEvent = mockk<KeyEvent>()
@@ -179,7 +179,7 @@ class ReadingKeyboardShortcutsTest {
     @Test
     fun openInBrowserOTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.OpenInBrowser) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val handled = manager.onKeyUp(KeyEvent.KEYCODE_O, mockk())
@@ -190,7 +190,7 @@ class ReadingKeyboardShortcutsTest {
     @Test
     fun openInBrowserVTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.OpenInBrowser) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val handled = manager.onKeyUp(KeyEvent.KEYCODE_V, mockk())
@@ -201,7 +201,7 @@ class ReadingKeyboardShortcutsTest {
     @Test
     fun scrollToCommentsTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.ScrollToComments) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val handled = manager.onKeyUp(KeyEvent.KEYCODE_C, mockk())
@@ -212,7 +212,7 @@ class ReadingKeyboardShortcutsTest {
     @Test
     fun openStoryTrainerTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.OpenStoryTrainer) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val handled = manager.onKeyUp(KeyEvent.KEYCODE_T, mockk())
