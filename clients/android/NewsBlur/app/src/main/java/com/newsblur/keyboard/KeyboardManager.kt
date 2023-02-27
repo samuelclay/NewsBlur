@@ -41,20 +41,18 @@ class KeyboardManager {
         /**
          * Story events
          */
-        KeyEvent.KEYCODE_J -> {
+        KeyEvent.KEYCODE_J,
+        KeyEvent.KEYCODE_DPAD_DOWN -> {
             listener?.onKeyboardEvent(KeyboardEvent.PreviousStory)
             true
         }
-        KeyEvent.KEYCODE_K -> {
+        KeyEvent.KEYCODE_K,
+        KeyEvent.KEYCODE_DPAD_UP -> {
             listener?.onKeyboardEvent(KeyboardEvent.NextStory)
             true
         }
         KeyEvent.KEYCODE_N -> {
             listener?.onKeyboardEvent(KeyboardEvent.NextUnreadStory)
-            true
-        }
-        KeyEvent.KEYCODE_W -> {
-            listener?.onKeyboardEvent(KeyboardEvent.ToggleTextView)
             true
         }
         KeyEvent.KEYCODE_U, KeyEvent.KEYCODE_M -> {
@@ -78,6 +76,18 @@ class KeyboardManager {
             listener?.onKeyboardEvent(KeyboardEvent.OpenStoryTrainer)
             true
         }
+        KeyEvent.KEYCODE_ENTER,
+        KeyEvent.KEYCODE_NUMPAD_ENTER -> {
+            if (event.isShiftPressed) {
+                listener?.onKeyboardEvent(KeyboardEvent.ToggleTextView)
+                true
+            } else false
+        }
+        KeyEvent.KEYCODE_SPACE -> {
+            if (event.isShiftPressed) listener?.onKeyboardEvent(KeyboardEvent.PageUp)
+            else listener?.onKeyboardEvent(KeyboardEvent.PageDown)
+            true
+        }
         else -> false
     }
 
@@ -91,15 +101,17 @@ class KeyboardManager {
         true
     } else false
 
-    fun isKnownKeyCode(keyCode: Int, overridePad: Boolean = false): Boolean {
-        val isShortcutKey = isShortcutKeyCode(keyCode)
-        return if (overridePad) isShortcutKey && isPadKeyCode(keyCode)
-        else isShortcutKey
-    }
+    fun isKnownKeyCode(keyCode: Int): Boolean =
+         isShortcutKeyCode(keyCode) && isSpecialKeyCode(keyCode)
 
-    private fun isPadKeyCode(keyCode: Int) = when (keyCode) {
+    private fun isSpecialKeyCode(keyCode: Int) = when (keyCode) {
         KeyEvent.KEYCODE_DPAD_LEFT,
         KeyEvent.KEYCODE_DPAD_RIGHT,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_ENTER,
+        KeyEvent.KEYCODE_NUMPAD_ENTER,
+        KeyEvent.KEYCODE_SPACE,
         -> true
         else -> false
     }
@@ -117,7 +129,6 @@ class KeyboardManager {
         KeyEvent.KEYCODE_V,
         KeyEvent.KEYCODE_C,
         KeyEvent.KEYCODE_T,
-        KeyEvent.KEYCODE_W,
         -> true
         else -> false
     }
