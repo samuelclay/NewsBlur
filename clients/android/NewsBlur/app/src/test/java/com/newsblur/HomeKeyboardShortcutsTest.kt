@@ -23,7 +23,7 @@ class HomeKeyboardShortcutsTest {
     @Test
     fun openAllStoriesTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.OpenAllStories) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val keyEvent = mockk<KeyEvent>()
@@ -46,7 +46,7 @@ class HomeKeyboardShortcutsTest {
     @Test
     fun addSiteTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.AddFeed) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val keyEvent = mockk<KeyEvent>()
@@ -69,7 +69,7 @@ class HomeKeyboardShortcutsTest {
     @Test
     fun switchViewLeftTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.SwitchViewLeft) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val handled = manager.onKeyUp(KeyEvent.KEYCODE_DPAD_LEFT, mockk())
@@ -80,7 +80,7 @@ class HomeKeyboardShortcutsTest {
     @Test
     fun switchViewRightTest() {
         val listener = mockk<KeyboardListener>()
-        every { listener.onKeyboardEvent(KeyboardEvent.SwitchViewRight) } returns Unit
+        every { listener.onKeyboardEvent(any()) } returns Unit
         manager.addListener(listener)
 
         val handled = manager.onKeyUp(KeyEvent.KEYCODE_DPAD_RIGHT, mockk())
