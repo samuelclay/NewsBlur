@@ -745,4 +745,8 @@
     <string name="story_read">Story marked as read</string>
     <string name="story_unread">Story marked as unread</string>
 
+    <string name="unread_stories">Unread stories</string>
+    <string name="focused_stories">Focused stories</string>
+    <string name="saved_stories">Saved stories</string>
+
 </resources>

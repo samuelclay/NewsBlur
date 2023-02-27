@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.*
 import android.view.ContextMenu.ContextMenuInfo
 import android.webkit.WebView.HitTestResult
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
@@ -21,7 +20,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
-import com.google.android.material.snackbar.Snackbar
 import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
 import com.newsblur.activity.Reading
@@ -1015,8 +1013,13 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         }
     }
 
+    fun scrollVerticallyBy(dy: Int) {
+        binding.readingScrollview.smoothScrollBy(0, dy)
+    }
+
     companion object {
         private const val BUNDLE_SCROLL_POS_REL = "scrollStateRel"
+        const val VERTICAL_SCROLL_DISTANCE_DP = 240
 
         @JvmStatic
         fun newInstance(story: Story?, feedTitle: String?, feedFaviconColor: String?, feedFaviconFade: String?, feedFaviconBorder: String?, faviconText: String?, faviconUrl: String?, classifier: Classifier?, displayFeedDetails: Boolean, sourceUserId: String?): ReadingItemFragment {

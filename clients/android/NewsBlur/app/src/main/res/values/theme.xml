@@ -61,6 +61,8 @@
         <item name="fontFamily">@font/whitney</item>
         <item name="circleProgressIndicator">@style/circleProgressIndicator</item>
         <item name="toggleButton">@style/toggleButton</item>
+        <item name="snackbarStyle">@style/materialSnackBarTheme</item>
+        <item name="snackbarTextViewStyle">@style/materialSnackBarTextView</item>
     </style>
 
     <style name="NewsBlurDarkTheme" parent="Theme.MaterialComponents.NoActionBar">
@@ -124,6 +126,8 @@
         <item name="fontFamily">@font/whitney</item>
         <item name="circleProgressIndicator">@style/circleProgressIndicator</item>
         <item name="toggleButton">@style/toggleButton.dark</item>
+        <item name="snackbarStyle">@style/materialSnackBarTheme.dark</item>
+        <item name="snackbarTextViewStyle">@style/materialSnackBarTextView.dark</item>
     </style>
 
     <style name="NewsBlurBlackTheme" parent="Theme.MaterialComponents.NoActionBar" >
@@ -187,6 +191,8 @@
         <item name="fontFamily">@font/whitney</item>
         <item name="circleProgressIndicator">@style/circleProgressIndicator</item>
         <item name="toggleButton">@style/toggleButton.dark</item>
+        <item name="snackbarStyle">@style/materialSnackBarTheme.dark</item>
+        <item name="snackbarTextViewStyle">@style/materialSnackBarTextView.dark</item>
     </style>
 
     <style name="NewsBlurTheme.Translucent" parent="NewsBlurTheme">

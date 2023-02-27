@@ -28,6 +28,8 @@ sealed class KeyboardEvent {
     object ShareStory : KeyboardEvent()
     object ScrollToComments : KeyboardEvent()
     object OpenStoryTrainer : KeyboardEvent()
+    object PageDown: KeyboardEvent()
+    object PageUp: KeyboardEvent()
 
     /**
      * TODO

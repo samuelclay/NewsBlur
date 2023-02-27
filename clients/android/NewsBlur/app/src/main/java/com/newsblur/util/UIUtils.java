@@ -602,6 +602,6 @@ public class UIUtils {
     }
 
     public static void showSnackBar(View view, String message) {
-        Snackbar.make(view, message, 750).show();
+        Snackbar.make(view, message, 600).show();
     }
 }

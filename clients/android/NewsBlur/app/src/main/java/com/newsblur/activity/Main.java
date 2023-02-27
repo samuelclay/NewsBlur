@@ -19,6 +19,7 @@ import android.view.View.OnKeyListener;
 import android.widget.AbsListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.FragmentManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -227,7 +228,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (KeyboardManager.hasHardwareKeyboard(this)) {
-            boolean isKnownKeyCode = keyboardManager.isKnownKeyCode(keyCode, true);
+            boolean isKnownKeyCode = keyboardManager.isKnownKeyCode(keyCode);
             if (isKnownKeyCode) return true;
             else return super.onKeyDown(keyCode, event);
         }
@@ -367,23 +368,28 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private void switchViewStateLeft() {
         StateFilter currentState = folderFeedList.currentState;
         if (currentState.equals(StateFilter.SAVED)) {
-            feedSelectorFragment.setState(StateFilter.BEST);
+            setAndNotifySelectorState(StateFilter.BEST, R.string.focused_stories);
         } else if (currentState.equals(StateFilter.BEST)) {
-            feedSelectorFragment.setState(StateFilter.SOME);
+            setAndNotifySelectorState(StateFilter.SOME, R.string.unread_stories);
         } else if (currentState.equals(StateFilter.SOME)) {
-            feedSelectorFragment.setState(StateFilter.ALL);
+            setAndNotifySelectorState(StateFilter.ALL, R.string.all_stories);
         }
     }
 
     private void switchViewStateRight() {
         StateFilter currentState = folderFeedList.currentState;
         if (currentState.equals(StateFilter.ALL)) {
-            feedSelectorFragment.setState(StateFilter.SOME);
+            setAndNotifySelectorState(StateFilter.SOME, R.string.unread_stories);
         } else if (currentState.equals(StateFilter.SOME)) {
-            feedSelectorFragment.setState(StateFilter.BEST);
+            setAndNotifySelectorState(StateFilter.BEST, R.string.focused_stories);
         } else if (currentState.equals(StateFilter.BEST)) {
-            feedSelectorFragment.setState(StateFilter.SAVED);
+            setAndNotifySelectorState(StateFilter.SAVED, R.string.saved_stories);
         }
+    }
+
+    private void setAndNotifySelectorState(StateFilter state, @StringRes  int notifyMsgRes) {
+        feedSelectorFragment.setState(state);
+        UIUtils.showSnackBar(binding.getRoot(), getString(notifyMsgRes));
     }
 
     @Override

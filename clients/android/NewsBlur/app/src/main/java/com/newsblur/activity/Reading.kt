@@ -22,6 +22,7 @@ import com.newsblur.databinding.ActivityReadingBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.Story
 import com.newsblur.fragment.ReadingItemFragment
+import com.newsblur.fragment.ReadingItemFragment.Companion.VERTICAL_SCROLL_DISTANCE_DP
 import com.newsblur.fragment.ReadingPagerFragment
 import com.newsblur.keyboard.KeyboardEvent
 import com.newsblur.keyboard.KeyboardListener
@@ -831,6 +832,10 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
             KeyboardEvent.ShareStory -> readingFragment?.openShareDialog()
             KeyboardEvent.ToggleReadUnread -> readingFragment?.switchMarkStoryReadState(true)
             KeyboardEvent.ToggleTextView -> readingFragment?.switchSelectedViewMode()
+            KeyboardEvent.PageDown ->
+                readingFragment?.scrollVerticallyBy(UIUtils.dp2px(this, VERTICAL_SCROLL_DISTANCE_DP))
+            KeyboardEvent.PageUp ->
+                readingFragment?.scrollVerticallyBy(UIUtils.dp2px(this, -VERTICAL_SCROLL_DISTANCE_DP))
             else -> {}
         }
     }
