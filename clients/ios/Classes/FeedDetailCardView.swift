@@ -17,10 +17,9 @@ struct CardView: View {
     var body: some View {
         ZStack(alignment: .leading) {
             if story.isSelected || cache.isGrid {
-                RoundedRectangle(cornerRadius: 10).foregroundColor(.init(white: 0.9))
+                RoundedRectangle(cornerRadius: 10).foregroundColor(highlightColor)
                 
                 CardFeedBarView(cache: cache, story: story)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
                     .padding(.leading, 2)
             } else {
                 CardFeedBarView(cache: cache, story: story)
@@ -39,15 +38,16 @@ struct CardView: View {
                 }
                 
                 HStack {
-                    if !cache.isGrid, cache.settings.listPreview.isLeft, let previewImage {
+                    if !cache.isGrid, cache.settings.preview.isLeft, let previewImage {
                         listPreview(image: previewImage)
                     }
                     
                     CardContentView(cache: cache, story: story)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-                        .padding(15)
+                        .padding([.leading, .trailing], 15)
+                        .padding([.top, .bottom], cache.settings.spacing == .compact ? 10 : 15)
                     
-                    if !cache.isGrid, !cache.settings.listPreview.isLeft, let previewImage {
+                    if !cache.isGrid, !cache.settings.preview.isLeft, let previewImage {
                         listPreview(image: previewImage)
                         
 //                        Image(uiImage: previewImage)
@@ -59,6 +59,9 @@ struct CardView: View {
                     }
                 }
             }
+        }
+        .if(cache.isGrid || story.isSelected) { view in
+            view.clipShape(RoundedRectangle(cornerRadius: 10))
         }
         .if(story.isSelected) { view in
             view.padding(10)
@@ -130,8 +133,16 @@ struct CardView: View {
 //        }
 //    }
     
+    var highlightColor: Color {
+        if cache.isGrid {
+            return Color.themed([0xFDFCFA, 0xFFFDEF, 0x4F4F4F, 0x292B2C])
+        } else {
+            return Color.themed([0xFFFDEF, 0xEEECCD, 0x303A40, 0x303030])
+        }
+    }
+    
     var previewImage: UIImage? {
-        guard cache.settings.listPreview != .none, let image = cache.appDelegate.cachedImage(forStoryHash: story.hash), image.isKind(of: UIImage.self) else {
+        guard cache.settings.preview != .none, let image = cache.appDelegate.cachedImage(forStoryHash: story.hash), image.isKind(of: UIImage.self) else {
             return nil
         }
         
@@ -151,9 +162,9 @@ struct CardView: View {
     
     @ViewBuilder
     func listPreview(image: UIImage) -> some View {
-        let isLeft = cache.settings.listPreview.isLeft
+        let isLeft = cache.settings.preview.isLeft
         
-        if cache.settings.listPreview.isSmall {
+        if cache.settings.preview.isSmall {
             Image(uiImage: image)
                 .resizable()
                 .scaledToFill()
@@ -167,7 +178,7 @@ struct CardView: View {
                 .resizable()
                 .scaledToFill()
                 .frame(width: 90)
-                .cornerRadius(10, corners: isLeft || !story.isSelected ? [] : [.topRight, .bottomRight])
+                .clipped()
                 .padding(.leading, isLeft ? 8 : -10)
                 .padding(.trailing, isLeft ? -10 : 0)
         }
@@ -208,8 +219,9 @@ struct CardContentView: View {
                         .padding(.leading, 24)
                     
                     Text(story.feedName)
-                        .font(.custom("WhitneySSm-Medium", size: 10, relativeTo: .caption))
+                        .font(font(named: "WhitneySSm-Medium", size: 10))
                         .lineLimit(1)
+                        .foregroundColor(feedColor)
                 }
             }
             
@@ -238,14 +250,28 @@ struct CardContentView: View {
                         }
                         
                         Text(story.title)
-                            .font(.custom("WhitneySSm-Medium", size: 18, relativeTo: .caption).bold())
+                            .font(font(named: "WhitneySSm-Medium", size: 18).bold())
+                            .foregroundColor(titleColor)
+                            .lineLimit(cache.isGrid ? StorySettings.Content.titleLimit : cache.settings.content.limit)
+                            .truncationMode(.tail)
                     }
-                    Text(story.content.prefix(400))
-                        .font(.custom("WhitneySSm-Book", size: 13, relativeTo: .caption))
-                        .padding(.top, 5)
+                    .padding(.bottom, cache.settings.spacing == .compact ? -5 : 0)
+                    
+                    if cache.isGrid || cache.settings.content != .title {
+                        Text(story.content)
+                            .font(font(named: "WhitneySSm-Book", size: 13))
+                            .foregroundColor(contentColor)
+                            .lineLimit(cache.isGrid ? StorySettings.Content.contentLimit : cache.settings.content.limit)
+                            .truncationMode(.tail)
+                            .padding(.top, 5)
+                            .padding(.bottom, cache.settings.spacing == .compact ? -5 : 0)
+                    }
+                    
                     Spacer()
+                    
                     Text(story.dateAndAuthor)
-                        .font(.custom("WhitneySSm-Medium", size: 10, relativeTo: .caption))
+                        .font(font(named: "WhitneySSm-Medium", size: 10))
+                        .foregroundColor(dateAndAuthorColor)
                         .padding(.top, 5)
                 }
             }
@@ -269,6 +295,40 @@ struct CardContentView: View {
         default:
             return UIImage(named: "indicator-unread")
         }
+    }
+    
+    func font(named: String, size: CGFloat) -> Font {
+        return Font.custom(named, size: size + cache.settings.fontSize.offset, relativeTo: .caption)
+    }
+    
+    var feedColor: Color {
+        return contentColor
+    }
+    
+    var titleColor: Color {
+        if story.isSelected {
+            return Color.themed([0x686868, 0xA0A0A0])
+        } else if story.isRead {
+            return Color.themed([0x585858, 0x585858, 0x989898, 0x888888])
+        } else {
+            return Color.themed([0x111111, 0x333333, 0xD0D0D0, 0xCCCCCC])
+        }
+    }
+    
+    var contentColor: Color {
+        if story.isSelected, story.isRead {
+            return Color.themed([0xB8B8B8, 0xB8B8B8, 0xA0A0A0, 0x707070])
+        } else if story.isSelected {
+            return Color.themed([0x888785, 0x686868, 0xA9A9A9, 0x989898])
+        } else if story.isRead {
+            return Color.themed([0xB8B8B8, 0xB8B8B8, 0xA0A0A0, 0x707070])
+        } else {
+            return Color.themed([0x404040, 0x404040, 0xC0C0C0, 0xB0B0B0])
+        }
+    }
+    
+    var dateAndAuthorColor: Color {
+        return contentColor
     }
 }
 

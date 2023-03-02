@@ -24,6 +24,7 @@ class Story: Identifiable {
     var content = ""
     var dateString = ""
     var timestamp = 0
+    var isRead = false
     var isSaved = false
     var isShared = false
     var score = 0
@@ -99,6 +100,7 @@ class Story: Identifiable {
             score = Int(NewsBlurAppDelegate.computeStoryScore(intelligence))
         }
         
+        isRead = score < 0
         isRiverOrSocial = storiesCollection.isRiverOrSocial
     }
     
@@ -107,9 +109,9 @@ class Story: Identifiable {
         let scanner = Scanner(string: hex)
         var color: Int64 = 0
         scanner.scanHexInt64(&color)
-        let array = [NSNumber(value: color)]
+        let value = Int(color)
         
-        return ThemeManager.color(fromRGB: array)
+        return ThemeManager.shared.fixedColor(fromRGB: value) ?? UIColor.gray
     }
 }
 
@@ -149,19 +151,44 @@ class StoryCache: ObservableObject {
 class StorySettings {
     let defaults = UserDefaults.standard
     
-    //TODO: 🚧
-//    var listContent: Int {
-//        NSString *preferenceKey = @"story_list_preview_text_size";
-//        NSArray *titles = @[@"Title", @"content_preview_small.png", @"content_preview_medium.png", @"content_preview_large.png"];
-//        NSArray *values = @[@"title", @"short", @"medium", @"long"];
-//    }
+    enum Content: String, RawRepresentable {
+        case title
+        case short
+        case medium
+        case long
+        
+        static let titleLimit = 6
+        
+        static let contentLimit = 10
+        
+        var limit: Int {
+            switch self {
+                case .title:
+                    return 6
+                case .short:
+                    return 2
+                case .medium:
+                    return 4
+                case .long:
+                    return 6
+            }
+        }
+    }
     
-    enum ListPreview {
+    var content: Content {
+        if let string = defaults.string(forKey: "story_list_preview_text_size"), let value = Content(rawValue: string) {
+            return value
+        } else {
+            return .short
+        }
+    }
+    
+    enum Preview: String, RawRepresentable {
         case none
-        case smallLeft
-        case largeLeft
-        case largeRight
-        case smallRight
+        case smallLeft = "small_left"
+        case largeLeft = "large_left"
+        case largeRight = "large_right"
+        case smallRight = "small_right"
         
         var isLeft: Bool {
             return [.smallLeft, .largeLeft].contains(self)
@@ -172,31 +199,57 @@ class StorySettings {
         }
     }
     
-    var listPreview: ListPreview {
-        switch defaults.string(forKey: "story_list_preview_images_size") {
-        case "none":
-            return .none
-        case "small_left":
-            return .smallLeft
-        case "large_left":
-            return .largeLeft
-        case "large_right":
-            return .largeRight
-        default:
+    var preview: Preview {
+        if let string = defaults.string(forKey: "story_list_preview_images_size"), let value = Preview(rawValue: string) {
+            return value
+        } else {
             return .smallRight
         }
     }
     
-    //TODO: 🚧
-//    NSString *preferenceKey = @"feed_list_font_size";
-//    NSArray *titles = @[@"XS", @"S", @"M", @"L", @"XL"];
-//    NSArray *values = @[@"xs", @"small", @"medium", @"large", @"xl"];
+    enum FontSize: String, RawRepresentable {
+        case xs
+        case small
+        case medium
+        case large
+        case xl
+        
+        var offset: CGFloat {
+            switch self {
+                case .xs:
+                    return -2
+                case .small:
+                    return -1
+                case .medium:
+                    return 0
+                case .large:
+                    return 1
+                case .xl:
+                    return 2
+            }
+        }
+    }
     
-    //TODO: 🚧
-//    preferenceKey = @"feed_list_spacing";
-//    titles = @[@"Compact", @"Comfortable"];
-//    values = @[@"compact", @"comfortable"];
+    var fontSize: FontSize {
+        if let string = defaults.string(forKey: "feed_list_font_size"), let value = FontSize(rawValue: string) {
+            return value
+        } else {
+            return .medium
+        }
+    }
     
+    enum Spacing: String, RawRepresentable {
+        case compact
+        case comfortable
+    }
+    
+    var spacing: Spacing {
+        if let string = defaults.string(forKey: "feed_list_spacing"), let value = Spacing(rawValue: string) {
+            return value
+        } else {
+            return .comfortable
+        }
+    }
     
 //    enum GridColumns: String {
 //        case auto = "auto"
