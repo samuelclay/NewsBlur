@@ -19,7 +19,7 @@ struct StoryView: View {
     var body: some View {
         VStack {
             ZStack {
-                Color(white: 0.9)
+                Color.themed([0xFFFDEF, 0xEEECCD, 0x303A40, 0x303030])
                 
                 HStack {
                     Text(story.title)
@@ -36,7 +36,7 @@ struct StoryView: View {
                 }
             }
             .font(.custom("WhitneySSm-Medium", size: 14, relativeTo: .body))
-            .foregroundColor(.secondary)
+            .foregroundColor(Color.themed([0x686868, 0xA0A0A0]))
             .frame(height: 50)
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .onTapGesture {
@@ -48,7 +48,7 @@ struct StoryView: View {
     }
     
     var previewImage: UIImage? {
-        guard cache.settings.listPreview != .none, let image = cache.appDelegate.cachedImage(forStoryHash: story.hash), image.isKind(of: UIImage.self) else {
+        guard cache.settings.preview != .none, let image = cache.appDelegate.cachedImage(forStoryHash: story.hash), image.isKind(of: UIImage.self) else {
             return nil
         }
         

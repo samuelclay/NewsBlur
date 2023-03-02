@@ -53,4 +53,8 @@ extension Color {
         return Color(red: .random(in: 0...1), green: .random(in: 0...1), blue: .random(in: 0...1)
         )
     }
+    
+    static func themed(_ hex: [NSNumber]) -> Color {
+        return Color(ThemeManager.color(fromRGB: hex))
+    }
 }
