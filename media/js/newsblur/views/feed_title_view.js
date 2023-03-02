@@ -321,7 +321,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         e.preventDefault();
         e.stopPropagation();
 
-        if (this.model.get('has_exception') && this.model.get('exception_type') == 'feed') {
+        if (NEWSBLUR.reader.get_unread_view_name() != "starred" &&
+            (this.model.get('has_exception') && this.model.get('exception_type') == 'feed')) {
             NEWSBLUR.reader.open_feed_exception_modal(this.model.id);
         } else if (this.model.is_search()) {
             NEWSBLUR.reader.open_saved_search({search_model: this.model, $feed: this.$el});
