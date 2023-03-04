@@ -10,9 +10,12 @@ import SwiftUI
 
 /// A protocol of interaction between a card in the grid, and the enclosing feed detail view controller.
 protocol FeedDetailInteraction {
-    func storyAppeared(_ story: Story)
-    func storyTapped(_ story: Story)
-    func storyHidden(_ story: Story)
+    var storyHeight: CGFloat { get }
+    
+    func visible(story: Story)
+    func tapped(story: Story)
+    func reading(story: Story)
+    func hid(story: Story)
 }
 
 /// A list or grid layout of story cards for the feed detail view.
@@ -42,33 +45,45 @@ struct FeedDetailGridView: View {
     }
     
     var storyHeight: CGFloat {
-        //TODO: 🚧 determine ideal height of story view
-        return 1000
+        print("Story height: \(feedDetailInteraction.storyHeight + 20)")
+        
+        return feedDetailInteraction.storyHeight + 20
     }
     
 //    let stories: [Story] = StoryCache.stories
     
     var body: some View {
         ScrollView {
-            LazyVGrid(columns: columns, spacing: cache.isGrid ? 20 : 0) {
-                Section {
-                    ForEach(cache.before) { story in
-                        makeCardView(for: story, cache: cache)
+            ScrollViewReader { scroller in
+                LazyVGrid(columns: columns, spacing: cache.isGrid ? 20 : 0) {
+                    Section {
+                        ForEach(cache.before, id: \.id) { story in
+                            makeCardView(for: story, cache: cache)
+                        }
                     }
-                }
                     
-                if !cache.isGrid, let story = cache.selected {
-                    makeCardView(for: story, cache: cache)
-                }
-                
-                Section(header: makeStoryView(cache: cache)) {
-                    ForEach(cache.after) { story in
+                    if !cache.isGrid, let story = cache.selected {
                         makeCardView(for: story, cache: cache)
                     }
+                    
+                    Section(header: makeStoryView(cache: cache)) {
+                        ForEach(cache.after, id: \.id) { story in
+                            makeCardView(for: story, cache: cache)
+                        }
+                    }
                 }
-            }
-            .if(cache.isGrid) { view in
-                view.padding()
+                .onChange(of: cache.selected) { [oldSelected = cache.selected] newSelected in
+                    print("\(oldSelected?.title ?? "none") -> \(newSelected?.title ?? "none")")
+                    Task {
+                        try await Task.sleep(nanoseconds: 3_000_000_000)
+                        withAnimation(Animation.spring().delay(0.5)) {
+                            scroller.scrollTo(newSelected?.id, anchor: .top)
+                        }
+                    }
+                }
+                .if(cache.isGrid) { view in
+                    view.padding()
+                }
             }
         }
         .background(Color.themed([0xF4F4F4, 0xFFFDEF, 0x4F4F4F, 0x101010]))
@@ -78,10 +93,10 @@ struct FeedDetailGridView: View {
     func makeCardView(for story: Story, cache: StoryCache) -> some View {
         CardView(cache: cache, story: loaded(story: story))
             .onAppear {
-                feedDetailInteraction.storyAppeared(story)
+                feedDetailInteraction.visible(story: story)
             }
             .onTapGesture {
-                feedDetailInteraction.storyTapped(story)
+                feedDetailInteraction.tapped(story: story)
             }
             .if(cache.isGrid) { view in
                 view.frame(height: cardHeight)
@@ -92,7 +107,7 @@ struct FeedDetailGridView: View {
     func makeStoryView(cache: StoryCache) -> some View {
         if cache.isGrid, let story = cache.selected {
             StoryView(cache: cache, story: loaded(story: story), interaction: feedDetailInteraction)
-                .frame(height: storyHeight)
+//                .frame(height: storyHeight)
         }
     }
     

@@ -110,15 +110,45 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         ])
     }
     
+//    @objc override func changedStoryHeight(_ storyHeight: CGFloat) {
+//        guard isGrid else {
+//            return
+//        }
+//        
+//        self.storyHeight = storyHeight
+//        
+//        changedLayout()
+//    }
+    
     @objc override func changedLayout() {
-        if isGrid {
-            feedCollectionView.collectionViewLayout = createGridLayout()
-        } else {
-            feedCollectionView.collectionViewLayout = createListLayout()
+//        if isGrid {
+//            feedCollectionView.collectionViewLayout = createGridLayout()
+//        } else {
+//            feedCollectionView.collectionViewLayout = createListLayout()
+//        }
+//
+//        feedCollectionView.setNeedsLayout()
+        
+        deferredReload()
+    }
+    
+    var reloadWorkItem: DispatchWorkItem?
+    
+    func deferredReload() {
+        reloadWorkItem?.cancel()
+        
+        let workItem = DispatchWorkItem { [weak self] in
+            guard let self else {
+                return
+            }
+            
+            self.reload()
         }
         
-        feedCollectionView.setNeedsLayout()
+        reloadWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(250), execute: workItem)
     }
+
     
     @objc override func reload() {
         configureDataSource()
@@ -312,7 +342,7 @@ extension FeedDetailViewController {
 }
 
 extension FeedDetailViewController: FeedDetailInteraction {
-    func storyAppeared(_ story: Story) {
+    func visible(story: Story) {
         print("\(story.title) appeared")
         
         //TODO: 🚧: this logic is from checkScroll; some more stuff there that may be needed
@@ -325,7 +355,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
         }
     }
     
-    func storyTapped(_ story: Story) {
+    func tapped(story: Story) {
         print("tapped \(story.title)")
         
         let indexPath = IndexPath(row: story.index, section: 0)
@@ -334,10 +364,16 @@ extension FeedDetailViewController: FeedDetailInteraction {
         collectionView(feedCollectionView, didSelectItemAt: indexPath)
     }
     
-    func storyHidden(_ story: Story) {
+    func reading(story: Story) {
+        print("reading \(story.title)")
+        
+        
+    }
+    
+    func hid(story: Story) {
         print("hiding \(story.title)")
         
-        let indexPath = IndexPath(row: story.index, section: 0)
+//        let indexPath = IndexPath(row: story.index, section: 0)
         
         appDelegate.activeStory = nil
         reload()

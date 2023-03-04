@@ -891,6 +891,10 @@
     [self setTextButton];
     [self.loadingIndicator stopAnimating];
     self.circularProgressView.hidden = NO;
+    
+//    if (self.currentPage != nil && pageController == self.currentPage) {
+//        [self.appDelegate.feedDetailViewController changedStoryHeight:currentPage.webView.scrollView.contentSize.height];
+//    }
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
@@ -1435,6 +1439,9 @@
     [self.currentPage showTextOrStoryView];
     [self.nextPage showTextOrStoryView];
     [self.previousPage showTextOrStoryView];
+    
+    [self.appDelegate.feedDetailViewController reload];
+//    [self.appDelegate.feedDetailViewController changedStoryHeight:currentPage.webView.scrollView.contentSize.height];
 }
 
 - (void)toggleStorySaved:(id)sender {

@@ -330,6 +330,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }
 }
 
+//- (void)changedStoryHeight:(CGFloat)storyHeight {
+//    @throw [NSException exceptionWithName:@"Missing changedStoryHeight implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+//}
+
 - (void)changedLayout {
     @throw [NSException exceptionWithName:@"Missing changedLayout implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
@@ -1589,7 +1593,9 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 }
 
 - (void)prepareStoryCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath {
-    self.storyHeight = 180;
+    if (self.storyHeight == 0) {
+        self.storyHeight = 180;
+    }
     
     [appDelegate.storyPagesViewController updatePageWithActiveStory:appDelegate.storiesCollection.locationOfActiveStory updateFeedDetail:NO];
     
