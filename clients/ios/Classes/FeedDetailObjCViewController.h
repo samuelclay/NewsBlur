@@ -66,6 +66,7 @@
 @property (nonatomic, readwrite) BOOL invalidateFontCache;
 @property (nonatomic, readwrite) BOOL cameFromFeedsList;
 
+//- (void)changedStoryHeight:(CGFloat)storyHeight;
 - (void)changedLayout;
 - (void)reload;
 - (void)reloadIndexPath:(NSIndexPath *)indexPath;

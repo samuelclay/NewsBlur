@@ -18,32 +18,43 @@ struct StoryView: View {
     
     var body: some View {
         VStack {
-            ZStack {
-                Color.themed([0xFFFDEF, 0xEEECCD, 0x303A40, 0x303030])
-                
-                HStack {
-                    Text(story.title)
-                        .padding()
-                    
-                    Spacer()
-                    
-                    if let image = previewImage {
-                        gridPreview(image: image)
-                    }
-                    
-                    Text(story.dateString)
-                        .padding()
-                }
-            }
-            .font(.custom("WhitneySSm-Medium", size: 14, relativeTo: .body))
-            .foregroundColor(Color.themed([0x686868, 0xA0A0A0]))
-            .frame(height: 50)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .onTapGesture {
-                interaction.storyHidden(story)
-            }
+            StoryHeaderView(cache: cache, story: story, interaction: interaction)
+            StoryPagesView(story: story, interaction: interaction)
+        }
+    }
+}
+
+struct StoryHeaderView: View {
+    let cache: StoryCache
+    
+    let story: Story
+    
+    let interaction: FeedDetailInteraction
+    
+    var body: some View {
+        ZStack {
+            Color.themed([0xFFFDEF, 0xEEECCD, 0x303A40, 0x303030])
             
-            StoryPagesView()
+            HStack {
+                Text(story.title)
+                    .padding()
+                
+                Spacer()
+                
+                if let image = previewImage {
+                    gridPreview(image: image)
+                }
+                
+                Text(story.dateString)
+                    .padding()
+            }
+        }
+        .font(.custom("WhitneySSm-Medium", size: 14, relativeTo: .body))
+        .foregroundColor(Color.themed([0x686868, 0xA0A0A0]))
+        .frame(height: 50)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .onTapGesture {
+            interaction.hid(story: story)
         }
     }
     
@@ -60,8 +71,8 @@ struct StoryView: View {
         Image(uiImage: image)
             .resizable()
             .scaledToFill()
-            .frame(width: 200, height: 50)
-            .clipped()
+            .frame(width: 76, height: 36)
+            .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 }
 
@@ -69,6 +80,10 @@ struct StoryPagesView: UIViewControllerRepresentable {
     typealias UIViewControllerType = StoryPagesViewController
     
     let appDelegate = NewsBlurAppDelegate.shared!
+    
+    let story: Story
+    
+    let interaction: FeedDetailInteraction
     
     func makeUIViewController(context: Context) -> StoryPagesViewController {
         appDelegate.detailViewController.prepareStoriesForGridView()
@@ -78,5 +93,25 @@ struct StoryPagesView: UIViewControllerRepresentable {
     
     func updateUIViewController(_ storyPagesViewController: StoryPagesViewController, context: Context) {
         storyPagesViewController.updatePage(withActiveStory: appDelegate.storiesCollection.locationOfActiveStory(), updateFeedDetail: false)
+        
+        interaction.reading(story: story)
+        
+        let size1 = storyPagesViewController.currentPage.webView.scrollView.contentSize
+        
+        storyPagesViewController.preferredContentSize = CGSize(width: size1.width, height: 200)
+        
+//        let size2 = storyPagesViewController.currentPage.webView.scrollView.contentSize
+//
+//        storyPagesViewController.preferredContentSize = size2
+        
+        storyPagesViewController.currentPage.webView.evaluateJavaScript(
+            "document.body.lastChild.getBoundingClientRect().bottom + window.scrollY"
+        ) { (result, _) in
+            guard let height = result as? CGFloat, height > 0 else {
+                return
+            }
+            
+            storyPagesViewController.preferredContentSize = CGSize(width: size1.width, height: height + 80)
+        }
     }
 }

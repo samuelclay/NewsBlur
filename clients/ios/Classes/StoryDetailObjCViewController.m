@@ -287,7 +287,7 @@
 }
 
 - (void)deferredEnableScrolling {
-    self.webView.scrollView.scrollEnabled = YES;
+    self.webView.scrollView.scrollEnabled = !self.appDelegate.detailViewController.storyTitlesInGrid;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -428,6 +428,10 @@
 
     scrollPct = 0;
     hasScrolled = NO;
+    
+    if (appDelegate.storyPagesViewController.currentPage == self) {
+        self.appDelegate.feedDetailViewController.storyHeight = 200;
+    }
     
     NSString *shareBarString = [self getShareBar];
     NSString *commentString = [self getComments];
@@ -1813,6 +1817,8 @@
     
     [self.activityIndicator stopAnimating];
     
+    self.webView.scrollView.scrollEnabled = !self.appDelegate.detailViewController.storyTitlesInGrid;
+    
     [self loadHTMLString:self.fullStoryHTML];
     self.fullStoryHTML = nil;
     self.hasStory = YES;
@@ -1833,8 +1839,8 @@
         
         if (self == self.appDelegate.storyPagesViewController.currentPage && self.appDelegate.detailViewController.storyTitlesInGrid) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                self.appDelegate.feedDetailViewController.storyHeight = self.webView.scrollView.contentSize.height + 50;
-                [self.appDelegate.feedDetailViewController changedLayout];
+//                [self.appDelegate.feedDetailViewController changedStoryHeight:self.webView.scrollView.contentSize.height];
+                [self.appDelegate.feedDetailViewController reload];
             });
         }
     });
