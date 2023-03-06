@@ -2,17 +2,16 @@ package com.newsblur.fragment;
 
 import java.util.Map;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -57,6 +56,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
         return fragment;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,9 +64,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
         fs = (FeedSet) getArguments().getSerializable("feedset");
         classifier = dbHelper.getClassifierForFeed(story.feedId);
 
-        final Activity activity = getActivity();
-        LayoutInflater inflater = LayoutInflater.from(activity);
-        View v = inflater.inflate(R.layout.dialog_trainstory, null);
+        View v = getLayoutInflater().inflate(R.layout.dialog_trainstory, null);
         binding = DialogTrainstoryBinding.bind(v);
 
         // set up the special title training box for the title from this story and the associated buttons
@@ -111,7 +109,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
         // scan trained title fragments for this feed and see if any apply to this story
         for (Map.Entry<String, Integer> rule : classifier.title.entrySet()) {
             if (story.title.indexOf(rule.getKey()) >= 0) {
-                View row = inflater.inflate(R.layout.include_intel_row, null);
+                View row = getLayoutInflater().inflate(R.layout.include_intel_row, null);
                 TextView label = (TextView) row.findViewById(R.id.intel_row_label);
                 label.setText(rule.getKey());
                 UIUtils.setupIntelDialogRow(row, classifier.title, rule.getKey());
@@ -121,7 +119,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
         
         // list all tags for this story, trained or not
         for (String tag : story.tags) {
-            View row = inflater.inflate(R.layout.include_intel_row, null);
+            View row = getLayoutInflater().inflate(R.layout.include_intel_row, null);
             TextView label = (TextView) row.findViewById(R.id.intel_row_label);
             label.setText(tag);
             UIUtils.setupIntelDialogRow(row, classifier.tags, tag);
@@ -131,7 +129,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
 
         // there is a single author per story
         if (!TextUtils.isEmpty(story.authors)) {
-            View rowAuthor = inflater.inflate(R.layout.include_intel_row, null);
+            View rowAuthor = getLayoutInflater().inflate(R.layout.include_intel_row, null);
             TextView labelAuthor = (TextView) rowAuthor.findViewById(R.id.intel_row_label);
             labelAuthor.setText(story.authors);
             UIUtils.setupIntelDialogRow(rowAuthor, classifier.authors, story.authors);
@@ -142,13 +140,13 @@ public class StoryIntelTrainerFragment extends DialogFragment {
 
         // there is a single feed to be trained, but it is a bit odd in that the label is the title and
         // the intel identifier is the feed ID
-        View rowFeed = inflater.inflate(R.layout.include_intel_row, null);
+        View rowFeed = getLayoutInflater().inflate(R.layout.include_intel_row, null);
         TextView labelFeed = (TextView) rowFeed.findViewById(R.id.intel_row_label);
         labelFeed.setText(feedUtils.getFeedTitle(story.feedId));
         UIUtils.setupIntelDialogRow(rowFeed, classifier.feeds, story.feedId);
         binding.existingFeedIntelContainer.addView(rowFeed);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         builder.setTitle(R.string.story_intel_dialog_title);
         builder.setView(v);
 
@@ -164,7 +162,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
                 if ((newTitleTraining != null) && (!TextUtils.isEmpty(binding.intelTitleSelection.getSelection()))) {
                     classifier.title.put(binding.intelTitleSelection.getSelection(), newTitleTraining);
                 }
-                feedUtils.updateClassifier(story.feedId, classifier, fs, activity);
+                feedUtils.updateClassifier(story.feedId, classifier, fs, requireActivity());
                 StoryIntelTrainerFragment.this.dismiss();
             }
         });

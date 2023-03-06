@@ -11,10 +11,10 @@ import com.newsblur.view.StateToggleButton;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 import com.newsblur.util.StateFilter;
 
-public class FeedIntelligenceSelectorFragment extends Fragment implements StateChangedListener {
-    
+public class FeedSelectorFragment extends Fragment implements StateChangedListener {
+
     private StateToggleButton button;
-    
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_intelligenceselector, null);
@@ -27,7 +27,7 @@ public class FeedIntelligenceSelectorFragment extends Fragment implements StateC
     public void changedState(StateFilter state) {
         ((StateChangedListener) getActivity()).changedState(state);
     }
-    
+
     public void setState(StateFilter state) {
         button.setState(state);
     }
