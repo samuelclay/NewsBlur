@@ -274,6 +274,9 @@
     <string name="setup_instructions_details">To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown above.\n\nIn Gmail, go to Settings > Forwarding and click on Add a forwarding address. Add your custom NewsBlur email address.\n\nGmail will walk you through confirming the email address. You\'ll want to come back to NewsBlur and look for the confirmation email under the "Newsletters" folder.\n\nNext, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur.</string>
     <string name="copy_email">Copy email</string>
 
+    <string name="stories_shortcuts">Stories shortcuts</string>
+    <string name="feeds_shortcuts">Feeds shortcuts</string>
+
     <string name="import_export">Import/Export…</string>
     <string name="settings">Preferences…</string>
     <string name="menu_mute_sites">Mute Sites…</string>
@@ -285,6 +288,7 @@
     <string name="title_no_subscriptions">No active subscriptions detected</string>
     <string name="title_widget_loading">Loading…</string>
     <string name="menu_newsletters">Newsletters…</string>
+    <string name="menu_shortcuts">Shortcuts…</string>
 
     <string name="import_export_title">Import/Export OPML</string>
     <string name="notifications_title">Notifications</string>
@@ -748,5 +752,47 @@
     <string name="unread_stories">Unread stories</string>
     <string name="focused_stories">Focused stories</string>
     <string name="saved_stories">Saved stories</string>
+    
+    <string name="short_next_story">Next Story</string>
+    <string name="short_next_story_key_down">\u2193</string>
+    <string name="short_next_story_key_j">J</string>
+
+    <string name="short_previous_story">Previous Story</string>
+    <string name="short_previous_story_key_up">\u2191</string>
+    <string name="short_previous_story_key_k">K</string>
+
+    <string name="short_text_view">Text View</string>
+    <string name="short_text_view_key">\u21E7 \u23CE</string>
+
+    <string name="short_page_down">Page Down</string>
+    <string name="short_page_down_key">space</string>
+
+    <string name="short_page_up">Page Up</string>
+    <string name="short_page_up_key">\u21E7 space</string>
+
+    <string name="short_next_unread_story">Next Unread Story</string>
+    <string name="short_next_unread_story_key">N</string>
+
+    <string name="short_toggle_read_unread">Toggle Read/Unread</string>
+    <string name="short_toggle_read_unread_key_u">U</string>
+    <string name="short_toggle_read_unread_key_m">M</string>
+
+    <string name="short_save_unsave_story">Save/Unsave Story</string>
+    <string name="short_save_unsave_story_key">S</string>
+
+    <string name="short_open_in_browser">Open in Browser</string>
+    <string name="short_open_in_browser_key_o">O</string>
+    <string name="short_open_in_browser_key_v">V</string>
+
+    <string name="short_share_this_story">Share this Story</string>
+    <string name="short_share_this_story_key">\u21E7 S</string>
+
+    <string name="short_scroll_to_comments">Scroll to Comments</string>
+    <string name="short_scroll_to_comments_key">C</string>
+
+    <string name="short_open_story_trainer">Open Story Trainer</string>
+    <string name="short_open_story_trainer_key">T</string>
+
+<!--    ⌥ (option): U+2325-->
 
 </resources>
