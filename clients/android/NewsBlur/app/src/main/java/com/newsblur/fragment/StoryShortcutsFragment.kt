@@ -36,7 +36,7 @@ class StoryShortcutsFragment : DialogFragment() {
     }
 
     private fun SpannableString.shiftKeySpannable() {
-        setSpan(AbsoluteSizeSpan(17, true),
+        setSpan(AbsoluteSizeSpan(18, true),
                 0, 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
         setSpan(StyleSpan(Typeface.BOLD),
                 0, 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE)

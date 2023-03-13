@@ -793,6 +793,14 @@
     <string name="short_open_story_trainer">Open Story Trainer</string>
     <string name="short_open_story_trainer_key">T</string>
 
-<!--    ⌥ (option): U+2325-->
+    <string name="short_open_all_stories">Open All Stories</string>
+    <string name="short_open_all_stories_key">\u2325 E</string>
+
+    <string name="short_switch_views">Switch Views</string>
+    <string name="short_switch_views_key_left">\u2190</string>
+    <string name="short_switch_views_key_right">\u2192</string>
+
+    <string name="short_add_site">Add Site</string>
+    <string name="short_add_site_key">\u2325 A</string>
 
 </resources>
