@@ -11,6 +11,7 @@ import com.newsblur.R
 import com.newsblur.activity.*
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.fragment.*
+import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.service.NBSyncService
 import com.newsblur.util.ListTextSize
 import com.newsblur.util.ListTextSize.Companion.fromSize
@@ -41,10 +42,9 @@ class MainContextMenuDelegateImpl(
             menu.findItem(R.id.menu_loginas).isVisible = true
         }
 
-        // TODO uncomment
-//        if (hasHardwareKeyboard(activity)) {
-//            menu.findItem(R.id.menu_shortcuts).isVisible = true
-//        }
+        if (KeyboardManager.hasHardwareKeyboard(activity)) {
+            menu.findItem(R.id.menu_shortcuts).isVisible = true
+        }
 
         when (PrefsUtils.getSelectedTheme(activity)) {
             ThemeValue.LIGHT -> menu.findItem(R.id.menu_theme_light).isChecked = true
@@ -191,8 +191,8 @@ class MainContextMenuDelegateImpl(
             true
         }
         R.id.menu_shortcuts -> {
-            val newFragment = StoryShortcutsFragment()
-            newFragment.show(activity.supportFragmentManager, StoryShortcutsFragment::class.java.name)
+            val newFragment = FeedsShortcutFragment()
+            newFragment.show(activity.supportFragmentManager, FeedsShortcutFragment::class.java.name)
             true
         }
         else -> false

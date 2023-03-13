@@ -31,6 +31,7 @@ import com.newsblur.di.StoryImageCache
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
 import com.newsblur.domain.UserDetails
+import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.network.APIManager
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_INTEL
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_SOCIAL
@@ -263,6 +264,10 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         menu.findItem(R.id.menu_reading_save).setTitle(if (story!!.starred) R.string.menu_unsave_story else R.string.menu_save_story)
         if (fs!!.isFilterSaved || fs!!.isAllSaved || fs!!.singleSavedTag != null) menu.findItem(R.id.menu_reading_markunread).isVisible = false
 
+        if (KeyboardManager.hasHardwareKeyboard(requireContext())) {
+            menu.findItem(R.id.menu_shortcuts).isVisible = true
+        }
+
         when (PrefsUtils.getSelectedTheme(requireContext())) {
             ThemeValue.LIGHT -> menu.findItem(R.id.menu_theme_light).isChecked = true
             ThemeValue.DARK -> menu.findItem(R.id.menu_theme_dark).isChecked = true
@@ -315,6 +320,11 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         }
         R.id.menu_send_story_full -> {
             feedUtils.sendStoryFull(story, requireContext())
+            true
+        }
+        R.id.menu_shortcuts -> {
+            val newFragment = StoryShortcutsFragment()
+            newFragment.show(requireActivity().supportFragmentManager, StoryShortcutsFragment::class.java.name)
             true
         }
         R.id.menu_text_size_xs -> {

@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/stories_shortcuts"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <FrameLayout
@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/short_next_story_key_j"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
         </FrameLayout>
 
@@ -52,7 +52,7 @@
                 style="?defaultText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
+                android:layout_gravity="start|center_vertical"
                 android:text="@string/short_next_story"
                 android:textSize="15sp" />
 
@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/short_next_story_key_down"
-                android:textSize="17sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
         </FrameLayout>
@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:text="@string/short_previous_story"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="?defaultText"
@@ -86,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/short_previous_story_key_k"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
         </FrameLayout>
 
@@ -99,9 +99,9 @@
                 style="?defaultText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
+                android:layout_gravity="start|center_vertical"
                 android:text="@string/short_previous_story"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="?defaultText"
@@ -109,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/short_previous_story_key_up"
-                android:textSize="17sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
         </FrameLayout>
@@ -117,15 +117,15 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="7dp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="?defaultText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
+                android:layout_gravity="start|center_vertical"
                 android:text="@string/short_text_view"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="?defaultText"
@@ -133,7 +133,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/short_text_view_key"
-                android:textSize="17sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
         </FrameLayout>
@@ -149,7 +149,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:text="@string/short_page_down"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="?defaultText"
@@ -157,22 +157,22 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/short_page_down_key"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
         </FrameLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="10dp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="?defaultText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
+                android:layout_gravity="start|center_vertical"
                 android:text="@string/short_page_up"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txt_page_up_key"
@@ -181,7 +181,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/short_page_up_key"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
         </FrameLayout>
 
@@ -204,14 +204,14 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/short_next_unread_story_key"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
         </FrameLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="10dp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="?defaultText"
@@ -227,14 +227,14 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/short_toggle_read_unread_key_u"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
         </FrameLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="10dp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="?defaultText"
@@ -250,14 +250,14 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/short_toggle_read_unread_key_m"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
         </FrameLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="10dp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="?defaultText"
@@ -273,14 +273,14 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/short_save_unsave_story_key"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
         </FrameLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="10dp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="?defaultText"
@@ -296,14 +296,14 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/short_open_in_browser_key_o"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
         </FrameLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="10dp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="?defaultText"
@@ -319,20 +319,20 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/short_open_in_browser_key_v"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
         </FrameLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="10dp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="?defaultText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
+                android:layout_gravity="start|center_vertical"
                 android:text="@string/short_share_this_story"
                 android:textSize="15sp" />
 
@@ -343,7 +343,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/short_share_this_story_key"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
         </FrameLayout>
 
@@ -366,14 +366,14 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/short_scroll_to_comments_key"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
         </FrameLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="10dp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="?defaultText"
@@ -389,7 +389,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/short_open_story_trainer_key"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
         </FrameLayout>
 
