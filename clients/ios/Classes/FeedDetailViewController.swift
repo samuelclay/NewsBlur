@@ -142,20 +142,19 @@ class FeedDetailViewController: FeedDetailObjCViewController {
                 return
             }
             
-            self.reload()
+            self.configureDataSource()
         }
         
         reloadWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(250), execute: workItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100), execute: workItem)
     }
-
     
     @objc override func reload() {
-        configureDataSource()
+        deferredReload()
     }
     
     @objc override func reload(_ indexPath: IndexPath) {
-        configureDataSource()
+        deferredReload()
     }
 }
 
@@ -332,6 +331,8 @@ extension FeedDetailViewController {
             }
             
             snapshot.appendItems([-1], toSection: .loading)
+            
+            print("✨ configureDataSource selectedIndex: \(selectedIndex)")
             
             //TODO: 🚧 move the above logic into StoryCache
             storyCache.appendStories(beforeSelection: beforeSelection, selectedIndex: selectedIndex, afterSelection: afterSelection)
