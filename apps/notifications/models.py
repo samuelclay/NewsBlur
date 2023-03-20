@@ -306,13 +306,15 @@ class MUserFeedNotification(mongo.Document):
 
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
         # To update APNS:
-        # 1. Create certificate signing requeswt in Keychain Access
+        # 1. Create certificate signing request in Keychain Access
         # 2. Upload to https://developer.apple.com/account/resources/certificates/list
         # 3. Download to secrets/certificates/ios/aps.cer
-        # 4. Open in Keychain Access and export as aps.p12
-        # 4. Export private key as aps_key.p12 WITH A PASSPHRASE (removed later)
-        # 5. openssl pkcs12 -in aps.p12 -out aps.pem -nodes -clcerts -nokeys
-        # 6. openssl pkcs12 -clcerts -nokeys -out aps.pem -in aps.p12
+        # 4. Open in Keychain Access:
+        #    - export "Apple Push Service: com.newsblur.NewsBlur" as aps.p12 (or just use aps.cer in #5)
+        #    - export private key as aps_key.p12 WITH A PASSPHRASE (removed later)
+        # 5. openssl x509 -in aps.cer -inform DER -out aps.pem -outform PEM
+        # 6. openssl pkcs12 -nocerts -out aps_key.pem -in aps_key.p12
+        # 7. openssl rsa -out aps_key.noenc.pem -in aps_key.pem
         # 7. cat aps.pem aps_key.noenc.pem > aps.p12.pem
         # 8. Verify: openssl s_client -connect gateway.push.apple.com:2195 -cert aps.p12.pem
         # 9. Deploy: aps -l work -t apns,repo,celery
