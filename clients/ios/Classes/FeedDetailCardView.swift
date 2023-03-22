@@ -60,6 +60,7 @@ struct CardView: View {
                 }
             }
         }
+        .opacity(story.isRead ? 0.7 : 1)
         .if(cache.isGrid || story.isSelected) { view in
             view.clipShape(RoundedRectangle(cornerRadius: 10))
         }
@@ -219,7 +220,7 @@ struct CardContentView: View {
                         .padding(.leading, 24)
                     
                     Text(story.feedName)
-                        .font(font(named: "WhitneySSm-Medium", size: 10))
+                        .font(font(named: "WhitneySSm-Medium", size: 11))
                         .lineLimit(1)
                         .foregroundColor(feedColor)
                 }
@@ -229,6 +230,7 @@ struct CardContentView: View {
                 if let unreadImage {
                     Image(uiImage: unreadImage)
                         .resizable()
+                        .opacity(story.isRead ? 0.15 : 1)
                         .frame(width: 16, height: 16)
                         .padding(.top, 3)
                 }
@@ -238,6 +240,7 @@ struct CardContentView: View {
                         if story.isSaved, let image = UIImage(named: "saved-stories") {
                             Image(uiImage: image)
                                 .resizable()
+                                .opacity(story.isRead ? 0.15 : 1)
                                 .frame(width: 16, height: 16)
                                 .padding(.top, 3)
                         }
@@ -245,6 +248,7 @@ struct CardContentView: View {
                         if story.isShared, let image = UIImage(named: "share") {
                             Image(uiImage: image)
                                 .resizable()
+                                .opacity(story.isRead ? 0.15 : 1)
                                 .frame(width: 16, height: 16)
                                 .padding(.top, 3)
                         }
@@ -270,7 +274,7 @@ struct CardContentView: View {
                     Spacer()
                     
                     Text(story.dateAndAuthor)
-                        .font(font(named: "WhitneySSm-Medium", size: 10))
+                        .font(font(named: "WhitneySSm-Medium", size: 11))
                         .foregroundColor(dateAndAuthorColor)
                         .padding(.top, 5)
                 }
@@ -287,6 +291,10 @@ struct CardContentView: View {
     }
     
     var unreadImage: UIImage? {
+        guard story.isReadAvailable else {
+            return nil
+        }
+        
         switch story.score {
         case -1:
             return UIImage(named: "indicator-hidden")

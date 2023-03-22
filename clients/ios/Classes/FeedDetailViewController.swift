@@ -371,6 +371,21 @@ extension FeedDetailViewController: FeedDetailInteraction {
         
     }
     
+    func read(story: Story) {
+        let dict = story.dictionary
+        
+        if storiesCollection.isStoryUnread(dict) {
+            print("marking as read '\(story.title)'")
+            
+            storiesCollection.markStoryRead(dict)
+            storiesCollection.syncStory(asRead: dict)
+            
+            story.load()
+            
+            deferredReload()
+        }
+    }
+    
     func hid(story: Story) {
         print("hiding \(story.title)")
         
