@@ -27,6 +27,7 @@ class Story: Identifiable {
     var dateString = ""
     var timestamp = 0
     var isRead = false
+    var isReadAvailable = true
     var isSaved = false
     var isShared = false
     var score = 0
@@ -102,7 +103,8 @@ class Story: Identifiable {
             score = Int(NewsBlurAppDelegate.computeStoryScore(intelligence))
         }
         
-        isRead = score < 0
+        isRead = !storiesCollection .isStoryUnread(dictionary)
+        isReadAvailable = storiesCollection.activeFolder != "saved_stories"
         isRiverOrSocial = storiesCollection.isRiverOrSocial
     }
     
@@ -142,6 +144,14 @@ class StoryCache: ObservableObject {
     @Published var before = [Story]()
     @Published var selected: Story?
     @Published var after = [Story]()
+    
+    var all: [Story] {
+        if let selected {
+            return before + [selected] + after
+        } else {
+            return before + after
+        }
+    }
     
     func appendStories(beforeSelection: [Int], selectedIndex: Int, afterSelection: [Int]) {
         before = beforeSelection.map { Story(index: $0) }
