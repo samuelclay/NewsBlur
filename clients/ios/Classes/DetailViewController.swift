@@ -264,6 +264,8 @@ class DetailViewController: BaseViewController {
         
         print("🎈 prepareStoriesForGridView: \(storyPagesViewController.currentPage.activeStory?["story_title"] ?? "none")")
         
+        remove(viewController: storyPagesViewController)
+        
         storyPagesViewController.updatePage(withActiveStory: appDelegate.storiesCollection.locationOfActiveStory(), updateFeedDetail: false)
         
         adjustForAutoscroll()
