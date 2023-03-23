@@ -67,6 +67,47 @@ struct CardView: View {
         .if(story.isSelected) { view in
             view.padding(10)
         }
+        .contextMenu {
+            Button {
+                cache.appDelegate.storiesCollection.toggleStoryUnread(story.dictionary)
+                cache.appDelegate.feedDetailViewController.reload()
+            } label: {
+                Label(story.isRead ? "Mark as unread" : "Mark as read", image: "mark-read")
+            }
+            
+            Button {
+                cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: false)
+                cache.appDelegate.feedDetailViewController.reload()
+            } label: {
+                Label("Mark newer stories read", image: "mark-read")
+            }
+            
+            Button {
+                cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: true)
+                cache.appDelegate.feedDetailViewController.reload()
+            } label: {
+                Label("Mark older stories read", image: "mark-read")
+            }
+            
+            Button {
+                cache.appDelegate.storiesCollection.toggleStorySaved(story.dictionary)
+                cache.appDelegate.feedDetailViewController.reload()
+            } label: {
+                Label(story.isSaved ? "Unsave this story" : "Save this story", image: "saved-stories")
+            }
+            
+            Button {
+                cache.appDelegate.showSend(to: cache.appDelegate.feedDetailViewController, sender: cache.appDelegate.feedDetailViewController.view)
+            } label: {
+                Label("Send this story to…", image: "email")
+            }
+            
+            Button {
+                cache.appDelegate.openTrainStory(nil)
+            } label: {
+                Label("Train this story", image: "train")
+            }
+        }
     }
     
 //    var body: some View {
