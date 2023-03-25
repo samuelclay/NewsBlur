@@ -205,7 +205,7 @@ public class APIManager {
 	public ProfileResponse updateUserProfile() {
 		final APIResponse response = get(buildUrl(APIConstants.PATH_MY_PROFILE));
 		if (!response.isError()) {
-			ProfileResponse profileResponse = (ProfileResponse) response.getResponse(gson, ProfileResponse.class);
+			ProfileResponse profileResponse = response.getResponse(gson, ProfileResponse.class);
 			PrefsUtils.saveUserDetails(context, profileResponse.user);
 			return profileResponse;
 		} else {
@@ -234,14 +234,14 @@ public class APIManager {
             values.put(APIConstants.PARAMETER_FEEDID, id);
         }
         APIResponse response = get(buildUrl(APIConstants.PATH_FEED_UNREAD_COUNT), values);
-        return (UnreadCountResponse) response.getResponse(gson, UnreadCountResponse.class);
+        return response.getResponse(gson, UnreadCountResponse.class);
     }
 
     public UnreadStoryHashesResponse getUnreadStoryHashes() {
 		ValueMultimap values = new ValueMultimap();
         values.put(APIConstants.PARAMETER_INCLUDE_TIMESTAMPS, "1");
         APIResponse response = get(buildUrl(APIConstants.PATH_UNREAD_HASHES), values);
-        return (UnreadStoryHashesResponse) response.getResponse(gson, UnreadStoryHashesResponse.class);
+        return response.getResponse(gson, UnreadStoryHashesResponse.class);
     }
 
     public StarredStoryHashesResponse getStarredStoryHashes() {
@@ -254,9 +254,9 @@ public class APIManager {
         for (String hash : storyHashes) {
             values.put(APIConstants.PARAMETER_H, hash);
         }
-        values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
+        attachIncludeHiddenParam(values);
         APIResponse response = get(buildUrl(APIConstants.PATH_RIVER_STORIES), values);
-        return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
+        return response.getResponse(gson, StoriesResponse.class);
     }
 
     /**
@@ -264,7 +264,7 @@ public class APIManager {
      * request parameters as needed.
      */
     public StoriesResponse getStories(FeedSet fs, int pageNumber, StoryOrder order, ReadFilter filter) {
-        Uri uri = null;
+        Uri uri;
         ValueMultimap values = new ValueMultimap();
     
         // create the URI and populate request params depending on what kind of stories we want
@@ -277,12 +277,12 @@ public class APIManager {
         } else if (fs.getSingleFeed() != null) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_FEED_STORIES)).buildUpon().appendPath(fs.getSingleFeed()).build();
             values.put(APIConstants.PARAMETER_FEEDS, fs.getSingleFeed());
-            values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
+            attachIncludeHiddenParam(values);
             if (fs.isFilterSaved()) values.put(APIConstants.PARAMETER_READ_FILTER, APIConstants.VALUE_STARRED);
         } else if (fs.getMultipleFeeds() != null) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
             for (String feedId : fs.getMultipleFeeds()) values.put(APIConstants.PARAMETER_FEEDS, feedId);
-            values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
+            attachIncludeHiddenParam(values);
             if (fs.isFilterSaved()) values.put(APIConstants.PARAMETER_READ_FILTER, APIConstants.VALUE_STARRED);
         } else if (fs.getSingleSocialFeed() != null) {
             String feedId = fs.getSingleSocialFeed().getKey();
@@ -297,11 +297,11 @@ public class APIManager {
             }
         } else if (fs.isInfrequent()) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
-            values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
+            attachIncludeHiddenParam(values);
             values.put(APIConstants.PARAMETER_INFREQUENT, Integer.toString(PrefsUtils.getInfrequentCutoff(context)));
         } else if (fs.isAllNormal()) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
-            values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
+            attachIncludeHiddenParam(values);
         } else if (fs.isAllSocial()) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_SHARED_RIVER_STORIES));
         } else if (fs.isAllRead()) {
@@ -331,29 +331,21 @@ public class APIManager {
         }
 
 		APIResponse response = get(uri.toString(), values);
-        return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
+        return response.getResponse(gson, StoriesResponse.class);
     }
 
 	public boolean followUser(final String userId) {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USERID, userId);
 		final APIResponse response = post(buildUrl(APIConstants.PATH_FOLLOW), values);
-		if (!response.isError()) {
-			return true;
-		} else {
-			return false;
-		}
+        return !response.isError();
 	}
 
 	public boolean unfollowUser(final String userId) {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USERID, userId);
 		final APIResponse response = post(buildUrl(APIConstants.PATH_UNFOLLOW), values);
-		if (!response.isError()) {
-			return true;
-		} else {
-			return false;
-		}
+        return !response.isError();
 	}
 
 	public APIResponse saveExternalStory(@NonNull String storyTitle, @NonNull String storyUrl) {
@@ -386,7 +378,7 @@ public class APIManager {
 
         APIResponse response = post(buildUrl(APIConstants.PATH_SHARE_STORY), values);
         // this call returns a new copy of the story with all fields updated and some metadata
-        return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
+        return response.getResponse(gson, StoriesResponse.class);
     }
 
     public StoriesResponse unshareStory(String storyId, String feedId) {
@@ -396,7 +388,7 @@ public class APIManager {
 
         APIResponse response = post(buildUrl(APIConstants.PATH_UNSHARE_STORY), values);
         // this call returns a new copy of the story with all fields updated and some metadata
-        return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
+        return response.getResponse(gson, StoriesResponse.class);
     }
 
 	/**
@@ -438,8 +430,7 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_USER_ID, userId);
 		final APIResponse response = get(buildUrl(APIConstants.PATH_USER_PROFILE), values);
 		if (!response.isError()) {
-			ProfileResponse profileResponse = (ProfileResponse) response.getResponse(gson, ProfileResponse.class);
-			return profileResponse;
+            return response.getResponse(gson, ProfileResponse.class);
 		} else {
 			return null;
 		}
@@ -452,8 +443,7 @@ public class APIManager {
         values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
         final APIResponse response = get(buildUrl(APIConstants.PATH_USER_ACTIVITIES), values);
         if (!response.isError()) {
-            ActivitiesResponse activitiesResponse = (ActivitiesResponse) response.getResponse(gson, ActivitiesResponse.class);
-            return activitiesResponse;
+            return response.getResponse(gson, ActivitiesResponse.class);
         } else {
             return null;
         }
@@ -466,8 +456,7 @@ public class APIManager {
         values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
         final APIResponse response = get(buildUrl(APIConstants.PATH_USER_INTERACTIONS), values);
         if (!response.isError()) {
-            InteractionsResponse interactionsResponse = (InteractionsResponse) response.getResponse(gson, InteractionsResponse.class);
-            return interactionsResponse;
+            return response.getResponse(gson, InteractionsResponse.class);
         } else {
             return null;
         }
@@ -479,8 +468,7 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
 		final APIResponse response = get(buildUrl(APIConstants.PATH_STORY_TEXT), values);
 		if (!response.isError()) {
-			StoryTextResponse storyTextResponse = (StoryTextResponse) response.getResponse(gson, StoryTextResponse.class);
-			return storyTextResponse;
+            return response.getResponse(gson, StoryTextResponse.class);
 		} else {
 			return null;
 		}
@@ -520,7 +508,7 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_REPLY_TEXT, reply);
 		APIResponse response = post(buildUrl(APIConstants.PATH_REPLY_TO), values);
         // this call returns a new copy of the comment with all fields updated
-        return (CommentResponse) response.getResponse(gson, CommentResponse.class);
+        return response.getResponse(gson, CommentResponse.class);
 	}
 
 	public CommentResponse editReply(String storyId, String storyFeedId, String commentUserId, String replyId, String reply) {
@@ -532,7 +520,7 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_REPLY_TEXT, reply);
 		APIResponse response = post(buildUrl(APIConstants.PATH_EDIT_REPLY), values);
         // this call returns a new copy of the comment with all fields updated
-        return (CommentResponse) response.getResponse(gson, CommentResponse.class);
+        return response.getResponse(gson, CommentResponse.class);
 	}
 
 	public CommentResponse deleteReply(String storyId, String storyFeedId, String commentUserId, String replyId) {
@@ -543,7 +531,7 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_REPLY_ID, replyId);
 		APIResponse response = post(buildUrl(APIConstants.PATH_DELETE_REPLY), values);
         // this call returns a new copy of the comment with all fields updated
-        return (CommentResponse) response.getResponse(gson, CommentResponse.class);
+        return response.getResponse(gson, CommentResponse.class);
 	}
 
 	public NewsBlurResponse addFolder(String folderName) {
@@ -711,10 +699,10 @@ public class APIManager {
 	}
 
     private String builderGetParametersString(ContentValues values) {
-        List<String> parameters = new ArrayList<String>();
+        List<String> parameters = new ArrayList<>();
         for (Entry<String, Object> entry : values.valueSet()) {
             StringBuilder builder = new StringBuilder();
-            builder.append((String) entry.getKey());
+            builder.append(entry.getKey());
             builder.append("=");
             builder.append(NetworkUtils.encodeURL((String) entry.getValue()));
             parameters.add(builder.toString());
@@ -749,7 +737,7 @@ public class APIManager {
                 formBody.writeTo(buffer);
                 body = buffer.readUtf8();
             } catch (Exception e) {
-                ; // this is debug code, do not raise
+                // this is debug code, do not raise
             }
 			Log.d(this.getClass().getName(), "post body: " + body);
 		}
@@ -787,5 +775,11 @@ public class APIManager {
         } catch (InterruptedException ie) {
             com.newsblur.util.Log.w(this.getClass().getName(), "Abandoning API backoff due to interrupt.");
         }
+    }
+
+    private void attachIncludeHiddenParam(ValueMultimap values) {
+        String value = PrefsUtils.includeHiddenStories(context) ?
+                APIConstants.VALUE_TRUE : APIConstants.VALUE_FALSE;
+        values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, value);
     }
 }
