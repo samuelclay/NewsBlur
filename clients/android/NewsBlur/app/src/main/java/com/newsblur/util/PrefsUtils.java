@@ -733,6 +733,11 @@ public class PrefsUtils {
         editor.commit();
     }
 
+    public static boolean includeHiddenStories(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return prefs.getBoolean(PrefConstants.STORIES_INCLUDE_HIDDEN, true);
+    }
+
     public static boolean isOfflineEnabled(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return prefs.getBoolean(PrefConstants.ENABLE_OFFLINE, false);
