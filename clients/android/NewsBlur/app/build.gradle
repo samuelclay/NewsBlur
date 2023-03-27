@@ -50,22 +50,22 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.fragment:fragment-ktx:1.5.5'
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.fragment:fragment-ktx:1.5.6'
+    implementation 'androidx.recyclerview:recyclerview:1.3.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'com.google.code.gson:gson:2.10'
     implementation 'com.android.billingclient:billing:5.1.0'
     implementation 'com.google.android.play:core:1.10.3'
-    implementation "com.google.android.material:material:1.7.0"
+    implementation "com.google.android.material:material:1.8.0"
     implementation "androidx.preference:preference-ktx:1.2.0"
-    implementation "androidx.browser:browser:1.4.0"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
-    implementation 'androidx.lifecycle:lifecycle-process:2.5.1'
+    implementation "androidx.browser:browser:1.5.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.1"
+    implementation 'androidx.lifecycle:lifecycle-process:2.6.1'
     implementation 'androidx.core:core-splashscreen:1.0.0'
     implementation "com.google.dagger:hilt-android:2.44.2"
     kapt "com.google.dagger:hilt-compiler:2.44.2"
-    implementation "androidx.profileinstaller:profileinstaller:1.2.2"
+    implementation "androidx.profileinstaller:profileinstaller:1.3.0"
 
     testImplementation "junit:junit:4.13.2"
     testImplementation "io.mockk:mockk:1.13.4"
