@@ -3,7 +3,6 @@ package com.newsblur.network;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
-import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -109,7 +108,6 @@ public class APIResponse {
      * may be used for calls that return data, or the parent class may be used if no
      * return data are expected.
      */
-    @SuppressWarnings("unchecked")
     public <T extends NewsBlurResponse> T getResponse(Gson gson, Class<T> classOfT) {
         if (this.isError) {
             // if we encountered an error, make a generic response type and populate
