@@ -287,7 +287,7 @@
 }
 
 - (void)deferredEnableScrolling {
-    self.webView.scrollView.scrollEnabled = !self.appDelegate.detailViewController.storyTitlesInGrid;
+    self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhone || !self.appDelegate.detailViewController.storyTitlesInGrid;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -1817,7 +1817,7 @@
     
     [self.activityIndicator stopAnimating];
     
-    self.webView.scrollView.scrollEnabled = !self.appDelegate.detailViewController.storyTitlesInGrid;
+    self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhone || !self.appDelegate.detailViewController.storyTitlesInGrid;
     
     [self loadHTMLString:self.fullStoryHTML];
     self.fullStoryHTML = nil;
@@ -1837,7 +1837,7 @@
         self.webView.hidden = NO;
         [self.webView setNeedsDisplay];
         
-        if (self == self.appDelegate.storyPagesViewController.currentPage && self.appDelegate.detailViewController.storyTitlesInGrid) {
+        if (self == self.appDelegate.storyPagesViewController.currentPage && !self.appDelegate.detailViewController.isPhone && self.appDelegate.detailViewController.storyTitlesInGrid) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 //                [self.appDelegate.feedDetailViewController changedStoryHeight:self.webView.scrollView.contentSize.height];
                 [self.appDelegate.feedDetailViewController reload];

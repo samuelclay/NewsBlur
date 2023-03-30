@@ -69,7 +69,7 @@ struct FeedDetailGridView: View {
                             }
                         }
                         
-                        if cache.isGrid {
+                        if cache.isGrid && !cache.isPhone {
                             EmptyView()
                                 .id(storyViewID)
                         } else if let story = cache.selected {
@@ -134,7 +134,7 @@ struct FeedDetailGridView: View {
             .onPreferenceChange(CardKey.self) {
                 print("pref change for '\(story.title)': \($0)")
                 
-                if let value = $0.first, value.frame.minY < 0 {
+                if let value = $0.first, value.frame.minY < -(value.frame.size.height / 2) {
                     print("pref '\(story.title)': scrolled off the top")
                     
                     feedDetailInteraction.read(story: story)
@@ -153,7 +153,7 @@ struct FeedDetailGridView: View {
     
     @ViewBuilder
     func makeStoryView(cache: StoryCache) -> some View {
-        if cache.isGrid, let story = cache.selected {
+        if cache.isGrid, !cache.isPhone, let story = cache.selected {
             StoryView(cache: cache, story: loaded(story: story), interaction: feedDetailInteraction)
 //                .frame(height: storyHeight)
         }

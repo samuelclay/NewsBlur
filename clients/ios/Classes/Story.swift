@@ -141,6 +141,10 @@ class StoryCache: ObservableObject {
         return appDelegate.detailViewController.layout == .grid
     }
     
+    var isPhone: Bool {
+        return appDelegate.detailViewController.isPhone
+    }
+    
     @Published var before = [Story]()
     @Published var selected: Story?
     @Published var after = [Story]()
@@ -288,13 +292,13 @@ class StorySettings {
 //    }
     
     var gridColumns: Int {
-        if NewsBlurAppDelegate.shared.isCompactWidth {
-            return 1
-        }
-        
         guard let pref = UserDefaults.standard.string(forKey: "grid_columns"), let columns = Int(pref) else {
             //TODO: 🚧 could have extra logic to determine the ideal number of columns
-            return 4
+            if NewsBlurAppDelegate.shared.isCompactWidth {
+                return 1
+            } else {
+                return 4
+            }
         }
         
         return columns

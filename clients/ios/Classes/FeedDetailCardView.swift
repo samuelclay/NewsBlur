@@ -261,7 +261,7 @@ struct CardContentView: View {
                         .padding(.leading, 24)
                     
                     Text(story.feedName)
-                        .font(font(named: "WhitneySSm-Medium", size: 11))
+                        .font(font(named: "WhitneySSm-Medium", size: 12))
                         .lineLimit(1)
                         .foregroundColor(feedColor)
                 }
@@ -315,7 +315,7 @@ struct CardContentView: View {
                     Spacer()
                     
                     Text(story.dateAndAuthor)
-                        .font(font(named: "WhitneySSm-Medium", size: 11))
+                        .font(font(named: "WhitneySSm-Medium", size: 12))
                         .foregroundColor(dateAndAuthorColor)
                         .padding(.top, 5)
                 }
