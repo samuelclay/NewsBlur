@@ -139,6 +139,11 @@ class DetailViewController: BaseViewController {
         }
     }
     
+    /// Returns `true` if the device is an iPhone, otherwise `false`.
+    @objc var isPhone: Bool {
+        return UIDevice.current.userInterfaceIdiom == .phone
+    }
+    
     /// Returns `true` if the window is in portrait orientation, otherwise `false`.
     @objc var isPortraitOrientation: Bool {
         return view.window?.windowScene?.interfaceOrientation.isPortrait ?? false
@@ -258,7 +263,7 @@ class DetailViewController: BaseViewController {
     
     /// Moves the story pages controller to a Grid layout cell content (automatically removing it from the previous parent).
     func prepareStoriesForGridView() {
-        guard let storyPagesViewController else {
+        guard !isPhone, let storyPagesViewController else {
             return
         }
         
@@ -338,7 +343,7 @@ class DetailViewController: BaseViewController {
     }
     
     private func adjustTopConstraint() {
-        if UIDevice.current.userInterfaceIdiom != .phone {
+        if !isPhone {
             if view.window?.windowScene?.traitCollection.horizontalSizeClass == .compact {
                 topContainerTopConstraint.constant = -50
             } else {
@@ -388,7 +393,7 @@ private extension DetailViewController {
     func checkViewControllers() {
         let isTop = layout == .top
         
-        if layout == .left {
+        if layout == .left || isPhone {
             if feedDetailViewController != nil {
                 remove(viewController: feedDetailViewController)
                 
@@ -459,7 +464,7 @@ private extension DetailViewController {
         
         appDelegate.feedDetailViewController.changedLayout()
         
-        if layout != .grid {
+        if layout != .grid || isPhone {
             moveStoriesToDetail()
         }
     }
