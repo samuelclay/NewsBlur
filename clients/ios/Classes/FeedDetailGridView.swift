@@ -27,6 +27,9 @@ struct FeedDetailGridView: View {
     
     @State private var scrollOffset = CGPoint()
     
+//    @State private var swipeState: SwipeState = .untouched
+//    @State var currentUserInteractionCellID: String?
+    
     let storyViewID = "storyViewID"
     
     var columns: [GridItem] {
@@ -127,7 +130,7 @@ struct FeedDetailGridView: View {
     
     @ViewBuilder
     func makeCardView(for story: Story, cache: StoryCache, reader: GeometryProxy) -> some View {
-        CardView(cache: cache, story: loaded(story: story))
+        CardView(cache: cache, story: loaded(story: story)) //, swipeState: $swipeState) //, currentUserInteractionCellID: $currentUserInteractionCellID)
             .transformAnchorPreference(key: CardKey.self, value: .bounds) {
                 $0.append(CardFrame(id: "\(story.id)", frame: reader[$1]))
             }
