@@ -717,6 +717,8 @@
 		176129611C630AEB00702FE4 /* mute_feed_off@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1761295D1C630AEB00702FE4 /* mute_feed_off@2x.png */; };
 		176129621C630AEB00702FE4 /* mute_feed_on.png in Resources */ = {isa = PBXBuildFile; fileRef = 1761295E1C630AEB00702FE4 /* mute_feed_on.png */; };
 		176129631C630AEB00702FE4 /* mute_feed_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1761295F1C630AEB00702FE4 /* mute_feed_on@2x.png */; };
+		17629CC429D78C8400B1FD41 /* SwipeCell in Frameworks */ = {isa = PBXBuildFile; productRef = 17629CC329D78C8400B1FD41 /* SwipeCell */; };
+		17629CC629D7A71E00B1FD41 /* SwipeCell in Frameworks */ = {isa = PBXBuildFile; productRef = 17629CC529D7A71E00B1FD41 /* SwipeCell */; };
 		1763E2A123B1BCC900BA080C /* WidgetFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1763E2A023B1BCC900BA080C /* WidgetFeed.swift */; };
 		1763E2A323B1CEB600BA080C /* WidgetBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1763E2A223B1CEB600BA080C /* WidgetBarView.swift */; };
 		176A5C7A24F8BD1B009E8DF9 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176A5C7924F8BD1B009E8DF9 /* DetailViewController.swift */; };
@@ -2298,6 +2300,7 @@
 				175792D22930605500490924 /* MessageUI.framework in Frameworks */,
 				175792D32930605500490924 /* Security.framework in Frameworks */,
 				175792D42930605500490924 /* libz.dylib in Frameworks */,
+				17629CC429D78C8400B1FD41 /* SwipeCell in Frameworks */,
 				175792D52930605500490924 /* CloudKit.framework in Frameworks */,
 				175792D62930605500490924 /* Foundation.framework in Frameworks */,
 				175792D72930605500490924 /* UIKit.framework in Frameworks */,
@@ -2338,6 +2341,7 @@
 				FF2D8B351487250C00057B80 /* MessageUI.framework in Frameworks */,
 				FF2D8B331487250200057B80 /* Security.framework in Frameworks */,
 				FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */,
+				17629CC629D7A71E00B1FD41 /* SwipeCell in Frameworks */,
 				179DD9CF23DFDD51007BFD21 /* CloudKit.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
@@ -3686,6 +3690,9 @@
 			dependencies = (
 			);
 			name = "NewsBlur Dev";
+			packageProductDependencies = (
+				17629CC329D78C8400B1FD41 /* SwipeCell */,
+			);
 			productName = NewsBlur;
 			productReference = 175792E42930605500490924 /* NewsBlur Dev.app */;
 			productType = "com.apple.product-type.application";
@@ -3726,6 +3733,9 @@
 				173CB31926BCE94A00BA872A /* PBXTargetDependency */,
 			);
 			name = NewsBlur;
+			packageProductDependencies = (
+				17629CC529D7A71E00B1FD41 /* SwipeCell */,
+			);
 			productName = NewsBlur;
 			productReference = 1D6058910D05DD3D006BFB54 /* NewsBlur.app */;
 			productType = "com.apple.product-type.application";
@@ -3754,7 +3764,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1120;
-				LastUpgradeCheck = 1410;
+				LastUpgradeCheck = 1420;
 				ORGANIZATIONNAME = NewsBlur;
 				TargetAttributes = {
 					173CB30C26BCE94700BA872A = {
@@ -3833,6 +3843,9 @@
 				tr,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
+			packageReferences = (
+				17629CC229D78C8400B1FD41 /* XCRemoteSwiftPackageReference "SwipeCell" */,
+			);
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -5760,7 +5773,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -5815,7 +5828,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -6018,6 +6031,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		17629CC229D78C8400B1FD41 /* XCRemoteSwiftPackageReference "SwipeCell" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/fatbobman/SwipeCell";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.5;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		17629CC329D78C8400B1FD41 /* SwipeCell */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 17629CC229D78C8400B1FD41 /* XCRemoteSwiftPackageReference "SwipeCell" */;
+			productName = SwipeCell;
+		};
+		17629CC529D7A71E00B1FD41 /* SwipeCell */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 17629CC229D78C8400B1FD41 /* XCRemoteSwiftPackageReference "SwipeCell" */;
+			productName = SwipeCell;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
 }
