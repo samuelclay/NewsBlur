@@ -27,9 +27,6 @@ struct FeedDetailGridView: View {
     
     @State private var scrollOffset = CGPoint()
     
-//    @State private var swipeState: SwipeState = .untouched
-//    @State var currentUserInteractionCellID: String?
-    
     let storyViewID = "storyViewID"
     
     var columns: [GridItem] {
@@ -58,11 +55,8 @@ struct FeedDetailGridView: View {
         return feedDetailInteraction.storyHeight + 20
     }
     
-//    let stories: [Story] = StoryCache.stories
-    
     var body: some View {
         GeometryReader { reader in
-//            OffsetObservingScrollView(offset: $scrollOffset) {
             ScrollView {
                 ScrollViewReader { scroller in
                     LazyVGrid(columns: columns, spacing: cache.isGrid ? 20 : 0) {
@@ -83,16 +77,8 @@ struct FeedDetailGridView: View {
                         Section(header: makeStoryView(cache: cache)) {
                             ForEach(cache.after, id: \.id) { story in
                                 makeCardView(for: story, cache: cache, reader: reader)
-//                                    .transformAnchorPreference(key: MyKey.self, value: .bounds) {
-//                                        $0.append(MyFrame(id: story.id.uuidString, frame: reader[$1]))
-//                                    }
-//                                    .onPreferenceChange(MyKey.self) {
-//                                        print("pref change for '\(story.title)': \($0)")
-//                                        // Handle content frame changes here
-//                                    }
                             }
                         }
-//                        .coordinateSpace(name: "GridView")
                     }
                     .onChange(of: cache.selected) { [oldSelected = cache.selected] newSelected in
                         if oldSelected?.hash == newSelected?.hash {
@@ -102,7 +88,6 @@ struct FeedDetailGridView: View {
                         print("\(oldSelected?.title ?? "none") -> \(newSelected?.title ?? "none")")
                         
                         Task {
-                            //                        try await Task.sleep(nanoseconds: 3_000_000_000)
                             if cache.isGrid {
                                 withAnimation(Animation.spring().delay(0.5)) {
                                     scroller.scrollTo(storyViewID, anchor: .top)
@@ -114,11 +99,6 @@ struct FeedDetailGridView: View {
                             }
                         }
                     }
-//                    .onChange(of: scrollOffset) { [oldOffset = scrollOffset] newOffset in
-//                        print("scrolled \(oldOffset) -> \(newOffset)")
-//
-//                        scrolled(offset: newOffset.y)
-//                    }
                     .if(cache.isGrid) { view in
                         view.padding()
                     }
@@ -130,7 +110,7 @@ struct FeedDetailGridView: View {
     
     @ViewBuilder
     func makeCardView(for story: Story, cache: StoryCache, reader: GeometryProxy) -> some View {
-        CardView(cache: cache, story: loaded(story: story)) //, swipeState: $swipeState) //, currentUserInteractionCellID: $currentUserInteractionCellID)
+        CardView(feedDetailInteraction: feedDetailInteraction, cache: cache, story: loaded(story: story))
             .transformAnchorPreference(key: CardKey.self, value: .bounds) {
                 $0.append(CardFrame(id: "\(story.id)", frame: reader[$1]))
             }
@@ -146,9 +126,6 @@ struct FeedDetailGridView: View {
             .onAppear {
                 feedDetailInteraction.visible(story: story)
             }
-            .onTapGesture {
-                feedDetailInteraction.tapped(story: story)
-            }
             .if(cache.isGrid) { view in
                 view.frame(height: cardHeight)
             }
@@ -158,7 +135,6 @@ struct FeedDetailGridView: View {
     func makeStoryView(cache: StoryCache) -> some View {
         if cache.isGrid, !cache.isPhone, let story = cache.selected {
             StoryView(cache: cache, story: loaded(story: story), interaction: feedDetailInteraction)
-//                .frame(height: storyHeight)
         }
     }
     
@@ -169,24 +145,7 @@ struct FeedDetailGridView: View {
         
         return story
     }
-    
-//    func scrolled(offset: CGFloat) {
-//        guard let story = cache.all.first(where: { $0.frame.midY > offset }) else {
-//            print("scrolled to \(offset); didn't find story")
-//            return
-//        }
-//
-//        print("scrolled to \(offset); story: \(story.title) has frame: \(story.frame)")
-//
-//        //TODO: 🚧
-//    }
 }
-
-//struct FeedDetailGridView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        FeedDetailGridView(feedDetailInteraction: FeedDetailViewController(), storyCache: StoryCache())
-//    }
-//}
 
 struct CardFrame : Equatable {
     let id : String

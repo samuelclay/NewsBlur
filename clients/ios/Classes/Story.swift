@@ -14,9 +14,6 @@ import Foundation
 class Story: Identifiable {
     let id = UUID()
     let index: Int
-//    lazy var title: String = {
-//       return "lazy story #\(index)"
-//    }()
     
     var dictionary = [String : Any]()
     
@@ -266,30 +263,6 @@ class StorySettings {
             return .comfortable
         }
     }
-    
-//    enum GridColumns: String {
-//        case auto = "auto"
-//        case two = "2"
-//        case three = "3"
-//        case four = "4"
-//
-//        var number: Int {
-//            switch self {
-//            case .two:
-//                return 2
-//            case .three:
-//                return 3
-//            case .four:
-//                return 4
-//            default:
-//                if NewsBlurAppDelegate.shared.isCompactWidth {
-//                    return 1
-//                } else {
-//                    return 4
-//                }
-//            }
-//        }
-//    }
     
     var gridColumns: Int {
         guard let pref = UserDefaults.standard.string(forKey: "grid_columns"), let columns = Int(pref) else {

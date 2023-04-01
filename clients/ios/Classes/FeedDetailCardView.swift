@@ -11,12 +11,11 @@ import SwipeCell
 
 /// Card view within the feed detail view, representing a story row in list layout or a story card in grid layout.
 struct CardView: View {
+    let feedDetailInteraction: FeedDetailInteraction
+    
     let cache: StoryCache
     
     let story: Story
-    
-//        @Binding var swipeState: SwipeState
-//    @Binding var currentUserInteractionCellID: String?
     
     @State private var isPinned: Bool = false
     
@@ -28,25 +27,6 @@ struct CardView: View {
             titleColor: .white,
             imageColor: .white,
             view: {
-//                AnyView(
-//                    Circle()
-//                        .fill(Color.blue)
-//                        .frame(width: 40, height: 40)
-//                        .overlay(
-//                            Image(uiImage: UIImage(named: "saved-stories") ?? UIImage())
-//                                .resizable()
-//                                .frame(width: 32, height: 32)
-//                                .font(.headline)
-//                                .foregroundColor(.white)
-//                        )
-//                )
-//                AnyView(
-//                    Image(uiImage: UIImage(named: "saved-stories") ?? UIImage())
-//                        .resizable()
-//                        .frame(width: 32, height: 32)
-//                        .font(.headline)
-//                        .foregroundColor(.white)
-//                )
                 AnyView(
                     VStack(spacing: 5) {
                         Image(uiImage: UIImage(named: "saved-stories") ?? UIImage())
@@ -86,14 +66,6 @@ struct CardView: View {
                             .foregroundColor(.white)
                     }
                 )},
-//                AnyView(
-//                    Image(uiImage: UIImage(named: "mark-read") ?? UIImage())
-//                        .resizable()
-//                        .frame(width: 32, height: 32)
-//                        .font(.headline)
-//                        .foregroundColor(.white)
-//                )
-//            },
             backgroundColor: .blue,
             action: {
                 cache.appDelegate.storiesCollection.toggleStoryUnread(story.dictionary)
@@ -116,12 +88,6 @@ struct CardView: View {
             VStack {
                 if cache.isGrid, let previewImage {
                     gridPreview(image: previewImage)
-//                    Image(uiImage: previewImage)
-//                        .resizable()
-//                        .scaledToFill()
-//                        .frame(height: cache.settings.gridHeight / 3)
-//                        .cornerRadius(12, corners: [.topLeft, .topRight])
-//                        .padding(0)
                 }
                 
                 HStack {
@@ -136,13 +102,6 @@ struct CardView: View {
                     
                     if !cache.isGrid, !cache.settings.preview.isLeft, let previewImage {
                         listPreview(image: previewImage)
-                        
-//                        Image(uiImage: previewImage)
-//                            .resizable()
-//                            .scaledToFill()
-//                            .frame(width: 80)
-//                            .clipShape(RoundedRectangle(cornerRadius: 10))
-//                            .padding([.top, .bottom, .trailing], 10)
                     }
                 }
             }
@@ -154,34 +113,10 @@ struct CardView: View {
         .if(story.isSelected) { view in
             view.padding(10)
         }
-//        .addFullSwipeAction(swipeColor: .clear, swipeRole: .defaults, state: $swipeState) {
-//            Leading {
-//                Button {
-//                    print("edit \(story)")
-//                } label: {
-//                    Image(systemName: "pencil")
-//                        .foregroundColor(.white)
-//                }
-//                .frame(width: 80, alignment: .center)
-//                .frame(maxHeight: .infinity)
-//                .contentShape(Rectangle())
-//                .background(Color.green)
-//            }
-//            Trailing {
-//                Button {
-//                    print("remove \(story)")
-//                } label: {
-//                    Image(systemName: "trash")
-//                        .foregroundColor(.white)
-//                }
-//                .frame(width: 80, alignment: .center)
-//                .frame(maxHeight: .infinity)
-//                .contentShape(Rectangle())
-//                .background(Color.blue)
-//            }
-//        }
-//        .swipeCell(id: story.id.uuidString, cellWidth: 60, leadingSideGroup: leftGroup(), trailingSideGroup: rightGroup(), currentUserInteractionCellID: $currentUserInteractionCellID, settings: SwipeCellSettings())
-//        .onSwipe(leading: slots, trailing: slots)
+        .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .onTapGesture {
+            feedDetailInteraction.tapped(story: story)
+        }
         .swipeCell(cellPosition: .both, leftSlot: SwipeCellSlot(slots: [swipeSaveButton], slotStyle: .destructive, buttonWidth: 80), rightSlot: SwipeCellSlot(slots: [swipeReadButton], slotStyle: .destructive, buttonWidth: 80))
         .dismissSwipeCellForScrollViewForLazyVStack()
         .contextMenu {
@@ -226,71 +161,6 @@ struct CardView: View {
             }
         }
     }
-    
-    //    var body: some View {
-    //        if cache.isGrid {
-    //            ZStack(alignment: .leading) {
-    //                RoundedRectangle(cornerRadius: 12).foregroundColor(.init(white: 0.9))
-    //
-    //                CardFeedBarView(cache: cache, story: story)
-    //                    .clipShape(RoundedRectangle(cornerRadius: 12))
-    //                    .padding(.leading, 1)
-    //
-    //                VStack {
-    //                    //                RoundedRectangle(cornerRadius: 12).foregroundColor(.random)
-    //                    //                    .frame(height: 200)
-    //
-    //                    if let previewImage {
-    //                        Image(uiImage: previewImage)
-    //                            .resizable()
-    //                            .scaledToFill()
-    //                            .frame(height: 200)
-    //                        //                            .clipped()
-    //                        //                            .clipShape(RoundedRectangle(cornerRadius: 12))
-    //                            .cornerRadius(12, corners: [.topLeft, .topRight])
-    //                            .padding(0)
-    //                    }
-    //
-    //                    CardContentView(cache: cache, story: story)
-    //                        .frame(maxHeight: .infinity, alignment: .leading)
-    //                        .padding(10)
-    //                }
-    //            }
-    //        } else {
-    //            ZStack(alignment: .leading) {
-    //                if story.isSelected {
-    //                    RoundedRectangle(cornerRadius: 12).foregroundColor(.init(white: 0.9))
-    //                    //                        .padding(10)
-    //
-    //                    CardFeedBarView(cache: cache, story: story)
-    //                        .clipShape(RoundedRectangle(cornerRadius: 12))
-    //                    //                        .padding(10)
-    //                } else {
-    //                    CardFeedBarView(cache: cache, story: story)
-    //                        .padding(.leading, 2)
-    //                }
-    //
-    //                HStack {
-    //                    CardContentView(cache: cache, story: story)
-    //                        .frame(maxWidth: .infinity, alignment: .leading)
-    //                        .padding([.top, .bottom], 10)
-    //                        .padding(.leading, 15)
-    //
-    //                    if let previewImage {
-    //                        Image(uiImage: previewImage)
-    //                            .resizable()
-    //                            .scaledToFill()
-    //                            .frame(width: 80)
-    //                            .clipShape(RoundedRectangle(cornerRadius: 10))
-    //                            .padding([.top, .bottom, .trailing], 10)
-    //                    }
-    //                }
-    //            }
-    //            .if(story.isSelected) { view in
-    //                view.padding(10)
-    //            }
-    //        }
-    //    }
     
     var highlightColor: Color {
         if cache.isGrid {
@@ -341,147 +211,7 @@ struct CardView: View {
                 .padding(.leading, isLeft ? 8 : -10)
                 .padding(.trailing, isLeft ? -10 : 0)
         }
-        
-        //        if cache.settings.listPreview.isLeft {
-        //            return image.padding(.trailing, 10)
-        //        } else {
-        //            return image.padding(.leading, 10)
-        //        }
-        //        //these cause it to crash; too complex? could try assigning the above to variable then add these
-        //            .if(cache.settings.listPreview.isLeft) { view in
-        //                self.padding(.trailing, 10)
-        //            }
-        //            .if(!cache.settings.listPreview.isLeft) { view in
-        //                self.padding(.leading, 10)
-        //            }
     }
-    
-    
-    //    func leftGroup()->[SwipeCellActionItem] {
-    //        return [SwipeCellActionItem(buttonView: {
-    //
-    //            VStack(spacing: 2)  {
-    //                Image(systemName: "person.crop.circle.badge.plus").font(.system(size: 22)).foregroundColor(.white)
-    //                Text("Share").fixedSize().font(.system(size: 12)).foregroundColor(.white)
-    //            }.frame(maxHeight: 80).castToAnyView()
-    //
-    //        }, backgroundColor: .blue)
-    //                {
-    //            print("share action!")
-    //        }]
-    
-    //        return [ SwipeCellActionItem(buttonView: {
-    //
-    //            self.pinView(swipeOut: false)
-    //
-    //        }, swipeOutButtonView: {
-    //            self.pinView(swipeOut: true)
-    //        }, buttonWidth: 80, backgroundColor: .yellow, swipeOutAction: true, swipeOutHapticFeedbackType: .success, swipeOutIsDestructive: false)
-    //                 {
-    //            print("pin action!")
-    //            self.isPinned.toggle()
-    //        }]
-    //    }
-    //
-    //    func pinView(swipeOut: Bool)->AnyView {
-    //
-    //        Group {
-    //            Spacer()
-    //            VStack(spacing: 2) {
-    //                Image(systemName: self.isPinned ? "pin.slash": "pin").font(.system(size: 24)).foregroundColor(.white)
-    //                Text(self.isPinned ? "Unpin": "Pin").fixedSize().font(.system(size: 14)).foregroundColor(.white)
-    //            }.frame(maxHeight: 80).padding(.horizontal, swipeOut ? 20 : 5)
-    //            if swipeOut == false {
-    //                Spacer()
-    //            }
-    //        }.animation(.default).castToAnyView()
-    //
-    //    }
-    //
-    //
-    //    func rightGroup()->[SwipeCellActionItem] {
-    //
-    //        let items =  [
-    //            SwipeCellActionItem(buttonView: {
-    //
-    //                VStack(spacing: 2)  {
-    //                    Image(systemName: "person.crop.circle.badge.plus").font(.system(size: 22)).foregroundColor(.white)
-    //                    Text("Share").fixedSize().font(.system(size: 12)).foregroundColor(.white)
-    //                }.frame(maxHeight: 80).castToAnyView()
-    //
-    //            }, backgroundColor: .blue)
-    //            {
-    //                print("share action!")
-    //            },
-    //            SwipeCellActionItem(buttonView: {
-    //                VStack(spacing: 2)  {
-    //                    Image(systemName: "folder.fill").font(.system(size: 22)).foregroundColor(.white)
-    //                    Text("Move").fixedSize().font(.system(size: 12)).foregroundColor(.white)
-    //                }.frame(maxHeight: 80).castToAnyView()
-    //
-    //            }, backgroundColor: .purple, actionCallback: {
-    //                print("folder action")
-    //            }),
-    //
-    //            SwipeCellActionItem(buttonView: {
-    //                self.trashView(swipeOut: false)
-    //            }, swipeOutButtonView: {
-    //                self.trashView(swipeOut: true)
-    //            }, backgroundColor: .red, swipeOutAction: true, swipeOutHapticFeedbackType: .warning, swipeOutIsDestructive: true) {
-    //                print("delete action")
-    ////                self.deletionCallback(item)
-    //            }
-    //        ]
-    //
-    //        return items
-    //    }
-    //
-    //    func trashView(swipeOut: Bool)->AnyView {
-    //        VStack(spacing: 3)  {
-    //            Image(systemName: "trash").font(.system(size: swipeOut ? 28 : 22)).foregroundColor(.white)
-    //            Text("Delete").fixedSize().font(.system(size: swipeOut ? 16 : 12)).foregroundColor(.white)
-    //        }.frame(maxHeight: 80).animation(.default).castToAnyView()
-    //
-    //    }
-    
-    
-//    var slots = [
-//        // First item
-//        Slot(
-//            image: {
-//                Image(systemName: "envelope.open.fill")
-//            },
-//            title: {
-//                Text("Read")
-//                    .foregroundColor(.white)
-//                    .font(.footnote)
-//                    .fontWeight(.semibold)
-//                    .embedInAnyView()
-//            },
-//            action: { print("Read Slot tapped") },
-//            style: .init(background: .orange)
-//        ),
-//        // Second item
-//        Slot(
-//            image: {
-//                Image(systemName: "hand.raised.fill")
-//            },
-//            title: {
-//                Text("Block")
-//                    .foregroundColor(.white)
-//                    .font(.footnote)
-//                    .fontWeight(.semibold)
-//                    .embedInAnyView()
-//            },
-//            action: { print("Block Slot Tapped") },
-//            style: .init(background: .blue, imageColor: .red)
-//        )
-//    ]
-
-//struct CardView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        CardView(cache: StoryCache(), story: Story(index: 0))
-//    }
 }
 
 struct CardContentView: View {
@@ -642,77 +372,5 @@ struct CardFeedBarView: View {
                 .stroke(Color(color), lineWidth: 4)
             }
         }
-        
-        
-//        if #available(iOS 15.0, *) {
-//            Canvas { context, size in
-//                context.stroke(
-//                    Path(CGRect(origin: .zero, size: CGSize(width: 0, height: size.height))),
-//                    with: .color(.green),
-//                    lineWidth: 4)
-//
-//                context.stroke(
-//                    Path(CGRect(origin: CGPoint(x: 5, y: 0), size: CGSize(width: 0, height: size.height))),
-//                    with: .color(.blue),
-//                    lineWidth: 4)
-//            }
-//            Canvas { context, size in
-//                let frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-//
-//                Path { path in
-//                    path.move(to: CGPoint(x: 0, y: 0))
-//                    path.addLine(to: CGPoint(x: 0, y: size.height))
-//                }
-//                .stroke(.blue, lineWidth: 10)
-//
-//                Path { path in
-//                    path.move(to: CGPoint(x: 10, y: 0))
-//                    path.addLine(to: CGPoint(x: 10, y: size.height))
-//                }
-//                .stroke(.green, lineWidth: 10)
-//            }
-//        } else {
-//            EmptyView()
-//        }
-        
-        
-//        Path { path in
-//            path.move(to: CGPoint(x: 0, y: 0))
-//            path.addLine(to: CGPoint(x: 100, y: 300))
-//            path.addLine(to: CGPoint(x: 300, y: 300))
-//            path.addLine(to: CGPoint(x: 200, y: 100))
-//            path.closeSubpath()
-//        }
-//        .stroke(.blue, lineWidth: 10)
-        
-        
-        
-        //    CGFloat feedBarOffset = isHighlighted ? 2 : 0;
-        //    CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBarTopBorder CGColor]));
-        //    if (self.isRead) {
-        //        CGContextSetAlpha(context, 0.15);
-        //    }
-        //    CGContextSetLineWidth(context, 4.0f);
-        //    CGContextBeginPath(context);
-        //    CGContextMoveToPoint(context, 2.0f + feedBarOffset, 0);
-        //    CGContextAddLineToPoint(context, 2.0f + feedBarOffset, self.frame.size.height);
-        //    CGContextStrokePath(context);
-        //
-        //    CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBar CGColor]));
-        //    CGContextBeginPath(context);
-        //    CGContextMoveToPoint(context, 6.0f + feedBarOffset, 0);
-        //    CGContextAddLineToPoint(context, 6.0 + feedBarOffset, self.frame.size.height);
-        //    CGContextStrokePath(context);
-        
-
     }
 }
-
-//extension ShapeStyle where Self == Color {
-//    static var darkBackground: Color {
-//        Color(red: 0.1, green: 0.1, blue: 0.2)
-//    }
-//    static var lightBackground: Color {
-//        Color(red: 0.2, green: 0.2, blue: 0.3)
-//    }
-//}
