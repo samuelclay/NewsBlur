@@ -159,49 +159,49 @@ class FeedDetailViewController: FeedDetailObjCViewController {
 }
 
 extension FeedDetailViewController {
-    func accessoriesForListCellItem(_ item: Int) -> [UICellAccessory] {
-        let isStarred = false //self.starredEmojis.contains(item)
-        var accessories = [UICellAccessory.disclosureIndicator()]
-        if isStarred {
-            let star = UIImageView(image: UIImage(systemName: "star.fill"))
-            accessories.append(.customView(configuration: .init(customView: star, placement: .trailing())))
-        }
-        return accessories
-    }
+//    func accessoriesForListCellItem(_ item: Int) -> [UICellAccessory] {
+//        let isStarred = false //self.starredEmojis.contains(item)
+//        var accessories = [UICellAccessory.disclosureIndicator()]
+//        if isStarred {
+//            let star = UIImageView(image: UIImage(systemName: "star.fill"))
+//            accessories.append(.customView(configuration: .init(customView: star, placement: .trailing())))
+//        }
+//        return accessories
+//    }
     
-    func leadingSwipeActionConfigurationForListCellItem(_ item: Int) -> UISwipeActionsConfiguration? {
-        let isStarred = false //self.starredEmojis.contains(item)
-        let starAction = UIContextualAction(style: .normal, title: nil) {
-            [weak self] (_, _, completion) in
-            guard let self = self else {
-                completion(false)
-                return
-            }
-            
-            // Don't check again for the starred state. We promised in the UI what this action will do.
-            // If the starred state has changed by now, we do nothing, as the set will not change.
-//            if isStarred {
-//                self.starredEmojis.remove(item)
-//            } else {
-//                self.starredEmojis.insert(item)
+//    func leadingSwipeActionConfigurationForListCellItem(_ item: Int) -> UISwipeActionsConfiguration? {
+//        let isStarred = false //self.starredEmojis.contains(item)
+//        let starAction = UIContextualAction(style: .normal, title: nil) {
+//            [weak self] (_, _, completion) in
+//            guard let self = self else {
+//                completion(false)
+//                return
 //            }
-            
-            // Reconfigure the cell of this item
-            // Make sure we get the current index path of the item.
-            if let currentIndexPath = self.dataSource.indexPath(for: item) {
-                if let cell = self.feedCollectionView.cellForItem(at: currentIndexPath) as? UICollectionViewListCell {
-                    UIView.animate(withDuration: 0.2) {
-                        cell.accessories = self.accessoriesForListCellItem(item)
-                    }
-                }
-            }
-            
-            completion(true)
-        }
-        starAction.image = UIImage(systemName: isStarred ? "star.slash" : "star.fill")
-        starAction.backgroundColor = .systemBlue
-        return UISwipeActionsConfiguration(actions: [starAction])
-    }
+//
+//            // Don't check again for the starred state. We promised in the UI what this action will do.
+//            // If the starred state has changed by now, we do nothing, as the set will not change.
+////            if isStarred {
+////                self.starredEmojis.remove(item)
+////            } else {
+////                self.starredEmojis.insert(item)
+////            }
+//
+//            // Reconfigure the cell of this item
+//            // Make sure we get the current index path of the item.
+//            if let currentIndexPath = self.dataSource.indexPath(for: item) {
+//                if let cell = self.feedCollectionView.cellForItem(at: currentIndexPath) as? UICollectionViewListCell {
+//                    UIView.animate(withDuration: 0.2) {
+//                        cell.accessories = self.accessoriesForListCellItem(item)
+//                    }
+//                }
+//            }
+//
+//            completion(true)
+//        }
+//        starAction.image = UIImage(systemName: isStarred ? "star.slash" : "star.fill")
+//        starAction.backgroundColor = .systemBlue
+//        return UISwipeActionsConfiguration(actions: [starAction])
+//    }
     
     func createListLayout() -> UICollectionViewLayout {
 //        let size = NSCollectionLayoutSize(
@@ -220,11 +220,11 @@ extension FeedDetailViewController {
         
         var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
         
-        configuration.leadingSwipeActionsConfigurationProvider = { [weak self] (indexPath) in
-            guard let self else { return nil }
-            guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return nil }
-            return self.leadingSwipeActionConfigurationForListCellItem(item)
-        }
+//        configuration.leadingSwipeActionsConfigurationProvider = { [weak self] (indexPath) in
+//            guard let self else { return nil }
+//            guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return nil }
+//            return self.leadingSwipeActionConfigurationForListCellItem(item)
+//        }
         
         return UICollectionViewCompositionalLayout.list(using: configuration)
     }
@@ -263,82 +263,85 @@ extension FeedDetailViewController {
 
 extension FeedDetailViewController {
     func configureDataSource() {
-        let feedCellRegistration = UICollectionView.CellRegistration<FeedDetailCollectionCell, Int> { (cell, indexPath, identifier) in
-            
-//            cell.frame.size.height = self.heightForRow(at: indexPath)
-            
-            self.prepareFeedCell(cell, indexPath: indexPath)
-            cell.setNeedsUpdateConfiguration()
-        }
+        storyCache.reload()
         
-        let storyCellRegistration = UICollectionView.CellRegistration<StoryPagesCollectionCell, Int> { (cell, indexPath, identifier) in
-            self.prepareStoryCell(cell, indexPath: indexPath)
-            cell.setNeedsUpdateConfiguration()
-        }
         
-        let loadingCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Int> { (cell, indexPath, identifier) in
-            self.prepareLoading(cell, indexPath: indexPath)
-            cell.setNeedsUpdateConfiguration()
-        }
-        
-        dataSource = UICollectionViewDiffableDataSource<SectionLayoutKind, Int>(collectionView: feedCollectionView) {
-            (collectionView: UICollectionView, indexPath: IndexPath, identifier: Int) -> UICollectionViewCell? in
-            guard let sectionKind = SectionLayoutKind(rawValue: indexPath.section) else {
-                return nil
-            }
-            
-            switch sectionKind {
-            case .feedBeforeStory, .feedAfterStory:
-                return collectionView.dequeueConfiguredReusableCell(using: feedCellRegistration, for: indexPath, item: identifier)
-            case .selectedStory:
-                if self.isGrid {
-                    return collectionView.dequeueConfiguredReusableCell(using: storyCellRegistration, for: indexPath, item: identifier)
-                } else {
-                    return collectionView.dequeueConfiguredReusableCell(using: feedCellRegistration, for: indexPath, item: identifier)
-                }
-            case .loading:
-                return collectionView.dequeueConfiguredReusableCell(using: loadingCellRegistration, for: indexPath, item: identifier)
-            }
-        }
-        
-        var snapshot = NSDiffableDataSourceSnapshot<SectionLayoutKind, Int>()
-        
-        let storyCount = Int(appDelegate.storiesCollection.storyLocationsCount)
-        var beforeSelection = [Int]()
-        var selectedIndex = -999
-        var afterSelection = [Int]()
-        
-        snapshot.appendSections(SectionLayoutKind.allCases)
-        
-        if self.messageView.isHidden {
-            if storyCount > 0 {
-                selectedIndex = appDelegate.storiesCollection.indexOfActiveStory()
-                
-                if selectedIndex < 0 {
-                    beforeSelection = Array(0..<storyCount)
-                    snapshot.appendItems(beforeSelection, toSection: .feedBeforeStory)
-                } else {
-                    beforeSelection = Array(0..<selectedIndex)
-                    
-                    snapshot.appendItems(beforeSelection, toSection: .feedBeforeStory)
-                    snapshot.appendItems([selectedIndex], toSection: .selectedStory)
-                    
-                    if selectedIndex + 1 < storyCount {
-                        afterSelection = Array(selectedIndex + 1..<storyCount)
-                        snapshot.appendItems(afterSelection, toSection: .feedAfterStory)
-                    }
-                }
-            }
-            
-            snapshot.appendItems([-1], toSection: .loading)
-            
-            print("✨ configureDataSource selectedIndex: \(selectedIndex)")
-            
-            //TODO: 🚧 move the above logic into StoryCache
-            storyCache.appendStories(beforeSelection: beforeSelection, selectedIndex: selectedIndex, afterSelection: afterSelection)
-        }
-        
-        dataSource.apply(snapshot, animatingDifferences: false)
+//        let feedCellRegistration = UICollectionView.CellRegistration<FeedDetailCollectionCell, Int> { (cell, indexPath, identifier) in
+//
+////            cell.frame.size.height = self.heightForRow(at: indexPath)
+//
+//            self.prepareFeedCell(cell, indexPath: indexPath)
+//            cell.setNeedsUpdateConfiguration()
+//        }
+//
+//        let storyCellRegistration = UICollectionView.CellRegistration<StoryPagesCollectionCell, Int> { (cell, indexPath, identifier) in
+//            self.prepareStoryCell(cell, indexPath: indexPath)
+//            cell.setNeedsUpdateConfiguration()
+//        }
+//
+//        let loadingCellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Int> { (cell, indexPath, identifier) in
+//            self.prepareLoading(cell, indexPath: indexPath)
+//            cell.setNeedsUpdateConfiguration()
+//        }
+//
+//        dataSource = UICollectionViewDiffableDataSource<SectionLayoutKind, Int>(collectionView: feedCollectionView) {
+//            (collectionView: UICollectionView, indexPath: IndexPath, identifier: Int) -> UICollectionViewCell? in
+//            guard let sectionKind = SectionLayoutKind(rawValue: indexPath.section) else {
+//                return nil
+//            }
+//
+//            switch sectionKind {
+//            case .feedBeforeStory, .feedAfterStory:
+//                return collectionView.dequeueConfiguredReusableCell(using: feedCellRegistration, for: indexPath, item: identifier)
+//            case .selectedStory:
+//                if self.isGrid {
+//                    return collectionView.dequeueConfiguredReusableCell(using: storyCellRegistration, for: indexPath, item: identifier)
+//                } else {
+//                    return collectionView.dequeueConfiguredReusableCell(using: feedCellRegistration, for: indexPath, item: identifier)
+//                }
+//            case .loading:
+//                return collectionView.dequeueConfiguredReusableCell(using: loadingCellRegistration, for: indexPath, item: identifier)
+//            }
+//        }
+//
+//        var snapshot = NSDiffableDataSourceSnapshot<SectionLayoutKind, Int>()
+//
+//        let storyCount = Int(appDelegate.storiesCollection.storyLocationsCount)
+//        var beforeSelection = [Int]()
+//        var selectedIndex = -999
+//        var afterSelection = [Int]()
+//
+//        snapshot.appendSections(SectionLayoutKind.allCases)
+//
+//        if self.messageView.isHidden {
+//            if storyCount > 0 {
+//                selectedIndex = appDelegate.storiesCollection.indexOfActiveStory()
+//
+//                if selectedIndex < 0 {
+//                    beforeSelection = Array(0..<storyCount)
+//                    snapshot.appendItems(beforeSelection, toSection: .feedBeforeStory)
+//                } else {
+//                    beforeSelection = Array(0..<selectedIndex)
+//
+//                    snapshot.appendItems(beforeSelection, toSection: .feedBeforeStory)
+//                    snapshot.appendItems([selectedIndex], toSection: .selectedStory)
+//
+//                    if selectedIndex + 1 < storyCount {
+//                        afterSelection = Array(selectedIndex + 1..<storyCount)
+//                        snapshot.appendItems(afterSelection, toSection: .feedAfterStory)
+//                    }
+//                }
+//            }
+//
+//            snapshot.appendItems([-1], toSection: .loading)
+//
+//            print("✨ configureDataSource selectedIndex: \(selectedIndex)")
+//
+//            //TODO: 🚧 move the above logic into StoryCache
+//            storyCache.appendStories(beforeSelection: beforeSelection, selectedIndex: selectedIndex, afterSelection: afterSelection)
+//        }
+//
+//        dataSource.apply(snapshot, animatingDifferences: false)
     }
 }
 
@@ -346,7 +349,6 @@ extension FeedDetailViewController: FeedDetailInteraction {
     func visible(story: Story) {
         print("\(story.title) appeared")
         
-        //TODO: 🚧: this logic is from checkScroll; some more stuff there that may be needed
         if story.index >= storyCache.before.count + storyCache.after.count - 5 {
             if storiesCollection.isRiverView, storiesCollection.activeFolder != nil {
                 fetchRiverPage(storiesCollection.feedPage + 1, withCallback: nil)
@@ -361,14 +363,11 @@ extension FeedDetailViewController: FeedDetailInteraction {
         
         let indexPath = IndexPath(row: story.index, section: 0)
         
-        //TODO: 🚧 change this function to work better with the grid view
-        collectionView(feedCollectionView, didSelectItemAt: indexPath)
+        didSelectItem(at: indexPath)
     }
     
     func reading(story: Story) {
         print("reading \(story.title)")
-        
-        
     }
     
     func read(story: Story) {
@@ -388,8 +387,6 @@ extension FeedDetailViewController: FeedDetailInteraction {
     
     func hid(story: Story) {
         print("hiding \(story.title)")
-        
-//        let indexPath = IndexPath(row: story.index, section: 0)
         
         appDelegate.activeStory = nil
         reload()

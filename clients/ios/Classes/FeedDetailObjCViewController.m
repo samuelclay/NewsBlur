@@ -102,15 +102,15 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishedLoadingFeedsNotification:) name:@"FinishedLoadingFeedsNotification" object:nil];
     
-    self.feedCollectionView.backgroundColor = UIColorFromRGB(0xf4f4f4);
+//    self.feedCollectionView.backgroundColor = UIColorFromRGB(0xf4f4f4);
 //    self.feedCollectionView.separatorColor = UIColorFromRGB(0xE9E8E4);
-    if (@available(iOS 15.0, *)) {
-        self.feedCollectionView.allowsFocus = NO;
-    }
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        self.feedCollectionView.dragDelegate = self;
-        self.feedCollectionView.dragInteractionEnabled = YES;
-    }
+//    if (@available(iOS 15.0, *)) {
+//        self.feedCollectionView.allowsFocus = NO;
+//    }
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        self.feedCollectionView.dragDelegate = self;
+//        self.feedCollectionView.dragInteractionEnabled = YES;
+//    }
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
 
     spacerBarButton = [[UIBarButtonItem alloc]
@@ -125,18 +125,18 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
     [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
     
-    self.searchBar = [[UISearchBar alloc]
-                 initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.feedCollectionView.frame), 44.)];
-    self.searchBar.delegate = self;
-    [self.searchBar setReturnKeyType:UIReturnKeySearch];
-    self.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
-    self.searchBar.tintColor = UIColorFromRGB(0x0);
-    self.searchBar.nb_searchField.textColor = UIColorFromRGB(0x0);
-    [self.searchBar setSearchBarStyle:UISearchBarStyleMinimal];
-    [self.searchBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-//    self.feedCollectionView.tableHeaderView = self.searchBar;
-    self.feedCollectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
-    self.feedCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
+//    self.searchBar = [[UISearchBar alloc]
+//                 initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.feedCollectionView.frame), 44.)];
+//    self.searchBar.delegate = self;
+//    [self.searchBar setReturnKeyType:UIReturnKeySearch];
+//    self.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
+//    self.searchBar.tintColor = UIColorFromRGB(0x0);
+//    self.searchBar.nb_searchField.textColor = UIColorFromRGB(0x0);
+//    [self.searchBar setSearchBarStyle:UISearchBarStyleMinimal];
+//    [self.searchBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+////    self.feedCollectionView.tableHeaderView = self.searchBar;
+//    self.feedCollectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
+//    self.feedCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
     self.messageView.translatesAutoresizingMaskIntoConstraints = NO;
 //    self.view.translatesAutoresizingMaskIntoConstraints = NO; // No autolayout until UISplitViewController is built
     
@@ -168,23 +168,23 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     
     titleImageBarButton = [UIBarButtonItem alloc];
 
-    UILongPressGestureRecognizer *tableLongPress = [[UILongPressGestureRecognizer alloc]
-                                               initWithTarget:self action:@selector(handleTableLongPress:)];
-    tableLongPress.minimumPressDuration = 1.0;
-    tableLongPress.delegate = self;
-    [self.feedCollectionView addGestureRecognizer:tableLongPress];
+//    UILongPressGestureRecognizer *tableLongPress = [[UILongPressGestureRecognizer alloc]
+//                                               initWithTarget:self action:@selector(handleTableLongPress:)];
+//    tableLongPress.minimumPressDuration = 1.0;
+//    tableLongPress.delegate = self;
+//    [self.feedCollectionView addGestureRecognizer:tableLongPress];
     
-#if TARGET_OS_MACCATALYST
-    // CATALYST: support double-click; doing the following breaks clicking on rows in Catalyst.
-#else
-    UITapGestureRecognizer *doubleTapGesture = [[UITapGestureRecognizer alloc]
-                                                initWithTarget:self action:nil];
-    doubleTapGesture.numberOfTapsRequired = 2;
-    [self.feedCollectionView addGestureRecognizer:doubleTapGesture];
-    doubleTapGesture.delegate = self;
-#endif
+//#if TARGET_OS_MACCATALYST
+//    // CATALYST: support double-click; doing the following breaks clicking on rows in Catalyst.
+//#else
+//    UITapGestureRecognizer *doubleTapGesture = [[UITapGestureRecognizer alloc]
+//                                                initWithTarget:self action:nil];
+//    doubleTapGesture.numberOfTapsRequired = 2;
+//    [self.feedCollectionView addGestureRecognizer:doubleTapGesture];
+//    doubleTapGesture.delegate = self;
+//#endif
     
-    [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.feedCollectionView];
+//    [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.feedCollectionView];
     
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..."];
     [self.view addSubview:self.notifier];
@@ -203,57 +203,57 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     return YES;
 }
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    //    NSLog(@"Gesture should multiple? %ld (%ld) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
-    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && inDoubleTap) {
-        CGPoint p = [gestureRecognizer locationInView:self.feedCollectionView];
-        NSIndexPath *indexPath = [self.feedCollectionView indexPathForItemAtPoint:p];
-        NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
-        if (!story) return YES;
-        NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-        BOOL openOriginal = NO;
-        BOOL showText = NO;
-        BOOL markUnread = NO;
-        BOOL saveStory = NO;
-        if (gestureRecognizer.numberOfTouches == 2) {
-            NSString *twoFingerTap = [preferences stringForKey:@"two_finger_double_tap"];
-            if ([twoFingerTap isEqualToString:@"open_original_story"]) {
-                openOriginal = YES;
-            } else if ([twoFingerTap isEqualToString:@"show_original_text"]) {
-                showText = YES;
-            } else if ([twoFingerTap isEqualToString:@"mark_unread"]) {
-                markUnread = YES;
-            } else if ([twoFingerTap isEqualToString:@"save_story"]) {
-                saveStory = YES;
-            }
-        } else if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
-            NSString *doubleTap = [preferences stringForKey:@"double_tap_story"];
-            if ([doubleTap isEqualToString:@"open_original_story"]) {
-                openOriginal = YES;
-            } else if ([doubleTap isEqualToString:@"show_original_text"]) {
-                showText = YES;
-            } else if ([doubleTap isEqualToString:@"mark_unread"]) {
-                markUnread = YES;
-            } else if ([doubleTap isEqualToString:@"save_story"]) {
-                saveStory = YES;
-            }
-        }
-        if (openOriginal) {
-            [appDelegate
-             showOriginalStory:[NSURL URLWithString:[story objectForKey:@"story_permalink"]]];
-        } else if (showText) {
-            [appDelegate.storyDetailViewController fetchTextView];
-        } else if (markUnread) {
-            [storiesCollection toggleStoryUnread:story];
-            [self reloadWithSizing];
-        } else if (saveStory) {
-            [storiesCollection toggleStorySaved:story];
-            [self reloadWithSizing];
-        }
-        inDoubleTap = NO;
-    }
-    return YES;
-}
+//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+//    //    NSLog(@"Gesture should multiple? %ld (%ld) - %d", gestureRecognizer.state, UIGestureRecognizerStateEnded, inDoubleTap);
+//    if (gestureRecognizer.state == UIGestureRecognizerStateEnded && inDoubleTap) {
+//        CGPoint p = [gestureRecognizer locationInView:self.feedCollectionView];
+//        NSIndexPath *indexPath = [self.feedCollectionView indexPathForItemAtPoint:p];
+//        NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
+//        if (!story) return YES;
+//        NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+//        BOOL openOriginal = NO;
+//        BOOL showText = NO;
+//        BOOL markUnread = NO;
+//        BOOL saveStory = NO;
+//        if (gestureRecognizer.numberOfTouches == 2) {
+//            NSString *twoFingerTap = [preferences stringForKey:@"two_finger_double_tap"];
+//            if ([twoFingerTap isEqualToString:@"open_original_story"]) {
+//                openOriginal = YES;
+//            } else if ([twoFingerTap isEqualToString:@"show_original_text"]) {
+//                showText = YES;
+//            } else if ([twoFingerTap isEqualToString:@"mark_unread"]) {
+//                markUnread = YES;
+//            } else if ([twoFingerTap isEqualToString:@"save_story"]) {
+//                saveStory = YES;
+//            }
+//        } else if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+//            NSString *doubleTap = [preferences stringForKey:@"double_tap_story"];
+//            if ([doubleTap isEqualToString:@"open_original_story"]) {
+//                openOriginal = YES;
+//            } else if ([doubleTap isEqualToString:@"show_original_text"]) {
+//                showText = YES;
+//            } else if ([doubleTap isEqualToString:@"mark_unread"]) {
+//                markUnread = YES;
+//            } else if ([doubleTap isEqualToString:@"save_story"]) {
+//                saveStory = YES;
+//            }
+//        }
+//        if (openOriginal) {
+//            [appDelegate
+//             showOriginalStory:[NSURL URLWithString:[story objectForKey:@"story_permalink"]]];
+//        } else if (showText) {
+//            [appDelegate.storyDetailViewController fetchTextView];
+//        } else if (markUnread) {
+//            [storiesCollection toggleStoryUnread:story];
+//            [self reloadWithSizing];
+//        } else if (saveStory) {
+//            [storiesCollection toggleStorySaved:story];
+//            [self reloadWithSizing];
+//        }
+//        inDoubleTap = NO;
+//    }
+//    return YES;
+//}
 
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
     [self updateTheme];
@@ -467,10 +467,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     
     if (storiesCollection.inSearch && storiesCollection.searchQuery) {
         [self.searchBar setText:storiesCollection.searchQuery];
-        [self.feedCollectionView setContentOffset:CGPointMake(0, 0)];
-        if (storiesCollection.savedSearchQuery == nil) {
-            [self.searchBar becomeFirstResponder];
-        }
+//        [self.feedCollectionView setContentOffset:CGPointMake(0, 0)];
+//        if (storiesCollection.savedSearchQuery == nil) {
+//            [self.searchBar becomeFirstResponder];
+//        }
     } else {
         [self.searchBar setText:@""];
     }
@@ -480,11 +480,11 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         [self.searchBar setShowsCancelButton:NO animated:YES];
     }
     
-    if (self.canPullToRefresh) {
-        self.feedCollectionView.refreshControl = self.refreshControl;
-    } else {
-        self.feedCollectionView.refreshControl = nil;
-    }
+//    if (self.canPullToRefresh) {
+//        self.feedCollectionView.refreshControl = self.refreshControl;
+//    } else {
+//        self.feedCollectionView.refreshControl = nil;
+//    }
     
     [self updateTheme];
     
@@ -562,15 +562,15 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     NSInteger location = storiesCollection.locationOfActiveStory;
     NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
     
-    if (indexPath && location >= 0 && self.view.window != nil) {
-        [feedCollectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
-        if (deselect) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),
-                           dispatch_get_main_queue(), ^(void) {
-                [self collectionView:self.feedCollectionView deselectItemAtIndexPath:indexPath animated:YES];
-            });
-        }
-    }
+//    if (indexPath && location >= 0 && self.view.window != nil) {
+//        [feedCollectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+//        if (deselect) {
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),
+//                           dispatch_get_main_queue(), ^(void) {
+//                [self collectionView:self.feedCollectionView deselectItemAtIndexPath:indexPath animated:YES];
+//            });
+//        }
+//    }
     
     if (deselect) {
         appDelegate.activeStory = nil;
@@ -708,7 +708,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }
     
     [self reload];
-    [feedCollectionView scrollRectToVisible:CGRectMake(0, CGRectGetHeight(self.searchBar.frame), 1, 1) animated:YES];
+//    [feedCollectionView scrollRectToVisible:CGRectMake(0, CGRectGetHeight(self.searchBar.frame), 1, 1) animated:YES];
 }
 
 - (void)beginOfflineTimer {
@@ -783,22 +783,22 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 }
 
 - (void)showImageForStoryHash:(NSString *)storyHash {
-    if (self.view.window == nil) {
-        NSLog(@"showImageForStoryHash when not in a window: %@", storyHash);  // log
-        return;
-    }
-    
-    for (FeedDetailCollectionCell *cell in [self.feedCollectionView visibleCells]) {
-        if (![cell isKindOfClass:[FeedDetailCollectionCell class]]) return;
-        if ([cell.storyHash isEqualToString:storyHash]) {
-            NSIndexPath *indexPath = [self.feedCollectionView indexPathForCell:cell];
-            
-            NSLog(@"showImageForStoryHash for index path %@", indexPath);  // log
-            
-            [self reloadIndexPath:indexPath];
-            break;
-        }
-    }
+//    if (self.view.window == nil) {
+//        NSLog(@"showImageForStoryHash when not in a window: %@", storyHash);  // log
+//        return;
+//    }
+//
+//    for (FeedDetailCollectionCell *cell in [self.feedCollectionView visibleCells]) {
+//        if (![cell isKindOfClass:[FeedDetailCollectionCell class]]) return;
+//        if ([cell.storyHash isEqualToString:storyHash]) {
+//            NSIndexPath *indexPath = [self.feedCollectionView indexPathForCell:cell];
+//
+//            NSLog(@"showImageForStoryHash for index path %@", indexPath);  // log
+//
+//            [self reloadIndexPath:indexPath];
+//            break;
+//        }
+//    }
 }
 
 - (void)flashInfrequentStories {
@@ -837,7 +837,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     NSInteger storyCount = storiesCollection.storyCount;
     if (storyCount == 0) {
         [self reload];
-        [feedCollectionView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
+//        [feedCollectionView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
     }
     if (storiesCollection.feedPage == 1) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
@@ -847,9 +847,9 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             }];
         });
     }
-    if (!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
-        [self.feedCollectionView setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
-    }
+//    if (!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
+//        [self.feedCollectionView setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
+//    }
     
     if (!self.isOnline) {
         [self loadOfflineStories];
@@ -1035,12 +1035,12 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     if (storyCount == 0) {
         self.messageView.hidden = YES;
         [self reload];
-        [feedCollectionView scrollRectToVisible:CGRectMake(0, 0, CGRectGetHeight(self.searchBar.frame), 1) animated:YES];
+//        [feedCollectionView scrollRectToVisible:CGRectMake(0, 0, CGRectGetHeight(self.searchBar.frame), 1) animated:YES];
     }
     
-    if (!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
-        [self.feedCollectionView setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
-    }
+//    if (!storiesCollection.inSearch && storiesCollection.feedPage == 1) {
+//        [self.feedCollectionView setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
+//    }
     if (storiesCollection.feedPage == 1) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                  (unsigned long)NULL), ^(void) {
@@ -1290,7 +1290,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         } else {
             self.messageView.hidden = YES;
         }
-        [feedCollectionView setContentOffset:CGPointZero animated:YES];
+//        [feedCollectionView setContentOffset:CGPointZero animated:YES];
     } else {
         self.messageView.hidden = YES;
     }
@@ -1434,14 +1434,14 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             }
             NSIndexPath *indexPath = [self indexPathForStoryLocation:locationOfStoryId];
             
-            [self collectionView:self.feedCollectionView selectItemAtIndexPath:indexPath
-                        animated:NO
-                  scrollPosition:UICollectionViewScrollPositionNone];
-            [[self.feedCollectionView cellForItemAtIndexPath:indexPath] setNeedsDisplay];
+//            [self collectionView:self.feedCollectionView selectItemAtIndexPath:indexPath
+//                        animated:NO
+//                  scrollPosition:UICollectionViewScrollPositionNone];
+//            [[self.feedCollectionView cellForItemAtIndexPath:indexPath] setNeedsDisplay];
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                FeedDetailCollectionCell *cell = (FeedDetailCollectionCell *)[self.feedCollectionView cellForItemAtIndexPath:indexPath];
-                [self loadStory:cell atRow:[self storyLocationForIndexPath:indexPath]];
+//                FeedDetailCollectionCell *cell = (FeedDetailCollectionCell *)[self.feedCollectionView cellForItemAtIndexPath:indexPath];
+                [self loadStoryAtRow:[self storyLocationForIndexPath:indexPath]];
             });
             
             [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -1470,238 +1470,238 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 #pragma mark -
 #pragma mark Collection View - Feed List
 
-- (void)prepareFeedCell:(FeedDetailCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
-    NSDictionary *feed;
-    
-    for (UIView *view in cell.contentView.subviews) {
-        if ([view isKindOfClass:[UIImageView class]] && ((UIImageView *)view).tag == 99) {
-            [view removeFromSuperview];
-            break;
-        }
-    }
-    
-    NSInteger active = [storiesCollection locationOfActiveStory];
-    NSInteger location = [self storyLocationForIndexPath:indexPath];
-    NSDictionary *story = [self getStoryAtLocation:location];
-    
-    NSLog(@"🎈 prepare feed cell: section: %@, row: %@, location: %@, active: %@: %@", @(indexPath.section), @(indexPath.row), @(location), @(active), story[@"story_title"]);  // log
-    
-    id feedId = [story objectForKey:@"story_feed_id"];
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
-    feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
-    
-    if (storiesCollection.isSocialView ||
-        storiesCollection.isSocialRiverView) {
-        feed = [appDelegate.dictActiveFeeds objectForKey:feedIdStr];
-        // this is to catch when a user is already subscribed
-        if (!feed) {
-            feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-        }
-    } else {
-        feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-    }
-    
-    NSString *siteTitle = [feed objectForKey:@"feed_title"];
-    cell.siteTitle = siteTitle;
-    
-    NSString *title = [story objectForKey:@"story_title"];
-    cell.storyTitle = [title stringByDecodingHTMLEntities];
-    
-    cell.storyDate = [story objectForKey:@"short_parsed_date"];
-    cell.storyTimestamp = [[story objectForKey:@"story_timestamp"] integerValue];
-    cell.isGrid = appDelegate.detailViewController.storyTitlesInGrid;
-    cell.isSaved = [[story objectForKey:@"starred"] boolValue];
-    cell.isShared = [[story objectForKey:@"shared"] boolValue];
-    cell.storyHash = story[@"story_hash"];
-    
-    if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
-        cell.storyAuthor = [[story objectForKey:@"story_authors"] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
-    } else {
-        cell.storyAuthor = @"";
-    }
-    
-    cell.storyContent = nil;
-    if (self.textSize != FeedDetailTextSizeTitleOnly) {
-        NSString *content = [[[[story objectForKey:@"story_content"] convertHTML] stringByDecodingXMLEntities] stringByDecodingHTMLEntities];
-        if ([content length] > 500) {
-            content = [content substringToIndex:500];
-        }
-        cell.storyContent = [content stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
-    }
-    
-    // feed color bar border
-    unsigned int colorBorder = 0;
-    NSString *faviconColor = [feed valueForKey:@"favicon_fade"];
-    
-    if ([faviconColor class] == [NSNull class] || !faviconColor) {
-        faviconColor = @"707070";
-    }
-    NSScanner *scannerBorder = [NSScanner scannerWithString:faviconColor];
-    [scannerBorder scanHexInt:&colorBorder];
-    
-    cell.feedColorBar = UIColorFromFixedRGB(colorBorder);
-    
-    // feed color bar border
-    NSString *faviconFade = [feed valueForKey:@"favicon_color"];
-    if ([faviconFade class] == [NSNull class] || !faviconFade) {
-        faviconFade = @"505050";
-    }
-    scannerBorder = [NSScanner scannerWithString:faviconFade];
-    [scannerBorder scanHexInt:&colorBorder];
-    cell.feedColorBarTopBorder =  UIColorFromFixedRGB(colorBorder);
-    
-    // favicon
-    cell.siteFavicon = [appDelegate getFavicon:feedIdStr];
-    cell.hasAlpha = NO;
-    
-    // undread indicator
-    
-    int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-    cell.storyScore = score;
-    
-    cell.isRead = ![storiesCollection isStoryUnread:story];
-    cell.isReadAvailable = ![storiesCollection.activeFolder isEqualToString:@"saved_stories"];
-    cell.textSize = self.textSize;
-    cell.isShort = NO;
-    
-    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
-    if (!self.isPhoneOrCompact &&
-        !appDelegate.detailViewController.storyTitlesOnLeft &&
-        UIInterfaceOrientationIsPortrait(orientation)) {
-        cell.isShort = YES;
-    }
-    
-    cell.isRiverOrSocial = NO;
-    if (storiesCollection.isRiverView ||
-        storiesCollection.isSavedView ||
-        storiesCollection.isReadView ||
-        storiesCollection.isWidgetView ||
-        storiesCollection.isSocialView ||
-        storiesCollection.isSocialRiverView) {
-        cell.isRiverOrSocial = YES;
-    }
-    
-    if (!self.isPhoneOrCompact) {
-        if (location == active) {
-            [self collectionView:feedCollectionView selectItemAtIndexPath:indexPath animated:NO];
-        }
-    }
-    
-    [cell setupGestures];
-    
-    [cell setNeedsDisplay];
-}
+//- (void)prepareFeedCell:(FeedDetailCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
+//    NSDictionary *feed;
+//
+//    for (UIView *view in cell.contentView.subviews) {
+//        if ([view isKindOfClass:[UIImageView class]] && ((UIImageView *)view).tag == 99) {
+//            [view removeFromSuperview];
+//            break;
+//        }
+//    }
+//
+//    NSInteger active = [storiesCollection locationOfActiveStory];
+//    NSInteger location = [self storyLocationForIndexPath:indexPath];
+//    NSDictionary *story = [self getStoryAtLocation:location];
+//
+//    NSLog(@"🎈 prepare feed cell: section: %@, row: %@, location: %@, active: %@: %@", @(indexPath.section), @(indexPath.row), @(location), @(active), story[@"story_title"]);  // log
+//
+//    id feedId = [story objectForKey:@"story_feed_id"];
+//    NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+//    feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
+//
+//    if (storiesCollection.isSocialView ||
+//        storiesCollection.isSocialRiverView) {
+//        feed = [appDelegate.dictActiveFeeds objectForKey:feedIdStr];
+//        // this is to catch when a user is already subscribed
+//        if (!feed) {
+//            feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+//        }
+//    } else {
+//        feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+//    }
+//
+//    NSString *siteTitle = [feed objectForKey:@"feed_title"];
+//    cell.siteTitle = siteTitle;
+//
+//    NSString *title = [story objectForKey:@"story_title"];
+//    cell.storyTitle = [title stringByDecodingHTMLEntities];
+//
+//    cell.storyDate = [story objectForKey:@"short_parsed_date"];
+//    cell.storyTimestamp = [[story objectForKey:@"story_timestamp"] integerValue];
+//    cell.isGrid = appDelegate.detailViewController.storyTitlesInGrid;
+//    cell.isSaved = [[story objectForKey:@"starred"] boolValue];
+//    cell.isShared = [[story objectForKey:@"shared"] boolValue];
+//    cell.storyHash = story[@"story_hash"];
+//
+//    if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
+//        cell.storyAuthor = [[story objectForKey:@"story_authors"] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+//    } else {
+//        cell.storyAuthor = @"";
+//    }
+//
+//    cell.storyContent = nil;
+//    if (self.textSize != FeedDetailTextSizeTitleOnly) {
+//        NSString *content = [[[[story objectForKey:@"story_content"] convertHTML] stringByDecodingXMLEntities] stringByDecodingHTMLEntities];
+//        if ([content length] > 500) {
+//            content = [content substringToIndex:500];
+//        }
+//        cell.storyContent = [content stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
+//    }
+//
+//    // feed color bar border
+//    unsigned int colorBorder = 0;
+//    NSString *faviconColor = [feed valueForKey:@"favicon_fade"];
+//
+//    if ([faviconColor class] == [NSNull class] || !faviconColor) {
+//        faviconColor = @"707070";
+//    }
+//    NSScanner *scannerBorder = [NSScanner scannerWithString:faviconColor];
+//    [scannerBorder scanHexInt:&colorBorder];
+//
+//    cell.feedColorBar = UIColorFromFixedRGB(colorBorder);
+//
+//    // feed color bar border
+//    NSString *faviconFade = [feed valueForKey:@"favicon_color"];
+//    if ([faviconFade class] == [NSNull class] || !faviconFade) {
+//        faviconFade = @"505050";
+//    }
+//    scannerBorder = [NSScanner scannerWithString:faviconFade];
+//    [scannerBorder scanHexInt:&colorBorder];
+//    cell.feedColorBarTopBorder =  UIColorFromFixedRGB(colorBorder);
+//
+//    // favicon
+//    cell.siteFavicon = [appDelegate getFavicon:feedIdStr];
+//    cell.hasAlpha = NO;
+//
+//    // undread indicator
+//
+//    int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+//    cell.storyScore = score;
+//
+//    cell.isRead = ![storiesCollection isStoryUnread:story];
+//    cell.isReadAvailable = ![storiesCollection.activeFolder isEqualToString:@"saved_stories"];
+//    cell.textSize = self.textSize;
+//    cell.isShort = NO;
+//
+//    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
+//    if (!self.isPhoneOrCompact &&
+//        !appDelegate.detailViewController.storyTitlesOnLeft &&
+//        UIInterfaceOrientationIsPortrait(orientation)) {
+//        cell.isShort = YES;
+//    }
+//
+//    cell.isRiverOrSocial = NO;
+//    if (storiesCollection.isRiverView ||
+//        storiesCollection.isSavedView ||
+//        storiesCollection.isReadView ||
+//        storiesCollection.isWidgetView ||
+//        storiesCollection.isSocialView ||
+//        storiesCollection.isSocialRiverView) {
+//        cell.isRiverOrSocial = YES;
+//    }
+//
+//    if (!self.isPhoneOrCompact) {
+//        if (location == active) {
+//            [self collectionView:feedCollectionView selectItemAtIndexPath:indexPath animated:NO];
+//        }
+//    }
+//
+//    [cell setupGestures];
+//
+//    [cell setNeedsDisplay];
+//}
+//
+//- (void)prepareStoryCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath {
+//    return;
+//
+//    if (self.storyHeight == 0) {
+//        self.storyHeight = 180;
+//    }
+//
+//    [appDelegate.storyPagesViewController updatePageWithActiveStory:appDelegate.storiesCollection.locationOfActiveStory updateFeedDetail:NO];
+//
+//    [appDelegate.detailViewController moveStoriesToGridCell:cell.contentView];
+//
+//}
+//
+//- (void)prepareLoadingCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath {
+//    NSInteger height = 41;
+////    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+//
+//    if (!self.pageFinished) {
+//        return;
+//    }
+//
+//    BOOL premiumRestriction = !appDelegate.isPremium &&
+//    storiesCollection.isRiverView &&
+//    !storiesCollection.isReadView &&
+//    !storiesCollection.isWidgetView &&
+//    !storiesCollection.isSocialView &&
+//    !storiesCollection.isSavedView;
+//
+//    UIImage *img = [UIImage imageNamed:@"fleuron.png"];
+//    UIImageView *fleuron = [[UIImageView alloc] initWithImage:img];
+//
+//    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
+//    if (!self.isPhoneOrCompact
+//        && !appDelegate.detailViewController.storyTitlesOnLeft
+//        && UIInterfaceOrientationIsPortrait(orientation)) {
+//        height = height - kTableViewShortRowDifference;
+//    }
+//
+//    fleuron.translatesAutoresizingMaskIntoConstraints = NO;
+//    fleuron.contentMode = UIViewContentModeCenter;
+//    fleuron.tag = 99;
+//    [cell.contentView addSubview:fleuron];
+//    [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:fleuron
+//                                                                 attribute:NSLayoutAttributeHeight
+//                                                                 relatedBy:NSLayoutRelationEqual toItem:nil
+//                                                                 attribute:NSLayoutAttributeNotAnAttribute
+//                                                                multiplier:1.0 constant:height]];
+//    [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:fleuron
+//                                                                 attribute:NSLayoutAttributeCenterX
+//                                                                 relatedBy:NSLayoutRelationEqual
+//                                                                    toItem:cell.contentView
+//                                                                 attribute:NSLayoutAttributeCenterX
+//                                                                multiplier:1.0 constant:0]];
+//    [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:fleuron
+//                                                                 attribute:NSLayoutAttributeTop
+//                                                                 relatedBy:NSLayoutRelationEqual
+//                                                                    toItem:cell.contentView
+//                                                                 attribute:NSLayoutAttributeTop
+//                                                                multiplier:1.0 constant:height/2]];
+//    cell.backgroundColor = [UIColor clearColor];
+//
+//    if (premiumRestriction) {
+//        UILabel *premiumLabel = [[UILabel alloc] init];
+//        premiumLabel.translatesAutoresizingMaskIntoConstraints = NO;
+//        NSString *premiumText = @"Reading by folder is only available to\npremium subscribers";
+//        NSDictionary *attribs = @{NSForegroundColorAttributeName: UIColorFromRGB(0x0c0c0c),
+//                                  NSFontAttributeName: [UIFont systemFontOfSize:14],
+//        };
+//        NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc]
+//                                                     initWithString:premiumText attributes:attribs];
+//
+//        NSRange blueRange = [premiumText rangeOfString:@"premium subscribers"];
+//        [attributedText setAttributes:@{NSForegroundColorAttributeName: UIColorFromRGB(0x2030C0),
+//                                        NSFontAttributeName: [UIFont systemFontOfSize:14],
+//                                      }
+//                                range:blueRange];
+//
+//        premiumLabel.attributedText = attributedText;
+//        premiumLabel.numberOfLines = 2;
+//        premiumLabel.textAlignment = NSTextAlignmentCenter;
+//
+//        [cell.contentView addSubview:premiumLabel];
+//        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:premiumLabel
+//                                                                     attribute:NSLayoutAttributeCenterX
+//                                                                     relatedBy:NSLayoutRelationEqual
+//                                                                        toItem:cell.contentView
+//                                                                     attribute:NSLayoutAttributeCenterX
+//                                                                    multiplier:1.0 constant:0]];
+//        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:premiumLabel
+//                                                                     attribute:NSLayoutAttributeLeading
+//                                                                     relatedBy:NSLayoutRelationEqual
+//                                                                        toItem:cell.contentView
+//                                                                     attribute:NSLayoutAttributeLeading
+//                                                                    multiplier:1.0 constant:24]];
+//        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:premiumLabel
+//                                                                     attribute:NSLayoutAttributeTrailing
+//                                                                     relatedBy:NSLayoutRelationEqual
+//                                                                        toItem:cell.contentView
+//                                                                     attribute:NSLayoutAttributeTrailing
+//                                                                    multiplier:1.0 constant:-24]];
+//        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:premiumLabel
+//                                                                     attribute:NSLayoutAttributeTop
+//                                                                     relatedBy:NSLayoutRelationEqual
+//                                                                        toItem:fleuron
+//                                                                     attribute:NSLayoutAttributeBottom
+//                                                                    multiplier:1.0 constant:height/2]];
+//    }
+//}
 
-- (void)prepareStoryCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath {
-    return;
-    
-    if (self.storyHeight == 0) {
-        self.storyHeight = 180;
-    }
-    
-    [appDelegate.storyPagesViewController updatePageWithActiveStory:appDelegate.storiesCollection.locationOfActiveStory updateFeedDetail:NO];
-    
-    [appDelegate.detailViewController moveStoriesToGridCell:cell.contentView];
-    
-}
-
-- (void)prepareLoadingCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath {
-    NSInteger height = 41;
-//    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    
-    if (!self.pageFinished) {
-        return;
-    }
-    
-    BOOL premiumRestriction = !appDelegate.isPremium &&
-    storiesCollection.isRiverView &&
-    !storiesCollection.isReadView &&
-    !storiesCollection.isWidgetView &&
-    !storiesCollection.isSocialView &&
-    !storiesCollection.isSavedView;
-    
-    UIImage *img = [UIImage imageNamed:@"fleuron.png"];
-    UIImageView *fleuron = [[UIImageView alloc] initWithImage:img];
-    
-    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
-    if (!self.isPhoneOrCompact
-        && !appDelegate.detailViewController.storyTitlesOnLeft
-        && UIInterfaceOrientationIsPortrait(orientation)) {
-        height = height - kTableViewShortRowDifference;
-    }
-    
-    fleuron.translatesAutoresizingMaskIntoConstraints = NO;
-    fleuron.contentMode = UIViewContentModeCenter;
-    fleuron.tag = 99;
-    [cell.contentView addSubview:fleuron];
-    [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:fleuron
-                                                                 attribute:NSLayoutAttributeHeight
-                                                                 relatedBy:NSLayoutRelationEqual toItem:nil
-                                                                 attribute:NSLayoutAttributeNotAnAttribute
-                                                                multiplier:1.0 constant:height]];
-    [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:fleuron
-                                                                 attribute:NSLayoutAttributeCenterX
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:cell.contentView
-                                                                 attribute:NSLayoutAttributeCenterX
-                                                                multiplier:1.0 constant:0]];
-    [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:fleuron
-                                                                 attribute:NSLayoutAttributeTop
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:cell.contentView
-                                                                 attribute:NSLayoutAttributeTop
-                                                                multiplier:1.0 constant:height/2]];
-    cell.backgroundColor = [UIColor clearColor];
-    
-    if (premiumRestriction) {
-        UILabel *premiumLabel = [[UILabel alloc] init];
-        premiumLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        NSString *premiumText = @"Reading by folder is only available to\npremium subscribers";
-        NSDictionary *attribs = @{NSForegroundColorAttributeName: UIColorFromRGB(0x0c0c0c),
-                                  NSFontAttributeName: [UIFont systemFontOfSize:14],
-        };
-        NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc]
-                                                     initWithString:premiumText attributes:attribs];
-        
-        NSRange blueRange = [premiumText rangeOfString:@"premium subscribers"];
-        [attributedText setAttributes:@{NSForegroundColorAttributeName: UIColorFromRGB(0x2030C0),
-                                        NSFontAttributeName: [UIFont systemFontOfSize:14],
-                                      }
-                                range:blueRange];
-        
-        premiumLabel.attributedText = attributedText;
-        premiumLabel.numberOfLines = 2;
-        premiumLabel.textAlignment = NSTextAlignmentCenter;
-        
-        [cell.contentView addSubview:premiumLabel];
-        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:premiumLabel
-                                                                     attribute:NSLayoutAttributeCenterX
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:cell.contentView
-                                                                     attribute:NSLayoutAttributeCenterX
-                                                                    multiplier:1.0 constant:0]];
-        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:premiumLabel
-                                                                     attribute:NSLayoutAttributeLeading
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:cell.contentView
-                                                                     attribute:NSLayoutAttributeLeading
-                                                                    multiplier:1.0 constant:24]];
-        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:premiumLabel
-                                                                     attribute:NSLayoutAttributeTrailing
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:cell.contentView
-                                                                     attribute:NSLayoutAttributeTrailing
-                                                                    multiplier:1.0 constant:-24]];
-        [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:premiumLabel
-                                                                     attribute:NSLayoutAttributeTop
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:fleuron
-                                                                     attribute:NSLayoutAttributeBottom
-                                                                    multiplier:1.0 constant:height/2]];
-    }
-}
-
-- (void)loadStory:(FeedDetailCollectionCell *)cell atRow:(NSInteger)row {
+- (void)loadStoryAtRow:(NSInteger)row {
     NSInteger storyIndex = [storiesCollection indexFromLocation:row];
     appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
     if ([storiesCollection isStoryUnread:appDelegate.activeStory]) {
@@ -1753,43 +1753,47 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 - (void)redrawUnreadStory {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
-    NSInteger location = [storiesCollection locationOfActiveStory];
-    NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
-    FeedDetailCollectionCell *cell = (FeedDetailCollectionCell*) [self.feedCollectionView cellForItemAtIndexPath:indexPath];
-    
-    if (![cell isKindOfClass:[FeedDetailCollectionCell class]]) {
-        return;
-    }
-    
-    cell.isRead = ![storiesCollection isStoryUnread:appDelegate.activeStory];
-    cell.isShared = [[appDelegate.activeStory objectForKey:@"shared"] boolValue];
-    cell.isSaved = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];
-    [cell setNeedsDisplay];
+//    NSInteger location = [storiesCollection locationOfActiveStory];
+//    NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
+//    FeedDetailCollectionCell *cell = (FeedDetailCollectionCell*) [self.feedCollectionView cellForItemAtIndexPath:indexPath];
+//
+//    if (![cell isKindOfClass:[FeedDetailCollectionCell class]]) {
+//        return;
+//    }
+//
+//    cell.isRead = ![storiesCollection isStoryUnread:appDelegate.activeStory];
+//    cell.isShared = [[appDelegate.activeStory objectForKey:@"shared"] boolValue];
+//    cell.isSaved = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];
+//    [cell setNeedsDisplay];
 }
 
 - (void)changeActiveStoryTitleCellLayout {
-    NSInteger location = [storiesCollection locationOfActiveStory];
-    NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
-    FeedDetailCollectionCell *cell = (FeedDetailCollectionCell*) [self.feedCollectionView cellForItemAtIndexPath:indexPath];
-    cell.isRead = YES;
-    [cell setNeedsLayout];
+//    NSInteger location = [storiesCollection locationOfActiveStory];
+//    NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
+//    FeedDetailCollectionCell *cell = (FeedDetailCollectionCell*) [self.feedCollectionView cellForItemAtIndexPath:indexPath];
+//    cell.isRead = YES;
+//    [cell setNeedsLayout];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    // obsolete; will remove
+}
+
+- (void)didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     if ([self storyLocationForIndexPath:indexPath] < storiesCollection.storyLocationsCount) {
         // mark the cell as read
         //        appDelegate.feedsViewController.currentRowAtIndexPath = nil;
         
         self.oldLocation = storiesCollection.locationOfActiveStory;
-        NSIndexPath *oldIndexPath = self.selectedIndexPath;
+//        NSIndexPath *oldIndexPath = self.selectedIndexPath;
         
-        if (![oldIndexPath isEqual:indexPath]) {
-            [self collectionView:collectionView deselectItemAtIndexPath:oldIndexPath animated:YES];
-        }
+//        if (![oldIndexPath isEqual:indexPath]) {
+//            [self collectionView:collectionView deselectItemAtIndexPath:oldIndexPath animated:YES];
+//        }
+//
+//        [self collectionView:collectionView redisplayCellAtIndexPath:indexPath];
         
-        [self collectionView:collectionView redisplayCellAtIndexPath:indexPath];
-        
-        FeedDetailCollectionCell *cell = (FeedDetailCollectionCell*) [collectionView cellForItemAtIndexPath:indexPath];
+//        FeedDetailCollectionCell *cell = (FeedDetailCollectionCell*) [collectionView cellForItemAtIndexPath:indexPath];
         NSInteger location = [self storyLocationForIndexPath:indexPath];
         NSInteger storyIndex = [storiesCollection indexFromLocation:location];
         NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
@@ -1813,7 +1817,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                 return;
             }
         }
-        [self loadStory:cell atRow:[self storyLocationForIndexPath:indexPath]];
+        [self loadStoryAtRow:[self storyLocationForIndexPath:indexPath]];
         
         [self reload];
         //[collectionView selectItemAtIndexPath:self.selectedIndexPath animated:YES scrollPosition:UICollectionViewScrollPositionTop];
@@ -1966,47 +1970,47 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 }
 
 - (void)checkScroll {
-    NSInteger currentOffset = self.feedCollectionView.contentOffset.y;
-    NSInteger maximumOffset = self.feedCollectionView.contentSize.height - self.feedCollectionView.frame.size.height;
-    
-    if (![storiesCollection.activeFeedStories count]) return;
-    
-    if (!self.pageFetching && (maximumOffset - currentOffset <= 500.0 ||
-                               (appDelegate.inFindingStoryMode))) {
-        if (storiesCollection.isRiverView && storiesCollection.activeFolder) {
-            [self fetchRiverPage:storiesCollection.feedPage+1 withCallback:nil];
-        } else {
-            [self fetchFeedDetail:storiesCollection.feedPage+1 withCallback:nil];
-        }
-    }
-    
-    CGPoint topRowPoint = self.feedCollectionView.contentOffset;
-    topRowPoint.y = topRowPoint.y + (self.textSize != FeedDetailTextSizeTitleOnly ? 80.f : 60.f);
-    NSIndexPath *indexPath = [self.feedCollectionView indexPathForItemAtPoint:topRowPoint];
-    BOOL markReadOnScroll = self.isMarkReadOnScroll;
-    
-    if (indexPath && markReadOnScroll) {
-        NSUInteger topRow = [self storyLocationForIndexPath:indexPath];
-        
-        if (self.scrollingMarkReadRow == NSNotFound) {
-            self.scrollingMarkReadRow = topRow;
-        } else if (topRow > self.scrollingMarkReadRow) {
-            for (NSUInteger thisRow = self.scrollingMarkReadRow; thisRow < topRow; thisRow++) {
-                NSInteger storyIndex = [storiesCollection indexFromLocation:thisRow];
-                NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
-                
-                if ([storiesCollection isStoryUnread:story]) {
-                    [storiesCollection markStoryRead:story];
-                    [storiesCollection syncStoryAsRead:story];
-                    NSIndexPath *reloadIndexPath = [self indexPathForStoryLocation:thisRow];
-                    NSLog(@" --> Reloading indexPath: %@", reloadIndexPath);
-                    [self reloadIndexPath:indexPath];
-                }
-            }
-            
-            self.scrollingMarkReadRow = topRow;
-        }
-    }
+//    NSInteger currentOffset = self.feedCollectionView.contentOffset.y;
+//    NSInteger maximumOffset = self.feedCollectionView.contentSize.height - self.feedCollectionView.frame.size.height;
+//
+//    if (![storiesCollection.activeFeedStories count]) return;
+//
+//    if (!self.pageFetching && (maximumOffset - currentOffset <= 500.0 ||
+//                               (appDelegate.inFindingStoryMode))) {
+//        if (storiesCollection.isRiverView && storiesCollection.activeFolder) {
+//            [self fetchRiverPage:storiesCollection.feedPage+1 withCallback:nil];
+//        } else {
+//            [self fetchFeedDetail:storiesCollection.feedPage+1 withCallback:nil];
+//        }
+//    }
+//
+//    CGPoint topRowPoint = self.feedCollectionView.contentOffset;
+//    topRowPoint.y = topRowPoint.y + (self.textSize != FeedDetailTextSizeTitleOnly ? 80.f : 60.f);
+//    NSIndexPath *indexPath = [self.feedCollectionView indexPathForItemAtPoint:topRowPoint];
+//    BOOL markReadOnScroll = self.isMarkReadOnScroll;
+//
+//    if (indexPath && markReadOnScroll) {
+//        NSUInteger topRow = [self storyLocationForIndexPath:indexPath];
+//
+//        if (self.scrollingMarkReadRow == NSNotFound) {
+//            self.scrollingMarkReadRow = topRow;
+//        } else if (topRow > self.scrollingMarkReadRow) {
+//            for (NSUInteger thisRow = self.scrollingMarkReadRow; thisRow < topRow; thisRow++) {
+//                NSInteger storyIndex = [storiesCollection indexFromLocation:thisRow];
+//                NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
+//
+//                if ([storiesCollection isStoryUnread:story]) {
+//                    [storiesCollection markStoryRead:story];
+//                    [storiesCollection syncStoryAsRead:story];
+//                    NSIndexPath *reloadIndexPath = [self indexPathForStoryLocation:thisRow];
+//                    NSLog(@" --> Reloading indexPath: %@", reloadIndexPath);
+//                    [self reloadIndexPath:indexPath];
+//                }
+//            }
+//
+//            self.scrollingMarkReadRow = topRow;
+//        }
+//    }
 }
 
 - (void)changeIntelligence:(NSInteger)newLevel {
@@ -2056,114 +2060,114 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }
 }
 
-- (NSIndexPath *)selectedIndexPath {
-    if (feedCollectionView.indexPathsForSelectedItems.count > 0) {
-        return [NSIndexPath indexPathForRow:0 inSection:FeedSectionSelected];
-    } else {
-        return nil;
-    }
-}
+//- (NSIndexPath *)selectedIndexPath {
+//    if (feedCollectionView.indexPathsForSelectedItems.count > 0) {
+//        return [NSIndexPath indexPathForRow:0 inSection:FeedSectionSelected];
+//    } else {
+//        return nil;
+//    }
+//}
 
 
 #pragma mark - MCSwipeTableViewCellDelegate
 
-// When the user starts swiping the cell this method is called
-- (void)swipeTableViewCellDidStartSwiping:(MCSwipeTableViewCell *)cell {
-    //    NSLog(@"Did start swiping the cell!");
-}
-
-// When the user is dragging, this method is called and return the dragged percentage from the border
-- (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didSwipWithPercentage:(CGFloat)percentage {
-    //    NSLog(@"Did swipe with percentage : %f", percentage);
-}
-
-- (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell
-didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
-                      mode:(MCSwipeTableViewCellMode)mode {
-    NSIndexPath *indexPath = [self.feedCollectionView indexPathForCell:cell];
-    if (!indexPath) {
-        // This can happen if the user swipes on a cell that is being refreshed.
-        return;
-    }
-    
-    NSInteger storyIndex = [storiesCollection indexFromLocation:[self storyLocationForIndexPath:indexPath]];
-    NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
-    
-    if (state == MCSwipeTableViewCellState1) {
-        // Saved
-        [storiesCollection toggleStorySaved:story];
-        [self reloadIndexPath:indexPath];
-    } else if (state == MCSwipeTableViewCellState3) {
-        // Read
-        [storiesCollection toggleStoryUnread:story];
-        [self reloadIndexPath:indexPath];
-    }
-}
+//// When the user starts swiping the cell this method is called
+//- (void)swipeTableViewCellDidStartSwiping:(MCSwipeTableViewCell *)cell {
+//    //    NSLog(@"Did start swiping the cell!");
+//}
+//
+//// When the user is dragging, this method is called and return the dragged percentage from the border
+//- (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell didSwipWithPercentage:(CGFloat)percentage {
+//    //    NSLog(@"Did swipe with percentage : %f", percentage);
+//}
+//
+//- (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell
+//didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
+//                      mode:(MCSwipeTableViewCellMode)mode {
+//    NSIndexPath *indexPath = [self.feedCollectionView indexPathForCell:cell];
+//    if (!indexPath) {
+//        // This can happen if the user swipes on a cell that is being refreshed.
+//        return;
+//    }
+//
+//    NSInteger storyIndex = [storiesCollection indexFromLocation:[self storyLocationForIndexPath:indexPath]];
+//    NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
+//
+//    if (state == MCSwipeTableViewCellState1) {
+//        // Saved
+//        [storiesCollection toggleStorySaved:story];
+//        [self reloadIndexPath:indexPath];
+//    } else if (state == MCSwipeTableViewCellState3) {
+//        // Read
+//        [storiesCollection toggleStoryUnread:story];
+//        [self reloadIndexPath:indexPath];
+//    }
+//}
 
 #pragma mark -
 #pragma mark Feed Actions
 
-- (void)handleTableLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
-    CGPoint p = [gestureRecognizer locationInView:self.feedCollectionView];
-    NSIndexPath *indexPath = [self.feedCollectionView indexPathForItemAtPoint:p];
-    FeedDetailCollectionCell *cell = (FeedDetailCollectionCell *)[self.feedCollectionView cellForItemAtIndexPath:indexPath];
-    
-    if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
-    if (indexPath == nil) return;
-    
-    NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
-    
-    if (!story) return;
-    
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    NSString *longPressStoryTitle = [preferences stringForKey:@"long_press_story_title"];
-    
-    if ([longPressStoryTitle isEqualToString:@"ask"]) {
-        appDelegate.activeStory = story;
-        [self showMarkOlderNewerOptionsForStory:story indexPath:indexPath cell:cell];
-    } else if ([longPressStoryTitle isEqualToString:@"open_send_to"]) {
-        appDelegate.activeStory = story;
-        [appDelegate showSendTo:self sender:cell];
-    } else if ([longPressStoryTitle isEqualToString:@"mark_unread"]) {
-        [storiesCollection toggleStoryUnread:story];
-        [self reloadIndexPath:indexPath];
-    } else if ([longPressStoryTitle isEqualToString:@"save_story"]) {
-        [storiesCollection toggleStorySaved:story];
-        [self reloadIndexPath:indexPath];
-    } else if ([longPressStoryTitle isEqualToString:@"train_story"]) {
-        appDelegate.activeStory = story;
-        [appDelegate openTrainStory:cell];
-    }
-}
-
-- (void)handleMarkReadLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
-    if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
-    
-    [self markReadShowMenu:MarkReadShowMenuAlways sender:nil];
-}
+//- (void)handleTableLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+//    CGPoint p = [gestureRecognizer locationInView:self.feedCollectionView];
+//    NSIndexPath *indexPath = [self.feedCollectionView indexPathForItemAtPoint:p];
+//    FeedDetailCollectionCell *cell = (FeedDetailCollectionCell *)[self.feedCollectionView cellForItemAtIndexPath:indexPath];
+//
+//    if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
+//    if (indexPath == nil) return;
+//
+//    NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
+//
+//    if (!story) return;
+//
+//    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+//    NSString *longPressStoryTitle = [preferences stringForKey:@"long_press_story_title"];
+//
+//    if ([longPressStoryTitle isEqualToString:@"ask"]) {
+//        appDelegate.activeStory = story;
+//        [self showMarkOlderNewerOptionsForStory:story indexPath:indexPath cell:cell];
+//    } else if ([longPressStoryTitle isEqualToString:@"open_send_to"]) {
+//        appDelegate.activeStory = story;
+//        [appDelegate showSendTo:self sender:cell];
+//    } else if ([longPressStoryTitle isEqualToString:@"mark_unread"]) {
+//        [storiesCollection toggleStoryUnread:story];
+//        [self reloadIndexPath:indexPath];
+//    } else if ([longPressStoryTitle isEqualToString:@"save_story"]) {
+//        [storiesCollection toggleStorySaved:story];
+//        [self reloadIndexPath:indexPath];
+//    } else if ([longPressStoryTitle isEqualToString:@"train_story"]) {
+//        appDelegate.activeStory = story;
+//        [appDelegate openTrainStory:cell];
+//    }
+//}
+//
+//- (void)handleMarkReadLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+//    if (gestureRecognizer.state != UIGestureRecognizerStateBegan) return;
+//
+//    [self markReadShowMenu:MarkReadShowMenuAlways sender:nil];
+//}
 
 - (void)showMarkOlderNewerOptionsForStory:(NSDictionary *)story indexPath:(NSIndexPath *)indexPath cell:(FeedDetailCollectionCell *)cell {
-    UICollectionViewLayoutAttributes * attributes = [self.feedCollectionView layoutAttributesForItemAtIndexPath:indexPath];
-    CGRect rect = [self.feedCollectionView convertRect:attributes.frame toView:[self.feedCollectionView superview]];
-    
-    NSMutableArray *items = [NSMutableArray array];
-    BOOL isSaved = [[story objectForKey:@"starred"] boolValue];
-    
-    [items addObject:[self itemWithTitle:isSaved ? @"Unsave This Story" : @"Save This Story" iconName:@"saved-stories" iconColor:UIColorFromRGB(0xD58B4F) handler:^{
-        [self.storiesCollection toggleStorySaved:story];
-    }]];
-    
-    [items addObject:[self itemWithTitle:@"Send This Story To..." iconName:@"menu_icn_mail.png" handler:^{
-        [self.appDelegate showSendTo:self sender:cell];
-    }]];
-    
-    [items addObject:[self itemWithTitle:@"Train This Story" iconName:@"menu_icn_train.png" handler:^{
-        [self.appDelegate openTrainStory:cell];
-    }]];
-    
-    [self.appDelegate showMarkOlderNewerReadMenuWithStoriesCollection:self.storiesCollection story:story sourceView:self.feedCollectionView sourceRect:rect extraItems:items completionHandler:^(BOOL marked) {
-        [self reload];
-    }];
+//    UICollectionViewLayoutAttributes * attributes = [self.feedCollectionView layoutAttributesForItemAtIndexPath:indexPath];
+//    CGRect rect = [self.feedCollectionView convertRect:attributes.frame toView:[self.feedCollectionView superview]];
+//
+//    NSMutableArray *items = [NSMutableArray array];
+//    BOOL isSaved = [[story objectForKey:@"starred"] boolValue];
+//
+//    [items addObject:[self itemWithTitle:isSaved ? @"Unsave This Story" : @"Save This Story" iconName:@"saved-stories" iconColor:UIColorFromRGB(0xD58B4F) handler:^{
+//        [self.storiesCollection toggleStorySaved:story];
+//    }]];
+//
+//    [items addObject:[self itemWithTitle:@"Send This Story To..." iconName:@"menu_icn_mail.png" handler:^{
+//        [self.appDelegate showSendTo:self sender:cell];
+//    }]];
+//
+//    [items addObject:[self itemWithTitle:@"Train This Story" iconName:@"menu_icn_train.png" handler:^{
+//        [self.appDelegate openTrainStory:cell];
+//    }]];
+//
+//    [self.appDelegate showMarkOlderNewerReadMenuWithStoriesCollection:self.storiesCollection story:story sourceView:self.feedCollectionView sourceRect:rect extraItems:items completionHandler:^(BOOL marked) {
+//        [self reload];
+//    }];
 }
 
 - (NSDictionary *)itemWithTitle:(NSString *)title iconName:(NSString *)iconName handler:(void (^)(void))handler {
@@ -2900,38 +2904,42 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (void)changeActiveFeedDetailRow {
-    if (feedCollectionView == nil) {
-        return;
-    }
-    
     [self reload];
     
-    NSInteger location = [storiesCollection locationOfActiveStory];
-    NSInteger offset = 1;
-    if ([[self.feedCollectionView visibleCells] count] <= 4) {
-        offset = 0;
-    }
-    if (offset > location) offset = location;
-    
-    NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
-    NSIndexPath *offsetIndexPath = [self indexPathForStoryLocation:location - offset];
-    
-    [self collectionView:feedCollectionView selectItemAtIndexPath:indexPath animated:YES];
-    
-    // check to see if the cell is completely visible
-    UICollectionViewLayoutAttributes * attributes = [self.feedCollectionView layoutAttributesForItemAtIndexPath:indexPath];
-    CGRect cellRect = [self.feedCollectionView convertRect:attributes.frame toView:[self.feedCollectionView superview]];
-    
-    cellRect = [feedCollectionView convertRect:cellRect toView:feedCollectionView.superview];
-    
-    BOOL completelyVisible = CGRectContainsRect(feedCollectionView.frame, cellRect);
-    NSInteger numberOfItems = [feedCollectionView numberOfItemsInSection:offsetIndexPath.section];
-    
-    if (!completelyVisible && numberOfItems > 0 && offsetIndexPath.row < numberOfItems) {
-        [feedCollectionView scrollToItemAtIndexPath:offsetIndexPath
-                                   atScrollPosition:UICollectionViewScrollPositionTop
-                                           animated:NO];
-    }
+//    return;
+//
+//    if (feedCollectionView == nil) {
+//        return;
+//    }
+//
+//    [self reload];
+//
+//    NSInteger location = [storiesCollection locationOfActiveStory];
+//    NSInteger offset = 1;
+//    if ([[self.feedCollectionView visibleCells] count] <= 4) {
+//        offset = 0;
+//    }
+//    if (offset > location) offset = location;
+//
+//    NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
+//    NSIndexPath *offsetIndexPath = [self indexPathForStoryLocation:location - offset];
+//
+//    [self collectionView:feedCollectionView selectItemAtIndexPath:indexPath animated:YES];
+//
+//    // check to see if the cell is completely visible
+//    UICollectionViewLayoutAttributes * attributes = [self.feedCollectionView layoutAttributesForItemAtIndexPath:indexPath];
+//    CGRect cellRect = [self.feedCollectionView convertRect:attributes.frame toView:[self.feedCollectionView superview]];
+//
+//    cellRect = [feedCollectionView convertRect:cellRect toView:feedCollectionView.superview];
+//
+//    BOOL completelyVisible = CGRectContainsRect(feedCollectionView.frame, cellRect);
+//    NSInteger numberOfItems = [feedCollectionView numberOfItemsInSection:offsetIndexPath.section];
+//
+//    if (!completelyVisible && numberOfItems > 0 && offsetIndexPath.row < numberOfItems) {
+//        [feedCollectionView scrollToItemAtIndexPath:offsetIndexPath
+//                                   atScrollPosition:UICollectionViewScrollPositionTop
+//                                           animated:NO];
+//    }
 }
 
 - (void)updateTheme {
@@ -2962,15 +2970,15 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     self.appDelegate.detailViewController.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
     
     if ([ThemeManager themeManager].isDarkTheme) {
-        self.feedCollectionView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
+//        self.feedCollectionView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
         self.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {
-        self.feedCollectionView.indicatorStyle = UIScrollViewIndicatorStyleBlack;
+//        self.feedCollectionView.indicatorStyle = UIScrollViewIndicatorStyleBlack;
         self.searchBar.keyboardAppearance = UIKeyboardAppearanceDefault;
     }
     
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
-    self.feedCollectionView.backgroundColor = UIColorFromRGB(0xf4f4f4);
+//    self.feedCollectionView.backgroundColor = UIColorFromRGB(0xf4f4f4);
     //    self.feedCollectionView.separatorColor = UIColorFromRGB(0xE9E8E4);
     [self reload];
 }
@@ -3028,7 +3036,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     storiesCollection.feedPage = 1;
     self.pageFetching = YES;
     [self reload];
-    [feedCollectionView scrollRectToVisible:CGRectMake(0, CGRectGetHeight(self.searchBar.frame), 1, 1) animated:YES];
+//    [feedCollectionView scrollRectToVisible:CGRectMake(0, CGRectGetHeight(self.searchBar.frame), 1, 1) animated:YES];
 }
 
 #pragma mark -
@@ -3113,76 +3121,76 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 #pragma mark - Drag Delegate
 
-- (NSArray<UIDragItem *> *)tableView:(UITableView *)tableView itemsForBeginningDragSession:(id<UIDragSession>)session atIndexPath:(NSIndexPath *)indexPath API_AVAILABLE(ios(11.0)) {
-    NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
-    
-    if (!story) return @[];
-    
-    NSString *storyTitle = story[@"story_title"];
-    NSString *storyPermalink = story[@"story_permalink"];
-    UIImage *storyImage = nil;
-    
-    FeedDetailCollectionCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    if (cell.storyHash) {
-        id cachedImage = appDelegate.cachedStoryImages[cell.storyHash];
-        if (cachedImage && cachedImage != [NSNull null])
-            storyImage = cachedImage;
-    }
-    
-    NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:storyTitle
-                                                                                        attributes:@{NSLinkAttributeName: storyPermalink}];
-    if (storyImage) {
-        NSTextAttachment *imageAttachment = [[NSTextAttachment alloc] init];
-        imageAttachment.image = storyImage;
-        NSAttributedString *imageString = [NSAttributedString attributedStringWithAttachment:imageAttachment];
-        [attributedTitle insertAttributedString:imageString atIndex:0];
-    }
-    NSString *titleURLString = [NSString stringWithFormat:@"%@ <%@>", storyTitle, storyPermalink];
-    NSItemProvider *itemProviderStory = [[NSItemProvider alloc] initWithObject:
-                                         [[StoryTitleAttributedString alloc] initWithAttributedString:attributedTitle plainString:titleURLString]];
-    [itemProviderStory registerObject:[NSURL URLWithString:storyPermalink] visibility:NSItemProviderRepresentationVisibilityAll];
-    
-    return @[[[UIDragItem alloc] initWithItemProvider:itemProviderStory]];
-}
-
-- (void)tableView:(UITableView *)tableView dragSessionWillBegin:(id<UIDragSession>)session API_AVAILABLE(ios(11.0)) {
-    
-}
-
-- (void)tableView:(UITableView *)tableView dragSessionDidEnd:(id<UIDragSession>)session API_AVAILABLE(ios(11.0)) {
-    
-}
-
-- (nonnull NSArray<UIDragItem *> *)collectionView:(nonnull UICollectionView *)collectionView itemsForBeginningDragSession:(nonnull id<UIDragSession>)session atIndexPath:(nonnull NSIndexPath *)indexPath {
-    #warning *** to be implemented ***
-    
-    return @[];
-}
-
-- (void)encodeWithCoder:(nonnull NSCoder *)coder {
-    #warning *** to be implemented ***
-}
-
-- (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
-    #warning *** to be implemented ***
-}
-
-- (void)didUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context withAnimationCoordinator:(nonnull UIFocusAnimationCoordinator *)coordinator {
-    #warning *** to be implemented ***
-}
-
-- (void)setNeedsFocusUpdate {
-    #warning *** to be implemented ***
-}
-
-- (BOOL)shouldUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context {
-    #warning *** to be implemented ***
-    
-    return NO;
-}
-
-- (void)updateFocusIfNeeded {
-    #warning *** to be implemented ***
-}
+//- (NSArray<UIDragItem *> *)tableView:(UITableView *)tableView itemsForBeginningDragSession:(id<UIDragSession>)session atIndexPath:(NSIndexPath *)indexPath API_AVAILABLE(ios(11.0)) {
+//    NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
+//
+//    if (!story) return @[];
+//
+//    NSString *storyTitle = story[@"story_title"];
+//    NSString *storyPermalink = story[@"story_permalink"];
+//    UIImage *storyImage = nil;
+//
+//    FeedDetailCollectionCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+//    if (cell.storyHash) {
+//        id cachedImage = appDelegate.cachedStoryImages[cell.storyHash];
+//        if (cachedImage && cachedImage != [NSNull null])
+//            storyImage = cachedImage;
+//    }
+//
+//    NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:storyTitle
+//                                                                                        attributes:@{NSLinkAttributeName: storyPermalink}];
+//    if (storyImage) {
+//        NSTextAttachment *imageAttachment = [[NSTextAttachment alloc] init];
+//        imageAttachment.image = storyImage;
+//        NSAttributedString *imageString = [NSAttributedString attributedStringWithAttachment:imageAttachment];
+//        [attributedTitle insertAttributedString:imageString atIndex:0];
+//    }
+//    NSString *titleURLString = [NSString stringWithFormat:@"%@ <%@>", storyTitle, storyPermalink];
+//    NSItemProvider *itemProviderStory = [[NSItemProvider alloc] initWithObject:
+//                                         [[StoryTitleAttributedString alloc] initWithAttributedString:attributedTitle plainString:titleURLString]];
+//    [itemProviderStory registerObject:[NSURL URLWithString:storyPermalink] visibility:NSItemProviderRepresentationVisibilityAll];
+//
+//    return @[[[UIDragItem alloc] initWithItemProvider:itemProviderStory]];
+//}
+//
+//- (void)tableView:(UITableView *)tableView dragSessionWillBegin:(id<UIDragSession>)session API_AVAILABLE(ios(11.0)) {
+//
+//}
+//
+//- (void)tableView:(UITableView *)tableView dragSessionDidEnd:(id<UIDragSession>)session API_AVAILABLE(ios(11.0)) {
+//
+//}
+//
+//- (nonnull NSArray<UIDragItem *> *)collectionView:(nonnull UICollectionView *)collectionView itemsForBeginningDragSession:(nonnull id<UIDragSession>)session atIndexPath:(nonnull NSIndexPath *)indexPath {
+//    #warning *** to be implemented ***
+//
+//    return @[];
+//}
+//
+//- (void)encodeWithCoder:(nonnull NSCoder *)coder {
+//    #warning *** to be implemented ***
+//}
+//
+//- (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
+//    #warning *** to be implemented ***
+//}
+//
+//- (void)didUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context withAnimationCoordinator:(nonnull UIFocusAnimationCoordinator *)coordinator {
+//    #warning *** to be implemented ***
+//}
+//
+//- (void)setNeedsFocusUpdate {
+//    #warning *** to be implemented ***
+//}
+//
+//- (BOOL)shouldUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context {
+//    #warning *** to be implemented ***
+//
+//    return NO;
+//}
+//
+//- (void)updateFocusIfNeeded {
+//    #warning *** to be implemented ***
+//}
 
 @end

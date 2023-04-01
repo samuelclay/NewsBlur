@@ -154,7 +154,26 @@ class StoryCache: ObservableObject {
         }
     }
     
-    func appendStories(beforeSelection: [Int], selectedIndex: Int, afterSelection: [Int]) {
+    func reload() {
+        let storyCount = Int(appDelegate.storiesCollection.storyLocationsCount)
+        var beforeSelection = [Int]()
+        var selectedIndex = -999
+        var afterSelection = [Int]()
+        
+        if storyCount > 0 {
+            selectedIndex = appDelegate.storiesCollection.indexOfActiveStory()
+            
+            if selectedIndex < 0 {
+                beforeSelection = Array(0..<storyCount)
+            } else {
+                beforeSelection = Array(0..<selectedIndex)
+                
+                if selectedIndex + 1 < storyCount {
+                    afterSelection = Array(selectedIndex + 1..<storyCount)
+                }
+            }
+        }
+        
         before = beforeSelection.map { Story(index: $0) }
         selected = selectedIndex >= 0 ? Story(index: selectedIndex) : nil
         after = afterSelection.map { Story(index: $0) }
@@ -266,7 +285,6 @@ class StorySettings {
     
     var gridColumns: Int {
         guard let pref = UserDefaults.standard.string(forKey: "grid_columns"), let columns = Int(pref) else {
-            //TODO: 🚧 could have extra logic to determine the ideal number of columns
             if NewsBlurAppDelegate.shared.isCompactWidth {
                 return 1
             } else {
