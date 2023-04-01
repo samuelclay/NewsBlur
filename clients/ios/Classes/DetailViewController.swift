@@ -279,20 +279,20 @@ class DetailViewController: BaseViewController {
     }
     
     /// Moves the story pages controller to a Grid layout cell content (automatically removing it from the previous parent).
-    @objc func moveStoriesToGridCell(_ cellContent: UIView) {
-        #warning("hack disabled for SwiftUI experiment")
-//        guard let storyPagesViewController else {
-//            return
-//        }
-//
-//        print("🎈 moveStoriesToGridCell: \(storyPagesViewController.currentPage.activeStory["story_title"] ?? "none")")
-//
-//        add(viewController: storyPagesViewController, to: cellContent, of: appDelegate.feedDetailViewController)
-//
-//        adjustForAutoscroll()
-//
-//        storyPagesViewController.currentPage.webView.scrollView.isScrollEnabled = false
-    }
+//    @objc func moveStoriesToGridCell(_ cellContent: UIView) {
+//        #warning("hack disabled for SwiftUI experiment")
+////        guard let storyPagesViewController else {
+////            return
+////        }
+////
+////        print("🎈 moveStoriesToGridCell: \(storyPagesViewController.currentPage.activeStory["story_title"] ?? "none")")
+////
+////        add(viewController: storyPagesViewController, to: cellContent, of: appDelegate.feedDetailViewController)
+////
+////        adjustForAutoscroll()
+////
+////        storyPagesViewController.currentPage.webView.scrollView.isScrollEnabled = false
+//    }
     
     /// Moves the story pages controller to the detail controller (automatically removing it from the previous parent).
     @objc func moveStoriesToDetail() {

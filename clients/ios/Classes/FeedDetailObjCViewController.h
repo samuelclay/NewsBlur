@@ -19,7 +19,7 @@
 
 @interface FeedDetailObjCViewController : BaseViewController
 <UIPopoverControllerDelegate,
- MCSwipeTableViewCellDelegate,
+// MCSwipeTableViewCellDelegate,
  UIGestureRecognizerDelegate, UISearchBarDelegate,
  UICollectionViewDelegate, UICollectionViewDragDelegate> {
     NewsBlurAppDelegate *appDelegate;
@@ -54,7 +54,7 @@
 @property (nonatomic) IBOutlet UIView *messageView;
 @property (nonatomic) IBOutlet UILabel *messageLabel;
 @property (nonatomic, strong) id standardInteractivePopGestureDelegate;
-@property (nonatomic, readonly) NSIndexPath *selectedIndexPath;
+//@property (nonatomic, readonly) NSIndexPath *selectedIndexPath;
 @property (nonatomic) CGFloat storyHeight;
 
 @property (nonatomic, readwrite) BOOL pageFetching;
@@ -84,9 +84,9 @@
 
 - (CGFloat)heightForRowAtIndexPath:(NSIndexPath *)indexPath;
 
-- (void)prepareFeedCell:(FeedDetailCollectionCell *)cell indexPath:(NSIndexPath *)indexPath;
-- (void)prepareStoryCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath;
-- (void)prepareLoadingCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath;
+//- (void)prepareFeedCell:(FeedDetailCollectionCell *)cell indexPath:(NSIndexPath *)indexPath;
+//- (void)prepareStoryCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath;
+//- (void)prepareLoadingCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath;
 
 - (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
@@ -101,7 +101,7 @@
 
 - (void)fadeSelectedCell;
 - (void)fadeSelectedCell:(BOOL)deselect;
-- (void)loadStory:(FeedDetailCollectionCell *)cell atRow:(NSInteger)row;
+- (void)loadStoryAtRow:(NSInteger)row;
 - (void)redrawUnreadStory;
 - (IBAction)doOpenMarkReadMenu:(id)sender;
 - (IBAction)doOpenSettingsMenu:(id)sender;
@@ -115,6 +115,7 @@
 - (void)changeActiveFeedDetailRow;
 - (void)instafetchFeed;
 - (void)changeActiveStoryTitleCellLayout;
+- (void)didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
 - (void)loadFaviconsFromActiveFeed;
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older;
 - (void)finishMarkAsSaved:(NSDictionary *)params;
