@@ -832,6 +832,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
             KeyboardEvent.ShareStory -> readingFragment?.openShareDialog()
             KeyboardEvent.ToggleReadUnread -> readingFragment?.switchMarkStoryReadState(true)
             KeyboardEvent.ToggleTextView -> readingFragment?.switchSelectedViewMode()
+            KeyboardEvent.Tutorial -> readingFragment?.showStoryShortcuts()
             KeyboardEvent.PageDown ->
                 readingFragment?.scrollVerticallyBy(UIUtils.dp2px(this, VERTICAL_SCROLL_DISTANCE_DP))
             KeyboardEvent.PageUp ->

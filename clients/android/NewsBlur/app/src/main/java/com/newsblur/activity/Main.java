@@ -30,6 +30,7 @@ import com.newsblur.databinding.ActivityMainBinding;
 import com.newsblur.delegate.MainContextMenuDelegate;
 import com.newsblur.delegate.MainContextMenuDelegateImpl;
 import com.newsblur.fragment.FeedSelectorFragment;
+import com.newsblur.fragment.FeedsShortcutFragment;
 import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.keyboard.KeyboardEvent;
 import com.newsblur.keyboard.KeyboardListener;
@@ -392,6 +393,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         UIUtils.showSnackBar(binding.getRoot(), getString(notifyMsgRes));
     }
 
+    private void showFeedShortcuts() {
+        FeedsShortcutFragment newFragment = new FeedsShortcutFragment();
+        newFragment.show(getSupportFragmentManager(), FeedsShortcutFragment.class.getName());
+    }
+
     @Override
     public void onKeyboardEvent(@NonNull KeyboardEvent event) {
         if (event instanceof KeyboardEvent.AddFeed) {
@@ -402,6 +408,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             switchViewStateLeft();
         } else if (event instanceof KeyboardEvent.SwitchViewRight) {
             switchViewStateRight();
+        } else if (event instanceof KeyboardEvent.Tutorial) {
+            showFeedShortcuts();
         }
     }
 }

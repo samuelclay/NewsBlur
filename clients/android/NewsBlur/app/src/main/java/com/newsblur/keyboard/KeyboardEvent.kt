@@ -31,10 +31,5 @@ sealed class KeyboardEvent {
     object PageDown: KeyboardEvent()
     object PageUp: KeyboardEvent()
 
-    /**
-     * TODO
-     * disable descendant focusability
-     * add back in the space and arrows key codes
-     * write tests
-     */
+   object Tutorial: KeyboardEvent()
 }
