@@ -323,8 +323,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             true
         }
         R.id.menu_shortcuts -> {
-            val newFragment = StoryShortcutsFragment()
-            newFragment.show(requireActivity().supportFragmentManager, StoryShortcutsFragment::class.java.name)
+            showStoryShortcuts()
             true
         }
         R.id.menu_text_size_xs -> {
@@ -977,6 +976,11 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                 binding.readingScrollview.scrollTo(0, relPos)
             }, 75L)
         }
+    }
+
+    fun showStoryShortcuts() {
+        val newFragment = StoryShortcutsFragment()
+        newFragment.show(requireActivity().supportFragmentManager, StoryShortcutsFragment::class.java.name)
     }
 
     fun flagWebviewError() {

@@ -88,6 +88,11 @@ class KeyboardManager {
             else listener?.onKeyboardEvent(KeyboardEvent.PageDown)
             true
         }
+        KeyEvent.KEYCODE_ALT_RIGHT,
+        KeyEvent.KEYCODE_ALT_LEFT -> {
+            listener?.onKeyboardEvent(KeyboardEvent.Tutorial)
+            true
+        }
         else -> false
     }
 
@@ -102,7 +107,7 @@ class KeyboardManager {
     } else false
 
     fun isKnownKeyCode(keyCode: Int): Boolean =
-         isShortcutKeyCode(keyCode) && isSpecialKeyCode(keyCode)
+            isShortcutKeyCode(keyCode) && isSpecialKeyCode(keyCode)
 
     private fun isSpecialKeyCode(keyCode: Int) = when (keyCode) {
         KeyEvent.KEYCODE_DPAD_LEFT,
