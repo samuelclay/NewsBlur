@@ -2,6 +2,7 @@ package com.newsblur.util;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Objects;
 
 import static android.graphics.Bitmap.Config.ARGB_8888;
 import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL;
@@ -423,7 +424,7 @@ public class UIUtils {
      * upon the provided classifier sub-type map while also setting up handlers to alter said
      * map if the buttons are pressed.
      */
-    public static void setupIntelDialogRow(final View row, final Map<String,Integer> classifier, final String key) {
+    public static void setupIntelDialogRow(final View row, @NonNull final Map<String,Integer> classifier, final String key) {
         colourIntelDialogRow(row, classifier, key);
         row.findViewById(R.id.intel_row_like).setOnClickListener(v -> {
             classifier.put(key, Classifier.LIKE);
@@ -434,7 +435,11 @@ public class UIUtils {
             colourIntelDialogRow(row, classifier, key);
         });
         row.findViewById(R.id.intel_row_clear).setOnClickListener(v -> {
-            classifier.put(key, Classifier.CLEAR_LIKE);
+            if (Objects.equals(classifier.get(key), Classifier.DISLIKE)) {
+                classifier.put(key, Classifier.CLEAR_DISLIKE);
+            } else {
+                classifier.put(key, Classifier.CLEAR_LIKE);
+            }
             colourIntelDialogRow(row, classifier, key);
         });
     }

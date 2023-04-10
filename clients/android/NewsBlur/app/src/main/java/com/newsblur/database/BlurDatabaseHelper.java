@@ -369,7 +369,7 @@ public class BlurDatabaseHelper {
                         }
                         insertSingleStoryExtSync(story);
                         // if the story is being fetched for the immediate session, also add the hash to the session table
-                        if (forImmediateReading && story.isStoryVisibileInState(intelState)) {
+                        if (forImmediateReading && story.isStoryVisibleInState(intelState)) {
                             ContentValues sessionHashValues = new ContentValues();
                             sessionHashValues.put(DatabaseConstants.READING_SESSION_STORY_HASH, story.storyHash);
                             dbRW.insert(DatabaseConstants.READING_SESSION_TABLE, null, sessionHashValues);
