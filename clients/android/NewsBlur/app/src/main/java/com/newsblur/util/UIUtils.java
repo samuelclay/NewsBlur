@@ -609,4 +609,11 @@ public class UIUtils {
     public static void showSnackBar(View view, String message) {
         Snackbar.make(view, message, 600).show();
     }
+
+    public static int[] getLoadingColorsArray(Context context) {
+        return new int[]{ContextCompat.getColor(context, R.color.refresh_1),
+                ContextCompat.getColor(context, R.color.refresh_2),
+                ContextCompat.getColor(context, R.color.refresh_3),
+                ContextCompat.getColor(context, R.color.refresh_4)};
+    }
 }

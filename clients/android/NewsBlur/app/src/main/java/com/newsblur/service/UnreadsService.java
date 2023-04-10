@@ -5,6 +5,7 @@ import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 
 import java.util.ArrayList;
@@ -156,7 +157,8 @@ public class UnreadsService extends SubService {
                 break unreadsyncloop;
             }
 
-            parent.insertStories(response);
+            StateFilter stateFilter = PrefsUtils.getStateFilter(parent);
+            parent.insertStories(response, stateFilter);
             for (String hash : hashBatch) {
                 StoryHashQueue.remove(hash);
             } 
