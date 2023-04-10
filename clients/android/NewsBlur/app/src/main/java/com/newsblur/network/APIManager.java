@@ -254,7 +254,7 @@ public class APIManager {
         for (String hash : storyHashes) {
             values.put(APIConstants.PARAMETER_H, hash);
         }
-        attachIncludeHiddenParam(values);
+        values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
         APIResponse response = get(buildUrl(APIConstants.PATH_RIVER_STORIES), values);
         return response.getResponse(gson, StoriesResponse.class);
     }
@@ -277,12 +277,12 @@ public class APIManager {
         } else if (fs.getSingleFeed() != null) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_FEED_STORIES)).buildUpon().appendPath(fs.getSingleFeed()).build();
             values.put(APIConstants.PARAMETER_FEEDS, fs.getSingleFeed());
-            attachIncludeHiddenParam(values);
+            values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
             if (fs.isFilterSaved()) values.put(APIConstants.PARAMETER_READ_FILTER, APIConstants.VALUE_STARRED);
         } else if (fs.getMultipleFeeds() != null) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
             for (String feedId : fs.getMultipleFeeds()) values.put(APIConstants.PARAMETER_FEEDS, feedId);
-            attachIncludeHiddenParam(values);
+            values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
             if (fs.isFilterSaved()) values.put(APIConstants.PARAMETER_READ_FILTER, APIConstants.VALUE_STARRED);
         } else if (fs.getSingleSocialFeed() != null) {
             String feedId = fs.getSingleSocialFeed().getKey();
@@ -297,11 +297,11 @@ public class APIManager {
             }
         } else if (fs.isInfrequent()) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
-            attachIncludeHiddenParam(values);
+            values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
             values.put(APIConstants.PARAMETER_INFREQUENT, Integer.toString(PrefsUtils.getInfrequentCutoff(context)));
         } else if (fs.isAllNormal()) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
-            attachIncludeHiddenParam(values);
+            values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
         } else if (fs.isAllSocial()) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_SHARED_RIVER_STORIES));
         } else if (fs.isAllRead()) {
@@ -775,11 +775,5 @@ public class APIManager {
         } catch (InterruptedException ie) {
             com.newsblur.util.Log.w(this.getClass().getName(), "Abandoning API backoff due to interrupt.");
         }
-    }
-
-    private void attachIncludeHiddenParam(ValueMultimap values) {
-        String value = PrefsUtils.includeHiddenStories(context) ?
-                APIConstants.VALUE_TRUE : APIConstants.VALUE_FALSE;
-        values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, value);
     }
 }

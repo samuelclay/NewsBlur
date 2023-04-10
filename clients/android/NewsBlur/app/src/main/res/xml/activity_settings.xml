@@ -101,10 +101,6 @@
             android:key="pref_mark_read_on_scroll"
             android:title="@string/settings_mark_read_on_feed_scroll"
             android:summary="@string/settings_mark_read_on_feed_scroll_sum" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="pref_include_hidden_stories"
-            android:title="@string/settings_include_hidden_stories" />
         <ListPreference
             android:key="pref_show_content_preview_style"
             android:title="@string/settings_content_preview"

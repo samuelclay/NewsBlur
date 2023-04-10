@@ -465,8 +465,6 @@
     <string name="settings_mark_read_on_feed_scroll">Mark story titles read on scroll</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Automatically mark stories as read when scrolled past</string>
 
-    <string name="settings_include_hidden_stories">Include hidden stories</string>
-
     <string name="settings_mark_story_read">Mark a story as read…</string>
     <string name="mark_story_read_immediately">Immediately</string>
     <string name="mark_story_read_5_seconds">After 5 seconds</string>
