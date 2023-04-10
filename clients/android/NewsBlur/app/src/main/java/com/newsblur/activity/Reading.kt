@@ -1,5 +1,6 @@
 package com.newsblur.activity
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.database.Cursor
@@ -141,7 +142,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         setupViews()
         setupListeners()
         setupObservers()
-        getActiveStoriesCursor(true)
+        getActiveStoriesCursor(this, true)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -169,7 +170,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         // this is not strictly necessary, since our first refresh with the fs will swap in
         // the correct session, but that can be delayed by sync backup, so we try here to
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
-        feedUtils.prepareReadingSession(fs, false)
+        feedUtils.prepareReadingSession(this, fs, false)
         keyboardManager.addListener(this)
     }
 
@@ -225,9 +226,10 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         }
     }
 
-    private fun getActiveStoriesCursor(finishOnInvalidFs: Boolean = false) {
+    private fun getActiveStoriesCursor(context: Context, finishOnInvalidFs: Boolean = false) {
         fs?.let {
-            storiesViewModel.getActiveStories(it)
+            val cursorFilters = CursorFilters(context, it)
+            storiesViewModel.getActiveStories(it, cursorFilters)
         } ?: run {
             if (finishOnInvalidFs) {
                 Log.e(this.javaClass.name, "can't create activity, no feedset ready")
@@ -392,7 +394,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
             }
         }
         if (updateType and UPDATE_STORY != 0) {
-            getActiveStoriesCursor()
+            getActiveStoriesCursor(this)
             updateOverlayNav()
         }
 

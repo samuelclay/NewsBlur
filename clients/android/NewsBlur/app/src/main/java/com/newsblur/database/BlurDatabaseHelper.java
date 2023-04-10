@@ -24,13 +24,12 @@ import com.newsblur.domain.UserProfile;
 import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.CursorFilters;
 import com.newsblur.util.FeedSet;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
-import com.newsblur.util.UIUtils;
 
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -56,14 +55,12 @@ public class BlurDatabaseHelper {
     // manual synchro isn't needed if you only use one DBHelper, but at present the app uses several
     public final static Object RW_MUTEX = new Object();
 
-    private Context context;
     private final BlurDatabase dbWrapper;
-    private SQLiteDatabase dbRO;
-    private SQLiteDatabase dbRW;
+    private final SQLiteDatabase dbRO;
+    private final SQLiteDatabase dbRW;
 
     public BlurDatabaseHelper(Context context) {
         com.newsblur.util.Log.d(this.getClass().getName(), "new DB conn requested");
-        this.context = context;
         synchronized (RW_MUTEX) {
             dbWrapper = new BlurDatabase(context);
             dbRO = dbWrapper.getRO();
@@ -328,8 +325,7 @@ public class BlurDatabaseHelper {
         return urls;
     }
 
-    public void insertStories(StoriesResponse apiResponse, boolean forImmediateReading) {
-        StateFilter intelState = PrefsUtils.getStateFilter(context);
+    public void insertStories(StoriesResponse apiResponse, StateFilter stateFilter, boolean forImmediateReading) {
         synchronized (RW_MUTEX) {
             // do not attempt to use beginTransactionNonExclusive() to reduce lock time for this very heavy set
             // of calls. most versions of Android incorrectly implement the underlying SQLite calls and will
@@ -369,7 +365,7 @@ public class BlurDatabaseHelper {
                         }
                         insertSingleStoryExtSync(story);
                         // if the story is being fetched for the immediate session, also add the hash to the session table
-                        if (forImmediateReading && story.isStoryVisibleInState(intelState)) {
+                        if (forImmediateReading && story.isStoryVisibleInState(stateFilter)) {
                             ContentValues sessionHashValues = new ContentValues();
                             sessionHashValues.put(DatabaseConstants.READING_SESSION_STORY_HASH, story.storyHash);
                             dbRW.insert(DatabaseConstants.READING_SESSION_TABLE, null, sessionHashValues);
@@ -481,7 +477,7 @@ public class BlurDatabaseHelper {
      * to reflect a social action, but that the new copy is missing some fields.  Attempt to merge the
      * new story with the old one.
      */
-    public void updateStory(StoriesResponse apiResponse, boolean forImmediateReading) {
+    public void updateStory(StoriesResponse apiResponse, StateFilter stateFilter, boolean forImmediateReading) {
         if (apiResponse.story == null) {
             com.newsblur.util.Log.e(this, "updateStory called on response with missing single story");
             return;
@@ -500,7 +496,7 @@ public class BlurDatabaseHelper {
             apiResponse.story.starredTimestamp = oldStory.starredTimestamp;
             apiResponse.story.read = oldStory.read;
         }
-        insertStories(apiResponse, forImmediateReading);
+        insertStories(apiResponse, stateFilter, forImmediateReading);
     }
 
     /**
@@ -754,8 +750,8 @@ public class BlurDatabaseHelper {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_READ, true);
         String rangeSelection = null;
-        if (olderThan != null) rangeSelection = DatabaseConstants.STORY_TIMESTAMP + " <= " + olderThan.toString();
-        if (newerThan != null) rangeSelection = DatabaseConstants.STORY_TIMESTAMP + " >= " + newerThan.toString();
+        if (olderThan != null) rangeSelection = DatabaseConstants.STORY_TIMESTAMP + " <= " + olderThan;
+        if (newerThan != null) rangeSelection = DatabaseConstants.STORY_TIMESTAMP + " >= " + newerThan;
         StringBuilder feedSelection = null;
         if (fs.isAllNormal()) {
             // a null selection is fine for all stories
@@ -982,7 +978,7 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void setStoryShared(String hash, boolean shared) {
+    public void setStoryShared(String hash, @Nullable String currentUserId, boolean shared) {
         // get a fresh copy of the story from the DB so we can append to the shared ID set
         Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, 
                               new String[]{DatabaseConstants.STORY_SHARED_USER_IDS}, 
@@ -998,15 +994,13 @@ public class BlurDatabaseHelper {
 		String[] sharedUserIds = TextUtils.split(c.getString(c.getColumnIndex(DatabaseConstants.STORY_SHARED_USER_IDS)), ",");
         closeQuietly(c);
 
-        // the id to append to or remove from the shared list (the current user)
-        String currentUser = PrefsUtils.getUserId(context);
-
         // append to set and update DB
         Set<String> newIds = new HashSet<String>(Arrays.asList(sharedUserIds));
+        // the id to append to or remove from the shared list (the current user)
         if (shared) {
-            newIds.add(currentUser);
+            newIds.add(currentUserId);
         } else {
-            newIds.remove(currentUser);
+            newIds.remove(currentUserId);
         }
         ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.STORY_SHARED_USER_IDS, TextUtils.join(",", newIds));
@@ -1146,16 +1140,16 @@ public class BlurDatabaseHelper {
         return rawQuery(q.toString(), null, cancellationSignal);
     }
 
-    public Cursor getActiveStoriesCursor(FeedSet fs, CancellationSignal cancellationSignal) {
-        final StoryOrder order = PrefsUtils.getStoryOrder(context, fs);
+    public Cursor getActiveStoriesCursor(FeedSet fs, CursorFilters cursorFilters, CancellationSignal cancellationSignal) {
         // get the stories for this FS
-        Cursor result = getActiveStoriesCursorNoPrep(fs, order, cancellationSignal);
+        Cursor result = getActiveStoriesCursorNoPrep(fs, cursorFilters.getStoryOrder(), cancellationSignal);
         // if the result is blank, try to prime the session table with existing stories, in case we
         // are offline, but if a session is started, just use what was there so offsets don't change.
         if (result.getCount() < 1) {
             if (AppConstants.VERBOSE_LOG) Log.d(this.getClass().getName(), "priming reading session");
-            prepareReadingSession(fs);
-            result = getActiveStoriesCursorNoPrep(fs, order, cancellationSignal);
+            prepareReadingSession(fs, cursorFilters.getStateFilter(), cursorFilters.getReadFilter());
+
+            result = getActiveStoriesCursorNoPrep(fs, cursorFilters.getStoryOrder(), cancellationSignal);
         }
         return result;
     }
@@ -1183,18 +1177,12 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.READING_SESSION_TABLE, null, null);}
     }
 
-    public void prepareReadingSession(FeedSet fs) {
-        ReadFilter readFilter = PrefsUtils.getReadFilter(context, fs);
-        StateFilter stateFilter = PrefsUtils.getStateFilter(context);
-        prepareReadingSession(fs, stateFilter, readFilter);
-    }
-
     /**
      * Populates the reading session table with hashes of already-fetched stories that meet the 
      * criteria for the given FeedSet and filters; these hashes will be supplemented by hashes
      * fetched via the API and used to actually select story data when rendering story lists.
      */
-    private void prepareReadingSession(FeedSet fs, StateFilter stateFilter, ReadFilter readFilter) {
+    public void prepareReadingSession(FeedSet fs, StateFilter stateFilter, ReadFilter readFilter) {
         // a selection filter that will be used to pull active story hashes from the stories table into the reading session table
         StringBuilder sel = new StringBuilder();
         // any selection args that need to be used within the inner select statement
@@ -1366,8 +1354,7 @@ public class BlurDatabaseHelper {
      * will show up in the UI with reduced functionality until the server gets back to us with
      * an ID at which time the placeholder will be removed.
      */
-    public void insertCommentPlaceholder(String storyId, String feedId, String commentText) {
-        String userId = PrefsUtils.getUserId(context);
+    public void insertCommentPlaceholder(String storyId, @Nullable String userId, String commentText) {
         Comment comment = new Comment();
         comment.isPlaceholder = true;
         comment.id = Comment.PLACEHOLDER_COMMENT_ID + storyId + userId;
@@ -1399,19 +1386,18 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.REPLY_TABLE, DatabaseConstants.REPLY_ID + " = ?", new String[]{replyId});}
     }
 
-    public void clearSelfComments(String storyId) {
-        String userId = PrefsUtils.getUserId(context);
-        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.COMMENT_TABLE, 
+    public void clearSelfComments(String storyId, @Nullable String userId) {
+        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.COMMENT_TABLE,
                                              DatabaseConstants.COMMENT_STORYID + " = ? AND " + DatabaseConstants.COMMENT_USERID + " = ?", 
                                              new String[]{storyId, userId});}
     }
 
-    public void setCommentLiked(String storyId, String userId, String feedId, boolean liked) {
+    public void setCommentLiked(String storyId, String commentUserId, @Nullable String currentUserId, boolean liked) {
         // get a fresh copy of the story from the DB so we can append to the shared ID set
         Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, 
                               null, 
                               DatabaseConstants.COMMENT_STORYID + " = ? AND " + DatabaseConstants.COMMENT_USERID + " = ?", 
-                              new String[]{storyId, userId}, 
+                              new String[]{storyId, commentUserId},
                               null, null, null);
         if ((c == null)||(c.getCount() < 1)) {
             Log.w(this.getClass().getName(), "comment removed before finishing mark-liked");
@@ -1422,15 +1408,13 @@ public class BlurDatabaseHelper {
         Comment comment = Comment.fromCursor(c);
         closeQuietly(c);
 
-        // the new id to append/remove from the liking list (the current user)
-        String currentUser = PrefsUtils.getUserId(context);
-
         // append to set and update DB
         Set<String> newIds = new HashSet<String>(Arrays.asList(comment.likingUsers));
+        // the new id to append/remove from the liking list (the current user)
         if (liked) {
-            newIds.add(currentUser);
+            newIds.add(currentUserId);
         } else {
-            newIds.remove(currentUser);
+            newIds.remove(currentUserId);
         }
         ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.COMMENT_LIKING_USERS, TextUtils.join(",", newIds));
@@ -1458,7 +1442,7 @@ public class BlurDatabaseHelper {
         return replies;
     }
 
-    public void insertReplyPlaceholder(String storyId, String feedId, String commentUserId, String replyText) {
+    public void insertReplyPlaceholder(String storyId, @Nullable String userId, String commentUserId, String replyText) {
         // get a fresh copy of the comment so we can discover the ID
         Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, 
                               null, 
@@ -1477,7 +1461,7 @@ public class BlurDatabaseHelper {
         Reply reply = new Reply();
         reply.commentId = comment.id;
         reply.text = replyText;
-        reply.userId = PrefsUtils.getUserId(context);
+        reply.userId = userId;
         reply.date = new Date();
         reply.id = Reply.PLACEHOLDER_COMMENT_ID + storyId + comment.id + reply.userId;
         synchronized (RW_MUTEX) {dbRW.insertWithOnConflict(DatabaseConstants.REPLY_TABLE, null, reply.getValues(), SQLiteDatabase.CONFLICT_REPLACE);}
@@ -1582,11 +1566,8 @@ public class BlurDatabaseHelper {
 
     public static void closeQuietly(Cursor c) {
         if (c == null) return;
-        try {c.close();} catch (Exception e) {;}
-    }
-
-    public void sendSyncUpdate(int updateType) {
-        UIUtils.syncUpdateStatus(context, updateType);
+        try {c.close();} catch (Exception e) {
+        }
     }
 
     private static String conjoinSelections(CharSequence... args) {

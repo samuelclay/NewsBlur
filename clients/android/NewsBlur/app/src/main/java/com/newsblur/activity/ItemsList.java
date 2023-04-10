@@ -81,7 +81,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         // this is not strictly necessary, since our first refresh with the fs will swap in
         // the correct session, but that can be delayed by sync backup, so we try here to
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
-        feedUtils.prepareReadingSession(fs, false);
+        feedUtils.prepareReadingSession(this, fs, false);
         if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false)) {
             String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
             UIUtils.startReadingActivity(fs, hash, this);
@@ -206,7 +206,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             if (session != null) {
                 // set the next session on the parent activity
                 fs = session.getFeedSet();
-                feedUtils.prepareReadingSession(fs, false);
+                feedUtils.prepareReadingSession(this, fs, false);
                 triggerSync();
 
                 // set the next session on the child activity
@@ -248,7 +248,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         String oldQuery = fs.getSearchQuery();
         fs.setSearchQuery(q);
         if (!TextUtils.equals(q, oldQuery)) {
-            feedUtils.prepareReadingSession(fs, true);
+            feedUtils.prepareReadingSession(this, fs, true);
             triggerSync();
             itemSetFragment.resetEmptyState();
             itemSetFragment.hasUpdated();
@@ -278,7 +278,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     protected void restartReadingSession() {
         NBSyncService.resetFetchState(fs);
-        feedUtils.prepareReadingSession(fs, true);
+        feedUtils.prepareReadingSession(this, fs, true);
         triggerSync();
         itemSetFragment.resetEmptyState();
         itemSetFragment.hasUpdated();

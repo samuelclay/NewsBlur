@@ -38,6 +38,7 @@ import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadCountResponse;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.CursorFilters;
 import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FileCache;
@@ -49,6 +50,7 @@ import com.newsblur.util.ReadingAction;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.UIUtils;
 import com.newsblur.widget.WidgetUtils;
 
 import java.util.ArrayList;
@@ -411,6 +413,8 @@ public class NBSyncService extends JobService {
 
             ActionsRunning = true;
 
+            StateFilter stateFilter = PrefsUtils.getStateFilter(this);
+
             actionsloop : while (c.moveToNext()) {
                 sendSyncUpdate(UPDATE_STATUS);
                 String id = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_ID));
@@ -427,7 +431,7 @@ public class NBSyncService extends JobService {
                 if ((ra.getTried() > 0) && (PendingFeed != null)) continue actionsloop;
                     
                 com.newsblur.util.Log.d(this, "attempting action: " + ra.toContentValues().toString());
-                NewsBlurResponse response = ra.doRemote(apiManager, dbHelper);
+                NewsBlurResponse response = ra.doRemote(apiManager, dbHelper, stateFilter);
 
                 if (response == null) {
                     com.newsblur.util.Log.e(this.getClass().getName(), "Discarding reading action with client-side error.");
@@ -471,7 +475,7 @@ public class NBSyncService extends JobService {
         Log.d(this, "double-checking " + FollowupActions.size() + " actions");
         int impactFlags = 0;
         for (ReadingAction ra : FollowupActions) {
-            int impact = ra.doLocal(dbHelper, true);
+            int impact = ra.doLocal(this, dbHelper, true);
             impactFlags |= impact;
         }
         sendSyncUpdate(impactFlags);
@@ -766,7 +770,7 @@ public class NBSyncService extends JobService {
                 return;
             }
 
-            prepareReadingSession(dbHelper, fs);
+            prepareReadingSession(this, dbHelper, fs);
 
             LastFeedSet = fs;
             
@@ -785,8 +789,7 @@ public class NBSyncService extends JobService {
             int pageNumber = FeedPagesSeen.get(fs);
             int totalStoriesSeen = FeedStoriesSeen.get(fs);
 
-            StoryOrder order = PrefsUtils.getStoryOrder(this, fs);
-            ReadFilter filter = PrefsUtils.getReadFilter(this, fs);
+            CursorFilters cursorFilters = new CursorFilters(this, fs);
 
             StorySyncRunning = true;
             sendSyncUpdate(UPDATE_STATUS);
@@ -802,7 +805,7 @@ public class NBSyncService extends JobService {
                 }
 
                 pageNumber++;
-                StoriesResponse apiResponse = apiManager.getStories(fs, pageNumber, order, filter);
+                StoriesResponse apiResponse = apiManager.getStories(fs, pageNumber, cursorFilters.getStoryOrder(), cursorFilters.getReadFilter());
             
                 if (! isStoryResponseGood(apiResponse)) return;
 
@@ -810,7 +813,7 @@ public class NBSyncService extends JobService {
                     return; 
                 }
 
-                insertStories(apiResponse, fs);
+                insertStories(apiResponse, fs, cursorFilters.getStateFilter());
                 // re-do any very recent actions that were incorrectly overwritten by this page
                 finishActions();
                 sendSyncUpdate(UPDATE_STORY | UPDATE_STATUS);
@@ -855,7 +858,7 @@ public class NBSyncService extends JobService {
     private long workaroundReadStoryTimestamp;
     private long workaroundGloblaSharedStoryTimestamp;
 
-    private void insertStories(StoriesResponse apiResponse, FeedSet fs) {
+    private void insertStories(StoriesResponse apiResponse, FeedSet fs, StateFilter stateFilter) {
         if (fs.isAllRead()) {
             // Ugly Hack Warning: the API doesn't vend the sortation key necessary to display
             // stories when in the "read stories" view. It does, however, return them in the
@@ -919,12 +922,12 @@ public class NBSyncService extends JobService {
         }
 
         com.newsblur.util.Log.d(NBSyncService.class.getName(), "got stories from main fetch loop: " + apiResponse.stories.length);
-        dbHelper.insertStories(apiResponse, true);
+        dbHelper.insertStories(apiResponse, stateFilter, true);
     }
 
-    void insertStories(StoriesResponse apiResponse) {
+    void insertStories(StoriesResponse apiResponse, StateFilter stateFilter) {
         com.newsblur.util.Log.d(NBSyncService.class.getName(), "got stories from sub sync: " + apiResponse.stories.length);
-        dbHelper.insertStories(apiResponse, false);
+        dbHelper.insertStories(apiResponse, stateFilter, false);
     }
 
     void prefetchOriginalText(StoriesResponse apiResponse) {
@@ -1144,8 +1147,9 @@ public class NBSyncService extends JobService {
      * set but also when we sync a page of stories, since there are no guarantees which
      * will happen first.
      */
-    public static void prepareReadingSession(BlurDatabaseHelper dbHelper, FeedSet fs) {
+    public static void prepareReadingSession(Context context, BlurDatabaseHelper dbHelper, FeedSet fs) {
         synchronized (PENDING_FEED_MUTEX) {
+            CursorFilters cursorFilters = new CursorFilters(context, fs);
             if (! fs.equals(dbHelper.getSessionFeedSet())) {
                 com.newsblur.util.Log.d(NBSyncService.class.getName(), "preparing new reading session");
                 // the next fetch will be the start of a new reading session; clear it so it
@@ -1153,10 +1157,10 @@ public class NBSyncService extends JobService {
                 dbHelper.clearStorySession();
                 // don't just rely on the auto-prepare code when fetching stories, it might be called
                 // after we insert our first page and not trigger
-                dbHelper.prepareReadingSession(fs);
+                dbHelper.prepareReadingSession(fs, cursorFilters.getStateFilter(), cursorFilters.getReadFilter());
                 // note which feedset we are loading so we can trigger another reset when it changes
                 dbHelper.setSessionFeedSet(fs);
-                dbHelper.sendSyncUpdate(UPDATE_STORY | UPDATE_STATUS);
+                UIUtils.syncUpdateStatus(context, UPDATE_STORY | UPDATE_STATUS);
             }
         }
     }
