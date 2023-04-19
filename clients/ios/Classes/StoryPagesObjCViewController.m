@@ -1450,7 +1450,7 @@
 
 - (void)toggleStoryUnread:(id)sender {
     [appDelegate.storiesCollection toggleStoryUnread];
-    [appDelegate.feedDetailViewController redrawUnreadStory]; // XXX only if successful?
+    [appDelegate.feedDetailViewController reload]; // XXX only if successful?
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
