@@ -2331,7 +2331,9 @@
 - (void)scrolltoComment {
     NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", currentUserId];
-    [self.webView evaluateJavaScript:jsFlashString completionHandler:nil];
+    if ([self getComments].length) {
+        [self.webView evaluateJavaScript:jsFlashString completionHandler:nil];
+    }
 }
 
 - (void)tryScrollingDown:(BOOL)down {
