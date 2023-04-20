@@ -210,10 +210,14 @@ class DetailViewController: BaseViewController {
     /// The horizontal page view controller. [Not currently used; might be used for #1351 (gestures in vertical scrolling).]
 //    var horizontalPageViewController: HorizontalPageViewController?
     
+    /// An instance of the story pages view controller for list layouts.
+    lazy var listStoryPagesViewController = StoryPagesViewController()
+    
+    /// A separate instance of the story pages view controller for use in the grid layout.
+    lazy var gridStoryPagesViewController = StoryPagesViewController()
+    
     /// The story pages view controller, that manages the previous, current, and next story view controllers.
-    var storyPagesViewController: StoryPagesViewController? {
-        return appDelegate.storyPagesViewController
-    }
+    @objc var storyPagesViewController: StoryPagesViewController?
     
     /// Returns the currently displayed story view controller, or `nil` if none.
     @objc var currentStoryController: StoryDetailViewController? {
@@ -294,8 +298,8 @@ class DetailViewController: BaseViewController {
 ////        storyPagesViewController.currentPage.webView.scrollView.isScrollEnabled = false
 //    }
     
-    /// Moves the story pages controller to the detail controller (automatically removing it from the previous parent).
-    @objc func moveStoriesToDetail() {
+    /// Moves the story pages controller to the appropriate container in the detail controller (automatically removing it from the previous parent).
+    @objc func moveStoriesToDetailContainer() {
         guard let storyPagesViewController else {
             return
         }
@@ -393,6 +397,16 @@ private extension DetailViewController {
     func checkViewControllers() {
         let isTop = layout == .top
         
+        if layout != .grid || isPhone {
+            storyPagesViewController = listStoryPagesViewController
+            _ = storyPagesViewController?.view
+            
+            moveStoriesToDetailContainer()
+        } else {
+            storyPagesViewController = gridStoryPagesViewController
+            _ = storyPagesViewController?.view
+        }
+        
         if layout == .left || isPhone {
             if feedDetailViewController != nil {
                 remove(viewController: feedDetailViewController)
@@ -404,6 +418,12 @@ private extension DetailViewController {
                 appDelegate.splitViewController.setViewController(supplementaryFeedDetailNavigationController, for: .supplementary)
                 supplementaryFeedDetailNavigationController = nil
                 supplementaryFeedDetailViewController = nil
+            }
+            
+            if wasGrid && !isPhone {
+                DispatchQueue.main.async {
+                    self.appDelegate.loadStoryDetailView()
+                }
             }
             
             dividerViewBottomConstraint.constant = -13
@@ -463,10 +483,6 @@ private extension DetailViewController {
         }
         
         appDelegate.feedDetailViewController.changedLayout()
-        
-        if layout != .grid || isPhone {
-            moveStoriesToDetail()
-        }
     }
     
     func add(viewController: UIViewController?, top: Bool) {

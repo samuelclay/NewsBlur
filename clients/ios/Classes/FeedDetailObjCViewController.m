@@ -1780,7 +1780,9 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 }
 
 - (void)didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    if ([self storyLocationForIndexPath:indexPath] < storiesCollection.storyLocationsCount) {
+    NSInteger location = [self storyLocationForIndexPath:indexPath];
+    
+    if (location < storiesCollection.storyLocationsCount) {
         // mark the cell as read
         //        appDelegate.feedsViewController.currentRowAtIndexPath = nil;
         
@@ -1794,7 +1796,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 //        [self collectionView:collectionView redisplayCellAtIndexPath:indexPath];
         
 //        FeedDetailCollectionCell *cell = (FeedDetailCollectionCell*) [collectionView cellForItemAtIndexPath:indexPath];
-        NSInteger location = [self storyLocationForIndexPath:indexPath];
         NSInteger storyIndex = [storiesCollection indexFromLocation:location];
         NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
         BOOL isGrid = appDelegate.detailViewController.storyTitlesInGrid;
@@ -1811,17 +1812,18 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                     [self reloadIndexPath:indexPath];
                 }
             }
+            
             [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"tap selected row"];
             
             if (!isGrid) {
                 return;
             }
         }
-        [self loadStoryAtRow:[self storyLocationForIndexPath:indexPath]];
         
+        [self loadStoryAtRow:location];
         [self reload];
         //[collectionView selectItemAtIndexPath:self.selectedIndexPath animated:YES scrollPosition:UICollectionViewScrollPositionTop];
-    } else if ([self storyLocationForIndexPath:indexPath] == storiesCollection.storyLocationsCount) {
+    } else if (location == storiesCollection.storyLocationsCount) {
         if (!appDelegate.isPremium && storiesCollection.isRiverView) {
             [appDelegate showPremiumDialog];
         }

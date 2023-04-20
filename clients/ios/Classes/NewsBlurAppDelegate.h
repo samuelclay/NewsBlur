@@ -78,7 +78,6 @@ SFSafariViewControllerDelegate>  {
     FriendsListViewController *friendsListViewController;
     FontSettingsViewController *fontSettingsViewController;
     
-    StoryPagesViewController *storyPagesViewController;
     StoryDetailViewController *storyDetailViewController;
     ShareViewController *shareViewController;
     LoginViewController *loginViewController;
@@ -177,7 +176,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, strong) UINavigationController *feedDetailMenuNavigationController;
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
-@property (nonatomic) IBOutlet StoryPagesViewController *storyPagesViewController;
+@property (nonatomic, readonly) StoryPagesViewController *storyPagesViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
 @property (nonatomic, strong) UINavigationController *addSiteNavigationController;
