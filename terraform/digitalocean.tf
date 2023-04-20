@@ -470,7 +470,7 @@ resource "digitalocean_droplet" "db-postgres" {
 # servers=$(for i in {1..9}; do echo -n "-target=\"digitalocean_droplet.db-mongo-primary[$i]\" " ; done); tf plan -refresh=false `eval echo $servers`
 # 
 resource "digitalocean_droplet" "db-mongo-primary" {
-  count   = 1
+  count   = 0
   backups = true
   image   = var.droplet_os
   name    = "db-mongo-primary${count.index + 1}"
@@ -494,7 +494,7 @@ resource "digitalocean_volume" "mongo_secondary_volume" {
   count                   = 3
   region                  = "nyc1"
   name                    = "mongosecondary${count.index + 1}"
-  size                    = 400
+  size                    = 500
   initial_filesystem_type = "xfs"
   description             = "Storage for NewsBlur MongoDB"
 }
