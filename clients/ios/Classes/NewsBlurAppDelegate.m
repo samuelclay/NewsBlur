@@ -1191,7 +1191,6 @@
     
     self.dashboardViewController = [DashboardViewController new];
     self.friendsListViewController = [FriendsListViewController new];
-    self.storyPagesViewController = [StoryPagesViewController new];
     self.storyDetailViewController = [StoryDetailViewController new];
     self.loginViewController = [LoginViewController new];
     self.addSiteViewController = [AddSiteViewController new];
@@ -1209,6 +1208,10 @@
     self.firstTimeUserAddNewsBlurViewController = [FirstTimeUserAddNewsBlurViewController new];
     
     [self updateSplitBehavior];
+}
+
+- (StoryPagesViewController *)storyPagesViewController {
+    return self.detailViewController.storyPagesViewController;
 }
 
 - (void)showLogin {

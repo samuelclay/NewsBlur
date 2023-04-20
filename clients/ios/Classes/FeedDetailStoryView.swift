@@ -96,9 +96,9 @@ struct StoryPagesView: UIViewControllerRepresentable {
         
         interaction.reading(story: story)
         
-        let size1 = storyPagesViewController.currentPage.webView.scrollView.contentSize
+        let size = storyPagesViewController.currentPage.webView.scrollView.contentSize
         
-        storyPagesViewController.preferredContentSize = CGSize(width: size1.width, height: 200)
+        storyPagesViewController.preferredContentSize = CGSize(width: size.width, height: 200)
         
         storyPagesViewController.currentPage.webView.evaluateJavaScript(
             "document.body.lastChild.getBoundingClientRect().bottom + window.scrollY"
@@ -107,7 +107,7 @@ struct StoryPagesView: UIViewControllerRepresentable {
                 return
             }
             
-            storyPagesViewController.preferredContentSize = CGSize(width: size1.width, height: height + 80)
+            storyPagesViewController.preferredContentSize = CGSize(width: size.width, height: height + 80)
         }
     }
 }

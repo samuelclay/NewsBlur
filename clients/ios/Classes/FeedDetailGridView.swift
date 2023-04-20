@@ -99,6 +99,11 @@ struct FeedDetailGridView: View {
                             }
                         }
                     }
+                    .onAppear() {
+                        if cache.isGrid {
+                            scroller.scrollTo(storyViewID, anchor: .top)
+                        }
+                    }
                     .if(cache.isGrid) { view in
                         view.padding()
                     }
