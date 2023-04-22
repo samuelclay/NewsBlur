@@ -12,6 +12,7 @@ import SwiftUI
 protocol FeedDetailInteraction {
     var storyHeight: CGFloat { get }
     
+    func pullToRefresh()
     func visible(story: Story)
     func tapped(story: Story)
     func reading(story: Story)
@@ -79,13 +80,15 @@ struct FeedDetailGridView: View {
                                 makeCardView(for: story, cache: cache, reader: reader)
                             }
                         }
+                        
+                        makeLoadingView(cache: cache)
                     }
                     .onChange(of: cache.selected) { [oldSelected = cache.selected] newSelected in
-                        if oldSelected?.hash == newSelected?.hash {
+                        guard let newSelected, oldSelected?.hash != newSelected.hash else {
                             return
                         }
                         
-                        print("\(oldSelected?.title ?? "none") -> \(newSelected?.title ?? "none")")
+                        print("\(oldSelected?.title ?? "none") -> \(newSelected.title)")
                         
                         Task {
                             if cache.isGrid {
@@ -94,7 +97,7 @@ struct FeedDetailGridView: View {
                                 }
                             } else {
                                 withAnimation(Animation.spring().delay(0.5)) {
-                                    scroller.scrollTo(newSelected?.id)
+                                    scroller.scrollTo(newSelected.id)
                                 }
                             }
                         }
@@ -109,6 +112,15 @@ struct FeedDetailGridView: View {
                     }
                 }
             }
+            .modify({ view in
+                if #available(iOS 15.0, *) {
+                    view.refreshable {
+                        if cache.canPullToRefresh {
+                            feedDetailInteraction.pullToRefresh()
+                        }
+                    }
+                }
+            })
         }
         .background(Color.themed([0xF4F4F4, 0xFFFDEF, 0x4F4F4F, 0x101010]))
     }
@@ -141,6 +153,14 @@ struct FeedDetailGridView: View {
         if cache.isGrid, !cache.isPhone, let story = cache.selected {
             StoryView(cache: cache, story: loaded(story: story), interaction: feedDetailInteraction)
         }
+    }
+    
+    @ViewBuilder
+    func makeLoadingView(cache: StoryCache) -> some View {
+        ProgressView()
+            .progressViewStyle(CircularProgressViewStyle(tint: cache.isDarkTheme ? .white : .black))
+            .scaleEffect(2)
+            .frame(height: 100)
     }
     
     func loaded(story: Story) -> Story {

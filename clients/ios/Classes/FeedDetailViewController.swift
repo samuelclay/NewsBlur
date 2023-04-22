@@ -80,7 +80,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
 //        }
 //    }
     
-    var dataSource: UICollectionViewDiffableDataSource<SectionLayoutKind, Int>! = nil
+//    var dataSource: UICollectionViewDiffableDataSource<SectionLayoutKind, Int>! = nil
     
     private func makeGridViewController() -> UIHostingController<FeedDetailGridView> {
 //        let headerView = FeedDetailGridView(isGrid: isGrid, storyCache: storyCache)
@@ -96,7 +96,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         changedLayout()
         configureDataSource()
         
-        feedCollectionView.isHidden = true
+//        feedCollectionView.isHidden = true
         
         addChild(gridViewController)
         view.addSubview(gridViewController.view)
@@ -105,8 +105,8 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         NSLayoutConstraint.activate([
             gridViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
             gridViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            gridViewController.view.widthAnchor.constraint(equalTo: view.widthAnchor),
-            gridViewController.view.heightAnchor.constraint(equalTo: view.heightAnchor)
+            gridViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            gridViewController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
     
@@ -158,7 +158,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     }
 }
 
-extension FeedDetailViewController {
+//extension FeedDetailViewController {
 //    func accessoriesForListCellItem(_ item: Int) -> [UICellAccessory] {
 //        let isStarred = false //self.starredEmojis.contains(item)
 //        var accessories = [UICellAccessory.disclosureIndicator()]
@@ -203,63 +203,63 @@ extension FeedDetailViewController {
 //        return UISwipeActionsConfiguration(actions: [starAction])
 //    }
     
-    func createListLayout() -> UICollectionViewLayout {
-//        let size = NSCollectionLayoutSize(
-//            widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
-//            heightDimension: NSCollectionLayoutDimension.estimated(200)
-//        )
-//        let item = NSCollectionLayoutItem(layoutSize: size)
-//        let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: 1)
+//    func createListLayout() -> UICollectionViewLayout {
+////        let size = NSCollectionLayoutSize(
+////            widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
+////            heightDimension: NSCollectionLayoutDimension.estimated(200)
+////        )
+////        let item = NSCollectionLayoutItem(layoutSize: size)
+////        let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: 1)
+////
+////        let section = NSCollectionLayoutSection(group: group)
+////        section.interGroupSpacing = 0
+////
+////        return UICollectionViewCompositionalLayout(section: section)
 //
-//        let section = NSCollectionLayoutSection(group: group)
-//        section.interGroupSpacing = 0
 //
-//        return UICollectionViewCompositionalLayout(section: section)
-        
-        
-        
-        var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
-        
-//        configuration.leadingSwipeActionsConfigurationProvider = { [weak self] (indexPath) in
-//            guard let self else { return nil }
-//            guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return nil }
-//            return self.leadingSwipeActionConfigurationForListCellItem(item)
+//
+//        var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
+//
+////        configuration.leadingSwipeActionsConfigurationProvider = { [weak self] (indexPath) in
+////            guard let self else { return nil }
+////            guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return nil }
+////            return self.leadingSwipeActionConfigurationForListCellItem(item)
+////        }
+//
+//        return UICollectionViewCompositionalLayout.list(using: configuration)
+//    }
+//
+//    func createGridLayout() -> UICollectionViewLayout {
+//        let layout = UICollectionViewCompositionalLayout { (sectionIndex: Int,
+//                                                            layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
+//
+//            guard let sectionLayoutKind = SectionLayoutKind(rawValue: sectionIndex) else {
+//                return nil
+//            }
+//
+//            let isStory = sectionLayoutKind == .selectedStory
+//            let isLoading = sectionLayoutKind == .loading
+//            let columns = isStory || isLoading ? 1 : self.feedColumns
+//
+//            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+//                                                  heightDimension: .fractionalHeight(1.0))
+//            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+//            item.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+//
+//            let groupHeight = isStory ? NSCollectionLayoutDimension.absolute(self.storyHeight) : isLoading ? NSCollectionLayoutDimension.absolute(100) : NSCollectionLayoutDimension.absolute(self.gridHeight)
+//            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+//                                                   heightDimension: groupHeight)
+//            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: columns)
+//
+//            let section = NSCollectionLayoutSection(group: group)
+//            section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 0, trailing: 10)
+//
+//            return section
 //        }
-        
-        return UICollectionViewCompositionalLayout.list(using: configuration)
-    }
-    
-    func createGridLayout() -> UICollectionViewLayout {
-        let layout = UICollectionViewCompositionalLayout { (sectionIndex: Int,
-                                                            layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
-            
-            guard let sectionLayoutKind = SectionLayoutKind(rawValue: sectionIndex) else {
-                return nil
-            }
-            
-            let isStory = sectionLayoutKind == .selectedStory
-            let isLoading = sectionLayoutKind == .loading
-            let columns = isStory || isLoading ? 1 : self.feedColumns
-            
-            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                  heightDimension: .fractionalHeight(1.0))
-            let item = NSCollectionLayoutItem(layoutSize: itemSize)
-            item.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
-            
-            let groupHeight = isStory ? NSCollectionLayoutDimension.absolute(self.storyHeight) : isLoading ? NSCollectionLayoutDimension.absolute(100) : NSCollectionLayoutDimension.absolute(self.gridHeight)
-            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                   heightDimension: groupHeight)
-            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: columns)
-            
-            let section = NSCollectionLayoutSection(group: group)
-            section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 0, trailing: 10)
-            
-            return section
-        }
-        
-        return layout
-    }
-}
+//
+//        return layout
+//    }
+//}
 
 extension FeedDetailViewController {
     func configureDataSource() {
@@ -346,6 +346,10 @@ extension FeedDetailViewController {
 }
 
 extension FeedDetailViewController: FeedDetailInteraction {
+    func pullToRefresh() {
+        instafetchFeed()
+    }
+    
     func visible(story: Story) {
         print("\(story.title) appeared")
         

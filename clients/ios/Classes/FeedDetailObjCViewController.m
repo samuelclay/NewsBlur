@@ -55,7 +55,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (nonatomic) NSInteger oldLocation;
 @property (nonatomic) NSUInteger scrollingMarkReadRow;
 @property (nonatomic, readonly) BOOL isMarkReadOnScroll;
-@property (nonatomic, readonly) BOOL canPullToRefresh;
 @property (readwrite) BOOL inPullToRefresh_;
 @property (nonatomic, strong) NSString *restoringFolder;
 @property (nonatomic, strong) NSString *restoringFeedID;
@@ -65,7 +64,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 
 @implementation FeedDetailObjCViewController
 
-@synthesize feedCollectionView, feedMarkReadButton;
+@synthesize feedMarkReadButton;
 @synthesize settingsBarButton;
 @synthesize separatorBarButton;
 @synthesize titleImageBarButton;
@@ -559,8 +558,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 
 - (void)fadeSelectedCell:(BOOL)deselect {
     [self reload];
-    NSInteger location = storiesCollection.locationOfActiveStory;
-    NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
+//    NSInteger location = storiesCollection.locationOfActiveStory;
+//    NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
     
 //    if (indexPath && location >= 0 && self.view.window != nil) {
 //        [feedCollectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
@@ -804,7 +803,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 - (void)flashInfrequentStories {
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
     NSInteger infrequent = [prefs integerForKey:@"infrequent_stories_per_month"];
-    [MBProgressHUD hideHUDForView:self.feedCollectionView animated:NO];
+//    [MBProgressHUD hideHUDForView:self.feedCollectionView animated:NO];
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.mode = MBProgressHUDModeText;
     hud.removeFromSuperViewOnHide = YES;
@@ -1775,9 +1774,9 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 //    [cell setNeedsLayout];
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    // obsolete; will remove
-}
+//- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+//    // obsolete; will remove
+//}
 
 - (void)didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger location = [self storyLocationForIndexPath:indexPath];

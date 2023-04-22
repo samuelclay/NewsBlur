@@ -19,9 +19,7 @@
 
 @interface FeedDetailObjCViewController : BaseViewController
 <UIPopoverControllerDelegate,
-// MCSwipeTableViewCellDelegate,
- UIGestureRecognizerDelegate, UISearchBarDelegate,
- UICollectionViewDelegate, UICollectionViewDragDelegate> {
+UIGestureRecognizerDelegate, UISearchBarDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     BOOL pageFetching;
@@ -32,14 +30,12 @@
     BOOL inDoubleTap;
     BOOL invalidateFontCache;
      
-    UICollectionView * feedCollectionView;
     UIBarButtonItem * feedMarkReadButton;
     Class popoverClass;
     NBNotifier *notifier;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic, strong) IBOutlet UICollectionView *feedCollectionView;
 @property (nonatomic) IBOutlet UIBarButtonItem * feedMarkReadButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * feedsBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * settingsBarButton;
@@ -56,6 +52,7 @@
 @property (nonatomic, strong) id standardInteractivePopGestureDelegate;
 //@property (nonatomic, readonly) NSIndexPath *selectedIndexPath;
 @property (nonatomic) CGFloat storyHeight;
+@property (nonatomic, readonly) BOOL canPullToRefresh;
 
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;

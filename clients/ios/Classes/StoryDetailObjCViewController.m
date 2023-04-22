@@ -1387,10 +1387,10 @@
             [appDelegate.storiesCollection markStoryRead:activeStory];
             [appDelegate.storiesCollection syncStoryAsRead:activeStory];
             
-            NSIndexPath *reloadIndexPath = appDelegate.feedDetailViewController.feedCollectionView.indexPathsForSelectedItems.firstObject;
-            if (reloadIndexPath != nil) {
-                [appDelegate.feedDetailViewController reloadIndexPath:reloadIndexPath];
-            }
+//            NSIndexPath *reloadIndexPath = appDelegate.feedDetailViewController.feedCollectionView.indexPathsForSelectedItems.firstObject;
+//            if (reloadIndexPath != nil) {
+//                [appDelegate.feedDetailViewController reloadIndexPath:reloadIndexPath];
+//            }
         }
         
         if (!isNavBarHidden && self.canHideNavigationBar && !nearTop) {
