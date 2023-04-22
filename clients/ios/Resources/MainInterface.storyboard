@@ -14,7 +14,7 @@
             <objects>
                 <viewController storyboardIdentifier="DetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="djW-7k-haK" customClass="DetailViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jTZ-4O-xyT">
-                        <rect key="frame" x="0.0" y="0.0" width="818.5" height="834"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bPa-u1-Aml">
                                 <rect key="frame" x="0.0" y="74" width="1194" height="580"/>
@@ -339,22 +339,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="760"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="nho-TY-qu5">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="760"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="rpb-nU-kSS">
-                                    <size key="itemSize" width="128" height="128"/>
-                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                </collectionViewFlowLayout>
-                                <cells/>
-                                <connections>
-                                    <outlet property="delegate" destination="gfj-2g-i9p" id="wZf-5i-eou"/>
-                                </connections>
-                            </collectionView>
                             <view hidden="YES" opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZLP-oU-XR7">
-                                <rect key="frame" x="0.0" y="386.5" width="375" height="181"/>
+                                <rect key="frame" x="0.0" y="279.5" width="375" height="181"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" alpha="0.40000000596046448" contentMode="scaleToFill" image="big_world.png" translatesAutoresizingMaskIntoConstraints="NO" id="Lzk-2I-zT1">
                                         <rect key="frame" x="155.5" y="24" width="64" height="64"/>
@@ -385,18 +371,13 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="ZLP-oU-XR7" secondAttribute="trailing" id="0Uy-X6-3Iy"/>
-                            <constraint firstItem="KZB-W3-hzF" firstAttribute="trailing" secondItem="nho-TY-qu5" secondAttribute="trailing" id="4xg-EJ-PeG"/>
-                            <constraint firstItem="nho-TY-qu5" firstAttribute="centerY" secondItem="ZLP-oU-XR7" secondAttribute="centerY" constant="-97" id="O2C-aA-59X"/>
-                            <constraint firstAttribute="bottom" secondItem="nho-TY-qu5" secondAttribute="bottom" id="i9O-FL-bCH"/>
-                            <constraint firstItem="nho-TY-qu5" firstAttribute="top" secondItem="Qlc-Qa-4j4" secondAttribute="top" id="leK-Rf-e0Y"/>
-                            <constraint firstItem="nho-TY-qu5" firstAttribute="leading" secondItem="KZB-W3-hzF" secondAttribute="leading" id="xbD-E8-ID8"/>
+                            <constraint firstItem="ZLP-oU-XR7" firstAttribute="centerY" secondItem="KZB-W3-hzF" secondAttribute="centerY" id="RC4-pY-DOM"/>
                             <constraint firstItem="ZLP-oU-XR7" firstAttribute="leading" secondItem="Qlc-Qa-4j4" secondAttribute="leading" id="zG5-2m-YKf"/>
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" id="vc8-hL-CKx"/>
                     <connections>
-                        <outlet property="feedCollectionView" destination="nho-TY-qu5" id="2AT-iE-SyS"/>
                         <outlet property="messageLabel" destination="ugt-jY-ACR" id="KxV-ws-Fjm"/>
                         <outlet property="messageView" destination="ZLP-oU-XR7" id="0aY-ZP-6Rk"/>
                     </connections>

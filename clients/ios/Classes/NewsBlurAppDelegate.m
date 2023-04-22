@@ -1650,7 +1650,7 @@
         }
         
         [self adjustStoryDetailWebView];
-        [self.feedDetailViewController.feedCollectionView reloadData];
+//        [self.feedDetailViewController.feedCollectionView reloadData];
         
         if (detailViewController.storyTitlesOnLeft) {
             [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadFeedDetailView"];
@@ -3861,7 +3861,8 @@
     }];
 
     [self recalculateIntelligenceScores:feedId];
-    [self.feedDetailViewController.feedCollectionView reloadData];
+    [self.feedDetailViewController reload];
+//    [self.feedDetailViewController.feedCollectionView reloadData];
 }
 
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId {
@@ -3905,7 +3906,8 @@
     }];
     
     [self recalculateIntelligenceScores:feedId];
-    [self.feedDetailViewController.feedCollectionView reloadData];
+    [self.feedDetailViewController reload];
+//    [self.feedDetailViewController.feedCollectionView reloadData];
 }
 
 - (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(NSInteger)score {
@@ -3953,7 +3955,8 @@
     }];
 
     [self recalculateIntelligenceScores:feedId];
-    [self.feedDetailViewController.feedCollectionView reloadData];
+//    [self.feedDetailViewController.feedCollectionView reloadData];
+    [self.feedDetailViewController reload];
 }
 
 - (void)toggleFeedClassifier:(NSString *)feedId {
@@ -3995,7 +3998,8 @@
     }];
 
     [self recalculateIntelligenceScores:feedId];
-    [self.feedDetailViewController.feedCollectionView reloadData];
+//    [self.feedDetailViewController.feedCollectionView reloadData];
+    [self.feedDetailViewController reload];
 }
 
 - (void)failedRequest:(NSURLResponse *)response {

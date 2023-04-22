@@ -134,12 +134,20 @@ class StoryCache: ObservableObject {
     
     let settings = StorySettings()
     
+    var isDarkTheme: Bool {
+        return ThemeManager.shared.isDarkTheme
+    }
+    
     var isGrid: Bool {
         return appDelegate.detailViewController.layout == .grid
     }
     
     var isPhone: Bool {
         return appDelegate.detailViewController.isPhone
+    }
+    
+    var canPullToRefresh: Bool {
+        return appDelegate.feedDetailViewController.canPullToRefresh
     }
     
     @Published var before = [Story]()
@@ -287,9 +295,15 @@ class StorySettings {
         guard let pref = UserDefaults.standard.string(forKey: "grid_columns"), let columns = Int(pref) else {
             if NewsBlurAppDelegate.shared.isCompactWidth {
                 return 1
+            } else if NewsBlurAppDelegate.shared.isPortrait() {
+                return 2
             } else {
                 return 4
             }
+        }
+        
+        if NewsBlurAppDelegate.shared.isPortrait(), columns > 3 {
+            return 3
         }
         
         return columns
