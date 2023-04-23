@@ -421,7 +421,7 @@ resource "digitalocean_droplet" "db-redis-pubsub" {
 resource "digitalocean_droplet" "db-postgres" {
   count  = 2
   image  = var.droplet_os
-  name   = contains([0], count.index) ? "db-postgres${count.index + 1}" : "db-postgres${count.index + 2}"
+  name   = contains([0], count.index) ? "db-postgres${count.index + 1}" : "db-postgres${count.index + 1}"
   region = var.droplet_region
   size   = contains([0], count.index) ? var.droplet_size_160 : var.droplet_size_320
   # size     = var.droplet_size_240
