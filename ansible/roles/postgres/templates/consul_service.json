@@ -1,6 +1,6 @@
 {
     "service": {
-        {% if inventory_hostname.startswith('db-postgres3') %}
+        {% if inventory_hostname.startswith('db-postgres2') %}
         "name": "db-postgres",
         {% else %}
         "name": "db-postgres-secondary",
