@@ -37,9 +37,9 @@ def user(u, msg, request=None, warn_color=True):
             seconds = time.time() - request.start_time
             color = '~FB'
             if warn_color:
-                if seconds >= 1:
+                if seconds >= 5:
                     color = '~FR'
-                elif seconds > .2:
+                elif seconds > 1:
                     color = '~SB~FK'
             time_elapsed = "[%s%.4ss~SB] " % (
                 color,

@@ -1226,7 +1226,7 @@ def find_friends(request):
         if results:
             email = results.group(0)
             profiles = MSocialProfile.objects.filter(email__iexact=email)[:limit]
-    if query.isdigit() and request.user.is_staff:
+    if not profiles and query.isdigit() and request.user.is_staff:
         profiles = MSocialProfile.objects.filter(user_id=int(query))[:limit]
     if not profiles:
         profiles = MSocialProfile.objects.filter(username__iexact=query)[:limit]
