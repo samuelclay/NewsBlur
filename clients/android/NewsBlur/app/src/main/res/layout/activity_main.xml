@@ -175,7 +175,7 @@
         android:imeOptions="actionSearch"
         android:visibility="gone"
         android:animateLayoutChanges="true"
-    />
+        android:importantForAutofill="no" />
 
     <!-- The scrollable and pull-able feed list.  -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
