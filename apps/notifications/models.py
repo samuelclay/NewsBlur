@@ -376,7 +376,7 @@ class MUserFeedNotification(mongo.Document):
         emails_sent_date_key = f"emails_sent:{datetime.datetime.now().strftime('%Y%m%d')}"
         r.hincrby(emails_sent_date_key, usersub.user_id, 1)
         r.expire(emails_sent_date_key, 60 * 60 * 24)  # Keep for a day
-        count = r.hget(emails_sent_date_key, usersub.user_id)
+        count = int(r.hget(emails_sent_date_key, usersub.user_id) or 0)
         if count > settings.MAX_EMAILS_SENT_PER_DAY_PER_USER:
             logging.user(usersub.user, "~BMSent too many email Story notifications by email: ~FR~SB%s~SN~FR emails" % (count))
             return
