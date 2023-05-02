@@ -370,6 +370,17 @@ class MUserFeedNotification(mongo.Document):
     def send_email(self, story, usersub):
         if not self.is_email:
             return
+
+        # Increment the daily email counter for this user
+        r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        emails_sent_date_key = f"emails_sent:{datetime.datetime.now().strftime('%Y%m%d')}"
+        r.hincrby(emails_sent_date_key, usersub.user_id, 1)
+        r.expire(emails_sent_date_key, 60 * 60 * 24)  # Keep for a day
+        count = r.hget(emails_sent_date_key, usersub.user_id)
+        if count > settings.MAX_EMAILS_SENT_PER_DAY_PER_USER:
+            logging.user(usersub.user, "~BMSent too many email Story notifications by email: ~FR~SB%s~SN~FR emails" % (count))
+            return
+
         feed = usersub.feed
         story_content = self.sanitize_story(story['story_content'])
 
