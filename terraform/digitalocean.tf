@@ -228,7 +228,7 @@ resource "digitalocean_droplet" "discovery" {
 }
 
 resource "digitalocean_droplet" "node-text" {
-  count    = 2
+  count    = 4
   image    = var.droplet_os
   name     = contains([0], count.index) ? "node-text" : "node-text${count.index + 1}"
   region   = var.droplet_region
