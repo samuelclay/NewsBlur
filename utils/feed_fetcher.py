@@ -195,10 +195,13 @@ class FetchFeed:
                 except (requests.adapters.ConnectionError, TimeoutError):
                     raw_feed = None
                 if not raw_feed or raw_feed.status_code >= 400:
-                    logging.debug(
-                        "   ***> [%-30s] ~FRFeed fetch was %s status code, trying fake user agent: %s"
-                        % (self.feed.log_title[:30], raw_feed.status_code, raw_feed.headers)
-                    )
+                    if raw_feed:
+                        logging.debug(
+                            "   ***> [%-30s] ~FRFeed fetch was %s status code, trying fake user agent: %s"
+                            % (self.feed.log_title[:30], raw_feed.status_code, raw_feed.headers)
+                        )
+                    else:
+                        logging.debug("   ***> [%-30s] ~FRFeed fetch timed out, trying fake headers: %s" % (self.feed.log_title[:30], address))
                     raw_feed = requests.get(
                         self.feed.feed_address,
                         headers=self.feed.fetch_headers(fake=True),
@@ -254,6 +257,7 @@ class FetchFeed:
                 http.client.BadStatusLine,
                 http.client.IncompleteRead,
                 ConnectionResetError,
+                TimeoutError,
             ) as e:
                 logging.debug('   ***> [%-30s] ~FRFeed fetch error: %s' % (self.feed.log_title[:30], e))
                 pass
