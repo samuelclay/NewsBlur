@@ -190,8 +190,11 @@ class FetchFeed:
                     headers['If-Modified-Since'] = modified_header
                 if etag or modified:
                     headers['A-IM'] = 'feed'
-                raw_feed = requests.get(address, headers=headers, timeout=15)
-                if raw_feed.status_code >= 400:
+                try:
+                    raw_feed = requests.get(address, headers=headers, timeout=15)
+                except (requests.adapters.ConnectionError, TimeoutError):
+                    raw_feed = None
+                if not raw_feed or raw_feed.status_code >= 400:
                     logging.debug(
                         "   ***> [%-30s] ~FRFeed fetch was %s status code, trying fake user agent: %s"
                         % (self.feed.log_title[:30], raw_feed.status_code, raw_feed.headers)
