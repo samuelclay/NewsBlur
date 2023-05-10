@@ -70,7 +70,7 @@ class FetchFeed:
         self.fpf = None
         self.raw_feed = None
 
-    @timelimit(30)
+    @timelimit(45)
     def fetch(self):
         """
         Uses requests to download the feed, parsing it in feedparser. Will be storified later.
@@ -201,7 +201,7 @@ class FetchFeed:
                             % (self.feed.log_title[:30], raw_feed.status_code, raw_feed.headers)
                         )
                     else:
-                        logging.debug("   ***> [%-30s] ~FRFeed fetch timed out, trying fake headers: %s" % (self.feed.log_title[:30], address))
+                        logging.debug("   ***> [%-30s] ~FRJson feed fetch timed out, trying fake headers: %s" % (self.feed.log_title[:30], address))
                     raw_feed = requests.get(
                         self.feed.feed_address,
                         headers=self.feed.fetch_headers(fake=True),
@@ -1192,7 +1192,7 @@ class FeedFetcherWorker:
                     try:
                         ret_feed, fetched_feed = ffeed.fetch()
                     except TimeoutError:
-                        logging.debug('   ---> [%-30s] ~FRFeed fetch timed out...' % (feed.log_title[:30]))
+                        logging.debug('   ---> [%-30s] ~FRArchive feed fetch timed out...' % (feed.log_title[:30]))
                         # Timeout means don't bother to keep checking...
                         continue
 
@@ -1221,7 +1221,7 @@ class FeedFetcherWorker:
                     try:
                         ret_feed, fetched_feed = ffeed.fetch()
                     except TimeoutError as e:
-                        logging.debug('   ---> [%-30s] ~FRFeed fetch timed out...' % (feed.log_title[:30]))
+                        logging.debug('   ---> [%-30s] ~FRArchive feed fetch timed out...' % (feed.log_title[:30]))
                         # Timeout means don't bother to keep checking...
                         break
 
@@ -1263,7 +1263,7 @@ class FeedFetcherWorker:
                     try:
                         ret_feed, fetched_feed = ffeed.fetch()
                     except TimeoutError as e:
-                        logging.debug('   ---> [%-30s] ~FRFeed fetch timed out...' % (feed.log_title[:30]))
+                        logging.debug('   ---> [%-30s] ~FRArchive feed fetch timed out...' % (feed.log_title[:30]))
                         # Timeout means don't bother to keep checking...
                         break
 
