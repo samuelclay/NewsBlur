@@ -99,7 +99,6 @@
 @synthesize feedDetailViewController;
 @synthesize friendsListViewController;
 @synthesize fontSettingsViewController;
-@synthesize storyPagesViewController;
 @synthesize storyDetailViewController;
 @synthesize shareViewController;
 @synthesize loginViewController;
@@ -223,21 +222,6 @@
     [[ThemeManager themeManager] prepareForWindow:self.window];
     
     [self createDatabaseConnection];
-    [self.cachedStoryImages removeAllObjects:nil];
-    [feedsViewController view];
-    [feedsViewController loadOfflineFeeds:NO];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
-                                             (unsigned long)NULL), ^(void) {
-        [self setupReachability];
-        self.cacheImagesOperationQueue = [NSOperationQueue new];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            self.cacheImagesOperationQueue.maxConcurrentOperationCount = 2;
-        } else {
-            self.cacheImagesOperationQueue.maxConcurrentOperationCount = 1;
-        }
-    });
-
-//    [self showFirstTimeUser];
     
     cachedFavicons = [[PINCache alloc] initWithName:@"NBFavicons"];
     cachedFavicons.memoryCache.removeAllObjectsOnEnteringBackground = NO;
@@ -252,7 +236,20 @@
     // Uncomment below line to test image caching
 //    [[NSURLCache sharedURLCache] removeAllCachedResponses];
     
-    [self registerBackgroundTask];
+    [feedsViewController view];
+    [feedsViewController loadOfflineFeeds:NO];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [self setupReachability];
+        self.cacheImagesOperationQueue = [NSOperationQueue new];
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            self.cacheImagesOperationQueue.maxConcurrentOperationCount = 2;
+        } else {
+            self.cacheImagesOperationQueue.maxConcurrentOperationCount = 1;
+        }
+    });
+    
+//    [self showFirstTimeUser];
     
     return YES;
 }
@@ -278,6 +275,8 @@
 //        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:appOpening];
     }
     
+    [self registerBackgroundTask];
+    
 	return YES;
 }
 
@@ -287,10 +286,10 @@
         self.launchedShortcutItem = nil;
     }
     
-    if (storyPagesViewController.temporarilyMarkedUnread && [storiesCollection isStoryUnread:activeStory]) {
+    if (self.storyPagesViewController.temporarilyMarkedUnread && [storiesCollection isStoryUnread:activeStory]) {
         [storiesCollection markStoryRead:activeStory];
         [storiesCollection syncStoryAsRead:activeStory];
-        storyPagesViewController.temporarilyMarkedUnread = NO;
+        self.storyPagesViewController.temporarilyMarkedUnread = NO;
         
         [self.feedDetailViewController reloadWithSizing];
         [self.storyPagesViewController refreshHeaders];
@@ -878,7 +877,7 @@
         }
     }
     
-    [storyPagesViewController refreshPages];
+    [self.storyPagesViewController refreshPages];
 }
 
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController {
@@ -1207,6 +1206,7 @@
     self.firstTimeUserAddFriendsViewController = [FirstTimeUserAddFriendsViewController new];
     self.firstTimeUserAddNewsBlurViewController = [FirstTimeUserAddNewsBlurViewController new];
     
+//    [self.detailViewController prepare];
     [self updateSplitBehavior];
 }
 
@@ -1650,7 +1650,7 @@
         }
         
         [self adjustStoryDetailWebView];
-//        [self.feedDetailViewController.feedCollectionView reloadData];
+        [self.feedDetailViewController reload];
         
         if (detailViewController.storyTitlesOnLeft) {
             [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadFeedDetailView"];
@@ -2122,9 +2122,9 @@
 
 - (void)adjustStoryDetailWebView {
     // change the web view
-    [storyPagesViewController.currentPage changeWebViewWidth];
-    [storyPagesViewController.nextPage changeWebViewWidth];
-    [storyPagesViewController.previousPage changeWebViewWidth];
+    [self.storyPagesViewController.currentPage changeWebViewWidth];
+    [self.storyPagesViewController.nextPage changeWebViewWidth];
+    [self.storyPagesViewController.previousPage changeWebViewWidth];
 }
 
 - (void)calibrateStoryTitles {
@@ -2220,6 +2220,10 @@
     
     NSInteger activeStoryLocation = [storiesCollection locationOfActiveStory];
     if (activeStoryLocation >= 0) {
+        if (self.storyPagesViewController == nil) {
+            [self.detailViewController checkLayout];
+        }
+        
         BOOL animated = ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad &&
                          !self.tryFeedCategory);
         [self.storyPagesViewController view];
@@ -2441,7 +2445,7 @@
 //        [self.masterContainerViewController transitionFromOriginalView];
     } else {
         if ([[feedsNavigationController viewControllers] containsObject:originalStoryViewController]) {
-            [feedsNavigationController popToViewController:storyPagesViewController animated:YES];
+            [feedsNavigationController popToViewController:self.storyPagesViewController animated:YES];
         }
     }
 }
@@ -3053,14 +3057,14 @@
 }
 
 - (void)finishMarkAsRead:(NSDictionary *)story {
-    if (!storyPagesViewController.previousPage || !storyPagesViewController.currentPage || !storyPagesViewController.nextPage) return;
-    for (StoryDetailViewController *page in @[storyPagesViewController.previousPage,
-                                              storyPagesViewController.currentPage,
-                                              storyPagesViewController.nextPage]) {
+    if (!self.storyPagesViewController.previousPage || !self.storyPagesViewController.currentPage || !self.storyPagesViewController.nextPage) return;
+    for (StoryDetailViewController *page in @[self.storyPagesViewController.previousPage,
+                                              self.storyPagesViewController.currentPage,
+                                              self.storyPagesViewController.nextPage]) {
         if ([[page.activeStory objectForKey:@"story_hash"]
              isEqualToString:[story objectForKey:@"story_hash"]] && page.isRecentlyUnread) {
             page.isRecentlyUnread = NO;
-            [storyPagesViewController refreshHeaders];
+            [self.storyPagesViewController refreshHeaders];
         }
     }
     
@@ -3070,52 +3074,52 @@
 }
 
 - (void)finishMarkAsUnread:(NSDictionary *)story {
-    if (!storyPagesViewController.previousPage || !storyPagesViewController.currentPage || !storyPagesViewController.nextPage) return;
-    for (StoryDetailViewController *page in @[storyPagesViewController.previousPage,
-                                              storyPagesViewController.currentPage,
-                                              storyPagesViewController.nextPage]) {
+    if (!self.storyPagesViewController.previousPage || !self.storyPagesViewController.currentPage || !self.storyPagesViewController.nextPage) return;
+    for (StoryDetailViewController *page in @[self.storyPagesViewController.previousPage,
+                                              self.storyPagesViewController.currentPage,
+                                              self.storyPagesViewController.nextPage]) {
         if ([[page.activeStory objectForKey:@"story_hash"]
              isEqualToString:[story objectForKey:@"story_hash"]]) {
             page.isRecentlyUnread = YES;
-            [storyPagesViewController refreshHeaders];
+            [self.storyPagesViewController refreshHeaders];
         }
     }
-    [storyPagesViewController setNextPreviousButtons];
+    [self.storyPagesViewController setNextPreviousButtons];
     originalStoryCount += 1;
     
     [self.feedsViewController updateFeedTitlesTable];
 }
 
 - (void)failedMarkAsUnread:(NSDictionary *)params {
-    if (![storyPagesViewController failedMarkAsUnread:params]) {
+    if (![self.storyPagesViewController failedMarkAsUnread:params]) {
         [feedDetailViewController failedMarkAsUnread:params];
-        [storyPagesViewController failedMarkAsUnread:params];
+        [self.storyPagesViewController failedMarkAsUnread:params];
     }
     [feedDetailViewController reloadWithSizing];
 }
 
 - (void)finishMarkAsSaved:(NSDictionary *)params {
-    [storyPagesViewController finishMarkAsSaved:params];
+    [self.storyPagesViewController finishMarkAsSaved:params];
     [feedDetailViewController finishMarkAsSaved:params];
 }
 
 - (void)failedMarkAsSaved:(NSDictionary *)params {
-    if (![storyPagesViewController failedMarkAsSaved:params]) {
+    if (![self.storyPagesViewController failedMarkAsSaved:params]) {
         [feedDetailViewController failedMarkAsSaved:params];
-        [storyPagesViewController failedMarkAsSaved:params];
+        [self.storyPagesViewController failedMarkAsSaved:params];
     }
     [feedDetailViewController reloadWithSizing];
 }
 
 - (void)finishMarkAsUnsaved:(NSDictionary *)params {
-    [storyPagesViewController finishMarkAsUnsaved:params];
+    [self.storyPagesViewController finishMarkAsUnsaved:params];
     [feedDetailViewController finishMarkAsUnsaved:params];
 }
 
 - (void)failedMarkAsUnsaved:(NSDictionary *)params {
-    if (![storyPagesViewController failedMarkAsUnsaved:params]) {
+    if (![self.storyPagesViewController failedMarkAsUnsaved:params]) {
         [feedDetailViewController failedMarkAsUnsaved:params];
-        [storyPagesViewController failedMarkAsUnsaved:params];
+        [self.storyPagesViewController failedMarkAsUnsaved:params];
     }
     [feedDetailViewController reloadWithSizing];
 }
@@ -4654,7 +4658,6 @@
 - (void)prepareActiveCachedImages:(FMDatabase *)db {
     activeCachedImages = [NSMutableDictionary dictionary];
     NSArray *feedIds;
-    int cached = 0;
     
     if (storiesCollection.isRiverView) {
         feedIds = storiesCollection.activeFolderFeeds;
@@ -4677,7 +4680,6 @@
         }
         [imageUrls addObject:[cursor objectForColumnName:@"image_url"]];
         [activeCachedImages setObject:imageUrls forKey:storyHash];
-        cached++;
     }
     
 //    NSLog(@"Pre-cached %d images", cached);

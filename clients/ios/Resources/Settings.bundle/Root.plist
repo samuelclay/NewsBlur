@@ -226,6 +226,26 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
+			<string>List style</string>
+			<key>Titles</key>
+			<array>
+				<string>Standard</string>
+				<string>Experimental</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>standard</string>
+			<key>Values</key>
+			<array>
+				<string>standard</string>
+				<string>experimental</string>
+			</array>
+			<key>Key</key>
+			<string>story_titles_style</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
 			<string>Preview</string>
 			<key>Titles</key>
 			<array>
