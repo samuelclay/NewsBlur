@@ -370,6 +370,10 @@ extension FeedDetailViewController: FeedDetailInteraction {
     }
     
     func tapped(story: Story) {
+        if presentedViewController != nil {
+            return
+        }
+        
         print("tapped \(story.title)")
         
         let indexPath = IndexPath(row: story.index, section: 0)
