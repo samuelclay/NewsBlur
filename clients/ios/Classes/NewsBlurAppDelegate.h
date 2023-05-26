@@ -156,7 +156,7 @@ SFSafariViewControllerDelegate>  {
     PINCache *cachedStoryImages;
 }
 
-@property (class, nonatomic) NewsBlurAppDelegate *shared;
+@property (class, nonatomic, readonly) NewsBlurAppDelegate *shared;
 
 @property (nonatomic) SplitViewController *splitViewController;
 @property (nonatomic) IBOutlet UINavigationController *ftuxNavigationController;

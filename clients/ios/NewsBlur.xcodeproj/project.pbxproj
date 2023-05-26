@@ -65,8 +65,6 @@
 		17432C831C53438D003F8FD6 /* FeedChooserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17432C821C53438D003F8FD6 /* FeedChooserViewController.m */; };
 		17432C861C5343C0003F8FD6 /* FeedChooserTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 17432C851C5343C0003F8FD6 /* FeedChooserTitleView.m */; };
 		17432C891C534BC6003F8FD6 /* FeedChooserViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 17432C881C534BC6003F8FD6 /* FeedChooserViewCell.m */; };
-		17435D312942DBBA002C126C /* FeedDetailCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17435D302942DBBA002C126C /* FeedDetailCollectionCell.swift */; };
-		17435D322942DBBA002C126C /* FeedDetailCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17435D302942DBBA002C126C /* FeedDetailCollectionCell.swift */; };
 		1745FABB217E7FD400336F24 /* storyDetailViewLight.css in Resources */ = {isa = PBXBuildFile; fileRef = 1745FABA217E7FD400336F24 /* storyDetailViewLight.css */; };
 		174939171C251BFE003D98AA /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 174939151C251BFE003D98AA /* MainInterface.storyboard */; };
 		1749391B1C251BFE003D98AA /* Share Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 174939101C251BFE003D98AA /* Share Extension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -554,7 +552,6 @@
 		1757923C2930605500490924 /* NBURLCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFF683C19D628000081904A /* NBURLCache.m */; };
 		1757923D2930605500490924 /* StoryDetailObjCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7842ECF611D44A530066CF9D /* StoryDetailObjCViewController.m */; };
 		1757923E2930605500490924 /* PINDiskCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2924E21E932D2900FCFA63 /* PINDiskCache.m */; };
-		1757923F2930605500490924 /* FeedDetailCollectionCellObsoleteObjCEdition.m in Sources */ = {isa = PBXBuildFile; fileRef = 7843F50411EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.m */; };
 		175792402930605500490924 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 784B50EB127E3F68008F90EA /* LoginViewController.m */; };
 		175792412930605500490924 /* StoryPagesCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D017C28B05D9500F2F2DB /* StoryPagesCollectionCell.swift */; };
 		175792422930605500490924 /* NotificationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5ACC231DE5F0C000FBD044 /* NotificationsViewController.m */; };
@@ -717,8 +714,6 @@
 		176129611C630AEB00702FE4 /* mute_feed_off@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1761295D1C630AEB00702FE4 /* mute_feed_off@2x.png */; };
 		176129621C630AEB00702FE4 /* mute_feed_on.png in Resources */ = {isa = PBXBuildFile; fileRef = 1761295E1C630AEB00702FE4 /* mute_feed_on.png */; };
 		176129631C630AEB00702FE4 /* mute_feed_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1761295F1C630AEB00702FE4 /* mute_feed_on@2x.png */; };
-		17629CC429D78C8400B1FD41 /* SwipeCell in Frameworks */ = {isa = PBXBuildFile; productRef = 17629CC329D78C8400B1FD41 /* SwipeCell */; };
-		17629CC629D7A71E00B1FD41 /* SwipeCell in Frameworks */ = {isa = PBXBuildFile; productRef = 17629CC529D7A71E00B1FD41 /* SwipeCell */; };
 		1763E2A123B1BCC900BA080C /* WidgetFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1763E2A023B1BCC900BA080C /* WidgetFeed.swift */; };
 		1763E2A323B1CEB600BA080C /* WidgetBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1763E2A223B1CEB600BA080C /* WidgetBarView.swift */; };
 		176A5C7A24F8BD1B009E8DF9 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176A5C7924F8BD1B009E8DF9 /* DetailViewController.swift */; };
@@ -728,6 +723,8 @@
 		177551DF238E228A00E27818 /* Old NewsBlur Latest.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 177551D3238E228A00E27818 /* Old NewsBlur Latest.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		177D017D28B05D9500F2F2DB /* StoryPagesCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D017C28B05D9500F2F2DB /* StoryPagesCollectionCell.swift */; };
 		17813FB723AC6E450057FB16 /* WidgetErrorTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17CE3F0523AC529B003152EF /* WidgetErrorTableViewCell.xib */; };
+		178552492A1F115800A8CD92 /* FeedDetailTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 178552472A1F115800A8CD92 /* FeedDetailTableCell.m */; };
+		1785524A2A1F115800A8CD92 /* FeedDetailTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 178552472A1F115800A8CD92 /* FeedDetailTableCell.m */; };
 		1787083024F8B3A50000C82B /* StoryDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1787082F24F8B3A50000C82B /* StoryDetailViewController.swift */; };
 		17876B9E1C9911D40055DD15 /* g_icn_folder_rss_sm.png in Resources */ = {isa = PBXBuildFile; fileRef = 17876B9A1C9911D40055DD15 /* g_icn_folder_rss_sm.png */; };
 		17876B9F1C9911D40055DD15 /* g_icn_folder_rss_sm@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17876B9B1C9911D40055DD15 /* g_icn_folder_rss_sm@2x.png */; };
@@ -966,7 +963,6 @@
 		78095E45128EF37E00230C8E /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78095E44128EF37E00230C8E /* SystemConfiguration.framework */; };
 		78095EC9128F30B500230C8E /* OriginalStoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095EC7128F30B500230C8E /* OriginalStoryViewController.m */; };
 		7842ECF811D44A530066CF9D /* StoryDetailObjCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7842ECF611D44A530066CF9D /* StoryDetailObjCViewController.m */; };
-		7843F50511EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.m in Sources */ = {isa = PBXBuildFile; fileRef = 7843F50411EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.m */; };
 		784B50ED127E3F68008F90EA /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 784B50EB127E3F68008F90EA /* LoginViewController.m */; };
 		788EF356127E5BC80088EDC5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 788EF355127E5BC80088EDC5 /* QuartzCore.framework */; };
 		E160F0571C9DAC2C00CB96DF /* UIViewController+HidePopover.m in Sources */ = {isa = PBXBuildFile; fileRef = E160F0561C9DAC2C00CB96DF /* UIViewController+HidePopover.m */; };
@@ -1446,7 +1442,6 @@
 		17432C851C5343C0003F8FD6 /* FeedChooserTitleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedChooserTitleView.m; sourceTree = "<group>"; };
 		17432C871C534BC6003F8FD6 /* FeedChooserViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedChooserViewCell.h; sourceTree = "<group>"; };
 		17432C881C534BC6003F8FD6 /* FeedChooserViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedChooserViewCell.m; sourceTree = "<group>"; };
-		17435D302942DBBA002C126C /* FeedDetailCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailCollectionCell.swift; sourceTree = "<group>"; };
 		1745FABA217E7FD400336F24 /* storyDetailViewLight.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailViewLight.css; path = static/storyDetailViewLight.css; sourceTree = SOURCE_ROOT; };
 		174939101C251BFE003D98AA /* Share Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Share Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		174939161C251BFE003D98AA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -1480,6 +1475,8 @@
 		177551DC238E228A00E27818 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		177551E3238E26BF00E27818 /* Widget Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Widget Extension.entitlements"; sourceTree = "<group>"; };
 		177D017C28B05D9500F2F2DB /* StoryPagesCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPagesCollectionCell.swift; sourceTree = "<group>"; };
+		178552472A1F115800A8CD92 /* FeedDetailTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailTableCell.m; sourceTree = "<group>"; };
+		178552482A1F115800A8CD92 /* FeedDetailTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailTableCell.h; sourceTree = "<group>"; };
 		1787082F24F8B3A50000C82B /* StoryDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryDetailViewController.swift; sourceTree = "<group>"; };
 		17876B9A1C9911D40055DD15 /* g_icn_folder_rss_sm.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_folder_rss_sm.png; sourceTree = "<group>"; };
 		17876B9B1C9911D40055DD15 /* g_icn_folder_rss_sm@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "g_icn_folder_rss_sm@2x.png"; sourceTree = "<group>"; };
@@ -1757,8 +1754,6 @@
 		78095EC7128F30B500230C8E /* OriginalStoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = OriginalStoryViewController.m; sourceTree = "<group>"; };
 		7842ECF511D44A530066CF9D /* StoryDetailObjCViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryDetailObjCViewController.h; sourceTree = "<group>"; };
 		7842ECF611D44A530066CF9D /* StoryDetailObjCViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = StoryDetailObjCViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		7843F50311EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailCollectionCellObsoleteObjCEdition.h; sourceTree = "<group>"; };
-		7843F50411EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailCollectionCellObsoleteObjCEdition.m; sourceTree = "<group>"; };
 		784B50EA127E3F68008F90EA /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		784B50EB127E3F68008F90EA /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		788EF355127E5BC80088EDC5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -2300,7 +2295,6 @@
 				175792D22930605500490924 /* MessageUI.framework in Frameworks */,
 				175792D32930605500490924 /* Security.framework in Frameworks */,
 				175792D42930605500490924 /* libz.dylib in Frameworks */,
-				17629CC429D78C8400B1FD41 /* SwipeCell in Frameworks */,
 				175792D52930605500490924 /* CloudKit.framework in Frameworks */,
 				175792D62930605500490924 /* Foundation.framework in Frameworks */,
 				175792D72930605500490924 /* UIKit.framework in Frameworks */,
@@ -2341,7 +2335,6 @@
 				FF2D8B351487250C00057B80 /* MessageUI.framework in Frameworks */,
 				FF2D8B331487250200057B80 /* Security.framework in Frameworks */,
 				FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */,
-				17629CC629D7A71E00B1FD41 /* SwipeCell in Frameworks */,
 				179DD9CF23DFDD51007BFD21 /* CloudKit.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
@@ -2705,9 +2698,8 @@
 				1737A9E12979EA8700E84348 /* FeedDetailGridView.swift */,
 				172ECBF9298B1481006371BC /* FeedDetailCardView.swift */,
 				172ECBFC298B14B1006371BC /* FeedDetailStoryView.swift */,
-				17435D302942DBBA002C126C /* FeedDetailCollectionCell.swift */,
-				7843F50311EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.h */,
-				7843F50411EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.m */,
+				178552482A1F115800A8CD92 /* FeedDetailTableCell.h */,
+				178552472A1F115800A8CD92 /* FeedDetailTableCell.m */,
 				FF2D8CE214893BBF00057B80 /* MoveSiteViewController.h */,
 				FF2D8CE314893BBF00057B80 /* MoveSiteViewController.m */,
 				FF5ACC221DE5F0C000FBD044 /* NotificationsViewController.h */,
@@ -3691,7 +3683,6 @@
 			);
 			name = "NewsBlur Dev";
 			packageProductDependencies = (
-				17629CC329D78C8400B1FD41 /* SwipeCell */,
 			);
 			productName = NewsBlur;
 			productReference = 175792E42930605500490924 /* NewsBlur Dev.app */;
@@ -3734,7 +3725,6 @@
 			);
 			name = NewsBlur;
 			packageProductDependencies = (
-				17629CC529D7A71E00B1FD41 /* SwipeCell */,
 			);
 			productName = NewsBlur;
 			productReference = 1D6058910D05DD3D006BFB54 /* NewsBlur.app */;
@@ -3844,7 +3834,6 @@
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			packageReferences = (
-				17629CC229D78C8400B1FD41 /* XCRemoteSwiftPackageReference "SwipeCell" */,
 			);
 			projectDirPath = "";
 			projectRoot = "";
@@ -4875,7 +4864,6 @@
 				1757923C2930605500490924 /* NBURLCache.m in Sources */,
 				1757923D2930605500490924 /* StoryDetailObjCViewController.m in Sources */,
 				1757923E2930605500490924 /* PINDiskCache.m in Sources */,
-				1757923F2930605500490924 /* FeedDetailCollectionCellObsoleteObjCEdition.m in Sources */,
 				175792402930605500490924 /* LoginViewController.m in Sources */,
 				175792412930605500490924 /* StoryPagesCollectionCell.swift in Sources */,
 				175792422930605500490924 /* NotificationsViewController.m in Sources */,
@@ -4894,9 +4882,9 @@
 				1757924F2930605500490924 /* BaseViewController.m in Sources */,
 				175792502930605500490924 /* IASKSwitch.m in Sources */,
 				175792512930605500490924 /* NBBarButtonItem.m in Sources */,
-				17435D322942DBBA002C126C /* FeedDetailCollectionCell.swift in Sources */,
 				175792522930605500490924 /* MoveSiteViewController.m in Sources */,
 				175792532930605500490924 /* FirstTimeUserViewController.m in Sources */,
+				1785524A2A1F115800A8CD92 /* FeedDetailTableCell.m in Sources */,
 				175792542930605500490924 /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
 				175792552930605500490924 /* SBJson4StreamWriter.m in Sources */,
 				175792562930605500490924 /* FontSettingsViewController.m in Sources */,
@@ -5057,7 +5045,6 @@
 				FFFF683D19D628000081904A /* NBURLCache.m in Sources */,
 				7842ECF811D44A530066CF9D /* StoryDetailObjCViewController.m in Sources */,
 				FF2924E61E932D2900FCFA63 /* PINDiskCache.m in Sources */,
-				7843F50511EEB1A000675F64 /* FeedDetailCollectionCellObsoleteObjCEdition.m in Sources */,
 				784B50ED127E3F68008F90EA /* LoginViewController.m in Sources */,
 				177D017D28B05D9500F2F2DB /* StoryPagesCollectionCell.swift in Sources */,
 				FF5ACC241DE5F0C000FBD044 /* NotificationsViewController.m in Sources */,
@@ -5076,9 +5063,9 @@
 				FFD1D7311459B63500E46F89 /* BaseViewController.m in Sources */,
 				FF34FD6D1E9D93CB0062F8ED /* IASKSwitch.m in Sources */,
 				FF9B8BB217F2351A0036A41C /* NBBarButtonItem.m in Sources */,
-				17435D312942DBBA002C126C /* FeedDetailCollectionCell.swift in Sources */,
 				FF2D8CE514893BC000057B80 /* MoveSiteViewController.m in Sources */,
 				433323CD158968ED0025064D /* FirstTimeUserViewController.m in Sources */,
+				178552492A1F115800A8CD92 /* FeedDetailTableCell.m in Sources */,
 				FF34FD6B1E9D93CB0062F8ED /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
 				FF8D1ED01BAA311000725D8A /* SBJson4StreamWriter.m in Sources */,
 				43763AD1158F90B100B3DBE2 /* FontSettingsViewController.m in Sources */,
@@ -5773,7 +5760,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -5828,7 +5815,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -6031,30 +6018,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		17629CC229D78C8400B1FD41 /* XCRemoteSwiftPackageReference "SwipeCell" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/fatbobman/SwipeCell";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.9.5;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		17629CC329D78C8400B1FD41 /* SwipeCell */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 17629CC229D78C8400B1FD41 /* XCRemoteSwiftPackageReference "SwipeCell" */;
-			productName = SwipeCell;
-		};
-		17629CC529D7A71E00B1FD41 /* SwipeCell */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 17629CC229D78C8400B1FD41 /* XCRemoteSwiftPackageReference "SwipeCell" */;
-			productName = SwipeCell;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
 }

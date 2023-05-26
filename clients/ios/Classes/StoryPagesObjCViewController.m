@@ -1166,7 +1166,7 @@
     currentPage.webView.scrollView.scrollsToTop = YES;
     currentPage.isRecentlyUnread = NO;
     if (!self.isPhoneOrCompact) {
-//        appDelegate.feedDetailViewController.feedCollectionView.scrollsToTop = NO;
+        appDelegate.feedDetailViewController.storyTitlesTable.scrollsToTop = NO;
     }
     self.scrollView.scrollsToTop = NO;
     

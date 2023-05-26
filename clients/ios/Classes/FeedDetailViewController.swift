@@ -93,8 +93,6 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        changedLayout()
-        configureDataSource()
         
 //        feedCollectionView.isHidden = true
         
@@ -108,6 +106,8 @@ class FeedDetailViewController: FeedDetailObjCViewController {
             gridViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             gridViewController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
+        
+        changedLayout()
     }
     
 //    @objc override func changedStoryHeight(_ storyHeight: CGFloat) {
@@ -128,6 +128,9 @@ class FeedDetailViewController: FeedDetailObjCViewController {
 //        }
 //
 //        feedCollectionView.setNeedsLayout()
+        
+        storyTitlesTable.isHidden = !isLegacyTable
+        gridViewController.view.isHidden = isLegacyTable
         
         deferredReload()
     }
@@ -265,7 +268,11 @@ extension FeedDetailViewController {
     func configureDataSource() {
         storyCache.reload()
         
+        if isLegacyTable {
+            reloadTable()
+        }
         
+
 //        let feedCellRegistration = UICollectionView.CellRegistration<FeedDetailCollectionCell, Int> { (cell, indexPath, identifier) in
 //
 ////            cell.frame.size.height = self.heightForRow(at: indexPath)

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r">
     <device id="ipad11_0rounded" orientation="landscape" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -14,7 +14,7 @@
             <objects>
                 <viewController storyboardIdentifier="DetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="djW-7k-haK" customClass="DetailViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jTZ-4O-xyT">
-                        <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
+                        <rect key="frame" x="0.0" y="0.0" width="818.5" height="834"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bPa-u1-Aml">
                                 <rect key="frame" x="0.0" y="74" width="1194" height="580"/>
@@ -339,6 +339,15 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="760"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="FeedDetailTable" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="HYy-Wb-YEm">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="760"/>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="gfj-2g-i9p" id="CEi-md-lRK"/>
+                                    <outlet property="delegate" destination="gfj-2g-i9p" id="Doa-w9-NeE"/>
+                                </connections>
+                            </tableView>
                             <view hidden="YES" opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZLP-oU-XR7">
                                 <rect key="frame" x="0.0" y="279.5" width="375" height="181"/>
                                 <subviews>
@@ -371,7 +380,11 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="ZLP-oU-XR7" secondAttribute="trailing" id="0Uy-X6-3Iy"/>
-                            <constraint firstItem="ZLP-oU-XR7" firstAttribute="centerY" secondItem="KZB-W3-hzF" secondAttribute="centerY" id="RC4-pY-DOM"/>
+                            <constraint firstItem="KZB-W3-hzF" firstAttribute="leading" secondItem="HYy-Wb-YEm" secondAttribute="leading" id="Es2-t9-LuN"/>
+                            <constraint firstAttribute="bottom" secondItem="HYy-Wb-YEm" secondAttribute="bottom" id="Kda-gl-BBw"/>
+                            <constraint firstItem="HYy-Wb-YEm" firstAttribute="trailing" secondItem="KZB-W3-hzF" secondAttribute="trailing" id="Nz7-a8-EPm"/>
+                            <constraint firstItem="ZLP-oU-XR7" firstAttribute="centerY" secondItem="HYy-Wb-YEm" secondAttribute="centerYWithinMargins" constant="-67" id="TaK-Yv-kSt"/>
+                            <constraint firstItem="HYy-Wb-YEm" firstAttribute="top" secondItem="Qlc-Qa-4j4" secondAttribute="top" id="wTE-Rf-iSp"/>
                             <constraint firstItem="ZLP-oU-XR7" firstAttribute="leading" secondItem="Qlc-Qa-4j4" secondAttribute="leading" id="zG5-2m-YKf"/>
                         </constraints>
                     </view>
@@ -380,6 +393,7 @@
                     <connections>
                         <outlet property="messageLabel" destination="ugt-jY-ACR" id="KxV-ws-Fjm"/>
                         <outlet property="messageView" destination="ZLP-oU-XR7" id="0aY-ZP-6Rk"/>
+                        <outlet property="storyTitlesTable" destination="HYy-Wb-YEm" id="GOm-Pe-3tB"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rzy-lw-MYb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

@@ -20,6 +20,9 @@ class DetailViewController: BaseViewController {
         /// Layout of the story titles and story pages.
         static let layout = "story_titles_position"
         
+        /// Style of the feed detail list layout.
+        static let style = "story_titles_style"
+        
         /// Behavior of the split controller.
         static let behavior = "split_behavior"
         
@@ -87,7 +90,7 @@ class DetailViewController: BaseViewController {
         }
     }
     
-    /// Whether or not the feed detail is on the left; see also the following property.
+    /// Whether or not the feed detail is on the left; see also the following properties.
     @objc var storyTitlesOnLeft: Bool {
         return layout == .left
     }
@@ -97,9 +100,55 @@ class DetailViewController: BaseViewController {
         return layout == .top
     }
     
-    /// Whether or not using the grid layout; see also the previous property.
+    /// Whether or not using the grid layout; see also the previous properties.
     @objc var storyTitlesInGrid: Bool {
         return layout == .grid
+    }
+    
+    /// Preference values.
+    enum StyleValue {
+        static let standard = "standard"
+        static let experimental = "experimental"
+    }
+    
+    /// Style of the feed detail list layout.
+    enum Style {
+        /// The feed detail list uses the legacy table view.
+        case standard
+        
+        /// The feed detail list uses the SwiftUI grid view.
+        case experimental
+    }
+    
+    /// Style of the feed detail list layout.
+    var style: Style {
+        get {
+            switch UserDefaults.standard.string(forKey: Key.style) {
+                case StyleValue.experimental:
+                    return .experimental
+                default:
+                    return .standard
+            }
+        }
+        set {
+            guard newValue != style else {
+                return
+            }
+            
+            switch newValue {
+                case .experimental:
+                    UserDefaults.standard.set(StyleValue.experimental, forKey: Key.style)
+                default:
+                    UserDefaults.standard.set(StyleValue.standard, forKey: Key.style)
+            }
+            
+            updateLayout(reload: true)
+        }
+    }
+    
+    /// Whether or not using the legacy list for non-grid layout.
+    @objc var storyTitlesInLegacyTable: Bool {
+        return layout != .grid && style != .experimental
     }
     
     /// Preference values.
@@ -222,6 +271,11 @@ class DetailViewController: BaseViewController {
     /// Returns the currently displayed story view controller, or `nil` if none.
     @objc var currentStoryController: StoryDetailViewController? {
         return storyPagesViewController?.currentPage
+    }
+    
+    /// Prepare the views.
+    @objc func checkLayout() {
+        checkViewControllers()
     }
     
     /// Updates the layout; call this when the layout is changed in the preferences.

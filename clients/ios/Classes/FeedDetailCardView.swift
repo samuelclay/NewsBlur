@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import SwipeCell
 
 /// Card view within the feed detail view, representing a story row in list layout or a story card in grid layout.
 struct CardView: View {
@@ -20,60 +19,6 @@ struct CardView: View {
     @State private var isPinned: Bool = false
     
     var body: some View {
-        let swipeSaveButton = SwipeCellButton(
-            buttonStyle: .view,
-            title: "",
-            systemImage: "",
-            titleColor: .white,
-            imageColor: .white,
-            view: {
-                AnyView(
-                    VStack(spacing: 5) {
-                        Image(uiImage: UIImage(named: "saved-stories") ?? UIImage())
-                            .resizable()
-                            .frame(width: 32, height: 32)
-                            .foregroundColor(.white)
-                        Text(story.isSaved ? "Unsave" : "Save")
-                            .font(.callout)
-                            .bold()
-                            .foregroundColor(.white)
-                    }
-                )},
-            backgroundColor: .purple,
-            action: {
-                cache.appDelegate.storiesCollection.toggleStorySaved(story.dictionary)
-                cache.appDelegate.feedDetailViewController.reload()
-            },
-            feedback: true
-        )
-        
-        let swipeReadButton = SwipeCellButton(
-            buttonStyle: .view,
-            title: "",
-            systemImage: "",
-            titleColor: .white,
-            imageColor: .white,
-            view: {
-                AnyView(
-                    VStack(spacing: 5) {
-                        Image(uiImage: UIImage(named: "mark-read") ?? UIImage())
-                            .resizable()
-                            .frame(width: 32, height: 32)
-                            .foregroundColor(.white)
-                        Text(story.isRead ? "Unread" : "Read")
-                            .font(.callout)
-                            .bold()
-                            .foregroundColor(.white)
-                    }
-                )},
-            backgroundColor: .blue,
-            action: {
-                cache.appDelegate.storiesCollection.toggleStoryUnread(story.dictionary)
-                cache.appDelegate.feedDetailViewController.reload()
-            },
-            feedback: true
-        )
-        
         ZStack(alignment: .leading) {
             if story.isSelected || cache.isGrid {
                 RoundedRectangle(cornerRadius: 10).foregroundColor(highlightColor)
@@ -117,8 +62,6 @@ struct CardView: View {
         .onTapGesture {
             feedDetailInteraction.tapped(story: story)
         }
-        .swipeCell(cellPosition: .both, leftSlot: SwipeCellSlot(slots: [swipeSaveButton], slotStyle: .destructive, buttonWidth: 80), rightSlot: SwipeCellSlot(slots: [swipeReadButton], slotStyle: .destructive, buttonWidth: 80))
-        .dismissSwipeCellForScrollViewForLazyVStack()
         .contextMenu {
             Button {
                 cache.appDelegate.storiesCollection.toggleStoryUnread(story.dictionary)

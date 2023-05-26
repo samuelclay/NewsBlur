@@ -12,14 +12,17 @@
 #import "Utilities.h"
 #import "NBNotifier.h"
 #import "MCSwipeTableViewCell.h"
+#import "FeedDetailTableCell.h"
 
 @class NewsBlurAppDelegate;
 @class MCSwipeTableViewCell;
-@class FeedDetailCollectionCell;
 
 @interface FeedDetailObjCViewController : BaseViewController
-<UIPopoverControllerDelegate,
-UIGestureRecognizerDelegate, UISearchBarDelegate> {
+<UITableViewDelegate, UITableViewDataSource,
+ UIPopoverControllerDelegate,
+ MCSwipeTableViewCellDelegate,
+ UIGestureRecognizerDelegate, UISearchBarDelegate,
+ UITableViewDragDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     BOOL pageFetching;
@@ -30,12 +33,14 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
     BOOL inDoubleTap;
     BOOL invalidateFontCache;
      
+    UITableView * storyTitlesTable;
     UIBarButtonItem * feedMarkReadButton;
     Class popoverClass;
     NBNotifier *notifier;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic, strong) IBOutlet UITableView *storyTitlesTable;
 @property (nonatomic) IBOutlet UIBarButtonItem * feedMarkReadButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * feedsBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * settingsBarButton;
@@ -53,12 +58,14 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 //@property (nonatomic, readonly) NSIndexPath *selectedIndexPath;
 @property (nonatomic) CGFloat storyHeight;
 @property (nonatomic, readonly) BOOL canPullToRefresh;
+@property (nonatomic, readonly) BOOL isLegacyTable;
 
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
 @property (nonatomic, readwrite) BOOL finishedAnimatingIn;
 @property (nonatomic, readwrite) BOOL isOnline;
 @property (nonatomic, readwrite) BOOL isShowingFetching;
+@property (nonatomic) FeedDetailTextSize textSize;
 @property (nonatomic, readwrite) BOOL showImagePreview;
 @property (nonatomic, readwrite) BOOL invalidateFontCache;
 @property (nonatomic, readwrite) BOOL cameFromFeedsList;
@@ -66,6 +73,7 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 //- (void)changedStoryHeight:(CGFloat)storyHeight;
 - (void)changedLayout;
 - (void)reload;
+- (void)reloadTable;
 - (void)reloadIndexPath:(NSIndexPath *)indexPath;
 - (void)reloadWithSizing;
 - (void)resetFeedDetail;
@@ -79,7 +87,7 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)flashInfrequentStories;
 - (void)gotoFolder:(NSString *)folder feedID:(NSString *)feedID;
 
-- (CGFloat)heightForRowAtIndexPath:(NSIndexPath *)indexPath;
+//- (CGFloat)heightForRowAtIndexPath:(NSIndexPath *)indexPath;
 
 //- (void)prepareFeedCell:(FeedDetailCollectionCell *)cell indexPath:(NSIndexPath *)indexPath;
 //- (void)prepareStoryCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath;
