@@ -11,6 +11,8 @@ import SwiftUI
 /// A protocol of interaction between a card in the grid, and the enclosing feed detail view controller.
 protocol FeedDetailInteraction {
     var storyHeight: CGFloat { get }
+    var hasNoMoreStories: Bool { get }
+    var isPremiumRestriction: Bool { get }
     
     func pullToRefresh()
     func visible(story: Story)
@@ -63,7 +65,7 @@ struct FeedDetailGridView: View {
                     LazyVGrid(columns: columns, spacing: cache.isGrid ? 20 : 0) {
                         Section {
                             ForEach(cache.before, id: \.id) { story in
-                                makeCardView(for: story, cache: cache, reader: reader)
+                                makeCardView(for: story, reader: reader)
                             }
                         }
                         
@@ -71,17 +73,15 @@ struct FeedDetailGridView: View {
                             EmptyView()
                                 .id(storyViewID)
                         } else if let story = cache.selected {
-                            makeCardView(for: story, cache: cache, reader: reader)
+                            makeCardView(for: story, reader: reader)
                                 .id(story.id)
                         }
                         
-                        Section(header: makeStoryView(cache: cache)) {
+                        Section(header: makeStoryView(), footer: makeLoadingView()) {
                             ForEach(cache.after, id: \.id) { story in
-                                makeCardView(for: story, cache: cache, reader: reader)
+                                makeCardView(for: story, reader: reader)
                             }
                         }
-                        
-                        makeLoadingView(cache: cache)
                     }
                     .onChange(of: cache.selected) { [oldSelected = cache.selected] newSelected in
                         guard let newSelected, oldSelected?.hash != newSelected.hash else {
@@ -126,7 +126,7 @@ struct FeedDetailGridView: View {
     }
     
     @ViewBuilder
-    func makeCardView(for story: Story, cache: StoryCache, reader: GeometryProxy) -> some View {
+    func makeCardView(for story: Story, reader: GeometryProxy) -> some View {
         CardView(feedDetailInteraction: feedDetailInteraction, cache: cache, story: loaded(story: story))
             .transformAnchorPreference(key: CardKey.self, value: .bounds) {
                 $0.append(CardFrame(id: "\(story.id)", frame: reader[$1]))
@@ -149,18 +149,16 @@ struct FeedDetailGridView: View {
     }
     
     @ViewBuilder
-    func makeStoryView(cache: StoryCache) -> some View {
+    func makeStoryView() -> some View {
         if cache.isGrid, !cache.isPhone, let story = cache.selected {
             StoryView(cache: cache, story: loaded(story: story), interaction: feedDetailInteraction)
         }
     }
     
     @ViewBuilder
-    func makeLoadingView(cache: StoryCache) -> some View {
-        ProgressView()
-            .progressViewStyle(CircularProgressViewStyle(tint: cache.isDarkTheme ? .white : .black))
-            .scaleEffect(2)
-            .frame(height: 100)
+    func makeLoadingView() -> some View {
+        FeedDetailLoadingView(feedDetailInteraction: feedDetailInteraction, cache: cache)
+            .id(UUID())
     }
     
     func loaded(story: Story) -> Story {

@@ -353,6 +353,19 @@ extension FeedDetailViewController {
 }
 
 extension FeedDetailViewController: FeedDetailInteraction {
+    var hasNoMoreStories: Bool {
+        return pageFinished
+    }
+    
+    var isPremiumRestriction: Bool {
+        return !appDelegate.isPremium &&
+        storiesCollection.isRiverView &&
+        !storiesCollection.isReadView &&
+        !storiesCollection.isWidgetView &&
+        !storiesCollection.isSocialView &&
+        !storiesCollection.isSavedView
+    }
+    
     func pullToRefresh() {
         instafetchFeed()
     }
