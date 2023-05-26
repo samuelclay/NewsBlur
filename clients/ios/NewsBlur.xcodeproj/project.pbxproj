@@ -725,6 +725,8 @@
 		17813FB723AC6E450057FB16 /* WidgetErrorTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17CE3F0523AC529B003152EF /* WidgetErrorTableViewCell.xib */; };
 		178552492A1F115800A8CD92 /* FeedDetailTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 178552472A1F115800A8CD92 /* FeedDetailTableCell.m */; };
 		1785524A2A1F115800A8CD92 /* FeedDetailTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 178552472A1F115800A8CD92 /* FeedDetailTableCell.m */; };
+		1785524C2A21693300A8CD92 /* FeedDetailLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1785524B2A21693300A8CD92 /* FeedDetailLoadingView.swift */; };
+		1785524D2A21693300A8CD92 /* FeedDetailLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1785524B2A21693300A8CD92 /* FeedDetailLoadingView.swift */; };
 		1787083024F8B3A50000C82B /* StoryDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1787082F24F8B3A50000C82B /* StoryDetailViewController.swift */; };
 		17876B9E1C9911D40055DD15 /* g_icn_folder_rss_sm.png in Resources */ = {isa = PBXBuildFile; fileRef = 17876B9A1C9911D40055DD15 /* g_icn_folder_rss_sm.png */; };
 		17876B9F1C9911D40055DD15 /* g_icn_folder_rss_sm@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17876B9B1C9911D40055DD15 /* g_icn_folder_rss_sm@2x.png */; };
@@ -1477,6 +1479,7 @@
 		177D017C28B05D9500F2F2DB /* StoryPagesCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPagesCollectionCell.swift; sourceTree = "<group>"; };
 		178552472A1F115800A8CD92 /* FeedDetailTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailTableCell.m; sourceTree = "<group>"; };
 		178552482A1F115800A8CD92 /* FeedDetailTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailTableCell.h; sourceTree = "<group>"; };
+		1785524B2A21693300A8CD92 /* FeedDetailLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailLoadingView.swift; sourceTree = "<group>"; };
 		1787082F24F8B3A50000C82B /* StoryDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryDetailViewController.swift; sourceTree = "<group>"; };
 		17876B9A1C9911D40055DD15 /* g_icn_folder_rss_sm.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_folder_rss_sm.png; sourceTree = "<group>"; };
 		17876B9B1C9911D40055DD15 /* g_icn_folder_rss_sm@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "g_icn_folder_rss_sm@2x.png"; sourceTree = "<group>"; };
@@ -2696,6 +2699,7 @@
 				FF4D9074265BE13500792DB3 /* FeedDetailObjCViewController.h */,
 				FF4D9073265BE13500792DB3 /* FeedDetailObjCViewController.m */,
 				1737A9E12979EA8700E84348 /* FeedDetailGridView.swift */,
+				1785524B2A21693300A8CD92 /* FeedDetailLoadingView.swift */,
 				172ECBF9298B1481006371BC /* FeedDetailCardView.swift */,
 				172ECBFC298B14B1006371BC /* FeedDetailStoryView.swift */,
 				178552482A1F115800A8CD92 /* FeedDetailTableCell.h */,
@@ -4880,6 +4884,7 @@
 				1757924D2930605500490924 /* Utilities.m in Sources */,
 				1757924E2930605500490924 /* ImportExportPreferences.swift in Sources */,
 				1757924F2930605500490924 /* BaseViewController.m in Sources */,
+				1785524D2A21693300A8CD92 /* FeedDetailLoadingView.swift in Sources */,
 				175792502930605500490924 /* IASKSwitch.m in Sources */,
 				175792512930605500490924 /* NBBarButtonItem.m in Sources */,
 				175792522930605500490924 /* MoveSiteViewController.m in Sources */,
@@ -5061,6 +5066,7 @@
 				FFE5322F144C8AC300ACFDE0 /* Utilities.m in Sources */,
 				17731A9D23DFAD3D00759A7D /* ImportExportPreferences.swift in Sources */,
 				FFD1D7311459B63500E46F89 /* BaseViewController.m in Sources */,
+				1785524C2A21693300A8CD92 /* FeedDetailLoadingView.swift in Sources */,
 				FF34FD6D1E9D93CB0062F8ED /* IASKSwitch.m in Sources */,
 				FF9B8BB217F2351A0036A41C /* NBBarButtonItem.m in Sources */,
 				FF2D8CE514893BC000057B80 /* MoveSiteViewController.m in Sources */,
