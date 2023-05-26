@@ -183,8 +183,8 @@ struct CardContentView: View {
                     Image(uiImage: unreadImage)
                         .resizable()
                         .opacity(story.isRead ? 0.15 : 1)
-                        .frame(width: 16, height: 16)
-                        .padding(.top, 3)
+                        .frame(width: 10, height: 10)
+                        .padding(.top, 6)
                 }
                 
                 VStack(alignment: .leading) {
@@ -215,7 +215,7 @@ struct CardContentView: View {
                     
                     if cache.isGrid || cache.settings.content != .title {
                         Text(story.content)
-                            .font(font(named: "WhitneySSm-Book", size: 13))
+                            .font(font(named: "WhitneySSm-Book", size: 15))
                             .foregroundColor(contentColor)
                             .lineLimit(cache.isGrid ? StorySettings.Content.contentLimit : cache.settings.content.limit)
                             .truncationMode(.tail)
