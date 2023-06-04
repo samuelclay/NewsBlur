@@ -62,15 +62,14 @@ public class WidgetConfig extends FeedChooser {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_select_all:
-                selectAllFeeds();
-                return true;
-            case R.id.menu_select_none:
-                replaceWidgetFeedIds(Collections.emptySet());
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.menu_select_all) {
+            selectAllFeeds();
+            return true;
+        } else if (item.getItemId() == R.id.menu_select_none) {
+            replaceWidgetFeedIds(Collections.emptySet());
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 

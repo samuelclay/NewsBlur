@@ -59,15 +59,14 @@ public class MuteConfig extends FeedChooser implements MuteConfigAdapter.FeedSta
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_mute_all:
-                setFeedsState(true);
-                return true;
-            case R.id.menu_mute_none:
-                setFeedsState(false);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.menu_mute_all) {
+            setFeedsState(true);
+            return true;
+        } else if (item.getItemId() == R.id.menu_mute_none) {
+            setFeedsState(false);
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 
