@@ -3,6 +3,7 @@ package com.newsblur.service;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.ExtensionsKt;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
@@ -26,7 +27,7 @@ public class UnreadsService extends SubService {
     static { StoryHashQueue = new ArrayList<String>(); }
 
     public UnreadsService(NBSyncService parent) {
-        super(parent);
+        super(parent, ExtensionsKt.NBScope);
     }
 
     @Override

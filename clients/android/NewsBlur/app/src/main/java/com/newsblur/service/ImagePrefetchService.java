@@ -3,6 +3,7 @@ package com.newsblur.service;
 import android.util.Log;
 
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.ExtensionsKt;
 import com.newsblur.util.PrefsUtils;
 
 import java.util.Collections;
@@ -19,7 +20,7 @@ public class ImagePrefetchService extends SubService {
     static Set<String> ThumbnailQueue = Collections.synchronizedSet(new HashSet<>());
 
     public ImagePrefetchService(NBSyncService parent) {
-        super(parent);
+        super(parent, ExtensionsKt.NBScope);
     }
 
     @Override
