@@ -42,7 +42,8 @@ struct CardView: View {
                     
                     CardContentView(cache: cache, story: story)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-                        .padding([.leading, .trailing], 15)
+                        .padding(.leading, cache.settings.spacing == .compact ? 8 : 14)
+                        .padding(.trailing, cache.settings.spacing == .compact ? 6 : 8)
                         .padding([.top, .bottom], cache.settings.spacing == .compact ? 10 : 15)
                     
                     if !cache.isGrid, !cache.settings.preview.isLeft, let previewImage {
@@ -169,7 +170,7 @@ struct CardContentView: View {
                     Image(uiImage: feedImage)
                         .resizable()
                         .frame(width: 16, height: 16)
-                        .padding(.leading, 24)
+                        .padding(.leading, cache.settings.spacing == .compact ? 20 : 24)
                     
                     Text(story.feedName)
                         .font(font(named: "WhitneySSm-Medium", size: 12))
@@ -184,7 +185,8 @@ struct CardContentView: View {
                         .resizable()
                         .opacity(story.isRead ? 0.15 : 1)
                         .frame(width: 10, height: 10)
-                        .padding(.top, 6)
+                        .padding(.top, 4)
+                        .padding(.leading, 5)
                 }
                 
                 VStack(alignment: .leading) {
@@ -229,7 +231,7 @@ struct CardContentView: View {
                         .font(font(named: "WhitneySSm-Medium", size: 12))
                         .foregroundColor(dateAndAuthorColor)
                         .padding(.top, 5)
-                }
+                }.padding(.leading, -4)
             }
         }
     }
