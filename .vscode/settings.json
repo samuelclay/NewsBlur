@@ -37,4 +37,5 @@
     "nrf-connect.toolchain.path": "${nrf-connect.toolchain:1.9.1}",
     "C_Cpp.default.configurationProvider": "nrf-connect",
     "editor.formatOnSave": false,
+    "ansible.python.interpreterPath": "/opt/homebrew/bin/python3",
 }
