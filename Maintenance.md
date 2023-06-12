@@ -137,6 +137,9 @@ Provision a new mongo server, replicate the data, take newsblur down for mainten
    make plan
    make apply
    make firewall
+   ./utils/ssh.sh db-mongo-primary1
+      docker exec -it mongo mongo
+      mongo> rs.add("db-mongo-primary1.node.nyc1.consul:27017")
    # Wait for mongo to synbc, takes 4-5 hours
    make celery_stop
    make maintenance_on
