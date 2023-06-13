@@ -218,21 +218,6 @@
     [[ThemeManager themeManager] prepareForWindow:self.window];
     
     [self createDatabaseConnection];
-    [self.cachedStoryImages removeAllObjects:nil];
-    [feedsViewController view];
-    [feedsViewController loadOfflineFeeds:NO];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
-                                             (unsigned long)NULL), ^(void) {
-        [self setupReachability];
-        self.cacheImagesOperationQueue = [NSOperationQueue new];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            self.cacheImagesOperationQueue.maxConcurrentOperationCount = 2;
-        } else {
-            self.cacheImagesOperationQueue.maxConcurrentOperationCount = 1;
-        }
-    });
-
-//    [self showFirstTimeUser];
     
     cachedFavicons = [[PINCache alloc] initWithName:@"NBFavicons"];
     cachedFavicons.memoryCache.removeAllObjectsOnEnteringBackground = NO;
@@ -246,6 +231,21 @@
     [NSURLCache setSharedURLCache:urlCache];
     // Uncomment below line to test image caching
 //    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
+    [feedsViewController view];
+    [feedsViewController loadOfflineFeeds:NO];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [self setupReachability];
+        self.cacheImagesOperationQueue = [NSOperationQueue new];
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            self.cacheImagesOperationQueue.maxConcurrentOperationCount = 2;
+        } else {
+            self.cacheImagesOperationQueue.maxConcurrentOperationCount = 1;
+        }
+    });
+    
+//    [self showFirstTimeUser];
     
     return YES;
 }
