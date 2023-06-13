@@ -192,7 +192,7 @@ resource "digitalocean_droplet" "blog" {
 }
 
 resource "digitalocean_droplet" "staging-web" {
-  count    = 3
+  count    = 1
   image    = var.droplet_os
   name     = count.index == 0 ? "staging-web" : "staging-web${count.index + 1}"
   region   = var.droplet_region
