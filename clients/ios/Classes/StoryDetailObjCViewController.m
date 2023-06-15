@@ -508,6 +508,25 @@
                          contentWidthClass, (int)floorf(CGRectGetWidth(self.view.frame))];
 #endif
     
+    if (appDelegate.feedsViewController.isOffline) {
+        NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
+        NSArray *imageUrls = [appDelegate.activeCachedImages objectForKey:storyHash];
+        if (imageUrls) {
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+            NSString *storyImagesDirectory = [[paths objectAtIndex:0]
+                                              stringByAppendingPathComponent:@"story_images"];
+            for (NSString *imageUrl in imageUrls) {
+                NSURL *cachedUrl = [NSURL fileURLWithPath:storyImagesDirectory];
+                cachedUrl = [cachedUrl URLByAppendingPathComponent:[Utilities md5:imageUrl]];
+                cachedUrl = [cachedUrl URLByAppendingPathExtension:imageUrl.pathExtension];
+                
+                storyContent = [storyContent
+                                stringByReplacingOccurrencesOfString:imageUrl
+                                withString:cachedUrl.absoluteString];
+            }
+        }
+    }
+    
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [self.activeStory
                             objectForKey:@"story_feed_id"]];
