@@ -2753,14 +2753,18 @@
                [folderName isEqual:@"infrequent"] ||
                (!folderName && ([storiesCollection.activeFolder isEqual:@"everything"] ||
                                 [storiesCollection.activeFolder isEqual:@"infrequent"]))) {
+        NSMutableSet *uniqueFeeds = [NSMutableSet new];
         for (NSArray *folder in [self.dictFolders allValues]) {
             for (id feedId in folder) {
                 if ([feedId isKindOfClass:[NSString class]] && [feedId startsWith:@"saved:"]) {
                     // Skip saved feeds which have fake unread counts.
                     continue;
                 }
-                [counts addCounts:[self splitUnreadCountForFeed:feedId]];
+                [uniqueFeeds addObject:feedId];
             }
+        }
+        for (NSString *feedId in uniqueFeeds) {
+            [counts addCounts:[self splitUnreadCountForFeed:feedId]];
         }
     } else {
         if (!folderName) {
