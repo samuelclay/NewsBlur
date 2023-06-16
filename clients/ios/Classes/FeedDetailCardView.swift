@@ -53,6 +53,9 @@ struct CardView: View {
             }
         }
         .opacity(story.isRead ? 0.7 : 1)
+//        .overlay( RoundedRectangle(cornerRadius: 10)
+//            .opacity(story.isRead ? 0.2 : 0)
+//            .animation(.spring()) )
         .if(cache.isGrid || story.isSelected) { view in
             view.clipShape(RoundedRectangle(cornerRadius: 10))
         }

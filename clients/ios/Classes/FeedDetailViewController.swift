@@ -129,6 +129,9 @@ class FeedDetailViewController: FeedDetailObjCViewController {
 //
 //        feedCollectionView.setNeedsLayout()
         
+        // Make sure the view has loaded.
+        _ = view
+        
         storyTitlesTable.isHidden = !isLegacyTable
         gridViewController.view.isHidden = isLegacyTable
         
@@ -405,6 +408,21 @@ extension FeedDetailViewController: FeedDetailInteraction {
             print("marking as read '\(story.title)'")
             
             storiesCollection.markStoryRead(dict)
+            storiesCollection.syncStory(asRead: dict)
+            
+            story.load()
+            
+            deferredReload()
+        }
+    }
+    
+    func unread(story: Story) {
+        let dict = story.dictionary
+        
+        if !storiesCollection.isStoryUnread(dict) {
+            print("marking as unread '\(story.title)'")
+            
+            storiesCollection.markStoryUnread(dict)
             storiesCollection.syncStory(asRead: dict)
             
             story.load()
