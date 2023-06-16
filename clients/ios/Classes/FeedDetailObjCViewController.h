@@ -58,6 +58,7 @@
 //@property (nonatomic, readonly) NSIndexPath *selectedIndexPath;
 @property (nonatomic) CGFloat storyHeight;
 @property (nonatomic, readonly) BOOL canPullToRefresh;
+@property (nonatomic, readonly) BOOL isMarkReadOnScroll;
 @property (nonatomic, readonly) BOOL isLegacyTable;
 
 @property (nonatomic, readwrite) BOOL pageFetching;

@@ -13,12 +13,14 @@ protocol FeedDetailInteraction {
     var storyHeight: CGFloat { get }
     var hasNoMoreStories: Bool { get }
     var isPremiumRestriction: Bool { get }
+    var isMarkReadOnScroll: Bool { get }
     
     func pullToRefresh()
     func visible(story: Story)
     func tapped(story: Story)
     func reading(story: Story)
     func read(story: Story)
+    func unread(story: Story)
     func hid(story: Story)
 }
 
@@ -63,23 +65,40 @@ struct FeedDetailGridView: View {
             ScrollView {
                 ScrollViewReader { scroller in
                     LazyVGrid(columns: columns, spacing: cache.isGrid ? 20 : 0) {
-                        Section {
-                            ForEach(cache.before, id: \.id) { story in
-                                makeCardView(for: story, reader: reader)
+                        if cache.isPhone {
+                            Section(footer: makeLoadingView()) {
+                                ForEach(cache.before, id: \.id) { story in
+                                    makeCardView(for: story, reader: reader)
+                                }
+                                
+                                if let story = cache.selected {
+                                    makeCardView(for: story, reader: reader)
+                                        .id(story.id)
+                                }
+                                
+                                ForEach(cache.after, id: \.id) { story in
+                                    makeCardView(for: story, reader: reader)
+                                }
                             }
-                        }
-                        
-                        if cache.isGrid && !cache.isPhone {
-                            EmptyView()
-                                .id(storyViewID)
-                        } else if let story = cache.selected {
-                            makeCardView(for: story, reader: reader)
-                                .id(story.id)
-                        }
-                        
-                        Section(header: makeStoryView(), footer: makeLoadingView()) {
-                            ForEach(cache.after, id: \.id) { story in
+                        } else {
+                            Section {
+                                ForEach(cache.before, id: \.id) { story in
+                                    makeCardView(for: story, reader: reader)
+                                }
+                            }
+                            
+                            if cache.isGrid && !cache.isPhone {
+                                EmptyView()
+                                    .id(storyViewID)
+                            } else if let story = cache.selected {
                                 makeCardView(for: story, reader: reader)
+                                    .id(story.id)
+                            }
+                            
+                            Section(header: makeStoryView(), footer: makeLoadingView()) {
+                                ForEach(cache.after, id: \.id) { story in
+                                    makeCardView(for: story, reader: reader)
+                                }
                             }
                         }
                     }
@@ -134,10 +153,12 @@ struct FeedDetailGridView: View {
             .onPreferenceChange(CardKey.self) {
                 print("pref change for '\(story.title)': \($0)")
                 
-                if let value = $0.first, value.frame.minY < -(value.frame.size.height / 2) {
+                if feedDetailInteraction.isMarkReadOnScroll, let value = $0.first, value.frame.minY < -(value.frame.size.height / 2) {
                     print("pref '\(story.title)': scrolled off the top")
                     
-                    feedDetailInteraction.read(story: story)
+//                    withAnimation(Animation.spring().delay(2)) {
+                        feedDetailInteraction.read(story: story)
+//                    }
                 }
             }
             .onAppear {
@@ -146,6 +167,19 @@ struct FeedDetailGridView: View {
             .if(cache.isGrid) { view in
                 view.frame(height: cardHeight)
             }
+            .gesture(DragGesture(minimumDistance: 50.0, coordinateSpace: .local)
+                .onEnded { value in
+                    switch(value.translation.width, value.translation.height) {
+                        case (...0, -30...30):
+                            feedDetailInteraction.read(story: story)
+                        case (0..., -30...30):
+                            feedDetailInteraction.unread(story: story)
+//                        case (-100...100, ...0):  print("up swipe")
+//                        case (-100...100, 0...):  print("down swipe")
+                        default:  break
+                    }
+                }
+            )
     }
     
     @ViewBuilder

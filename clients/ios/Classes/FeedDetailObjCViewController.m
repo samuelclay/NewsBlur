@@ -55,7 +55,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 
 @property (nonatomic) NSInteger oldLocation;
 @property (nonatomic) NSUInteger scrollingMarkReadRow;
-@property (nonatomic, readonly) BOOL isMarkReadOnScroll;
 @property (readwrite) BOOL inPullToRefresh_;
 @property (nonatomic, strong) NSString *restoringFolder;
 @property (nonatomic, strong) NSString *restoringFeedID;
@@ -3073,7 +3072,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
-    [self.storyTitlesTable reloadData];
+    
+    [self reload];
 }
 
 #pragma mark -

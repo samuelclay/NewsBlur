@@ -397,18 +397,27 @@ class DetailViewController: BaseViewController {
             }
         }
         
-        adjustTopConstraint()
+        coordinator.animate { context in
+            self.adjustTopConstraint()
+        }
     }
     
     private func adjustTopConstraint() {
+        guard let scene = view.window?.windowScene else {
+            return
+        }
+        
         if !isPhone {
-            if view.window?.windowScene?.traitCollection.horizontalSizeClass == .compact {
+            if scene.traitCollection.horizontalSizeClass == .compact {
                 topContainerTopConstraint.constant = -50
             } else {
                 topContainerTopConstraint.constant = 0
             }
         } else if let controller = storyPagesViewController, !controller.isNavigationBarHidden {
-            topContainerTopConstraint.constant = -44
+            let navigationHeight = navigationController?.navigationBar.frame.height ?? 0
+            let adjustment: CGFloat = view.safeAreaInsets.top > 25 ? 5 : 0
+            
+            topContainerTopConstraint.constant = -(navigationHeight - adjustment)
         } else {
             topContainerTopConstraint.constant = 0
         }
