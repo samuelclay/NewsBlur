@@ -827,7 +827,7 @@
     [self.premiumViewController.view setNeedsLayout];
 }
 
-- (void)updateSplitBehavior {
+- (void)updateSplitBehavior:(BOOL)refresh {
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *behavior = [preferences stringForKey:@"split_behavior"];
     
@@ -855,7 +855,9 @@
         }
     }
     
-    [storyPagesViewController refreshPages];
+    if (refresh) {
+        [storyPagesViewController refreshPages];
+    }
 }
 
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController {
@@ -865,7 +867,7 @@
     
     [menuViewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         [UIView animateWithDuration:0.5 animations:^{
-            [self updateSplitBehavior];
+            [self updateSplitBehavior:YES];
         }];
         [self.detailViewController updateLayoutWithReload:NO];
     }];
@@ -1185,7 +1187,7 @@
     self.firstTimeUserAddFriendsViewController = [FirstTimeUserAddFriendsViewController new];
     self.firstTimeUserAddNewsBlurViewController = [FirstTimeUserAddNewsBlurViewController new];
     
-    [self updateSplitBehavior];
+    [self updateSplitBehavior:NO];
 }
 
 - (void)showLogin {

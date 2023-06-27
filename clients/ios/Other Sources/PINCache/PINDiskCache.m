@@ -661,6 +661,12 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
     [self lock];
         fileURL = [self encodedFileURLForKey:key];
         object = nil;
+    
+//    #warning hack; this will simulate issue #1797
+//    fileURL = nil;
+    
+    #warning tracing issue #1797
+    NSLog(@"🌄 key: %@, URL: %@, %@", key, fileURL, [[NSFileManager defaultManager] fileExistsAtPath:[fileURL path]] ? @"exists" : @"doesn't exist");  // log
         
         if ([[NSFileManager defaultManager] fileExistsAtPath:[fileURL path]] &&
             // If the cache should behave like a TTL cache, then only fetch the object if there's a valid ageLimit and  the object is still alive
