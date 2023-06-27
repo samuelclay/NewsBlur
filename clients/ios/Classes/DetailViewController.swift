@@ -309,6 +309,10 @@ class DetailViewController: BaseViewController {
     }
     
     private func adjustTopConstraint() {
+        guard topContainerTopConstraint != nil else {
+            return
+        }
+        
         if UIDevice.current.userInterfaceIdiom != .phone {
             if view.window?.windowScene?.traitCollection.horizontalSizeClass == .compact {
                 topContainerTopConstraint.constant = -50
@@ -393,7 +397,7 @@ private extension DetailViewController {
             
             dividerViewBottomConstraint.constant = dividerPosition
             
-            appDelegate.updateSplitBehavior()
+            appDelegate.updateSplitBehavior(true)
         }
         
         guard let storyPagesViewController else {

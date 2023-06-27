@@ -1359,7 +1359,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     }
     
     if ([identifier isEqualToString:@"split_behavior"]) {
-        [self.appDelegate updateSplitBehavior];
+        [self.appDelegate updateSplitBehavior:YES];
     } else if ([identifier isEqualToString:@"feed_list_sort_order"]) {
         [self.appDelegate reloadFeedsView:YES];
     } else if ([identifier isEqual:@"feed_list_font_size"]) {
