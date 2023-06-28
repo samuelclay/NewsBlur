@@ -897,8 +897,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && finished) {
         [self cacheFeedRowLocations];
     }
-    [self loadNotificationStory];
-
+    
+    if (!self.isOffline) {
+        [self loadNotificationStory];
+    }
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
 }
 
