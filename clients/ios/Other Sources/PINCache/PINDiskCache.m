@@ -303,6 +303,9 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
                                                    includingPropertiesForKeys:keys
                                                                       options:NSDirectoryEnumerationSkipsHiddenFiles
                                                                         error:&error];
+#warning tracing issue #1797
+    NSLog(@"🌄 %@ disk cache contains %@ files; error: %@", _name, @(files.count), error);  // log
+    
     PINDiskCacheError(error);
     
     for (NSURL *fileURL in files) {
@@ -666,7 +669,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 //    fileURL = nil;
     
     #warning tracing issue #1797
-    NSLog(@"🌄 key: %@, URL: %@, %@", key, fileURL, [[NSFileManager defaultManager] fileExistsAtPath:[fileURL path]] ? @"exists" : @"doesn't exist");  // log
+    NSLog(@"🌄 %@ key: %@, URL: %@ %@", _name, key, fileURL, [[NSFileManager defaultManager] fileExistsAtPath:[fileURL path]] ? @"✅" : @"🚫");  // log
         
         if ([[NSFileManager defaultManager] fileExistsAtPath:[fileURL path]] &&
             // If the cache should behave like a TTL cache, then only fetch the object if there's a valid ageLimit and  the object is still alive

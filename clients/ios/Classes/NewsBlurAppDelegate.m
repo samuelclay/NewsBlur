@@ -1446,6 +1446,9 @@
         [self endNetworkOperation:networkOperationIdentifier];
     }];
     
+//#warning tracing issue #1797
+//    NSLog(@"🌄 start network operation: %@", networkOperationIdentifier);  // log
+    
     if (backgroundTaskIdentifier != UIBackgroundTaskInvalid) {
         self.networkBackgroundTasks[networkOperationIdentifier] = @(backgroundTaskIdentifier);
     }
@@ -1457,6 +1460,9 @@
     UIBackgroundTaskIdentifier identifier = self.networkBackgroundTasks[networkOperationIdentifier].integerValue;
     
     if (identifier != UIBackgroundTaskInvalid) {
+//#warning tracing issue #1797 (commenting out -endBackgroundTask: to trigger eviction)
+//        NSLog(@"🌄 end network operation: %@", networkOperationIdentifier);  // log
+        
         [[UIApplication sharedApplication] endBackgroundTask:identifier];
     }
     
