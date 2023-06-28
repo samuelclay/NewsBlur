@@ -1396,14 +1396,14 @@ img.feed_favicon {
     background-image: linear-gradient(180deg, #F3F3EE, #f0f3ed);
 }
 
-.NB-feedbar .feed .feed_favicon {
+.NB-feedbar .feed > .feed_favicon {
     margin: 4px 4px 0 6px;
     vertical-align: top;
     float: left;
     width: 16px;
     height: 16px;
 }
-.NB-feedbar .feed.NB-feed-social .feed_favicon {
+.NB-feedbar .feed.NB-feed-social >.feed_favicon {
     border-radius: 3px;
 }
 .NB-feedbar .feed .feed_title,
@@ -1577,12 +1577,12 @@ img.feed_favicon {
   opacity: 0;
 }
 
-.NB-feedbar:hover .feed_favicon,
+.NB-feedbar:hover .feed > .feed_favicon,
 .NB-feedbar:hover .NB-folder-icon {
   display: none;
 }
 
-.NB-feedbar:hover .NB-no-hover .feed_favicon,
+.NB-feedbar:hover .feed.NB-no-hover .feed_favicon,
 .NB-feedbar:hover .NB-no-hover .NB-folder-icon {
   display: block;
 }
@@ -1650,7 +1650,7 @@ img.feed_favicon {
     text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
 }
 
-.NB-feedbar .NB-folder .feed_favicon {
+.NB-feedbar .NB-folder .NB-folder-icon .feed_favicon {
     vertical-align: text-bottom;
     width: 16px;
     height: 16px;
@@ -1663,6 +1663,38 @@ img.feed_favicon {
 .NB-feedbar .folder .NB-feedlist-collapse-icon,
 .NB-feeds-header .NB-feedlist-collapse-icon {
     display: none;
+}
+
+/* ================== */
+/* = Discover Feeds = */
+/* ================== */
+
+.NB-feedbar .NB-feedbar-discover-container {
+    float: right;
+    cursor: pointer;
+    color: rgba(0, 0, 0, .5);
+    border: 1px solid rgba(0, 0, 0, .1);
+    border-radius: 16px;
+    text-transform: uppercase;
+    font-size: 10px;
+    padding: 1px 8px;
+    line-height: 14px;
+    margin: 3px 12px 0;
+}
+.NB-feedbar .NB-feedbar-discover-container:hover {
+    background-color: rgba(0, 0, 0, .1);
+}
+.NB-feedbar .NB-feedbar-discover-container .feed_favicon {
+    width: 12px;
+    height: 12px;
+    display: block;
+    float: left;
+    margin: 1px 2px 1px 0;
+    filter: grayscale();
+    transition: filter 0.2s ease-in-out;
+}
+.NB-feedbar:hover .NB-feedbar-discover-container .feed_favicon {
+    filter: none;
 }
 
 /* ============================= */
