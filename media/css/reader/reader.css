@@ -3578,6 +3578,8 @@ body {
     color: #757B6B;
 /*    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);*/
     margin: 6px 8px 0 0;
+    flex: none;
+    align-self: start;
 }
 .NB-theme-size-xs .NB-feed-story .NB-feed-story-author-wrapper {
     font-size: 10px;
@@ -3602,6 +3604,7 @@ body {
 }
 .NB-feed-story .NB-feed-story-author {
     cursor: pointer;
+    flex: none;
 }
 .NB-feed-story .NB-feed-story-author.NB-score-1 {
     color: #34912E;
@@ -3637,47 +3640,43 @@ body {
 
 .NB-feed-story .NB-feed-story-tags {
     margin: 7px 0 6px;
+    padding-left: 12px;
 }
 .NB-feed-story .NB-feed-story-tags .NB-middot {
     color: #A0A0A0;
     font-size: 10px;
     padding-right: 8px;
-    margin-top: 6px;
     float: left;
+    margin-left: -12px;
     font-weight: normal;
 }
 .NB-feed-story .NB-feed-story-tag {
     /* Grey */
-/*    float: left;*/
     display: inline-block;
     cursor: pointer;
     font-weight: normal;
-    font-size: 10px;
+    font-size: 12px;
     border-radius: 4px;
     
     padding: 1px 5px;
-    margin: 8px 4px 0 0;
+    margin: 0 4px 4px 0;
     line-height: 14px;
     background-color: rgba(0, 0, 0, .1);
     color: #959B8B;
-/*    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);*/
     border: 1px solid transparent;
     border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
 } 
 .NB-theme-size-xs .NB-feed-story .NB-feed-story-tag {
     font-size: 9px;
-    margin-top: 5px;
 }
 .NB-theme-size-s .NB-feed-story .NB-feed-story-tag {
-    margin-top: 7px;
+    font-size: 10px;
 }
 .NB-theme-size-l .NB-feed-story .NB-feed-story-tag {
-    margin-top: 10px;
-    font-size: 11px;
+    font-size: 13px;
 }
 .NB-theme-size-xl .NB-feed-story .NB-feed-story-tag {
-    margin-top: 13px;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .NB-feed-story .NB-feed-story-tag:first-child {
@@ -3749,6 +3748,8 @@ body {
 /*    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);*/
     font-weight: normal;
     margin: 6px 8px 0 0;
+    flex: none;
+    align-self: start;
 }
 .NB-theme-size-xs .NB-feed-story .NB-feed-story-date {
     font-size: 10px;
@@ -3768,6 +3769,7 @@ body {
 }
 .NB-feed-story .NB-feed-story-header .NB-feed-story-date-line {
     clear: left;
+    display: flex;
 }
 .NB-pref-story-position-center .NB-feed-story .NB-feed-story-header .NB-feed-story-date-line {
     margin: 0 auto;
@@ -3788,6 +3790,8 @@ body {
     background: transparent url('/media/embed/icons/circular/g_icn_modified.png') no-repeat 0 center;
     background-size: 16px;
     cursor: pointer;
+    flex: none;
+    align-self: start;
 }
 .NB-theme-size-xs .NB-feed-story-header .NB-feed-story-show-changes {
     font-size: 10px;
@@ -3816,16 +3820,20 @@ body {
     display: block;
     clear: both;
     margin: 6px 0 0;
+    flex: none;
+    align-self: flex-start;
 }
 .NB-feed-story .NB-feed-story-header .NB-feed-story-starred-date .NB-icon {
     background: transparent url('/media/embed/icons/nouns/saved-stories.svg') no-repeat 0 2px;
     background-size: 16px;
     height: 16px;
-    margin-top: 6px;
     display: inline-block;
     vertical-align: text-bottom;
     color: #9B9D97;
     padding-left: 20px;
+}
+.NB-feed-story .NB-feed-story-header .NB-feed-story-starred-date .NB-title {
+    color: #9B9D97;
 }
 .NB-theme-size-xs .NB-feed-story-header .NB-feed-story-starred-date {
     font-size: 10px;
