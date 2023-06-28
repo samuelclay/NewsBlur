@@ -898,7 +898,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self cacheFeedRowLocations];
     }
     
-    if (!self.isOffline) {
+    if (appDelegate.pendingFolder != nil) {
+        if ([appDelegate splitUnreadCountForFolder:appDelegate.pendingFolder].nt > 0) {
+            [self loadNotificationStory];
+        }
+    } else {
         [self loadNotificationStory];
     }
     
@@ -2852,8 +2856,23 @@ heightForHeaderInSection:(NSInteger)section {
     
     [userInfoView addSubview:userAvatarButton];
     
+    
+#warning tracing issue #1797
+    NSString *rootPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *PINDiskCachePrefix = @"com.pinterest.PINDiskCache";
+    NSString *cacheName = @"NBFavicons";
+    NSString *pathComponent = [[NSString alloc] initWithFormat:@"%@.%@", PINDiskCachePrefix, cacheName];
+    NSURL *cacheURL = [NSURL fileURLWithPathComponents:@[ rootPath, pathComponent ]];
+    NSError *error = nil;
+    NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:cacheURL
+                                                   includingPropertiesForKeys:nil
+                                                                      options:NSDirectoryEnumerationSkipsHiddenFiles
+                                                                        error:&error];
+    NSLog(@"🌄 %@ disk cache contains %@ files; error: %@", cacheName, @(files.count), error);  // log
+    
+    
     userLabel = [[UILabel alloc] initWithFrame:CGRectMake(50, yOffset, userInfoView.frame.size.width, 16)];
-    userLabel.text = appDelegate.activeUsername;
+    userLabel.text = [NSString stringWithFormat:@"%@ — 🌄 %@ icons", appDelegate.activeUsername, @(files.count)]; // appDelegate.activeUsername;
     userLabel.font = userLabelFont;
     userLabel.textColor = UIColorFromRGB(0x404040);
     userLabel.backgroundColor = [UIColor clearColor];
