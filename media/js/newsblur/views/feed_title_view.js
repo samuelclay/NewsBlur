@@ -18,6 +18,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         "click .NB-feedlist-manage-icon"            : "show_manage_menu",
         "click .feed_favicon"                       : "show_manage_menu",
         "click .NB-feedbar-options"                 : "open_options_popover",
+        "click .NB-feedbar-discover-container"      : "open_discover_popover",
         "click"                                     : "open",
         "mousedown"                                 : "highlight_event",
         "mouseenter"                                : "add_hover_inverse",
@@ -115,6 +116,11 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                   <div class="NB-story-title-indicator-count"></div>\
                   <span class="NB-story-title-indicator-text">show hidden stories</span>\
               </div>\
+              <div class="NB-feedbar-discover-container">\
+                <% _.map(feed.get("discover_feeds"), (feed_id) => { %>\
+                    <img class="feed_favicon" src="<%= $.favicon(feed_id) %>">\
+                <% }); %>\
+              </div >\
           <% } %>\
           <img class="feed_favicon" src="<%= $.favicon(feed) %>" <% if (type == "story") { %>role="button"<% } %>>\
           <span class="feed_title">\
@@ -292,7 +298,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         $(this.el).removeClass("unread_positive unread_neutral unread_negative unread_starred");
         $(this.el).addClass(extra_classes);
     },
-    
+
     // ==========
     // = Events =
     // ==========
@@ -507,6 +513,13 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     open_options_popover: function() {
         NEWSBLUR.FeedOptionsPopover.create({
             anchor: this.$(".NB-feedbar-options"),
+            feed_id: this.model.id
+        });
+    },
+
+    open_discover_popover: function() {
+        NEWSBLUR.DiscoverFeedsPopover.create({
+            anchor: this.$(".NB-feedbar-discover-container"),
             feed_id: this.model.id
         });
     }

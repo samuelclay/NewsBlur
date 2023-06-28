@@ -229,6 +229,7 @@ class Feed(models.Model):
             's3_page': self.s3_page,
             's3_icon': self.s3_icon,
             'disabled_page': not self.has_page,
+            'discover_feeds': [f.pk for f in Feed.objects.all().order_by("?")[:5]]
         }
         
         if include_favicon:
