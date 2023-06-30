@@ -34,10 +34,15 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
         var self = this;
         
         NEWSBLUR.ReaderPopover.prototype.render.call(this);
+        var feed = this.model.get_feed(this.options.feed_id);
         
         this.$el.html($.make('div', [
             $.make('div', { className: 'NB-popover-section' }, [
-                $.make('div', { className: 'NB-popover-section-title' }, 'Discover sites')
+                $.make('div', { className: 'NB-popover-section-title' }, 'Discover sites'),
+                $.make('div', { className: 'NB-discover-feed-badges' }, _.map(feed.get("discover_feeds"), function(feed) {
+                    var model = new NEWSBLUR.Models.Feed(feed);
+                    return new NEWSBLUR.Views.FeedBadge({model: model});
+                }))
             ])
         ]));
         

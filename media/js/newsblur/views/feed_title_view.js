@@ -16,7 +16,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         "click .NB-feedbar-train-feed"              : "open_trainer",
         "click .NB-feedbar-statistics"              : "open_statistics",
         "click .NB-feedlist-manage-icon"            : "show_manage_menu",
-        "click .feed_favicon"                       : "show_manage_menu",
+        "click .feed > .feed_favicon"               : "show_manage_menu",
         "click .NB-feedbar-options"                 : "open_options_popover",
         "click .NB-feedbar-discover-container"      : "open_discover_popover",
         "click"                                     : "open",
