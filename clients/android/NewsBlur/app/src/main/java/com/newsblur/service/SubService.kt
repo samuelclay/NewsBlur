@@ -5,11 +5,12 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.Log
 import com.newsblur.util.NBScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import java.util.concurrent.CancellationException
 
 /**
@@ -25,11 +26,13 @@ abstract class SubService(
 ) {
 
     private var cycleStartTime = 0L
+    private var mainJob: Job? = null
+    private var awaitTerminationJob: Job? = null
 
     protected abstract fun exec()
 
     fun start() {
-        coroutineScope.launch {
+        mainJob = coroutineScope.launch {
             if (!parent.stopSync()) {
                 execInternal()
             }
@@ -37,6 +40,10 @@ abstract class SubService(
             if (isActive) {
                 parent.checkCompletion()
                 parent.sendSyncUpdate(NBSyncReceiver.UPDATE_STATUS)
+            }
+        }.apply {
+            invokeOnCompletion {
+                awaitTerminationJob?.cancel()
             }
         }
     }
@@ -54,7 +61,15 @@ abstract class SubService(
     fun shutdown() {
         Log.d(this, "SubService shutdown")
         try {
-            coroutineScope.cancel()
+            mainJob?.let { job ->
+                if (job.isActive) {
+                    awaitTerminationJob = coroutineScope.launch {
+                        withTimeout(AppConstants.SHUTDOWN_SLACK_SECONDS) {
+                            if (job.isActive) job.cancel()
+                        }
+                    }
+                }
+            }
         } catch (e: CancellationException) {
             Log.d(this, "SubService cancelled")
         } finally {
@@ -65,7 +80,7 @@ abstract class SubService(
     // don't advise completion until there are no tasks, or just one check task left
     val isRunning: Boolean
         get() =// don't advise completion until there are no tasks, or just one check task left
-            coroutineScope.isActive
+            mainJob?.isActive ?: false
 
     /**
      * If called at the beginning of an expensive loop in a SubService, enforces the maximum duty cycle
