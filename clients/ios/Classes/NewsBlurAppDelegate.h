@@ -156,6 +156,7 @@ SFSafariViewControllerDelegate>  {
     PINCache *cachedStoryImages;
 }
 
+@property (nonatomic, readonly) NSURL *documentsURL;
 @property (nonatomic) SplitViewController *splitViewController;
 @property (nonatomic) IBOutlet UINavigationController *ftuxNavigationController;
 @property (nonatomic) IBOutlet UINavigationController *feedsNavigationController;

@@ -508,8 +508,7 @@
         NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
         NSArray *imageUrls = [appDelegate.activeCachedImages objectForKey:storyHash];
         if (imageUrls) {
-            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-            NSString *storyImagesDirectory = [[paths objectAtIndex:0]
+            NSString *storyImagesDirectory = [appDelegate.documentsURL.path
                                               stringByAppendingPathComponent:@"story_images"];
             for (NSString *imageUrl in imageUrls) {
                 NSURL *cachedUrl = [NSURL fileURLWithPath:storyImagesDirectory];

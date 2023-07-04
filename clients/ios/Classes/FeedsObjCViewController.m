@@ -2856,9 +2856,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     [userInfoView addSubview:userAvatarButton];
     
-    
-#warning tracing issue #1797
-    NSString *rootPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *rootPath = appDelegate.documentsURL.path;
     NSString *PINDiskCachePrefix = @"com.pinterest.PINDiskCache";
     NSString *cacheName = @"NBFavicons";
     NSString *pathComponent = [[NSString alloc] initWithFormat:@"%@.%@", PINDiskCachePrefix, cacheName];
@@ -2868,11 +2866,9 @@ heightForHeaderInSection:(NSInteger)section {
                                                    includingPropertiesForKeys:nil
                                                                       options:NSDirectoryEnumerationSkipsHiddenFiles
                                                                         error:&error];
-    NSLog(@"🌄 %@ disk cache contains %@ files; error: %@", cacheName, @(files.count), error);  // log
-    
     
     userLabel = [[UILabel alloc] initWithFrame:CGRectMake(50, yOffset, userInfoView.frame.size.width, 16)];
-    userLabel.text = [NSString stringWithFormat:@"%@ — 🌄 %@ icons", appDelegate.activeUsername, @(files.count)]; // appDelegate.activeUsername;
+    userLabel.text = appDelegate.activeUsername;
     userLabel.font = userLabelFont;
     userLabel.textColor = UIColorFromRGB(0x404040);
     userLabel.backgroundColor = [UIColor clearColor];
