@@ -1446,9 +1446,6 @@
         [self endNetworkOperation:networkOperationIdentifier];
     }];
     
-//#warning tracing issue #1797
-//    NSLog(@"🌄 start network operation: %@", networkOperationIdentifier);  // log
-    
     if (backgroundTaskIdentifier != UIBackgroundTaskInvalid) {
         self.networkBackgroundTasks[networkOperationIdentifier] = @(backgroundTaskIdentifier);
     }
@@ -1460,9 +1457,6 @@
     UIBackgroundTaskIdentifier identifier = self.networkBackgroundTasks[networkOperationIdentifier].integerValue;
     
     if (identifier != UIBackgroundTaskInvalid) {
-//#warning tracing issue #1797 (commenting out -endBackgroundTask: to trigger eviction)
-//        NSLog(@"🌄 end network operation: %@", networkOperationIdentifier);  // log
-        
         [[UIApplication sharedApplication] endBackgroundTask:identifier];
     }
     
@@ -4003,11 +3997,9 @@
 #pragma mark Storing Stories for Offline
 
 // Returns the URL to the application's Documents directory.
-- (NSURL *)applicationDocumentsDirectory
+- (NSURL *)documentsURL
 {
-    NSLog(@" ---> DB dir: %@",[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory  inDomains:NSUserDomainMask] lastObject]);
-    
-    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
 }
 
 - (NSInteger)databaseSchemaVersion:(FMDatabase *)db {
@@ -4020,35 +4012,28 @@
     return version;
 }
 
+- (void)copyFrom:(NSURL *)sourceFolderURL to:(NSURL *)destFolderURL name:(NSString *)filename isDirectory:(BOOL)isDirectory {
+    NSURL *sourceURL = [sourceFolderURL URLByAppendingPathComponent:filename isDirectory:isDirectory];
+    NSURL *destURL = [destFolderURL URLByAppendingPathComponent:filename isDirectory:isDirectory];
+    
+    [[NSFileManager defaultManager] copyItemAtURL:sourceURL toURL:destURL error:nil];
+}
+
 - (void)createDatabaseConnection {
-    NSError *error;
-    
-    // Remove the deletion of old sqlite dbs past version 3.1, once everybody's
-    // upgraded and removed the old files.
+    NSURL *documentsURL = self.documentsURL;
     NSFileManager *fileManager = [[NSFileManager alloc] init];
-    NSArray *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *oldDBPath = [documentPaths objectAtIndex:0];
-    NSArray *directoryContents = [fileManager contentsOfDirectoryAtPath:oldDBPath error:&error];
-    int removed = 0;
-    
-    if (error == nil) {
-        for (NSString *path in directoryContents) {
-            NSString *fullPath = [oldDBPath stringByAppendingPathComponent:path];
-            if ([fullPath hasSuffix:@".sqlite"]) {
-                [fileManager removeItemAtPath:fullPath error:&error];
-                removed++;
-            }
-        }
-    }
-    if (removed) {
-        NSLog(@"Deleted %d sql dbs.", removed);
-    }
-    
-    NSArray *cachePaths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *dbPath = [cachePaths objectAtIndex:0];
+    NSString *dbPath = documentsURL.path;
     NSString *dbName = [NSString stringWithFormat:@"%@.sqlite", self.host];
     NSString *path = [dbPath stringByAppendingPathComponent:dbName];
-    [self applicationDocumentsDirectory];
+    
+    // Move data from Caches directory to Documents directory.
+    if (![fileManager fileExistsAtPath:path]) {
+        NSURL *oldURL = [[fileManager URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] firstObject];
+        [self copyFrom:oldURL to:documentsURL name:@"com.pinterest.PINDiskCache.NBFavicons" isDirectory:YES];
+        [self copyFrom:oldURL to:documentsURL name:@"com.pinterest.PINDiskCache.NBStoryImages" isDirectory:YES];
+        [self copyFrom:oldURL to:documentsURL name:@"story_images" isDirectory:YES];
+        [self copyFrom:oldURL to:documentsURL name:dbName isDirectory:YES];
+    }
     
     database = [FMDatabaseQueue databaseQueueWithPath:path];
     [database inDatabase:^(FMDatabase *db) {
@@ -4076,8 +4061,7 @@
             //        [db executeUpdate:@"drop table if exists `queued_saved_hashes`"]; // Nope, don't clear this.
             
             NSFileManager *fileManager = [NSFileManager defaultManager];
-            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-            NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+            NSString *cacheDirectory = [self.documentsURL.path stringByAppendingPathComponent:@"story_images"];
             NSError *error = nil;
             BOOL success = [fileManager removeItemAtPath:cacheDirectory error:&error];
             if (!success || error) {
@@ -4215,8 +4199,7 @@
     [db executeUpdate:indexUsersUserId];
     
     NSError *error;
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *storyImagesDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+    NSString *storyImagesDirectory = [self.documentsURL.path stringByAppendingPathComponent:@"story_images"];
     if (![[NSFileManager defaultManager] fileExistsAtPath:storyImagesDirectory]) {
         [[NSFileManager defaultManager] createDirectoryAtPath:storyImagesDirectory
                                   withIntermediateDirectories:NO
@@ -4707,8 +4690,7 @@
     
     NSFileManager *fileManager = [[NSFileManager alloc] init];
     NSError *error = nil;
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+    NSString *cacheDirectory = [self.documentsURL.path stringByAppendingPathComponent:@"story_images"];
     NSArray *directoryContents = [fileManager contentsOfDirectoryAtPath:cacheDirectory error:&error];
     int removed = 0;
     

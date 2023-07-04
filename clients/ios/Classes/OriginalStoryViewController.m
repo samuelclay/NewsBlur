@@ -391,7 +391,7 @@
     NSString* urlString = activeUrl;
     NSURL* url = [NSURL URLWithString:urlString];
 //    if ([urlString containsString:@"story_images"]) {
-//        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+//        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 //        NSString *storyImagesDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
 //
 //        urlString = [urlString substringFromIndex:NSMaxRange([urlString
