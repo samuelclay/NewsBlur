@@ -186,6 +186,16 @@ class StoryCache: ObservableObject {
         selected = selectedIndex >= 0 ? Story(index: selectedIndex) : nil
         after = afterSelection.map { Story(index: $0) }
     }
+    
+    func reload(story: Story) {
+        if story == selected {
+            selected = Story(index: story.index)
+        } else if let index = before.firstIndex(of: story) {
+            before[index] = Story(index: story.index)
+        } else if let index = after.firstIndex(of: story) {
+            after[index] = Story(index: story.index)
+        }
+    }
 }
 
 class StorySettings {
