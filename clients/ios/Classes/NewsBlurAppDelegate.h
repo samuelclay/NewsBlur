@@ -158,6 +158,7 @@ SFSafariViewControllerDelegate>  {
 
 @property (class, nonatomic, readonly) NewsBlurAppDelegate *shared;
 
+@property (nonatomic, readonly) NSURL *documentsURL;
 @property (nonatomic) SplitViewController *splitViewController;
 @property (nonatomic) IBOutlet UINavigationController *ftuxNavigationController;
 @property (nonatomic) IBOutlet UINavigationController *feedsNavigationController;
@@ -320,7 +321,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showOrganizeSites;
 - (void)showWidgetSites;
 - (void)showPremiumDialog;
-- (void)updateSplitBehavior;
+- (void)updateSplitBehavior:(BOOL)refresh;
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;
 - (void)showPreferences;
 - (void)setHiddenPreferencesAnimated:(BOOL)animated;
