@@ -2856,17 +2856,6 @@ heightForHeaderInSection:(NSInteger)section {
     
     [userInfoView addSubview:userAvatarButton];
     
-    NSString *rootPath = appDelegate.documentsURL.path;
-    NSString *PINDiskCachePrefix = @"com.pinterest.PINDiskCache";
-    NSString *cacheName = @"NBFavicons";
-    NSString *pathComponent = [[NSString alloc] initWithFormat:@"%@.%@", PINDiskCachePrefix, cacheName];
-    NSURL *cacheURL = [NSURL fileURLWithPathComponents:@[ rootPath, pathComponent ]];
-    NSError *error = nil;
-    NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:cacheURL
-                                                   includingPropertiesForKeys:nil
-                                                                      options:NSDirectoryEnumerationSkipsHiddenFiles
-                                                                        error:&error];
-    
     userLabel = [[UILabel alloc] initWithFrame:CGRectMake(50, yOffset, userInfoView.frame.size.width, 16)];
     userLabel.text = appDelegate.activeUsername;
     userLabel.font = userLabelFont;
