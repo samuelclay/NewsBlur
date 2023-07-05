@@ -110,14 +110,16 @@ struct FeedDetailGridView: View {
                         print("\(oldSelected?.title ?? "none") -> \(newSelected.title)")
                         
                         Task {
-                            if cache.isGrid {
+                            if !cache.isGrid {
+                                withAnimation(Animation.spring().delay(0.5)) {
+                                    scroller.scrollTo(newSelected.id)
+                                }
+                            } else if !cache.isPhone {
                                 withAnimation(Animation.spring().delay(0.5)) {
                                     scroller.scrollTo(storyViewID, anchor: .top)
                                 }
                             } else {
-                                withAnimation(Animation.spring().delay(0.5)) {
-                                    scroller.scrollTo(newSelected.id)
-                                }
+                                scroller.scrollTo(newSelected.id, anchor: .top)
                             }
                         }
                     }
