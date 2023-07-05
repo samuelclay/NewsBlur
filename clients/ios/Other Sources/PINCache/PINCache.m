@@ -35,7 +35,7 @@ static NSString * const PINCacheSharedName = @"PINCacheShared";
 
 - (instancetype)initWithName:(NSString *)name
 {
-    return [self initWithName:name rootPath:[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject]];
+    return [self initWithName:name rootPath:[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject]];
 }
 
 - (instancetype)initWithName:(NSString *)name rootPath:(NSString *)rootPath

@@ -541,7 +541,7 @@ private extension DetailViewController {
             
             dividerViewBottomConstraint.constant = dividerPosition
             
-            appDelegate.updateSplitBehavior()
+            appDelegate.updateSplitBehavior(true)
             wasGrid = false
         }
         
