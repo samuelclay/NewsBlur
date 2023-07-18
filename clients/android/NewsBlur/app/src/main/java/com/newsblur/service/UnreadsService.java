@@ -139,8 +139,6 @@ public class UnreadsService extends SubService {
             boolean isTextPrefetchEnabled = PrefsUtils.isTextPrefetchEnabled(parent);
             if (! (isOfflineEnabled || isEnableNotifications)) return;
 
-            startExpensiveCycle();
-
             List<String> hashBatch = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
             List<String> hashSkips = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
             batchloop: for (String hash : StoryHashQueue) {
