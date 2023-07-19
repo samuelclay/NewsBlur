@@ -13,14 +13,14 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = '1.8'
     }
 
     defaultConfig {
         minSdk 23
         targetSdk 33
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     buildTypes {
@@ -30,12 +30,12 @@ android {
         benchmark {
             debuggable = true
             signingConfig = debug.signingConfig
-            matchingFallbacks = ["release"]
+            matchingFallbacks = ['release']
         }
     }
 
-    targetProjectPath = ":app"
-    experimentalProperties["android.experimental.self-instrumenting"] = true
+    targetProjectPath = ':app'
+    experimentalProperties['android.experimental.self-instrumenting'] = true
 }
 
 dependencies {
@@ -47,6 +47,6 @@ dependencies {
 
 androidComponents {
     beforeVariants(selector().all()) {
-        enabled = buildType == "benchmark"
+        enabled = buildType == 'benchmark'
     }
 }

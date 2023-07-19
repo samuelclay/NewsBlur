@@ -6,5 +6,5 @@ pluginManagement {
     }
 }
 rootProject.name = "NewsBlur"
-include ':app'
-include ':app:benchmark'
+include("app")
+include("app:benchmark")
