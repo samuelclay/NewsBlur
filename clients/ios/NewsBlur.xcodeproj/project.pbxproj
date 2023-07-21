@@ -844,6 +844,10 @@
 		17F39EBA26478538004B46D1 /* content_preview_small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17F39EB726478538004B46D1 /* content_preview_small@2x.png */; };
 		17F39EBB26478538004B46D1 /* content_preview_large@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17F39EB826478538004B46D1 /* content_preview_large@2x.png */; };
 		17FB51D723AC81C500F5D5BF /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 17FB51D923AC81C500F5D5BF /* InfoPlist.strings */; };
+		17FBFA982A6AEA4100149651 /* SlideAnimatedTransitioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FBFA962A6AEA4100149651 /* SlideAnimatedTransitioning.swift */; };
+		17FBFA992A6AEA4100149651 /* SlideAnimatedTransitioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FBFA962A6AEA4100149651 /* SlideAnimatedTransitioning.swift */; };
+		17FBFA9A2A6AEA4100149651 /* SwipeRightToPopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FBFA972A6AEA4100149651 /* SwipeRightToPopViewController.swift */; };
+		17FBFA9B2A6AEA4100149651 /* SwipeRightToPopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FBFA972A6AEA4100149651 /* SwipeRightToPopViewController.swift */; };
 		17FF4F7D27DA9645000526E6 /* ShareAddSiteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FF4F7C27DA9645000526E6 /* ShareAddSiteCell.swift */; };
 		17FF4F7E27DAAA6E000526E6 /* ak-icon-allstories.png in Resources */ = {isa = PBXBuildFile; fileRef = FF85BF7216D6A972002D334D /* ak-icon-allstories.png */; };
 		17FF4F7F27DAAA78000526E6 /* g_icn_folder.png in Resources */ = {isa = PBXBuildFile; fileRef = FFDD847216E887D3000AA0A2 /* g_icn_folder.png */; };
@@ -1603,6 +1607,8 @@
 		17F39EB726478538004B46D1 /* content_preview_small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "content_preview_small@2x.png"; sourceTree = "<group>"; };
 		17F39EB826478538004B46D1 /* content_preview_large@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "content_preview_large@2x.png"; sourceTree = "<group>"; };
 		17FB51D823AC81C500F5D5BF /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		17FBFA962A6AEA4100149651 /* SlideAnimatedTransitioning.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlideAnimatedTransitioning.swift; sourceTree = "<group>"; };
+		17FBFA972A6AEA4100149651 /* SwipeRightToPopViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipeRightToPopViewController.swift; sourceTree = "<group>"; };
 		17FF4F7C27DA9645000526E6 /* ShareAddSiteCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareAddSiteCell.swift; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = NewsBlurAppDelegate.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -2489,6 +2495,15 @@
 			path = "Old Widget Extension";
 			sourceTree = "<group>";
 		};
+		17FBFA952A6AEA4100149651 /* Lazy Pop */ = {
+			isa = PBXGroup;
+			children = (
+				17FBFA962A6AEA4100149651 /* SlideAnimatedTransitioning.swift */,
+				17FBFA972A6AEA4100149651 /* SwipeRightToPopViewController.swift */,
+			);
+			path = "Lazy Pop";
+			sourceTree = SOURCE_ROOT;
+		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -2536,6 +2551,7 @@
 				FF22FE5316E53ADC0046165A /* Underscore */,
 				FF2924CE1E93293F00FCFA63 /* PINCache */,
 				FF34FD2A1E9D93CB0062F8ED /* InAppSettingsKit */,
+				17FBFA952A6AEA4100149651 /* Lazy Pop */,
 				43A4C3E615B0099B008787B5 /* NewsBlur_Prefix.pch */,
 				179DD9CC23DFD20E007BFD21 /* BridgingHeader.h */,
 				43A4C3B915B00966008787B5 /* ABTableViewCell.h */,
@@ -4863,6 +4879,7 @@
 				175792372930605500490924 /* FeedTableCell.m in Sources */,
 				175792382930605500490924 /* StoryPagesViewController.swift in Sources */,
 				175792392930605500490924 /* NewsBlurAppDelegate.m in Sources */,
+				17FBFA9B2A6AEA4100149651 /* SwipeRightToPopViewController.swift in Sources */,
 				1757923A2930605500490924 /* FeedChooserTitleView.m in Sources */,
 				1757923B2930605500490924 /* FeedsObjCViewController.m in Sources */,
 				1757923C2930605500490924 /* NBURLCache.m in Sources */,
@@ -4887,6 +4904,7 @@
 				1785524D2A21693300A8CD92 /* FeedDetailLoadingView.swift in Sources */,
 				175792502930605500490924 /* IASKSwitch.m in Sources */,
 				175792512930605500490924 /* NBBarButtonItem.m in Sources */,
+				17FBFA992A6AEA4100149651 /* SlideAnimatedTransitioning.swift in Sources */,
 				175792522930605500490924 /* MoveSiteViewController.m in Sources */,
 				175792532930605500490924 /* FirstTimeUserViewController.m in Sources */,
 				1785524A2A1F115800A8CD92 /* FeedDetailTableCell.m in Sources */,
@@ -5045,6 +5063,7 @@
 				43F44B1C159D8DBC00F48F8A /* FeedTableCell.m in Sources */,
 				171B6FFD25C4C7C8008638A9 /* StoryPagesViewController.swift in Sources */,
 				1D3623260D0F684500981E51 /* NewsBlurAppDelegate.m in Sources */,
+				17FBFA9A2A6AEA4100149651 /* SwipeRightToPopViewController.swift in Sources */,
 				17432C861C5343C0003F8FD6 /* FeedChooserTitleView.m in Sources */,
 				28D7ACF80DDB3853001CB0EB /* FeedsObjCViewController.m in Sources */,
 				FFFF683D19D628000081904A /* NBURLCache.m in Sources */,
@@ -5069,6 +5088,7 @@
 				1785524C2A21693300A8CD92 /* FeedDetailLoadingView.swift in Sources */,
 				FF34FD6D1E9D93CB0062F8ED /* IASKSwitch.m in Sources */,
 				FF9B8BB217F2351A0036A41C /* NBBarButtonItem.m in Sources */,
+				17FBFA982A6AEA4100149651 /* SlideAnimatedTransitioning.swift in Sources */,
 				FF2D8CE514893BC000057B80 /* MoveSiteViewController.m in Sources */,
 				433323CD158968ED0025064D /* FirstTimeUserViewController.m in Sources */,
 				178552492A1F115800A8CD92 /* FeedDetailTableCell.m in Sources */,
