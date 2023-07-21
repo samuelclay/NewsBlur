@@ -619,7 +619,7 @@ resource "digitalocean_droplet" "task-work" {
   image    = var.droplet_os
   name     = "task-work${count.index + 1}"
   region   = var.droplet_region
-  size     = var.droplet_size_10
+  size     = var.droplet_size_20
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
