@@ -144,6 +144,9 @@ struct FeedDetailGridView: View {
             })
         }
         .background(Color.themed([0xE0E0E0, 0xFFF8CA, 0x363636, 0x101010]))
+        .if(cache.isGrid) { view in
+            view.lazyPop()
+        }
     }
     
     @ViewBuilder
