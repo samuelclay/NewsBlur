@@ -273,6 +273,20 @@
     }
 }
 
+- (NSString *)activeStoryTitlesPosition {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSString *positionPrefDefault = [userPreferences stringForKey:@"story_titles_position"];
+    NSString *positionPref = [userPreferences stringForKey:[self storyTitlesPositionKey]];
+    
+    if (positionPref) {
+        return positionPref;
+    } else if (positionPrefDefault) {
+        return positionPrefDefault;
+    } else {
+        return @"titles_on_left";
+    }
+}
+
 - (NSString *)activeStoryView {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSString *storyViewPref = [userPreferences stringForKey:[self storyViewKey]];
@@ -310,6 +324,14 @@
         return [NSString stringWithFormat:@"folder:%@:scroll_read_filter", self.activeFolder];
     } else {
         return [NSString stringWithFormat:@"%@:scroll_read_filter", [self.activeFeed objectForKey:@"id"]];
+    }
+}
+
+- (NSString *)storyTitlesPositionKey {
+    if (self.isRiverView) {
+        return [NSString stringWithFormat:@"folder:%@:story_titles_position", self.activeFolder];
+    } else {
+        return [NSString stringWithFormat:@"%@:story_titles_position", [self.activeFeed objectForKey:@"id"]];
     }
 }
 

@@ -340,7 +340,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     @throw [NSException exceptionWithName:@"Missing reload implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
 
-- (void)reloadIndexPath:(NSIndexPath *)indexPath {
+- (void)reloadIndexPath:(NSIndexPath *)indexPath withRowAnimation:(UITableViewRowAnimation)rowAnimation {
     @throw [NSException exceptionWithName:@"Missing reloadIndexPath implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
 
@@ -354,6 +354,13 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.scrollingMarkReadRow = NSNotFound;
     
     [self.storyTitlesTable reloadData];
+    
+    NSInteger location = storiesCollection.locationOfActiveStory;
+    NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
+    
+    if (indexPath && location >= 0 && self.view.window != nil) {
+        [self tableView:self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO];
+    }
 }
 
 - (void)reloadWithSizing {
@@ -577,7 +584,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         if (indexPath && location >= 0 && self.view.window != nil) {
             [self tableView:self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO];
             if (deselect) {
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  5.1 * NSEC_PER_SEC),
                                dispatch_get_main_queue(), ^(void) {
                     [self tableView:self.storyTitlesTable deselectRowAtIndexPath:indexPath animated:YES];
                 });
@@ -820,8 +827,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                 continue;
             }
             
-            [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
-                                         withRowAnimation:UITableViewRowAnimationNone];
+            [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationNone];
             break;
         }
     }
@@ -1056,6 +1062,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 - (void)fetchRiverPage:(int)page withCallback:(void(^)(void))callback {
     if (self.pageFetching || self.pageFinished) return;
     //    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
+    
+    [self changedLayout];
     
     storiesCollection.feedPage = page;
     self.pageFetching = YES;
@@ -1890,11 +1898,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                 [storiesCollection markStoryRead:story];
                 [storiesCollection syncStoryAsRead:story];
                 
-                if (self.isLegacyTable) {
-                    [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
-                                                 withRowAnimation:UITableViewRowAnimationFade];
-                } else if (!isGrid) {
-                    [self reloadIndexPath:indexPath];
+                if (!isGrid) {
+                    [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationFade];
                 }
             }
             
@@ -2096,8 +2101,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                     [storiesCollection syncStoryAsRead:story];
                     NSIndexPath *reloadIndexPath = [NSIndexPath indexPathForRow:thisRow inSection:0];
                     NSLog(@" --> Reloading indexPath: %@", reloadIndexPath);
-                    [self.storyTitlesTable reloadRowsAtIndexPaths:@[reloadIndexPath]
-                                                 withRowAnimation:UITableViewRowAnimationFade];
+                    [self reloadIndexPath:reloadIndexPath withRowAnimation:UITableViewRowAnimationFade];
                 }
             }
             
@@ -2132,7 +2136,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 }
 
 - (NSInteger)storyLocationForIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == FeedSectionBefore) {
+    if (self.isLegacyTable || indexPath.section == FeedSectionBefore) {
         return indexPath.row;
     } else if (indexPath.section == FeedSectionSelected) {
         return storiesCollection.indexOfActiveStory;
@@ -2144,7 +2148,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 - (NSIndexPath *)indexPathForStoryLocation:(NSInteger)location {
     NSInteger active = storiesCollection.indexOfActiveStory;
     
-    if (active < 0 || location < active) {
+    if (self.isLegacyTable || active < 0 || location < active) {
         return [NSIndexPath indexPathForRow:location inSection:FeedSectionBefore];
     } else if (location == active) {
         return [NSIndexPath indexPathForRow:0 inSection:FeedSectionSelected];
@@ -2189,13 +2193,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     if (state == MCSwipeTableViewCellState1) {
         // Saved
         [storiesCollection toggleStorySaved:story];
-        [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
-                                     withRowAnimation:UITableViewRowAnimationFade];
+        [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationFade];
     } else if (state == MCSwipeTableViewCellState3) {
         // Read
         [storiesCollection toggleStoryUnread:story];
-        [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
-                                     withRowAnimation:UITableViewRowAnimationFade];
+        [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -2225,12 +2227,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [appDelegate showSendTo:self sender:cell];
     } else if ([longPressStoryTitle isEqualToString:@"mark_unread"]) {
         [storiesCollection toggleStoryUnread:story];
-        [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
-                                     withRowAnimation:UITableViewRowAnimationFade];
+        [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationFade];
     } else if ([longPressStoryTitle isEqualToString:@"save_story"]) {
         [storiesCollection toggleStorySaved:story];
-        [self.storyTitlesTable reloadRowsAtIndexPaths:@[indexPath]
-                                     withRowAnimation:UITableViewRowAnimationFade];
+        [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationFade];
     } else if ([longPressStoryTitle isEqualToString:@"train_story"]) {
         appDelegate.activeStory = story;
         [appDelegate openTrainStory:cell];
@@ -2492,7 +2492,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     [appDelegate addSplitControlToMenuController:viewController];
     
-    NSString *preferenceKey = @"story_titles_position";
+    NSString *preferenceKey = self.appDelegate.storiesCollection.storyTitlesPositionKey;
     NSArray *titles;
     NSArray *values;
     
@@ -2504,7 +2504,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         values = @[@"titles_on_left", @"titles_on_top", @"titles_on_bottom", @"titles_in_grid"];
     }
     
-    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+    [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"titles_on_left" selectValue:self.appDelegate.storiesCollection.activeStoryTitlesPosition preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         [self.appDelegate.detailViewController updateLayoutWithReload:YES];
     }];
     

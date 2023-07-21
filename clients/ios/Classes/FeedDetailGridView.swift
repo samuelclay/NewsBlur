@@ -143,7 +143,7 @@ struct FeedDetailGridView: View {
                 }
             })
         }
-        .background(Color.themed([0xF4F4F4, 0xFFFDEF, 0x4F4F4F, 0x101010]))
+        .background(Color.themed([0xE0E0E0, 0xFFF8CA, 0x363636, 0x101010]))
     }
     
     @ViewBuilder

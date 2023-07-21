@@ -17,9 +17,6 @@ class DetailViewController: BaseViewController {
     
     /// Preference keys.
     enum Key {
-        /// Layout of the story titles and story pages.
-        static let layout = "story_titles_position"
-        
         /// Style of the feed detail list layout.
         static let style = "story_titles_style"
         
@@ -59,7 +56,7 @@ class DetailViewController: BaseViewController {
     /// How the feed detail and story pages are laid out.
     var layout: Layout {
         get {
-            switch UserDefaults.standard.string(forKey: Key.layout) {
+            switch appDelegate.storiesCollection.activeStoryTitlesPosition {
             case LayoutValue.top:
                 return .top
             case LayoutValue.bottom:
@@ -71,19 +68,19 @@ class DetailViewController: BaseViewController {
             }
         }
         set {
-            guard newValue != layout else {
+            guard newValue != layout, let key = appDelegate.storiesCollection.storyTitlesPositionKey else {
                 return
             }
             
             switch newValue {
             case .top:
-                UserDefaults.standard.set(LayoutValue.top, forKey: Key.layout)
+                UserDefaults.standard.set(LayoutValue.top, forKey: key)
             case .bottom:
-                UserDefaults.standard.set(LayoutValue.bottom, forKey: Key.layout)
+                UserDefaults.standard.set(LayoutValue.bottom, forKey: key)
             case .grid:
-                UserDefaults.standard.set(LayoutValue.grid, forKey: Key.layout)
+                UserDefaults.standard.set(LayoutValue.grid, forKey: key)
             default:
-                UserDefaults.standard.set(LayoutValue.left, forKey: Key.layout)
+                UserDefaults.standard.set(LayoutValue.left, forKey: key)
             }
             
             updateLayout(reload: true)
