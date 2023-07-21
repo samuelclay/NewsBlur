@@ -105,7 +105,8 @@ class FeedDetailViewController: FeedDetailObjCViewController {
                 return
             }
             
-            self.configureDataSource(story: story)
+            configureDataSource(story: story)
+            reloadWorkItem = nil
         }
         
         reloadWorkItem = workItem
@@ -116,12 +117,17 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         deferredReload()
     }
     
-    @objc override func reload(_ indexPath: IndexPath) {
-        deferredReload()
-    }
-    
     func reload(story: Story) {
         deferredReload(story: story)
+    }
+    
+    @objc override func reload(_ indexPath: IndexPath, with rowAnimation: UITableView.RowAnimation = .none) {
+        if !isLegacyTable {
+            deferredReload()
+        } else if reloadWorkItem == nil {
+            // Only do this if a deferred reload isn't pending; otherwise no point in doing a partial reload, plus the table may be stale.
+            storyTitlesTable.reloadRows(at: [indexPath], with: rowAnimation)
+        }
     }
 }
 

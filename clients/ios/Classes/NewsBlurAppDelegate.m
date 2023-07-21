@@ -1651,7 +1651,7 @@
         }
         
         [self adjustStoryDetailWebView];
-        [self.feedDetailViewController reload];
+        [self.feedDetailViewController changedLayout];
         
         if (detailViewController.storyTitlesOnLeft || detailViewController.storyTitlesInGrid) {
             [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadFeedDetailView"];
