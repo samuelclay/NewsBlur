@@ -1376,9 +1376,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     } else if ([identifier isEqual:@"theme_style"]) {
         [self updateThemeStyle];
     } else if ([identifier isEqual:self.appDelegate.storiesCollection.storyTitlesPositionKey]) {
-        [self.appDelegate.detailViewController updateLayoutWithReload:YES];
+        [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
     } else if ([identifier isEqual:@"story_titles_style"]) {
-        [self.appDelegate.detailViewController updateLayoutWithReload:YES];
+        [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
     } else if ([identifier isEqual:@"story_list_preview_images_size"]) {
         NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
         NSString *preview = [userPreferences stringForKey:@"story_list_preview_images_size"];

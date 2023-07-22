@@ -72,6 +72,7 @@
 @property (nonatomic, readwrite) BOOL cameFromFeedsList;
 
 //- (void)changedStoryHeight:(CGFloat)storyHeight;
+- (void)loadingFeed;
 - (void)changedLayout;
 - (void)reload;
 - (void)reloadTable;

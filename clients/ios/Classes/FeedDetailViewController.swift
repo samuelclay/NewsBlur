@@ -85,6 +85,19 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         changedLayout()
     }
     
+    @objc override func loadingFeed() {
+        // Make sure the view has loaded.
+        _ = view
+        
+        if appDelegate.detailViewController.isPhone {
+            changedLayout()
+        } else {
+            DispatchQueue.main.async {
+                self.appDelegate.detailViewController.updateLayout(reload: true, fetchFeeds: false)
+            }
+        }
+    }
+    
     @objc override func changedLayout() {
         // Make sure the view has loaded.
         _ = view

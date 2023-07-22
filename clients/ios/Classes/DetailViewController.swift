@@ -83,7 +83,7 @@ class DetailViewController: BaseViewController {
                 UserDefaults.standard.set(LayoutValue.left, forKey: key)
             }
             
-            updateLayout(reload: true)
+            updateLayout(reload: true, fetchFeeds: true)
         }
     }
     
@@ -139,7 +139,7 @@ class DetailViewController: BaseViewController {
                     UserDefaults.standard.set(StyleValue.standard, forKey: Key.style)
             }
             
-            updateLayout(reload: true)
+            updateLayout(reload: true, fetchFeeds: true)
         }
     }
     
@@ -276,10 +276,12 @@ class DetailViewController: BaseViewController {
     }
     
     /// Updates the layout; call this when the layout is changed in the preferences.
-    @objc(updateLayoutWithReload:) func updateLayout(reload: Bool) {
+    @objc(updateLayoutWithReload:fetchFeeds:) func updateLayout(reload: Bool, fetchFeeds: Bool) {
         checkViewControllers()
         
-        appDelegate.feedsViewController.loadOfflineFeeds(false)
+        if fetchFeeds {
+            appDelegate.feedsViewController.loadOfflineFeeds(false)
+        }
         
         if layout != .left, let controller = feedDetailViewController {
             if behavior == .overlay {
@@ -376,7 +378,7 @@ class DetailViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        updateLayout(reload: false)
+        updateLayout(reload: false, fetchFeeds: true)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -478,6 +480,10 @@ private extension DetailViewController {
                 appDelegate.splitViewController.setViewController(supplementaryFeedDetailNavigationController, for: .supplementary)
                 supplementaryFeedDetailNavigationController = nil
                 supplementaryFeedDetailViewController = nil
+            }
+            
+            if !isPhone {
+                appDelegate.show(.supplementary, debugInfo: "checkViewControllers")
             }
             
             if wasGrid && !isPhone {
