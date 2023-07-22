@@ -891,7 +891,7 @@
         [UIView animateWithDuration:0.5 animations:^{
             [self updateSplitBehavior:YES];
         }];
-        [self.detailViewController updateLayoutWithReload:NO];
+        [self.detailViewController updateLayoutWithReload:NO fetchFeeds:YES];
     }];
 }
 
@@ -1651,7 +1651,7 @@
         }
         
         [self adjustStoryDetailWebView];
-        [self.feedDetailViewController changedLayout];
+        [self.feedDetailViewController loadingFeed];
         
         if (detailViewController.storyTitlesOnLeft || detailViewController.storyTitlesInGrid) {
             [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadFeedDetailView"];

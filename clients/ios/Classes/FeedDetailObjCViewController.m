@@ -332,6 +332,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 //    @throw [NSException exceptionWithName:@"Missing changedStoryHeight implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 //}
 
+- (void)loadingFeed {
+    @throw [NSException exceptionWithName:@"Missing loadingFeed implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
 - (void)changedLayout {
     @throw [NSException exceptionWithName:@"Missing changedLayout implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
@@ -1063,7 +1067,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     if (self.pageFetching || self.pageFinished) return;
     //    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
     
-    [self changedLayout];
+    [self loadingFeed];
     
     storiesCollection.feedPage = page;
     self.pageFetching = YES;
@@ -2505,7 +2509,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }
     
     [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"titles_on_left" selectValue:self.appDelegate.storiesCollection.activeStoryTitlesPosition preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
-        [self.appDelegate.detailViewController updateLayoutWithReload:YES];
+        [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
     }];
     
     if (self.appDelegate.detailViewController.storyTitlesInGrid) {
@@ -2520,7 +2524,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
         
         [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"auto" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
-            [self.appDelegate.detailViewController updateLayoutWithReload:YES];
+            [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
         }];
         
         preferenceKey = @"grid_height";
@@ -2528,7 +2532,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         values = @[@"xs", @"short", @"medium", @"tall", @"xl"];
         
         [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"medium" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
-            [self.appDelegate.detailViewController updateLayoutWithReload:YES];
+            [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
         }];
     }
     
