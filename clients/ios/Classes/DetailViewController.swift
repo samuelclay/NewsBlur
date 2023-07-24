@@ -598,3 +598,4 @@ private extension DetailViewController {
         navigationController?.navigationBar.subviews.first?.backgroundColor = UINavigationBar.appearance().backgroundColor
     }
 }
+
