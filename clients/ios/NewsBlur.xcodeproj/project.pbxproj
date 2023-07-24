@@ -5533,7 +5533,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur.alpha;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NB-Alpha";
 				PRODUCT_MODULE_NAME = NewsBlur;
 				PRODUCT_NAME = "NB Alpha";
 				PROVISIONING_PROFILE = "";
@@ -5581,7 +5581,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur.alpha;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.newsblur.NB-Alpha";
 				PRODUCT_MODULE_NAME = NewsBlur;
 				PRODUCT_NAME = "NB Alpha";
 				PROVISIONING_PROFILE = "";

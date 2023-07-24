@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "175790592930605500490924"
-               BuildableName = "NewsBlur Alpha.app"
+               BuildableName = "NB Alpha.app"
                BlueprintName = "NewsBlur Alpha"
                ReferencedContainer = "container:NewsBlur.xcodeproj">
             </BuildableReference>
@@ -45,7 +45,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "175790592930605500490924"
-            BuildableName = "NewsBlur Alpha.app"
+            BuildableName = "NB Alpha.app"
             BlueprintName = "NewsBlur Alpha"
             ReferencedContainer = "container:NewsBlur.xcodeproj">
          </BuildableReference>
@@ -70,6 +70,7 @@
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Release"
+      customArchiveName = "NB Alpha"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>
