@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "175790592930605500490924"
-               BuildableName = "NewsBlur Dev.app"
-               BlueprintName = "NewsBlur Dev"
+               BuildableName = "NewsBlur Alpha.app"
+               BlueprintName = "NewsBlur Alpha"
                ReferencedContainer = "container:NewsBlur.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,8 +45,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "175790592930605500490924"
-            BuildableName = "NewsBlur Dev.app"
-            BlueprintName = "NewsBlur Dev"
+            BuildableName = "NewsBlur Alpha.app"
+            BlueprintName = "NewsBlur Alpha"
             ReferencedContainer = "container:NewsBlur.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
