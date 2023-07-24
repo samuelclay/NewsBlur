@@ -1462,7 +1462,7 @@
 		1750658E1C5730FB00072BF5 /* barbutton_selection_off@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "barbutton_selection_off@3x.png"; sourceTree = "<group>"; };
 		175696A41C596ABC004C128D /* menu_icn_all.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_icn_all.png; sourceTree = "<group>"; };
 		175696A51C596ABC004C128D /* menu_icn_all@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_all@2x.png"; sourceTree = "<group>"; };
-		175792E42930605500490924 /* NewsBlur Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "NewsBlur Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		175792E42930605500490924 /* NB Alpha.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "NB Alpha.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		175792E62930611B00490924 /* LaunchScreenDev.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreenDev.xib; sourceTree = "<group>"; };
 		175792E82930617600490924 /* logo_newsblur_512-dev.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo_newsblur_512-dev.png"; sourceTree = "<group>"; };
 		175FAC4A23AB34EB002AC38C /* menu_icn_widget.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_icn_widget.png; sourceTree = "<group>"; };
@@ -2512,7 +2512,7 @@
 				FF8A94971DE3BB77000A4C31 /* Story Notification Service Extension.appex */,
 				177551D3238E228A00E27818 /* Old NewsBlur Latest.appex */,
 				173CB30D26BCE94700BA872A /* NewsBlur Widget.appex */,
-				175792E42930605500490924 /* NewsBlur Dev.app */,
+				175792E42930605500490924 /* NB Alpha.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3689,9 +3689,9 @@
 			productReference = 174939101C251BFE003D98AA /* Share Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		175790592930605500490924 /* NewsBlur Dev */ = {
+		175790592930605500490924 /* NewsBlur Alpha */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 175792E12930605500490924 /* Build configuration list for PBXNativeTarget "NewsBlur Dev" */;
+			buildConfigurationList = 175792E12930605500490924 /* Build configuration list for PBXNativeTarget "NewsBlur Alpha" */;
 			buildPhases = (
 				175790622930605500490924 /* Resources */,
 				175792252930605500490924 /* Sources */,
@@ -3701,11 +3701,11 @@
 			);
 			dependencies = (
 			);
-			name = "NewsBlur Dev";
+			name = "NewsBlur Alpha";
 			packageProductDependencies = (
 			);
 			productName = NewsBlur;
-			productReference = 175792E42930605500490924 /* NewsBlur Dev.app */;
+			productReference = 175792E42930605500490924 /* NB Alpha.app */;
 			productType = "com.apple.product-type.application";
 		};
 		177551D2238E228A00E27818 /* Old Widget Extension */ = {
@@ -3859,7 +3859,7 @@
 			projectRoot = "";
 			targets = (
 				1D6058900D05DD3D006BFB54 /* NewsBlur */,
-				175790592930605500490924 /* NewsBlur Dev */,
+				175790592930605500490924 /* NewsBlur Alpha */,
 				1749390F1C251BFE003D98AA /* Share Extension */,
 				FF8A94961DE3BB77000A4C31 /* Story Notification Service Extension */,
 				177551D2238E228A00E27818 /* Old Widget Extension */,
@@ -5533,8 +5533,9 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur.dev;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur.alpha;
+				PRODUCT_MODULE_NAME = NewsBlur;
+				PRODUCT_NAME = "NB Alpha";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -5580,8 +5581,9 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur.dev;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.newsblur.NewsBlur.alpha;
+				PRODUCT_MODULE_NAME = NewsBlur;
+				PRODUCT_NAME = "NB Alpha";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTS_MACCATALYST = YES;
@@ -6002,7 +6004,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		175792E12930605500490924 /* Build configuration list for PBXNativeTarget "NewsBlur Dev" */ = {
+		175792E12930605500490924 /* Build configuration list for PBXNativeTarget "NewsBlur Alpha" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				175792E22930605500490924 /* Debug */,
