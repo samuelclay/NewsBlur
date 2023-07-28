@@ -53,12 +53,12 @@ android {
 }
 
 dependencies {
-    implementation("androidx.fragment:fragment-ktx:1.5.7")
-    implementation("androidx.recyclerview:recyclerview:1.3.0")
+    implementation("androidx.fragment:fragment-ktx:1.6.1")
+    implementation("androidx.recyclerview:recyclerview:1.3.1")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("com.google.code.gson:gson:2.10")
-    implementation("com.android.billingclient:billing:6.0.0")
+    implementation("com.android.billingclient:billing:6.0.1")
     implementation("com.google.android.play:core:1.10.3")
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.preference:preference-ktx:1.2.0")
