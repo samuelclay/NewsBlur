@@ -24,4 +24,7 @@ object Dependencies {
     // android test
     const val junitExt = "androidx.test.ext:junit:${Version.junitExt}"
     const val espressoCore = "androidx.test.espresso:espresso-core:${Version.espresso}"
+
+    const val uiAutomator = "androidx.test.uiautomator:uiautomator:${Version.uiAutomator}"
+    const val benchmarkMacroJunit4 = "androidx.benchmark:benchmark-macro-junit4:${Version.benchmarkMacroJunit4}"
 }
