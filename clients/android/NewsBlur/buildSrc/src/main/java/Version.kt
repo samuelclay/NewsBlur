@@ -25,4 +25,7 @@ object Version {
 
     const val junitExt = "1.1.5"
     const val espresso = "3.5.1"
+
+    const val uiAutomator = "2.2.0"
+    const val benchmarkMacroJunit4 = "1.1.1"
 }

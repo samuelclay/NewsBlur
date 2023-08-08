@@ -1,16 +1,16 @@
 plugins {
-    id ("com.android.application")
+    id("com.android.application")
     kotlin("android")
     kotlin("kapt")
-    id ("com.google.dagger.hilt.android")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
-    namespace = "com.newsblur"
+    namespace = Const.namespace
     compileSdk = Config.compileSdk
 
     defaultConfig {
-        applicationId = "com.newsblur"
+        applicationId = Const.namespace
         minSdk = Config.minSdk
         targetSdk = Config.targetSdk
         versionCode = Config.versionCode
@@ -20,32 +20,29 @@ android {
     }
 
     buildTypes {
-        getByName("debug") {
+        getByName(Const.debug) {
             isMinifyEnabled = false
             isShrinkResources = false
         }
-        maybeCreate("benchmark")
-        getByName("benchmark") {
-            signingConfig = signingConfigs.getByName("debug")
-            matchingFallbacks += listOf("release")
+        maybeCreate(Const.benchmark)
+        getByName(Const.benchmark) {
+            signingConfig = signingConfigs.getByName(Const.debug)
+            matchingFallbacks += listOf(Const.release)
             isDebuggable = false
-            proguardFiles("benchmark-rules.pro")
+            proguardFiles(Const.benchmarkProguard)
         }
-        getByName("release") {
+        getByName(Const.release) {
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            proguardFiles(getDefaultProguardFile(Const.defaultProguard), Const.appProguard)
         }
     }
     packaging {
         resources.excludes.add("META-INF/*")
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
+        sourceCompatibility = Config.javaVersion
+        targetCompatibility = Config.javaVersion
     }
     buildFeatures {
         viewBinding = true
@@ -53,26 +50,26 @@ android {
 }
 
 dependencies {
-    implementation("androidx.fragment:fragment-ktx:1.6.1")
-    implementation("androidx.recyclerview:recyclerview:1.3.1")
-    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    implementation("com.squareup.okhttp3:okhttp:4.11.0")
-    implementation("com.google.code.gson:gson:2.10")
-    implementation("com.android.billingclient:billing:6.0.1")
-    implementation("com.google.android.play:core:1.10.3")
-    implementation("com.google.android.material:material:1.9.0")
-    implementation("androidx.preference:preference-ktx:1.2.0")
-    implementation("androidx.browser:browser:1.5.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-process:2.6.1")
-    implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("com.google.dagger:hilt-android:2.44.2")
-    kapt("com.google.dagger:hilt-compiler:2.44.2")
-    implementation("androidx.profileinstaller:profileinstaller:1.3.1")
+    implementation(Dependencies.fragment)
+    implementation(Dependencies.recyclerView)
+    implementation(Dependencies.swipeRefreshLayout)
+    implementation(Dependencies.okHttp)
+    implementation(Dependencies.gson)
+    implementation(Dependencies.billing)
+    implementation(Dependencies.playCore)
+    implementation(Dependencies.material)
+    implementation(Dependencies.preference)
+    implementation(Dependencies.browser)
+    implementation(Dependencies.lifecycleRuntime)
+    implementation(Dependencies.lifecycleProcess)
+    implementation(Dependencies.splashScreen)
+    implementation(Dependencies.hiltAndroid)
+    kapt(Dependencies.hiltCompiler)
+    implementation(Dependencies.profileInstaller)
 
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("io.mockk:mockk:1.13.4")
+    testImplementation(Dependencies.junit)
+    testImplementation(Dependencies.mockk)
 
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation(Dependencies.junitExt)
+    androidTestImplementation(Dependencies.espressoCore)
 }
