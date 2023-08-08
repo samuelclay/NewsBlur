@@ -7,16 +7,16 @@ plugins {
 
 android {
     namespace = "com.newsblur"
-    compileSdk = 33
+    compileSdk = Config.compileSdk
 
     defaultConfig {
         applicationId = "com.newsblur"
-        minSdk = 23
-        targetSdk = 33
-        versionCode = 210
-        versionName = "13.0.0b3"
+        minSdk = Config.minSdk
+        targetSdk = Config.targetSdk
+        versionCode = Config.versionCode
+        versionName = Config.versionName
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = Config.androidTestInstrumentation
     }
 
     buildTypes {
