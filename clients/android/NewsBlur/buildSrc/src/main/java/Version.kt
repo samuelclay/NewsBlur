@@ -1,5 +1,7 @@
 object Version {
 
+    const val android = "8.1.0"
+
     const val kotlin = "1.8.10"
 
     const val fragment = "1.6.1"
