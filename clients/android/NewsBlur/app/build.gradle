@@ -13,8 +13,8 @@ android {
         applicationId "com.newsblur"
         minSdk 23
         targetSdk 33
-        versionCode 211
-        versionName "13.0.0b4"
+        versionCode 212
+        versionName "13.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
