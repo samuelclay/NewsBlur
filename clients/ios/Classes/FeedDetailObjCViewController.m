@@ -344,6 +344,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     @throw [NSException exceptionWithName:@"Missing reload implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
 
+- (void)reloadImmediately {
+    @throw [NSException exceptionWithName:@"Missing reloadImmediately implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
 - (void)reloadIndexPath:(NSIndexPath *)indexPath withRowAnimation:(UITableViewRowAnimation)rowAnimation {
     @throw [NSException exceptionWithName:@"Missing reloadIndexPath implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
@@ -707,7 +711,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [self.notifier hideIn:0];
     [self beginOfflineTimer];
     [appDelegate.cacheImagesOperationQueue cancelAllOperations];
-    [self reload];
+//    [self reload];
 }
 
 - (void)reloadStories {

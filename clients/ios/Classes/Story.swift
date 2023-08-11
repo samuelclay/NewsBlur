@@ -32,9 +32,7 @@ class Story: Identifiable {
     var author = ""
     
     var dateAndAuthor: String {
-        let date = Utilities.formatShortDate(fromTimestamp: timestamp) ?? ""
-        
-        return author.isEmpty ? date : "\(date) · \(author)"
+        return author.isEmpty ? dateString : "\(dateString) · \(author)"
     }
     
     var isRiverOrSocial = true
@@ -90,8 +88,8 @@ class Story: Identifiable {
         title = (string(for: "story_title") as NSString).decodingHTMLEntities()
         content = String(string(for: "story_content").convertHTML().decodingXMLEntities().decodingHTMLEntities().replacingOccurrences(of: "\n", with: " ").prefix(500))
         author = string(for: "story_authors").replacingOccurrences(of: "\"", with: "")
-        dateString = string(for: "short_parsed_date")
         timestamp = dictionary["story_timestamp"] as? Int ?? 0
+        dateString = Utilities.formatShortDate(fromTimestamp: timestamp) ?? ""
         isSaved = dictionary["starred"] as? Bool ?? false
         isShared = dictionary["shared"] as? Bool ?? false
         hash = string(for: "story_hash")
@@ -124,7 +122,11 @@ extension Story: Equatable {
 
 extension Story: CustomDebugStringConvertible {
     var debugDescription: String {
-        return "Story \"\(title)\" in \(feedName)"
+        if isLoaded {
+            return "Story #\(index) \"\(title)\" in \(feedName)"
+        } else {
+            return "Story #\(index) (not loaded)"
+        }
     }
 }
 
@@ -160,6 +162,10 @@ class StoryCache: ObservableObject {
         } else {
             return before + after
         }
+    }
+    
+    func story(with index: Int) -> Story? {
+        return all.first(where: { $0.index == index } )
     }
     
     func reload() {

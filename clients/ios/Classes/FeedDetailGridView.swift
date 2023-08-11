@@ -103,14 +103,16 @@ struct FeedDetailGridView: View {
                         }
                     }
                     .onChange(of: cache.selected) { [oldSelected = cache.selected] newSelected in
-                        guard let newSelected, oldSelected?.hash != newSelected.hash else {
+                        guard oldSelected?.hash != newSelected?.hash else {
                             return
                         }
                         
-                        print("\(oldSelected?.title ?? "none") -> \(newSelected.title)")
+                        print("\(oldSelected?.title ?? "none") -> \(newSelected?.title ?? "none")")
                         
                         Task {
-                            if !cache.isGrid {
+                            if newSelected == nil, !cache.isPhone, let oldSelected, let story = cache.story(with: oldSelected.index) {
+                                scroller.scrollTo(story.id, anchor: .top)
+                            } else if let newSelected, !cache.isGrid {
                                 withAnimation(Animation.spring().delay(0.5)) {
                                     scroller.scrollTo(newSelected.id)
                                 }
@@ -118,7 +120,7 @@ struct FeedDetailGridView: View {
                                 withAnimation(Animation.spring().delay(0.5)) {
                                     scroller.scrollTo(storyViewID, anchor: .top)
                                 }
-                            } else {
+                            } else if let newSelected {
                                 scroller.scrollTo(newSelected.id, anchor: .top)
                             }
                         }

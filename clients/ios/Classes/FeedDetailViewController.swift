@@ -33,6 +33,18 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         return appDelegate.detailViewController.layout == .grid
     }
     
+    var wasGrid: Bool {
+        return appDelegate.detailViewController.wasGrid
+    }
+    
+    var isExperimental: Bool {
+        return appDelegate.detailViewController.style == .experimental
+    }
+    
+    var isSwiftUI: Bool {
+        return isGrid || isExperimental
+    }
+    
     var feedColumns: Int {
         guard let pref = UserDefaults.standard.string(forKey: "grid_columns"), let columns = Int(pref) else {
             return 4
@@ -92,8 +104,14 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         if appDelegate.detailViewController.isPhone {
             changedLayout()
         } else {
-            DispatchQueue.main.async {
-                self.appDelegate.detailViewController.updateLayout(reload: true, fetchFeeds: false)
+            let wasGrid = wasGrid
+            
+            self.appDelegate.detailViewController.updateLayout(reload: false, fetchFeeds: false)
+            
+            if wasGrid != isGrid {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                    self.appDelegate.detailViewController.updateLayout(reload: true, fetchFeeds: false)
+                }
             }
         }
     }
@@ -105,25 +123,47 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         storyTitlesTable.isHidden = !isLegacyTable
         gridViewController.view.isHidden = isLegacyTable
         
+        print("changedLayout for \(isLegacyTable ? "legacy table" : "SwiftUI grid layout")")
+        
         deferredReload()
     }
     
     var reloadWorkItem: DispatchWorkItem?
     
+    var pendingStories = [Story.ID : Story]()
+    
     func deferredReload(story: Story? = nil) {
         reloadWorkItem?.cancel()
+        
+        if let story {
+            pendingStories[story.id] = story
+        } else {
+            pendingStories.removeAll()
+        }
         
         let workItem = DispatchWorkItem { [weak self] in
             guard let self else {
                 return
             }
             
-            configureDataSource(story: story)
+            if pendingStories.isEmpty {
+                configureDataSource()
+            } else {
+                for story in pendingStories.values {
+                    configureDataSource(story: story)
+                }
+            }
+            
+            pendingStories.removeAll()
             reloadWorkItem = nil
         }
         
         reloadWorkItem = workItem
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100), execute: workItem)
+    }
+    
+    @objc override func reloadImmediately() {
+        configureDataSource()
     }
     
     @objc override func reload() {
@@ -207,7 +247,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
     func read(story: Story) {
         let dict = story.dictionary
         
-        if storiesCollection.isStoryUnread(dict) {
+        if isSwiftUI, storiesCollection.isStoryUnread(dict) {
             print("marking as read '\(story.title)'")
             
             storiesCollection.markStoryRead(dict)
@@ -222,7 +262,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
     func unread(story: Story) {
         let dict = story.dictionary
         
-        if !storiesCollection.isStoryUnread(dict) {
+        if isSwiftUI, !storiesCollection.isStoryUnread(dict) {
             print("marking as unread '\(story.title)'")
             
             storiesCollection.markStoryUnread(dict)
