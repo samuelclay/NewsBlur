@@ -374,6 +374,10 @@
 #pragma mark - Story Management
 
 - (void)addStories:(NSArray *)stories {
+    if (self.activeFeedStories == nil) {
+        NSLog(@"addStories: activeFeedStories was nil!");
+        self.activeFeedStories = [NSMutableArray array];
+    }
     self.activeFeedStories = [self.activeFeedStories arrayByAddingObjectsFromArray:stories];
     self.storyCount = (int)[self.activeFeedStories count];
     [self calculateStoryLocations];
@@ -424,6 +428,10 @@
     NSString *hash = story[@"story_hash"];
     NSString *title = story[@"story_title"];
     
+    if (!hash) {
+        NSLog(@"🔧 trying to sync as read with no hash: %@: %@", hash, title);  // log
+        return;
+    }
     if (self.recentlyReadHashes[hash]) {
         NSLog(@"🔧 trying to sync as read when already read: %@: %@", hash, title);  // log
         return;

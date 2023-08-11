@@ -251,7 +251,7 @@ class DetailViewController: BaseViewController {
     var feedDetailViewController: FeedDetailViewController?
     
     /// Whether or not the grid layout was used the last time checking the view controllers.
-    private var wasGrid = false
+    var wasGrid = false
     
     /// The horizontal page view controller. [Not currently used; might be used for #1351 (gestures in vertical scrolling).]
 //    var horizontalPageViewController: HorizontalPageViewController?
@@ -284,19 +284,13 @@ class DetailViewController: BaseViewController {
         }
         
         if layout != .left, let controller = feedDetailViewController {
-            if behavior == .overlay {
-                navigationItem.leftBarButtonItems = [controller.feedsBarButton, controller.settingsBarButton]
-            } else {
-                navigationItem.leftBarButtonItems = [controller.settingsBarButton]
-            }
+            navigationItem.leftBarButtonItems = [controller.feedsBarButton, controller.settingsBarButton]
         } else {
             navigationItem.leftBarButtonItems = []
         }
         
         if reload {
-            DispatchQueue.main.async {
-                self.feedDetailViewController?.reload()
-            }
+            self.feedDetailViewController?.reload()
         }
     }
     

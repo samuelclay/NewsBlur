@@ -75,6 +75,7 @@
 - (void)loadingFeed;
 - (void)changedLayout;
 - (void)reload;
+- (void)reloadImmediately;
 - (void)reloadTable;
 - (void)reloadIndexPath:(NSIndexPath *)indexPath withRowAnimation:(UITableViewRowAnimation)rowAnimation;
 - (void)reloadWithSizing;
