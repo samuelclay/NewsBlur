@@ -39,6 +39,8 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
         var feed = this.model.get_feed(this.options.feed_id);
         this.discover_feeds_model.feed_ids = feed.get("discover_feeds");;
 
+        NEWSBLUR.ReaderPopover.prototype.render.call(this);
+
         this.showLoading();
         this.discover_feeds_model.fetch({
             success: function () {
@@ -52,8 +54,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
     },
 
     showLoading: function () {
-        NEWSBLUR.ReaderPopover.prototype.render.call(this);
-        
+
         this.$el.html($.make('div', [
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, 'Discover sites'),
@@ -79,14 +80,10 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
     render: function () {
         var self = this;
 
-        NEWSBLUR.ReaderPopover.prototype.render.call(this);
-        var feed = this.model.get_feed(this.options.feed_id);
-
         this.$el.html($.make('div', [
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, 'Discover sites'),
                 $.make('div', { className: 'NB-discover-feed-badges' }, this.discover_feeds_model.map(function (discover_feed) {
-                    console.log("Discover feed", discover_feed.get("feed"), discover_feed.get("stories"));
                     return new NEWSBLUR.Views.FeedBadge({ model: discover_feed.get("feed") });
                 }))
             ])
