@@ -2,7 +2,7 @@ object Dependencies {
 
     const val fragment = "androidx.fragment:fragment-ktx:${Version.fragment}"
     const val recyclerView = "androidx.recyclerview:recyclerview:${Version.recyclerView}"
-    const val swipeRefreshLayout = "androidx.recyclerview:recyclerview:${Version.swipeRefreshLayout}"
+    const val swipeRefreshLayout = "androidx.swiperefreshlayout:swiperefreshlayout:${Version.swipeRefreshLayout}"
     const val okHttp = "com.squareup.okhttp3:okhttp:${Version.okHttp}"
     const val gson = "com.google.code.gson:gson:${Version.gson}"
     const val billing = "com.android.billingclient:billing:${Version.billing}"
