@@ -1,46 +1,53 @@
 package com.newsblur.util;
 
-import java.net.URL;
+import android.content.Context;
+import android.util.Log;
+
+import com.newsblur.di.ImageOkHttpClient;
+
 import java.io.File;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.content.Context;
-import android.util.Log;
+import okhttp3.OkHttpClient;
 
 public class FileCache {
 
+    private static final String FILE_CACHE_STORY_IMAGES_DIR = "olimages";
+    private static final String FILE_CACHE_ICONS_DIR = "icons";
+    private static final String FILE_CACHE_THUMBNAILS_DIR = "thumbs";
     private static final long MIN_FREE_SPACE_BYTES = 250L * 1024L * 1024L;
-    private static final Pattern POSTFIX_PATTERN = Pattern.compile("(\\.[a-zA-Z0-9]+)[^\\.]*$");
+    private static final Pattern POSTFIX_PATTERN = Pattern.compile("(\\.[a-zA-Z0-9]+)[^.]*$");
 
     private final int minValidCacheBytes;
+    @ImageOkHttpClient
+    private final OkHttpClient imageOkHttpClient;
 
-	private final File cacheDir;
+    private final File cacheDir;
     private FileCache chain;
 
-	private FileCache(Context context, String subdir, int minValidCacheBytes) {
+    private FileCache(Context context, @ImageOkHttpClient OkHttpClient imageOkHttpClient, String subdir, int minValidCacheBytes) {
+        this.imageOkHttpClient = imageOkHttpClient;
         this.minValidCacheBytes = minValidCacheBytes;
         cacheDir = new File(context.getCacheDir(), subdir);
-		if (!cacheDir.exists()) {
-			cacheDir.mkdirs();
-		}
-	}
-
-    public static FileCache asStoryImageCache(Context context) {
-        FileCache fc = new FileCache(context, "olimages", 512);
-        return fc;
+        if (!cacheDir.exists()) {
+            cacheDir.mkdirs();
+        }
     }
 
-    public static FileCache asIconCache(Context context) {
-        FileCache fc = new FileCache(context, "icons", 128);
-        return fc;
+    public static FileCache asStoryImageCache(Context context, @ImageOkHttpClient OkHttpClient imageOkHttpClient) {
+        return new FileCache(context, imageOkHttpClient, FILE_CACHE_STORY_IMAGES_DIR, 512);
     }
 
-    public static FileCache asThumbnailCache(Context context) {
-        FileCache fc = new FileCache(context, "thumbs", 256);
-        return fc;
+    public static FileCache asIconCache(Context context, @ImageOkHttpClient OkHttpClient imageOkHttpClient) {
+        return new FileCache(context, imageOkHttpClient, FILE_CACHE_ICONS_DIR, 128);
+    }
+
+    public static FileCache asThumbnailCache(Context context, @ImageOkHttpClient OkHttpClient imageOkHttpClient) {
+        return new FileCache(context, imageOkHttpClient, FILE_CACHE_THUMBNAILS_DIR, 256);
     }
 
     /**
@@ -58,13 +65,13 @@ public class FileCache {
                 File f = chain.getCachedFile(url);
                 if ((f != null) && (f.exists())) return;
             }
-            
+
             // don't be evil and download if the user is low on storage
             if (cacheDir.getFreeSpace() < MIN_FREE_SPACE_BYTES) {
                 Log.w(this.getClass().getName(), "device low on storage, not caching");
                 return;
             }
-            
+
             String fileName = getFileName(url);
             if (fileName == null) {
                 return;
@@ -72,7 +79,7 @@ public class FileCache {
 
             File f = new File(cacheDir, fileName);
             if (f.exists()) return;
-            long size = NetworkUtils.loadURL(new URL(url), f);
+            long size = NetworkUtils.loadURL(imageOkHttpClient, new URL(url), f);
             // images that are super-small tend to be errors or invisible. don't waste file handles on them
             if (size < minValidCacheBytes) {
                 f.delete();
@@ -110,7 +117,7 @@ public class FileCache {
             File f = new File(cacheDir, fileName);
             if (f.exists()) {
                 return f.getAbsolutePath();
-            } else { 
+            } else {
                 return null;
             }
         } catch (Exception e) {
@@ -121,7 +128,7 @@ public class FileCache {
 
     private String getFileName(String url) {
         Matcher m = POSTFIX_PATTERN.matcher(url);
-        if (! m.find()) {
+        if (!m.find()) {
             return null;
         }
         String fileName = Integer.toString(Math.abs(url.hashCode())) + m.group(1);
@@ -133,7 +140,7 @@ public class FileCache {
             int cleaned = 0;
             File[] files = cacheDir.listFiles();
             if (files == null) return;
-            com.newsblur.util.Log.i(this, String.format( "have %d files", files.length));
+            com.newsblur.util.Log.i(this, String.format("have %d files", files.length));
             for (File f : files) {
                 long timestamp = f.lastModified();
                 if (System.currentTimeMillis() > (timestamp + maxFileAgeMillis)) {
@@ -141,7 +148,7 @@ public class FileCache {
                     cleaned++;
                 }
             }
-            com.newsblur.util.Log.i(this, String.format( "cleaned up %d files", cleaned));
+            com.newsblur.util.Log.i(this, String.format("cleaned up %d files", cleaned));
         } catch (Exception e) {
             com.newsblur.util.Log.e(this, "exception cleaning up cache", e);
         }
@@ -161,16 +168,16 @@ public class FileCache {
             int cleaned = 0;
             File[] files = cacheDir.listFiles();
             if (files == null) return;
-            com.newsblur.util.Log.i(this, String.format( "have %d files", files.length));
+            com.newsblur.util.Log.i(this, String.format("have %d files", files.length));
             for (File f : files) {
                 long timestamp = f.lastModified();
                 if ((System.currentTimeMillis() > (timestamp + maxFileAgeMillis)) &&
-                    (!currentFiles.contains(f.getName()))) {
+                        (!currentFiles.contains(f.getName()))) {
                     f.delete();
                     cleaned++;
                 }
             }
-            com.newsblur.util.Log.i(this, String.format( "cleaned up %d files", cleaned));
+            com.newsblur.util.Log.i(this, String.format("cleaned up %d files", cleaned));
         } catch (Exception e) {
             com.newsblur.util.Log.e(this, "exception cleaning up cache", e);
         }
@@ -204,7 +211,7 @@ public class FileCache {
             if (files == null) return;
             Pattern oldCachePattern = Pattern.compile("^[0-9-]+$");
             for (File f : files) {
-                if ( (!f.isDirectory()) && (oldCachePattern.matcher(f.getName()).matches())) {
+                if ((!f.isDirectory()) && (oldCachePattern.matcher(f.getName()).matches())) {
                     f.delete();
                 }
             }

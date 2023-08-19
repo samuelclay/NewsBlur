@@ -19,6 +19,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.newsblur.di.ApiOkHttpClient;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.FeedResult;
 import com.newsblur.domain.ValueMultimap;
@@ -57,15 +58,16 @@ public class APIManager {
 
 	private final Context context;
 	private final Gson gson;
-	private final OkHttpClient httpClient;
+    @ApiOkHttpClient
+	private final OkHttpClient apiOkHttpClient;
     private String customUserAgent;
 
-	public APIManager(final Context context, Gson gson, String customUserAgent, OkHttpClient httpClient) {
+	public APIManager(final Context context, Gson gson, String customUserAgent, @ApiOkHttpClient OkHttpClient apiOkHttpClient) {
         APIConstants.setCustomServer(PrefsUtils.getCustomServer(context));
         this.context = context;
         this.gson = gson;
         this.customUserAgent = customUserAgent;
-        this.httpClient = httpClient;
+        this.apiOkHttpClient = apiOkHttpClient;
 	}
 
 	public LoginResponse login(final String username, final String password) {
@@ -683,7 +685,7 @@ public class APIManager {
 		addCookieHeader(requestBuilder);
 		requestBuilder.header("User-Agent", this.customUserAgent);
 
-		return new APIResponse(httpClient, requestBuilder.build(), expectedReturnCode);
+		return new APIResponse(apiOkHttpClient, requestBuilder.build(), expectedReturnCode);
 	}
 
 	private void addCookieHeader(Request.Builder requestBuilder) {
@@ -746,7 +748,7 @@ public class APIManager {
 		addCookieHeader(requestBuilder);
 		requestBuilder.post(formBody);
 
-		return new APIResponse(httpClient, requestBuilder.build());
+		return new APIResponse(apiOkHttpClient, requestBuilder.build());
 	}
 
 	private APIResponse post(final String urlString, final ContentValues values) {
