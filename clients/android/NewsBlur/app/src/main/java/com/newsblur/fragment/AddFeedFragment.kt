@@ -24,10 +24,9 @@ import com.newsblur.fragment.AddFeedFragment.AddFeedAdapter.FolderViewHolder
 import com.newsblur.network.APIManager
 import com.newsblur.service.NBSyncService
 import com.newsblur.util.AppConstants
-import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import java.util.Collections
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -88,14 +87,14 @@ class AddFeedFragment : DialogFragment() {
                         binding.inputFolderName.text.clear()
                         addFeed(activity, apiManager, folderName)
                     } else {
-                        UIUtils.safeToast(activity, R.string.add_folder_error, Toast.LENGTH_SHORT)
+                        Toast.makeText(activity, R.string.add_folder_error, Toast.LENGTH_SHORT).show()
                     }
                 }
         )
     }
 
     private fun addFeed(activity: Activity, apiManager: APIManager, folderName: String?) {
-        binding.textSyncStatus.visibility = View.VISIBLE
+        binding.containerSyncStatus.visibility = View.VISIBLE
         lifecycleScope.executeAsyncTask(
                 doInBackground = {
                     (activity as AddFeedProgressListener).addFeedStarted()
@@ -103,7 +102,7 @@ class AddFeedFragment : DialogFragment() {
                     apiManager.addFeed(feedUrl, folderName)
                 },
                 onPostExecute = {
-                    binding.textSyncStatus.visibility = View.GONE
+                    binding.containerSyncStatus.visibility = View.GONE
                     val intent = Intent(activity, Main::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     if (!it.isError) {
@@ -111,7 +110,7 @@ class AddFeedFragment : DialogFragment() {
                         NBSyncService.forceFeedsFolders()
                         intent.putExtra(Main.EXTRA_FORCE_SHOW_FEED_ID, it.feed.feedId)
                     } else {
-                        UIUtils.safeToast(activity, R.string.add_feed_error, Toast.LENGTH_SHORT)
+                        Toast.makeText(activity, R.string.add_feed_error, Toast.LENGTH_SHORT).show()
                     }
                     activity.startActivity(intent)
                     activity.finish()
@@ -119,8 +118,7 @@ class AddFeedFragment : DialogFragment() {
         )
     }
 
-    private class AddFeedAdapter
-    constructor(private val listener: OnFolderClickListener) : RecyclerView.Adapter<FolderViewHolder>() {
+    private class AddFeedAdapter(private val listener: OnFolderClickListener) : RecyclerView.Adapter<FolderViewHolder>() {
 
         private val folders: MutableList<Folder> = ArrayList()
 
@@ -145,7 +143,7 @@ class AddFeedFragment : DialogFragment() {
             Collections.sort(folders, Folder.FolderComparator)
             this.folders.clear()
             this.folders.addAll(folders)
-            notifyDataSetChanged()
+            this.notifyDataSetChanged()
         }
 
         class FolderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

@@ -581,7 +581,7 @@
     <string name="sync_status_text">Storing text for %s stories…</string>
     <string name="sync_status_images">Storing %s images…</string>
     <string name="sync_status_offline">Offline</string>
-    <string name="sync_status_feed_add">Adding feed …</string>
+    <string name="sync_status_feed_add">Adding feed</string>
 
     <string name="volume_key_navigation">Volume key navigation…</string>
     <string name="off">Off</string>
