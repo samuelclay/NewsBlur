@@ -5,11 +5,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 
+import com.newsblur.di.ImageOkHttpClient;
+
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -22,27 +23,17 @@ public class NetworkUtils {
 
     private NetworkUtils() {} // util class - no instances
 
-    private static OkHttpClient ImageFetchHttpClient;
-
-    static {
-        ImageFetchHttpClient = new OkHttpClient.Builder()
-                               .connectTimeout(AppConstants.IMAGE_PREFETCH_CONN_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                               .readTimeout(AppConstants.IMAGE_PREFETCH_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                               .followSslRedirects(true)
-                               .build();
-    }
-
 	public static boolean isOnline(Context context) {
 		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo netInfo = cm.getActiveNetworkInfo();
 		return (netInfo != null && netInfo.isConnected());
 	}
 
-    public static long loadURL(URL url, File file) {
+    public static long loadURL(@ImageOkHttpClient OkHttpClient imageOkHttpClient, URL url, File file) {
         long bytesRead = 0;
         try {
             Request.Builder requestBuilder = new Request.Builder().url(url);
-            Response response = ImageFetchHttpClient.newCall(requestBuilder.build()).execute();
+            Response response = imageOkHttpClient.newCall(requestBuilder.build()).execute();
             if (response.isSuccessful()) {
                 BufferedSink sink = Okio.buffer(Okio.sink(file));
                 try {
