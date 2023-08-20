@@ -413,52 +413,42 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         @Override
         public boolean onMenuItemClick(MenuItem item) {
-            switch (item.getItemId()) {
-            case R.id.menu_mark_story_as_read:
+            if (item.getItemId() == R.id.menu_mark_story_as_read) {
                 feedUtils.markStoryAsRead(story, context);
                 return true;
-
-            case R.id.menu_mark_story_as_unread:
+            } else if (item.getItemId() == R.id.menu_mark_story_as_unread) {
                 feedUtils.markStoryUnread(story, context);
                 return true;
-
-            case R.id.menu_mark_older_stories_as_read:
+            } else if (item.getItemId() == R.id.menu_mark_older_stories_as_read) {
                 feedUtils.markRead(context, fs, story.timestamp, null, R.array.mark_older_read_options);
                 return true;
-
-            case R.id.menu_mark_newer_stories_as_read:
+            } else if (item.getItemId() == R.id.menu_mark_newer_stories_as_read) {
                 feedUtils.markRead(context, fs, null, story.timestamp, R.array.mark_newer_read_options);
                 return true;
-
-            case R.id.menu_send_story:
+            } else if (item.getItemId() == R.id.menu_send_story) {
                 feedUtils.sendStoryUrl(story, context);
                 return true;
-
-            case R.id.menu_send_story_full:
+            } else if (item.getItemId() == R.id.menu_send_story_full) {
                 feedUtils.sendStoryFull(story, context);
                 return true;
-
-            case R.id.menu_save_story:
+            } else if (item.getItemId() == R.id.menu_save_story) {
                 //TODO get folder name
                 feedUtils.setStorySaved(story, true, context, null);
                 return true;
-
-            case R.id.menu_unsave_story:
+            } else if (item.getItemId() == R.id.menu_unsave_story) {
                 feedUtils.setStorySaved(story, false, context, null);
                 return true;
-
-            case R.id.menu_intel:
+            } else if (item.getItemId() == R.id.menu_intel) {
                 if (story.feedId.equals("0")) return true; // cannot train on feedless stories
                 StoryIntelTrainerFragment intelFrag = StoryIntelTrainerFragment.newInstance(story, fs);
                 intelFrag.show(context.getSupportFragmentManager(), StoryIntelTrainerFragment.class.getName());
                 return true;
-
-            case R.id.menu_go_to_feed:
+            } else if (item.getItemId() == R.id.menu_go_to_feed) {
                 FeedSet fs = FeedSet.singleFeed(story.feedId);
                 FeedItemsList.startActivity(context, fs,
                         feedUtils.getFeed(story.feedId), null, null);
                 return true;
-            default:
+            } else {
                 return false;
             }
         }

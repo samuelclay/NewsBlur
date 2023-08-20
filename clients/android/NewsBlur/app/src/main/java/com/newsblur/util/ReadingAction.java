@@ -6,6 +6,7 @@ import static com.newsblur.service.NBSyncReceiver.UPDATE_SOCIAL;
 import static com.newsblur.service.NBSyncReceiver.UPDATE_STORY;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 
 import java.io.Serializable;
@@ -277,7 +278,7 @@ public class ReadingAction implements Serializable {
     /**
      * Execute this action remotely via the API.
      */
-    public NewsBlurResponse doRemote(APIManager apiManager, BlurDatabaseHelper dbHelper) {
+    public NewsBlurResponse doRemote(APIManager apiManager, BlurDatabaseHelper dbHelper, StateFilter stateFilter) {
         // generic response to return
         NewsBlurResponse result = null;
         // optional specific responses that are locally actionable
@@ -370,7 +371,7 @@ public class ReadingAction implements Serializable {
         if (storiesResponse != null) {
             result = storiesResponse;
             if (storiesResponse.story != null) {
-                dbHelper.updateStory(storiesResponse, true);
+                dbHelper.updateStory(storiesResponse, stateFilter, true);
             } else {
                 com.newsblur.util.Log.w(this, "failed to refresh story data after action");
             }
@@ -391,8 +392,8 @@ public class ReadingAction implements Serializable {
         return result;
     }
 
-    public int doLocal(BlurDatabaseHelper dbHelper) {
-        return doLocal(dbHelper, false);
+    public int doLocal(Context context, BlurDatabaseHelper dbHelper) {
+        return doLocal(context, dbHelper, false);
     }
 
     /**
@@ -402,7 +403,8 @@ public class ReadingAction implements Serializable {
      *
      * @return the union of update impact flags that resulted from this action.
      */
-    public int doLocal(BlurDatabaseHelper dbHelper, boolean isFollowup) {
+    public int doLocal(Context context, BlurDatabaseHelper dbHelper, boolean isFollowup) {
+        String userId = PrefsUtils.getUserId(context);
         int impact = 0;
         switch (type) {
 
@@ -434,32 +436,32 @@ public class ReadingAction implements Serializable {
 
             case SHARE:
                 if (isFollowup) break; // shares are only placeholders
-                dbHelper.setStoryShared(storyHash, true);
-                dbHelper.insertCommentPlaceholder(storyId, feedId, commentReplyText);
+                dbHelper.setStoryShared(storyHash, userId, true);
+                dbHelper.insertCommentPlaceholder(storyId, userId, commentReplyText);
                 impact |= UPDATE_SOCIAL;
                 impact |= UPDATE_STORY;
                 break;
 
             case UNSHARE:
-                dbHelper.setStoryShared(storyHash, false);
-                dbHelper.clearSelfComments(storyId);
+                dbHelper.setStoryShared(storyHash, userId, false);
+                dbHelper.clearSelfComments(storyId, userId);
                 impact |= UPDATE_SOCIAL;
                 impact |= UPDATE_STORY;
                 break;
 
             case LIKE_COMMENT:
-                dbHelper.setCommentLiked(storyId, commentUserId, feedId, true);
+                dbHelper.setCommentLiked(storyId, commentUserId, userId, true);
                 impact |= UPDATE_SOCIAL;
                 break;
 
             case UNLIKE_COMMENT:
-                dbHelper.setCommentLiked(storyId, commentUserId, feedId, false);
+                dbHelper.setCommentLiked(storyId, commentUserId, userId, false);
                 impact |= UPDATE_SOCIAL;
                 break;
 
             case REPLY:
                 if (isFollowup) break; // replies are only placeholders
-                dbHelper.insertReplyPlaceholder(storyId, feedId, commentUserId, commentReplyText);
+                dbHelper.insertReplyPlaceholder(storyId, userId, commentUserId, commentReplyText);
                 break;
 
             case EDIT_REPLY:

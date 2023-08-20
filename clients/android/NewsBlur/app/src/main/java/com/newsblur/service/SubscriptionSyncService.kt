@@ -24,8 +24,6 @@ import kotlinx.coroutines.launch
  */
 class SubscriptionSyncService : JobService() {
 
-    private val scope = NBScope
-
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.d(this, "onStartJob")
         if (!PrefsUtils.hasCookie(this)) {
@@ -33,10 +31,10 @@ class SubscriptionSyncService : JobService() {
             return false
         }
 
-        val subscriptionManager = SubscriptionManagerImpl(this@SubscriptionSyncService, scope)
+        val subscriptionManager = SubscriptionManagerImpl(this@SubscriptionSyncService)
         subscriptionManager.startBillingConnection(object : SubscriptionsListener {
             override fun onBillingConnectionReady() {
-                scope.launch {
+                NBScope.launch {
                     subscriptionManager.syncActiveSubscription()
                     Log.d(this, "sync active subscription completed.")
                     // manually call jobFinished after work is done

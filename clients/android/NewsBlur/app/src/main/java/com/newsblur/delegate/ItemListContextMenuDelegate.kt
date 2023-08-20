@@ -303,7 +303,7 @@ open class ItemListContextMenuDelegateImpl(
 
     private fun restartReadingSession(fragment: ItemSetFragment, fs: FeedSet) {
         NBSyncService.resetFetchState(fs)
-        feedUtils.prepareReadingSession(fs, true)
+        feedUtils.prepareReadingSession(activity, fs, true)
         triggerSync(activity)
         fragment.resetEmptyState()
         fragment.hasUpdated()

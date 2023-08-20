@@ -5,6 +5,7 @@ import static com.newsblur.service.NBSyncReceiver.UPDATE_TEXT;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.ExtensionsKt;
 import com.newsblur.util.FeedUtils;
 
 import java.util.HashSet;
@@ -22,14 +23,12 @@ public class OriginalTextService extends SubService {
     private static final Pattern imgSniff = Pattern.compile("<img[^>]*src=(['\"])((?:(?!\\1).)*)\\1[^>]*>", Pattern.CASE_INSENSITIVE);
 
     /** story hashes we need to fetch (from newly found stories) */
-    private static Set<String> Hashes;
-    static {Hashes = new HashSet<String>();}
+    private static final Set<String> Hashes = new HashSet<>();
     /** story hashes we should fetch ASAP (they are waiting on-screen) */
-    private static Set<String> PriorityHashes;
-    static {PriorityHashes = new HashSet<String>();}
+    private static final Set<String> PriorityHashes = new HashSet<>();
 
     public OriginalTextService(NBSyncService parent) {
-        super(parent);
+        super(parent, ExtensionsKt.NBScope);
     }
 
     @Override

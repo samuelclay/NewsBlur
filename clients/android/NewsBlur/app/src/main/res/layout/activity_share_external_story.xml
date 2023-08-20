@@ -41,7 +41,8 @@
             android:hint="@string/share_comment_hint"
             android:inputType="textCapSentences|textMultiLine"
             android:singleLine="false"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:importantForAutofill="no" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/container_buttons"
