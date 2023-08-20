@@ -13,6 +13,7 @@
         android:layout_marginTop="5dp"
         android:singleLine="false"
         android:inputType="textCapSentences|textMultiLine"
-        android:hint="@string/share_comment_hint"/>
+        android:hint="@string/share_comment_hint"
+        android:importantForAutofill="no" />
 
 </RelativeLayout>

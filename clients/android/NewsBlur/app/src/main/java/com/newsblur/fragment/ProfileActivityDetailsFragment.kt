@@ -47,10 +47,8 @@ abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_profileactivity, null)
         binding = FragmentProfileactivityBinding.bind(view)
-        val colorsArray = intArrayOf(ContextCompat.getColor(requireContext(), R.color.refresh_1),
-                ContextCompat.getColor(requireContext(), R.color.refresh_2),
-                ContextCompat.getColor(requireContext(), R.color.refresh_3),
-                ContextCompat.getColor(requireContext(), R.color.refresh_4))
+        val colorsArray = UIUtils.getLoadingColorsArray(requireContext())
+
         binding.emptyViewLoadingThrob.setColors(*colorsArray)
         binding.profileDetailsActivitylist.setFooterDividersEnabled(false)
         binding.profileDetailsActivitylist.emptyView = binding.emptyView

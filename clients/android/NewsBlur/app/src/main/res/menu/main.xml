@@ -31,6 +31,11 @@
         android:title="@string/menu_newsletters"
         app:showAsAction="never" />
 
+    <item android:id="@+id/menu_shortcuts"
+        android:title="@string/menu_shortcuts"
+        app:showAsAction="never"
+        android:visible="false" />
+
     <item android:id="@+id/menu_text_size"
         android:title="@string/menu_text_size" >
         <menu>

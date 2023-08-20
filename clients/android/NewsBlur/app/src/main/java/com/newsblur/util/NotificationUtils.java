@@ -103,8 +103,6 @@ public class NotificationUtils {
         }
     }
 
-    // addAction deprecated in 23 but replacement not avail until 21
-    @SuppressWarnings("deprecation")
     private static Notification buildStoryNotification(Story story, Cursor cursor, Context context, FileCache iconCache) {
         Log.d(NotificationUtils.class.getName(), "Building notification");
         Intent i = new Intent(context, FeedReading.class);

@@ -22,6 +22,8 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import android.util.Log;
@@ -40,7 +42,7 @@ public class PrefsUtils {
 
     private PrefsUtils() {} // util class - no instances
 
-	public static void saveCustomServer(Context context, String customServer) {
+	public static void saveCustomServer(Context context, @Nullable String customServer) {
         if (customServer == null) return;
         if (customServer.length() <= 0) return;
 		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
@@ -88,7 +90,7 @@ public class PrefsUtils {
 
     }
 
-    public static void updateVersion(Context context, String appVersion) {
+    public static void updateVersion(Context context, @Nullable String appVersion) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         // store the current version
         prefs.edit().putString(AppConstants.LAST_APP_VERSION, appVersion).commit();
@@ -96,6 +98,7 @@ public class PrefsUtils {
         prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, 0L).commit();
     }
 
+    @Nullable
     public static String getVersion(Context context) {
         try {
             return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
@@ -105,7 +108,7 @@ public class PrefsUtils {
         }
     }
 
-    public static String createFeedbackLink(Context context, BlurDatabaseHelper dbHelper) {
+    public static String createFeedbackLink(Context context, @NonNull BlurDatabaseHelper dbHelper) {
         StringBuilder s = new StringBuilder(AppConstants.FEEDBACK_URL);
         s.append("<give us some feedback!>%0A%0A%0A");
         String info = getDebugInfo(context, dbHelper);
@@ -113,7 +116,7 @@ public class PrefsUtils {
         return s.toString();
     }
 
-    public static void sendLogEmail(Context context, BlurDatabaseHelper dbHelper) {
+    public static void sendLogEmail(Context context, @NonNull BlurDatabaseHelper dbHelper) {
         File f = com.newsblur.util.Log.getLogfile();
         if (f == null) return;
         String debugInfo = "Tell us a bit about your problem:\n\n\n\n" + getDebugInfo(context, dbHelper);
@@ -129,7 +132,7 @@ public class PrefsUtils {
         }
     }
 
-    private static String getDebugInfo(Context context, BlurDatabaseHelper dbHelper) {
+    private static String getDebugInfo(Context context, @NonNull BlurDatabaseHelper dbHelper) {
         StringBuilder s = new StringBuilder();
         s.append("app version: ").append(getVersion(context));
         s.append("\n");
@@ -167,7 +170,7 @@ public class PrefsUtils {
         return s.toString();
     }
 
-    public static void logout(Context context, BlurDatabaseHelper dbHelper) {
+    public static void logout(Context context, @NonNull BlurDatabaseHelper dbHelper) {
         NBSyncService.softInterrupt();
         NBSyncService.clearState();
 
@@ -194,7 +197,7 @@ public class PrefsUtils {
         context.startActivity(i);
     }
 
-    public static void clearPrefsAndDbForLoginAs(Context context, BlurDatabaseHelper dbHelper) {
+    public static void clearPrefsAndDbForLoginAs(Context context, @NonNull BlurDatabaseHelper dbHelper) {
         NBSyncService.softInterrupt();
         NBSyncService.clearState();
 
@@ -252,6 +255,7 @@ public class PrefsUtils {
 		saveUserImage(context, profile.photoUrl);
 	}
 
+    @Nullable
     public static String getUserId(Context context) {   
 		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         return preferences.getString(PrefConstants.USER_ID, null);
@@ -282,7 +286,7 @@ public class PrefsUtils {
 	}
 
 	private static void saveUserImage(final Context context, String pictureUrl) {
-		Bitmap bitmap = null;
+		Bitmap bitmap;
 		try {
 			URL url = new URL(pictureUrl);
 			URLConnection connection;

@@ -20,6 +20,7 @@ fun <R> CoroutineScope.executeAsyncTask(
             withContext(Dispatchers.Main) { onPostExecute(result) }
         }
 
+@JvmField
 val NBScope = CoroutineScope(
         CoroutineName(TAG) +
                 Dispatchers.Default +

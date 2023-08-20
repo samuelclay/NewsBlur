@@ -6,17 +6,33 @@
     android:animateLayoutChanges="true"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/text_sync_status"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/container_sync_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/status_overlay_background"
         android:gravity="center"
-        android:padding="2dp"
-        android:text="@string/sync_status_feed_add"
-        android:textColor="@color/status_overlay_text"
-        android:textSize="14sp"
-        android:visibility="gone" />
+        android:orientation="horizontal"
+        android:paddingVertical="1dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/sync_status_feed_add"
+            android:textColor="@color/status_overlay_text"
+            android:textSize="14sp" />
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            style="?circleProgressIndicator"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="4dp"
+            android:indeterminate="true" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
     <TextView
         android:id="@+id/text_add_folder_title"
@@ -45,10 +61,10 @@
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:autofillHints="@null"
-            android:textSize="14sp"
             android:hint="@string/new_folder_name_hint"
             android:inputType="textCapSentences"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:textSize="14sp" />
 
         <ImageView
             android:id="@+id/ic_create_folder"

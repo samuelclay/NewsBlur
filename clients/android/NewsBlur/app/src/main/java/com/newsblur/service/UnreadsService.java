@@ -3,8 +3,10 @@ package com.newsblur.service;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.ExtensionsKt;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ public class UnreadsService extends SubService {
     static { StoryHashQueue = new ArrayList<String>(); }
 
     public UnreadsService(NBSyncService parent) {
-        super(parent);
+        super(parent, ExtensionsKt.NBScope);
     }
 
     @Override
@@ -137,8 +139,6 @@ public class UnreadsService extends SubService {
             boolean isTextPrefetchEnabled = PrefsUtils.isTextPrefetchEnabled(parent);
             if (! (isOfflineEnabled || isEnableNotifications)) return;
 
-            startExpensiveCycle();
-
             List<String> hashBatch = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
             List<String> hashSkips = new ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE);
             batchloop: for (String hash : StoryHashQueue) {
@@ -156,7 +156,8 @@ public class UnreadsService extends SubService {
                 break unreadsyncloop;
             }
 
-            parent.insertStories(response);
+            StateFilter stateFilter = PrefsUtils.getStateFilter(parent);
+            parent.insertStories(response, stateFilter);
             for (String hash : hashBatch) {
                 StoryHashQueue.remove(hash);
             } 

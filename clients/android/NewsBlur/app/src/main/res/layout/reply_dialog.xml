@@ -12,6 +12,7 @@
         android:layout_marginBottom="10dp"
         android:layout_marginTop="5dp"
         android:singleLine="false"
-        android:inputType="textCapSentences|textMultiLine" />
+        android:inputType="textCapSentences|textMultiLine"
+        android:importantForAutofill="no" />
 
 </RelativeLayout>

@@ -34,12 +34,14 @@ class FeedUtils(
     @JvmField
     var currentFolderName: String? = null
 
-    fun prepareReadingSession(fs: FeedSet?, resetFirst: Boolean) {
+    fun prepareReadingSession(context: Context, fs: FeedSet?, resetFirst: Boolean) {
         NBScope.executeAsyncTask(
                 doInBackground = {
                     try {
                         if (resetFirst) NBSyncService.resetReadingSession(dbHelper)
-                        NBSyncService.prepareReadingSession(dbHelper, fs)
+                        fs?.let {
+                            NBSyncService.prepareReadingSession(context, dbHelper, it)
+                        }
                     } catch (e: Exception) {
                         // this is a UI hinting call and might fail if the DB is being reset, but that is fine
                     }
@@ -63,7 +65,7 @@ class FeedUtils(
         NBScope.executeAsyncTask(
                 doInBackground = {
                     val ra = if (saved) ReadingAction.saveStory(storyHash, userTags) else ReadingAction.unsaveStory(storyHash)
-                    ra.doLocal(dbHelper)
+                    ra.doLocal(context, dbHelper)
                     syncUpdateStatus(context, UPDATE_STORY)
                     dbHelper.enqueueAction(ra)
                     triggerSync(context)
@@ -306,7 +308,7 @@ class FeedUtils(
         NBScope.executeAsyncTask(
                 doInBackground = {
                     dbHelper.enqueueAction(ra)
-                    val impact = ra.doLocal(dbHelper)
+                    val impact = ra.doLocal(context, dbHelper)
                     syncUpdateStatus(context, impact)
                     triggerSync(context)
                 }
@@ -347,7 +349,7 @@ class FeedUtils(
         }
         val ra = ReadingAction.shareStory(story.storyHash, story.id, story.feedId, sourceUserId, comment)
         dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper)
+        ra.doLocal(context, dbHelper)
         syncUpdateStatus(context, UPDATE_SOCIAL or UPDATE_STORY)
         triggerSync(context)
     }
@@ -355,7 +357,7 @@ class FeedUtils(
     fun renameFeed(context: Context, feedId: String?, newFeedName: String?) {
         val ra = ReadingAction.renameFeed(feedId, newFeedName)
         dbHelper.enqueueAction(ra)
-        val impact = ra.doLocal(dbHelper)
+        val impact = ra.doLocal(context, dbHelper)
         syncUpdateStatus(context, impact)
         triggerSync(context)
     }
@@ -363,7 +365,7 @@ class FeedUtils(
     fun unshareStory(story: Story, context: Context) {
         val ra = ReadingAction.unshareStory(story.storyHash, story.id, story.feedId)
         dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper)
+        ra.doLocal(context, dbHelper)
         syncUpdateStatus(context, UPDATE_SOCIAL or UPDATE_STORY)
         triggerSync(context)
     }
@@ -371,7 +373,7 @@ class FeedUtils(
     fun likeComment(story: Story, commentUserId: String?, context: Context) {
         val ra = ReadingAction.likeComment(story.id, commentUserId, story.feedId)
         dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper)
+        ra.doLocal(context, dbHelper)
         syncUpdateStatus(context, UPDATE_SOCIAL)
         triggerSync(context)
     }
@@ -379,7 +381,7 @@ class FeedUtils(
     fun unlikeComment(story: Story, commentUserId: String?, context: Context) {
         val ra = ReadingAction.unlikeComment(story.id, commentUserId, story.feedId)
         dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper)
+        ra.doLocal(context, dbHelper)
         syncUpdateStatus(context, UPDATE_SOCIAL)
         triggerSync(context)
     }
@@ -387,7 +389,7 @@ class FeedUtils(
     fun replyToComment(storyId: String?, feedId: String?, commentUserId: String?, replyText: String?, context: Context) {
         val ra = ReadingAction.replyToComment(storyId, feedId, commentUserId, replyText)
         dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper)
+        ra.doLocal(context, dbHelper)
         syncUpdateStatus(context, UPDATE_SOCIAL)
         triggerSync(context)
     }
@@ -395,7 +397,7 @@ class FeedUtils(
     fun updateReply(context: Context, story: Story, commentUserId: String?, replyId: String?, replyText: String?) {
         val ra = ReadingAction.updateReply(story.id, story.feedId, commentUserId, replyId, replyText)
         dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper)
+        ra.doLocal(context, dbHelper)
         syncUpdateStatus(context, UPDATE_SOCIAL)
         triggerSync(context)
     }
@@ -403,7 +405,7 @@ class FeedUtils(
     fun deleteReply(context: Context, story: Story, commentUserId: String?, replyId: String?) {
         val ra = ReadingAction.deleteReply(story.id, story.feedId, commentUserId, replyId)
         dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper)
+        ra.doLocal(context, dbHelper)
         syncUpdateStatus(context, UPDATE_SOCIAL)
         triggerSync(context)
     }
@@ -448,7 +450,7 @@ class FeedUtils(
                     }
 
                     dbHelper.enqueueAction(ra)
-                    ra.doLocal(dbHelper)
+                    ra.doLocal(context, dbHelper)
 
                     syncUpdateStatus(context, UPDATE_METADATA)
                     triggerSync(context)
@@ -459,7 +461,7 @@ class FeedUtils(
     fun instaFetchFeed(context: Context, feedId: String?) {
         val ra = ReadingAction.instaFetch(feedId)
         dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper)
+        ra.doLocal(context, dbHelper)
         syncUpdateStatus(context, UPDATE_METADATA)
         triggerSync(context)
     }
