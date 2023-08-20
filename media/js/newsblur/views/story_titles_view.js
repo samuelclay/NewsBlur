@@ -57,6 +57,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.override_grid();
         
         this.scroll_to_selected_story(null, options);
+
+        return this;
     },
     
     add: function(options) {
