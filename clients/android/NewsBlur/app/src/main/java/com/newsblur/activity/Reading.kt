@@ -253,7 +253,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
         // swapCursor() will asynch process the new cursor and fully update the pager,
         // update child fragments, and then call pagerUpdated()
-        readingAdapter?.swapCursor(cursor, pager)
+        readingAdapter?.swapCursor(cursor)
 
         stories = cursor
 
@@ -290,7 +290,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         val position: Int = if (storyHash == FIND_FIRST_UNREAD) {
             readingAdapter!!.findFirstUnread()
         } else {
-            readingAdapter!!.findHash(storyHash)
+            readingAdapter!!.findHash(storyHash!!)
         }
 
         if (stopLoading) return
