@@ -41,9 +41,19 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder().apply {
+    @ApiOkHttpClient
+    fun provideApiOkHttpClient(): OkHttpClient = OkHttpClient.Builder().apply {
         connectTimeout(AppConstants.API_CONN_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         readTimeout(AppConstants.API_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        followSslRedirects(true)
+    }.build()
+
+    @Singleton
+    @Provides
+    @ImageOkHttpClient
+    fun provideImageOkHttpClient(): OkHttpClient = OkHttpClient.Builder().apply {
+        connectTimeout(AppConstants.IMAGE_PREFETCH_CONN_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        readTimeout(AppConstants.IMAGE_PREFETCH_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         followSslRedirects(true)
     }.build()
 
@@ -60,9 +70,9 @@ object NetworkModule {
             @ApplicationContext context: Context,
             customUserAgent: CustomUserAgent,
             gson: Gson,
-            okHttpClient: OkHttpClient): APIManager =
+            @ApiOkHttpClient apiOkHttpClient: OkHttpClient): APIManager =
             APIManager(context,
                     gson,
                     customUserAgent,
-                    okHttpClient)
+                    apiOkHttpClient)
 }

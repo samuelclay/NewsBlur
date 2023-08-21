@@ -10,6 +10,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
 import javax.inject.Singleton
 
 @Module
@@ -29,14 +30,14 @@ class StorageModule {
     @Singleton
     @Provides
     @StoryImageCache
-    fun provideStoryCache(@ApplicationContext context: Context): FileCache =
-            FileCache.asStoryImageCache(context)
+    fun provideStoryCache(@ApplicationContext context: Context, @ImageOkHttpClient imageOkHttpClient: OkHttpClient): FileCache =
+            FileCache.asStoryImageCache(context, imageOkHttpClient)
 
     @Singleton
     @Provides
     @IconFileCache
-    fun provideIconCache(@ApplicationContext context: Context): FileCache =
-            FileCache.asIconCache(context)
+    fun provideIconCache(@ApplicationContext context: Context, @ImageOkHttpClient imageOkHttpClient: OkHttpClient): FileCache =
+            FileCache.asIconCache(context, imageOkHttpClient)
 
     @Singleton
     @Provides
@@ -44,8 +45,9 @@ class StorageModule {
     fun provideThumbnailCache(
             @ApplicationContext context: Context,
             @StoryImageCache storyImageCache: FileCache,
+            @ImageOkHttpClient imageOkHttpClient: OkHttpClient,
     ): FileCache {
-        val thumbnailCache = FileCache.asThumbnailCache(context)
+        val thumbnailCache = FileCache.asThumbnailCache(context, imageOkHttpClient)
         thumbnailCache.addChain(storyImageCache)
         return thumbnailCache
     }
