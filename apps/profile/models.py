@@ -235,7 +235,7 @@ class Profile(models.Model):
         EmailNewPremium.delay(user_id=self.user.pk)
 
         subs = UserSubscription.objects.filter(user=self.user)
-        if subs.count() > 3000:
+        if subs.count() > 5000:
             logging.user(self.user, "~FR~SK~FW~SBWARNING! ~FR%s subscriptions~SN!" % (subs.count()))
             mail_admins(f"WARNING! {self.user.username} has {subs.count()} subscriptions", 
                         f"{self.user.username} has {subs.count()} subscriptions and just upgraded to premium. They'll need a refund: {self.user.profile.paypal_sub_id} {self.user.profile.stripe_id} {self.user.email}")
@@ -284,7 +284,7 @@ class Profile(models.Model):
         UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
         
         subs = UserSubscription.objects.filter(user=self.user)
-        if subs.count() > 3000:
+        if subs.count() > 2000:
             logging.user(self.user, "~FR~SK~FW~SBWARNING! ~FR%s subscriptions~SN!" % (subs.count()))
             mail_admins(f"WARNING! {self.user.username} has {subs.count()} subscriptions", 
                         f"{self.user.username} has {subs.count()} subscriptions and just upgraded to archive. They'll need a refund: {self.user.profile.paypal_sub_id} {self.user.profile.stripe_id} {self.user.email}")
@@ -338,7 +338,7 @@ class Profile(models.Model):
         EmailNewPremiumPro.delay(user_id=self.user.pk)
         
         subs = UserSubscription.objects.filter(user=self.user)
-        if subs.count() > 3000:
+        if subs.count() > 1000:
             logging.user(self.user, "~FR~SK~FW~SBWARNING! ~FR%s subscriptions~SN!" % (subs.count()))
             mail_admins(f"WARNING! {self.user.username} has {subs.count()} subscriptions", 
                         f"{self.user.username} has {subs.count()} subscriptions and just upgraded to pro. They'll need a refund: {self.user.profile.paypal_sub_id} {self.user.profile.stripe_id} {self.user.email}")
