@@ -434,7 +434,7 @@
 }
 
 - (void)registerBackgroundTask {
-    [BGTaskScheduler.sharedScheduler registerForTaskWithIdentifier:@"com.newsblur.NewsBlur.refresh" usingQueue:nil launchHandler:^(__kindof BGTask * _Nonnull task) {
+    [BGTaskScheduler.sharedScheduler registerForTaskWithIdentifier:@"com.newsblur.NewsBlur.refresh" usingQueue:dispatch_get_main_queue() launchHandler:^(__kindof BGTask * _Nonnull task) {
         [self handleAppRefresh:task];
     }];
 }

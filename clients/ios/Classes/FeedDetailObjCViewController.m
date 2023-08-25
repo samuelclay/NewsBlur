@@ -56,6 +56,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (nonatomic) NSInteger oldLocation;
 @property (nonatomic) NSUInteger scrollingMarkReadRow;
 @property (readwrite) BOOL inPullToRefresh_;
+@property (nonatomic) BOOL isFadingTable;
 @property (nonatomic, strong) NSString *restoringFolder;
 @property (nonatomic, strong) NSString *restoringFeedID;
 
@@ -353,6 +354,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 }
 
 - (void)reloadTable {
+    if (self.isFadingTable) {
+        return;
+    }
+    
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     [self updateTextSize];
@@ -583,21 +588,25 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 }
 
 - (void)fadeSelectedCell:(BOOL)deselect {
-    [self reload];
-    
     if (self.isLegacyTable) {
+        [self reloadTable];
+        
         NSInteger location = storiesCollection.locationOfActiveStory;
         NSIndexPath *indexPath = [self indexPathForStoryLocation:location];
         
         if (indexPath && location >= 0 && self.view.window != nil) {
             [self tableView:self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO];
             if (deselect) {
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  5.1 * NSEC_PER_SEC),
+                self.isFadingTable = YES;
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),
                                dispatch_get_main_queue(), ^(void) {
                     [self tableView:self.storyTitlesTable deselectRowAtIndexPath:indexPath animated:YES];
+                    self.isFadingTable = NO;
                 });
             }
         }
+    } else {
+        [self reload];
     }
     
     if (deselect) {
