@@ -440,7 +440,7 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (void)updateForSystemAppearance {
-    BOOL isDark = self.appDelegate.window.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+    BOOL isDark = self.appDelegate.window.windowScene.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
     
     [self systemAppearanceDidChange:isDark];
 }

@@ -103,6 +103,10 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         
         if appDelegate.detailViewController.isPhone {
             changedLayout()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+                self.reload()
+            }
         } else {
             let wasGrid = wasGrid
             

@@ -344,11 +344,14 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (void)fadeCellWithIndexPath:(NSIndexPath *)indexPath {
-    if (!indexPath) return;
+    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+    NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
+    
+    if (!indexPath || indexPath.row >= folder.count) return;
+    
     [self tableView:self.feedTitlesTable deselectRowAtIndexPath:indexPath animated:YES];
     
-    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
-    id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
+    id feedId = [folder objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
 
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
