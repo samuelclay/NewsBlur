@@ -127,7 +127,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         storyTitlesTable.isHidden = !isLegacyTable
         gridViewController.view.isHidden = isLegacyTable
         
-        print("changedLayout for \(isLegacyTable ? "legacy table" : "SwiftUI grid layout")")
+        print("🪿 changedLayout for \(isLegacyTable ? "legacy table" : "SwiftUI grid layout")")
         
         deferredReload()
     }
@@ -221,7 +221,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
     }
     
     func visible(story: Story) {
-        print("\(story.title) appeared")
+        print("🐓 Visible: \(story.debugTitle)")
         
         if story.index >= storyCache.before.count + storyCache.after.count - 5 {
             if storiesCollection.isRiverView, storiesCollection.activeFolder != nil {
@@ -237,7 +237,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
             return
         }
         
-        print("tapped \(story.title)")
+        print("🪿 Tapped \(story.debugTitle)")
         
         let indexPath = IndexPath(row: story.index, section: 0)
         
@@ -245,14 +245,14 @@ extension FeedDetailViewController: FeedDetailInteraction {
     }
     
     func reading(story: Story) {
-        print("reading \(story.title)")
+        print("🪿 Reading \(story.debugTitle)")
     }
     
     func read(story: Story) {
         let dict = story.dictionary
         
         if isSwiftUI, storiesCollection.isStoryUnread(dict) {
-            print("marking as read '\(story.title)'")
+            print("🪿 Marking as read \(story.debugTitle)")
             
             storiesCollection.markStoryRead(dict)
             storiesCollection.syncStory(asRead: dict)
@@ -267,7 +267,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
         let dict = story.dictionary
         
         if isSwiftUI, !storiesCollection.isStoryUnread(dict) {
-            print("marking as unread '\(story.title)'")
+            print("🪿 Marking as unread \(story.debugTitle)")
             
             storiesCollection.markStoryUnread(dict)
             storiesCollection.syncStory(asRead: dict)
@@ -279,7 +279,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
     }
     
     func hid(story: Story) {
-        print("hiding \(story.title)")
+        print("🪿 Hiding \(story.debugTitle)")
         
         appDelegate.activeStory = nil
         reload()

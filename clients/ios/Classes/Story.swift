@@ -40,11 +40,19 @@ class Story: Identifiable {
     var feedColorBarRight: UIColor?
     
     var isSelected: Bool {
-        return index == NewsBlurAppDelegate.shared!.storiesCollection.indexOfActiveStory()
+        return index == NewsBlurAppDelegate.shared!.storiesCollection.locationOfActiveStory()
     }
     
     var isLoaded: Bool {
         return !dictionary.isEmpty
+    }
+    
+    var debugTitle: String {
+        if title.count > 75 {
+            return "#\(index) '\(title.prefix(75))...'"
+        } else {
+            return "#\(index) '\(title)'"
+        }
     }
     
     init(index: Int) {
@@ -175,7 +183,7 @@ class StoryCache: ObservableObject {
         var afterSelection = [Int]()
         
         if storyCount > 0 {
-            selectedIndex = appDelegate.storiesCollection.indexOfActiveStory()
+            selectedIndex = appDelegate.storiesCollection.locationOfActiveStory()
             
             if selectedIndex < 0 {
                 beforeSelection = Array(0..<storyCount)
@@ -191,6 +199,23 @@ class StoryCache: ObservableObject {
         before = beforeSelection.map { Story(index: $0) }
         selected = selectedIndex >= 0 ? Story(index: selectedIndex) : nil
         after = afterSelection.map { Story(index: $0) }
+        
+        print("🪿 Reload: \(before.count) before, \(selected == nil ? "none" : selected!.debugTitle) selected, \(after.count) after")
+        
+        
+//        
+//        #warning("hack")
+//        for story in all {
+//            story.load()
+//        }
+//        
+//        print("🪿 ... count: \(storyCount), index: \(selectedIndex)")
+//        print("🪿 ... before: \(before)")
+//        print("🪿 ... selection: \(selected == nil ? "none" : selected!.debugTitle)")
+//        print("🪿 ... after: \(after)")
+        
+        
+        
     }
     
     func reload(story: Story) {

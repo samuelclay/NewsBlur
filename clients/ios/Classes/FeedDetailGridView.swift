@@ -55,7 +55,7 @@ struct FeedDetailGridView: View {
     }
     
     var storyHeight: CGFloat {
-        print("Story height: \(feedDetailInteraction.storyHeight + 20)")
+        print("🐓 Story height: \(feedDetailInteraction.storyHeight + 20)")
         
         return feedDetailInteraction.storyHeight + 20
     }
@@ -107,7 +107,7 @@ struct FeedDetailGridView: View {
                             return
                         }
                         
-                        print("\(oldSelected?.title ?? "none") -> \(newSelected?.title ?? "none")")
+                        print("🪿 Selection: '\(oldSelected?.title ?? "none")' -> '\(newSelected?.title ?? "none")'")
                         
                         Task {
                             if newSelected == nil, !cache.isPhone, let oldSelected, let story = cache.story(with: oldSelected.index) {
@@ -158,10 +158,8 @@ struct FeedDetailGridView: View {
                 $0.append(CardFrame(id: "\(story.id)", frame: reader[$1]))
             }
             .onPreferenceChange(CardKey.self) {
-                print("pref change for '\(story.title)': \($0)")
-                
                 if feedDetailInteraction.isMarkReadOnScroll, let value = $0.first, value.frame.minY < -(value.frame.size.height / 2) {
-                    print("pref '\(story.title)': scrolled off the top")
+                    print("🐓 Scrolled off the top: \(story.debugTitle): \($0)")
                     
 //                    withAnimation(Animation.spring().delay(2)) {
                         feedDetailInteraction.read(story: story)
@@ -205,7 +203,7 @@ struct FeedDetailGridView: View {
     func loaded(story: Story) -> Story {
         story.load()
         
-        print("Loaded story '\(story.title)")
+        print("🐓 Loaded story \(story.debugTitle)")
         
         return story
     }
