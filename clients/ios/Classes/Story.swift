@@ -43,10 +43,6 @@ class Story: Identifiable {
         return index == NewsBlurAppDelegate.shared!.storiesCollection.locationOfActiveStory()
     }
     
-    var isLoaded: Bool {
-        return !dictionary.isEmpty
-    }
-    
     var debugTitle: String {
         if title.count > 75 {
             return "#\(index) '\(title.prefix(75))...'"
@@ -57,13 +53,15 @@ class Story: Identifiable {
     
     init(index: Int) {
         self.index = index
+        
+        load()
     }
     
     private func string(for key: String) -> String {
         return dictionary[key] as? String ?? ""
     }
     
-    func load() {
+    private func load() {
         guard let appDelegate = NewsBlurAppDelegate.shared, let storiesCollection = appDelegate.storiesCollection,
               index < storiesCollection.activeFeedStoryLocations.count,
               let row = storiesCollection.activeFeedStoryLocations[index] as? Int,
@@ -130,11 +128,7 @@ extension Story: Equatable {
 
 extension Story: CustomDebugStringConvertible {
     var debugDescription: String {
-        if isLoaded {
-            return "Story #\(index) \"\(title)\" in \(feedName)"
-        } else {
-            return "Story #\(index) (not loaded)"
-        }
+        return "Story #\(index) \"\(title)\" in \(feedName)"
     }
 }
 
@@ -205,10 +199,7 @@ class StoryCache: ObservableObject {
         
 //        
 //        #warning("hack")
-//        for story in all {
-//            story.load()
-//        }
-//        
+//
 //        print("🪿 ... count: \(storyCount), index: \(selectedIndex)")
 //        print("🪿 ... before: \(before)")
 //        print("🪿 ... selection: \(selected == nil ? "none" : selected!.debugTitle)")

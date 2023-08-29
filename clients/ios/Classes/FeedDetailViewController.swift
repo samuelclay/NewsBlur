@@ -257,8 +257,6 @@ extension FeedDetailViewController: FeedDetailInteraction {
             storiesCollection.markStoryRead(dict)
             storiesCollection.syncStory(asRead: dict)
             
-            story.load()
-            
             deferredReload(story: story)
         }
     }
@@ -271,8 +269,6 @@ extension FeedDetailViewController: FeedDetailInteraction {
             
             storiesCollection.markStoryUnread(dict)
             storiesCollection.syncStory(asRead: dict)
-            
-            story.load()
             
             deferredReload(story: story)
         }
