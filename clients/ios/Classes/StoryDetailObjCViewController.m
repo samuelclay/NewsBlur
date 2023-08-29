@@ -1553,7 +1553,7 @@
                     NSInteger position = floor(self->scrollPct * strongSelf.webView.scrollView.contentSize.height);
                     NSInteger maxPosition = (NSInteger)(floor(strongSelf.webView.scrollView.contentSize.height - strongSelf.webView.frame.size.height));
                     if (position > maxPosition) {
-                        NSLog(@"Position too far, scaling back to max position: %ld > %ld", (long)position, (long)maxPosition);
+                        NSLog(@"Position too far, scaling back to max position: %@ > %@", @(position), @(maxPosition));
                         position = maxPosition;
                     }
                     if (position > 0) {

@@ -98,7 +98,7 @@ struct StoryPagesView: UIViewControllerRepresentable {
         
         let size = storyPagesViewController.currentPage.webView.scrollView.contentSize
         
-        storyPagesViewController.preferredContentSize = CGSize(width: size.width, height: 200)
+        storyPagesViewController.preferredContentSize = CGSize(width: size.width, height: 1000)
         
         storyPagesViewController.currentPage.webView.evaluateJavaScript(
             "document.body.lastChild.getBoundingClientRect().bottom + window.scrollY"
