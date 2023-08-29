@@ -2463,6 +2463,16 @@
     }
 }
 
+//- (NSDictionary *)activeStory {
+//    return activeStory;
+//}
+//
+//- (void)setActiveStory:(NSDictionary *)newActiveStory {
+//    activeStory = newActiveStory;
+//    
+//    NSLog(@"🪿 setActiveStory: %@", newActiveStory[@"story_title"]);  // log
+//}
+
 #pragma mark -
 #pragma mark Siri Shortcuts
 
