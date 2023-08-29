@@ -136,6 +136,8 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     
     var pendingStories = [Story.ID : Story]()
     
+    var suppressMarkAsRead = false
+    
     func deferredReload(story: Story? = nil) {
         reloadWorkItem?.cancel()
         
@@ -241,7 +243,13 @@ extension FeedDetailViewController: FeedDetailInteraction {
         
         let indexPath = IndexPath(row: story.index, section: 0)
         
+        suppressMarkAsRead = true
+        
         didSelectItem(at: indexPath)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.suppressMarkAsRead = false
+        }
     }
     
     func reading(story: Story) {
@@ -249,6 +257,10 @@ extension FeedDetailViewController: FeedDetailInteraction {
     }
     
     func read(story: Story) {
+        if suppressMarkAsRead {
+            return
+        }
+        
         let dict = story.dictionary
         
         if isSwiftUI, storiesCollection.isStoryUnread(dict) {
