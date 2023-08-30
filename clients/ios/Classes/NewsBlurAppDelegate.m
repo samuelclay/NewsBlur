@@ -2468,9 +2468,9 @@
 //}
 //
 //- (void)setActiveStory:(NSDictionary *)newActiveStory {
-//    activeStory = newActiveStory;
+//    NSLog(@"🪿 setActiveStory: %@ -> %@", activeStory[@"story_title"], newActiveStory[@"story_title"]);  // log
 //    
-//    NSLog(@"🪿 setActiveStory: %@", newActiveStory[@"story_title"]);  // log
+//    activeStory = newActiveStory;
 //}
 
 #pragma mark -

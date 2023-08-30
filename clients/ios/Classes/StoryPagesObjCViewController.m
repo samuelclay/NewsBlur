@@ -989,6 +989,10 @@
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
 {
+    if (appDelegate.feedDetailViewController.suppressMarkAsRead) {
+        return;
+    }
+    
     self.isDraggingScrollview = NO;
     CGSize size = self.scrollView.frame.size;
     CGPoint offset = self.scrollView.contentOffset;
