@@ -136,7 +136,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     
     var pendingStories = [Story.ID : Story]()
     
-    var suppressMarkAsRead = false
+    @objc var suppressMarkAsRead = false
     
     func deferredReload(story: Story? = nil) {
         reloadWorkItem?.cancel()
