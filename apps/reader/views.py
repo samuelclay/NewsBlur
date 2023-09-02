@@ -671,6 +671,10 @@ def load_single_feed(request, feed_id):
     if feed.is_newsletter and not usersub:
         # User must be subscribed to a newsletter in order to read it
         raise Http404
+
+    if feed.num_subscribers = 1 and not usersub:
+        # This feed could be private so user must be subscribed in order to read it
+        raise Http404
     
     if page > 400:
         logging.user(request, "~BR~FK~SBOver page 400 on single feed: %s" % page)
