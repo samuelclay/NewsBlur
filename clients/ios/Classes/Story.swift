@@ -61,6 +61,14 @@ class Story: Identifiable {
         return dictionary[key] as? String ?? ""
     }
     
+    private func int(for key: String) -> Int {
+        if let value = dictionary[key] as? Int {
+            return value
+        } else {
+            return Int(string(for: key)) ?? 0
+        }
+    }
+    
     private func load() {
         guard let appDelegate = NewsBlurAppDelegate.shared, let storiesCollection = appDelegate.storiesCollection,
               index < storiesCollection.activeFeedStoryLocations.count,
@@ -94,7 +102,7 @@ class Story: Identifiable {
         title = (string(for: "story_title") as NSString).decodingHTMLEntities()
         content = String(string(for: "story_content").convertHTML().decodingXMLEntities().decodingHTMLEntities().replacingOccurrences(of: "\n", with: " ").prefix(500))
         author = string(for: "story_authors").replacingOccurrences(of: "\"", with: "")
-        timestamp = dictionary["story_timestamp"] as? Int ?? 0
+        timestamp = int(for:"story_timestamp")
         dateString = Utilities.formatShortDate(fromTimestamp: timestamp) ?? ""
         isSaved = dictionary["starred"] as? Bool ?? false
         isShared = dictionary["shared"] as? Bool ?? false
