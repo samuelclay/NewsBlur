@@ -59,8 +59,10 @@ public class FeedFolderResponse {
         if (userProfile != null) {
             JsonObject profile = (JsonObject) userProfile;
             this.isPremium = profile.get("is_premium").getAsBoolean();
-            this.isArchive = profile.get("is_archive").getAsBoolean();
             this.premiumExpire = profile.get("premium_expire").getAsLong();
+            if (asJsonObject.has("is_archive")) {
+                this.isArchive = profile.get("is_archive").getAsBoolean();
+            }
         }
 
 		JsonElement starredCountElement = asJsonObject.get("starred_count");

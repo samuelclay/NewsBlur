@@ -1,3 +1,6 @@
+html {
+    overflow: hidden;
+}
 body {
     overflow: hidden;
     line-height: 1.5em;
