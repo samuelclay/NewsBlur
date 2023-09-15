@@ -146,8 +146,10 @@
 - (void) viewDidLoad {
 	[super viewDidLoad];
     
+    BOOL isDark = [NewsBlurAppDelegate sharedAppDelegate].window.windowScene.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+    
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.view];
-    [[ThemeManager themeManager] systemAppearanceDidChange:self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark];
+    [[ThemeManager themeManager] systemAppearanceDidChange:isDark];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -162,9 +164,9 @@
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
     [super traitCollectionDidChange:previousTraitCollection];
     
-    if ([previousTraitCollection hasDifferentColorAppearanceComparedToTraitCollection:self.traitCollection]) {
-        [[ThemeManager themeManager] systemAppearanceDidChange:self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark];
-    }
+    BOOL isDark = [NewsBlurAppDelegate sharedAppDelegate].window.windowScene.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+    
+    [[ThemeManager themeManager] systemAppearanceDidChange:isDark];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
