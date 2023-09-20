@@ -15,6 +15,8 @@
         android:fullBackupContent="@xml/backupscheme"
         android:name=".NbApplication"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:allowBackup="true"
+        android:fullBackupOnly="true"
         tools:targetApi="31">
 
         <profileable
