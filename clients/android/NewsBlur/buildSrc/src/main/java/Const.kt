@@ -11,5 +11,5 @@ object Const {
 
     const val benchmarkProguard = "benchmark-rules.pro"
     const val appProguard = "proguard-rules.pro"
-    const val defaultProguard = "proguard-android.txt"
+    const val defaultProguard = "proguard-android-optimize.txt"
 }
