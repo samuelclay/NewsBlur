@@ -135,7 +135,7 @@ abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener 
                 //context.startActivity(intent);
             }
         } else if (activity.category == ActivityDetails.Category.STAR) {
-            UIUtils.startReadingActivity(FeedSet.allSaved(), activity.storyHash, context)
+            UIUtils.startReadingActivity(context, FeedSet.allSaved(), activity.storyHash)
         } else if (isSocialFeedCategory(activity)) {
             // Strip the social: prefix from feedId
             val socialFeedId = activity.feedId.substring(7)
@@ -143,7 +143,7 @@ abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener 
             if (feed == null) {
                 Toast.makeText(context, R.string.profile_do_not_follow, Toast.LENGTH_SHORT).show()
             } else {
-                UIUtils.startReadingActivity(FeedSet.singleSocialFeed(feed.userId, feed.username), activity.storyHash, context)
+                UIUtils.startReadingActivity(context, FeedSet.singleSocialFeed(feed.userId, feed.username), activity.storyHash)
             }
         }
     }

@@ -185,7 +185,7 @@ public class ItemSetFragment extends NbFragment {
             }
         });
 
-        adapter = new StoryViewAdapter(((NbActivity) getActivity()), this, getFeedSet(), listStyle, iconLoader, thumbnailLoader, feedUtils);
+        adapter = new StoryViewAdapter(((NbActivity) getActivity()), this, getFeedSet(), listStyle, iconLoader, thumbnailLoader, feedUtils, getOnStoryClickListener());
         adapter.addFooterView(footerView);
         adapter.addFooterView(fleuronBinding.getRoot());
         binding.itemgridfragmentGrid.setAdapter(adapter);
@@ -259,6 +259,13 @@ public class ItemSetFragment extends NbFragment {
 
     public void scrollToTop() {
         layoutManager.scrollToPositionWithOffset(0, 0);
+    }
+
+    public void scrollToPosition(int position) {
+        int layoutTotalPositions = layoutManager.getItemCount() - 1;
+        if (position > 0 && position <= layoutTotalPositions) {
+            layoutManager.scrollToPosition(position);
+        }
     }
 
     protected FeedSet getFeedSet() {
@@ -544,6 +551,13 @@ public class ItemSetFragment extends NbFragment {
             newLayout.setMargins(0, marginPx_4dp, 0, defaultPx_100dp);
         }
         fleuronBinding.getRoot().setLayoutParams(newLayout);
+    }
+
+    private StoryViewAdapter.OnStoryClickListener getOnStoryClickListener() {
+        return (feedSet, storyHash) -> {
+            ItemsList activity = ((ItemsList) getActivity());
+            if (activity != null) activity.startReadingActivity(feedSet, storyHash);
+        };
     }
 
     @Override
