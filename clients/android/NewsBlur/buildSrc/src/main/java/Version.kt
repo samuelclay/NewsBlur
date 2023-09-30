@@ -1,6 +1,6 @@
 object Version {
 
-    const val android = "8.1.0"
+    const val android = "8.1.1"
 
     const val kotlin = "1.8.10"
 
@@ -18,6 +18,7 @@ object Version {
     const val browser = "1.5.0"
     const val lifecycle = "2.6.1"
     const val splashScreen = "1.0.1"
+    const val coreKtx = "1.12.0"
 
     const val hilt = "2.44.2"
     const val profileInstaller = "1.3.1"
