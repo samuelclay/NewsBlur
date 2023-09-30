@@ -4,6 +4,7 @@ import android.content.IntentFilter
 import androidx.appcompat.app.AppCompatActivity
 import com.newsblur.util.PrefConstants.ThemeValue
 import android.os.Bundle
+import androidx.core.content.ContextCompat
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
@@ -75,9 +76,10 @@ open class NbActivity : AppCompatActivity() {
             PrefsUtils.applyThemePreference(this)
             UIUtils.restartActivity(this)
         }
-        registerReceiver(serviceSyncReceiver, IntentFilter().apply {
+
+        ContextCompat.registerReceiver(this, serviceSyncReceiver, IntentFilter().apply {
             addAction(NBSyncReceiver.NB_SYNC_ACTION)
-        })
+        }, ContextCompat.RECEIVER_NOT_EXPORTED)
     }
 
     override fun onPause() {
