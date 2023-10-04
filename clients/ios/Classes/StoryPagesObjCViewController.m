@@ -381,7 +381,9 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
-    appDelegate.detailViewController.navigationItem.leftBarButtonItem = nil;
+    if (!appDelegate.detailViewController.storyTitlesInGrid) {
+        appDelegate.detailViewController.navigationItem.leftBarButtonItem = nil;
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -889,6 +891,10 @@
     [self setTextButton];
     [self.loadingIndicator stopAnimating];
     self.circularProgressView.hidden = NO;
+    
+//    if (self.currentPage != nil && pageController == self.currentPage) {
+//        [self.appDelegate.feedDetailViewController changedStoryHeight:currentPage.webView.scrollView.contentSize.height];
+//    }
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
@@ -983,6 +989,10 @@
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
 {
+    if (appDelegate.feedDetailViewController.suppressMarkAsRead) {
+        return;
+    }
+    
     self.isDraggingScrollview = NO;
     CGSize size = self.scrollView.frame.size;
     CGPoint offset = self.scrollView.contentOffset;
@@ -1174,7 +1184,7 @@
         }
         
         appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:storyIndex];
-        [self updatePageWithActiveStory:currentPage.pageIndex];
+        [self updatePageWithActiveStory:currentPage.pageIndex updateFeedDetail:YES];
         if ([appDelegate.storiesCollection isStoryUnread:appDelegate.activeStory]) {
             [appDelegate.storiesCollection markStoryRead:appDelegate.activeStory];
             [appDelegate.storiesCollection syncStoryAsRead:appDelegate.activeStory];
@@ -1201,7 +1211,11 @@
     [self doNextUnreadStory:nil];
 }
 
-- (void)updatePageWithActiveStory:(NSInteger)location {
+- (void)updatePageWithActiveStory:(NSInteger)location updateFeedDetail:(BOOL)updateFeedDetail {
+    if (appDelegate.activeStory == nil) {
+        return;
+    }
+    
     [appDelegate.storiesCollection pushReadStory:[appDelegate.activeStory objectForKey:@"story_hash"]];
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
@@ -1222,7 +1236,9 @@
     
     [self setNextPreviousButtons];
     
-    [appDelegate changeActiveFeedDetailRow];
+    if (updateFeedDetail) {
+        [appDelegate changeActiveFeedDetailRow];
+    }
     
     if (self.currentPage.pageIndex != location) {
 //        NSLog(@"Updating Current: from %d to %d", currentPage.pageIndex, location);
@@ -1427,6 +1443,9 @@
     [self.currentPage showTextOrStoryView];
     [self.nextPage showTextOrStoryView];
     [self.previousPage showTextOrStoryView];
+    
+    [self.appDelegate.feedDetailViewController reload];
+//    [self.appDelegate.feedDetailViewController changedStoryHeight:currentPage.webView.scrollView.contentSize.height];
 }
 
 - (void)toggleStorySaved:(id)sender {
@@ -1435,7 +1454,7 @@
 
 - (void)toggleStoryUnread:(id)sender {
     [appDelegate.storiesCollection toggleStoryUnread];
-    [appDelegate.feedDetailViewController redrawUnreadStory]; // XXX only if successful?
+    [appDelegate.feedDetailViewController reload]; // XXX only if successful?
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {

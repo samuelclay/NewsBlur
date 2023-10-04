@@ -17,8 +17,8 @@ class DetailViewController: BaseViewController {
     
     /// Preference keys.
     enum Key {
-        /// Layout of the story titles and story pages.
-        static let layout = "story_titles_position"
+        /// Style of the feed detail list layout.
+        static let style = "story_titles_style"
         
         /// Behavior of the split controller.
         static let behavior = "split_behavior"
@@ -35,6 +35,7 @@ class DetailViewController: BaseViewController {
         static let left = "titles_on_left"
         static let top = "titles_on_top"
         static let bottom = "titles_on_bottom"
+        static let grid = "titles_in_grid"
     }
     
     /// How the feed detail and story pages are laid out.
@@ -47,39 +48,46 @@ class DetailViewController: BaseViewController {
         
         /// The story pages are at the top, the feed detail at the bottom.
         case bottom
+        
+        /// Using a grid view for the story titles and story pages.
+        case grid
     }
     
     /// How the feed detail and story pages are laid out.
     var layout: Layout {
         get {
-            switch UserDefaults.standard.string(forKey: Key.layout) {
+            switch appDelegate.storiesCollection.activeStoryTitlesPosition {
             case LayoutValue.top:
                 return .top
             case LayoutValue.bottom:
                 return .bottom
+            case LayoutValue.grid:
+                return .grid
             default:
                 return .left
             }
         }
         set {
-            guard newValue != layout else {
+            guard newValue != layout, let key = appDelegate.storiesCollection.storyTitlesPositionKey else {
                 return
             }
             
             switch newValue {
             case .top:
-                UserDefaults.standard.set(LayoutValue.top, forKey: Key.layout)
+                UserDefaults.standard.set(LayoutValue.top, forKey: key)
             case .bottom:
-                UserDefaults.standard.set(LayoutValue.bottom, forKey: Key.layout)
+                UserDefaults.standard.set(LayoutValue.bottom, forKey: key)
+            case .grid:
+                UserDefaults.standard.set(LayoutValue.grid, forKey: key)
             default:
-                UserDefaults.standard.set(LayoutValue.left, forKey: Key.layout)
+                UserDefaults.standard.set(LayoutValue.left, forKey: key)
             }
             
-            updateLayout(reload: true)
+            updateLayout(reload: true, fetchFeeds: true)
         }
     }
     
-    /// Whether or not the feed detail is on the left; see also the following property.
+    /// Whether or not the feed detail is on the left; see also the following properties.
     @objc var storyTitlesOnLeft: Bool {
         return layout == .left
     }
@@ -87,6 +95,57 @@ class DetailViewController: BaseViewController {
     /// Whether or not the feed detail is on the top; see also the previous property.
     @objc var storyTitlesOnTop: Bool {
         return layout == .top
+    }
+    
+    /// Whether or not using the grid layout; see also the previous properties.
+    @objc var storyTitlesInGrid: Bool {
+        return layout == .grid
+    }
+    
+    /// Preference values.
+    enum StyleValue {
+        static let standard = "standard"
+        static let experimental = "experimental"
+    }
+    
+    /// Style of the feed detail list layout.
+    enum Style {
+        /// The feed detail list uses the legacy table view.
+        case standard
+        
+        /// The feed detail list uses the SwiftUI grid view.
+        case experimental
+    }
+    
+    /// Style of the feed detail list layout.
+    var style: Style {
+        get {
+            switch UserDefaults.standard.string(forKey: Key.style) {
+                case StyleValue.experimental:
+                    return .experimental
+                default:
+                    return .standard
+            }
+        }
+        set {
+            guard newValue != style else {
+                return
+            }
+            
+            switch newValue {
+                case .experimental:
+                    UserDefaults.standard.set(StyleValue.experimental, forKey: Key.style)
+                default:
+                    UserDefaults.standard.set(StyleValue.standard, forKey: Key.style)
+            }
+            
+            updateLayout(reload: true, fetchFeeds: true)
+        }
+    }
+    
+    /// Whether or not using the legacy list for non-grid layout.
+    @objc var storyTitlesInLegacyTable: Bool {
+        return layout != .grid && style != .experimental
     }
     
     /// Preference values.
@@ -124,6 +183,11 @@ class DetailViewController: BaseViewController {
         default:
             return .auto
         }
+    }
+    
+    /// Returns `true` if the device is an iPhone, otherwise `false`.
+    @objc var isPhone: Bool {
+        return UIDevice.current.userInterfaceIdiom == .phone
     }
     
     /// Returns `true` if the window is in portrait orientation, otherwise `false`.
@@ -183,36 +247,50 @@ class DetailViewController: BaseViewController {
     /// The feed detail view controller in the supplementary pane, loaded from the storyboard.
     var supplementaryFeedDetailViewController: FeedDetailViewController?
     
-    /// The feed detail view controller, if using `top` or `bottom` layout. `nil` if using `left` layout.
+    /// The feed detail view controller, if using `top`, `bottom`, or `grid` layout. `nil` if using `left` layout.
     var feedDetailViewController: FeedDetailViewController?
+    
+    /// Whether or not the grid layout was used the last time checking the view controllers.
+    var wasGrid = false
     
     /// The horizontal page view controller. [Not currently used; might be used for #1351 (gestures in vertical scrolling).]
 //    var horizontalPageViewController: HorizontalPageViewController?
     
+    /// An instance of the story pages view controller for list layouts.
+    lazy var listStoryPagesViewController = StoryPagesViewController()
+    
+    /// A separate instance of the story pages view controller for use in the grid layout.
+    lazy var gridStoryPagesViewController = StoryPagesViewController()
+    
     /// The story pages view controller, that manages the previous, current, and next story view controllers.
-    var storyPagesViewController: StoryPagesViewController? {
-        return appDelegate.storyPagesViewController
-    }
+    @objc var storyPagesViewController: StoryPagesViewController?
     
     /// Returns the currently displayed story view controller, or `nil` if none.
     @objc var currentStoryController: StoryDetailViewController? {
         return storyPagesViewController?.currentPage
     }
     
+    /// Prepare the views.
+    @objc func checkLayout() {
+        checkViewControllers()
+    }
+    
     /// Updates the layout; call this when the layout is changed in the preferences.
-    @objc(updateLayoutWithReload:) func updateLayout(reload: Bool) {
+    @objc(updateLayoutWithReload:fetchFeeds:) func updateLayout(reload: Bool, fetchFeeds: Bool) {
         checkViewControllers()
         
-        appDelegate.feedsViewController.loadOfflineFeeds(false)
+        if fetchFeeds {
+            appDelegate.feedsViewController.loadOfflineFeeds(false)
+        }
         
         if layout != .left, let controller = feedDetailViewController {
-            if behavior == .overlay {
-                navigationItem.leftBarButtonItems = [controller.feedsBarButton, controller.settingsBarButton]
-            } else {
-                navigationItem.leftBarButtonItems = [controller.settingsBarButton]
-            }
+            navigationItem.leftBarButtonItems = [controller.feedsBarButton, controller.settingsBarButton]
         } else {
             navigationItem.leftBarButtonItems = []
+        }
+        
+        if reload {
+            self.feedDetailViewController?.reload()
         }
     }
     
@@ -232,10 +310,57 @@ class DetailViewController: BaseViewController {
         navigationController?.navigationBar.barStyle = manager.isDarkTheme ? .black : .default
         
         tidyNavigationController()
+    }
+    
+    /// Moves the story pages controller to a Grid layout cell content (automatically removing it from the previous parent).
+    func prepareStoriesForGridView() {
+        guard !isPhone, let storyPagesViewController else {
+            return
+        }
         
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-//            self.findSplitBackButton()
-//        }
+        print("🎈 prepareStoriesForGridView: \(storyPagesViewController.currentPage.activeStory?["story_title"] ?? "none")")
+        
+        remove(viewController: storyPagesViewController)
+        
+        storyPagesViewController.updatePage(withActiveStory: appDelegate.storiesCollection.locationOfActiveStory(), updateFeedDetail: false)
+        
+        adjustForAutoscroll()
+        
+        storyPagesViewController.currentPage.webView.scrollView.isScrollEnabled = false
+    }
+    
+    /// Moves the story pages controller to a Grid layout cell content (automatically removing it from the previous parent).
+//    @objc func moveStoriesToGridCell(_ cellContent: UIView) {
+//        #warning("hack disabled for SwiftUI experiment")
+////        guard let storyPagesViewController else {
+////            return
+////        }
+////
+////        print("🎈 moveStoriesToGridCell: \(storyPagesViewController.currentPage.activeStory["story_title"] ?? "none")")
+////
+////        add(viewController: storyPagesViewController, to: cellContent, of: appDelegate.feedDetailViewController)
+////
+////        adjustForAutoscroll()
+////
+////        storyPagesViewController.currentPage.webView.scrollView.isScrollEnabled = false
+//    }
+    
+    /// Moves the story pages controller to the appropriate container in the detail controller (automatically removing it from the previous parent).
+    @objc func moveStoriesToDetailContainer() {
+        guard let storyPagesViewController else {
+            return
+        }
+        
+        let isTop = layout == .top
+        let appropriateSuperview = isTop ? bottomContainerView : topContainerView
+        
+        if storyPagesViewController.view.superview != appropriateSuperview {
+            add(viewController: storyPagesViewController, top: !isTop)
+            
+            adjustForAutoscroll()
+            
+            storyPagesViewController.currentPage.webView.scrollView.isScrollEnabled = true
+        }
     }
     
     /// Adjusts the container when autoscrolling. Only applies to iPhone.
@@ -244,50 +369,10 @@ class DetailViewController: BaseViewController {
         updateTheme()
     }
     
-//    @objc func findSplitBackButton() {
-//        guard let navBar = navigationController?.navigationBar else {
-//            return
-//        }
-//
-//        let imageViews = recursiveImageSubviews(of: navBar)
-//
-//        for view in imageViews {
-//            if let imageView = view as? UIImageView, let image = imageView.image, image.description.contains("BackIndicator"), let button = recursiveButtonSuperview(of: imageView) {
-//                print("image view: \(imageView), image: \(String(describing: imageView.image)), button: \(button)")
-//            }
-//        }
-//    }
-//
-//    func recursiveImageSubviews(of view: UIView) -> [UIView] {
-//        var subviews = [UIView]()
-//
-//        for subview in view.subviews {
-//            if subview is UIImageView {
-//                subviews.append(subview)
-//            } else {
-//                subviews.append(contentsOf: recursiveImageSubviews(of: subview))
-//            }
-//        }
-//
-//        return subviews
-//    }
-//
-//    func recursiveButtonSuperview(of view: UIView) -> UIButton? {
-//        guard let superview = view.superview else {
-//            return nil
-//        }
-//
-//        if let button = superview as? UIButton {
-//            return button
-//        }
-//
-//        return recursiveButtonSuperview(of: superview)
-//    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        updateLayout(reload: false)
+        updateLayout(reload: false, fetchFeeds: true)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -299,24 +384,33 @@ class DetailViewController: BaseViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
-        if layout != .left {
+        if [.top, .bottom].contains(layout) {
             coordinator.animate { context in
                 self.dividerViewBottomConstraint.constant = self.dividerPosition
             }
         }
         
-        adjustTopConstraint()
+        coordinator.animate { context in
+            self.adjustTopConstraint()
+        }
     }
     
     private func adjustTopConstraint() {
-        if UIDevice.current.userInterfaceIdiom != .phone {
-            if view.window?.windowScene?.traitCollection.horizontalSizeClass == .compact {
+        guard let scene = view.window?.windowScene else {
+            return
+        }
+        
+        if !isPhone {
+            if scene.traitCollection.horizontalSizeClass == .compact {
                 topContainerTopConstraint.constant = -50
             } else {
                 topContainerTopConstraint.constant = 0
             }
         } else if let controller = storyPagesViewController, !controller.isNavigationBarHidden {
-            topContainerTopConstraint.constant = -44
+            let navigationHeight = navigationController?.navigationBar.frame.height ?? 0
+            let adjustment: CGFloat = view.safeAreaInsets.top > 25 ? 5 : 0
+            
+            topContainerTopConstraint.constant = -(navigationHeight - adjustment)
         } else {
             topContainerTopConstraint.constant = 0
         }
@@ -359,11 +453,22 @@ private extension DetailViewController {
     func checkViewControllers() {
         let isTop = layout == .top
         
-        if layout == .left {
+        if layout != .grid || isPhone {
+            storyPagesViewController = listStoryPagesViewController
+            _ = storyPagesViewController?.view
+            
+            moveStoriesToDetailContainer()
+        } else {
+            storyPagesViewController = gridStoryPagesViewController
+            _ = storyPagesViewController?.view
+        }
+        
+        if layout == .left || isPhone {
             if feedDetailViewController != nil {
                 remove(viewController: feedDetailViewController)
                 
                 feedDetailViewController = nil
+                supplementaryFeedDetailViewController?.storiesCollection = appDelegate.storiesCollection
                 appDelegate.feedDetailNavigationController = supplementaryFeedDetailNavigationController
                 appDelegate.feedDetailViewController = supplementaryFeedDetailViewController
                 appDelegate.splitViewController.setViewController(supplementaryFeedDetailNavigationController, for: .supplementary)
@@ -371,14 +476,54 @@ private extension DetailViewController {
                 supplementaryFeedDetailViewController = nil
             }
             
+            if !isPhone {
+                appDelegate.show(.supplementary, debugInfo: "checkViewControllers")
+            }
+            
+            if wasGrid && !isPhone {
+                DispatchQueue.main.async {
+                    self.appDelegate.loadStoryDetailView()
+                }
+            }
+            
             dividerViewBottomConstraint.constant = -13
-        } else {
-            if feedDetailViewController == nil {
+            wasGrid = false
+        } else if layout == .grid {
+            if feedDetailViewController == nil || !wasGrid {
+                remove(viewController: feedDetailViewController)
+                
                 feedDetailViewController = Storyboards.shared.controller(withIdentifier: .feedDetail) as? FeedDetailViewController
+                feedDetailViewController?.storiesCollection = appDelegate.storiesCollection
+                
+                add(viewController: feedDetailViewController, top: true)
+                
+                if appDelegate.feedDetailNavigationController != nil {
+                    supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
+                }
+                
+                supplementaryFeedDetailViewController = appDelegate.feedDetailViewController
+                appDelegate.feedDetailNavigationController = nil
+                appDelegate.feedDetailViewController = feedDetailViewController
+                appDelegate.splitViewController.setViewController(nil, for: .supplementary)
+            } else {
+                add(viewController: feedDetailViewController, top: true)
+            }
+            
+            dividerViewBottomConstraint.constant = -13
+            wasGrid = true
+        } else {
+            if feedDetailViewController == nil || wasGrid {
+                remove(viewController: feedDetailViewController)
+                
+                feedDetailViewController = Storyboards.shared.controller(withIdentifier: .feedDetail) as? FeedDetailViewController
+                feedDetailViewController?.storiesCollection = appDelegate.storiesCollection
                 
                 add(viewController: feedDetailViewController, top: isTop)
                 
-                supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
+                if appDelegate.feedDetailNavigationController != nil {
+                    supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
+                }
+                
                 supplementaryFeedDetailViewController = appDelegate.feedDetailViewController
                 appDelegate.feedDetailNavigationController = nil
                 appDelegate.feedDetailViewController = feedDetailViewController
@@ -393,33 +538,11 @@ private extension DetailViewController {
             
             dividerViewBottomConstraint.constant = dividerPosition
             
-            appDelegate.updateSplitBehavior()
+            appDelegate.updateSplitBehavior(true)
+            wasGrid = false
         }
         
-        guard let storyPagesViewController else {
-            return
-        }
-        
-        let appropriateSuperview = isTop ? bottomContainerView : topContainerView
-        
-        if storyPagesViewController.view.superview != appropriateSuperview {
-            add(viewController: storyPagesViewController, top: !isTop)
-            
-            adjustForAutoscroll()
-            
-//            if isTop {
-//                bottomContainerView.addSubview(traverseView)
-//                bottomContainerView.addSubview(autoscrollView)
-//            } else {
-//                topContainerView.addSubview(traverseView)
-//                topContainerView.addSubview(autoscrollView)
-//            }
-        }
-//
-//        traverseTopContainerBottomConstraint.isActive = !isTop
-//        traverseBottomContainerBottomConstraint.isActive = isTop
-//        autoscrollTopContainerBottomConstraint.isActive = !isTop
-//        autoscrollBottomContainerBottomConstraint.isActive = isTop
+        appDelegate.feedDetailViewController.changedLayout()
     }
     
     func add(viewController: UIViewController?, top: Bool) {
@@ -430,12 +553,14 @@ private extension DetailViewController {
         }
     }
     
-    func add(viewController: UIViewController?, to containerView: UIView) {
+    func add(viewController: UIViewController?, to containerView: UIView, of containerController: UIViewController? = nil) {
         guard let viewController else {
             return
         }
         
-        addChild(viewController)
+        let containerController = containerController ?? self
+        
+        containerController.addChild(viewController)
         
         containerView.addSubview(viewController.view)
         
@@ -445,7 +570,7 @@ private extension DetailViewController {
         viewController.view.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
         viewController.view.bottomAnchor.constraint(equalTo: containerView.bottomAnchor).isActive = true
         
-        viewController.didMove(toParent: self)
+        viewController.didMove(toParent: containerController)
     }
     
     func remove(viewController: UIViewController?) {

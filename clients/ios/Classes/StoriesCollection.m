@@ -97,6 +97,10 @@
     self.savedSearchQuery = fromCollection.savedSearchQuery;
 }
 
+- (BOOL)isRiverOrSocial {
+    return self.isRiverView || self.isSavedView || self.isReadView || self.isWidgetView || self.isSocialView || self.isSocialRiverView;
+}
+
 #pragma mark - Story Traversal
 
 - (BOOL)isStoryUnread:(NSDictionary *)story {
@@ -269,6 +273,20 @@
     }
 }
 
+- (NSString *)activeStoryTitlesPosition {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSString *positionPrefDefault = [userPreferences stringForKey:@"story_titles_position"];
+    NSString *positionPref = [userPreferences stringForKey:[self storyTitlesPositionKey]];
+    
+    if (positionPref) {
+        return positionPref;
+    } else if (positionPrefDefault) {
+        return positionPrefDefault;
+    } else {
+        return @"titles_on_left";
+    }
+}
+
 - (NSString *)activeStoryView {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSString *storyViewPref = [userPreferences stringForKey:[self storyViewKey]];
@@ -306,6 +324,14 @@
         return [NSString stringWithFormat:@"folder:%@:scroll_read_filter", self.activeFolder];
     } else {
         return [NSString stringWithFormat:@"%@:scroll_read_filter", [self.activeFeed objectForKey:@"id"]];
+    }
+}
+
+- (NSString *)storyTitlesPositionKey {
+    if (self.isRiverView) {
+        return [NSString stringWithFormat:@"folder:%@:story_titles_position", self.activeFolder];
+    } else {
+        return [NSString stringWithFormat:@"%@:story_titles_position", [self.activeFeed objectForKey:@"id"]];
     }
 }
 
@@ -348,6 +374,10 @@
 #pragma mark - Story Management
 
 - (void)addStories:(NSArray *)stories {
+    if (self.activeFeedStories == nil) {
+        NSLog(@"addStories: activeFeedStories was nil!");
+        self.activeFeedStories = [NSMutableArray array];
+    }
     self.activeFeedStories = [self.activeFeedStories arrayByAddingObjectsFromArray:stories];
     self.storyCount = (int)[self.activeFeedStories count];
     [self calculateStoryLocations];
@@ -398,6 +428,10 @@
     NSString *hash = story[@"story_hash"];
     NSString *title = story[@"story_title"];
     
+    if (!hash) {
+        NSLog(@"🔧 trying to sync as read with no hash: %@: %@", hash, title);  // log
+        return;
+    }
     if (self.recentlyReadHashes[hash]) {
         NSLog(@"🔧 trying to sync as read when already read: %@: %@", hash, title);  // log
         return;

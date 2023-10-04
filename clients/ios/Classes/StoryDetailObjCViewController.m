@@ -242,10 +242,10 @@
             [self fetchTextView];
         } else if (markUnread) {
             [appDelegate.storiesCollection toggleStoryUnread];
-            [appDelegate.feedDetailViewController reloadData];
+            [appDelegate.feedDetailViewController reloadWithSizing];
         } else if (saveStory) {
             [appDelegate.storiesCollection toggleStorySaved];
-            [appDelegate.feedDetailViewController reloadData];
+            [appDelegate.feedDetailViewController reloadWithSizing];
         }
         inDoubleTap = NO;
         [self performSelector:@selector(deferredEnableScrolling) withObject:nil afterDelay:0.0];
@@ -287,7 +287,7 @@
 }
 
 - (void)deferredEnableScrolling {
-    self.webView.scrollView.scrollEnabled = YES;
+    self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhone || !self.appDelegate.detailViewController.storyTitlesInGrid;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -429,6 +429,10 @@
     scrollPct = 0;
     hasScrolled = NO;
     
+    if (appDelegate.storyPagesViewController.currentPage == self) {
+        self.appDelegate.feedDetailViewController.storyHeight = 200;
+    }
+    
     NSString *shareBarString = [self getShareBar];
     NSString *commentString = [self getComments];
     NSString *headerString;
@@ -503,6 +507,24 @@
     contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
                          contentWidthClass, (int)floorf(CGRectGetWidth(self.view.frame))];
 #endif
+    
+    if (appDelegate.feedsViewController.isOffline) {
+        NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
+        NSArray *imageUrls = [appDelegate.activeCachedImages objectForKey:storyHash];
+        if (imageUrls) {
+            NSString *storyImagesDirectory = [appDelegate.documentsURL.path
+                                              stringByAppendingPathComponent:@"story_images"];
+            for (NSString *imageUrl in imageUrls) {
+                NSURL *cachedUrl = [NSURL fileURLWithPath:storyImagesDirectory];
+                cachedUrl = [cachedUrl URLByAppendingPathComponent:[Utilities md5:imageUrl]];
+                cachedUrl = [cachedUrl URLByAppendingPathExtension:imageUrl.pathExtension];
+                
+                storyContent = [storyContent
+                                stringByReplacingOccurrencesOfString:imageUrl
+                                withString:cachedUrl.absoluteString];
+            }
+        }
+    }
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [self.activeStory
@@ -1385,8 +1407,7 @@
             
             NSIndexPath *reloadIndexPath = appDelegate.feedDetailViewController.storyTitlesTable.indexPathForSelectedRow;
             if (reloadIndexPath != nil) {
-                [appDelegate.feedDetailViewController.storyTitlesTable reloadRowsAtIndexPaths:@[reloadIndexPath]
-                                                                             withRowAnimation:UITableViewRowAnimationNone];
+                [appDelegate.feedDetailViewController reloadIndexPath:reloadIndexPath withRowAnimation:UITableViewRowAnimationNone];
             }
         }
         
@@ -1532,7 +1553,7 @@
                     NSInteger position = floor(self->scrollPct * strongSelf.webView.scrollView.contentSize.height);
                     NSInteger maxPosition = (NSInteger)(floor(strongSelf.webView.scrollView.contentSize.height - strongSelf.webView.frame.size.height));
                     if (position > maxPosition) {
-                        NSLog(@"Position too far, scaling back to max position: %ld > %ld", (long)position, (long)maxPosition);
+                        NSLog(@"Position too far, scaling back to max position: %@ > %@", @(position), @(maxPosition));
                         position = maxPosition;
                     }
                     if (position > 0) {
@@ -1814,6 +1835,8 @@
     
     [self.activityIndicator stopAnimating];
     
+    self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhone || !self.appDelegate.detailViewController.storyTitlesInGrid;
+    
     [self loadHTMLString:self.fullStoryHTML];
     self.fullStoryHTML = nil;
     self.hasStory = YES;
@@ -1831,6 +1854,13 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         self.webView.hidden = NO;
         [self.webView setNeedsDisplay];
+        
+        if (self == self.appDelegate.storyPagesViewController.currentPage && !self.appDelegate.detailViewController.isPhone && self.appDelegate.detailViewController.storyTitlesInGrid) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                [self.appDelegate.feedDetailViewController changedStoryHeight:self.webView.scrollView.contentSize.height];
+                [self.appDelegate.feedDetailViewController reload];
+            });
+        }
     });
 }
 
@@ -2319,7 +2349,9 @@
 - (void)scrolltoComment {
     NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", currentUserId];
-    [self.webView evaluateJavaScript:jsFlashString completionHandler:nil];
+    if ([self getComments].length) {
+        [self.webView evaluateJavaScript:jsFlashString completionHandler:nil];
+    }
 }
 
 - (void)tryScrollingDown:(BOOL)down {
