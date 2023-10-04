@@ -42,4 +42,8 @@ class SplitViewDelegate: NSObject, UISplitViewControllerDelegate {
             return proposedDisplayMode
         }
     }
+    
+    func splitViewController(_ svc: UISplitViewController, willChangeTo displayMode: UISplitViewController.DisplayMode) {
+        
+    }
 }

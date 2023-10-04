@@ -24,6 +24,7 @@ typedef void (^MenuItemSegmentedHandler)(NSUInteger selectedIndex);
 - (void)addSegmentedControlWithTitles:(NSArray *)titles selectIndex:(NSUInteger)selectIndex selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSegmentedHandler)handler;
 - (void)addSegmentedControlWithTitles:(NSArray *)titles values:(NSArray *)values preferenceKey:(NSString *)preferenceKey selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSegmentedHandler)handler;
 - (void)addSegmentedControlWithTitles:(NSArray *)titles values:(NSArray *)values defaultValue:(NSString *)defaultValue preferenceKey:(NSString *)preferenceKey selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSegmentedHandler)handler;
+- (void)addSegmentedControlWithTitles:(NSArray *)titles values:(NSArray *)values defaultValue:(NSString *)defaultValue selectValue:(id)value preferenceKey:(NSString *)preferenceKey selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSegmentedHandler)handler;
 - (void)addThemeSegmentedControl;
 
 - (void)showFromNavigationController:(UINavigationController *)navigationController barButtonItem:(UIBarButtonItem *)barButtonItem;

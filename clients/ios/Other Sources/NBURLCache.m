@@ -12,7 +12,7 @@
 @implementation NBURLCache
 
 - (NSString *)substitutePath:(NSString *)pathString {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *storyImagesDirectory = [[paths objectAtIndex:0]
                                       stringByAppendingPathComponent:@"story_images"];
     NSString *cachedImage = [[storyImagesDirectory

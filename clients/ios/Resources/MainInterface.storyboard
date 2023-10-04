@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r">
     <device id="ipad11_0rounded" orientation="landscape" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -69,8 +69,8 @@
                                 </constraints>
                                 <variation key="default">
                                     <mask key="constraints">
-                                        <exclude reference="WIp-Ao-Khg"/>
                                         <exclude reference="fbc-Ms-uFK"/>
+                                        <exclude reference="WIp-Ao-Khg"/>
                                     </mask>
                                 </variation>
                             </view>
@@ -315,7 +315,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="y78-Tv-B24" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <customObject id="9g1-OD-yDA" customClass="HorizontalPageDelegate" customModule="NewsBlur" customModuleProvider="target"/>
             </objects>
-            <point key="canvasLocation" x="181" y="2603"/>
+            <point key="canvasLocation" x="181" y="3488"/>
         </scene>
         <!--Vertical Page View Controller-->
         <scene sceneID="jpJ-mR-ccR">
@@ -329,7 +329,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rdh-By-bOV" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <customObject id="aFI-Ht-5Fb" customClass="VerticalPageDelegate" customModule="NewsBlur" customModuleProvider="target"/>
             </objects>
-            <point key="canvasLocation" x="181" y="3363"/>
+            <point key="canvasLocation" x="181" y="4247"/>
         </scene>
         <!--Feed Detail View Controller-->
         <scene sceneID="P4B-M4-aIa">

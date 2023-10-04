@@ -55,6 +55,11 @@
 @property (nonatomic) IBOutlet UIView *messageView;
 @property (nonatomic) IBOutlet UILabel *messageLabel;
 @property (nonatomic, strong) id standardInteractivePopGestureDelegate;
+//@property (nonatomic, readonly) NSIndexPath *selectedIndexPath;
+@property (nonatomic) CGFloat storyHeight;
+@property (nonatomic, readonly) BOOL canPullToRefresh;
+@property (nonatomic, readonly) BOOL isMarkReadOnScroll;
+@property (nonatomic, readonly) BOOL isLegacyTable;
 
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
@@ -66,7 +71,14 @@
 @property (nonatomic, readwrite) BOOL invalidateFontCache;
 @property (nonatomic, readwrite) BOOL cameFromFeedsList;
 
-- (void)reloadData;
+//- (void)changedStoryHeight:(CGFloat)storyHeight;
+- (void)loadingFeed;
+- (void)changedLayout;
+- (void)reload;
+- (void)reloadImmediately;
+- (void)reloadTable;
+- (void)reloadIndexPath:(NSIndexPath *)indexPath withRowAnimation:(UITableViewRowAnimation)rowAnimation;
+- (void)reloadWithSizing;
 - (void)resetFeedDetail;
 - (void)reloadStories;
 - (void)fetchNextPage:(void(^)(void))callback;
@@ -78,17 +90,26 @@
 - (void)flashInfrequentStories;
 - (void)gotoFolder:(NSString *)folder feedID:(NSString *)feedID;
 
+//- (CGFloat)heightForRowAtIndexPath:(NSIndexPath *)indexPath;
+
+//- (void)prepareFeedCell:(FeedDetailCollectionCell *)cell indexPath:(NSIndexPath *)indexPath;
+//- (void)prepareStoryCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath;
+//- (void)prepareLoadingCell:(UICollectionViewCell *)cell indexPath:(NSIndexPath *)indexPath;
+
 - (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
 - (void)changeIntelligence:(NSInteger)newLevel;
-- (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow;
+- (NSDictionary *)getStoryAtLocation:(NSInteger)storyLocation;
+- (NSInteger)storyLocationForIndexPath:(NSIndexPath *)indexPath;
+- (NSIndexPath *)indexPathForStoryLocation:(NSInteger)location;
+
 - (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle;
 - (void)checkScroll;
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation;
 
 - (void)fadeSelectedCell;
 - (void)fadeSelectedCell:(BOOL)deselect;
-- (void)loadStory:(FeedDetailTableCell *)cell atRow:(NSInteger)row;
+- (void)loadStoryAtRow:(NSInteger)row;
 - (void)redrawUnreadStory;
 - (IBAction)doOpenMarkReadMenu:(id)sender;
 - (IBAction)doOpenSettingsMenu:(id)sender;
@@ -102,6 +123,7 @@
 - (void)changeActiveFeedDetailRow;
 - (void)instafetchFeed;
 - (void)changeActiveStoryTitleCellLayout;
+- (void)didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
 - (void)loadFaviconsFromActiveFeed;
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older;
 - (void)finishMarkAsSaved:(NSDictionary *)params;
