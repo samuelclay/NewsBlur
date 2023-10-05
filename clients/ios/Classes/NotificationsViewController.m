@@ -85,7 +85,7 @@
 viewForHeaderInSection:(NSInteger)section {
     int headerLabelHeight, folderImageViewY;
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!self.isPhone) {
         headerLabelHeight = 36;
         folderImageViewY = 8;
     } else {

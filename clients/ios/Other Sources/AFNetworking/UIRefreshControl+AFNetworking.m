@@ -23,7 +23,7 @@
 #import "UIRefreshControl+AFNetworking.h"
 #import <objc/runtime.h>
 
-#if TARGET_OS_IOS
+#if TARGET_OS_IOS && !TARGET_OS_MACCATALYST
 
 #import "AFURLSessionManager.h"
 

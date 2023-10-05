@@ -108,7 +108,7 @@
     [self.scrollView setAlwaysBounceHorizontal:self.isHorizontal];
     [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!self.isPhone) {
         self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
     
@@ -663,7 +663,7 @@
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [self hideNotifier];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!self.isPhone) {
         [currentPage realignScroll];
     }
 }
@@ -772,7 +772,7 @@
         
         if (pageIndex >= 0) {
             [self changePage:pageIndex animated:NO];
-        } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        } else if (!self.isPhone) {
             // If the story can't be found, don't show anything; uncomment this to instead show the first unread story:
 //            [self doNextUnreadStory:nil];
         } else {
@@ -1218,7 +1218,7 @@
     
     [appDelegate.storiesCollection pushReadStory:[appDelegate.activeStory objectForKey:@"story_hash"]];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!self.isPhone) {
         if (appDelegate.detailViewController.storyTitlesOnLeft) {
             appDelegate.detailViewController.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
                                                        originalStoryButton,

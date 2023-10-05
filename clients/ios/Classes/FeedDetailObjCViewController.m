@@ -106,7 +106,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     if (@available(iOS 15.0, *)) {
         self.storyTitlesTable.allowsFocus = NO;
     }
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!self.isPhone) {
         self.storyTitlesTable.dragDelegate = self;
         self.storyTitlesTable.dragInteractionEnabled = YES;
     }
@@ -119,10 +119,12 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                         initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     spacer2BarButton.width = 0;
     
+#if !TARGET_OS_MACCATALYST
     self.refreshControl = [UIRefreshControl new];
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
     [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
+#endif
     
     self.searchBar = [[UISearchBar alloc]
                  initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.storyTitlesTable.frame), 44.)];
@@ -434,7 +436,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     if (storiesCollection == nil) {
         NSString *appOpening = [userPreferences stringForKey:@"app_opening"];
         
-        if ([appOpening isEqualToString:@"feeds"] && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if ([appOpening isEqualToString:@"feeds"] && !self.isPhone) {
             self.messageLabel.text = @"Select a feed to read";
             self.messageView.hidden = NO;
         }
@@ -510,11 +512,13 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         [self.searchBar setShowsCancelButton:NO animated:YES];
     }
     
+#if !TARGET_OS_MACCATALYST
     if (self.canPullToRefresh) {
         self.storyTitlesTable.refreshControl = self.refreshControl;
     } else {
         self.storyTitlesTable.refreshControl = nil;
     }
+#endif
     
     [self updateTheme];
     
@@ -1440,7 +1444,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
             NSString *feedOpening = [preferences stringForKey:@"feed_opening"];
             
-            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && feedOpening == nil) {
+            if (!self.isPhone && feedOpening == nil) {
                 feedOpening = @"story";
             }
             
@@ -3068,8 +3072,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         self.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
     }
     
+#if !TARGET_OS_MACCATALYST
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
+#endif
     
     self.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
     self.searchBar.tintColor = UIColorFromRGB(0xffffff);
@@ -3165,6 +3171,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     return appDelegate.storiesCollection.activeFeed != nil && !river && !infrequent && !saved && !read && !widget;
 }
 
+#if !TARGET_OS_MACCATALYST
 - (void)refresh:(UIRefreshControl *)refreshControl {
     if (self.canPullToRefresh) {
         self.inPullToRefresh_ = YES;
@@ -3173,10 +3180,13 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [self finishRefresh];
     }
 }
+#endif
 
 - (void)finishRefresh {
     self.inPullToRefresh_ = NO;
+#if !TARGET_OS_MACCATALYST
     [self.refreshControl endRefreshing];
+#endif
 }
 
 #pragma mark -

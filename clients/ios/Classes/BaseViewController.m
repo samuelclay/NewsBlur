@@ -177,4 +177,34 @@
     return UIStatusBarStyleLightContent;
 }
 
+- (BOOL)isPhone {
+    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone;
+}
+
+- (BOOL)isMac {
+    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomMac;
+}
+
+- (BOOL)isVision {
+    if (@available(iOS 17.0, *)) {
+        return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomVision;
+    } else {
+        return NO;
+    }
+}
+
+- (BOOL)isPortrait {
+    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
+    if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (BOOL)isCompactWidth {
+    return self.view.window.windowScene.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact;
+    //return self.compactWidth > 0.0;
+}
+
 @end

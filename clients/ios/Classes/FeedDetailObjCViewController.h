@@ -50,7 +50,9 @@
 @property (nonatomic) IBOutlet UIBarButtonItem * titleImageBarButton;
 @property (nonatomic, retain) NBNotifier *notifier;
 @property (nonatomic, retain) StoriesCollection *storiesCollection;
+#if !TARGET_OS_MACCATALYST
 @property (nonatomic) UIRefreshControl *refreshControl;
+#endif
 @property (nonatomic) UISearchBar *searchBar;
 @property (nonatomic) IBOutlet UIView *messageView;
 @property (nonatomic) IBOutlet UILabel *messageLabel;
