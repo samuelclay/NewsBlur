@@ -171,7 +171,7 @@ NSArray * AFQueryStringPairsFromKeyAndValue(NSString *key, id value) {
 
 #pragma mark -
 
-static NSArray * AFHTTPRequestSerializerObservedKeyPaths() {
+static NSArray * AFHTTPRequestSerializerObservedKeyPaths(void) {
     static NSArray *_AFHTTPRequestSerializerObservedKeyPaths = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -591,7 +591,7 @@ forHTTPHeaderField:(NSString *)field
 
 #pragma mark -
 
-static NSString * AFCreateMultipartFormBoundary() {
+static NSString * AFCreateMultipartFormBoundary(void) {
     return [NSString stringWithFormat:@"Boundary+%08X%08X", arc4random(), arc4random()];
 }
 

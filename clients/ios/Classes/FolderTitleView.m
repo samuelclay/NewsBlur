@@ -213,7 +213,7 @@
     
     if (section == NewsBlurTopSectionInfrequentSiteStories) {
         folderImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!appDelegate.isPhone) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;
@@ -221,7 +221,7 @@
         allowLongPress = YES;
     } else if (section == NewsBlurTopSectionAllStories) {
         folderImage = [UIImage imageNamed:@"all-stories"];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!appDelegate.isPhone) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;
@@ -229,42 +229,42 @@
         allowLongPress = NO;
     } else if ([folderName isEqual:@"river_global"]) {
         folderImage = [UIImage imageNamed:@"global-shares"];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!appDelegate.isPhone) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 8;
         }
     } else if ([folderName isEqual:@"river_blurblogs"]) {
         folderImage = [UIImage imageNamed:@"all-shares"];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!appDelegate.isPhone) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 8;
         }
     } else if ([folderName isEqual:@"saved_searches"]) {
         folderImage = [UIImage imageNamed:@"search"];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!appDelegate.isPhone) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;
         }
     } else if ([folderName isEqual:@"saved_stories"]) {
         folderImage = [UIImage imageNamed:@"saved-stories"];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!appDelegate.isPhone) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;
         }
     } else if ([folderName isEqual:@"read_stories"]) {
         folderImage = [UIImage imageNamed:@"indicator-unread"];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!appDelegate.isPhone) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;
         }
     } else if ([folderName isEqual:@"widget_stories"]) {
         folderImage = [UIImage imageNamed:@"g_icn_folder_widget.png"];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!appDelegate.isPhone) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 7;
@@ -275,7 +275,7 @@
         } else {
             folderImage = [UIImage imageNamed:@"folder-open"];
         }
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!appDelegate.isPhone) {
         } else {
             folderImageViewX = 7;
         }

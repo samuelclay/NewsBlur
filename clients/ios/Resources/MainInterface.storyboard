@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r" initialMenu="YWi-Ju-M3z">
     <device id="ipad11_0rounded" orientation="landscape" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="UIMenu" message="Requires Xcode 11 or later." minToolsVersion="11.0" requiredIntegratedClassName="UICommandDiff"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -14,7 +15,7 @@
             <objects>
                 <viewController storyboardIdentifier="DetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="djW-7k-haK" customClass="DetailViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jTZ-4O-xyT">
-                        <rect key="frame" x="0.0" y="0.0" width="818.5" height="834"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bPa-u1-Aml">
                                 <rect key="frame" x="0.0" y="74" width="1194" height="580"/>
@@ -110,7 +111,7 @@
             <objects>
                 <viewController storyboardIdentifier="FeedsViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="c70-P4-4n6" customClass="FeedsViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="B68-yP-FpJ">
-                        <rect key="frame" x="0.0" y="0.0" width="420" height="834"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hRx-bd-6Da">
@@ -239,12 +240,23 @@
             </objects>
             <point key="canvasLocation" x="180.90452261306532" y="285.61151079136692"/>
         </scene>
+        <!--Root-->
+        <scene sceneID="eNE-X1-NXV">
+            <objects>
+                <menu isSystemItem="YES" title="Root" identifier="com.apple.menu.root" id="YWi-Ju-M3z" sceneMemberID="viewController">
+                    <systemMenuChildDeletions>
+                        <menuDeletion anchor="com.apple.menu.format"/>
+                    </systemMenuChildDeletions>
+                </menu>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="J28-e1-gcC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1484" y="632"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="gvC-iq-nYU">
             <objects>
                 <navigationController storyboardIdentifier="FeedsNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="TEt-aw-KDr" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="FYM-Eb-jEE">
-                        <rect key="frame" x="0.0" y="24" width="420" height="50"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -276,7 +288,6 @@
             <objects>
                 <navigationController storyboardIdentifier="FeedDetailNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="u8Q-0B-JY9" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Sc3-NO-Rlz">
-                        <rect key="frame" x="0.0" y="24" width="375" height="50"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -292,7 +303,6 @@
             <objects>
                 <navigationController storyboardIdentifier="DetailNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="HsP-cn-nIY" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Noh-2M-34G">
-                        <rect key="frame" x="0.0" y="24" width="818.5" height="50"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -336,7 +346,7 @@
             <objects>
                 <viewController storyboardIdentifier="FeedDetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="gfj-2g-i9p" customClass="FeedDetailViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Qlc-Qa-4j4">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="760"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="FeedDetailTable" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="HYy-Wb-YEm">
@@ -405,7 +415,7 @@
             <objects>
                 <viewController id="afA-W0-XsQ" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="jBw-7b-YGl">
-                        <rect key="frame" x="0.0" y="0.0" width="1194" height="580"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="xqp-qa-ugn"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -420,7 +430,7 @@
             <objects>
                 <viewController id="1tQ-fy-A3c" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="jdW-Cp-Pkg">
-                        <rect key="frame" x="0.0" y="0.0" width="1194" height="168"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="k4r-Od-mPr"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>

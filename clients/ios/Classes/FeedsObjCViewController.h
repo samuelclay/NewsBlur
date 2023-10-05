@@ -74,7 +74,9 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 @property (nonatomic, readwrite) BOOL viewShowingAllFeeds;
 @property (nonatomic, readwrite) BOOL interactiveFeedDetailTransition;
 @property (nonatomic, readwrite) BOOL isOffline;
+#if !TARGET_OS_MACCATALYST
 @property (nonatomic) UIRefreshControl *refreshControl;
+#endif
 @property (nonatomic) UISearchBar *searchBar;
 @property (nonatomic, strong) NSArray<NSString *> *searchFeedIds;
 @property (nonatomic) NSCache *imageCache;

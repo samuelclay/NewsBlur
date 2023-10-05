@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -5539,7 +5539,9 @@
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_INSTALLED_PRODUCT = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Other Sources/BridgingHeader.h";
 				SWIFT_OBJC_INTERFACE_HEADER_NAME = "NewsBlur-Swift.h";
 				TARGETED_DEVICE_FAMILY = "1,2,6";
@@ -5586,7 +5588,9 @@
 				PRODUCT_NAME = "NB Alpha";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Other Sources/BridgingHeader.h";
 				SWIFT_OBJC_INTERFACE_HEADER_NAME = "NewsBlur-Swift.h";
 				TARGETED_DEVICE_FAMILY = "1,2,6";

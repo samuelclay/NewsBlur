@@ -99,7 +99,7 @@
             [self informError:@"Could not load trainer"];
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^() {
-                               if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+                               if (!self.isPhone) {
                                    [self.appDelegate hidePopover];
                                } else {
                                    [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];

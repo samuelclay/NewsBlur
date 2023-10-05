@@ -24,8 +24,8 @@
 #import "JNWThrottledBlock.h"
 #import "NewsBlur-Swift.h"
 
-#define iPadPro12 ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && ([UIScreen mainScreen].bounds.size.height == 1366 || [UIScreen mainScreen].bounds.size.width == 1366))
-#define iPadPro10 ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && ([UIScreen mainScreen].bounds.size.height == 1112 || [UIScreen mainScreen].bounds.size.width == 1112))
+#define iPadPro12 (!self.isPhone && ([UIScreen mainScreen].bounds.size.height == 1366 || [UIScreen mainScreen].bounds.size.width == 1366))
+#define iPadPro10 (!self.isPhone && ([UIScreen mainScreen].bounds.size.height == 1112 || [UIScreen mainScreen].bounds.size.width == 1112))
 
 @interface StoryDetailObjCViewController ()
 
@@ -99,7 +99,7 @@
     [self.webView.scrollView setAutoresizingMask:(UIViewAutoresizingFlexibleWidth |
                                                      UIViewAutoresizingFlexibleHeight)];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!self.isPhone) {
         self.webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
     
@@ -401,9 +401,13 @@
     static NSURL *baseURL;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+#if TARGET_OS_MACCATALYST
+        baseURL = [NSBundle mainBundle].resourceURL;
+#else
         baseURL = [NSBundle mainBundle].bundleURL;
+#endif
     });
-
+    
     [self.webView loadHTMLString:html baseURL:baseURL];
 }
 
@@ -480,7 +484,7 @@
     
 #if TARGET_OS_MACCATALYST
     // CATALYST: probably will want to add custom CSS for Macs.
-    contentWidthClass = @"NB-ipad-wide NB-ipad-pro-12-wide NB-width-768";
+    contentWidthClass = @"NB-ipad-wide NB-ipad-pro-12-wide";
 #else
     if (UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
         if (iPadPro12) {
@@ -503,10 +507,10 @@
     } else {
         contentWidthClass = @"NB-iphone";
     }
+#endif
     
     contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
                          contentWidthClass, (int)floorf(CGRectGetWidth(self.view.frame))];
-#endif
     
     if (appDelegate.feedsViewController.isOffline) {
         NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
@@ -2399,7 +2403,7 @@
 
 #if TARGET_OS_MACCATALYST
     // CATALYST: probably will want to add custom CSS for Macs.
-    contentWidthClass = @"NB-ipad-wide NB-ipad-pro-12-wide NB-width-768";
+    contentWidthClass = @"NB-ipad-wide NB-ipad-pro-12-wide";
 #else
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     
@@ -2424,10 +2428,10 @@
     } else {
         contentWidthClass = @"NB-iphone";
     }
+#endif
     
     contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
                          contentWidthClass, (int)floorf(CGRectGetWidth(webView.scrollView.bounds))];
-#endif
     
     NSString *alternateViewClass = @"";
     if (!self.isPhoneOrCompact) {

@@ -185,20 +185,10 @@ class DetailViewController: BaseViewController {
         }
     }
     
-    /// Returns `true` if the device is an iPhone, otherwise `false`.
-    @objc var isPhone: Bool {
-        return UIDevice.current.userInterfaceIdiom == .phone
-    }
-    
-    /// Returns `true` if the window is in portrait orientation, otherwise `false`.
-    @objc var isPortraitOrientation: Bool {
-        return view.window?.windowScene?.interfaceOrientation.isPortrait ?? false
-    }
-    
     /// Position of the divider between the views.
     var dividerPosition: CGFloat {
         get {
-            let key = isPortraitOrientation ? Key.verticalPosition : Key.horizontalPosition
+            let key = isPortrait ? Key.verticalPosition : Key.horizontalPosition
             let value = CGFloat(UserDefaults.standard.float(forKey: key))
             
             if value == 0 {
@@ -212,7 +202,7 @@ class DetailViewController: BaseViewController {
                 return
             }
             
-            let key = isPortraitOrientation ? Key.verticalPosition : Key.horizontalPosition
+            let key = isPortrait ? Key.verticalPosition : Key.horizontalPosition
             
             UserDefaults.standard.set(Float(newValue), forKey: key)
         }
@@ -452,6 +442,10 @@ class DetailViewController: BaseViewController {
 private extension DetailViewController {
     func checkViewControllers() {
         let isTop = layout == .top
+        
+#if targetEnvironment(macCatalyst)
+//        splitViewController?.primaryBackgroundStyle = .sidebar //TODO: work in progress
+#endif
         
         if layout != .grid || isPhone {
             storyPagesViewController = listStoryPagesViewController

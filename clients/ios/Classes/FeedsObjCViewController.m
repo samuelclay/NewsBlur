@@ -113,12 +113,14 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.rowHeights = [NSMutableDictionary dictionary];
     self.folderTitleViews = [NSMutableDictionary dictionary];
     
+#if !TARGET_OS_MACCATALYST
     self.refreshControl = [UIRefreshControl new];
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
     [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
     self.feedTitlesTable.refreshControl = self.refreshControl;
     self.feedViewToolbar.translatesAutoresizingMaskIntoConstraints = NO;
+#endif
     
     self.searchBar = [[UISearchBar alloc]
                       initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.feedTitlesTable.frame), 44.)];
@@ -169,7 +171,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
                                                                UIColorFromFixedRGB(0x4C4D4A)}
                                                 forState:UIControlStateHighlighted];
+#if TARGET_OS_MACCATALYST
+//    self.view.superview.backgroundColor = UIColor.clearColor;
+//    self.view.backgroundColor = UIColor.clearColor;
+    self.view.backgroundColor = UIColorFromRGB(0xf4f4f4); //TODO: work in progress
+#else
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
+#endif
     self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
     self.navigationController.navigationBar.translucent = NO;
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
@@ -194,7 +202,12 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.notifier.topOffsetConstraint = [NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.feedViewToolbar attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
     [self.view addConstraint:self.notifier.topOffsetConstraint];
     
+#if TARGET_OS_MACCATALYST
+//    self.feedTitlesTable.backgroundColor = UIColor.clearColor;
+    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4); //TODO: work in progress
+#else
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+#endif
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
     self.feedTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
     self.feedTitlesTable.estimatedRowHeight = 0;
@@ -228,13 +241,20 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     [self resetRowHeights];
     
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad &&
+//    if (!self.isPhone &&
 //        !self.interactiveFeedDetailTransition) {
 //
 //        [appDelegate.masterContainerViewController transitionFromFeedDetail];
 //    }
 //    NSLog(@"Feed List timing 0: %f", [NSDate timeIntervalSinceReferenceDate] - start);
     [super viewWillAppear:animated];
+    
+#if TARGET_OS_MACCATALYST
+    UINavigationController *navController = self.navigationController;
+    UITitlebar *titlebar = navController.navigationBar.window.windowScene.titlebar;
+    
+    titlebar.titleVisibility = UITitlebarTitleVisibilityHidden;
+#endif
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSInteger intelligenceLevel = [userPreferences integerForKey:@"selectedIntelligence"];
@@ -421,7 +441,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 //    CGSize toolbarSize = [self.feedViewToolbar sizeThatFits:self.view.frame.size];
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//    if (!self.isPhone) {
 //        self.feedViewToolbar.frame = CGRectMake(-10.0f,
 //                                                CGRectGetHeight(self.view.frame) - toolbarSize.height,
 //                                                toolbarSize.width + 20, toolbarSize.height);
@@ -430,7 +450,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //    }
 //    self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.frame), CGRectGetMinY(self.feedViewToolbar.frame))};
     
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !appDelegate.isCompactWidth) {
+//    if (!self.isPhone && !appDelegate.isCompactWidth) {
 //        CGRect navFrame = appDelegate.navigationController.view.frame;
 //        CGFloat limit = appDelegate.masterContainerViewController.rightBorder.frame.origin.x + 1;
 //
@@ -452,7 +472,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         orientation = self.view.window.windowScene.interfaceOrientation;
     }
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !UIInterfaceOrientationIsLandscape(orientation)) {
+    if (!self.isPhone && !UIInterfaceOrientationIsLandscape(orientation)) {
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_yellow_icn.png"] forSegmentAtIndex:1];
         [self.intelligenceControl setImage:[Utilities imageNamed:@"indicator-focus" sized:14] forSegmentAtIndex:2];
         [self.intelligenceControl setImage:[Utilities imageNamed:@"unread_blue_icn.png" sized:14] forSegmentAtIndex:3];
@@ -488,6 +508,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 // allow keyboard comands
 - (BOOL)canBecomeFirstResponder {
     return YES;
+}
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+    
 }
 
 #pragma mark -
@@ -897,7 +921,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self refreshHeaderCounts];
     [appDelegate checkForFeedNotifications];
 
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && finished) {
+    if (!self.isPhone && finished) {
         [self cacheFeedRowLocations];
     }
     
@@ -1052,9 +1076,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     MenuViewController *viewController = [MenuViewController new];
     
-    [viewController addTitle:@"Preferences" iconName:@"dialog-preferences" iconColor:UIColorFromRGB(0xDF8566) selectionShouldDismiss:YES handler:^{
-        [self.appDelegate showPreferences];
-    }];
+    if (!self.isMac) {
+        [viewController addTitle:@"Preferences" iconName:@"dialog-preferences" iconColor:UIColorFromRGB(0xDF8566) selectionShouldDismiss:YES handler:^{
+            [self.appDelegate showPreferences];
+        }];
+    }
     
     [viewController addTitle:@"Mute Sites" iconName:@"menu_icn_mute.png" selectionShouldDismiss:YES handler:^{
         [self.appDelegate showMuteSites];
@@ -1295,9 +1321,15 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.feedViewToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
     self.addBarButton.tintColor = UIColorFromRGB(0x8F918B);
     self.settingsBarButton.tintColor = UIColorFromRGB(0x8F918B);
+#if TARGET_OS_MACCATALYST
+//    self.view.superview.backgroundColor = UIColor.clearColor;
+//    self.view.backgroundColor = UIColor.clearColor;
+    self.view.backgroundColor = UIColorFromRGB(0xf4f4f4); //TODO: work in progress
+#else
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
+#endif
     
     [[ThemeManager themeManager] updateSegmentedControl:self.intelligenceControl];
     
@@ -1322,7 +1354,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         self.searchBar.keyboardAppearance = UIKeyboardAppearanceDefault;
     }
     
+#if TARGET_OS_MACCATALYST
+//    self.feedTitlesTable.backgroundColor = UIColor.clearColor;
+    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4); //TODO: work in progress
+#else
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+#endif
+    
     [self reloadFeedTitlesTable];
     
     [self resetupGestures];
@@ -1678,7 +1716,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (CGFloat)calculateHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (appDelegate.hasNoSites) {
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!self.isPhone) {
             return kBlurblogTableViewRowHeight;            
         } else {
             return kPhoneBlurblogTableViewRowHeight;
@@ -1722,13 +1760,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     if ([folderName isEqualToString:@"river_blurblogs"] ||
         [folderName isEqualToString:@"river_global"]) { // blurblogs
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!self.isPhone) {
             height = kBlurblogTableViewRowHeight;
         } else {
             height = kPhoneBlurblogTableViewRowHeight;
         }
     } else {
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!self.isPhone) {
             height = kTableViewRowHeight;
         } else {
             height = kPhoneTableViewRowHeight;
@@ -2448,7 +2486,7 @@ heightForHeaderInSection:(NSInteger)section {
 	[hud hide:YES afterDelay:0.5];
     [self showExplainerOnEmptyFeedlist];
     
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//    if (!self.isPhone) {
 //        FeedDetailViewController *storiesModule = self.appDelegate.dashboardViewController.storiesModule;
 //
 //        storiesModule.storiesCollection.feedPage = 0;
@@ -2677,15 +2715,19 @@ heightForHeaderInSection:(NSInteger)section {
 #pragma mark -
 #pragma mark PullToRefresh
 
+#if !TARGET_OS_MACCATALYST
 - (void)refresh:(UIRefreshControl *)refreshControl {
     self.inPullToRefresh_ = YES;
     [appDelegate reloadFeedsView:NO];
     [appDelegate donateRefresh];
 }
+#endif
 
 - (void)finishRefresh {
     self.inPullToRefresh_ = NO;
+#if !TARGET_OS_MACCATALYST
     [self.refreshControl endRefreshing];
+#endif
 }
 
 - (void)refreshFeedList {

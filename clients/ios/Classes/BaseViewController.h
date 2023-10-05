@@ -1,8 +1,13 @@
 #import <UIKit/UIKit.h>
 #import "MBProgressHUD.h"
 
-@interface BaseViewController : UIViewController {
-}
+@interface BaseViewController : UIViewController
+
+@property (nonatomic, readonly) BOOL isPhone;
+@property (nonatomic, readonly) BOOL isMac;
+@property (nonatomic, readonly) BOOL isVision;
+@property (nonatomic, readonly) BOOL isPortrait;
+@property (nonatomic, readonly) BOOL isCompactWidth;
 
 - (void)informError:(id)error;
 - (void)informError:(id)error statusCode:(NSInteger)statusCode;

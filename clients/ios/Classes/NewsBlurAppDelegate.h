@@ -287,7 +287,6 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, readwrite) BOOL hasQueuedReadStories;
 @property (nonatomic, readwrite) BOOL hasQueuedSavedStories;
 @property (nonatomic, readonly) BOOL showingSafariViewController;
-@property (nonatomic, readonly) BOOL isCompactWidth;
 //@property (nonatomic) CGFloat compactWidth;
 
 @property (nonatomic, strong) BGAppRefreshTask *backgroundAppRefreshTask;
@@ -395,7 +394,6 @@ SFSafariViewControllerDelegate>  {
 - (BOOL)isSavedStoriesIntelligenceMode;
 - (NSArray *)allFeedIds;
 - (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle;
-- (BOOL)isPortrait;
 - (void)confirmLogout;
 - (void)showConnectToService:(NSString *)serviceName;
 - (void)showAlert:(UIAlertController *)alert withViewController:(UIViewController *)vc;
