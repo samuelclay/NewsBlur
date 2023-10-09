@@ -1,5 +1,6 @@
 package com.newsblur.activity
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.database.Cursor
@@ -22,7 +23,11 @@ import com.newsblur.databinding.ActivityReadingBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.Story
 import com.newsblur.fragment.ReadingItemFragment
+import com.newsblur.fragment.ReadingItemFragment.Companion.VERTICAL_SCROLL_DISTANCE_DP
 import com.newsblur.fragment.ReadingPagerFragment
+import com.newsblur.keyboard.KeyboardEvent
+import com.newsblur.keyboard.KeyboardListener
+import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_REBUILD
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_STATUS
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_STORY
@@ -42,7 +47,7 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
-abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListener {
+abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListener, KeyboardListener {
 
     @Inject
     lateinit var feedUtils: FeedUtils
@@ -84,6 +89,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
     private var isMultiWindowModeHack = false
 
     private val pageHistory = mutableListOf<Story>()
+    private val keyboardManager = KeyboardManager()
 
     private lateinit var volumeKeyNavigation: VolumeKeyNavigation
     private lateinit var intelState: StateFilter
@@ -136,7 +142,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         setupViews()
         setupListeners()
         setupObservers()
-        getActiveStoriesCursor(true)
+        getActiveStoriesCursor(this, true)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -164,11 +170,13 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         // this is not strictly necessary, since our first refresh with the fs will swap in
         // the correct session, but that can be delayed by sync backup, so we try here to
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
-        feedUtils.prepareReadingSession(fs, false)
+        feedUtils.prepareReadingSession(this, fs, false)
+        keyboardManager.addListener(this)
     }
 
     override fun onPause() {
         super.onPause()
+        keyboardManager.removeListener()
         if (isMultiWindowModeHack) {
             isMultiWindowModeHack = false
         } else {
@@ -218,9 +226,10 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         }
     }
 
-    private fun getActiveStoriesCursor(finishOnInvalidFs: Boolean = false) {
+    private fun getActiveStoriesCursor(context: Context, finishOnInvalidFs: Boolean = false) {
         fs?.let {
-            storiesViewModel.getActiveStories(it)
+            val cursorFilters = CursorFilters(context, it)
+            storiesViewModel.getActiveStories(it, cursorFilters)
         } ?: run {
             if (finishOnInvalidFs) {
                 Log.e(this.javaClass.name, "can't create activity, no feedset ready")
@@ -244,7 +253,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
         // swapCursor() will asynch process the new cursor and fully update the pager,
         // update child fragments, and then call pagerUpdated()
-        readingAdapter?.swapCursor(cursor, pager)
+        readingAdapter?.swapCursor(cursor)
 
         stories = cursor
 
@@ -281,7 +290,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         val position: Int = if (storyHash == FIND_FIRST_UNREAD) {
             readingAdapter!!.findFirstUnread()
         } else {
-            readingAdapter!!.findHash(storyHash)
+            readingAdapter!!.findHash(storyHash!!)
         }
 
         if (stopLoading) return
@@ -385,7 +394,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
             }
         }
         if (updateType and UPDATE_STORY != 0) {
-            getActiveStoriesCursor()
+            getActiveStoriesCursor(this)
             updateOverlayNav()
         }
 
@@ -737,6 +746,10 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         return if (isVolumeKeyNavigationEvent(keyCode)) {
             processVolumeKeyNavigationEvent(keyCode)
             true
+        } else if (KeyboardManager.hasHardwareKeyboard(this)) {
+            val isKnownKeyCode = keyboardManager.isKnownKeyCode(keyCode)
+            if (isKnownKeyCode) true
+            else super.onKeyDown(keyCode, event)
         } else {
             super.onKeyDown(keyCode, event)
         }
@@ -748,24 +761,32 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
     private fun processVolumeKeyNavigationEvent(keyCode: Int) {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && volumeKeyNavigation == VolumeKeyNavigation.DOWN_NEXT ||
                 keyCode == KeyEvent.KEYCODE_VOLUME_UP && volumeKeyNavigation == VolumeKeyNavigation.UP_NEXT) {
-            if (pager == null) return
-            val nextPosition = pager!!.currentItem + 1
-            if (nextPosition < readingAdapter!!.count) {
-                try {
-                    pager!!.currentItem = nextPosition
-                } catch (e: Exception) {
-                    // Just in case cursor changes.
-                }
-            }
+            nextStory()
         } else {
-            if (pager == null) return
-            val nextPosition = pager!!.currentItem - 1
-            if (nextPosition >= 0) {
-                try {
-                    pager!!.currentItem = nextPosition
-                } catch (e: Exception) {
-                    // Just in case cursor changes.
-                }
+            previousStory()
+        }
+    }
+
+    private fun nextStory() {
+        if (pager == null) return
+        val nextPosition = pager!!.currentItem + 1
+        if (nextPosition < readingAdapter!!.count) {
+            try {
+                pager!!.currentItem = nextPosition
+            } catch (e: Exception) {
+                // Just in case cursor changes.
+            }
+        }
+    }
+
+    private fun previousStory() {
+        if (pager == null) return
+        val nextPosition = pager!!.currentItem - 1
+        if (nextPosition >= 0) {
+            try {
+                pager!!.currentItem = nextPosition
+            } catch (e: Exception) {
+                // Just in case cursor changes.
             }
         }
     }
@@ -774,6 +795,10 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         // Required to prevent the default sound playing when the volume key is pressed
         return if (isVolumeKeyNavigationEvent(keyCode)) {
             true
+        } else if (KeyboardManager.hasHardwareKeyboard(this)) {
+            val handledKeyCode = keyboardManager.onKeyUp(keyCode, event)
+            if (handledKeyCode) true
+            else super.onKeyUp(keyCode, event)
         } else {
             super.onKeyUp(keyCode, event)
         }
@@ -796,6 +821,27 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
                 if (isActive) delay(delayMillis)
                 if (isActive) feedUtils.markStoryAsRead(story, this@Reading)
             }
+
+    override fun onKeyboardEvent(event: KeyboardEvent) {
+        when (event) {
+            KeyboardEvent.NextStory -> nextStory()
+            KeyboardEvent.PreviousStory -> previousStory()
+            KeyboardEvent.NextUnreadStory -> nextUnread()
+            KeyboardEvent.OpenInBrowser -> readingFragment?.openBrowser()
+            KeyboardEvent.OpenStoryTrainer -> readingFragment?.openStoryTrainer()
+            KeyboardEvent.SaveUnsaveStory -> readingFragment?.switchStorySavedState(true)
+            KeyboardEvent.ScrollToComments -> readingFragment?.scrollToComments()
+            KeyboardEvent.ShareStory -> readingFragment?.openShareDialog()
+            KeyboardEvent.ToggleReadUnread -> readingFragment?.switchMarkStoryReadState(true)
+            KeyboardEvent.ToggleTextView -> readingFragment?.switchSelectedViewMode()
+            KeyboardEvent.Tutorial -> readingFragment?.showStoryShortcuts()
+            KeyboardEvent.PageDown ->
+                readingFragment?.scrollVerticallyBy(UIUtils.dp2px(this, VERTICAL_SCROLL_DISTANCE_DP))
+            KeyboardEvent.PageUp ->
+                readingFragment?.scrollVerticallyBy(UIUtils.dp2px(this, -VERTICAL_SCROLL_DISTANCE_DP))
+            else -> {}
+        }
+    }
 
     companion object {
         const val EXTRA_FEEDSET = "feed_set"

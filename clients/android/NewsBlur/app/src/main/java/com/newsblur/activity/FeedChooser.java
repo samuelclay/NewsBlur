@@ -101,44 +101,44 @@ abstract public class FeedChooser extends NbActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            case R.id.menu_sort_order_ascending:
-                replaceListOrderFilter(ListOrderFilter.ASCENDING);
-                return true;
-            case R.id.menu_sort_order_descending:
-                replaceListOrderFilter(ListOrderFilter.DESCENDING);
-                return true;
-            case R.id.menu_sort_by_name:
-                replaceFeedOrderFilter(FeedOrderFilter.NAME);
-                return true;
-            case R.id.menu_sort_by_subs:
-                replaceFeedOrderFilter(FeedOrderFilter.SUBSCRIBERS);
-                return true;
-            case R.id.menu_sort_by_recent_story:
-                replaceFeedOrderFilter(FeedOrderFilter.RECENT_STORY);
-                return true;
-            case R.id.menu_sort_by_stories_month:
-                replaceFeedOrderFilter(FeedOrderFilter.STORIES_MONTH);
-                return true;
-            case R.id.menu_sort_by_number_opens:
-                replaceFeedOrderFilter(FeedOrderFilter.OPENS);
-                return true;
-            case R.id.menu_folder_view_nested:
-                replaceFolderView(FolderViewFilter.NESTED);
-                return true;
-            case R.id.menu_folder_view_flat:
-                replaceFolderView(FolderViewFilter.FLAT);
-                return true;
-            case R.id.menu_widget_background_default:
-                setWidgetBackground(WidgetBackground.DEFAULT);
-                return true;
-            case R.id.menu_widget_background_transparent:
-                setWidgetBackground(WidgetBackground.TRANSPARENT);
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        } else if (item.getItemId() == R.id.menu_sort_order_ascending) {
+            replaceListOrderFilter(ListOrderFilter.ASCENDING);
+            return true;
+        } else if (item.getItemId() == R.id.menu_sort_order_descending) {
+            replaceListOrderFilter(ListOrderFilter.DESCENDING);
+            return true;
+        } else if (item.getItemId() == R.id.menu_sort_by_name) {
+            replaceFeedOrderFilter(FeedOrderFilter.NAME);
+            return true;
+        } else if (item.getItemId() == R.id.menu_sort_by_subs) {
+            replaceFeedOrderFilter(FeedOrderFilter.SUBSCRIBERS);
+            return true;
+        } else if (item.getItemId() == R.id.menu_sort_by_recent_story) {
+            replaceFeedOrderFilter(FeedOrderFilter.RECENT_STORY);
+            return true;
+        } else if (item.getItemId() == R.id.menu_sort_by_stories_month) {
+            replaceFeedOrderFilter(FeedOrderFilter.STORIES_MONTH);
+            return true;
+        } else if (item.getItemId() == R.id.menu_sort_by_number_opens) {
+            replaceFeedOrderFilter(FeedOrderFilter.OPENS);
+            return true;
+        } else if (item.getItemId() == R.id.menu_folder_view_nested) {
+            replaceFolderView(FolderViewFilter.NESTED);
+            return true;
+        } else if (item.getItemId() == R.id.menu_folder_view_flat) {
+            replaceFolderView(FolderViewFilter.FLAT);
+            return true;
+        } else if (item.getItemId() == R.id.menu_widget_background_default) {
+            setWidgetBackground(WidgetBackground.DEFAULT);
+            return true;
+        } else if (item.getItemId() == R.id.menu_widget_background_transparent) {
+            setWidgetBackground(WidgetBackground.TRANSPARENT);
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 

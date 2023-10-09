@@ -15,8 +15,7 @@ import com.newsblur.util.setViewVisible
 class NewslettersFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val view = layoutInflater.inflate(R.layout.newsletter_dialog, null)
-        val binding: NewsletterDialogBinding = NewsletterDialogBinding.bind(view)
+        val binding = NewsletterDialogBinding.inflate(layoutInflater)
         val emailAddress = generateEmail()
 
         binding.txtEmail.text = emailAddress

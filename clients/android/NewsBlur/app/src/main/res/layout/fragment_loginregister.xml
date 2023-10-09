@@ -24,6 +24,7 @@
                 android:id="@+id/login_username"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:autofillHints="username"
                 android:hint="@string/login_username_hint"
                 android:inputType="textEmailAddress"
                 android:textSize="22sp" />
@@ -33,6 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
+                android:autofillHints="password"
                 android:hint="@string/login_password_hint"
                 android:imeOptions="actionDone"
                 android:inputType="textPassword"
@@ -103,7 +105,8 @@
             android:hint="@string/login_custom_server_hint"
             android:inputType="textNoSuggestions|textMultiLine"
             android:textSize="17sp"
-            android:visibility="invisible" />
+            android:visibility="invisible"
+            android:importantForAutofill="no" />
 
         <TextView
             android:id="@+id/button_reset_url"
@@ -165,6 +168,7 @@
                     android:id="@+id/registration_username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:autofillHints="username"
                     android:hint="@string/login_username_hint"
                     android:inputType="textEmailAddress"
                     android:textSize="22sp">
@@ -176,6 +180,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
+                    android:autofillHints="password"
                     android:hint="@string/login_password_hint"
                     android:inputType="textPassword"
                     android:nextFocusDown="@+id/registration_email"
@@ -186,6 +191,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
+                    android:autofillHints="emailAddress"
                     android:hint="@string/login_registration_email_hint"
                     android:imeOptions="actionDone"
                     android:inputType="textEmailAddress"

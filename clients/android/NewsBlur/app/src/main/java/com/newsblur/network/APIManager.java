@@ -19,6 +19,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.newsblur.di.ApiOkHttpClient;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.FeedResult;
 import com.newsblur.domain.ValueMultimap;
@@ -57,15 +58,16 @@ public class APIManager {
 
 	private final Context context;
 	private final Gson gson;
-	private final OkHttpClient httpClient;
+    @ApiOkHttpClient
+	private final OkHttpClient apiOkHttpClient;
     private String customUserAgent;
 
-	public APIManager(final Context context, Gson gson, String customUserAgent, OkHttpClient httpClient) {
+	public APIManager(final Context context, Gson gson, String customUserAgent, @ApiOkHttpClient OkHttpClient apiOkHttpClient) {
         APIConstants.setCustomServer(PrefsUtils.getCustomServer(context));
         this.context = context;
         this.gson = gson;
         this.customUserAgent = customUserAgent;
-        this.httpClient = httpClient;
+        this.apiOkHttpClient = apiOkHttpClient;
 	}
 
 	public LoginResponse login(final String username, final String password) {
@@ -205,7 +207,7 @@ public class APIManager {
 	public ProfileResponse updateUserProfile() {
 		final APIResponse response = get(buildUrl(APIConstants.PATH_MY_PROFILE));
 		if (!response.isError()) {
-			ProfileResponse profileResponse = (ProfileResponse) response.getResponse(gson, ProfileResponse.class);
+			ProfileResponse profileResponse = response.getResponse(gson, ProfileResponse.class);
 			PrefsUtils.saveUserDetails(context, profileResponse.user);
 			return profileResponse;
 		} else {
@@ -234,14 +236,14 @@ public class APIManager {
             values.put(APIConstants.PARAMETER_FEEDID, id);
         }
         APIResponse response = get(buildUrl(APIConstants.PATH_FEED_UNREAD_COUNT), values);
-        return (UnreadCountResponse) response.getResponse(gson, UnreadCountResponse.class);
+        return response.getResponse(gson, UnreadCountResponse.class);
     }
 
     public UnreadStoryHashesResponse getUnreadStoryHashes() {
 		ValueMultimap values = new ValueMultimap();
         values.put(APIConstants.PARAMETER_INCLUDE_TIMESTAMPS, "1");
         APIResponse response = get(buildUrl(APIConstants.PATH_UNREAD_HASHES), values);
-        return (UnreadStoryHashesResponse) response.getResponse(gson, UnreadStoryHashesResponse.class);
+        return response.getResponse(gson, UnreadStoryHashesResponse.class);
     }
 
     public StarredStoryHashesResponse getStarredStoryHashes() {
@@ -256,7 +258,7 @@ public class APIManager {
         }
         values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
         APIResponse response = get(buildUrl(APIConstants.PATH_RIVER_STORIES), values);
-        return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
+        return response.getResponse(gson, StoriesResponse.class);
     }
 
     /**
@@ -264,7 +266,7 @@ public class APIManager {
      * request parameters as needed.
      */
     public StoriesResponse getStories(FeedSet fs, int pageNumber, StoryOrder order, ReadFilter filter) {
-        Uri uri = null;
+        Uri uri;
         ValueMultimap values = new ValueMultimap();
     
         // create the URI and populate request params depending on what kind of stories we want
@@ -331,29 +333,21 @@ public class APIManager {
         }
 
 		APIResponse response = get(uri.toString(), values);
-        return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
+        return response.getResponse(gson, StoriesResponse.class);
     }
 
 	public boolean followUser(final String userId) {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USERID, userId);
 		final APIResponse response = post(buildUrl(APIConstants.PATH_FOLLOW), values);
-		if (!response.isError()) {
-			return true;
-		} else {
-			return false;
-		}
+        return !response.isError();
 	}
 
 	public boolean unfollowUser(final String userId) {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USERID, userId);
 		final APIResponse response = post(buildUrl(APIConstants.PATH_UNFOLLOW), values);
-		if (!response.isError()) {
-			return true;
-		} else {
-			return false;
-		}
+        return !response.isError();
 	}
 
 	public APIResponse saveExternalStory(@NonNull String storyTitle, @NonNull String storyUrl) {
@@ -386,7 +380,7 @@ public class APIManager {
 
         APIResponse response = post(buildUrl(APIConstants.PATH_SHARE_STORY), values);
         // this call returns a new copy of the story with all fields updated and some metadata
-        return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
+        return response.getResponse(gson, StoriesResponse.class);
     }
 
     public StoriesResponse unshareStory(String storyId, String feedId) {
@@ -396,7 +390,7 @@ public class APIManager {
 
         APIResponse response = post(buildUrl(APIConstants.PATH_UNSHARE_STORY), values);
         // this call returns a new copy of the story with all fields updated and some metadata
-        return (StoriesResponse) response.getResponse(gson, StoriesResponse.class);
+        return response.getResponse(gson, StoriesResponse.class);
     }
 
 	/**
@@ -438,8 +432,7 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_USER_ID, userId);
 		final APIResponse response = get(buildUrl(APIConstants.PATH_USER_PROFILE), values);
 		if (!response.isError()) {
-			ProfileResponse profileResponse = (ProfileResponse) response.getResponse(gson, ProfileResponse.class);
-			return profileResponse;
+            return response.getResponse(gson, ProfileResponse.class);
 		} else {
 			return null;
 		}
@@ -452,8 +445,7 @@ public class APIManager {
         values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
         final APIResponse response = get(buildUrl(APIConstants.PATH_USER_ACTIVITIES), values);
         if (!response.isError()) {
-            ActivitiesResponse activitiesResponse = (ActivitiesResponse) response.getResponse(gson, ActivitiesResponse.class);
-            return activitiesResponse;
+            return response.getResponse(gson, ActivitiesResponse.class);
         } else {
             return null;
         }
@@ -466,8 +458,7 @@ public class APIManager {
         values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
         final APIResponse response = get(buildUrl(APIConstants.PATH_USER_INTERACTIONS), values);
         if (!response.isError()) {
-            InteractionsResponse interactionsResponse = (InteractionsResponse) response.getResponse(gson, InteractionsResponse.class);
-            return interactionsResponse;
+            return response.getResponse(gson, InteractionsResponse.class);
         } else {
             return null;
         }
@@ -479,8 +470,7 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
 		final APIResponse response = get(buildUrl(APIConstants.PATH_STORY_TEXT), values);
 		if (!response.isError()) {
-			StoryTextResponse storyTextResponse = (StoryTextResponse) response.getResponse(gson, StoryTextResponse.class);
-			return storyTextResponse;
+            return response.getResponse(gson, StoryTextResponse.class);
 		} else {
 			return null;
 		}
@@ -520,7 +510,7 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_REPLY_TEXT, reply);
 		APIResponse response = post(buildUrl(APIConstants.PATH_REPLY_TO), values);
         // this call returns a new copy of the comment with all fields updated
-        return (CommentResponse) response.getResponse(gson, CommentResponse.class);
+        return response.getResponse(gson, CommentResponse.class);
 	}
 
 	public CommentResponse editReply(String storyId, String storyFeedId, String commentUserId, String replyId, String reply) {
@@ -532,7 +522,7 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_REPLY_TEXT, reply);
 		APIResponse response = post(buildUrl(APIConstants.PATH_EDIT_REPLY), values);
         // this call returns a new copy of the comment with all fields updated
-        return (CommentResponse) response.getResponse(gson, CommentResponse.class);
+        return response.getResponse(gson, CommentResponse.class);
 	}
 
 	public CommentResponse deleteReply(String storyId, String storyFeedId, String commentUserId, String replyId) {
@@ -543,7 +533,7 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_REPLY_ID, replyId);
 		APIResponse response = post(buildUrl(APIConstants.PATH_DELETE_REPLY), values);
         // this call returns a new copy of the comment with all fields updated
-        return (CommentResponse) response.getResponse(gson, CommentResponse.class);
+        return response.getResponse(gson, CommentResponse.class);
 	}
 
 	public NewsBlurResponse addFolder(String folderName) {
@@ -695,7 +685,7 @@ public class APIManager {
 		addCookieHeader(requestBuilder);
 		requestBuilder.header("User-Agent", this.customUserAgent);
 
-		return new APIResponse(httpClient, requestBuilder.build(), expectedReturnCode);
+		return new APIResponse(apiOkHttpClient, requestBuilder.build(), expectedReturnCode);
 	}
 
 	private void addCookieHeader(Request.Builder requestBuilder) {
@@ -711,10 +701,10 @@ public class APIManager {
 	}
 
     private String builderGetParametersString(ContentValues values) {
-        List<String> parameters = new ArrayList<String>();
+        List<String> parameters = new ArrayList<>();
         for (Entry<String, Object> entry : values.valueSet()) {
             StringBuilder builder = new StringBuilder();
-            builder.append((String) entry.getKey());
+            builder.append(entry.getKey());
             builder.append("=");
             builder.append(NetworkUtils.encodeURL((String) entry.getValue()));
             parameters.add(builder.toString());
@@ -749,7 +739,7 @@ public class APIManager {
                 formBody.writeTo(buffer);
                 body = buffer.readUtf8();
             } catch (Exception e) {
-                ; // this is debug code, do not raise
+                // this is debug code, do not raise
             }
 			Log.d(this.getClass().getName(), "post body: " + body);
 		}
@@ -758,7 +748,7 @@ public class APIManager {
 		addCookieHeader(requestBuilder);
 		requestBuilder.post(formBody);
 
-		return new APIResponse(httpClient, requestBuilder.build());
+		return new APIResponse(apiOkHttpClient, requestBuilder.build());
 	}
 
 	private APIResponse post(final String urlString, final ContentValues values) {
