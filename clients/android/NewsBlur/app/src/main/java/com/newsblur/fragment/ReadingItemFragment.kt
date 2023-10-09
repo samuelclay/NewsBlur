@@ -15,6 +15,7 @@ import android.webkit.WebView.HitTestResult
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
@@ -30,6 +31,7 @@ import com.newsblur.di.StoryImageCache
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
 import com.newsblur.domain.UserDetails
+import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.network.APIManager
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_INTEL
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_SOCIAL
@@ -198,10 +200,10 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.storyContextMenuButton.setOnClickListener { onClickMenuButton() }
-        readingItemActionsBinding.markReadStoryButton.setOnClickListener { clickMarkStoryRead() }
-        readingItemActionsBinding.trainStoryButton.setOnClickListener { clickTrain() }
-        readingItemActionsBinding.saveStoryButton.setOnClickListener { clickSave() }
-        readingItemActionsBinding.shareStoryButton.setOnClickListener { clickShare() }
+        readingItemActionsBinding.markReadStoryButton.setOnClickListener { switchMarkStoryReadState() }
+        readingItemActionsBinding.trainStoryButton.setOnClickListener { openStoryTrainer() }
+        readingItemActionsBinding.saveStoryButton.setOnClickListener { switchStorySavedState() }
+        readingItemActionsBinding.shareStoryButton.setOnClickListener { openShareDialog() }
     }
 
     override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
@@ -262,6 +264,10 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         menu.findItem(R.id.menu_reading_save).setTitle(if (story!!.starred) R.string.menu_unsave_story else R.string.menu_save_story)
         if (fs!!.isFilterSaved || fs!!.isAllSaved || fs!!.singleSavedTag != null) menu.findItem(R.id.menu_reading_markunread).isVisible = false
 
+        if (KeyboardManager.hasHardwareKeyboard(requireContext())) {
+            menu.findItem(R.id.menu_shortcuts).isVisible = true
+        }
+
         when (PrefsUtils.getSelectedTheme(requireContext())) {
             ThemeValue.LIGHT -> menu.findItem(R.id.menu_theme_light).isChecked = true
             ThemeValue.DARK -> menu.findItem(R.id.menu_theme_dark).isChecked = true
@@ -298,8 +304,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
         R.id.menu_reading_original -> {
-            val uri = Uri.parse(story!!.permalink)
-            UIUtils.handleUri(requireContext(), uri)
+            openBrowser()
             true
         }
         R.id.menu_reading_sharenewsblur -> {
@@ -315,6 +320,10 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         }
         R.id.menu_send_story_full -> {
             feedUtils.sendStoryFull(story, requireContext())
+            true
+        }
+        R.id.menu_shortcuts -> {
+            showStoryShortcuts()
             true
         }
         R.id.menu_text_size_xs -> {
@@ -408,7 +417,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         R.id.menu_intel -> {
             // check against training on feedless stories
             if (story!!.feedId != "0") {
-                clickTrain()
+                openStoryTrainer()
             }
             true
         }
@@ -421,9 +430,19 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         }
     }
 
-    private fun clickMarkStoryRead() {
-        if (story!!.read) feedUtils.markStoryUnread(story!!, requireContext())
-        else feedUtils.markStoryAsRead(story!!, requireContext())
+    fun switchMarkStoryReadState(notifyUser: Boolean = false) {
+        story?.let {
+            val msg = if (it.read) {
+                feedUtils.markStoryUnread(it, requireContext())
+                getString(R.string.story_unread)
+            }
+            else {
+                feedUtils.markStoryAsRead(it, requireContext())
+                getString(R.string.story_read)
+            }
+            if (notifyUser) UIUtils.showSnackBar(binding.root, msg)
+        } ?: Log.e(this.javaClass.name, "Error switching null story read state.")
+
     }
 
     private fun updateMarkStoryReadState() {
@@ -437,7 +456,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         sampledQueue?.add { updateStoryReadTitleState.invoke() } ?: updateStoryReadTitleState.invoke()
     }
 
-    private fun clickTrain() {
+    fun openStoryTrainer() {
         val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs)
         intelFrag.show(requireActivity().supportFragmentManager, StoryIntelTrainerFragment::class.java.name)
     }
@@ -446,19 +465,25 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         readingItemActionsBinding.trainStoryButton.visibility = if (story!!.feedId == "0") View.GONE else View.VISIBLE
     }
 
-    private fun clickSave() {
-        if (story!!.starred) {
-            feedUtils.setStorySaved(story!!.storyHash, false, requireContext())
-        } else {
-            feedUtils.setStorySaved(story!!.storyHash, true, requireContext())
-        }
+    fun switchStorySavedState(notifyUser: Boolean = false) {
+        story?.let {
+            val msg = if (it.starred) {
+                feedUtils.setStorySaved(it.storyHash, false, requireContext())
+                getString(R.string.story_saved)
+            } else {
+                feedUtils.setStorySaved(it.storyHash, true, requireContext())
+                getString(R.string.story_unsaved)
+            }
+            if (notifyUser) UIUtils.showSnackBar(binding.root, msg)
+
+        } ?: Log.e(this.javaClass.name, "Error switching null story saved state.")
     }
 
     private fun updateSaveButton() {
         readingItemActionsBinding.saveStoryButton.setText(if (story!!.starred) R.string.unsave_this else R.string.save_this)
     }
 
-    private fun clickShare() {
+    fun openShareDialog() {
         val newFragment: DialogFragment = ShareDialogFragment.newInstance(story, sourceUserId)
         newFragment.show(parentFragmentManager, "dialog")
     }
@@ -530,17 +555,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs)
             intelFrag.show(parentFragmentManager, StoryIntelTrainerFragment::class.java.name)
         })
-        binding.readingItemTitle.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View) {
-                try {
-                    UIUtils.handleUri(requireContext(), Uri.parse(story!!.permalink))
-                } catch (t: Throwable) {
-                    // we don't actually know if the user will successfully be able to open whatever string
-                    // was in the permalink or if the Intent could throw errors
-                    Log.e(this.javaClass.name, "Error opening story by permalink URL.", t)
-                }
-            }
-        })
+        binding.readingItemTitle.setOnClickListener { openBrowser() }
 
         setupTagsAndIntel()
     }
@@ -963,6 +978,11 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         }
     }
 
+    fun showStoryShortcuts() {
+        val newFragment = StoryShortcutsFragment()
+        newFragment.show(requireActivity().supportFragmentManager, StoryShortcutsFragment::class.java.name)
+    }
+
     fun flagWebviewError() {
         // TODO: enable a selective reload mechanism on load failures?
     }
@@ -989,8 +1009,31 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         reloadStoryContent()
     }
 
+    fun openBrowser() {
+        story?.let {
+            val uri = Uri.parse(it.permalink)
+            UIUtils.handleUri(requireContext(), uri)
+        } ?: Log.e(this.javaClass.name, "Error opening null story by permalink URL.")
+    }
+
+    fun scrollToComments() {
+        val targetView = if (readingItemActionsBinding.readingFriendCommentHeader.isVisible) {
+            readingItemActionsBinding.readingFriendCommentContainer
+        } else if (readingItemActionsBinding.readingPublicCommentHeader.isVisible) {
+            readingItemActionsBinding.readingPublicCommentContainer
+        } else null
+        targetView?.let {
+            it.parent.requestChildFocus(targetView, it)
+        }
+    }
+
+    fun scrollVerticallyBy(dy: Int) {
+        binding.readingScrollview.smoothScrollBy(0, dy)
+    }
+
     companion object {
         private const val BUNDLE_SCROLL_POS_REL = "scrollStateRel"
+        const val VERTICAL_SCROLL_DISTANCE_DP = 240
 
         @JvmStatic
         fun newInstance(story: Story?, feedTitle: String?, feedFaviconColor: String?, feedFaviconFade: String?, feedFaviconBorder: String?, faviconText: String?, faviconUrl: String?, classifier: Classifier?, displayFeedDetails: Boolean, sourceUserId: String?): ReadingItemFragment {

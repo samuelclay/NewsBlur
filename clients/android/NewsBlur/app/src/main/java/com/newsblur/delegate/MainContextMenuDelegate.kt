@@ -10,10 +10,8 @@ import androidx.fragment.app.DialogFragment
 import com.newsblur.R
 import com.newsblur.activity.*
 import com.newsblur.database.BlurDatabaseHelper
-import com.newsblur.fragment.FolderListFragment
-import com.newsblur.fragment.LoginAsDialogFragment
-import com.newsblur.fragment.LogoutDialogFragment
-import com.newsblur.fragment.NewslettersFragment
+import com.newsblur.fragment.*
+import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.service.NBSyncService
 import com.newsblur.util.ListTextSize
 import com.newsblur.util.ListTextSize.Companion.fromSize
@@ -42,6 +40,10 @@ class MainContextMenuDelegateImpl(
 
         if (NBSyncService.isStaff == true) {
             menu.findItem(R.id.menu_loginas).isVisible = true
+        }
+
+        if (KeyboardManager.hasHardwareKeyboard(activity)) {
+            menu.findItem(R.id.menu_shortcuts).isVisible = true
         }
 
         when (PrefsUtils.getSelectedTheme(activity)) {
@@ -184,8 +186,13 @@ class MainContextMenuDelegateImpl(
             true
         }
         R.id.menu_newsletters -> {
-            val newFragment: DialogFragment = NewslettersFragment()
+            val newFragment = NewslettersFragment()
             newFragment.show(activity.supportFragmentManager, NewslettersFragment::class.java.name)
+            true
+        }
+        R.id.menu_shortcuts -> {
+            val newFragment = FeedsShortcutFragment()
+            newFragment.show(activity.supportFragmentManager, FeedsShortcutFragment::class.java.name)
             true
         }
         else -> false

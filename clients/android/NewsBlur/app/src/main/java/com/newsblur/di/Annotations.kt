@@ -22,4 +22,12 @@ annotation class IconLoader
 @Retention(AnnotationRetention.BINARY)
 annotation class ThumbnailLoader
 
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class ApiOkHttpClient
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class ImageOkHttpClient
+
 

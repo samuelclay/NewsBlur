@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.newsblur.database.BlurDatabaseHelper
+import com.newsblur.util.CursorFilters
 import com.newsblur.util.FeedSet
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,9 +22,9 @@ class StoriesViewModel
     private val _activeStoriesLiveData = MutableLiveData<Cursor>()
     val activeStoriesLiveData: LiveData<Cursor> = _activeStoriesLiveData
 
-    fun getActiveStories(fs: FeedSet) {
+    fun getActiveStories(fs: FeedSet, cursorFilters: CursorFilters) {
         viewModelScope.launch(Dispatchers.IO) {
-            dbHelper.getActiveStoriesCursor(fs, cancellationSignal).let {
+            dbHelper.getActiveStoriesCursor(fs, cursorFilters, cancellationSignal).let {
                 _activeStoriesLiveData.postValue(it)
             }
         }

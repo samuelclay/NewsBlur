@@ -149,9 +149,10 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
                     Log.d(this.javaClass.name, "onDataSetChanged - get remote stories")
                     val response = apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL)
                     response.stories?.let {
+                        val stateFilter = PrefsUtils.getStateFilter(context)
                         Log.d(this.javaClass.name, "onDataSetChanged - got ${it.size} remote stories")
                         processStories(response.stories)
-                        dbHelper.insertStories(response, true)
+                        dbHelper.insertStories(response, stateFilter, true)
                     } ?: Log.d(this.javaClass.name, "onDataSetChanged - null remote stories")
                 }
             } catch (e: TimeoutCancellationException) {

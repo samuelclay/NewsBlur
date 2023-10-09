@@ -2,6 +2,7 @@ package com.newsblur.util;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Objects;
 
 import static android.graphics.Bitmap.Config.ARGB_8888;
 import static com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL;
@@ -35,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
@@ -44,6 +46,7 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.color.MaterialColors;
+import com.google.android.material.snackbar.Snackbar;
 import com.newsblur.NbApplication;
 import com.newsblur.R;
 import com.newsblur.activity.*;
@@ -422,7 +425,7 @@ public class UIUtils {
      * upon the provided classifier sub-type map while also setting up handlers to alter said
      * map if the buttons are pressed.
      */
-    public static void setupIntelDialogRow(final View row, final Map<String,Integer> classifier, final String key) {
+    public static void setupIntelDialogRow(final View row, @NonNull final Map<String,Integer> classifier, final String key) {
         colourIntelDialogRow(row, classifier, key);
         row.findViewById(R.id.intel_row_like).setOnClickListener(v -> {
             classifier.put(key, Classifier.LIKE);
@@ -433,7 +436,11 @@ public class UIUtils {
             colourIntelDialogRow(row, classifier, key);
         });
         row.findViewById(R.id.intel_row_clear).setOnClickListener(v -> {
-            classifier.put(key, Classifier.CLEAR_LIKE);
+            if (Objects.equals(classifier.get(key), Classifier.DISLIKE)) {
+                classifier.put(key, Classifier.CLEAR_DISLIKE);
+            } else {
+                classifier.put(key, Classifier.CLEAR_LIKE);
+            }
             colourIntelDialogRow(row, classifier, key);
         });
     }
@@ -598,5 +605,16 @@ public class UIUtils {
             intent.putExtra(NBSyncReceiver.NB_SYNC_UPDATE_TYPE, updateType);
             context.sendBroadcast(intent);
         }
+    }
+
+    public static void showSnackBar(View view, String message) {
+        Snackbar.make(view, message, 600).show();
+    }
+
+    public static int[] getLoadingColorsArray(Context context) {
+        return new int[]{ContextCompat.getColor(context, R.color.refresh_1),
+                ContextCompat.getColor(context, R.color.refresh_2),
+                ContextCompat.getColor(context, R.color.refresh_3),
+                ContextCompat.getColor(context, R.color.refresh_4)};
     }
 }

@@ -8,7 +8,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +30,7 @@ import com.newsblur.di.IconLoader;
 import com.newsblur.di.ThumbnailLoader;
 import com.newsblur.domain.Story;
 import com.newsblur.service.NBSyncService;
+import com.newsblur.util.CursorFilters;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
@@ -149,15 +149,12 @@ public class ItemSetFragment extends NbFragment {
         // disable the throbbers if animations are going to have a zero time scale
         boolean isDisableAnimations = ViewUtils.isPowerSaveMode(requireContext());
 
-        int[] colorsArray = {ContextCompat.getColor(requireContext(), R.color.refresh_1),
-                ContextCompat.getColor(requireContext(), R.color.refresh_2),
-                ContextCompat.getColor(requireContext(), R.color.refresh_3),
-                ContextCompat.getColor(requireContext(), R.color.refresh_4)};
+        int[] colorsArray = UIUtils.getLoadingColorsArray(requireContext());
         binding.topLoadingThrob.setEnabled(!isDisableAnimations);
         binding.topLoadingThrob.setColors(colorsArray);
 
         View footerView = inflater.inflate(R.layout.row_loading_throbber, null);
-        bottomProgressView = (ProgressThrobber) footerView.findViewById(R.id.itemlist_loading_throb);
+        bottomProgressView = footerView.findViewById(R.id.itemlist_loading_throb);
         bottomProgressView.setEnabled(!isDisableAnimations);
         bottomProgressView.setColors(colorsArray);
 
@@ -271,7 +268,7 @@ public class ItemSetFragment extends NbFragment {
 	public void hasUpdated() {
         FeedSet fs = getFeedSet();
         if (isAdded() && fs != null) {
-            storiesViewModel.getActiveStories(fs);
+            storiesViewModel.getActiveStories(fs, new CursorFilters(requireContext(), fs));
         }
 	}
 
@@ -391,7 +388,7 @@ public class ItemSetFragment extends NbFragment {
 
         // ensure we have measured
         if (itemGridWidthPx > 0) {
-            int itemGridWidthDp = Math.round(UIUtils.px2dp(getActivity(), itemGridWidthPx));
+            int itemGridWidthDp = Math.round(UIUtils.px2dp(requireContext(), itemGridWidthPx));
             colsCoarse = itemGridWidthDp / 300;
             colsMed = itemGridWidthDp / 200;
             colsFine = itemGridWidthDp / 150;
@@ -416,7 +413,7 @@ public class ItemSetFragment extends NbFragment {
         if (listStyle == StoryListStyle.LIST) {
             gridSpacingPx = 0;
         } else {
-            gridSpacingPx = UIUtils.dp2px(getActivity(), GRID_SPACING_DP);
+            gridSpacingPx = UIUtils.dp2px(requireContext(), GRID_SPACING_DP);
         }
     }
 
@@ -435,8 +432,8 @@ public class ItemSetFragment extends NbFragment {
         }
 
         RecyclerView.ItemAnimator anim = binding.itemgridfragmentGrid.getItemAnimator();
-        anim.setAddDuration((long) ((anim.getAddDuration() + targetAddDuration)/2L));
-        anim.setMoveDuration((long) ((anim.getMoveDuration() + targetMovDuration)/2L));
+        anim.setAddDuration((anim.getAddDuration() + targetAddDuration)/2L);
+        anim.setMoveDuration((anim.getMoveDuration() + targetMovDuration)/2L);
     }
 
     private void onScrolled(RecyclerView recyclerView, int dx, int dy) {

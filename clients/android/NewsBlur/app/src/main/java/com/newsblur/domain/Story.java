@@ -238,7 +238,7 @@ public class Story implements Serializable {
         }
 	}
 
-    public boolean isStoryVisibileInState(StateFilter state) {
+    public boolean isStoryVisibleInState(StateFilter state) {
         int score = intelligence.calcTotalIntel();
         switch (state) {
         case ALL:
@@ -252,7 +252,7 @@ public class Story implements Serializable {
         case NEG:
             return (score < 0);
         case SAVED:
-            return (starred == true);
+            return (starred);
         default:
             return true;
         }
