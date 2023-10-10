@@ -80,6 +80,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private final ExecutorService executorService;
     private final NbActivity context;
     private final ItemSetFragment fragment;
+    private final OnStoryClickListener listener;
     private FeedSet fs;
     private StoryListStyle listStyle;
     private boolean ignoreReadStatus;
@@ -96,7 +97,8 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                             StoryListStyle listStyle,
                             ImageLoader iconLoader,
                             ImageLoader thumbnailLoader,
-                            FeedUtils feedUtils) {
+                            FeedUtils feedUtils,
+                            OnStoryClickListener listener) {
         this.context = context;
         this.fragment = fragment;
         this.fs = fs;
@@ -104,6 +106,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.iconLoader = iconLoader;
         this.thumbnailLoader = thumbnailLoader;
         this.feedUtils = feedUtils;
+        this.listener = listener;
         
         if (fs.isGlobalShared())   {ignoreReadStatus = false; ignoreIntel = true; singleFeed = false;}
         if (fs.isAllSocial())      {ignoreReadStatus = false; ignoreIntel = false; singleFeed = false;}
@@ -392,7 +395,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 return;
             }
             if (gestureL2R || gestureR2L) return;
-            UIUtils.startReadingActivity(fs, story.storyHash, context);
+            listener.onStoryClicked(fs, story.storyHash);
         }
 
         @Override
@@ -815,6 +818,10 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     public void notifyAllItemsChanged() {
         notifyItemRangeChanged(0, getItemCount());
+    }
+
+    public interface OnStoryClickListener {
+        void onStoryClicked(FeedSet feedSet, String storyHash);
     }
 
 }
