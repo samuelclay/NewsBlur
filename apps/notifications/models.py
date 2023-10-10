@@ -259,7 +259,7 @@ class MUserFeedNotification(mongo.Document):
         # else:
         #     subtitle = html.unescape(story['story_title'])
         #     body = replace_with_newlines(soup)
-        body = truncate_chars(body.strip(), 600)
+        body = truncate_chars(body.strip(), 3600)
         if not body:
             body = " "
 
@@ -306,13 +306,15 @@ class MUserFeedNotification(mongo.Document):
 
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
         # To update APNS:
-        # 1. Create certificate signing requeswt in Keychain Access
+        # 1. Create certificate signing request in Keychain Access
         # 2. Upload to https://developer.apple.com/account/resources/certificates/list
         # 3. Download to secrets/certificates/ios/aps.cer
-        # 4. Open in Keychain Access and export as aps.p12
-        # 4. Export private key as aps_key.p12 WITH A PASSPHRASE (removed later)
-        # 5. openssl pkcs12 -in aps.p12 -out aps.pem -nodes -clcerts -nokeys
-        # 6. openssl pkcs12 -clcerts -nokeys -out aps.pem -in aps.p12
+        # 4. Open in Keychain Access:
+        #    - export "Apple Push Service: com.newsblur.NewsBlur" as aps.p12 (or just use aps.cer in #5)
+        #    - export private key as aps_key.p12 WITH A PASSPHRASE (removed later)
+        # 5. openssl x509 -in aps.cer -inform DER -out aps.pem -outform PEM
+        # 6. openssl pkcs12 -nocerts -out aps_key.pem -in aps_key.p12
+        # 7. openssl rsa -out aps_key.noenc.pem -in aps_key.pem
         # 7. cat aps.pem aps_key.noenc.pem > aps.p12.pem
         # 8. Verify: openssl s_client -connect gateway.push.apple.com:2195 -cert aps.p12.pem
         # 9. Deploy: aps -l work -t apns,repo,celery
@@ -368,6 +370,17 @@ class MUserFeedNotification(mongo.Document):
     def send_email(self, story, usersub):
         if not self.is_email:
             return
+
+        # Increment the daily email counter for this user
+        r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        emails_sent_date_key = f"emails_sent:{datetime.datetime.now().strftime('%Y%m%d')}"
+        r.hincrby(emails_sent_date_key, usersub.user_id, 1)
+        r.expire(emails_sent_date_key, 60 * 60 * 24)  # Keep for a day
+        count = int(r.hget(emails_sent_date_key, usersub.user_id) or 0)
+        if count > settings.MAX_EMAILS_SENT_PER_DAY_PER_USER:
+            logging.user(usersub.user, "~BMSent too many email Story notifications by email: ~FR~SB%s~SN~FR emails" % (count))
+            return
+
         feed = usersub.feed
         story_content = self.sanitize_story(story['story_content'])
 

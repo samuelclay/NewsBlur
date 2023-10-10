@@ -190,6 +190,11 @@ class TwitterFetcher:
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(564, "Twitter Error: User not found")
                 return
+            elif 'not authenticate you' in message:
+                logging.debug('   ***> [%-30s] ~FRTwitter user not found, (not) disconnecting twitter: %s: %s' % 
+                              (self.feed.log_title[:30], self.address, e))
+                self.feed.save_feed_history(565, "Twitter Error: API not authorized")
+                return
             elif 'over capacity' in message or 'Max retries' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter over capacity, ignoring... %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
@@ -273,6 +278,11 @@ class TwitterFetcher:
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(574, "Twitter Error: User not found")
                 return None, None
+            elif 'not authenticate you' in message:
+                logging.debug('   ***> [%-30s] ~FRTwitter user not found, (not) disconnecting twitter: %s: %s' % 
+                              (self.feed.log_title[:30], self.address, e))
+                self.feed.save_feed_history(565, "Twitter Error: API not authorized")
+                return None, None
             elif 'over capacity' in message or 'Max retries' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter over capacity, ignoring... %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
@@ -317,6 +327,11 @@ class TwitterFetcher:
                 logging.debug('   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s' % 
                               (self.feed.log_title[:30], self.address, e))
                 self.feed.save_feed_history(574, "Twitter Error: User not found")
+                return None
+            elif 'not authenticate you' in message:
+                logging.debug('   ***> [%-30s] ~FRTwitter user not found, (not) disconnecting twitter: %s: %s' % 
+                              (self.feed.log_title[:30], self.address, e))
+                self.feed.save_feed_history(565, "Twitter Error: API not authorized")
                 return None
             elif 'over capacity' in message or 'Max retries' in message:
                 logging.debug('   ***> [%-30s] ~FRTwitter over capacity, ignoring... %s: %s' % 

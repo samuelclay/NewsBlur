@@ -330,9 +330,13 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             }
             
             // console.log(["scroll_to_selected_story 3", position]);
+            NEWSBLUR.reader.flags['opening_story'] = true;
             this.$story_titles.stop().scrollTo(position, {
                 duration: !options.immediate && NEWSBLUR.assets.preference('animations') ? 260 : 0,
-                queue: false
+                queue: false,
+                onAfter: function () {
+                    NEWSBLUR.reader.flags['opening_story'] = false;
+                }
             });
         }    
     },
@@ -347,6 +351,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         
         if (!this.options.on_dashboard) {
             if (NEWSBLUR.reader.flags['opening_feed']) return;
+            // if (NEWSBLUR.reader.flags['opening_story']) return;
             if (NEWSBLUR.assets.preference('mark_read_on_scroll_titles')) {
                 this.mark_read_stories_above_scroll(scroll_y);
             }
@@ -391,6 +396,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             return;
         }
         // console.log(['closest', $story_title[0], topstory && topstory.model.get('story_title'), unread_stories]);
+        if (NEWSBLUR.reader.flags['opening_story']) {
+            console.log(['opening story, not marking read', unread_stories]);
+            return;
+        }
         _.invoke(unread_stories, 'mark_read');
     }
     

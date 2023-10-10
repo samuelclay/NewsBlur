@@ -22,7 +22,7 @@
     int deleted = 0;
     int checked = 0;
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
     NSDirectoryEnumerator* en = [fileManager enumeratorAtPath:cacheDirectory];
     NSDate *d = [[NSDate date] dateByAddingTimeInterval:-30*24*60*60];
