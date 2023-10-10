@@ -59,10 +59,13 @@ static id AFPublicKeyForCertificate(NSData *certificate) {
     __Require_Quiet(allowedCertificate != NULL, _out);
 
     policy = SecPolicyCreateBasicX509();
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     __Require_noErr_Quiet(SecTrustCreateWithCertificates(allowedCertificate, policy, &allowedTrust), _out);
     __Require_noErr_Quiet(SecTrustEvaluate(allowedTrust, &result), _out);
-
+    
     allowedPublicKey = (__bridge_transfer id)SecTrustCopyPublicKey(allowedTrust);
+#pragma GCC diagnostic pop
 
 _out:
     if (allowedTrust) {
@@ -83,8 +86,11 @@ _out:
 static BOOL AFServerTrustIsValid(SecTrustRef serverTrust) {
     BOOL isValid = NO;
     SecTrustResultType result;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     __Require_noErr_Quiet(SecTrustEvaluate(serverTrust, &result), _out);
-
+#pragma GCC diagnostic pop
+    
     isValid = (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed);
 
 _out:
@@ -117,10 +123,13 @@ static NSArray * AFPublicKeyTrustChainForServerTrust(SecTrustRef serverTrust) {
         __Require_noErr_Quiet(SecTrustCreateWithCertificates(certificates, policy, &trust), _out);
 
         SecTrustResultType result;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
         __Require_noErr_Quiet(SecTrustEvaluate(trust, &result), _out);
 
         [trustChain addObject:(__bridge_transfer id)SecTrustCopyPublicKey(trust)];
-
+#pragma GCC diagnostic pop
+        
     _out:
         if (trust) {
             CFRelease(trust);
