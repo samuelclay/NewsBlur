@@ -52,6 +52,7 @@
 @class PremiumManager;
 @class PremiumViewController;
 @class WKWebView;
+@class BGAppRefreshTask;
 
 @interface NewsBlurAppDelegate : BaseViewController
 <UIApplicationDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate,
@@ -77,7 +78,6 @@ SFSafariViewControllerDelegate>  {
     FriendsListViewController *friendsListViewController;
     FontSettingsViewController *fontSettingsViewController;
     
-    StoryPagesViewController *storyPagesViewController;
     StoryDetailViewController *storyDetailViewController;
     ShareViewController *shareViewController;
     LoginViewController *loginViewController;
@@ -156,6 +156,9 @@ SFSafariViewControllerDelegate>  {
     PINCache *cachedStoryImages;
 }
 
+@property (class, nonatomic, readonly) NewsBlurAppDelegate *shared;
+
+@property (nonatomic, readonly) NSURL *documentsURL;
 @property (nonatomic) SplitViewController *splitViewController;
 @property (nonatomic) IBOutlet UINavigationController *ftuxNavigationController;
 @property (nonatomic) IBOutlet UINavigationController *feedsNavigationController;
@@ -174,7 +177,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, strong) UINavigationController *feedDetailMenuNavigationController;
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
-@property (nonatomic) IBOutlet StoryPagesViewController *storyPagesViewController;
+@property (nonatomic, readonly) StoryPagesViewController *storyPagesViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
 @property (nonatomic, strong) UINavigationController *addSiteNavigationController;
@@ -287,7 +290,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, readonly) BOOL isCompactWidth;
 //@property (nonatomic) CGFloat compactWidth;
 
-@property (nonatomic, strong) void (^backgroundCompletionHandler)(UIBackgroundFetchResult);
+@property (nonatomic, strong) BGAppRefreshTask *backgroundAppRefreshTask;
 
 + (instancetype)sharedAppDelegate;
 
@@ -318,7 +321,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showOrganizeSites;
 - (void)showWidgetSites;
 - (void)showPremiumDialog;
-- (void)updateSplitBehavior;
+- (void)updateSplitBehavior:(BOOL)refresh;
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;
 - (void)showPreferences;
 - (void)setHiddenPreferencesAnimated:(BOOL)animated;
@@ -497,6 +500,7 @@ SFSafariViewControllerDelegate>  {
 - (void)queueSavedStory:(NSDictionary *)story;
 - (void)fetchTextForStory:(NSString *)storyHash inFeed:(NSString *)feedId checkCache:(BOOL)checkCache withCallback:(void(^)(NSString *))callback;
 - (void)prepareActiveCachedImages:(FMDatabase *)db;
+- (UIImage *)cachedImageForStoryHash:(NSString *)storyHash;
 - (void)cleanImageCache;
 - (void)deleteAllCachedImages;
 

@@ -46,8 +46,6 @@
 - (void)viewDidLoad {
     self.appDelegate = NewsBlurAppDelegate.sharedAppDelegate;
     
-    self.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
-    
     self.usernameInput.borderStyle = UITextBorderStyleRoundedRect;
     self.passwordInput.borderStyle = UITextBorderStyleRoundedRect;
     self.emailInput.borderStyle = UITextBorderStyleRoundedRect;
@@ -91,6 +89,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    self.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+    
     [self showError:nil];
     [super viewWillAppear:animated];
     [usernameInput becomeFirstResponder];
@@ -112,6 +112,12 @@
         [self updateControls];
         [self rearrangeViews];
     }
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
+    [[ThemeManager themeManager] systemAppearanceDidChange:self.appDelegate.feedsViewController.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark];
 }
 
 - (void)didReceiveMemoryWarning {
