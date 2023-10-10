@@ -197,6 +197,8 @@ mongodump:
 mongorestore:
 	cp -fr docker/volumes/mongodump docker/volumes/db_mongo/
 	docker exec -it db_mongo mongorestore --port 29019 -d newsblur /data/db/mongodump/newsblur
+pgrestore:
+	docker exec -it db_postgres bash -c "psql -U newsblur -c 'CREATE DATABASE newsblur_prod;'; pg_restore -U newsblur --role=newsblur --dbname=newsblur_prod /var/lib/postgresql/data/backup_postgresql_2023-10-09-04-00.sql.sql"
 index_feeds:
 	docker exec -it newsblur_web ./manage.py index_feeds
 index_stories:
