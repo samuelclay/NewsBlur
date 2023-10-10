@@ -268,7 +268,7 @@
 //        self.frame = move;
         [self.superview layoutIfNeeded];
     } completion:^(BOOL finished) {
-//        self.hidden = YES;
+        self.hidden = YES;
     }];
     
     self.showing = NO;

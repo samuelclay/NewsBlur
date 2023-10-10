@@ -79,7 +79,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 
 - (instancetype)initWithName:(NSString *)name
 {
-    return [self initWithName:name rootPath:[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]];
+    return [self initWithName:name rootPath:[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0]];
 }
 
 - (instancetype)initWithName:(NSString *)name rootPath:(NSString *)rootPath
@@ -317,7 +317,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
             [_dates setObject:date forKey:key];
         
         NSNumber *fileSize = [dictionary objectForKey:NSURLTotalFileAllocatedSizeKey];
-        if (fileSize) {
+        if (fileSize && key) {
             [_sizes setObject:fileSize forKey:key];
             byteCount += [fileSize unsignedIntegerValue];
         }
@@ -666,7 +666,10 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
             // If the cache should behave like a TTL cache, then only fetch the object if there's a valid ageLimit and  the object is still alive
             (!self->_ttlCache || self->_ageLimit <= 0 || fabs([[_dates objectForKey:key] timeIntervalSinceDate:now]) < self->_ageLimit)) {
             @try {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
                 object = [NSKeyedUnarchiver unarchiveObjectWithFile:[fileURL path]];
+#pragma GCC diagnostic pop
             }
             @catch (NSException *exception) {
                 NSError *error = nil;
@@ -748,10 +751,13 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
         
         if (self->_willAddObjectBlock)
             self->_willAddObjectBlock(self, key, object, fileURL);
-  
+        
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
         NSData *data = [NSKeyedArchiver archivedDataWithRootObject:object];
         NSError *writeError = nil;
-  
+#pragma GCC diagnostic pop
+        
         BOOL written = [data writeToURL:fileURL options:writeOptions error:&writeError];
         PINDiskCacheError(writeError);
         

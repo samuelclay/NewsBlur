@@ -12,6 +12,8 @@
 <a href="https://play.google.com/store/apps/details?id=com.newsblur" target="_blank">
 <img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" alt="Get it on Google Play" height="80"/></a>
 
+&nbsp;&nbsp;&nbsp;<a href="https://apps.apple.com/us/app/newsblur/id463981119"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" alt="Download on the Apple App Store" height="55"></a>
+
 ## Features
 
  1. Shows the original site (you have to see it to believe it).

@@ -20,6 +20,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
+from django.core.mail import mail_admins
 from django.urls import reverse
 from django.template.loader import render_to_string
 from apps.rss_feeds.models import Feed, MStory, MStarredStory
@@ -232,6 +233,13 @@ class Profile(models.Model):
         from apps.profile.tasks import EmailNewPremium
         
         EmailNewPremium.delay(user_id=self.user.pk)
+
+        subs = UserSubscription.objects.filter(user=self.user)
+        if subs.count() > 5000:
+            logging.user(self.user, "~FR~SK~FW~SBWARNING! ~FR%s subscriptions~SN!" % (subs.count()))
+            mail_admins(f"WARNING! {self.user.username} has {subs.count()} subscriptions", 
+                        f"{self.user.username} has {subs.count()} subscriptions and just upgraded to premium. They'll need a refund: {self.user.profile.paypal_sub_id} {self.user.profile.stripe_id} {self.user.email}")
+            return False
         
         was_premium = self.is_premium
         self.is_premium = True
@@ -242,7 +250,6 @@ class Profile(models.Model):
         self.user.save()
         
         # Only auto-enable every feed if a free user is moving to premium
-        subs = UserSubscription.objects.filter(user=self.user)
         if not was_premium:
             for sub in subs:
                 if sub.active: continue
@@ -276,6 +283,13 @@ class Profile(models.Model):
     def activate_archive(self, never_expire=False):
         UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
         
+        subs = UserSubscription.objects.filter(user=self.user)
+        if subs.count() > 2000:
+            logging.user(self.user, "~FR~SK~FW~SBWARNING! ~FR%s subscriptions~SN!" % (subs.count()))
+            mail_admins(f"WARNING! {self.user.username} has {subs.count()} subscriptions", 
+                        f"{self.user.username} has {subs.count()} subscriptions and just upgraded to archive. They'll need a refund: {self.user.profile.paypal_sub_id} {self.user.profile.stripe_id} {self.user.email}")
+            return False
+        
         was_premium = self.is_premium
         was_archive = self.is_archive
         was_pro = self.is_pro
@@ -286,7 +300,6 @@ class Profile(models.Model):
         self.user.save()
         
         # Only auto-enable every feed if a free user is moving to premium
-        subs = UserSubscription.objects.filter(user=self.user)
         if not was_premium:
             for sub in subs:
                 if sub.active: continue
@@ -324,6 +337,13 @@ class Profile(models.Model):
         
         EmailNewPremiumPro.delay(user_id=self.user.pk)
         
+        subs = UserSubscription.objects.filter(user=self.user)
+        if subs.count() > 1000:
+            logging.user(self.user, "~FR~SK~FW~SBWARNING! ~FR%s subscriptions~SN!" % (subs.count()))
+            mail_admins(f"WARNING! {self.user.username} has {subs.count()} subscriptions", 
+                        f"{self.user.username} has {subs.count()} subscriptions and just upgraded to pro. They'll need a refund: {self.user.profile.paypal_sub_id} {self.user.profile.stripe_id} {self.user.email}")
+            return False
+        
         was_premium = self.is_premium
         was_archive = self.is_archive
         was_pro = self.is_pro
@@ -335,7 +355,6 @@ class Profile(models.Model):
         self.user.save()
         
         # Only auto-enable every feed if a free user is moving to premium
-        subs = UserSubscription.objects.filter(user=self.user)
         if not was_premium:
             for sub in subs:
                 if sub.active: continue

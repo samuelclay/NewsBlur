@@ -1,0 +1,21 @@
+NewsBlur is a personal <i>news reader<i> bringing people together to talk about the world. Share stories, read your feed subscriptions, and talk to like minded people with this free service. A new sound of an old instrument.
+
+Google Reader has left us and we are working hard to be your replacement. We have many fixes and enhancements planned for all our NewsBlur offerings so stay tuned.
+
+<b>Features:<b>
+<ul>
+    <li>Synchronizes with NewsBlur servers so keep your stories and read/unread status consistent<li>
+    <li>Read all of your news subscriptions (RSS feeds)<li>
+    <li>Read while offline and re-sync read and saved stories when online again.<li>
+    <li>Share and comment on the news with friends<li>
+    <li>Multiple device support (Web, Android, iOS)<li>
+    <li>Meet new people who share the same interests<li>
+    <li>Collapsible folders<li>
+    <li>Save stories<li>
+    <li>Dark mode for night time reading<li>
+    <li>Multiple viewing options for stories<li>
+    <li>Training your feeds - Hide the stories you don't like and highlight the stories you do.<li>
+    <li>River of news - show stories from several different feeds in a single view<li>
+<ul>
+
+https://www.newsblur.com/

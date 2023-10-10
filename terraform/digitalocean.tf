@@ -192,7 +192,7 @@ resource "digitalocean_droplet" "blog" {
 }
 
 resource "digitalocean_droplet" "staging-web" {
-  count    = 3
+  count    = 1
   image    = var.droplet_os
   name     = count.index == 0 ? "staging-web" : "staging-web${count.index + 1}"
   region   = var.droplet_region
@@ -228,7 +228,7 @@ resource "digitalocean_droplet" "discovery" {
 }
 
 resource "digitalocean_droplet" "node-text" {
-  count    = 2
+  count    = 4
   image    = var.droplet_os
   name     = contains([0], count.index) ? "node-text" : "node-text${count.index + 1}"
   region   = var.droplet_region
@@ -382,12 +382,12 @@ resource "digitalocean_droplet" "db-redis-sessions" {
 }
 
 resource "digitalocean_droplet" "db-redis-story" {
-  count  = 2
+  count  = 1
   image  = var.droplet_os
-  name   = "db-redis-story${count.index + 1}"
+  name   = "db-redis-story${count.index + 2}"
   region = var.droplet_region
-  size   = contains([1], count.index) ? "m-8vcpu-64gb" : var.redis_story_droplet_size
-  # size     = var.redis_story_droplet_size
+  # size   = contains([1], count.index) ? "m-8vcpu-64gb" : var.redis_story_droplet_size
+  size     = var.redis_story_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -419,12 +419,13 @@ resource "digitalocean_droplet" "db-redis-pubsub" {
 }
 
 resource "digitalocean_droplet" "db-postgres" {
-  count  = 2
+  count  = 1
+  backups = true
   image  = var.droplet_os
-  name   = contains([0], count.index) ? "db-postgres${count.index + 1}" : "db-postgres${count.index + 2}"
+  name   = contains([0], count.index) ? "db-postgres${count.index + 2}" : "db-postgres${count.index + 2}"
   region = var.droplet_region
-  size   = contains([0], count.index) ? var.droplet_size_160 : var.droplet_size_320
-  # size     = var.droplet_size_240
+  # size   = contains([0], count.index) ? var.droplet_size_160 : var.droplet_size_320
+  size     = var.droplet_size_320
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
@@ -470,7 +471,7 @@ resource "digitalocean_droplet" "db-postgres" {
 # servers=$(for i in {1..9}; do echo -n "-target=\"digitalocean_droplet.db-mongo-primary[$i]\" " ; done); tf plan -refresh=false `eval echo $servers`
 # 
 resource "digitalocean_droplet" "db-mongo-primary" {
-  count   = 2
+  count   = 1
   backups = true
   image   = var.droplet_os
   name    = "db-mongo-primary${count.index + 1}"
@@ -491,16 +492,16 @@ resource "digitalocean_droplet" "db-mongo-primary" {
 }
 
 resource "digitalocean_volume" "mongo_secondary_volume" {
-  count                   = 3
+  count                   = 2
   region                  = "nyc1"
   name                    = "mongosecondary${count.index + 1}"
-  size                    = 400
+  size                    = 500
   initial_filesystem_type = "xfs"
   description             = "Storage for NewsBlur MongoDB"
 }
 
 resource "digitalocean_droplet" "db-mongo-secondary" {
-  count = 3
+  count = 2
   # backups  = contains([0], count.index) ? true : false
   image      = var.droplet_os
   name       = "db-mongo-secondary${count.index + 1}"
@@ -618,7 +619,7 @@ resource "digitalocean_droplet" "task-work" {
   image    = var.droplet_os
   name     = "task-work${count.index + 1}"
   region   = var.droplet_region
-  size     = var.droplet_size_10
+  size     = var.droplet_size_20
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
   provisioner "local-exec" {
     command = "/srv/newsblur/ansible/utils/generate_inventory.py; sleep 120"
