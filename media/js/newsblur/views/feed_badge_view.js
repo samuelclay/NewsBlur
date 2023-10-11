@@ -10,6 +10,7 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
 
     constructor: function (options) {
         Backbone.View.call(this, options);
+
         this.render();
 
         return this.el;
@@ -50,7 +51,9 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
                 }, 'Add'),
                 (this.options.show_folders && $.make('div', { className: 'NB-badge-folders' }, [
                     NEWSBLUR.utils.make_folders()
-                ]))
+                ])),
+                $.make("div", { className: "NB-loading" }),
+                $.make('div', { className: 'NB-error' })
             ]))
         ]));
 
@@ -59,17 +62,78 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
 
     try_feed: function () {
         NEWSBLUR.reader.load_feed_in_tryfeed_view(this.model.id);
+        if (this.options.in_popover) {
+            this.options.in_popover.close();
+        }
     },
 
     add_feed: function () {
-        NEWSBLUR.reader.open_add_feed_modal({ url: this.model.get('feed_address') });
+        if (this.options.in_popover) {
+            this.save_add_url();
+        } else {
+            NEWSBLUR.reader.open_add_feed_modal({ url: this.model.get('feed_address') });
+        }
+    },
+
+    save_add_url: function () {
+        var $submit = this.$('.NB-badge-action-add');
+        var $error = this.$('.NB-error');
+        var $loading = this.$('.NB-loading');
+
+        var url = this.model.get('feed_address');
+        var folder = this.$('.NB-folders').val();
+
+        $error.slideUp(300);
+        $loading.addClass('NB-active');
+        $submit.addClass('NB-disabled').text('Adding...');
+
+        NEWSBLUR.reader.flags['reloading_feeds'] = true;
+        NEWSBLUR.assets.save_add_url(url, folder, _.bind(this.post_save_add_url, this), _.bind(this.error, this));
+    },
+
+    post_save_add_url: function (e, data) {
+        NEWSBLUR.log(['Data', data]);
+        var $submit = this.$('.NB-badge-action-add');
+        var $loading = this.$('.NB-loading');
+        $loading.removeClass('NB-active');
+        NEWSBLUR.reader.flags['reloading_feeds'] = false;
+
+        if (data && data.code > 0) {
+            NEWSBLUR.assets.load_feeds(function () {
+                if (data.feed) {
+                    NEWSBLUR.reader.open_feed(data.feed.id);
+                }
+            });
+            NEWSBLUR.reader.handle_mouse_indicator_hover();
+            $submit.text('Subscribed!');
+        } else {
+            this.error(data);
+            $submit.removeClass('NB-disabled');
+        }
+    },
+
+    error: function (data) {
+        var $submit = this.$('.NB-badge-action-add');
+        var $error = this.$('.NB-error');
+
+        $error.text(data.message || "Oh no, there was a problem grabbing that URL and there's no good explanation for what happened.");
+        $error.slideDown(300);
+        $submit.text('Add');
+        NEWSBLUR.reader.flags['reloading_feeds'] = false;
     },
 
     open_stats: function () {
-        NEWSBLUR.assets.load_canonical_feed(this.model.id, _.bind(function () {
-            NEWSBLUR.reader.open_feed_statistics_modal(this.model.id);
-        }, this));
+        var load_stats = _.bind(function () {
+            NEWSBLUR.assets.load_canonical_feed(this.model.id, _.bind(function () {
+                NEWSBLUR.reader.open_feed_statistics_modal(this.model.id);
+            }, this));
+        }, this);
 
+        if (this.options.in_popover) {
+            this.options.in_popover.close(load_stats);
+        } else {
+            load_stats();
+        }
     }
 
 });

@@ -95,7 +95,8 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                     return [
                         new NEWSBLUR.Views.FeedBadge({
                             model: discover_feed.get("feed"),
-                            show_folders: true
+                            show_folders: true,
+                            in_popover: self
                         }),
                         story_titles_view.render().el
                     ];
