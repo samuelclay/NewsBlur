@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.core.management.base import BaseCommand
+
 from apps.recommendations.models import CollaborativelyFilteredRecommendation
 
 
@@ -15,7 +17,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Store user feed data to file
-        file_name = "user_feed_data.csv"
+        file_name = f"{settings.SURPRISE_DATA_FOLDER}/user_feed_data_2.csv"
         CollaborativelyFilteredRecommendation.store_user_feed_data_to_file(file_name)
 
         # Load data and get the trained model

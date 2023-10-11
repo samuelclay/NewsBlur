@@ -69,6 +69,10 @@ jekyll:
 	cd blog && bundle exec jekyll serve
 jekyll_drafts:
 	cd blog && bundle exec jekyll serve --drafts
+lint:
+	docker exec -it newsblur_web isort --profile black .
+	docker exec -it newsblur_web black --line-length 110 .
+	docker exec -it newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv
 
 # runs tests
 test:
@@ -198,7 +202,7 @@ mongorestore:
 	cp -fr docker/volumes/mongodump docker/volumes/db_mongo/
 	docker exec -it db_mongo mongorestore --port 29019 -d newsblur /data/db/mongodump/newsblur
 pgrestore:
-	docker exec -it db_postgres bash -c "psql -U newsblur -c 'CREATE DATABASE newsblur_prod;'; pg_restore -U newsblur --role=newsblur --dbname=newsblur_prod /var/lib/postgresql/data/backup_postgresql_2023-10-09-04-00.sql.sql"
+	docker exec -it db_postgres bash -c "psql -U newsblur -c 'CREATE DATABASE newsblur_prod;'; pg_restore -U newsblur --role=newsblur --dbname=newsblur_prod /var/lib/postgresql/data/backup_postgresql_2023-10-10-04-00.sql.sql"
 index_feeds:
 	docker exec -it newsblur_web ./manage.py index_feeds
 index_stories:

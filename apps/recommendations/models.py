@@ -1,14 +1,16 @@
 import tempfile
-import mongoengine as mongo
-from surprise import SVD
-from surprise.model_selection import train_test_split
-from surprise import Reader, Dataset
-from django.db import models
-from django.contrib.auth.models import User
-from apps.rss_feeds.models import Feed
-from apps.reader.models import UserSubscription, UserSubscriptionFolders
-from utils import json_functions as json
 from collections import defaultdict
+
+import mongoengine as mongo
+from django.contrib.auth.models import User
+from django.core.paginator import Paginator
+from django.db import models
+from surprise import SVD, Dataset, Reader
+from surprise.model_selection import train_test_split
+
+from apps.reader.models import UserSubscription, UserSubscriptionFolders
+from apps.rss_feeds.models import Feed
+from utils import json_functions as json
 
 
 class RecommendedFeed(models.Model):
@@ -80,15 +82,16 @@ class MFeedFolder(mongo.Document):
 
 class CollaborativelyFilteredRecommendation(models.Model):
     @classmethod
-    def store_user_feed_data_to_file(cls, file_name="user_feed_data.csv"):
+    def store_user_feed_data_to_file(cls, file_name):
         temp_file = open(file_name, "w+")
-        users = User.objects.all()
+        users = User.objects.all().order_by("pk")
         paginator = Paginator(users, 1000)
         for page_num in paginator.page_range:
             users = paginator.page(page_num)
             for user in users:
                 # Only include feeds with num_subscribers >= 5
                 subs = UserSubscription.objects.filter(user=user, feed__num_subscribers__gte=5)
+                # print(f"User {user} has {subs.count()} feeds")
                 for sub in subs:
                     temp_file.write(f"{user.id},{sub.feed_id},1\n")
             print(f"Page {page_num} of {paginator.num_pages} saved to {file_name}")
