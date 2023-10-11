@@ -20,7 +20,7 @@ RUN       set -ex \
                     libxslt1-dev \
                     ncurses-dev \
                     zlib1g-dev \
-                            ' \
+                    ' \
             && apt-get update \
             && apt-get install -y $rundDeps $buildDeps --no-install-recommends
 COPY      config/requirements.txt /srv/newsblur/
