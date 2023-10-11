@@ -1697,6 +1697,17 @@ img.feed_favicon {
     filter: none;
 }
 
+.NB-discover-feed-badges .NB-story-titles {
+    margin-left: 36px;
+}
+
+.NB-discover-feed-badges .NB-folders {
+    float: left;
+    width: 180px;
+    font-size: 16px;
+    margin: 8px 0 0 1px;
+}
+
 /* ============================= */
 /* = Story Titles Hidden Count = */
 /* ============================= */
