@@ -1707,6 +1707,18 @@ img.feed_favicon {
     font-size: 16px;
     margin: 8px 0 0 1px;
 }
+.NB-discover-feed-badges .NB-feed-badge {
+    padding-top: 30px;
+}
+
+.NB-discover-feed-badges .NB-error {
+    clear: both;
+    font-size: 10px;
+    color: #6A1000;
+    padding: 4px 0 0;
+    line-height: 14px;
+    font-weight: bold;
+}
 
 /* ============================= */
 /* = Story Titles Hidden Count = */
@@ -4950,6 +4962,7 @@ body {
     text-align: center;
 }
 .NB-feeds-header-user-interactions {
+    padding: 8px 0;
     right: 32px;
 }
 .NB-feeds-header-collapse-sidebar img,
@@ -4957,6 +4970,10 @@ body {
     width: 16px;
     height: 16px;
     opacity: .7;
+}
+.NB-feeds-header-user-interactions img {
+    width: 20px;
+    height: 20px;
 }
 .NB-feeds-header-collapse-sidebar:hover img,
 .NB-feeds-header-user-interactions:hover img {
