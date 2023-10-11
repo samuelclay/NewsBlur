@@ -811,6 +811,8 @@ REDIS_PUBSUB_POOL          = redis.ConnectionPool(host=REDIS_PUBSUB['host'], por
 # celeryapp.autodiscover_tasks(INSTALLED_APPS)
 accept_content = ['pickle', 'json', 'msgpack', 'yaml']
 
+SURPRISE_DATA_FOLDER = os.getenv("SURPRISE_DATA_FOLDER", "/srv/newsblur/docker/volumes/surprise")
+
 # ==========
 # = Assets =
 # ==========
