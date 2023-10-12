@@ -90,7 +90,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                         collection: discover_feed.get("stories"),
                         $story_titles: $story_titles,
                         override_layout: 'split',
-                        on_dashboard: discover_feed
+                        on_discover: self
                     });
                     return [
                         new NEWSBLUR.Views.FeedBadge({
