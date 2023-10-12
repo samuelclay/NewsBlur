@@ -1369,7 +1369,7 @@ img.feed_favicon {
   margin-left: 36px;
 }
 .NB-story-titles-expand-sidebar {
-  background: url(/media/img/reader/chevron_sq_right.png) no-repeat center center;
+  background: url(/media/img/icons/nouns/nav-right.svg) no-repeat center center;
   background-size: 16px;
   width: 36px;
   height: 36px;
@@ -1713,7 +1713,7 @@ img.feed_favicon {
 
 .NB-discover-feed-badges .NB-error {
     clear: both;
-    font-size: 10px;
+    font-size: 12px;
     color: #6A1000;
     padding: 4px 0 0;
     line-height: 14px;
@@ -5349,6 +5349,9 @@ background: transparent;
     display: none;
     border-top: 1px solid #dbdbda;
 }
+#story_taskbar .NB-taskbar-flex {
+    display: flex;
+}
 #story_taskbar .NB-taskbar {
     margin: 5px 0 0 0;    
 }
@@ -5369,17 +5372,19 @@ background: transparent;
 }
 
 #story_taskbar .NB-taskbar-view {
-    float: left;
-    margin-left: 6px;
+    margin: 0 8px 0 6px;
 }
-
+#story_taskbar .NB-tryfeed-add,
+#story_taskbar .NB-tryfeed-follow,
+#story_taskbar .NB-tryfeed-signup {
+    display: none;
+}
 .NB-feedbar .NB-taskbar-nav {
     float: right;
     margin: 6px 18px 0 0;
     font-weight: normal;
 }
 #story_taskbar .NB-taskbar-layout {
-    float: right;
     margin-right: 18px;
 }
 .NB-taskbar .NB-task-title {
@@ -5561,14 +5566,16 @@ background: transparent;
 .NB-style-popover-container .popover-content {
     padding: 0;
 }
-
+#story_taskbar .NB-modal-submit {
+    flex-grow: 1;
+    margin: 0 6px;
+}
 #story_taskbar .NB-taskbar-options-container {
-    float: right;
-    margin: 3px 24px 0 0;
+    flex-shrink: 1;
+    margin: 3px 0px;
 }
 #story_taskbar .NB-taskbar-options {
     cursor: pointer;
-    float: right;
     color: rgba(0, 0, 0, .5);
     border: 1px solid rgba(0, 0, 0, .1);
     border-radius: 16px;
@@ -5578,6 +5585,8 @@ background: transparent;
     padding: 1px 4px 1px 8px;
     line-height: 14px;
     margin: 6px 0 0;
+    display: flex;
+    flex-direction: row-reverse;
 }
 #story_taskbar .NB-taskbar-options:hover,
 #story_taskbar .NB-taskbar-options.NB-active {
