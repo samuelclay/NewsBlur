@@ -592,12 +592,12 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             this.options.on_dashboard.open_story(this.model);
             return;
         } else if (this.options.on_discover) {
-            console.log(['clicked story', this.model]);
+            console.log(['clicked story', this.model, this.options.on_discover, this.options.in_popover]);
             NEWSBLUR.reader.load_feed_in_tryfeed_view(this.model.get('story_feed_id'), {
                 'feed': this.options.on_discover.feed,
                 'select_story_in_feed': this.model.get('story_hash')
             });
-            this.options.on_discover.close();
+            this.options.in_popover.close();
         }
 
         if (_.contains(['list', 'grid', 'magazine'], this.options.override_layout ||
