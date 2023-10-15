@@ -1697,6 +1697,17 @@ img.feed_favicon {
     filter: none;
 }
 
+.NB-discover-popover .NB-discover-loading {
+    margin: 24px 0;
+}
+
+.NB-discover-popover .NB-loading.NB-active {
+    width: 32px;
+    height: 32px;
+    background-size: 32px;
+    margin: 24px auto;
+}
+
 .NB-discover-feed-badges .NB-story-titles {
     margin-left: 36px;
 }
@@ -5572,7 +5583,7 @@ background: transparent;
 }
 #story_taskbar .NB-taskbar-options-container {
     flex-shrink: 1;
-    margin: 3px 0px;
+    margin: 3px 12px;
 }
 #story_taskbar .NB-taskbar-options {
     cursor: pointer;
@@ -13819,10 +13830,8 @@ form.opml_import_form input {
 }
 .NB-popover-section-title {
     color: #585A55;
-    text-transform: uppercase;
     margin: 12px 0 10px;
-    font-size: 12px;
-    font-weight: bold;
+    font-size: 15px;
 }
 .NB-popover-section-title:first-child {
     margin-top: 0;
@@ -13840,7 +13849,7 @@ form.opml_import_form input {
     float: right;
     width: 18px;
     height: 18px;
-    margin-top: 8px;
+    margin-top: 14px;
     cursor: pointer;
     background-size: 18px;
 }
@@ -14096,7 +14105,6 @@ form.opml_import_form input {
     clear: both;
     overflow: hidden;
     border-bottom: 1px solid #F0F0F0;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 .NB-feed-badge:last-child {
     border-bottom: none;

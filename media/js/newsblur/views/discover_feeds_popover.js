@@ -1,6 +1,6 @@
 NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
 
-    className: "NB-filter-popover",
+    className: "NB-discover-popover",
 
     options: {
         'width': 604,
@@ -42,15 +42,19 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
         NEWSBLUR.ReaderPopover.prototype.render.call(this);
 
         this.showLoading();
-        this.discover_feeds_model.fetch({
-            success: function () {
-                self.hideLoading();
-                self.render();
-            },
-            error: function () {
-                self.hideLoading();
-            }
-        });
+        try {
+            this.discover_feeds_model.fetch({
+                success: function () {
+                    self.hideLoading();
+                    self.render();
+                },
+                error: function () {
+                    self.hideLoading();
+                }
+            });
+        } catch (e) {
+            this.onDataLoadError();
+        }
     },
 
     showLoading: function () {
@@ -58,13 +62,15 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
         this.$el.html($.make('div', [
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, 'Discover sites'),
-                $.make('div', { className: 'NB-discover-loading' }, "Loading...")
+                $.make('div', { className: 'NB-discover-loading' }, [
+                    $.make('div', { className: 'NB-loading NB-active' })
+                ])
             ])
         ]));
     },
 
     hideLoading: function () {
-        this.$el.html('');
+        this.$el.find(".NB-loading").html('');
     },
 
     onDataLoaded: function () {
@@ -73,8 +79,8 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
     },
 
     onDataLoadError: function () {
-        // Handle the error, for example:
-        this.$el.html('<div class="error-message">Failed to load data</div>');
+        this.hideLoading();
+        this.$el.find(".NB-discover-loading").html('<div class="error-message">Failed to load related sites</div>');
     },
 
     render: function () {
@@ -90,7 +96,8 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                         collection: discover_feed.get("stories"),
                         $story_titles: $story_titles,
                         override_layout: 'split',
-                        on_discover: self
+                        on_discover: discover_feed,
+                        in_popover: self
                     });
                     return [
                         new NEWSBLUR.Views.FeedBadge({
