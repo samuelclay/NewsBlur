@@ -293,6 +293,7 @@
         
         [self.feedDetailViewController reloadWithSizing];
         [self.storyPagesViewController refreshHeaders];
+        [self.storyPagesViewController reorientPages];
     }
 }
 
