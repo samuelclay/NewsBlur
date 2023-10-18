@@ -373,8 +373,6 @@
         self.scrollView.frame = CGRectMake(frame.origin.x, frame.origin.y, floor(frame.size.width), floor(frame.size.height));
     }
     
-    [self reorientPages];
-    
     [super viewDidLayoutSubviews];
 }
 
