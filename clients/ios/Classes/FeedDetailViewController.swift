@@ -225,7 +225,13 @@ extension FeedDetailViewController: FeedDetailInteraction {
     func visible(story: Story) {
         print("🐓 Visible: \(story.debugTitle)")
         
-        if story.index >= storyCache.before.count + storyCache.after.count - 5 {
+        guard storiesCollection.activeFeedStories != nil else {
+            return
+        }
+        
+        let cacheCount = storyCache.before.count + storyCache.after.count
+        
+        if cacheCount > 0, story.index >= cacheCount - 5 {
             if storiesCollection.isRiverView, storiesCollection.activeFolder != nil {
                 fetchRiverPage(storiesCollection.feedPage + 1, withCallback: nil)
             } else {

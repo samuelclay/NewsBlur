@@ -1177,7 +1177,7 @@
         self.scrollingToPage = -1;
         NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:currentPage.pageIndex];
         
-        if (storyIndex < 0) {
+        if (storyIndex < 0 || storyIndex >= UINT_MAX) {
             NSLog(@"invalid story index: %@ for page index: %@", @(storyIndex), @(currentPage.pageIndex));  // log
         }
         
