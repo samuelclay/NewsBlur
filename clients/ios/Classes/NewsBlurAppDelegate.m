@@ -1032,8 +1032,10 @@
              title:(NSString *)title
          feedTitle:(NSString *)feedTitle
             images:(NSArray *)images {
+    if (url == nil) {
+        return;
+    }
     
-    // iOS 8+
     if (text) {
         NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
         text = [NSString stringWithFormat:@"<html><body><br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@</body></html>", [url absoluteString], title, maybeFeedTitle, text];
