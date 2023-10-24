@@ -183,7 +183,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     @objc override func reload(_ indexPath: IndexPath, with rowAnimation: UITableView.RowAnimation = .none) {
         if !isLegacyTable {
             deferredReload()
-        } else if reloadWorkItem == nil {
+        } else if reloadWorkItem == nil, storyTitlesTable.window != nil {
             // Only do this if a deferred reload isn't pending; otherwise no point in doing a partial reload, plus the table may be stale.
             storyTitlesTable.reloadRows(at: [indexPath], with: rowAnimation)
         }
