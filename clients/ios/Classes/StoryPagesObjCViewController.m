@@ -27,6 +27,7 @@
 
 @property (nonatomic) CGFloat statusBarHeight;
 @property (nonatomic) BOOL wasNavigationBarHidden;
+@property (nonatomic) BOOL doneInitialRefresh;
 @property (nonatomic, strong) NSTimer *autoscrollTimer;
 @property (nonatomic, strong) NSTimer *autoscrollViewTimer;
 @property (nonatomic, strong) NSString *restoringStoryId;
@@ -1099,6 +1100,14 @@
     }
     
     [self becomeFirstResponder];
+    
+    if (!self.isPhoneOrCompact && !self.doneInitialRefresh) {
+        self.doneInitialRefresh = YES;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC),
+                       dispatch_get_main_queue(), ^{
+            [self refreshPages];
+        });
+    }
 }
 
 - (void)changeToNextPage:(id)sender {
