@@ -83,9 +83,9 @@ static UIFont *indicatorFont = nil;
     CGContextMoveToPoint(context, width, 1.0f);
     CGContextAddLineToPoint(context, width, self.frame.size.height);
     CGContextStrokePath(context);
-
+    
     // site favicon
-    if (self.isRead) {
+    if (self.isRead && self.siteFavicon != nil) {
         self.siteFavicon = [self imageByApplyingAlpha:self.siteFavicon withAlpha:0.25];
     } 
     
