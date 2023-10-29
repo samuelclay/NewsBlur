@@ -17,6 +17,7 @@ import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_METADATA
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_SOCIAL
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_STORY
 import com.newsblur.service.NBSyncService
+import com.newsblur.service.OriginalTextService
 import com.newsblur.util.FeedExt.disableNotification
 import com.newsblur.util.FeedExt.setNotifyFocus
 import com.newsblur.util.FeedExt.setNotifyUnread
@@ -333,7 +334,9 @@ class FeedUtils(
     fun sendStoryFull(story: Story?, context: Context) {
         if (story == null) return
         var body = getStoryText(story.storyHash)
-        if (TextUtils.isEmpty(body)) body = getStoryContent(story.storyHash)
+        if (body.isNullOrEmpty() || body == OriginalTextService.NULL_STORY_TEXT) {
+            body = getStoryContent(story.storyHash)
+        }
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "text/plain"
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
