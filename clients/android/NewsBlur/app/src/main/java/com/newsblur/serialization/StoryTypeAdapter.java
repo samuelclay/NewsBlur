@@ -9,6 +9,7 @@ import com.google.gson.JsonParseException;
 
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIConstants;
+import com.newsblur.util.StoryUtil;
 import com.newsblur.util.UIUtils;
 
 import java.lang.reflect.Type;
@@ -42,6 +43,11 @@ public class StoryTypeAdapter implements JsonDeserializer<Story> {
         // Convert story_timestamp to milliseconds
         story.timestamp = story.timestamp * 1000;
         story.starredTimestamp = story.starredTimestamp * 1000;
+
+        // due to android.os.TransactionTooLargeException and
+        // android.database.sqlite.SQLiteBlobTooBigException
+        // truncate the story's content in case it's large
+        story.content = StoryUtil.truncateContent(story.content);
 
         // replace http image urls with https
         if (httpSniff.matcher(story.content).find() && story.secureImageUrls != null && story.secureImageUrls.size() > 0) {
