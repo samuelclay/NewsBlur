@@ -672,7 +672,7 @@ def load_single_feed(request, feed_id):
         # User must be subscribed to a newsletter in order to read it
         raise Http404
 
-    if feed.num_subscribers = 1 and not usersub:
+    if feed.num_subscribers == 1 and not usersub and not user.is_staff:
         # This feed could be private so user must be subscribed in order to read it
         raise Http404
     
