@@ -9,7 +9,7 @@ from django.core.paginator import Paginator
 from django.db import models
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
-from surprise import SVD, Dataset, KNNBasic, KNNWithMeans, Reader
+from surprise import NMF, SVD, Dataset, KNNBasic, KNNWithMeans, Reader
 from surprise.model_selection import train_test_split
 
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
@@ -111,15 +111,29 @@ class CollaborativelyFilteredRecommendation(models.Model):
         data = Dataset.load_from_file(file_name, reader)
 
         trainset, _ = train_test_split(data, test_size=0.2)
+        return trainset
+
+    @classmethod
+    def svd(cls, trainset):
         model = SVD()
         model.fit(trainset)
 
-        return trainset, model
+        return model
+
+    @classmethod
+    def nmf(cls, trainset):
+        model = NMF()
+        model.fit(trainset)
+        return model
 
     @classmethod
     def get_recommendations(cls, trainset, user_id, model, n=10):
         # Retrieve the inner id of the user
-        user_inner_id = trainset.to_inner_uid(user_id)
+        try:
+            user_inner_id = trainset.to_inner_uid(user_id)
+        except ValueError:
+            # User was not part of the trainset, so we can't make recommendations
+            return []
 
         # Predict ratings for all feeds
         predictions = [
@@ -243,7 +257,93 @@ class CollaborativelyFilteredRecommendation(models.Model):
         return index
 
     @classmethod
-    def recommend_similar_feeds_for_item(cls, model, trainset, feed_id, n=10):
+    def recommend_similar_feeds_for_item_nnmf(cls, model, trainset, user_id, feed_ids, n=10):
+        users_who_liked_feeds = set()
+
+        # Collect users who interacted with these feeds
+        for _, uid, _ in trainset.all_ratings():
+            for feed_id in feed_ids:
+                if model.predict(uid, feed_id).est > 0.5:  # Assuming > 0.5 implies interaction/like
+                    users_who_liked_feeds.add(uid)
+
+        # Predict feeds for these users
+        all_recommendations = {}
+        print(f"Number of users who liked the feeds: {len(users_who_liked_feeds)}")
+        for uid in users_who_liked_feeds:
+            user_recs = cls.get_recommendations(trainset, uid, model, n)
+            print(f"Recommendations for user {uid}: {user_recs}")
+            for rec in user_recs:
+                if rec not in feed_ids:  # Exclude original feeds
+                    all_recommendations[rec] = all_recommendations.get(rec, 0) + 1
+
+        # Sort feeds based on how many times they appear as recommendations
+        sorted_recommendations = sorted(all_recommendations, key=all_recommendations.get, reverse=True)
+
+        return sorted_recommendations[:n]
+
+    @classmethod
+    def recommend_feeds_for_user_nnmf(cls, model, trainset, user_id, n=10):
+        try:
+            # Convert user_id to inner user id used by Surprise
+            user_inner_id = trainset.to_inner_uid(str(user_id))
+        except ValueError:
+            # If user_id is not in the training set, you cannot provide recommendations
+            print(f"User {user_id} not found in the training set.")
+            return []
+
+        # Get the list of all feed ids (items) in the training set
+        all_feed_ids = set([j for j in trainset.all_items()])
+
+        # Get the list of feed ids (items) that the user has already rated
+        rated_feeds = set([j for (j, _) in trainset.ur[user_inner_id]])
+
+        # Get the list of feed ids (items) that the user has not rated yet
+        unrated_feeds = all_feed_ids - rated_feeds
+
+        # Predict the ratings for all unrated items
+        predictions = [model.predict(user_inner_id, feed_id, verbose=False) for feed_id in unrated_feeds]
+
+        # Sort predictions by estimated rating in descending order
+        predictions.sort(key=lambda x: x.est, reverse=True)
+
+        # Extract the top 'n' feed ids with highest predicted ratings
+        recommended_feed_ids = [pred.iid for pred in predictions[:n]]
+
+        print(f"Recommended {len(recommended_feed_ids)} feeds for user {user_id}:")
+        return recommended_feed_ids
+
+    @classmethod
+    def recommend_similar_feeds_for_user_and_item_nnmf(cls, model, trainset, user_id, feed_ids, n=10):
+        # Convert feed_ids to the proper format if it's a comma-separated string
+        if isinstance(feed_ids, str):
+            feed_ids = [str(fid) for fid in feed_ids.split(",")]
+
+        users_who_liked_feeds = set()
+
+        # Check if the given user interacted with the given feeds
+        for feed_id in feed_ids:
+            if model.predict(user_id, feed_id).est > 0.5:  # Assuming > 0.5 implies interaction/like
+                # Collect users who interacted with these feeds
+                for _, uid, _ in trainset.all_ratings():
+                    if model.predict(uid, feed_id).est > 0.5:
+                        users_who_liked_feeds.add(uid)
+
+        # Predict feeds for these users
+        all_recommendations = {}
+        print(f"Number of users who liked the feeds: {len(users_who_liked_feeds)}")
+        for uid in users_who_liked_feeds:
+            user_recs = cls.get_recommendations(trainset, uid, model, n)
+            print(f"Recommendations for user {uid}: {user_recs}")
+            for rec in user_recs:
+                if rec not in feed_ids:  # Exclude original feeds
+                    all_recommendations[rec] = all_recommendations.get(rec, 0) + 1
+
+        # Sort feeds based on how many times they appear as recommendations
+        sorted_recommendations = sorted(all_recommendations, key=all_recommendations.get, reverse=True)
+
+        return sorted_recommendations[:n]
+
+    def recommend_similar_feeds_for_item_faiss(cls, model, trainset, feed_id, n=10):
         # Build Faiss index
         # index = cls.build_faiss_index(model)
         index = cls.build_faiss_ivfpq_index(model)

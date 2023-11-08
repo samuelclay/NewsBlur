@@ -23,7 +23,9 @@ class Command(BaseCommand):
         CollaborativelyFilteredRecommendation.store_user_feed_data_to_file(file_name)
 
         # Load data and get the trained model
-        trainset, model = CollaborativelyFilteredRecommendation.load_surprise_data(file_name)
+        trainset = CollaborativelyFilteredRecommendation.load_surprise_data(file_name)
+        # model = CollaborativelyFilteredRecommendation.svd(trainset)
+        model = CollaborativelyFilteredRecommendation.nmf(trainset)
 
         user_id = options["user_id"]
         n = options["n"]
@@ -41,11 +43,16 @@ class Command(BaseCommand):
             # )
 
             # Load trainset and SVD model (assuming file_name is already known)
-            trainset, model = CollaborativelyFilteredRecommendation.load_svd_model(file_name)
+            # trainset, model = CollaborativelyFilteredRecommendation.load_svd_model(file_name)
 
             # Assuming target_feed_id is the ID of the feed you want similar feeds for
-            similar_feeds = CollaborativelyFilteredRecommendation.recommend_similar_feeds_for_item(
-                model, trainset, feed_ids, n=n
+            # similar_feeds = CollaborativelyFilteredRecommendation.recommend_similar_feeds_for_item_faiss(
+            #     model, trainset, feed_ids, n=n
+            # )
+            similar_feeds = (
+                CollaborativelyFilteredRecommendation.recommend_similar_feeds_for_user_and_item_nnmf(
+                    model, trainset, user_id, feed_ids, n=n
+                )
             )
 
             print(f"Found {len(similar_feeds)} similar feeds to {Feed.get_by_id(feed_ids)}")
