@@ -514,5 +514,5 @@ def ip_addresses(request):
     import digitalocean
     doapi = digitalocean.Manager(token=settings.DO_TOKEN_API_IPADDRESSES)
     droplets = doapi.get_all_droplets()
-    addresses = '\n'.join([d.ip_address for d in droplets])
+    addresses = '\n'.join([d.ip_address for d in droplets if any(name in d.name for name in ['task', 'staging', 'app', 'node'])])
     return HttpResponse(addresses, content_type='text/plain')
