@@ -65,6 +65,7 @@
 #import <Intents/Intents.h>
 #import <CoreSpotlight/CoreSpotlight.h>
 #import <CoreServices/CoreServices.h>
+#import <BackgroundTasks/BackgroundTasks.h>
 
 @interface NewsBlurAppDelegate () <UIViewControllerTransitioningDelegate, UNUserNotificationCenterDelegate>
 
@@ -98,7 +99,6 @@
 @synthesize feedDetailViewController;
 @synthesize friendsListViewController;
 @synthesize fontSettingsViewController;
-@synthesize storyPagesViewController;
 @synthesize storyDetailViewController;
 @synthesize shareViewController;
 @synthesize loginViewController;
@@ -181,7 +181,7 @@
 @synthesize hasQueuedReadStories;
 @synthesize offlineQueue;
 @synthesize offlineCleaningQueue;
-@synthesize backgroundCompletionHandler;
+@synthesize backgroundAppRefreshTask;
 @synthesize cacheImagesOperationQueue;
 
 @synthesize totalUnfetchedStoryCount;
@@ -193,6 +193,10 @@
 
 + (instancetype)sharedAppDelegate {
 	return (NewsBlurAppDelegate *)[UIApplication sharedApplication].delegate;
+}
+
++ (instancetype)shared {
+    return (NewsBlurAppDelegate *)[UIApplication sharedApplication].delegate;
 }
 
 - (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -218,21 +222,6 @@
     [[ThemeManager themeManager] prepareForWindow:self.window];
     
     [self createDatabaseConnection];
-    [self.cachedStoryImages removeAllObjects:nil];
-    [feedsViewController view];
-    [feedsViewController loadOfflineFeeds:NO];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
-                                             (unsigned long)NULL), ^(void) {
-        [self setupReachability];
-        self.cacheImagesOperationQueue = [NSOperationQueue new];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-            self.cacheImagesOperationQueue.maxConcurrentOperationCount = 2;
-        } else {
-            self.cacheImagesOperationQueue.maxConcurrentOperationCount = 1;
-        }
-    });
-
-//    [self showFirstTimeUser];
     
     cachedFavicons = [[PINCache alloc] initWithName:@"NBFavicons"];
     cachedFavicons.memoryCache.removeAllObjectsOnEnteringBackground = NO;
@@ -246,6 +235,21 @@
     [NSURLCache setSharedURLCache:urlCache];
     // Uncomment below line to test image caching
 //    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
+    [feedsViewController view];
+    [feedsViewController loadOfflineFeeds:NO];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                             (unsigned long)NULL), ^(void) {
+        [self setupReachability];
+        self.cacheImagesOperationQueue = [NSOperationQueue new];
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            self.cacheImagesOperationQueue.maxConcurrentOperationCount = 2;
+        } else {
+            self.cacheImagesOperationQueue.maxConcurrentOperationCount = 1;
+        }
+    });
+    
+//    [self showFirstTimeUser];
     
     return YES;
 }
@@ -271,6 +275,8 @@
 //        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:appOpening];
     }
     
+    [self registerBackgroundTask];
+    
 	return YES;
 }
 
@@ -280,12 +286,12 @@
         self.launchedShortcutItem = nil;
     }
     
-    if (storyPagesViewController.temporarilyMarkedUnread && [storiesCollection isStoryUnread:activeStory]) {
+    if (self.storyPagesViewController.temporarilyMarkedUnread && [storiesCollection isStoryUnread:activeStory]) {
         [storiesCollection markStoryRead:activeStory];
         [storiesCollection syncStoryAsRead:activeStory];
-        storyPagesViewController.temporarilyMarkedUnread = NO;
+        self.storyPagesViewController.temporarilyMarkedUnread = NO;
         
-        [self.feedDetailViewController reloadData];
+        [self.feedDetailViewController reloadWithSizing];
         [self.storyPagesViewController refreshHeaders];
     }
 }
@@ -300,6 +306,7 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     [self.feedsViewController refreshHeaderCounts];
+    [self scheduleAppRefresh];
 }
 
 - (BOOL)application:(UIApplication *)application shouldSaveSecureApplicationState:(NSCoder *)coder {
@@ -312,34 +319,34 @@
 }
 
 - (BOOL)application:(UIApplication *)application shouldRestoreSecureApplicationState:(NSCoder *)coder {
-    // state restoration disabled; doesn't work with split layout; need alternative approach
+    // state restoration disabled; uses other options now
     return NO;
     
-    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    NSString *option = [preferences stringForKey:@"restore_state"];
-    
-    if ([option isEqualToString:@"never"]) {
-        return NO;
-    } else if ([option isEqualToString:@"always"]) {
-        return YES;
-    }
-    
-    NSTimeInterval daysInterval = 60 * 60;
-    NSTimeInterval limitInterval = option.doubleValue * daysInterval;
-    NSInteger version = [coder decodeIntegerForKey:@"version"];
-    NSDate *lastSavedDate = [coder decodeObjectOfClass:[NSDate class] forKey:@"last_saved_state_date"];
-    
-    if (limitInterval == 0) {
-        limitInterval = 24 * daysInterval;
-    }
-    
-    if (version > CURRENT_STATE_VERSION || lastSavedDate == nil) {
-        return NO;
-    }
-    
-    NSTimeInterval savedInterval = -[lastSavedDate timeIntervalSinceNow];
-    
-    return savedInterval < limitInterval;
+//    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+//    NSString *option = [preferences stringForKey:@"restore_state"];
+//
+//    if ([option isEqualToString:@"never"]) {
+//        return NO;
+//    } else if ([option isEqualToString:@"always"]) {
+//        return YES;
+//    }
+//
+//    NSTimeInterval daysInterval = 60 * 60;
+//    NSTimeInterval limitInterval = option.doubleValue * daysInterval;
+//    NSInteger version = [coder decodeIntegerForKey:@"version"];
+//    NSDate *lastSavedDate = [coder decodeObjectOfClass:[NSDate class] forKey:@"last_saved_state_date"];
+//
+//    if (limitInterval == 0) {
+//        limitInterval = 24 * daysInterval;
+//    }
+//
+//    if (version > CURRENT_STATE_VERSION || lastSavedDate == nil) {
+//        return NO;
+//    }
+//
+//    NSTimeInterval savedInterval = -[lastSavedDate timeIntervalSinceNow];
+//
+//    return savedInterval < limitInterval;
 }
 
 - (UIViewController *)application:(UIApplication *)application viewControllerWithRestorationIdentifierPath:(NSArray<NSString *> *)identifierComponents coder:(NSCoder *)coder {
@@ -426,25 +433,40 @@
     self.title = @"All";
 }
 
-//TODO: replace this with a BGAppRefreshTask in the BackgroundTasks framework
-- (void)application:(UIApplication *)application
-    performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+- (void)registerBackgroundTask {
+    [BGTaskScheduler.sharedScheduler registerForTaskWithIdentifier:@"com.newsblur.NewsBlur.refresh" usingQueue:dispatch_get_main_queue() launchHandler:^(__kindof BGTask * _Nonnull task) {
+        [self handleAppRefresh:task];
+    }];
+}
+
+- (void)scheduleAppRefresh {
+    BGAppRefreshTaskRequest *request = [[BGAppRefreshTaskRequest alloc] initWithIdentifier:@"com.newsblur.NewsBlur.refresh"];
+    NSError *error = nil;
+    
+    request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:15 * 60];
+    
+    [BGTaskScheduler.sharedScheduler submitTaskRequest:request error:&error];
+}
+
+- (void)handleAppRefresh:(BGAppRefreshTask *)task {
     [self createDatabaseConnection];
     [self.feedsViewController fetchFeedList:NO];
-    backgroundCompletionHandler = completionHandler;
+    
+    [self scheduleAppRefresh];
 }
 
 - (void)finishBackground {
-    if (!backgroundCompletionHandler) return;
+    if (!backgroundAppRefreshTask) return;
     
     NSLog(@"Background fetch complete. Found data: %ld/%ld = %d",
           (long)self.totalUnfetchedStoryCount, (long)self.totalUncachedImagesCount,
           self.totalUnfetchedStoryCount || self.totalUncachedImagesCount);
     if (self.totalUnfetchedStoryCount || self.totalUncachedImagesCount) {
-        backgroundCompletionHandler(UIBackgroundFetchResultNewData);
+        [backgroundAppRefreshTask setTaskCompletedWithSuccess:YES];
     } else {
-        backgroundCompletionHandler(UIBackgroundFetchResultNoData);
+        [backgroundAppRefreshTask setTaskCompletedWithSuccess:NO];
     }
+    backgroundAppRefreshTask = nil;
 }
 
 - (void)registerDefaultsFromSettingsBundle {
@@ -827,7 +849,7 @@
     [self.premiumViewController.view setNeedsLayout];
 }
 
-- (void)updateSplitBehavior {
+- (void)updateSplitBehavior:(BOOL)refresh {
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *behavior = [preferences stringForKey:@"split_behavior"];
     
@@ -855,7 +877,9 @@
         }
     }
     
-    [storyPagesViewController refreshPages];
+    if (refresh) {
+        [self.storyPagesViewController refreshPages];
+    }
 }
 
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController {
@@ -865,9 +889,9 @@
     
     [menuViewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         [UIView animateWithDuration:0.5 animations:^{
-            [self updateSplitBehavior];
+            [self updateSplitBehavior:YES];
         }];
-        [self.detailViewController updateLayoutWithReload:NO];
+        [self.detailViewController updateLayoutWithReload:NO fetchFeeds:YES];
     }];
 }
 
@@ -1168,7 +1192,6 @@
     
     self.dashboardViewController = [DashboardViewController new];
     self.friendsListViewController = [FriendsListViewController new];
-    self.storyPagesViewController = [StoryPagesViewController new];
     self.storyDetailViewController = [StoryDetailViewController new];
     self.loginViewController = [LoginViewController new];
     self.addSiteViewController = [AddSiteViewController new];
@@ -1185,7 +1208,11 @@
     self.firstTimeUserAddFriendsViewController = [FirstTimeUserAddFriendsViewController new];
     self.firstTimeUserAddNewsBlurViewController = [FirstTimeUserAddNewsBlurViewController new];
     
-    [self updateSplitBehavior];
+    [self updateSplitBehavior:NO];
+}
+
+- (StoryPagesViewController *)storyPagesViewController {
+    return self.detailViewController.storyPagesViewController;
 }
 
 - (void)showLogin {
@@ -1624,9 +1651,9 @@
         }
         
         [self adjustStoryDetailWebView];
-        [self.feedDetailViewController.storyTitlesTable reloadData];
+        [self.feedDetailViewController loadingFeed];
         
-        if (detailViewController.storyTitlesOnLeft) {
+        if (detailViewController.storyTitlesOnLeft || detailViewController.storyTitlesInGrid) {
             [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadFeedDetailView"];
         }
     }
@@ -2096,9 +2123,9 @@
 
 - (void)adjustStoryDetailWebView {
     // change the web view
-    [storyPagesViewController.currentPage changeWebViewWidth];
-    [storyPagesViewController.nextPage changeWebViewWidth];
-    [storyPagesViewController.previousPage changeWebViewWidth];
+    [self.storyPagesViewController.currentPage changeWebViewWidth];
+    [self.storyPagesViewController.nextPage changeWebViewWidth];
+    [self.storyPagesViewController.previousPage changeWebViewWidth];
 }
 
 - (void)calibrateStoryTitles {
@@ -2194,6 +2221,10 @@
     
     NSInteger activeStoryLocation = [storiesCollection locationOfActiveStory];
     if (activeStoryLocation >= 0) {
+        if (self.storyPagesViewController == nil) {
+            [self.detailViewController checkLayout];
+        }
+        
         BOOL animated = ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad &&
                          !self.tryFeedCategory);
         [self.storyPagesViewController view];
@@ -2415,7 +2446,7 @@
 //        [self.masterContainerViewController transitionFromOriginalView];
     } else {
         if ([[feedsNavigationController viewControllers] containsObject:originalStoryViewController]) {
-            [feedsNavigationController popToViewController:storyPagesViewController animated:YES];
+            [feedsNavigationController popToViewController:self.storyPagesViewController animated:YES];
         }
     }
 }
@@ -2431,6 +2462,16 @@
         [self showColumn:UISplitViewControllerColumnPrimary debugInfo:@"showFeedsListAnimated"];
     }
 }
+
+//- (NSDictionary *)activeStory {
+//    return activeStory;
+//}
+//
+//- (void)setActiveStory:(NSDictionary *)newActiveStory {
+//    NSLog(@"🪿 setActiveStory: %@ -> %@", activeStory[@"story_title"], newActiveStory[@"story_title"]);  // log
+//    
+//    activeStory = newActiveStory;
+//}
 
 #pragma mark -
 #pragma mark Siri Shortcuts
@@ -2753,14 +2794,18 @@
                [folderName isEqual:@"infrequent"] ||
                (!folderName && ([storiesCollection.activeFolder isEqual:@"everything"] ||
                                 [storiesCollection.activeFolder isEqual:@"infrequent"]))) {
+        NSMutableSet *uniqueFeeds = [NSMutableSet new];
         for (NSArray *folder in [self.dictFolders allValues]) {
             for (id feedId in folder) {
                 if ([feedId isKindOfClass:[NSString class]] && [feedId startsWith:@"saved:"]) {
                     // Skip saved feeds which have fake unread counts.
                     continue;
                 }
-                [counts addCounts:[self splitUnreadCountForFeed:feedId]];
+                [uniqueFeeds addObject:feedId];
             }
+        }
+        for (NSString *feedId in uniqueFeeds) {
+            [counts addCounts:[self splitUnreadCountForFeed:feedId]];
         }
     } else {
         if (!folderName) {
@@ -3027,14 +3072,14 @@
 }
 
 - (void)finishMarkAsRead:(NSDictionary *)story {
-    if (!storyPagesViewController.previousPage || !storyPagesViewController.currentPage || !storyPagesViewController.nextPage) return;
-    for (StoryDetailViewController *page in @[storyPagesViewController.previousPage,
-                                              storyPagesViewController.currentPage,
-                                              storyPagesViewController.nextPage]) {
+    if (!self.storyPagesViewController.previousPage || !self.storyPagesViewController.currentPage || !self.storyPagesViewController.nextPage) return;
+    for (StoryDetailViewController *page in @[self.storyPagesViewController.previousPage,
+                                              self.storyPagesViewController.currentPage,
+                                              self.storyPagesViewController.nextPage]) {
         if ([[page.activeStory objectForKey:@"story_hash"]
              isEqualToString:[story objectForKey:@"story_hash"]] && page.isRecentlyUnread) {
             page.isRecentlyUnread = NO;
-            [storyPagesViewController refreshHeaders];
+            [self.storyPagesViewController refreshHeaders];
         }
     }
     
@@ -3044,54 +3089,54 @@
 }
 
 - (void)finishMarkAsUnread:(NSDictionary *)story {
-    if (!storyPagesViewController.previousPage || !storyPagesViewController.currentPage || !storyPagesViewController.nextPage) return;
-    for (StoryDetailViewController *page in @[storyPagesViewController.previousPage,
-                                              storyPagesViewController.currentPage,
-                                              storyPagesViewController.nextPage]) {
+    if (!self.storyPagesViewController.previousPage || !self.storyPagesViewController.currentPage || !self.storyPagesViewController.nextPage) return;
+    for (StoryDetailViewController *page in @[self.storyPagesViewController.previousPage,
+                                              self.storyPagesViewController.currentPage,
+                                              self.storyPagesViewController.nextPage]) {
         if ([[page.activeStory objectForKey:@"story_hash"]
              isEqualToString:[story objectForKey:@"story_hash"]]) {
             page.isRecentlyUnread = YES;
-            [storyPagesViewController refreshHeaders];
+            [self.storyPagesViewController refreshHeaders];
         }
     }
-    [storyPagesViewController setNextPreviousButtons];
+    [self.storyPagesViewController setNextPreviousButtons];
     originalStoryCount += 1;
     
     [self.feedsViewController updateFeedTitlesTable];
 }
 
 - (void)failedMarkAsUnread:(NSDictionary *)params {
-    if (![storyPagesViewController failedMarkAsUnread:params]) {
+    if (![self.storyPagesViewController failedMarkAsUnread:params]) {
         [feedDetailViewController failedMarkAsUnread:params];
-        [storyPagesViewController failedMarkAsUnread:params];
+        [self.storyPagesViewController failedMarkAsUnread:params];
     }
-    [feedDetailViewController reloadData];
+    [feedDetailViewController reloadWithSizing];
 }
 
 - (void)finishMarkAsSaved:(NSDictionary *)params {
-    [storyPagesViewController finishMarkAsSaved:params];
+    [self.storyPagesViewController finishMarkAsSaved:params];
     [feedDetailViewController finishMarkAsSaved:params];
 }
 
 - (void)failedMarkAsSaved:(NSDictionary *)params {
-    if (![storyPagesViewController failedMarkAsSaved:params]) {
+    if (![self.storyPagesViewController failedMarkAsSaved:params]) {
         [feedDetailViewController failedMarkAsSaved:params];
-        [storyPagesViewController failedMarkAsSaved:params];
+        [self.storyPagesViewController failedMarkAsSaved:params];
     }
-    [feedDetailViewController reloadData];
+    [feedDetailViewController reloadWithSizing];
 }
 
 - (void)finishMarkAsUnsaved:(NSDictionary *)params {
-    [storyPagesViewController finishMarkAsUnsaved:params];
+    [self.storyPagesViewController finishMarkAsUnsaved:params];
     [feedDetailViewController finishMarkAsUnsaved:params];
 }
 
 - (void)failedMarkAsUnsaved:(NSDictionary *)params {
-    if (![storyPagesViewController failedMarkAsUnsaved:params]) {
+    if (![self.storyPagesViewController failedMarkAsUnsaved:params]) {
         [feedDetailViewController failedMarkAsUnsaved:params];
-        [storyPagesViewController failedMarkAsUnsaved:params];
+        [self.storyPagesViewController failedMarkAsUnsaved:params];
     }
-    [feedDetailViewController reloadData];
+    [feedDetailViewController reloadWithSizing];
 }
 
 
@@ -3835,7 +3880,8 @@
     }];
 
     [self recalculateIntelligenceScores:feedId];
-    [self.feedDetailViewController.storyTitlesTable reloadData];
+    [self.feedDetailViewController reload];
+//    [self.feedDetailViewController.feedCollectionView reloadData];
 }
 
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId {
@@ -3879,7 +3925,8 @@
     }];
     
     [self recalculateIntelligenceScores:feedId];
-    [self.feedDetailViewController.storyTitlesTable reloadData];
+    [self.feedDetailViewController reload];
+//    [self.feedDetailViewController.feedCollectionView reloadData];
 }
 
 - (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(NSInteger)score {
@@ -3927,7 +3974,8 @@
     }];
 
     [self recalculateIntelligenceScores:feedId];
-    [self.feedDetailViewController.storyTitlesTable reloadData];
+//    [self.feedDetailViewController.feedCollectionView reloadData];
+    [self.feedDetailViewController reload];
 }
 
 - (void)toggleFeedClassifier:(NSString *)feedId {
@@ -3969,7 +4017,8 @@
     }];
 
     [self recalculateIntelligenceScores:feedId];
-    [self.feedDetailViewController.storyTitlesTable reloadData];
+//    [self.feedDetailViewController.feedCollectionView reloadData];
+    [self.feedDetailViewController reload];
 }
 
 - (void)failedRequest:(NSURLResponse *)response {
@@ -3991,11 +4040,9 @@
 #pragma mark Storing Stories for Offline
 
 // Returns the URL to the application's Documents directory.
-- (NSURL *)applicationDocumentsDirectory
+- (NSURL *)documentsURL
 {
-    NSLog(@" ---> DB dir: %@",[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory  inDomains:NSUserDomainMask] lastObject]);
-    
-    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
 }
 
 - (NSInteger)databaseSchemaVersion:(FMDatabase *)db {
@@ -4008,35 +4055,28 @@
     return version;
 }
 
+- (void)copyFrom:(NSURL *)sourceFolderURL to:(NSURL *)destFolderURL name:(NSString *)filename isDirectory:(BOOL)isDirectory {
+    NSURL *sourceURL = [sourceFolderURL URLByAppendingPathComponent:filename isDirectory:isDirectory];
+    NSURL *destURL = [destFolderURL URLByAppendingPathComponent:filename isDirectory:isDirectory];
+    
+    [[NSFileManager defaultManager] copyItemAtURL:sourceURL toURL:destURL error:nil];
+}
+
 - (void)createDatabaseConnection {
-    NSError *error;
-    
-    // Remove the deletion of old sqlite dbs past version 3.1, once everybody's
-    // upgraded and removed the old files.
+    NSURL *documentsURL = self.documentsURL;
     NSFileManager *fileManager = [[NSFileManager alloc] init];
-    NSArray *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *oldDBPath = [documentPaths objectAtIndex:0];
-    NSArray *directoryContents = [fileManager contentsOfDirectoryAtPath:oldDBPath error:&error];
-    int removed = 0;
-    
-    if (error == nil) {
-        for (NSString *path in directoryContents) {
-            NSString *fullPath = [oldDBPath stringByAppendingPathComponent:path];
-            if ([fullPath hasSuffix:@".sqlite"]) {
-                [fileManager removeItemAtPath:fullPath error:&error];
-                removed++;
-            }
-        }
-    }
-    if (removed) {
-        NSLog(@"Deleted %d sql dbs.", removed);
-    }
-    
-    NSArray *cachePaths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *dbPath = [cachePaths objectAtIndex:0];
+    NSString *dbPath = documentsURL.path;
     NSString *dbName = [NSString stringWithFormat:@"%@.sqlite", self.host];
     NSString *path = [dbPath stringByAppendingPathComponent:dbName];
-    [self applicationDocumentsDirectory];
+    
+    // Move data from Caches directory to Documents directory.
+    if (![fileManager fileExistsAtPath:path]) {
+        NSURL *oldURL = [[fileManager URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] firstObject];
+        [self copyFrom:oldURL to:documentsURL name:@"com.pinterest.PINDiskCache.NBFavicons" isDirectory:YES];
+        [self copyFrom:oldURL to:documentsURL name:@"com.pinterest.PINDiskCache.NBStoryImages" isDirectory:YES];
+        [self copyFrom:oldURL to:documentsURL name:@"story_images" isDirectory:YES];
+        [self copyFrom:oldURL to:documentsURL name:dbName isDirectory:YES];
+    }
     
     database = [FMDatabaseQueue databaseQueueWithPath:path];
     [database inDatabase:^(FMDatabase *db) {
@@ -4064,8 +4104,7 @@
             //        [db executeUpdate:@"drop table if exists `queued_saved_hashes`"]; // Nope, don't clear this.
             
             NSFileManager *fileManager = [NSFileManager defaultManager];
-            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-            NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+            NSString *cacheDirectory = [self.documentsURL.path stringByAppendingPathComponent:@"story_images"];
             NSError *error = nil;
             BOOL success = [fileManager removeItemAtPath:cacheDirectory error:&error];
             if (!success || error) {
@@ -4203,8 +4242,7 @@
     [db executeUpdate:indexUsersUserId];
     
     NSError *error;
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *storyImagesDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+    NSString *storyImagesDirectory = [self.documentsURL.path stringByAppendingPathComponent:@"story_images"];
     if (![[NSFileManager defaultManager] fileExistsAtPath:storyImagesDirectory]) {
         [[NSFileManager defaultManager] createDirectoryAtPath:storyImagesDirectory
                                   withIntermediateDirectories:NO
@@ -4624,7 +4662,6 @@
 - (void)prepareActiveCachedImages:(FMDatabase *)db {
     activeCachedImages = [NSMutableDictionary dictionary];
     NSArray *feedIds;
-    int cached = 0;
     
     if (storiesCollection.isRiverView) {
         feedIds = storiesCollection.activeFolderFeeds;
@@ -4647,10 +4684,13 @@
         }
         [imageUrls addObject:[cursor objectForColumnName:@"image_url"]];
         [activeCachedImages setObject:imageUrls forKey:storyHash];
-        cached++;
     }
     
 //    NSLog(@"Pre-cached %d images", cached);
+}
+
+- (UIImage *)cachedImageForStoryHash:(NSString *)storyHash {
+    return self.cachedStoryImages[storyHash];
 }
 
 - (void)cleanImageCache {
@@ -4695,8 +4735,7 @@
     
     NSFileManager *fileManager = [[NSFileManager alloc] init];
     NSError *error = nil;
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
+    NSString *cacheDirectory = [self.documentsURL.path stringByAppendingPathComponent:@"story_images"];
     NSArray *directoryContents = [fileManager contentsOfDirectoryAtPath:cacheDirectory error:&error];
     int removed = 0;
     

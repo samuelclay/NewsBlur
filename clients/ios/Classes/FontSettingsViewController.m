@@ -376,11 +376,11 @@
     
     if (indexPath.row == 0) {
         [self.appDelegate.storiesCollection toggleStorySaved];
-        [self.appDelegate.feedDetailViewController reloadData];
+        [self.appDelegate.feedDetailViewController reloadWithSizing];
         [self.appDelegate.storyPagesViewController refreshHeaders];
     } else if (indexPath.row == 1) {
         [self.appDelegate.storiesCollection toggleStoryUnread];
-        [self.appDelegate.feedDetailViewController reloadData];
+        [self.appDelegate.feedDetailViewController reloadWithSizing];
         [self.appDelegate.storyPagesViewController refreshHeaders];
     } else if (indexPath.row == 2) {
         [self.appDelegate.storyPagesViewController openSendToDialog:self.appDelegate.storyPagesViewController.fontSettingsButton];

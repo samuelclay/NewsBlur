@@ -344,11 +344,14 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (void)fadeCellWithIndexPath:(NSIndexPath *)indexPath {
-    if (!indexPath) return;
+    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+    NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
+    
+    if (!indexPath || indexPath.row >= folder.count) return;
+    
     [self tableView:self.feedTitlesTable deselectRowAtIndexPath:indexPath animated:YES];
     
-    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
-    id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
+    id feedId = [folder objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
 
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
@@ -526,7 +529,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
                        self.appDelegate.url];
     }
     
-    if (appDelegate.backgroundCompletionHandler) {
+    if (appDelegate.backgroundAppRefreshTask) {
         urlFeedList = [urlFeedList stringByAppendingString:@"&background_ios=true"];
     }
     
@@ -897,8 +900,15 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && finished) {
         [self cacheFeedRowLocations];
     }
-    [self loadNotificationStory];
-
+    
+    if (appDelegate.pendingFolder != nil) {
+        if ([appDelegate splitUnreadCountForFolder:appDelegate.pendingFolder].nt > 0) {
+            [self loadNotificationStory];
+        }
+    } else {
+        [self loadNotificationStory];
+    }
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
 }
 
@@ -1113,7 +1123,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"comfortable" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
         [self reloadFeedTitlesTable];
-        [self.appDelegate.feedDetailViewController reloadData];
+        [self.appDelegate.feedDetailViewController reloadWithSizing];
     }];
     
     [viewController addThemeSegmentedControl];
@@ -1250,7 +1260,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (void)resizePreviewSize {
     [self reloadFeedTitlesTable];
     
-    [appDelegate.feedDetailViewController reloadData];
+    [appDelegate.feedDetailViewController reloadWithSizing];
 }
 
 - (void)resizeFontSize {
@@ -1258,7 +1268,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self reloadFeedTitlesTable];
     
     appDelegate.feedDetailViewController.invalidateFontCache = YES;
-    [appDelegate.feedDetailViewController reloadData];
+    [appDelegate.feedDetailViewController reloadWithSizing];
 }
 
 - (void)updateTheme {
@@ -1359,7 +1369,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     }
     
     if ([identifier isEqualToString:@"split_behavior"]) {
-        [self.appDelegate updateSplitBehavior];
+        [self.appDelegate updateSplitBehavior:YES];
     } else if ([identifier isEqualToString:@"feed_list_sort_order"]) {
         [self.appDelegate reloadFeedsView:YES];
     } else if ([identifier isEqual:@"feed_list_font_size"]) {
@@ -1368,8 +1378,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self updateThemeBrightness];
     } else if ([identifier isEqual:@"theme_style"]) {
         [self updateThemeStyle];
-    } else if ([identifier isEqual:@"story_titles_position"]) {
-        [self.appDelegate.detailViewController updateLayoutWithReload:YES];
+    } else if ([identifier isEqual:self.appDelegate.storiesCollection.storyTitlesPositionKey]) {
+        [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
+    } else if ([identifier isEqual:@"story_titles_style"]) {
+        [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
     } else if ([identifier isEqual:@"story_list_preview_images_size"]) {
         NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
         NSString *preview = [userPreferences stringForKey:@"story_list_preview_images_size"];

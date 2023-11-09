@@ -228,6 +228,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     load_stories: function (options) {
         if (_.string.startsWith(this.model.get('river_id'), 'search:')) {
             var feed = NEWSBLUR.assets.get_feed(this.model.get('river_id'));
+            if (!feed) return;
             this.options.query = feed.get('query');
         }
 

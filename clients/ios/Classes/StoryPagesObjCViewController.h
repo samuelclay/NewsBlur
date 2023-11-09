@@ -114,7 +114,7 @@
 - (void)setStoryFromScroll;
 - (void)setStoryFromScroll:(BOOL)force;
 - (void)advanceToNextUnread;
-- (void)updatePageWithActiveStory:(NSInteger)location;
+- (void)updatePageWithActiveStory:(NSInteger)location updateFeedDetail:(BOOL)updateFeedDetail;
 - (void)animateIntoPlace:(BOOL)animated;
 - (void)changePage:(NSInteger)pageIndex;
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated;

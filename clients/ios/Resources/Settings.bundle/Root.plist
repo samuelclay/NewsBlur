@@ -206,6 +206,46 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
+			<string>Story titles layout</string>
+			<key>Titles</key>
+			<array>
+				<string>Titles in list</string>
+				<string>Titles in grid</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>titles_on_left</string>
+			<key>Values</key>
+			<array>
+				<string>titles_on_left</string>
+				<string>titles_in_grid</string>
+			</array>
+			<key>Key</key>
+			<string>story_titles_position</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>List style</string>
+			<key>Titles</key>
+			<array>
+				<string>Standard</string>
+				<string>Experimental</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>standard</string>
+			<key>Values</key>
+			<array>
+				<string>standard</string>
+				<string>experimental</string>
+			</array>
+			<key>Key</key>
+			<string>story_titles_style</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
 			<string>Preview</string>
 			<key>Titles</key>
 			<array>
