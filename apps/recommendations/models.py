@@ -2,15 +2,15 @@ import os
 import tempfile
 from collections import defaultdict
 
-import faiss
 import mongoengine as mongo
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db import models
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
+
+# # from sklearn.feature_extraction.text import TfidfVectorizer
+# # from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
 from surprise import NMF, SVD, Dataset, KNNBasic, KNNWithMeans, Reader
-from surprise.model_selection import train_test_split
+from surprise.model_selection import cross_validate, train_test_split
 
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import Feed
@@ -125,6 +125,17 @@ class CollaborativelyFilteredRecommendation(models.Model):
         model = NMF()
         model.fit(trainset)
         return model
+        # cross_validate(model, data, measures=["RMSE", "MAE"], cv=5, verbose=True)
+
+        return model
+
+    @classmethod
+    def get_predicted_ratings(cls, model, user_id, all_feed_ids):
+        predicted_ratings = {}
+        for feed_id in all_feed_ids:
+            pred = model.predict(user_id, feed_id)
+            predicted_ratings[feed_id] = pred.est
+        return predicted_ratings
 
     @classmethod
     def get_recommendations(cls, trainset, user_id, model, n=10):
@@ -229,32 +240,32 @@ class CollaborativelyFilteredRecommendation(models.Model):
 
         return item_similarities
 
-    @classmethod
-    def build_faiss_index(cls, model):
-        # Retrieve item factor vectors (embeddings)
-        item_factors = model.qi.astype("float32")  # Faiss requires float32 type
+    # @classmethod
+    # def build_faiss_index(cls, model):
+    #     # Retrieve item factor vectors (embeddings)
+    #     item_factors = model.qi.astype("float32")  # Faiss requires float32 type
 
-        # Build the Faiss index
-        index = faiss.IndexFlatL2(item_factors.shape[1])
-        index.add(item_factors)
+    #     # Build the Faiss index
+    #     index = faiss.IndexFlatL2(item_factors.shape[1])
+    #     index.add(item_factors)
 
-        return index
+    #     return index
 
-    @classmethod
-    def build_faiss_ivfpq_index(cls, model, nlists=100):
-        item_factors = model.qi.astype("float32")
-        dim = item_factors.shape[1]
+    # @classmethod
+    # def build_faiss_ivfpq_index(cls, model, nlists=100):
+    #     item_factors = model.qi.astype("float32")
+    #     dim = item_factors.shape[1]
 
-        # Choose an M that divides dim. This is just an example, adjust as needed.
-        M = 4 if dim % 4 == 0 else 8 if dim % 8 == 0 else 1  # Adjust this based on your actual dimension
+    #     # Choose an M that divides dim. This is just an example, adjust as needed.
+    #     M = 4 if dim % 4 == 0 else 8 if dim % 8 == 0 else 1  # Adjust this based on your actual dimension
 
-        # Quantizer and Index
-        quantizer = faiss.IndexFlatL2(dim)
-        index = faiss.IndexIVFPQ(quantizer, dim, nlists, M, 8)  # Adjusted M
-        index.train(item_factors)
-        index.add(item_factors)
+    #     # Quantizer and Index
+    #     quantizer = faiss.IndexFlatL2(dim)
+    #     index = faiss.IndexIVFPQ(quantizer, dim, nlists, M, 8)  # Adjusted M
+    #     index.train(item_factors)
+    #     index.add(item_factors)
 
-        return index
+    #     return index
 
     @classmethod
     def recommend_similar_feeds_for_item_nnmf(cls, model, trainset, user_id, feed_ids, n=10):
@@ -349,18 +360,18 @@ class CollaborativelyFilteredRecommendation(models.Model):
         index = cls.build_faiss_ivfpq_index(model)
         index.nprobe = 100  # Adjust as needed
 
-        # Retrieve the inner id of the feed and its embedding
-        feed_inner_id = trainset.to_inner_iid(feed_id)
-        feed_vector = model.qi[feed_inner_id].astype("float32").reshape(1, -1)
+    #     # Retrieve the inner id of the feed and its embedding
+    #     feed_inner_id = trainset.to_inner_iid(feed_id)
+    #     feed_vector = model.qi[feed_inner_id].astype("float32").reshape(1, -1)
 
-        # Use Faiss to get the most similar items
-        _, similar_feed_inner_ids = index.search(feed_vector, n + 1)
-        similar_feed_inner_ids = similar_feed_inner_ids[0][1:]  # Exclude the feed itself
+    #     # Use Faiss to get the most similar items
+    #     _, similar_feed_inner_ids = index.search(feed_vector, n + 1)
+    #     similar_feed_inner_ids = similar_feed_inner_ids[0][1:]  # Exclude the feed itself
 
-        # Convert inner ids to raw ids
-        similar_feed_ids = [trainset.to_raw_iid(int(inner_id)) for inner_id in similar_feed_inner_ids]
+    #     # Convert inner ids to raw ids
+    #     similar_feed_ids = [trainset.to_raw_iid(int(inner_id)) for inner_id in similar_feed_inner_ids]
 
-        return similar_feed_ids
+    #     return similar_feed_ids
 
 
 class SubscriptionBasedRecommendation:

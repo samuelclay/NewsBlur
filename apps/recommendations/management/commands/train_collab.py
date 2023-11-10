@@ -1,6 +1,9 @@
+import os
+
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
+from apps.reader.models import UserSubscription
 from apps.recommendations.models import CollaborativelyFilteredRecommendation
 from apps.rss_feeds.models import Feed
 
@@ -10,53 +13,63 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--user_id", type=int, required=False, help="ID of the user for whom to generate recommendations"
+            "--user_id",
+            "-u",
+            type=int,
+            required=True,
+            help="ID of the user for whom to generate recommendations",
         )
         parser.add_argument(
-            "--n", type=int, default=10, help="Number of recommendations to generate (default is 10)"
+            "-n", type=int, default=10, help="Number of recommendations to generate (default is 10)"
         )
         parser.add_argument("-f", type=str, required=False, help="Feed ids, separated by commas")
 
     def handle(self, *args, **options):
         # Store user feed data to file
+        os.makedirs(settings.SURPRISE_DATA_FOLDER, exist_ok=True)
         file_name = f"{settings.SURPRISE_DATA_FOLDER}/user_feed_data.csv"
         CollaborativelyFilteredRecommendation.store_user_feed_data_to_file(file_name)
 
         # Load data and get the trained model
-        trainset = CollaborativelyFilteredRecommendation.load_surprise_data(file_name)
-        # model = CollaborativelyFilteredRecommendation.svd(trainset)
-        model = CollaborativelyFilteredRecommendation.nmf(trainset)
+        model = CollaborativelyFilteredRecommendation.load_surprise_data(file_name)
 
         user_id = options["user_id"]
         n = options["n"]
         feed_ids = options["f"]
 
-        if feed_ids:
+        if user_id:
             print(f"Finding similar feeds: {feed_ids}")
-            # trainset, model = CollaborativelyFilteredRecommendation.load_knnbasic_model(file_name)
-            # print(f"Trained, now finding similar feeds: {feed_ids}")
-            # similar_feeds = CollaborativelyFilteredRecommendation.recommend_similar_feeds_for_folder(
-            #     trainset,
-            #     model,
-            #     feed_ids.split(","),
-            #     n=n,
-            # )
 
-            # Load trainset and SVD model (assuming file_name is already known)
-            # trainset, model = CollaborativelyFilteredRecommendation.load_svd_model(file_name)
+            # Get list of all feed IDs to make predictions
+            all_feed_ids = [
+                feed.id
+                for feed in Feed.objects.filter(num_subscribers__gte=5, active_subscribers__gte=5).only("id")
+            ]
 
-            # Assuming target_feed_id is the ID of the feed you want similar feeds for
-            # similar_feeds = CollaborativelyFilteredRecommendation.recommend_similar_feeds_for_item_faiss(
-            #     model, trainset, feed_ids, n=n
-            # )
-            similar_feeds = (
-                CollaborativelyFilteredRecommendation.recommend_similar_feeds_for_user_and_item_nnmf(
-                    model, trainset, user_id, feed_ids, n=n
-                )
+            # Predict ratings for all feeds for the given user
+            predicted_ratings = CollaborativelyFilteredRecommendation.get_predicted_ratings(
+                model, user_id, all_feed_ids
             )
 
-            print(f"Found {len(similar_feeds)} similar feeds to {Feed.get_by_id(feed_ids)}")
-            for f in similar_feeds:
+            # Remove feeds that user is already subscribed to
+            user_subscribed_feeds = UserSubscription.objects.filter(user_id=user_id).values_list(
+                "feed_id", flat=True
+            )
+            for feed_id in user_subscribed_feeds:
+                if feed_id in predicted_ratings:
+                    del predicted_ratings[feed_id]
+
+            # Sort feeds based on predicted ratings
+            recommended_feed_ids = sorted(
+                predicted_ratings.keys(),
+                key=lambda f: Feed.get_by_id(f).well_read_score()["reach_score"],
+                reverse=True,
+            )[:n]
+
+            print(f"Top {n} feeds recommended for user {user_id}: {recommended_feed_ids}")
+
+            print(f"Found {len(recommended_feed_ids)} similar feeds")
+            for f in recommended_feed_ids:
                 feed = Feed.get_by_id(f)
                 if not feed:
                     continue

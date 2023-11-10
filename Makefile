@@ -203,6 +203,9 @@ mongorestore:
 	docker exec -it db_mongo mongorestore --port 29019 -d newsblur /data/db/mongodump/newsblur
 pgrestore:
 	docker exec -it db_postgres bash -c "psql -U newsblur -c 'CREATE DATABASE newsblur_prod;'; pg_restore -U newsblur --role=newsblur --dbname=newsblur_prod /var/lib/postgresql/data/backup_postgresql_2023-10-10-04-00.sql.sql"
+redisrestore:
+	docker exec -it db_redis bash -c "redis-cli -p 6579 --pipe < /data/backup_db_redis_user_2023-10-21-04-00.rdb.gz"
+	docker exec -it db_redis bash -c "redis-cli -p 6579 --pipe < /data/backup_db_redis_story2_2023-10-21-04-00.rdb.gz"
 index_feeds:
 	docker exec -it newsblur_web ./manage.py index_feeds
 index_stories:
