@@ -36,7 +36,7 @@ class Settings : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChange
         super.onDestroy()
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (key == PrefConstants.THEME) {
             UIUtils.restartActivity(this)
         }
