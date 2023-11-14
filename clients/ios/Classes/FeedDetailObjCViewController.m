@@ -1497,7 +1497,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 //            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:locationOfStoryId inSection:0];
             NSIndexPath *indexPath = [self indexPathForStoryLocation:locationOfStoryId];
             
-            if (self.isLegacyTable && self.storyTitlesTable.window != nil) {
+            if (self.isLegacyTable && self.storyTitlesTable.window != nil && indexPath.row < [self.storyTitlesTable numberOfRowsInSection:0]) {
                 [self tableView:self.storyTitlesTable selectRowAtIndexPath:indexPath
                        animated:NO
                  scrollPosition:UITableViewScrollPositionMiddle];
