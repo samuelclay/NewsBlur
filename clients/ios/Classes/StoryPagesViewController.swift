@@ -20,6 +20,6 @@ class StoryPagesViewController: StoryPagesObjCViewController {
     
     /// Reload the widget timeline.
     @objc func reloadWidget() {
-        WidgetCenter.shared.reloadTimelines(ofKind: "Latest")
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }
