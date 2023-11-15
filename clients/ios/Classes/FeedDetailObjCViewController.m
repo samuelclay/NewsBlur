@@ -167,6 +167,13 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     markReadLongPress.delegate = self;
     [view addGestureRecognizer:markReadLongPress];
     
+#if TARGET_OS_MACCATALYST
+    if (@available(macCatalyst 16.0, *)) {
+        settingsBarButton.hidden = YES;
+        feedMarkReadButton.hidden = YES;
+    }
+#endif
+    
     titleImageBarButton = [UIBarButtonItem alloc];
 
     UILongPressGestureRecognizer *tableLongPress = [[UILongPressGestureRecognizer alloc]
@@ -1303,6 +1310,13 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }
     
     NSLog(@"finishedLoadingFeed: %@", receivedFeedId);  // log
+    
+#if TARGET_OS_MACCATALYST
+    if (@available(macCatalyst 16.0, *)) {
+        settingsBarButton.hidden = NO;
+        feedMarkReadButton.hidden = NO;
+    }
+#endif
     
     self.pageFinished = NO;
     [self renderStories:confirmedNewStories];

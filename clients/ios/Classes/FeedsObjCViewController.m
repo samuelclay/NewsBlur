@@ -2863,6 +2863,9 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation {
+#if TARGET_OS_MACCATALYST
+    int yOffset = -5;
+#else
     if (!orientation) {
         orientation = self.view.window.windowScene.interfaceOrientation;
     }
@@ -2874,6 +2877,7 @@ heightForHeaderInSection:(NSInteger)section {
     }
     
     int yOffset = isShort ? 0 : 6;
+#endif
     UIView *userInfoView = [[UIView alloc]
                             initWithFrame:CGRectMake(0, 0,
                                                      self.navigationController.navigationBar.frame.size.width,
@@ -2886,9 +2890,19 @@ heightForHeaderInSection:(NSInteger)section {
                                                 target:self action:@selector((showUserProfile))];
     userAvatarButton.pointerInteractionEnabled = YES;
     userAvatarButton.accessibilityLabel = @"User info";
+#if TARGET_OS_MACCATALYST
+    userAvatarButton.accessibilityHint = @"Double-click for information about your account.";
+    CGRect frame = userAvatarButton.frame;
+    frame.origin.y = -8;
+    frame.size.width = 38;
+    frame.size.height = 38;
+    userAvatarButton.frame = frame;
+#else
     userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
     UIEdgeInsets insets = UIEdgeInsetsMake(0, -10, 10, 0);
     userAvatarButton.contentEdgeInsets = insets;
+#endif
+//    userAvatarButton.backgroundColor = UIColor.blueColor;
     
     NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL];
     [avatarRequest addValue:@"image/*" forHTTPHeaderField:@"Accept"];
@@ -2899,8 +2913,11 @@ heightForHeaderInSection:(NSInteger)section {
         typeof(weakSelf) __strong strongSelf = weakSelf;
         image = [Utilities roundCorneredImage:image radius:6 convertToSize:CGSizeMake(38, 38)];
         image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-        [(UIButton *)strongSelf.userAvatarButton setImage:image forState:UIControlStateNormal];
-        
+        UIButton *button = strongSelf.userAvatarButton;
+        [button setImage:image forState:UIControlStateNormal];
+#if TARGET_OS_MACCATALYST
+        strongSelf.appDelegate.feedDetailViewController.navigationItem.leftBarButtonItems = @[[[UIBarButtonItem alloc] initWithCustomView:[UIView new]]];
+#endif
     } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nonnull response, NSError * _Nonnull error) {
         NSLog(@"Could not fetch user avatar: %@", error);
     }];
@@ -2941,7 +2958,13 @@ heightForHeaderInSection:(NSInteger)section {
     
 //    userInfoView.backgroundColor = UIColor.blueColor;
     
+#if TARGET_OS_MACCATALYST
+    self.userBarButton = [[UIBarButtonItem alloc] initWithCustomView:userInfoView];
+//        userInfoView.backgroundColor = UIColor.redColor;
+    self.navigationItem.leftBarButtonItem = self.userBarButton;
+#else
     self.navigationItem.titleView = userInfoView;
+#endif
 }
 
 - (void)refreshHeaderCounts {
