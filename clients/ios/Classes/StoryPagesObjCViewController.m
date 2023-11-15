@@ -1225,6 +1225,10 @@
     
     [appDelegate.storiesCollection pushReadStory:[appDelegate.activeStory objectForKey:@"story_hash"]];
     
+#if TARGET_OS_MACCATALYST
+    self.appDelegate.detailViewController.navigationItem.leftBarButtonItems = @[[[UIBarButtonItem alloc] initWithCustomView:[UIView new]]];
+#endif
+    
     if (!self.isPhone) {
         if (appDelegate.detailViewController.storyTitlesOnLeft) {
             appDelegate.detailViewController.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
@@ -1327,6 +1331,13 @@
         
         fontSettingsButton.enabled = YES;
         originalStoryButton.enabled = YES;
+        
+#if TARGET_OS_MACCATALYST
+        if (@available(macCatalyst 16.0, *)) {
+            fontSettingsButton.hidden = NO;
+            originalStoryButton.hidden = NO;
+        }
+#endif
     } else {
         [buttonText setEnabled:NO];
         [buttonText setAlpha:.4];
@@ -1335,6 +1346,13 @@
         
         fontSettingsButton.enabled = NO;
         originalStoryButton.enabled = NO;
+        
+#if TARGET_OS_MACCATALYST
+        if (@available(macCatalyst 16.0, *)) {
+            fontSettingsButton.hidden = YES;
+            originalStoryButton.hidden = YES;
+        }
+#endif
     }
     
     [buttonSend setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_send.png"]]

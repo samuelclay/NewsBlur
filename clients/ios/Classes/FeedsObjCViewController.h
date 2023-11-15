@@ -62,6 +62,9 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 @property (nonatomic) IBOutlet UIBarButtonItem * addBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * settingsBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * activitiesButton;
+#if TARGET_OS_MACCATALYST
+@property (nonatomic) IBOutlet UIBarButtonItem * userBarButton;
+#endif
 @property (nonatomic) IBOutlet UIButton *userAvatarButton;
 @property (nonatomic) IBOutlet UILabel *neutralCount;
 @property (nonatomic) IBOutlet UILabel *positiveCount;
