@@ -1435,7 +1435,7 @@ img.feed_favicon {
     font-size: 10px;
     padding: 1px 4px 1px 8px;
     line-height: 14px;
-    margin: 3px 0 0;
+    margin: 3px 0 0 12px;
     white-space: nowrap;
 }
 .NB-feedbar .NB-feedbar-options:hover,
@@ -1677,9 +1677,9 @@ img.feed_favicon {
     border-radius: 16px;
     text-transform: uppercase;
     font-size: 10px;
-    padding: 1px 8px;
+    padding: 1px 4px 1px 8px;
     line-height: 14px;
-    margin: 3px 12px 0;
+    margin: 3px 0 0 12px;
 }
 .NB-feedbar .NB-feedbar-discover-container:hover {
     background-color: rgba(0, 0, 0, .1);
@@ -1695,6 +1695,14 @@ img.feed_favicon {
 }
 .NB-feedbar:hover .NB-feedbar-discover-container .feed_favicon {
     filter: none;
+}
+.NB-feedbar .NB-feedbar-discover-container .NB-icon {
+    float: right;
+    width: 16px;
+    height: 12px;
+    background: transparent url('/media/embed/icons/nouns/down.svg') no-repeat 3px 2px;
+    background-size: 9px;
+    margin: 0;
 }
 
 .NB-discover-popover .NB-discover-loading {
@@ -1747,7 +1755,7 @@ img.feed_favicon {
     font-size: 10px;
     padding: 1px 8px;
     line-height: 14px;
-    margin: 3px 12px 0;
+    margin: 3px 0 0 12px;
 }
 .NB-feedbar .NB-story-title-indicator:hover {
     background-color: rgba(0, 0, 0, .1);
