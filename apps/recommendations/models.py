@@ -9,7 +9,7 @@ from django.db import models
 
 # # from sklearn.feature_extraction.text import TfidfVectorizer
 # # from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
-from surprise import NMF, SVD, Dataset, KNNBasic, KNNWithMeans, Reader
+from surprise import NMF, SVD, Dataset, KNNBasic, KNNWithMeans, Reader, accuracy
 from surprise.model_selection import cross_validate, train_test_split
 
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
@@ -115,16 +115,18 @@ class CollaborativelyFilteredRecommendation(models.Model):
 
     @classmethod
     def load_surprise_data(cls, file_name):
-        reader = Reader(line_format="user item rating", sep=",", rating_scale=(0, 1))
+        reader = Reader(line_format="user item rating", sep=",", rating_scale=(0, 100))
         data = Dataset.load_from_file(file_name, reader)
 
-        trainset, _ = train_test_split(data, test_size=0.2)
-        return trainset
+        trainset, testset = train_test_split(data, test_size=0.2)
+        return trainset, testset
 
     @classmethod
-    def svd(cls, trainset):
+    def svd(cls, trainset, testset):
         model = SVD()
         model.fit(trainset)
+        predictions = model.test(testset)
+        accuracy.rmse(predictions)
 
         return model
 
@@ -146,24 +148,15 @@ class CollaborativelyFilteredRecommendation(models.Model):
         return predicted_ratings
 
     @classmethod
-    def get_recommendations(cls, trainset, user_id, model, n=10):
-        # Retrieve the inner id of the user
-        try:
-            user_inner_id = trainset.to_inner_uid(user_id)
-        except ValueError:
-            # User was not part of the trainset, so we can't make recommendations
-            return []
-
+    def get_recommendations(cls, user_id, feed_ids, model, n=10):
         # Predict ratings for all feeds
-        predictions = [
-            model.predict(str(user_inner_id), str(iid), verbose=False) for iid in trainset.all_items()
-        ]
+        predictions = [model.predict(str(user_id), str(feed_id), verbose=False) for feed_id in feed_ids]
 
         # Sort by highest predicted rating
         sorted_predictions = sorted(predictions, key=lambda x: x.est if x.est != 1 else 0, reverse=True)
 
         # Return top n feed IDs as recommendations
-        return [pred.iid for pred in sorted_predictions[:n]]
+        return [(pred.iid, pred.est) for pred in sorted_predictions[:n]]
 
     @classmethod
     def load_knn_model(cls, file_name):
