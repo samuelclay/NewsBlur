@@ -1709,7 +1709,7 @@ img.feed_favicon {
 }
 
 .NB-discover-feed-badges .NB-story-titles {
-    margin-left: 36px;
+    margin: 0 24px;
 }
 
 .NB-discover-feed-badges .NB-folders {
@@ -1720,6 +1720,7 @@ img.feed_favicon {
 }
 .NB-discover-feed-badges .NB-feed-badge {
     padding-top: 30px;
+    border-bottom: none;
 }
 
 .NB-discover-feed-badges .NB-error {
@@ -5384,6 +5385,7 @@ background: transparent;
 
 #story_taskbar .NB-taskbar-view {
     margin: 0 8px 0 6px;
+    align-self: flex-end;
 }
 #story_taskbar .NB-tryfeed-add,
 #story_taskbar .NB-tryfeed-follow,
@@ -5560,14 +5562,11 @@ background: transparent;
 #story_taskbar .NB-tryfeed-add,
 #story_taskbar .NB-tryfeed-follow,
 #story_taskbar .NB-tryout-signup {
-    margin: 2px auto 0px;
+    margin: 0px auto 0px;
     width: 80px;
     height: 14px;
     text-align: center;
     cursor: pointer;
-    -webkit-box-shadow: #9A9A9A 2px 2px 0px;
-    -moz-box-shadow: #9A9A9A 2px 2px 0px;
-    box-shadow: #9A9A9A 2px 2px 0px;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .4);
 }
 .NB-narrow #story_taskbar .NB-task-title {
@@ -5580,6 +5579,10 @@ background: transparent;
 #story_taskbar .NB-modal-submit {
     flex-grow: 1;
     margin: 0 6px;
+    display: flex;
+    align-items: center;
+    /* height: 100%; */
+    place-self: flex-end;
 }
 #story_taskbar .NB-taskbar-options-container {
     flex-shrink: 1;
