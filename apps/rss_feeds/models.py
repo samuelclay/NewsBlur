@@ -1833,7 +1833,7 @@ class Feed(models.Model):
         # pprint(sorted_popularity)
         return sorted_popularity
             
-    def well_read_score(self):
+    def well_read_score(self, user_id=None):
         """Average percentage of stories read vs published across recently active subscribers"""
         from apps.reader.models import UserSubscription
         from apps.social.models import MSharedStory
@@ -1846,7 +1846,9 @@ class Feed(models.Model):
         subscribing_users = UserSubscription.objects.filter(feed_id=self.pk).values('user_id')
         subscribing_user_ids = [sub['user_id'] for sub in subscribing_users]
         
-        for user_id in subscribing_user_ids:
+        for sub_user_id in subscribing_user_ids:
+            if user_id and sub_user_id != user_id:
+                continue
             user_rs = "RS:%s:%s" % (user_id, self.pk)
             p.scard(user_rs)
         
