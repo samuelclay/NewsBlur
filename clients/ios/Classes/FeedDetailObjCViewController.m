@@ -2824,7 +2824,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }];
 }
 
-- (void)muteSite {
+- (IBAction)muteSite {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Muting...";
@@ -2977,7 +2977,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [menuNavigationController showViewController:viewController sender:self];
 }
 
-- (void)openTrainSite {
+- (IBAction)openTrainSite {
     [appDelegate openTrainSite];
 }
 
@@ -2987,15 +2987,27 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [self reload];
 }
 
+- (IBAction)openNotifications:(id)sender {
+    NSString *feedId = [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"];
+    
+    [appDelegate openNotificationsWithFeed:feedId];
+}
+
 - (void)openNotificationsWithFeed:(NSString *)feedId {
     [appDelegate openNotificationsWithFeed:feedId];
+}
+
+- (IBAction)openStatistics:(id)sender {
+    NSString *feedId = [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"];
+    
+    [appDelegate openStatisticsWithFeed:feedId sender:settingsBarButton];
 }
 
 - (void)openStatisticsWithFeed:(NSString *)feedId {
     [appDelegate openStatisticsWithFeed:feedId sender:settingsBarButton];
 }
 
-- (void)openRenameSite {
+- (IBAction)openRenameSite {
     NSString *title = [NSString stringWithFormat:@"Rename \"%@\"", appDelegate.storiesCollection.isRiverView ?
                        [appDelegate extractFolderName:appDelegate.storiesCollection.activeFolder] : [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_title"]];
     NSString *subtitle = (appDelegate.storiesCollection.isRiverView ?
@@ -3147,7 +3159,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 // called when the user taps refresh button
 
-- (void)instafetchFeed {
+- (IBAction)instafetchFeed {
     NSString *urlString = [NSString
                            stringWithFormat:@"%@/reader/refresh_feed/%@",
                            self.appDelegate.url,

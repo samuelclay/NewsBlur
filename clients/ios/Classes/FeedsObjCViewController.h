@@ -99,7 +99,9 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (void)didSelectSectionHeaderWithTag:(NSInteger)tag;
 - (void)selectNextFolderOrFeed;
+- (IBAction)reloadFeeds:(id)sender;
 - (IBAction)selectIntelligence;
+- (IBAction)chooseTheme:(id)sender;
 - (void)markFeedRead:(NSString *)feedId cutoffDays:(NSInteger)days;
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days;
 - (void)markEverythingReadWithDays:(NSInteger)days;

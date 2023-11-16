@@ -2727,6 +2727,10 @@ heightForHeaderInSection:(NSInteger)section {
 }
 #endif
 
+- (IBAction)reloadFeeds:(id)sender {
+    [appDelegate reloadFeedsView:NO];
+}
+
 - (void)finishRefresh {
     self.inPullToRefresh_ = NO;
 #if !TARGET_OS_MACCATALYST
@@ -2854,6 +2858,13 @@ heightForHeaderInSection:(NSInteger)section {
 //            }
         });
     });
+}
+
+- (IBAction)chooseTheme:(id)sender {
+    UICommand *command = sender;
+    NSString *string = command.propertyList;
+    
+    [ThemeManager themeManager].theme = string;
 }
 
 - (void)resetToolbar {
