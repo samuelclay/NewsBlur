@@ -86,8 +86,8 @@ class MFeedFolder(mongo.Document):
 
 class CollaborativelyFilteredRecommendation(models.Model):
     @classmethod
-    def store_user_feed_data_to_file(cls, file_name):
-        if os.path.exists(file_name):
+    def store_user_feed_data_to_file(cls, file_name, force=False):
+        if os.path.exists(file_name) and not force:
             print(f"{file_name} exists, skipping storing data...")
             return
 
@@ -98,10 +98,18 @@ class CollaborativelyFilteredRecommendation(models.Model):
             users = paginator.page(page_num)
             for user in users:
                 # Only include feeds with num_subscribers >= 5
-                subs = UserSubscription.objects.filter(user=user, feed__num_subscribers__gte=5)
+                subs = UserSubscription.objects.filter(
+                    user=user,
+                    feed__num_subscribers__gte=5,
+                    feed__stories_last_month__gte=1,
+                    feed__active_subscribers__gte=1,
+                )
                 # print(f"User {user} has {subs.count()} feeds")
                 for sub in subs:
-                    temp_file.write(f"{user.id},{sub.feed_id},1\n")
+                    well_read_score = sub.feed.well_read_score(user_id=sub.user_id)["reach_score"]
+                    if not well_read_score:
+                        continue
+                    temp_file.write(f"{user.id},{sub.feed_id},{well_read_score}\n")
             print(f"Page {page_num} of {paginator.num_pages} saved to {file_name}")
             temp_file.flush()
 
@@ -161,7 +169,7 @@ class CollaborativelyFilteredRecommendation(models.Model):
     def load_knn_model(cls, file_name):
         """OOM"""
         print(f"Loading user item rating from {file_name}")
-        reader = Reader(line_format="user item rating", sep=",", rating_scale=(0, 1))
+        reader = Reader(line_format="user item rating", sep=",", rating_scale=(0, 100))
         data = Dataset.load_from_file(file_name, reader)
         print(f"Training model with {data.n_users} users and {data.n_items} items")
         trainset = data.build_full_trainset()
