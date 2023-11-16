@@ -1473,13 +1473,21 @@
 //    [self.appDelegate.feedDetailViewController changedStoryHeight:currentPage.webView.scrollView.contentSize.height];
 }
 
-- (void)toggleStorySaved:(id)sender {
+- (IBAction)toggleStorySaved:(id)sender {
     [appDelegate.storiesCollection toggleStorySaved];
 }
 
-- (void)toggleStoryUnread:(id)sender {
+- (IBAction)toggleStoryUnread:(id)sender {
     [appDelegate.storiesCollection toggleStoryUnread];
     [appDelegate.feedDetailViewController reload]; // XXX only if successful?
+}
+
+- (IBAction)showTrain:(id)sender {
+    [self.appDelegate openTrainStory:self.appDelegate.storyPagesViewController.fontSettingsButton];
+}
+
+- (IBAction)showShare:(id)sender {
+    [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {

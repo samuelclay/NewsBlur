@@ -202,24 +202,9 @@
 - (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [self registerDefaultsFromSettingsBundle];
     
-    // CATALYST: this is now handled by the storyboard.
-//    self.navigationController.delegate = self;
-//    self.navigationController.viewControllers = [NSArray arrayWithObject:self.feedsViewController];
     self.storiesCollection = [StoriesCollection new];
     
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhond) {
-//        self.window.rootViewController = self.masterContainerViewController;
-//    } else {
-//        self.window.rootViewController = self.navigationController;
-//    }
-    
-    [self prepareViewControllers];
-    
     [self clearNetworkManager];
-    
-    [window makeKeyAndVisible];
-    
-    [[ThemeManager themeManager] prepareForWindow:self.window];
     
     [self createDatabaseConnection];
     
@@ -236,8 +221,6 @@
     // Uncomment below line to test image caching
 //    [[NSURLCache sharedURLCache] removeAllCachedResponses];
     
-    [feedsViewController view];
-    [feedsViewController loadOfflineFeeds:NO];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
         [self setupReachability];
@@ -248,8 +231,6 @@
             self.cacheImagesOperationQueue.maxConcurrentOperationCount = 1;
         }
     });
-    
-//    [self showFirstTimeUser];
     
     return YES;
 }
@@ -422,10 +403,6 @@
     }
     
     return handled;
-}
-
-- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
-    
 }
 
 - (void)delayedAddSite {
@@ -1221,6 +1198,13 @@
     self.firstTimeUserAddNewsBlurViewController = [FirstTimeUserAddNewsBlurViewController new];
     
     [self updateSplitBehavior:NO];
+    
+    [window makeKeyAndVisible];
+    
+    [[ThemeManager themeManager] prepareForWindow:self.window];
+    
+    [feedsViewController view];
+    [feedsViewController loadOfflineFeeds:NO];
 }
 
 - (StoryPagesViewController *)storyPagesViewController {

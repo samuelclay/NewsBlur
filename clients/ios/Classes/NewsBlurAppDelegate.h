@@ -295,6 +295,7 @@ SFSafariViewControllerDelegate>  {
 
 - (void)registerDefaultsFromSettingsBundle;
 - (void)finishBackground;
+- (void)prepareViewControllers;
 
 - (void)showFirstTimeUser;
 - (void)showLogin;

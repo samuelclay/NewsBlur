@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r" initialMenu="YWi-Ju-M3z">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r" initialMenu="YWi-Ju-M3z">
     <device id="ipad11_0rounded" orientation="landscape" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="UIMenu" message="Requires Xcode 11 or later." minToolsVersion="11.0" requiredIntegratedClassName="UICommandDiff"/>
@@ -15,7 +15,7 @@
             <objects>
                 <viewController storyboardIdentifier="DetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="djW-7k-haK" customClass="DetailViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jTZ-4O-xyT">
-                        <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
+                        <rect key="frame" x="0.0" y="0.0" width="818.5" height="834"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bPa-u1-Aml">
                                 <rect key="frame" x="0.0" y="74" width="1194" height="580"/>
@@ -111,7 +111,7 @@
             <objects>
                 <viewController storyboardIdentifier="FeedsViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="c70-P4-4n6" customClass="FeedsViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="B68-yP-FpJ">
-                        <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
+                        <rect key="frame" x="0.0" y="0.0" width="420" height="834"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hRx-bd-6Da">
@@ -244,6 +244,164 @@
         <scene sceneID="eNE-X1-NXV">
             <objects>
                 <menu isSystemItem="YES" title="Root" identifier="com.apple.menu.root" id="YWi-Ju-M3z" sceneMemberID="viewController">
+                    <children>
+                        <menu isSystemItem="YES" title="File" identifier="com.apple.menu.file" id="cyC-FU-wa2">
+                            <children>
+                                <menu isSystemItem="YES" title="Open" identifier="com.apple.menu.open" id="kg7-Yc-6nd">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <systemMenuChildDeletions>
+                                        <menuDeletion anchor="com.apple.menu.open-recent"/>
+                                    </systemMenuChildDeletions>
+                                </menu>
+                                <menu isSystemItem="YES" title="Document" identifier="com.apple.menu.document" id="vwX-rl-iVO">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <systemMenuChildDeletions>
+                                        <itemDeletion anchorAction="rename:"/>
+                                        <itemDeletion anchorAction="export:"/>
+                                    </systemMenuChildDeletions>
+                                </menu>
+                                <menu anchor="com.apple.menu.document" id="ksZ-gH-4gO">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Reload Sites" input="r" id="9ee-Z4-HxV">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="reloadFeeds:" destination="J28-e1-gcC" id="Ry7-2F-Wl3"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu isSystemItem="YES" title="Print" identifier="com.apple.menu.print" id="L8Z-gR-6rG">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <systemMenuChildDeletions>
+                                        <itemDeletion anchorAction="_saveDocumentToPDF:"/>
+                                        <itemDeletion anchorAction="_printDocument:"/>
+                                    </systemMenuChildDeletions>
+                                </menu>
+                            </children>
+                        </menu>
+                        <menu isSystemItem="YES" title="View" identifier="com.apple.menu.view" id="pdl-gx-X6C">
+                            <children>
+                                <menu title="Theme" id="k0L-se-kpA">
+                                    <menuOptions key="menuOptions" singleSelection="YES"/>
+                                    <children>
+                                        <command title="Light" propertyListString="light" id="nvf-Kg-GEz">
+                                            <connections>
+                                                <action selector="chooseTheme:" destination="J28-e1-gcC" id="AGW-N1-hqV"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Sepia" propertyListString="sepia" id="Nvo-zG-r0S">
+                                            <connections>
+                                                <action selector="chooseTheme:" destination="J28-e1-gcC" id="F6m-fp-d1B"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Medium" propertyListString="medium" id="u5z-am-9MT">
+                                            <connections>
+                                                <action selector="chooseTheme:" destination="J28-e1-gcC" id="fOO-Pu-NR6"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Dark" propertyListString="dark" id="roz-8B-xfb">
+                                            <connections>
+                                                <action selector="chooseTheme:" destination="J28-e1-gcC" id="Zpe-za-poM"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                            </children>
+                        </menu>
+                        <menu title="Site" identifier="site" anchor="com.apple.menu.view" id="Kg8-V5-XsH">
+                            <children>
+                                <menu title="Manage" id="uU0-yq-BC8">
+                                    <children>
+                                        <command title="Move to Another Folder…" id="LG6-8T-2ce"/>
+                                        <command title="Rename Site…" id="ogl-RU-MAV">
+                                            <connections>
+                                                <action selector="openRenameSite" destination="J28-e1-gcC" id="aCr-ei-bqw"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Mute Site" id="USf-x7-etD">
+                                            <connections>
+                                                <action selector="muteSite" destination="J28-e1-gcC" id="v0a-pd-QV6"/>
+                                            </connections>
+                                        </command>
+                                        <menu id="HKb-sW-DLl">
+                                            <menuOptions key="menuOptions" displayInline="YES"/>
+                                            <children>
+                                                <command title="Delete Site…" id="RuQ-ea-MNw">
+                                                    <menuElementAttributes key="attributes" destructive="YES"/>
+                                                </command>
+                                            </children>
+                                        </menu>
+                                    </children>
+                                </menu>
+                                <menu id="CCe-ei-YVh">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                </menu>
+                                <command title="Train…" id="hIh-yf-xP8">
+                                    <connections>
+                                        <action selector="openTrainSite" destination="J28-e1-gcC" id="7OO-UO-3Ro"/>
+                                    </connections>
+                                </command>
+                                <command title="Notifications…" id="zeT-bO-F72">
+                                    <connections>
+                                        <action selector="openNotifications:" destination="J28-e1-gcC" id="4dl-l2-1n6"/>
+                                    </connections>
+                                </command>
+                                <command title="Statistics…" id="IRg-Uz-w76">
+                                    <connections>
+                                        <action selector="openStatistics:" destination="J28-e1-gcC" id="4ps-fi-6FI"/>
+                                    </connections>
+                                </command>
+                                <menu id="ffV-Jd-hmj">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                </menu>
+                                <command title="Insta-Fetch Stories" input="r" id="skD-1M-foi">
+                                    <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                    <connections>
+                                        <action selector="instafetchFeed" destination="J28-e1-gcC" id="kAI-0o-ni8"/>
+                                    </connections>
+                                </command>
+                                <menu id="ze6-Sa-c31">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Mark All as Read" input="a" id="BDX-7T-oPE">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="doMarkAllRead:" destination="J28-e1-gcC" id="2eI-UY-pbY"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                            </children>
+                        </menu>
+                        <menu title="Story" identifier="story" anchor="com.apple.menu.view" id="KgH-xe-mTD">
+                            <children>
+                                <command title="Save This Story" input="s" id="mRM-X6-xCI">
+                                    <keyModifierFlags key="modifierFlags" command="YES"/>
+                                    <connections>
+                                        <action selector="toggleStorySaved:" destination="J28-e1-gcC" id="w9j-wM-yXJ"/>
+                                    </connections>
+                                </command>
+                                <command title="Mark as Read" input="m" id="MOV-1R-tmb">
+                                    <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                    <connections>
+                                        <action selector="toggleStoryUnread:" destination="J28-e1-gcC" id="iNX-pg-hgT"/>
+                                    </connections>
+                                </command>
+                                <command title="Send To…" id="d3Y-Ik-PAB"/>
+                                <command title="Train This Story…" id="GJC-ae-c80">
+                                    <connections>
+                                        <action selector="showTrain:" destination="J28-e1-gcC" id="pr3-BS-f2g"/>
+                                    </connections>
+                                </command>
+                                <command title="Share This Story…" id="wmQ-3e-8h8">
+                                    <connections>
+                                        <action selector="showShare:" destination="J28-e1-gcC" id="UGy-Xo-sDK"/>
+                                    </connections>
+                                </command>
+                            </children>
+                        </menu>
+                    </children>
                     <systemMenuChildDeletions>
                         <menuDeletion anchor="com.apple.menu.format"/>
                     </systemMenuChildDeletions>
@@ -257,6 +415,7 @@
             <objects>
                 <navigationController storyboardIdentifier="FeedsNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="TEt-aw-KDr" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="FYM-Eb-jEE">
+                        <rect key="frame" x="0.0" y="24" width="420" height="50"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -288,6 +447,7 @@
             <objects>
                 <navigationController storyboardIdentifier="FeedDetailNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="u8Q-0B-JY9" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Sc3-NO-Rlz">
+                        <rect key="frame" x="0.0" y="24" width="375" height="50"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -303,6 +463,7 @@
             <objects>
                 <navigationController storyboardIdentifier="DetailNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="HsP-cn-nIY" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Noh-2M-34G">
+                        <rect key="frame" x="0.0" y="24" width="818.5" height="50"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -346,7 +507,7 @@
             <objects>
                 <viewController storyboardIdentifier="FeedDetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="gfj-2g-i9p" customClass="FeedDetailViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Qlc-Qa-4j4">
-                        <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="760"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="FeedDetailTable" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="HYy-Wb-YEm">
@@ -415,7 +576,7 @@
             <objects>
                 <viewController id="afA-W0-XsQ" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="jBw-7b-YGl">
-                        <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1194" height="580"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="xqp-qa-ugn"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -430,7 +591,7 @@
             <objects>
                 <viewController id="1tQ-fy-A3c" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="jdW-Cp-Pkg">
-                        <rect key="frame" x="0.0" y="0.0" width="1194" height="834"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1194" height="168"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="k4r-Od-mPr"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
