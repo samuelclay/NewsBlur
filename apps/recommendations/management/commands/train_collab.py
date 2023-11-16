@@ -40,19 +40,20 @@ class Command(BaseCommand):
         CollaborativelyFilteredRecommendation.store_user_feed_data_to_file(file_name, force=clear)
 
         # Load data and get the trained model
-        trainset, model = CollaborativelyFilteredRecommendation.load_knn_model(file_name)
-        # model = CollaborativelyFilteredRecommendation.load_surprise_data(file_name)
+        # trainset, model = CollaborativelyFilteredRecommendation.load_knn_model(file_name)
+        trainset, testset = CollaborativelyFilteredRecommendation.load_surprise_data(file_name)
+        model = CollaborativelyFilteredRecommendation.svd(trainset, testset)
         # model = CollaborativelyFilteredRecommendation.nmf(model)
         # Get list of all feed IDs to make predictions
         all_feed_ids = [
             feed.id
-            for feed in Feed.objects.filter(num_subscribers__gte=5, active_subscribers__gte=5).only("id")
+            for feed in Feed.objects.filter(num_subscribers__gte=5, active_subscribers__gte=1).only("id")
         ]
 
         # Predict ratings for all feeds for the given user
         predicted_ratings = CollaborativelyFilteredRecommendation.get_recommendations(
-            model, user_id, all_feed_ids
-        )
+            user_id, all_feed_ids, model
+        )[:n]
 
         # Remove feeds that user is already subscribed to
         user_subscribed_feeds = UserSubscription.objects.filter(user_id=user_id).values_list(
@@ -65,7 +66,7 @@ class Command(BaseCommand):
         # Sort feeds based on predicted ratings
         print(predicted_ratings)
         recommended_feed_ids = sorted(
-            predicted_ratings.keys(),
+            [rating[0] for rating in predicted_ratings],
             key=lambda f: Feed.get_by_id(f).well_read_score()["reach_score"],
             reverse=True,
         )[:n]
