@@ -29,6 +29,7 @@ from django.core.validators import validate_email
 from django.contrib.sites.models import Site
 from django.utils import feedgenerator
 from django.utils.encoding import smart_str
+from django.utils.http import url_has_allowed_host_and_scheme
 from mongoengine.queryset import OperationError
 from mongoengine.queryset import NotUniqueError
 from apps.recommendations.models import RecommendedFeed
@@ -200,9 +201,10 @@ def login(request):
                 code = 1
             else:
                 logging.user(form.get_user(), "~FG~BBLogin~FW")
-                next_url = request.POST.get('next', '')
-                if next_url:
-                    return HttpResponseRedirect(next_url)
+                next_url = request.POST.get('next', '') 
+                if next_url and url_has_allowed_host_and_scheme(next_url, settings.ALLOWED_HOSTS): 
+                    return HttpResponseRedirect(next_url) 
+
                 return HttpResponseRedirect(reverse('index'))
         else:
             message = list(form.errors.items())[0][1][0]
