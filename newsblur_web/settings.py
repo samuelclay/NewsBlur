@@ -815,6 +815,8 @@ REDIS_PUBSUB_POOL          = redis.ConnectionPool(host=REDIS_PUBSUB['host'], por
 accept_content = ['pickle', 'json', 'msgpack', 'yaml']
 
 SURPRISE_DATA_FOLDER = os.getenv("SURPRISE_DATA_FOLDER", "/srv/newsblur/docker/volumes/surprise")
+# Create the folder if it doesn't exist
+os.makedirs(SURPRISE_DATA_FOLDER, exist_ok=True)
 
 # ==========
 # = Assets =
