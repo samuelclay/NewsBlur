@@ -1,3 +1,4 @@
+import datetime
 import os
 import tempfile
 from collections import defaultdict
@@ -92,26 +93,29 @@ class CollaborativelyFilteredRecommendation(models.Model):
             return
 
         temp_file = open(file_name, "w+")
-        users = User.objects.all().order_by("pk")
-        paginator = Paginator(users, 1000)
-        for page_num in paginator.page_range:
-            users = paginator.page(page_num)
-            for user in users:
-                # Only include feeds with num_subscribers >= 5
-                subs = UserSubscription.objects.filter(
-                    user=user,
-                    feed__num_subscribers__gte=5,
-                    feed__stories_last_month__gte=1,
-                    feed__active_subscribers__gte=1,
-                )
-                # print(f"User {user} has {subs.count()} feeds")
-                for sub in subs:
-                    well_read_score = sub.feed.well_read_score(user_id=sub.user_id)["reach_score"]
-                    if not well_read_score:
-                        continue
-                    temp_file.write(f"{user.id},{sub.feed_id},{well_read_score}\n")
-            print(f"Page {page_num} of {paginator.num_pages} saved to {file_name}")
+        max_user_pk = User.objects.latest("pk").pk
+        for user_id in range(max_user_pk):
+            try:
+                user = User.objects.get(pk=user_id)
+            except User.DoesNotExist:
+                continue
+            # Only include feeds with num_subscribers >= 5
+            last_month = datetime.datetime.now() - datetime.timedelta(days=30)
+            subs = UserSubscription.objects.filter(
+                user=user,
+                feed__num_subscribers__gte=5,
+                feed__stories_last_month__gte=1,
+                feed__active_subscribers__gte=1,
+                feed__last_story_date__gte=last_month,
+            )
+            for sub in subs:
+                well_read_score = sub.feed.well_read_score(user_id=sub.user_id)["reach_score"]
+                if not well_read_score:
+                    continue
+                temp_file.write(f"{user.id},{sub.feed_id},{well_read_score}\n")
             temp_file.flush()
+            if user_id % 1000 == 0:
+                print(f"User {user_id} saved to {file_name}")
 
     @classmethod
     def load_surprise_data(cls, file_name):
