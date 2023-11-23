@@ -1864,7 +1864,7 @@ class Feed(models.Model):
         else:
             average_pct = 0
         
-        reach_score = average_pct * reader_count * story_count
+        reach_score = round(average_pct * reader_count * story_count)
         
         return {'read_pct': average_pct, 'reader_count': reader_count, 
                 'reach_score': reach_score, 'story_count': story_count,
