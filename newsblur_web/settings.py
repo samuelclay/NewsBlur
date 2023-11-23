@@ -817,6 +817,8 @@ accept_content = ['pickle', 'json', 'msgpack', 'yaml']
 SURPRISE_DATA_FOLDER = os.getenv("SURPRISE_DATA_FOLDER", "/srv/newsblur/docker/volumes/surprise")
 # Create the folder if it doesn't exist
 os.makedirs(SURPRISE_DATA_FOLDER, exist_ok=True)
+# Set it as an env var (in case it wasn't set before) so python-surprise sees it
+os.environ["SURPRISE_DATA_FOLDER"] = SURPRISE_DATA_FOLDER
 
 # ==========
 # = Assets =
