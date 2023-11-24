@@ -20,6 +20,13 @@ class Command(BaseCommand):
             help="ID of the user for whom to generate recommendations",
         )
         parser.add_argument(
+            "--skip",
+            "-s",
+            type=int,
+            required=False,
+            help="# of user pks to skip, for continuing a previous run",
+        )
+        parser.add_argument(
             "-n", type=int, default=10, help="Number of recommendations to generate (default is 10)"
         )
         parser.add_argument(
@@ -33,11 +40,12 @@ class Command(BaseCommand):
         user_id = options["user_id"]
         n = options["n"]
         clear = options.get("clear", False)
+        skip = options.get("skip", 0)
 
         # Store user feed data to file
         os.makedirs(settings.SURPRISE_DATA_FOLDER, exist_ok=True)
         file_name = f"{settings.SURPRISE_DATA_FOLDER}/user_feed_data.csv"
-        CollaborativelyFilteredRecommendation.store_user_feed_data_to_file(file_name, force=clear)
+        CollaborativelyFilteredRecommendation.store_user_feed_data_to_file(file_name, force=clear, skip=skip)
 
         # Load data and get the trained model
         # trainset, model = CollaborativelyFilteredRecommendation.load_knn_model(file_name)
