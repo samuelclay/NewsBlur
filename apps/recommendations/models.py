@@ -87,14 +87,14 @@ class MFeedFolder(mongo.Document):
 
 class CollaborativelyFilteredRecommendation(models.Model):
     @classmethod
-    def store_user_feed_data_to_file(cls, file_name, force=False):
+    def store_user_feed_data_to_file(cls, file_name, force=False, skip=0):
         if os.path.exists(file_name) and not force:
             print(f"{file_name} exists, skipping storing data...")
             return
 
         temp_file = open(file_name, "w+")
         max_user_pk = User.objects.latest("pk").pk
-        for user_id in range(max_user_pk):
+        for user_id in range(skip, max_user_pk):
             try:
                 user = User.objects.get(pk=user_id)
             except User.DoesNotExist:
