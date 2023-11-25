@@ -92,7 +92,7 @@ class CollaborativelyFilteredRecommendation(models.Model):
             print(f"{file_name} exists, skipping storing data...")
             return
 
-        temp_file = open(file_name, "w+")
+        temp_file = open(file_name, "a+")
         max_user_pk = User.objects.latest("pk").pk
         for user_id in range(skip, max_user_pk):
             try:
