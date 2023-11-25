@@ -11,7 +11,7 @@ services:
     # user: "${CURRENT_UID}:${CURRENT_GID}"
     environment: 
       - DOCKERBUILD=True
-      - SURPRISE_DATA_FOLDER=/srv/newsblur/docker/volumes/suprise
+      - SURPRISE_DATA_FOLDER=/srv/newsblur/docker/volumes/surprise
       - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD?Use the `make` command instead of docker CLI}
     stdin_open: true
     tty: true
@@ -168,7 +168,7 @@ services:
       - ${PWD}:/srv/newsblur
     environment: 
       - DOCKERBUILD=True
-      - SURPRISE_DATA_FOLDER=/srv/newsblur/docker/volumes/suprise
+      - SURPRISE_DATA_FOLDER=/srv/newsblur/docker/volumes/surprise
 
   haproxy:
     container_name: haproxy
