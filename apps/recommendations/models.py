@@ -87,7 +87,9 @@ class MFeedFolder(mongo.Document):
 
 class CollaborativelyFilteredRecommendation(models.Model):
     @classmethod
-    def store_user_feed_data_to_file(cls, file_name, force=False, skip=0):
+    def store_user_feed_data_to_file(cls, file_name, force=False, skip=None):
+        if not skip:
+            skip = 0
         if os.path.exists(file_name) and not force and skip == 0:
             print(f"{file_name} exists, skipping storing data...")
             return
