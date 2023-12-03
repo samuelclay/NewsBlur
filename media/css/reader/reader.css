@@ -3845,6 +3845,7 @@ body {
 .NB-feed-story .NB-feed-story-header .NB-feed-story-date-line {
     clear: left;
     display: flex;
+    flex-wrap: wrap;
 }
 .NB-pref-story-position-center .NB-feed-story .NB-feed-story-header .NB-feed-story-date-line {
     margin: 0 auto;
@@ -13843,6 +13844,7 @@ form.opml_import_form input {
     color: #585A55;
     margin: 12px 0 10px;
     font-size: 15px;
+    font-weight: bold;
 }
 .NB-popover-section-title:first-child {
     margin-top: 0;
