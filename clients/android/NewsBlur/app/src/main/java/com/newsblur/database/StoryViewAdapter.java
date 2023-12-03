@@ -24,9 +24,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import com.newsblur.R;
 import com.newsblur.activity.FeedItemsList;
@@ -195,12 +198,12 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (position >= getStoryCount()) {
             return (footerViews.get(position - getStoryCount()).hashCode());
         }
-        
+
         if (position >= stories.size() || position < 0) return 0;
         return stories.get(position).storyHash.hashCode();
     }
 
-    public void swapCursor(final Cursor c, final RecyclerView rv, Parcelable oldScrollState) {
+    public void swapCursor(final Cursor c, final RecyclerView rv, Parcelable oldScrollState, final boolean ignoreCursorNewStories) {
         // cache the identity of the most recent cursor so async batches can check to
         // see if they are stale
         cursor = c;
@@ -213,7 +216,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                thawDiffUpdate(c, rv);
+                thawDiffUpdate(c, rv, ignoreCursorNewStories);
             }
         };
         executorService.submit(r);
@@ -223,7 +226,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
      * Attempt to thaw a new set of stories from the cursor most recently
      * seen when the that cycle started.
      */
-    private void thawDiffUpdate(final Cursor c, final RecyclerView rv) {
+    private void thawDiffUpdate(final Cursor c, final RecyclerView rv, final boolean ignoreCursorNewStories) {
         if (c != cursor) return;
 
         // thawed stories
@@ -234,14 +237,21 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         // as a new one will be provided and another cycle will start.  just return.
         try {
             if (c == null) {
-                newStories = new ArrayList<Story>(0);
+                newStories = new ArrayList<>();
             } else {
                 if (c.isClosed()) return;
-                newStories = new ArrayList<Story>(c.getCount());
+                newStories = new ArrayList<>(c.getCount());
                 c.moveToPosition(-1);
+
+                Set<String> currentStoryHashes = ignoreCursorNewStories ? stories.stream()
+                        .map(story -> story.storyHash)
+                        .collect(Collectors.toSet()) : Collections.emptySet();
+
                 while (c.moveToNext()) {
                     if (c.isClosed()) return;
                     Story s = Story.fromCursor(c);
+                    if (ignoreCursorNewStories && !currentStoryHashes.contains(s.storyHash)) return;
+
                     s.bindExternValues(c);
                     newStories.add(s);
                     if (! s.read) indexOfLastUnread = c.getPosition();
@@ -336,8 +346,8 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public class StoryViewHolder extends RecyclerView.ViewHolder
-                                 implements View.OnClickListener, 
-                                            View.OnCreateContextMenuListener, 
+                                 implements View.OnClickListener,
+                                            View.OnCreateContextMenuListener,
                                             MenuItem.OnMenuItemClickListener,
                                             View.OnTouchListener {
 
