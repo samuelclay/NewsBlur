@@ -183,7 +183,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     @objc override func reload(_ indexPath: IndexPath, with rowAnimation: UITableView.RowAnimation = .none) {
         if !isLegacyTable {
             deferredReload()
-        } else if reloadWorkItem == nil {
+        } else if reloadWorkItem == nil, storyTitlesTable.window != nil {
             // Only do this if a deferred reload isn't pending; otherwise no point in doing a partial reload, plus the table may be stale.
             storyTitlesTable.reloadRows(at: [indexPath], with: rowAnimation)
         }
@@ -225,7 +225,13 @@ extension FeedDetailViewController: FeedDetailInteraction {
     func visible(story: Story) {
         print("🐓 Visible: \(story.debugTitle)")
         
-        if story.index >= storyCache.before.count + storyCache.after.count - 5 {
+        guard storiesCollection.activeFeedStories != nil else {
+            return
+        }
+        
+        let cacheCount = storyCache.before.count + storyCache.after.count
+        
+        if cacheCount > 0, story.index >= cacheCount - 5 {
             if storiesCollection.isRiverView, storiesCollection.activeFolder != nil {
                 fetchRiverPage(storiesCollection.feedPage + 1, withCallback: nil)
             } else {

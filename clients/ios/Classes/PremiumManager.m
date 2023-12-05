@@ -192,11 +192,13 @@
     NSString *urlString = [NSString stringWithFormat:@"%@/profile/save_ios_receipt/",
                            self.appDelegate.url];
     NSString *transactionIdentifier = isComplete ? transaction.originalTransaction.transactionIdentifier : @"in-progress";
+    transactionIdentifier = transactionIdentifier ?: @"missing";
+    NSString *productIdentifier = transaction.payment.productIdentifier ?: @"missing";
     
     NSDictionary *params = @{
                              //                             @"receipt": [receipt base64EncodedStringWithOptions:0],
         @"transaction_identifier": transactionIdentifier,
-                             @"product_identifier": transaction.payment.productIdentifier,
+                             @"product_identifier": productIdentifier,
                              };
     
     [self.appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
