@@ -820,6 +820,10 @@
         [tags addObject:userTag];
     }
     
+    if (storyHash == nil || storyFeedId == nil || tags == nil) {
+        return;
+    }
+    
     [params setObject:storyHash forKey:@"story_id"];
     [params setObject:storyFeedId forKey:@"feed_id"];
     [params setObject:tags forKey:@"user_tags"];
