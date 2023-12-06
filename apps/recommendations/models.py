@@ -121,11 +121,16 @@ class CollaborativelyFilteredRecommendation(models.Model):
 
     @classmethod
     def load_surprise_data(cls, file_name):
-        reader = Reader(line_format="user item rating", sep=",", rating_scale=(0, 100))
+        reader = Reader(line_format="user item rating", sep=",", rating_scale=(0, 10000))
         data = Dataset.load_from_file(file_name, reader)
 
-        trainset, testset = train_test_split(data, test_size=0.2)
-        return trainset, testset
+        trainset, _ = train_test_split(data, test_size=0.2)
+
+        # Train an SVD algorithm on the trainset
+        algo = SVD()
+        algo.fit(trainset)
+
+        return algo
 
     @classmethod
     def svd(cls, trainset, testset):
