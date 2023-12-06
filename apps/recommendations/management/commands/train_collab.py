@@ -1,11 +1,15 @@
+import logging
 import os
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 
 from apps.reader.models import UserSubscription
 from apps.recommendations.models import CollaborativelyFilteredRecommendation
 from apps.rss_feeds.models import Feed
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -35,6 +39,7 @@ class Command(BaseCommand):
             required=False,
             help="Deltes the csv and recreates the user_feed matrix",
         )
+        parser.add_argument("--path", type=str, required=False, help="Path to the data file")
 
     def handle(self, *args, **options):
         user_id = options["user_id"]
@@ -44,46 +49,29 @@ class Command(BaseCommand):
 
         # Store user feed data to file
         os.makedirs(settings.SURPRISE_DATA_FOLDER, exist_ok=True)
-        file_name = f"{settings.SURPRISE_DATA_FOLDER}/user_feed_data.csv"
+        file_name = options.get("path", f"{settings.SURPRISE_DATA_FOLDER}/user_feed_data.csv")
         CollaborativelyFilteredRecommendation.store_user_feed_data_to_file(file_name, force=clear, skip=skip)
 
         # Load data and get the trained model
-        # trainset, model = CollaborativelyFilteredRecommendation.load_knn_model(file_name)
-        trainset, testset = CollaborativelyFilteredRecommendation.load_surprise_data(file_name)
-        model = CollaborativelyFilteredRecommendation.svd(trainset, testset)
-        # model = CollaborativelyFilteredRecommendation.nmf(model)
-        # Get list of all feed IDs to make predictions
-        all_feed_ids = [
-            feed.id
-            for feed in Feed.objects.filter(num_subscribers__gte=5, active_subscribers__gte=1).only("id")
-        ]
+        model = CollaborativelyFilteredRecommendation.load_surprise_data(file_name)
 
-        # Predict ratings for all feeds for the given user
-        predicted_ratings = CollaborativelyFilteredRecommendation.get_recommendations(
-            user_id, all_feed_ids, model
-        )[:n]
+        user_id = options["user_id"]
+        n = options["n"]
+        feed_ids = options["f"]
 
-        # Remove feeds that user is already subscribed to
-        user_subscribed_feeds = UserSubscription.objects.filter(user_id=user_id).values_list(
-            "feed_id", flat=True
-        )
-        for feed_id in user_subscribed_feeds:
-            if feed_id in predicted_ratings:
-                del predicted_ratings[feed_id]
+        logger.debug(f"Generating recommendations for user {User.objects.get(id=user_id)}")
+        recommendations = self.get_recommendations(model, user_id, feed_ids, n)
+        for feed_id in recommendations:
+            feed = Feed.get_by_id(feed_id)
+            print(f"Feed ID: {feed}")
 
-        # Sort feeds based on predicted ratings
-        print(predicted_ratings)
-        recommended_feed_ids = sorted(
-            [rating[0] for rating in predicted_ratings],
-            key=lambda f: Feed.get_by_id(f).well_read_score()["reach_score"],
-            reverse=True,
-        )[:n]
+    def get_recommendations(self, model, user_id, feed_ids, n):
+        # If feed_ids are not provided, get all feed ids
+        feed_ids = [feed.id for feed in Feed.objects.all()]
 
-        print(f"Top {n} feeds recommended for user {user_id}: {recommended_feed_ids}")
+        # Predict ratings for all feeds and sort them
+        predictions = [model.predict(user_id, feed_id) for feed_id in feed_ids]
+        predictions.sort(key=lambda x: x.est, reverse=True)
 
-        print(f"Found {len(recommended_feed_ids)} similar feeds")
-        for f in recommended_feed_ids:
-            feed = Feed.get_by_id(f)
-            if not feed:
-                continue
-            print(feed)
+        # Return top N feed ids
+        return [pred.iid for pred in predictions[:n]]
