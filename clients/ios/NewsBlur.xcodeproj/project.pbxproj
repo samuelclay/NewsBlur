@@ -505,7 +505,7 @@
 		1757920A2930605500490924 /* g_icn_textview_black.png in Resources */ = {isa = PBXBuildFile; fileRef = FF83FF0F1FB54691008DAC0F /* g_icn_textview_black.png */; };
 		1757920B2930605500490924 /* logo_58.png in Resources */ = {isa = PBXBuildFile; fileRef = FF322234185BC1AA004078AA /* logo_58.png */; };
 		1757920C2930605500490924 /* logo_144.png in Resources */ = {isa = PBXBuildFile; fileRef = FFC486A619CA40B700F4758F /* logo_144.png */; };
-		1757920D2930605500490924 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4C717750BDD00BF59D3 /* Settings.bundle */; };
+		1757920D2930605500490924 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4C717750BDD00BF59D3 /* Settings.bundle */; platformFilter = ios; };
 		1757920E2930605500490924 /* menu_icn_preferences.png in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4C917750D2C00BF59D3 /* menu_icn_preferences.png */; };
 		1757920F2930605500490924 /* menu_icn_preferences@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4CA17750D2C00BF59D3 /* menu_icn_preferences@2x.png */; };
 		175792102930605500490924 /* checkmark.png in Resources */ = {isa = PBXBuildFile; fileRef = FF855B541794A53A0098D48A /* checkmark.png */; };
@@ -846,6 +846,10 @@
 		17EB505D1BE4411E0021358B /* choose_font@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17EB505B1BE4411E0021358B /* choose_font@2x.png */; };
 		17EB50601BE46A900021358B /* FontListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17EB505F1BE46A900021358B /* FontListViewController.m */; };
 		17EB50621BE46BB00021358B /* FontListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17EB50611BE46BB00021358B /* FontListViewController.xib */; };
+		17EE11C82B27FA0C00E7C0CC /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 17EE11C72B27FA0C00E7C0CC /* Settings.bundle */; };
+		17EE11C92B27FA0C00E7C0CC /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 17EE11C72B27FA0C00E7C0CC /* Settings.bundle */; platformFilter = maccatalyst; };
+		17EE11CE2B28011D00E7C0CC /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 17EE11CD2B28011D00E7C0CC /* Credits.rtf */; };
+		17EE11CF2B28011D00E7C0CC /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 17EE11CD2B28011D00E7C0CC /* Credits.rtf */; };
 		17F156711BDABBF60092EBFD /* safari_shadow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17F156701BDABBF60092EBFD /* safari_shadow@2x.png */; };
 		17F363F2238E417300D5379D /* WidgetExtensionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17F363EF238E417300D5379D /* WidgetExtensionViewController.swift */; };
 		17F39EAA264754CD004B46D1 /* image_preview_large_left.png in Resources */ = {isa = PBXBuildFile; fileRef = 17F39EA6264754CC004B46D1 /* image_preview_large_left.png */; };
@@ -1629,6 +1633,8 @@
 		17EB505E1BE46A900021358B /* FontListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontListViewController.h; sourceTree = "<group>"; };
 		17EB505F1BE46A900021358B /* FontListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontListViewController.m; sourceTree = "<group>"; };
 		17EB50611BE46BB00021358B /* FontListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FontListViewController.xib; path = Classes/FontListViewController.xib; sourceTree = SOURCE_ROOT; };
+		17EE11C72B27FA0C00E7C0CC /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = mac/Settings.bundle; sourceTree = "<group>"; };
+		17EE11CD2B28011D00E7C0CC /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; name = Credits.rtf; path = mac/Credits.rtf; sourceTree = "<group>"; };
 		17F156701BDABBF60092EBFD /* safari_shadow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "safari_shadow@2x.png"; sourceTree = "<group>"; };
 		17F363EF238E417300D5379D /* WidgetExtensionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WidgetExtensionViewController.swift; sourceTree = "<group>"; };
 		17F39EA6264754CC004B46D1 /* image_preview_large_left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_preview_large_left.png; sourceTree = "<group>"; };
@@ -2681,12 +2687,14 @@
 			children = (
 				17A396D824F86A8F0023C9E2 /* MainInterface.storyboard */,
 				FF191E4E18A323F400473252 /* Images.xcassets */,
+				17EE11CD2B28011D00E7C0CC /* Credits.rtf */,
 				430C4BBE15D7208000B9F63B /* FTUX */,
 				431B857815A132C500DCE497 /* js */,
 				431B857715A132BE00DCE497 /* css */,
 				1753696F1BE535CF00904D00 /* fonts */,
 				431B857615A132B600DCE497 /* Images */,
 				FFF1E4C717750BDD00BF59D3 /* Settings.bundle */,
+				17EE11C72B27FA0C00E7C0CC /* Settings.bundle */,
 				E1D123FD1C66753D00434F40 /* Localizable.stringsdict */,
 				FF8C49921BBC9D140010D894 /* App.entitlements */,
 				8D1107310486CEB800E47090 /* Info.plist */,
@@ -3963,10 +3971,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				175790632930605500490924 /* ChronicleSSm-Book.otf in Resources */,
+				1757920D2930605500490924 /* Settings.bundle in Resources */,
 				175790642930605500490924 /* WhitneySSm-Book-Bas.otf in Resources */,
 				175790652930605500490924 /* ChronicleSSm-BookItalic.otf in Resources */,
 				175790662930605500490924 /* WhitneySSm-Medium-Bas.otf in Resources */,
 				175790672930605500490924 /* icons8-stack-of-paper-100.png in Resources */,
+				17EE11C92B27FA0C00E7C0CC /* Settings.bundle in Resources */,
 				175790682930605500490924 /* WhitneySSm-MediumItalic-Bas.otf in Resources */,
 				175790692930605500490924 /* WhitneySSm-BookItalic-Bas.otf in Resources */,
 				1757906A2930605500490924 /* barbutton_sort_desc@3x.png in Resources */,
@@ -4174,6 +4184,7 @@
 				175791342930605500490924 /* g_icn_greensun@2x.png in Resources */,
 				175791352930605500490924 /* ak-icon-infrequent.png in Resources */,
 				175791362930605500490924 /* nav_icn_add.png in Resources */,
+				17EE11CF2B28011D00E7C0CC /* Credits.rtf in Resources */,
 				175791372930605500490924 /* icons8-pyramids-100.png in Resources */,
 				175791382930605500490924 /* ak-icon-global.png in Resources */,
 				175791392930605500490924 /* content_preview_large@2x.png in Resources */,
@@ -4390,7 +4401,6 @@
 				1757920A2930605500490924 /* g_icn_textview_black.png in Resources */,
 				1757920B2930605500490924 /* logo_58.png in Resources */,
 				1757920C2930605500490924 /* logo_144.png in Resources */,
-				1757920D2930605500490924 /* Settings.bundle in Resources */,
 				1757920E2930605500490924 /* menu_icn_preferences.png in Resources */,
 				1757920F2930605500490924 /* menu_icn_preferences@2x.png in Resources */,
 				175792102930605500490924 /* checkmark.png in Resources */,
@@ -4488,6 +4498,7 @@
 				433323B9158901A40025064D /* fountain_pen@2x.png in Resources */,
 				433323BB158901C10025064D /* login_background.png in Resources */,
 				FF83FF151FB54693008DAC0F /* g_icn_lightning.png in Resources */,
+				17EE11CE2B28011D00E7C0CC /* Credits.rtf in Resources */,
 				17BE5A761C5DDA8C0075F92C /* barbutton_sort_desc@2x.png in Resources */,
 				433323BE1589022C0025064D /* user.png in Resources */,
 				433323BF1589022C0025064D /* user@2x.png in Resources */,
@@ -4693,6 +4704,7 @@
 				17EB505D1BE4411E0021358B /* choose_font@2x.png in Resources */,
 				FFC5F30C16E2D2C2007AC72C /* story_share_appnet_active@2x.png in Resources */,
 				FFC5F30D16E2D2C2007AC72C /* story_share_appnet.png in Resources */,
+				17EE11C82B27FA0C00E7C0CC /* Settings.bundle in Resources */,
 				FFC5F30E16E2D2C2007AC72C /* story_share_appnet@2x.png in Resources */,
 				1740C6A11C1110BA005EA453 /* theme_color_medium-sel@2x.png in Resources */,
 				17876BA01C9911D40055DD15 /* g_icn_folder_sm.png in Resources */,
@@ -6002,7 +6014,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 152;
+				CURRENT_PROJECT_VERSION = 153;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -6058,7 +6070,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 152;
+				CURRENT_PROJECT_VERSION = 153;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
