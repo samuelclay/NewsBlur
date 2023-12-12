@@ -458,7 +458,7 @@
         return;
     }
     
-    NSString *name = !self.isPhone ? @"Root~ipad.plist" : @"Root.plist";
+    NSString *name = !self.isMac && !self.isPhone ? @"Root~ipad.plist" : @"Root.plist";
     NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:name]];
     NSArray *preferences = [settings objectForKey:@"PreferenceSpecifiers"];
     
