@@ -152,11 +152,11 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.feedsBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Sites" style:UIBarButtonItemStylePlain target:self action:@selector(doShowFeeds:)];
     self.feedsBarButton.accessibilityLabel = @"Show Sites";
     
-    UIImage *settingsImage = [Utilities imageNamed:@"settings" sized:30];
+    UIImage *settingsImage = [Utilities imageNamed:@"settings" sized:self.isMac ? 24 : 30];
     settingsBarButton = [UIBarButtonItem barItemWithImage:settingsImage target:self action:@selector(doOpenSettingsMenu:)];
     settingsBarButton.accessibilityLabel = @"Settings";
     
-    UIImage *markreadImage = [Utilities imageNamed:@"mark-read" sized:30];
+    UIImage *markreadImage = [Utilities imageNamed:@"mark-read" sized:self.isMac ? 24 : 30];
     feedMarkReadButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(doOpenMarkReadMenu:)];
     feedMarkReadButton.accessibilityLabel = @"Mark all as read";
     

@@ -192,7 +192,7 @@
 @synthesize remainingUncachedImagesCount;
 
 + (instancetype)sharedAppDelegate {
-	return (NewsBlurAppDelegate *)[UIApplication sharedApplication].delegate;
+    return (NewsBlurAppDelegate *)[UIApplication sharedApplication].delegate;
 }
 
 + (instancetype)shared {
@@ -219,7 +219,7 @@
     NBURLCache *urlCache = [[NBURLCache alloc] init];
     [NSURLCache setSharedURLCache:urlCache];
     // Uncomment below line to test image caching
-//    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    //    [[NSURLCache sharedURLCache] removeAllCachedResponses];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
@@ -253,12 +253,12 @@
     
     if (![appOpening isEqualToString:@"feeds"]) {
         self.pendingFolder = appOpening;
-//        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:appOpening];
+        //        [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:appOpening];
     }
     
     [self registerBackgroundTask];
     
-	return YES;
+    return YES;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -304,31 +304,31 @@
     // state restoration disabled; uses other options now
     return NO;
     
-//    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-//    NSString *option = [preferences stringForKey:@"restore_state"];
-//
-//    if ([option isEqualToString:@"never"]) {
-//        return NO;
-//    } else if ([option isEqualToString:@"always"]) {
-//        return YES;
-//    }
-//
-//    NSTimeInterval daysInterval = 60 * 60;
-//    NSTimeInterval limitInterval = option.doubleValue * daysInterval;
-//    NSInteger version = [coder decodeIntegerForKey:@"version"];
-//    NSDate *lastSavedDate = [coder decodeObjectOfClass:[NSDate class] forKey:@"last_saved_state_date"];
-//
-//    if (limitInterval == 0) {
-//        limitInterval = 24 * daysInterval;
-//    }
-//
-//    if (version > CURRENT_STATE_VERSION || lastSavedDate == nil) {
-//        return NO;
-//    }
-//
-//    NSTimeInterval savedInterval = -[lastSavedDate timeIntervalSinceNow];
-//
-//    return savedInterval < limitInterval;
+    //    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    //    NSString *option = [preferences stringForKey:@"restore_state"];
+    //
+    //    if ([option isEqualToString:@"never"]) {
+    //        return NO;
+    //    } else if ([option isEqualToString:@"always"]) {
+    //        return YES;
+    //    }
+    //
+    //    NSTimeInterval daysInterval = 60 * 60;
+    //    NSTimeInterval limitInterval = option.doubleValue * daysInterval;
+    //    NSInteger version = [coder decodeIntegerForKey:@"version"];
+    //    NSDate *lastSavedDate = [coder decodeObjectOfClass:[NSDate class] forKey:@"last_saved_state_date"];
+    //
+    //    if (limitInterval == 0) {
+    //        limitInterval = 24 * daysInterval;
+    //    }
+    //
+    //    if (version > CURRENT_STATE_VERSION || lastSavedDate == nil) {
+    //        return NO;
+    //    }
+    //
+    //    NSTimeInterval savedInterval = -[lastSavedDate timeIntervalSinceNow];
+    //
+    //    return savedInterval < limitInterval;
 }
 
 - (UIViewController *)application:(UIApplication *)application viewControllerWithRestorationIdentifierPath:(NSArray<NSString *> *)identifierComponents coder:(NSCoder *)coder {
@@ -458,11 +458,26 @@
         return;
     }
     
-    NSString *name = !self.isMac && !self.isPhone ? @"Root~ipad.plist" : @"Root.plist";
-    NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:name]];
-    NSArray *preferences = [settings objectForKey:@"PreferenceSpecifiers"];
+    if (self.isMac) {
+        [self registerDefaultsFromSettingsBundle:settingsBundle withPlistName:@"Root.plist"];
+        [self registerDefaultsFromSettingsBundle:settingsBundle withPlistName:@"StoryList.plist"];
+        [self registerDefaultsFromSettingsBundle:settingsBundle withPlistName:@"Appearance.plist"];
+        [self registerDefaultsFromSettingsBundle:settingsBundle withPlistName:@"Advanced.plist"];
+    } else if (self.isPhone) {
+        [self registerDefaultsFromSettingsBundle:settingsBundle withPlistName:@"Root.plist"];
+    } else {
+        [self registerDefaultsFromSettingsBundle:settingsBundle withPlistName:@"Root~ipad.plist"];
+    }
     
+    NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    [[NSUserDefaults standardUserDefaults] setObject:version forKey:@"version"];
+}
+
+- (void)registerDefaultsFromSettingsBundle:(NSString *)settingsPath withPlistName:(NSString *)name {
+    NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:[settingsPath stringByAppendingPathComponent:name]];
+    NSArray *preferences = [settings objectForKey:@"PreferenceSpecifiers"];
     NSMutableDictionary *defaultsToRegister = [[NSMutableDictionary alloc] initWithCapacity:[preferences count]];
+    
     for(NSDictionary *prefSpecification in preferences) {
         NSString *key = [prefSpecification objectForKey:@"Key"];
         if (key && [[prefSpecification allKeys] containsObject:@"DefaultValue"]) {
@@ -471,9 +486,6 @@
     }
     
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaultsToRegister];
-    
-    NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-    [[NSUserDefaults standardUserDefaults] setObject:version forKey:@"version"];
 }
 
 - (void)registerForRemoteNotifications {
@@ -481,15 +493,15 @@
     center.delegate = self;
     [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error){
         if(!error){
-            dispatch_async(dispatch_get_main_queue(), ^{            
+            dispatch_async(dispatch_get_main_queue(), ^{
                 [[UIApplication sharedApplication] registerForRemoteNotifications];
             });
         }
     }];
     
-//    UNNotificationAction *viewAction = [UNNotificationAction actionWithIdentifier:@"VIEW_STORY_IDENTIFIER"
-//                                                                            title:@"View story"
-//                                                                          options:UNNotificationActionOptionForeground];
+    //    UNNotificationAction *viewAction = [UNNotificationAction actionWithIdentifier:@"VIEW_STORY_IDENTIFIER"
+    //                                                                            title:@"View story"
+    //                                                                          options:UNNotificationActionOptionForeground];
     UNNotificationAction *readAction = [UNNotificationAction actionWithIdentifier:@"MARK_READ_IDENTIFIER"
                                                                             title:@"Mark read"
                                                                           options:UNNotificationActionOptionNone];
@@ -497,8 +509,8 @@
                                                                             title:@"Save story"
                                                                           options:UNNotificationActionOptionNone];
     UNNotificationAction *dismissAction = [UNNotificationAction actionWithIdentifier:@"DISMISS_IDENTIFIER"
-                                                                            title:@"Dismiss"
-                                                                          options:UNNotificationActionOptionDestructive];
+                                                                               title:@"Dismiss"
+                                                                             options:UNNotificationActionOptionDestructive];
     UNNotificationCategory *storyCategory = [UNNotificationCategory categoryWithIdentifier:@"STORY_CATEGORY"
                                                                                    actions:@[readAction, starAction, dismissAction]
                                                                          intentIdentifiers:@[]
@@ -511,7 +523,7 @@
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     center.delegate = self;
     [center requestAuthorizationWithOptions:(UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error){
-    
+        
     }];
 }
 
@@ -635,10 +647,10 @@
 }
 
 - (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
+    // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
     
-	// Release any cached data, images, etc that aren't in use.
+    // Release any cached data, images, etc that aren't in use.
     [cachedStoryImages removeAllObjects];
 }
 
@@ -662,13 +674,13 @@
 
 - (void)reachabilityChanged:(id)something {
     NSLog(@"Reachability changed: %@", something);
-//    Reachability* reach = [Reachability reachabilityWithHostname:self.host];
-
-//    if (reach.isReachable && feedsViewController.isOffline) {
-//        [feedsViewController loadOfflineFeeds:NO];
-////    } else {
-////        [feedsViewController loadOfflineFeeds:NO];
-//    }
+    //    Reachability* reach = [Reachability reachabilityWithHostname:self.host];
+    
+    //    if (reach.isReachable && feedsViewController.isOffline) {
+    //        [feedsViewController loadOfflineFeeds:NO];
+    ////    } else {
+    ////        [feedsViewController loadOfflineFeeds:NO];
+    //    }
 }
 
 - (NSString *)url {
@@ -732,17 +744,17 @@
 - (void)showUserProfileModal:(id)sender {
     [self hidePopoverAnimated:NO];
     UserProfileViewController *newUserProfile = [[UserProfileViewController alloc] init];
-    self.userProfileViewController = newUserProfile; 
+    self.userProfileViewController = newUserProfile;
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.userProfileViewController];
     self.userProfileNavigationController = navController;
     self.userProfileNavigationController.navigationBar.translucent = NO;
-
+    
     
     // adding Done button
     UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"Close" 
-                                   style:UIBarButtonItemStyleDone 
-                                   target:self 
+                                   initWithTitle:@"Close"
+                                   style:UIBarButtonItemStyleDone
+                                   target:self
                                    action:@selector(hideUserProfileModal)];
     
     newUserProfile.navigationItem.rightBarButtonItem = donebutton;
@@ -754,30 +766,30 @@
     } else {
         [self.feedsNavigationController presentViewController:navController animated:YES completion:nil];
     }
-
+    
 }
 
 - (void)pushUserProfile {
     UserProfileViewController *userProfileView = [[UserProfileViewController alloc] init];
-
-
+    
+    
     // adding Done button
     UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"Close" 
-                                   style:UIBarButtonItemStyleDone 
-                                   target:self 
+                                   initWithTitle:@"Close"
+                                   style:UIBarButtonItemStyleDone
+                                   target:self
                                    action:@selector(hideUserProfileModal)];
     
     userProfileView.navigationItem.rightBarButtonItem = donebutton;
     userProfileView.navigationItem.title = self.activeUserProfileName;
     userProfileView.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
-    [userProfileView getUserProfile];   
+    [userProfileView getUserProfile];
     if (self.modalNavigationController.view.window == nil) {
         [self.userProfileNavigationController showViewController:userProfileView sender:self];
     } else {
         [self.modalNavigationController showViewController:userProfileView sender:self];
     };
-
+    
 }
 
 - (void)hideUserProfileModal {
@@ -824,7 +836,7 @@
                                             initWithRootViewController:self.premiumViewController];
     }
     self.premiumNavigationController.navigationBar.translucent = NO;
-
+    
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
     premiumNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     [self.splitViewController presentViewController:premiumNavigationController animated:YES completion:nil];
@@ -879,7 +891,7 @@
 
 - (void)showPreferences {
     if (self.isMac) {
-//        [[UIApplication sharedApplication] sendAction:@selector(orderFrontPreferencesPanel:) to:nil from:nil forEvent:nil];
+        //        [[UIApplication sharedApplication] sendAction:@selector(orderFrontPreferencesPanel:) to:nil from:nil forEvent:nil];
         return;
     }
     
@@ -889,7 +901,7 @@
     }
     
     [self hidePopover];
-
+    
     preferencesViewController.delegate = self.feedsViewController;
     preferencesViewController.showDoneButton = YES;
     preferencesViewController.showCreditsFooter = NO;
@@ -1026,10 +1038,10 @@
         NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
         text = [NSString stringWithFormat:@"<html><body><br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@</body></html>", [url absoluteString], title, maybeFeedTitle, text];
     }
-
+    
     NBActivityItemSource *activityItemSource = [[NBActivityItemSource alloc] initWithUrl:url authorName:authorName text:text title:title feedTitle:feedTitle];
     NSArray *activityItems = @[activityItemSource, url];
-
+    
     NSMutableArray *appActivities = [[NSMutableArray alloc] init];
     if (url) [appActivities addObject:[[TUSafariActivity alloc] init]];
     if (url) [appActivities addObject:[[ARChromeActivity alloc]
@@ -1080,7 +1092,7 @@
             [storyHUD hide:YES afterDelay:1];
         }
     }];
-
+    
     if (!self.isPhone) {
         BOOL fromPopover = [self hidePopoverAnimated:NO];
         [self.splitViewController presentViewController:activityViewController animated:!fromPopover completion:nil];
@@ -1116,25 +1128,25 @@
 }
 
 - (void)showShareView:(NSString *)type
-            setUserId:(NSString *)userId 
-          setUsername:(NSString *)username 
-      setReplyId:(NSString *)replyId {
+            setUserId:(NSString *)userId
+          setUsername:(NSString *)username
+           setReplyId:(NSString *)replyId {
     
     [self.shareViewController setCommentType:type];
-//    if (!self.isPhone) {
-//        [self.masterContainerViewController transitionToShareView];
-//        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
-//    } else {
-        if (self.shareNavigationController == nil) {
-            UINavigationController *shareNav = [[UINavigationController alloc]
-                                                initWithRootViewController:self.shareViewController];
-            self.shareNavigationController = shareNav;
-            self.shareNavigationController.navigationBar.translucent = NO;
-        }
-        [self.feedsNavigationController presentViewController:self.shareNavigationController animated:YES completion:^{
-            [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
-        }];
-//    }
+    //    if (!self.isPhone) {
+    //        [self.masterContainerViewController transitionToShareView];
+    //        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
+    //    } else {
+    if (self.shareNavigationController == nil) {
+        UINavigationController *shareNav = [[UINavigationController alloc]
+                                            initWithRootViewController:self.shareViewController];
+        self.shareNavigationController = shareNav;
+        self.shareNavigationController.navigationBar.translucent = NO;
+    }
+    [self.feedsNavigationController presentViewController:self.shareNavigationController animated:YES completion:^{
+        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
+    }];
+    //    }
 }
 
 - (void)hideShareView:(BOOL)resetComment {
@@ -1142,11 +1154,11 @@
         self.shareViewController.commentField.text = @"";
         self.shareViewController.currentType = nil;
     }
-        
-//    if (!self.isPhone) {
-//        [self.masterContainerViewController transitionFromShareView];
-//        [self.storyPagesViewController becomeFirstResponder];
-//    } else
+    
+    //    if (!self.isPhone) {
+    //        [self.masterContainerViewController transitionFromShareView];
+    //        [self.storyPagesViewController becomeFirstResponder];
+    //    } else
     if (!self.showingSafariViewController) {
         [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
         [self.shareViewController.commentField resignFirstResponder];
@@ -1252,7 +1264,7 @@
 }
 
 - (void)showFirstTimeUser {
-//    [self.feedsViewController changeToAllMode];
+    //    [self.feedsViewController changeToAllMode];
     
     UINavigationController *ftux = [[UINavigationController alloc] initWithRootViewController:self.firstTimeUserViewController];
     
@@ -1285,10 +1297,10 @@
     // Needs a delay because the menu will close the popover.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC),
                    dispatch_get_main_queue(), ^{
-                       [self
-                        openTrainSiteWithFeedLoaded:YES
-                        from:self.feedDetailViewController.settingsBarButton];
-                   });
+        [self
+         openTrainSiteWithFeedLoaded:YES
+         from:self.feedDetailViewController.settingsBarButton];
+    });
 }
 
 - (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender {
@@ -1298,8 +1310,8 @@
     trainerViewController.feedLoaded = feedLoaded;
     
     if (!self.isPhone) {
-//        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
-//        [navController presentViewController:trainerViewController animated:YES completion:nil];
+        //        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
+        //        [navController presentViewController:trainerViewController animated:YES completion:nil];
         [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(500, 630) sender:sender];
     } else {
         if (self.trainNavigationController == nil) {
@@ -1450,7 +1462,7 @@
     [networkManager.requestSerializer setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
     
     NSString *currentVersion = [[[NSBundle mainBundle] infoDictionary]
-                                      objectForKey:@"CFBundleVersion"];
+                                objectForKey:@"CFBundleVersion"];
     NSString *UA;
     if (self.isMac) {
         UA = [NSString stringWithFormat:@"NewsBlur Mac App v%@", currentVersion];
@@ -1553,10 +1565,10 @@
 }
 
 - (void)POST:(NSString *)urlString
- parameters:(id)parameters
-     target:(id)target
-    success:(SEL)success
-    failure:(SEL)failure {
+  parameters:(id)parameters
+      target:(id)target
+     success:(SEL)success
+     failure:(SEL)failure {
     [self POST:urlString parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
         [self safelyInvokeTarget:target withSelector:success passingObject:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -1631,7 +1643,7 @@
 - (void)loadFeedDetailView:(BOOL)transition {
     self.inFeedDetail = YES;
     popoverHasFeedView = YES;
-
+    
     [feedDetailViewController resetFeedDetail];
     feedDetailViewController.storiesCollection = storiesCollection;
     
@@ -1698,24 +1710,24 @@
     
     [self reloadFeedsView:NO];
     
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-//        if (!self.isPhone) {
-//            [self loadFeedDetailView];
-//        } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-//    //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-//            [self showFeedsListAnimated:NO];
-//    //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
-//            [self hidePopoverAnimated:NO completion:^{
-//                if (self.feedsNavigationController.presentedViewController) {
-//                    [self.feedsNavigationController dismissViewControllerAnimated:NO completion:^{
-//                        [self loadFeedDetailView];
-//                    }];
-//                } else {
-//                    [self loadFeedDetailView];
-//                }
-//            }];
-//        }
-//    });
+    //    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    //        if (!self.isPhone) {
+    //            [self loadFeedDetailView];
+    //        } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+    //    //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+    //            [self showFeedsListAnimated:NO];
+    //    //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+    //            [self hidePopoverAnimated:NO completion:^{
+    //                if (self.feedsNavigationController.presentedViewController) {
+    //                    [self.feedsNavigationController dismissViewControllerAnimated:NO completion:^{
+    //                        [self loadFeedDetailView];
+    //                    }];
+    //                } else {
+    //                    [self loadFeedDetailView];
+    //                }
+    //            }];
+    //        }
+    //    });
 }
 
 - (void)loadTryFeedDetailView:(NSString *)feedId
@@ -1728,7 +1740,7 @@
     if (social) {
         storiesCollection.isSocialView = YES;
         self.inFindingStoryMode = YES;
-  
+        
         if (feed == nil) {
             feed = user;
             self.isTryFeedView = YES;
@@ -1737,12 +1749,12 @@
         if (feed == nil) {
             feed = user;
             self.isTryFeedView = YES;
-
+            
         }
         storiesCollection.isSocialView = NO;
-//        [self setInFindingStoryMode:NO];
+        //        [self setInFindingStoryMode:NO];
     }
-            
+    
     self.tryFeedStoryId = contentId;
     storiesCollection.activeFeed = feed;
     storiesCollection.activeFolder = nil;
@@ -1750,8 +1762,8 @@
     if (!self.isPhone) {
         [self loadFeedDetailView];
     } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-//        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-//        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+        //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self showFeedsListAnimated:NO];
         [self hidePopoverAnimated:YES completion:^{
             if (self.feedsNavigationController.presentedViewController) {
@@ -1804,13 +1816,13 @@
 - (void)loadStarredDetailViewWithStory:(NSString *)contentId
                       showFindingStory:(BOOL)showHUD {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-//        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-//        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+        //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self showFeedsListAnimated:NO];
         [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
         [self hidePopoverAnimated:NO];
     }
-
+    
     self.inFindingStoryMode = YES;
     [storiesCollection reset];
     storiesCollection.isRiverView = YES;
@@ -1894,7 +1906,7 @@
         [alertController dismissViewControllerAnimated:YES completion:nil];
         NSLog(@"Logging out...");
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/logout?api=1",
-                          self.url];
+                               self.url];
         [self GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [MBProgressHUD hideHUDForView:self.view animated:YES];
             [self showLogin];
@@ -1924,7 +1936,7 @@
     self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     self.modalNavigationController.navigationBar.translucent = NO;
     [self.splitViewController presentViewController:modalNavigationController
-                                                          animated:YES completion:nil];
+                                           animated:YES completion:nil];
 }
 
 - (void)showAlert:(UIAlertController *)alert withViewController:(UIViewController *)vc {
@@ -1945,7 +1957,7 @@
 }
 
 - (void)refreshFeedCount:(id)feedId {
-//    [feedsViewController fadeFeed:feedId];
+    //    [feedsViewController fadeFeed:feedId];
     [feedsViewController redrawFeedCounts:feedId];
     [feedsViewController refreshHeaderCounts];
 }
@@ -1963,9 +1975,9 @@
     if (feedDetailView == feedDetailViewController) {
         feedDetailView.storiesCollection = storiesCollection;
     }
-
+    
     [feedDetailView.storiesCollection reset];
-
+    
     if ([folder isEqualToString:@"river_global"]) {
         feedDetailView.storiesCollection.isSocialRiverView = YES;
         feedDetailView.storiesCollection.isRiverView = YES;
@@ -2089,8 +2101,8 @@
 - (void)openDashboardRiverForStory:(NSString *)contentId
                   showFindingStory:(BOOL)showHUD {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-//        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-//        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+        //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self showFeedsListAnimated:NO];
         [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
         [self hidePopoverAnimated:NO];
@@ -2139,9 +2151,9 @@
             [newFeedStories addObject:story];
             continue;
         }
-
+        
         NSMutableDictionary *newStory = [story mutableCopy];
-
+        
         // If the story is visible, mark it as sticky so it doesn't go away on page loads.
         NSInteger score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
         if (score >= self.selectedIntelligence) {
@@ -2203,10 +2215,10 @@
 }
 
 - (void)loadStoryDetailView {
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || self.isCompactWidth) {
-//        [self showDetailViewController:detailViewController sender:self];
-//        feedsNavigationController.navigationItem.hidesBackButton = YES;
-//    }
+    //    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || self.isCompactWidth) {
+    //        [self showDetailViewController:detailViewController sender:self];
+    //        feedsNavigationController.navigationItem.hidesBackButton = YES;
+    //    }
     
     self.inFindingStoryMode = NO;
     self.findingStoryStartDate = nil;
@@ -2235,7 +2247,7 @@
             [self deferredChangePage:params];
         }
     }
-
+    
     [MBProgressHUD hideHUDForView:self.storyPagesViewController.view animated:YES];
 }
 
@@ -2280,7 +2292,7 @@
     NSString *storyBrowser = [preferences stringForKey:@"story_browser"];
     if ([storyBrowser isEqualToString:@"safari"]) {
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
-//        [[UIApplication sharedApplication] openURL:url];
+        //        [[UIApplication sharedApplication] openURL:url];
         return;
     } else if ([storyBrowser isEqualToString:@"chrome"] &&
                [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"googlechrome-x-callback://"]]) {
@@ -2299,8 +2311,8 @@
         return;
     } else if ([storyBrowser isEqualToString:@"opera_mini"] &&
                [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"opera-http://"]]) {
-
-                   
+        
+        
         NSString *operaURL;
         NSRange prefix = [[url absoluteString] rangeOfString: @"http"];
         if (NSNotFound != prefix.location) {
@@ -2308,7 +2320,7 @@
                         stringByReplacingCharactersInRange: prefix
                         withString:                         @"opera-http"];
         }
-                   
+        
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:operaURL] options:@{} completionHandler:nil];
         return;
     } else if ([storyBrowser isEqualToString:@"firefox"]) {
@@ -2321,8 +2333,8 @@
         
         if (NSNotFound != prefix.location) {
             edgeURL = [[url absoluteString]
-                        stringByReplacingCharactersInRange: prefix
-                        withString: @"microsoft-edge-http"];
+                       stringByReplacingCharactersInRange: prefix
+                       withString: @"microsoft-edge-http"];
         }
         
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:edgeURL] options:@{} completionHandler:nil];
@@ -2402,9 +2414,9 @@
 }
 
 - (void)deferredSafariCleanup {
-//    if (!self.isPhone) {
-//        self.navigationController.view.frame = CGRectMake(self.navigationController.view.frame.origin.x, self.navigationController.view.frame.origin.y, self.isPortrait ? 270.0 : 370.0, self.navigationController.view.frame.size.height);
-//    }
+    //    if (!self.isPhone) {
+    //        self.navigationController.view.frame = CGRectMake(self.navigationController.view.frame.origin.x, self.navigationController.view.frame.origin.y, self.isPortrait ? 270.0 : 370.0, self.navigationController.view.frame.size.height);
+    //    }
     
     [self.storyPagesViewController reorientPages];
 }
@@ -2437,7 +2449,7 @@
 
 - (void)closeOriginalStory {
     if (!self.isPhone) {
-//        [self.masterContainerViewController transitionFromOriginalView];
+        //        [self.masterContainerViewController transitionFromOriginalView];
     } else {
         if ([[feedsNavigationController viewControllers] containsObject:originalStoryViewController]) {
             [feedsNavigationController popToViewController:self.storyPagesViewController animated:YES];
@@ -2463,7 +2475,7 @@
 //
 //- (void)setActiveStory:(NSDictionary *)newActiveStory {
 //    NSLog(@"🪿 setActiveStory: %@ -> %@", activeStory[@"story_title"], newActiveStory[@"story_title"]);  // log
-//    
+//
 //    activeStory = newActiveStory;
 //}
 
@@ -2472,23 +2484,23 @@
 
 - (void)handleUserActivity:(NSUserActivity *)activity {
     if ([activity.activityType isEqualToString:@"com.newsblur.refresh"]) {
-//        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-//        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+        //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self showFeedsListAnimated:NO];
         [self.feedsViewController refreshFeedList];
     } else if ([activity.activityType isEqualToString:@"com.newsblur.gotoFolder"]) {
         NSString *folder = activity.userInfo[@"folder"];
         
-//        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-//        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+        //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self showFeedsListAnimated:NO];
         [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:folder];
     } else if ([activity.activityType isEqualToString:@"com.newsblur.gotoFeed"]) {
         NSString *folder = activity.userInfo[@"folder"];
         NSString *feedID = activity.userInfo[@"feedID"];
         
-//        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-//        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+        //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
+        //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
         [self showFeedsListAnimated:NO];
         
         if (folder != nil) {
@@ -2631,7 +2643,7 @@
 
 #pragma mark - Unread Counts
 
-- (void)populateDictUnreadCounts {    
+- (void)populateDictUnreadCounts {
     [self.database inDatabase:^(FMDatabase *db) {
         FMResultSet *cursor = [db executeQuery:@"SELECT * FROM unread_counts"];
         
@@ -2647,7 +2659,7 @@
 - (NSInteger)unreadCount {
     if (storiesCollection.isRiverView || storiesCollection.isSocialRiverView) {
         return [self unreadCountForFolder:nil];
-    } else { 
+    } else {
         return [self unreadCountForFeed:nil];
     }
 }
@@ -2666,17 +2678,17 @@
         NSDictionary *feed = [self.dictUnreadCounts objectForKey:key];
         total += [[feed objectForKey:@"ps"] intValue];
         total += [[feed objectForKey:@"nt"] intValue];
-//        NSLog(@"feed title and number is %@ %i", [feed objectForKey:@"feed_title"], ([[feed objectForKey:@"ps"] intValue] + [[feed objectForKey:@"nt"] intValue]));
-//        NSLog(@"total is %i", total);
+        //        NSLog(@"feed title and number is %@ %i", [feed objectForKey:@"feed_title"], ([[feed objectForKey:@"ps"] intValue] + [[feed objectForKey:@"nt"] intValue]));
+        //        NSLog(@"total is %i", total);
     }
-
+    
     return total;
 }
 
 - (NSInteger)unreadCountForFeed:(NSString *)feedId {
     NSInteger total = 0;
     NSDictionary *feed;
-
+    
     if (feedId) {
         NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
         if ([feedIdStr containsString:@"social:"]) {
@@ -2684,7 +2696,7 @@
         } else {
             feed = [self.dictUnreadCounts objectForKey:feedIdStr];
         }
-
+        
     } else {
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [storiesCollection.activeFeed objectForKey:@"id"]];
         feed = [self.dictUnreadCounts objectForKey:feedIdStr];
@@ -2731,7 +2743,7 @@
         } else {
             folder = [self.dictFolders objectForKey:folderName];
         }
-    
+        
         for (id feedId in folder) {
             total += [self unreadCountForFeed:feedId];
         }
@@ -2782,7 +2794,7 @@
             [counts addCounts:[self splitUnreadCountForFeed:feedId]];
         }
     } else if ([folderName isEqual:@"river_global"] ||
-            (!folderName && [storiesCollection.activeFolder isEqual:@"river_global"])) {
+               (!folderName && [storiesCollection.activeFolder isEqual:@"river_global"])) {
         // Nothing for global
     } else if ([folderName isEqual:@"everything"] ||
                [folderName isEqual:@"infrequent"] ||
@@ -2820,7 +2832,7 @@
     [self.folderCountCache setObject:[NSNumber numberWithInt:counts.ps] forKey:[NSString stringWithFormat:@"%@-ps", folderName]];
     [self.folderCountCache setObject:[NSNumber numberWithInt:counts.nt] forKey:[NSString stringWithFormat:@"%@-nt", folderName]];
     [self.folderCountCache setObject:[NSNumber numberWithInt:counts.ng] forKey:[NSString stringWithFormat:@"%@-ng", folderName]];
-        
+    
     return counts;
 }
 
@@ -2869,7 +2881,7 @@
         NSMutableArray *stories = [feedsStories objectForKey:feedIdStr];
         [stories addObject:[story objectForKey:@"story_hash"]];
         [storiesCollection markStoryRead:story feed:feed];
-    }   
+    }
     return feedsStories;
 }
 
@@ -2881,7 +2893,7 @@
         for (NSString *folderName in self.dictFoldersArray) {
             for (id feedId in [self.dictFolders objectForKey:folderName]) {
                 [self markFeedAllRead:feedId];
-            }        
+            }
         }
     } else {
         for (id feedId in [self.dictFolders objectForKey:storiesCollection.activeFolder]) {
@@ -3021,7 +3033,7 @@
 
 - (void)markStoriesRead:(NSDictionary *)stories inFeeds:(NSArray *)feeds cutoffTimestamp:(NSInteger)cutoff {
     // Must be offline and marking all as read, so load all stories.
-
+    
     if (stories && [[stories allKeys] count]) {
         [self queueReadStories:stories];
     }
@@ -3140,7 +3152,7 @@
     if (!newTag) {
         newTag = [@{@"ps": [NSNumber numberWithInt:0],
                     @"feed_title": tagName
-                    } mutableCopy];
+                  } mutableCopy];
     }
     NSInteger newCount = [[newTag objectForKey:@"ps"] integerValue] + direction;
     [newTag setObject:[NSNumber numberWithInteger:newCount] forKey:@"ps"];
@@ -3201,11 +3213,11 @@
         [savedStories addObject:savedTagId];
         [savedStoryDict setObject:savedTag forKey:savedTagId];
         [self.dictUnreadCounts setObject:@{@"ps": [userTag objectForKey:@"count"],
-                                                  @"nt": [NSNumber numberWithInt:0],
-                                                  @"ng": [NSNumber numberWithInt:0]}
-                                         forKey:savedTagId];
+                                           @"nt": [NSNumber numberWithInt:0],
+                                           @"ng": [NSNumber numberWithInt:0]}
+                                  forKey:savedTagId];
     }
-
+    
     self.dictSavedStoryTags = savedStoryDict;
     self.dictSavedStoryFeedCounts = savedStoryFeedCounts;
     
@@ -3308,7 +3320,11 @@
     [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:nil sourceView:sourceView sourceRect:sourceRect permittedArrowDirections:permittedArrowDirections];
 }
 
-- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections {
+//- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections {
+//    [self showPopoverWithViewController:viewController contentSize:contentSize sourceNavigationController:self.navigationControllerForPopover barButtonItem:barButtonItem sourceView:sourceView sourceRect:sourceRect permittedArrowDirections:permittedArrowDirections];
+//}
+
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize /*sourceNavigationController:(UINavigationController *)sourceNavigationController*/ barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections {
     if (viewController == self.navigationControllerForPopover.presentedViewController) {
         return; // nothing to do, already showing this controller
     }
@@ -3371,7 +3387,11 @@
 }
 
 - (UINavigationController *)navigationControllerForPopover {
+#if TARGET_OS_MACCATALYST
+    return self.storyPagesViewController.navigationController ?: self.feedsNavigationController;
+#else
     return self.feedsNavigationController;
+#endif
 }
 
 #pragma mark -
