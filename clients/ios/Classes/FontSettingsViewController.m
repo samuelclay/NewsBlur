@@ -580,7 +580,14 @@
         name = [name stringByAppendingString:@"-sel"];
     }
     
-    return [[UIImage imageNamed:name] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    UIImage *image = [[UIImage imageNamed:name] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomMac) {
+        image = [Utilities imageWithImage:image convertToSize:CGSizeMake(20.0, 20.0)];
+        image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    }
+    
+    return image;
 }
 
 @end

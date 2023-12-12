@@ -172,13 +172,13 @@
     [separatorBarButton setEnabled:NO];
     separatorBarButton.isAccessibilityElement = NO;
     
-    UIImage *settingsImage = [Utilities imageNamed:@"settings" sized:30];
+    UIImage *settingsImage = [Utilities imageNamed:@"settings" sized:self.isMac ? 24 : 30];
     fontSettingsButton = [UIBarButtonItem barItemWithImage:settingsImage
                                                     target:self
                                                     action:@selector(toggleFontSize:)];
     fontSettingsButton.accessibilityLabel = @"Story settings";
     
-    UIImage *markreadImage = [UIImage imageNamed:@"original_button.png"];
+    UIImage *markreadImage = [Utilities imageNamed:@"original_button.png" sized:self.isMac ? 24 : 30];
     originalStoryButton = [UIBarButtonItem barItemWithImage:markreadImage
                                                      target:self
                                                      action:@selector(showOriginalSubview:)];
@@ -1513,6 +1513,7 @@
     UINavigationController *fontSettingsNavigationController = appDelegate.fontSettingsNavigationController;
 
     [fontSettingsNavigationController popToRootViewControllerAnimated:NO];
+//    [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero sourceNavigationController:self.navigationController barButtonItem:self.fontSettingsButton sourceView:nil sourceRect:CGRectZero permittedArrowDirections:UIPopoverArrowDirectionAny];
     [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:self.fontSettingsButton];
 }
 

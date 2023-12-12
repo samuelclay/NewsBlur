@@ -1059,7 +1059,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"username"]];
 //    appDelegate.activeUserProfileName = @"You";
-    [appDelegate showUserProfileModal:self.navigationItem.titleView];
+#if TARGET_OS_MACCATALYST
+        [appDelegate showUserProfileModal:self.userBarButton];
+#else
+        [appDelegate showUserProfileModal:self.navigationItem.titleView];
+#endif
 }
 
 - (IBAction)tapAddSite:(id)sender {
@@ -1340,7 +1344,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     NBBarButtonItem *barButton = self.addBarButton.customView;
     [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_add.png"]] forState:UIControlStateNormal];
     
-    self.settingsBarButton.image = [Utilities imageNamed:@"settings" sized:30];
+    self.settingsBarButton.image = [Utilities imageNamed:@"settings" sized:self.isMac ? 24 : 30];
     
     [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
