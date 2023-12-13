@@ -3125,6 +3125,16 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [self reload];
 }
 
+//- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+//    NSLog(@"canPerformAction: %@ withSender: %@", NSStringFromSelector(action), sender);  // log
+//    
+//    if (action == @selector(deleteSite:)) {
+//        return NO;
+//    }
+//
+//    return YES;
+//}
+
 #pragma mark -
 #pragma mark Story Actions - save
 
@@ -3182,6 +3192,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     if (self.isLegacyTable) {
         [storyTitlesTable scrollRectToVisible:CGRectMake(0, CGRectGetHeight(self.searchBar.frame), 1, 1) animated:YES];
     }
+}
+
+- (IBAction)deleteSite:(id)sender {
+    //TODO
 }
 
 #pragma mark -

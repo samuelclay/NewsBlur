@@ -2864,6 +2864,76 @@ heightForHeaderInSection:(NSInteger)section {
     });
 }
 
+//- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+//    NSLog(@"canPerformAction: %@ withSender: %@", NSStringFromSelector(action, sender);  // log
+//    return YES;
+//}
+
+- (IBAction)showMuteSites:(id)sender {
+    [self.appDelegate showMuteSites];
+}
+
+- (IBAction)showOrganizeSites:(id)sender {
+    [self.appDelegate showOrganizeSites];
+}
+
+- (IBAction)showWidgetSites:(id)sender {
+    [self.appDelegate showWidgetSites];
+}
+
+- (IBAction)showNotifications:(id)sender {
+    [self.appDelegate openNotificationsWithFeed:nil];
+}
+
+- (IBAction)showFindFriends:(id)sender {
+    [self.appDelegate showFindFriends];
+}
+
+- (IBAction)showPremium:(id)sender {
+    [self.appDelegate showPremiumDialog];
+}
+
+- (IBAction)showSupportForum:(id)sender {
+    NSURL *url = [NSURL URLWithString:@"https://forum.newsblur.com"];
+    [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+}
+
+- (IBAction)showLogout:(id)sender {
+    [self.appDelegate confirmLogout];
+}
+
+- (IBAction)chooseColumns:(id)sender {
+    UICommand *command = sender;
+    NSString *string = command.propertyList;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:string forKey:@"split_behavior"];
+    
+    [UIView animateWithDuration:0.5 animations:^{
+        [self.appDelegate updateSplitBehavior:YES];
+    }];
+    
+    [self.appDelegate.detailViewController updateLayoutWithReload:NO fetchFeeds:YES];
+}
+
+- (IBAction)chooseFontSize:(id)sender {
+    UICommand *command = sender;
+    NSString *string = command.propertyList;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:string forKey:@"feed_list_font_size"];
+    
+    [self.appDelegate resizeFontSize];
+}
+
+- (IBAction)chooseSpacing:(id)sender {
+    UICommand *command = sender;
+    NSString *string = command.propertyList;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:string forKey:@"feed_list_spacing"];
+    
+    [self reloadFeedTitlesTable];
+    [self.appDelegate.feedDetailViewController reloadWithSizing];
+}
+
 - (IBAction)chooseTheme:(id)sender {
     UICommand *command = sender;
     NSString *string = command.propertyList;

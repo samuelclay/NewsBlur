@@ -99,9 +99,22 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (void)didSelectSectionHeaderWithTag:(NSInteger)tag;
 - (void)selectNextFolderOrFeed;
+
 - (IBAction)reloadFeeds:(id)sender;
 - (IBAction)selectIntelligence;
+- (IBAction)showMuteSites:(id)sender;
+- (IBAction)showOrganizeSites:(id)sender;
+- (IBAction)showWidgetSites:(id)sender;
+- (IBAction)showNotifications:(id)sender;
+- (IBAction)showFindFriends:(id)sender;
+- (IBAction)showPremium:(id)sender;
+- (IBAction)showSupportForum:(id)sender;
+- (IBAction)showLogout:(id)sender;
+- (IBAction)chooseColumns:(id)sender;
+- (IBAction)chooseFontSize:(id)sender;
+- (IBAction)chooseSpacing:(id)sender;
 - (IBAction)chooseTheme:(id)sender;
+
 - (void)markFeedRead:(NSString *)feedId cutoffDays:(NSInteger)days;
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days;
 - (void)markEverythingReadWithDays:(NSInteger)days;
