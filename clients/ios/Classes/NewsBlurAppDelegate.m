@@ -3320,11 +3320,7 @@
     [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:nil sourceView:sourceView sourceRect:sourceRect permittedArrowDirections:permittedArrowDirections];
 }
 
-//- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections {
-//    [self showPopoverWithViewController:viewController contentSize:contentSize sourceNavigationController:self.navigationControllerForPopover barButtonItem:barButtonItem sourceView:sourceView sourceRect:sourceRect permittedArrowDirections:permittedArrowDirections];
-//}
-
-- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize /*sourceNavigationController:(UINavigationController *)sourceNavigationController*/ barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections {
+- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections {
     if (viewController == self.navigationControllerForPopover.presentedViewController) {
         return; // nothing to do, already showing this controller
     }

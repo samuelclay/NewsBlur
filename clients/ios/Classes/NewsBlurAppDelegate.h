@@ -445,7 +445,6 @@ SFSafariViewControllerDelegate>  {
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem;
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect;
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections;
-//- (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sourceNavigationController:(UINavigationController *)sourceNavigationController barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections;
 
 - (void)hidePopoverAnimated:(BOOL)animated completion:(void (^)(void))completion;
 - (BOOL)hidePopoverAnimated:(BOOL)animated;
