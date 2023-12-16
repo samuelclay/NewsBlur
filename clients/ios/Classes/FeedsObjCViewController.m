@@ -344,6 +344,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (void)fadeCellWithIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section > [self numberOfSectionsInTableView:self.feedTitlesTable]) {
+        return;
+    }
+    
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
     
