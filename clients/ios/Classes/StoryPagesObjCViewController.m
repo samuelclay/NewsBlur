@@ -27,6 +27,7 @@
 
 @property (nonatomic) CGFloat statusBarHeight;
 @property (nonatomic) BOOL wasNavigationBarHidden;
+@property (nonatomic) BOOL doneInitialRefresh;
 @property (nonatomic, strong) NSTimer *autoscrollTimer;
 @property (nonatomic, strong) NSTimer *autoscrollViewTimer;
 @property (nonatomic, strong) NSString *restoringStoryId;
@@ -372,8 +373,6 @@
     if (frame.size.width != floor(frame.size.width)) {
         self.scrollView.frame = CGRectMake(frame.origin.x, frame.origin.y, floor(frame.size.width), floor(frame.size.height));
     }
-    
-    [self reorientPages];
     
     [super viewDidLayoutSubviews];
 }
@@ -1101,6 +1100,14 @@
     }
     
     [self becomeFirstResponder];
+    
+    if (!self.isPhoneOrCompact && !self.doneInitialRefresh) {
+        self.doneInitialRefresh = YES;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC),
+                       dispatch_get_main_queue(), ^{
+            [self refreshPages];
+        });
+    }
 }
 
 - (void)changeToNextPage:(id)sender {
@@ -1179,7 +1186,7 @@
         self.scrollingToPage = -1;
         NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:currentPage.pageIndex];
         
-        if (storyIndex < 0) {
+        if (storyIndex < 0 || storyIndex >= UINT_MAX) {
             NSLog(@"invalid story index: %@ for page index: %@", @(storyIndex), @(currentPage.pageIndex));  // log
         }
         

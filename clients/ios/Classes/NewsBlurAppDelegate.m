@@ -293,6 +293,7 @@
         
         [self.feedDetailViewController reloadWithSizing];
         [self.storyPagesViewController refreshHeaders];
+        [self.storyPagesViewController reorientPages];
     }
 }
 
@@ -1031,8 +1032,10 @@
              title:(NSString *)title
          feedTitle:(NSString *)feedTitle
             images:(NSArray *)images {
+    if (url == nil) {
+        return;
+    }
     
-    // iOS 8+
     if (text) {
         NSString *maybeFeedTitle = feedTitle ? [NSString stringWithFormat:@" via %@", feedTitle] : @"";
         text = [NSString stringWithFormat:@"<html><body><br><br><hr style=\"border: none; overflow: hidden; height: 1px;width: 100%%;background-color: #C0C0C0;\"><br><a href=\"%@\">%@</a>%@<br>%@</body></html>", [url absoluteString], title, maybeFeedTitle, text];
@@ -2010,7 +2013,11 @@
             NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
             NSArray *folderFeeds = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
             for (int l=0; l < [folderFeeds count]; l++) {
-                [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
+                id feed = [originalFolder safeObjectAtIndex:[[folderFeeds objectAtIndex:l] intValue]];
+                
+                if (feed != nil) {
+                    [feeds addObject:feed];
+                }
             }
         }
         [self.folderCountCache removeAllObjects];
@@ -2048,7 +2055,11 @@
         NSArray *originalFolder = [self.dictFolders objectForKey:folderName];
         NSArray *activeFeedLocations = [self.feedsViewController.activeFeedLocations objectForKey:folderName];
         for (int l=0; l < [activeFeedLocations count]; l++) {
-            [feeds addObject:[originalFolder objectAtIndex:[[activeFeedLocations objectAtIndex:l] intValue]]];
+            id feed = [originalFolder safeObjectAtIndex:[[activeFeedLocations safeObjectAtIndex:l] intValue]];
+            
+            if (feed != nil) {
+                [feeds addObject:feed];
+            }
         }
         
     }
