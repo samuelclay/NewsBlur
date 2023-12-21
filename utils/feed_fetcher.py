@@ -152,6 +152,14 @@ class FetchFeed:
                 )
                 return FEED_ERRHTTP, None
             self.fpf = feedparser.parse(facebook_feed)
+        elif re.match(r'(.*?)reddit.com/\w+/?$', qurl(address, remove=['_'])):
+            reddit_feed = self.fetch_reddit()
+            if not reddit_feed:
+                logging.debug(
+                    '   ***> [%-30s] ~FRReddit fetch failed: %s' % (self.feed.log_title[:30], address)
+                )
+                return FEED_ERRHTTP, None
+            self.fpf = feedparser.parse(reddit_feed)
 
         if not self.fpf and 'json' in address:
             try:
@@ -303,7 +311,11 @@ class FetchFeed:
     def fetch_facebook(self):
         facebook_fetcher = FacebookFetcher(self.feed, self.options)
         return facebook_fetcher.fetch()
-
+    
+    def fetch_reddit(self):
+        reddit_fetcher = RedditFetcher(self.feed, self.options)
+        return reddit_fetcher.fetch()
+    
     def fetch_json_feed(self, address, headers):
         json_fetcher = JSONFetcher(self.feed, self.options)
         return json_fetcher.fetch(address, headers)

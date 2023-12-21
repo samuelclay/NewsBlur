@@ -8,7 +8,7 @@ services:
     # build: 
     #   context: /srv/newsblur
     #   dockerfile: docker/newsblur_base_image.Dockerfile
-    user: "${CURRENT_UID}:${CURRENT_GID}"
+    # user: "${CURRENT_UID}:${CURRENT_GID}"
     environment: 
       - DOCKERBUILD=True
       - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD?Use the `make` command instead of docker CLI}

@@ -382,9 +382,9 @@ resource "digitalocean_droplet" "db-redis-sessions" {
 }
 
 resource "digitalocean_droplet" "db-redis-story" {
-  count  = 1
+  count  = 2
   image  = var.droplet_os
-  name   = "db-redis-story${count.index + 2}"
+  name   = "db-redis-story${count.index + 1}"
   region = var.droplet_region
   # size   = contains([1], count.index) ? "m-8vcpu-64gb" : var.redis_story_droplet_size
   size     = var.redis_story_droplet_size

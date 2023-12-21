@@ -34,7 +34,7 @@
     dest: /srv/newsblur/docker/redis/redis_replica.conf
   notify: restart redis
   register: updated_config
-  when: "'db-redis-story1' in inventory_hostname"
+  when: "'db-redis-story2' in inventory_hostname"
 
 - name: Create Redis docker volume with correct permissions
   file:
