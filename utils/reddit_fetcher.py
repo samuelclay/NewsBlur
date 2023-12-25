@@ -25,11 +25,19 @@ class RedditFetcher:
         return self._api
     
     def fetch(self):
-        subreddit_name = self.extract_subreddit_name()
-        if not subreddit_name: 
-            return
-
-        subreddit = self.fetch_subreddit(subreddit_name)
+        # Common subreddits handled differently
+        # Home page
+        if self.feed.feed_address == "https://reddit.com/.rss":
+            subreddit = self.fetch_subreddit("popular")
+        elif self.feed.feed_address == "https://reddit.com/r/all.rss":
+            subreddit = self.fetch_subreddit("all")
+        elif self.feed.feed_address == "https://reddit.com/r/popular.rss":
+            subreddit = self.fetch_subreddit("popular")
+        else:
+            subreddit_name = self.extract_subreddit_name()
+            if not subreddit_name: 
+                return
+            subreddit = self.fetch_subreddit(subreddit_name)
 
         data = {}
         data['title'] = subreddit.title
@@ -91,7 +99,8 @@ class RedditFetcher:
         story_data = {}
         story_data['title'] = submission.title
         story_data['link'] = submission.url
-        story_data['description'] = submission.selftext
+        story_data['description'] = self.process_story_text(submission)
+        story_data['author_name'] = submission.author.name
         story_data['categories'] = []
         story_data['unique_id'] = "reddit_post:%s" % submission.id
         story_data['pubdate'] = datetime.datetime.fromtimestamp(submission.created_utc)
@@ -101,12 +110,40 @@ class RedditFetcher:
         story_data = {}
         story_data['title'] = submission.title
         story_data['link'] = submission.url
-        story_data['description'] = submission.selftext
+        story_data['description'] = self.process_story_text(submission)
+        story_data["author_name"] = submission.author.name
         story_data['categories'] = []
         story_data['unique_id'] = "reddit_post:%s" % submission.id
         story_data['pubdate'] = datetime.datetime.fromtimestamp(submission.created_utc)
         return story_data
 
+    def process_story_text(self, submission):
+        text = submission.selftext
+
+        # Wrap blocks with four spaces in <pre> tags
+        text = re.sub(r'(^\s{4})(.*\n)', r'<pre>\2</pre>', text, flags=re.M)
+        # Wrap links in <a> tags
+        text = re.sub(r'(https?://[^\s]+)', r'<a href="\1">\1</a>', text, flags=re.M)
+        # Wrap image links in <img> tags
+        text = re.sub(r'(https?://[^\s]+\.(jpg|jpeg|gif|png))', r'<img src="\1" />', text, flags=re.M)
+        # Wrap bold text in <b> tags
+        text = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', text)
+        # Wrap italics text in <i> tags
+        text = re.sub(r'\*(.*?)\*', r'<i>\1</i>', text)
+        # Replace newlines with <br> tags
+        
+        text = text.replace('\r\n', '\n')
+        text = text.replace('\r', '\n')
+        text = linebreaks(text)
+
+        # Add author and [link] [comments] footer
+        permalink = submission.permalink
+        if submission.is_self:
+            permalink = submission.url
+        text = f'{text}\n\n<p>Posted by <a href="https://reddit.com/u/{submission.author.name}">{submission.author.name}</a><br><a href="{permalink}">[link]</a> <a href="{permalink}">[comments]</a></p>'
+        
+        return text
+    
     def favicon_url(self, subreddit=None):
         if not subreddit:
             subreddit_name = self.extract_subreddit_name()

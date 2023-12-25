@@ -52,6 +52,7 @@ from utils import json_functions as json
 from celery.exceptions import SoftTimeLimitExceeded
 from utils.twitter_fetcher import TwitterFetcher
 from utils.facebook_fetcher import FacebookFetcher
+from utils.reddit_fetcher import RedditFetcher
 from utils.json_fetcher import JSONFetcher
 
 # from utils.feed_functions import mail_feed_error_to_admin
@@ -152,7 +153,7 @@ class FetchFeed:
                 )
                 return FEED_ERRHTTP, None
             self.fpf = feedparser.parse(facebook_feed)
-        elif re.match(r'(.*?)reddit.com/\w+/?$', qurl(address, remove=['_'])):
+        elif re.match(r'(.*?)reddit.com/(.*?)$', qurl(address, remove=['_'])):
             reddit_feed = self.fetch_reddit()
             if not reddit_feed:
                 logging.debug(
