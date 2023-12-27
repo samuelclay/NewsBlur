@@ -1122,8 +1122,13 @@ class Feed(models.Model):
         )
 
         self.similar_feeds.clear()
-        self.similar_feeds.add(*top_recommended_feeds)
-        return self.similiar_feeds.all()
+        for feed_id in top_recommended_feeds:
+            try:
+                self.similar_feeds.add(feed_id)
+            except IntegrityError:
+                logging.debug(f" ---> ~FRIntegrity error adding similar feed: {feed_id}")
+                pass
+        return self.similar_feeds.all()
 
     def _split_favicon_color(self, color=None):
         if not color:

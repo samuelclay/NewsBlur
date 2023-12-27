@@ -37,7 +37,8 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
         var self = this;
 
         var feed = this.model.get_feed(this.options.feed_id);
-        this.discover_feeds_model.feed_ids = feed.get("discover_feeds");;
+        this.discover_feeds_model.feed_ids = feed.get("similar_feeds");;
+        this.discover_feeds_model.similar_to_feed_id = feed.get("id");;
 
         NEWSBLUR.ReaderPopover.prototype.render.call(this);
 
@@ -53,6 +54,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                 }
             });
         } catch (e) {
+            console.log(["Error fetching discover feeds", e]);
             this.onDataLoadError();
         }
     },

@@ -650,8 +650,10 @@ def story_changes(request):
 
 @ajax_login_required
 @json.json_view
-def discover_feeds(request):
+def discover_feeds(request, feed_id=None):
     feed_ids = request.GET.getlist("feed_id") or request.GET.getlist("feed_id[]")
+    if not feed_ids:
+        feed_ids = Feed.get_by_id(feed_id).count_similar_feeds().values_list("pk", flat=True)
     feeds = Feed.objects.filter(pk__in=feed_ids)
     discover_feeds = defaultdict(dict)
     for feed in feeds:
