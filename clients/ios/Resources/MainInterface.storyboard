@@ -228,6 +228,7 @@
                     <connections>
                         <outlet property="addBarButton" destination="Wu8-MQ-nN6" id="mk5-Nm-bYF"/>
                         <outlet property="feedTitlesTable" destination="Gil-Jz-die" id="Jby-a1-If4"/>
+                        <outlet property="feedTitlesTopConstraint" destination="YMn-QK-fCb" id="Bjn-sa-Qdx"/>
                         <outlet property="feedViewToolbar" destination="pWr-U1-GMQ" id="FFI-k8-5iO"/>
                         <outlet property="innerView" destination="hRx-bd-6Da" id="vd8-hw-hZT"/>
                         <outlet property="intelligenceControl" destination="ADC-ot-Aao" id="8EU-ja-Dan"/>

@@ -56,6 +56,7 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UIView *innerView;
 @property (nonatomic) IBOutlet UITableView *feedTitlesTable;
+@property (nonatomic) IBOutlet NSLayoutConstraint *feedTitlesTopConstraint;
 @property (nonatomic) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic) IBOutlet UIBarButtonItem * homeButton;
@@ -63,8 +64,10 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 @property (nonatomic) IBOutlet UIBarButtonItem * settingsBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * activitiesButton;
 #if TARGET_OS_MACCATALYST
+@property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * userBarButton;
 #endif
+@property (nonatomic) IBOutlet UIView *userInfoView;
 @property (nonatomic) IBOutlet UIButton *userAvatarButton;
 @property (nonatomic) IBOutlet UILabel *neutralCount;
 @property (nonatomic) IBOutlet UILabel *positiveCount;
