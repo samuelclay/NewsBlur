@@ -3297,7 +3297,7 @@
         UITableViewCell *cell = (UITableViewCell *)sender;
         
         [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:cell sourceRect:cell.bounds];
-    } else if ([sender class] == [UIBarButtonItem class]) {
+    } else if ([sender class] == [UIBarButtonItem class] || [sender class] == [UIButton class]) {
         [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:sender];
     } else if ([sender class] == [UIView class]) {
         [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:sender sourceRect:[sender frame]];

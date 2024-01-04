@@ -1060,7 +1060,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"username"]];
 //    appDelegate.activeUserProfileName = @"You";
 #if TARGET_OS_MACCATALYST
-        [appDelegate showUserProfileModal:self.userBarButton];
+        [appDelegate showUserProfileModal:self.userAvatarButton];
 #else
         [appDelegate showUserProfileModal:self.navigationItem.titleView];
 #endif
@@ -2949,7 +2949,14 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation {
 #if TARGET_OS_MACCATALYST
-    int yOffset = -5;
+    int xOffset = 60;
+    int yOffset = 10;
+    
+    [self.userInfoView removeFromSuperview];
+    
+    self.userInfoView = [[UIView alloc]
+                         initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 50)];
+    self.userInfoView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE0E0E0, 0xFFF8CA, 0x4F4F4F, 0x292B2C);
 #else
     if (!orientation) {
         orientation = self.view.window.windowScene.interfaceOrientation;
@@ -2961,26 +2968,26 @@ heightForHeaderInSection:(NSInteger)section {
         isShort = YES;
     }
     
+    int xOffset = 50;
     int yOffset = isShort ? 0 : 6;
+    
+    self.userInfoView = [[UIView alloc]
+                         initWithFrame:CGRectMake(0, 0,
+                                                  self.navigationController.navigationBar.frame.size.width,
+                                                  self.navigationController.navigationBar.frame.size.height)];
 #endif
-    UIView *userInfoView = [[UIView alloc]
-                            initWithFrame:CGRectMake(0, 0,
-                                                     self.navigationController.navigationBar.frame.size.width,
-                                                     self.navigationController.navigationBar.frame.size.height)];
+    
     // adding user avatar to left
     NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@",
                                             [appDelegate.dictSocialProfile
                                              objectForKey:@"large_photo_url"]]];
     userAvatarButton = [UIButton systemButtonWithImage:[UIImage imageNamed:@"user"]
-                                                target:self action:@selector((showUserProfile))];
+                                                target:self action:@selector(showUserProfile)];
     userAvatarButton.pointerInteractionEnabled = YES;
     userAvatarButton.accessibilityLabel = @"User info";
 #if TARGET_OS_MACCATALYST
     userAvatarButton.accessibilityHint = @"Double-click for information about your account.";
     CGRect frame = userAvatarButton.frame;
-    frame.origin.y = -8;
-    frame.size.width = 38;
-    frame.size.height = 38;
     userAvatarButton.frame = frame;
 #else
     userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
@@ -3000,55 +3007,52 @@ heightForHeaderInSection:(NSInteger)section {
         image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         UIButton *button = strongSelf.userAvatarButton;
         [button setImage:image forState:UIControlStateNormal];
-#if TARGET_OS_MACCATALYST
-        strongSelf.appDelegate.feedDetailViewController.navigationItem.leftBarButtonItems = @[[[UIBarButtonItem alloc] initWithCustomView:[UIView new]]];
-#endif
     } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nonnull response, NSError * _Nonnull error) {
         NSLog(@"Could not fetch user avatar: %@", error);
     }];
     
-    [userInfoView addSubview:userAvatarButton];
+    [self.userInfoView addSubview:userAvatarButton];
     
-    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(50, yOffset, userInfoView.frame.size.width, 16)];
+    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(xOffset, yOffset, self.userInfoView.frame.size.width, 16)];
     userLabel.text = appDelegate.activeUsername;
     userLabel.font = userLabelFont;
     userLabel.textColor = UIColorFromRGB(0x404040);
     userLabel.backgroundColor = [UIColor clearColor];
     userLabel.accessibilityLabel = [NSString stringWithFormat:@"Logged in as %@", appDelegate.activeUsername];
     [userLabel sizeToFit];
-    [userInfoView addSubview:userLabel];
+    [self.userInfoView addSubview:userLabel];
     
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
     yellowIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_unread"]];
-    [userInfoView addSubview:yellowIcon];
+    [self.userInfoView addSubview:yellowIcon];
     yellowIcon.hidden = YES;
     
     neutralCount = [[UILabel alloc] init];
     neutralCount.font = [UIFont fontWithName:@"WhitneySSm-Book" size:12];
     neutralCount.textColor = UIColorFromRGB(0x707070);
     neutralCount.backgroundColor = [UIColor clearColor];
-    [userInfoView addSubview:neutralCount];
+    [self.userInfoView addSubview:neutralCount];
     
     greenIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_focus"]];
-    [userInfoView addSubview:greenIcon];
+    [self.userInfoView addSubview:greenIcon];
     greenIcon.hidden = YES;
     
     positiveCount = [[UILabel alloc] init];
     positiveCount.font = [UIFont fontWithName:@"WhitneySSm-Book" size:12];
     positiveCount.textColor = UIColorFromRGB(0x707070);
     positiveCount.backgroundColor = [UIColor clearColor];
-    [userInfoView addSubview:positiveCount];
+    [self.userInfoView addSubview:positiveCount];
     
-    [userInfoView sizeToFit];
+    [self.userInfoView sizeToFit];
     
-//    userInfoView.backgroundColor = UIColor.blueColor;
+//    self.userInfoView.backgroundColor = UIColor.blueColor;
     
 #if TARGET_OS_MACCATALYST
-    self.userBarButton = [[UIBarButtonItem alloc] initWithCustomView:userInfoView];
-//        userInfoView.backgroundColor = UIColor.redColor;
-    self.navigationItem.leftBarButtonItem = self.userBarButton;
+    [self.innerView addSubview:self.userInfoView];
+    
+    self.feedTitlesTopConstraint.constant = 50;
 #else
-    self.navigationItem.titleView = userInfoView;
+    self.navigationItem.titleView = self.userInfoView;
 #endif
 }
 
@@ -3057,6 +3061,12 @@ heightForHeaderInSection:(NSInteger)section {
         userAvatarButton.hidden = YES;
         return;
     }
+    
+#if TARGET_OS_MACCATALYST
+    int yOffset = 2;
+#else
+    int yOffset = 0;
+#endif
     
     userAvatarButton.hidden = NO;
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
@@ -3074,13 +3084,13 @@ heightForHeaderInSection:(NSInteger)section {
     yellowIcon.frame = CGRectMake(CGRectGetMinX(userLabel.frame), CGRectGetMaxY(userLabel.frame) + 4, 8, 8);
 
     neutralCount.frame = CGRectMake(CGRectGetMaxX(yellowIcon.frame) + 2,
-                                    CGRectGetMinY(yellowIcon.frame) - 2, 100, 16);
+                                    CGRectGetMinY(yellowIcon.frame) - 2 - yOffset, 100, 16);
     [neutralCount sizeToFit];
     
     greenIcon.frame = CGRectMake(CGRectGetMaxX(neutralCount.frame) + 8,
                                  CGRectGetMinY(yellowIcon.frame), 8, 8);
     positiveCount.frame = CGRectMake(CGRectGetMaxX(greenIcon.frame) + 2,
-                                     CGRectGetMinY(greenIcon.frame) - 2, 100, 16);
+                                     CGRectGetMinY(greenIcon.frame) - 2 - yOffset, 100, 16);
     [positiveCount sizeToFit];
     
     yellowIcon.hidden = NO;
