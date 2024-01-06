@@ -1,6 +1,7 @@
-import sys
 import os
-import yaml 
+import sys
+
+import yaml
 
 # ===========================
 # = Directory Declaractions =
@@ -25,20 +26,22 @@ if '/utils' not in ' '.join(sys.path):
 if '/vendor' not in ' '.join(sys.path):
     sys.path.append(VENDOR_ROOT)
 
-import logging
 import datetime
+import logging
+import re
+
+import boto3
+import django.http
+import paypalrestsdk
 import redis
 import sentry_sdk
-import paypalrestsdk
-from sentry_sdk.integrations.django import DjangoIntegration
-from sentry_sdk.integrations.redis import RedisIntegration
-from sentry_sdk.integrations.celery import CeleryIntegration
-import django.http
-import re
 from mongoengine import connect
 from pymongo import monitoring
+from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
+
 from utils.mongo_command_monitor import MongoCommandLogger
-import boto3
 
 # ===================
 # = Server Settings =
@@ -811,6 +814,12 @@ REDIS_PUBSUB_POOL          = redis.ConnectionPool(host=REDIS_PUBSUB['host'], por
 # celeryapp.autodiscover_tasks(INSTALLED_APPS)
 accept_content = ['pickle', 'json', 'msgpack', 'yaml']
 
+DISCOVER_DATA_FOLDER = os.getenv("DISCOVER_DATA_FOLDER", "/srv/newsblur/docker/volumes/discover")
+# Create the folder if it doesn't exist
+os.makedirs(DISCOVER_DATA_FOLDER, exist_ok=True)
+# Set it as an env var (in case it wasn't set before) so python-surprise sees it
+os.environ["DISCOVER_DATA_FOLDER"] = DISCOVER_DATA_FOLDER
+
 # ==========
 # = Assets =
 # ==========
@@ -909,6 +918,7 @@ django.http.request.host_validation_re = re.compile(r"^([a-z0-9.-_\-]+|\[[a-f0-9
 
 
 from django.contrib import auth
+
 
 def monkey_patched_get_user(request):
     """

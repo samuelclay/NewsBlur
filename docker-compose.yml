@@ -8,9 +8,10 @@ services:
     # build: 
     #   context: /srv/newsblur
     #   dockerfile: docker/newsblur_base_image.Dockerfile
-    user: "${CURRENT_UID}:${CURRENT_GID}"
+    # user: "${CURRENT_UID}:${CURRENT_GID}"
     environment: 
       - DOCKERBUILD=True
+      - DISCOVER_DATA_FOLDER=/srv/newsblur/docker/volumes/discover
       - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD?Use the `make` command instead of docker CLI}
     stdin_open: true
     tty: true
@@ -110,6 +111,19 @@ services:
       - ./docker/redis/redis_server.conf:/usr/local/etc/redis/redis_replica.conf
       - ./docker/volumes/redis:/data
     command: redis-server /etc/redis/redis.conf --port 6579
+  
+  # Prod Redis
+  # db_redis:
+  #   container_name: db_redis
+  #   image: redis:latest
+  #   ports:
+  #     - 6579:6579
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./docker/redis/redis.conf:/etc/redis/redis.conf
+  #     - ./docker/redis/redis_server.conf:/usr/local/etc/redis/redis_replica.conf
+  #     - ./docker/volumes/redis_prod:/data
+  #   command: redis-server /etc/redis/redis.conf --port 6579
 
   db_elasticsearch:
     container_name: db_elasticsearch
@@ -154,6 +168,7 @@ services:
       - ${PWD}:/srv/newsblur
     environment: 
       - DOCKERBUILD=True
+      - DISCOVER_DATA_FOLDER=/srv/newsblur/docker/volumes/discover
 
   haproxy:
     container_name: haproxy
