@@ -63,7 +63,10 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
 
         this.$el.html($.make('div', [
             $.make('div', { className: 'NB-popover-section' }, [
-                $.make('div', { className: 'NB-popover-section-title' }, 'Discover sites'),
+                $.make('div', { className: 'NB-popover-section-title' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    'Discover sites'
+                ]),
                 $.make('div', { className: 'NB-discover-loading' }, [
                     $.make('div', { className: 'NB-loading NB-active' })
                 ])
@@ -90,7 +93,10 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
 
         this.$el.html($.make('div', [
             $.make('div', { className: 'NB-popover-section' }, [
-                $.make('div', { className: 'NB-popover-section-title' }, 'Discover sites'),
+                $.make('div', { className: 'NB-popover-section-title' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    'Discover sites'
+                ]),
                 $.make('div', { className: 'NB-discover-feed-badges NB-story-pane-west' }, _.flatten(this.discover_feeds_model.map(function (discover_feed) {
                     var $story_titles = $.make('div', { className: 'NB-story-titles' });
                     var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
