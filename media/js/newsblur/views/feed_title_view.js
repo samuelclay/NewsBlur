@@ -118,6 +118,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
               </div>\
               <% if (show_discover) { %>\
                 <div class="NB-feedbar-discover-container">\
+                    <div class="NB-feedbar-discover-icon"></div>\
                     <% _.map(feed.get("similar_feeds"), (feed_id) => { %>\
                         <img class="feed_favicon" src="<%= $.favicon(feed_id) %>">\
                     <% }); %>\

@@ -1704,6 +1704,14 @@ img.feed_favicon {
     background-size: 9px;
     margin: 0;
 }
+.NB-feedbar .NB-feedbar-discover-container .NB-feedbar-discover-icon {
+    float: left;
+    width: 16px;
+    height: 14px;
+    background: transparent url('/media/embed/icons/nouns/discover.svg') no-repeat 1px 1px;
+    background-size: 12px;
+    margin: 0;
+}
 
 .NB-discover-popover .NB-discover-loading {
     margin: 24px 0;
@@ -1715,7 +1723,14 @@ img.feed_favicon {
     background-size: 32px;
     margin: 24px auto;
 }
-
+.NB-discover-popover .NB-popover-section-title .NB-icon {
+    float: left;
+    width: 24px;
+    height: 24px;
+    background: transparent url(/media/embed/icons/nouns/discover.svg) no-repeat 0 0;
+    background-size: 24px;
+    margin: -1px 8px 0 0;
+}
 .NB-discover-feed-badges .NB-story-titles {
     margin: 0 24px;
 }
@@ -1728,6 +1743,8 @@ img.feed_favicon {
 }
 .NB-discover-feed-badges .NB-feed-badge {
     padding-top: 30px;
+    padding-left: 0;
+    padding-right: 0;
     border-bottom: none;
 }
 
