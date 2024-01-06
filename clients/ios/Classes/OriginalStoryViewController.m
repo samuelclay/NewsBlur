@@ -17,7 +17,6 @@
 
 @implementation OriginalStoryViewController
 
-@synthesize appDelegate;
 @synthesize webView;
 //@synthesize swiper;
 @synthesize progressView;
@@ -25,8 +24,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-
     self.view.layer.masksToBounds = NO;
     self.view.layer.shadowRadius = 5;
     self.view.layer.shadowOpacity = 0.5;

@@ -10,11 +10,8 @@
 #import "NewsBlurAppDelegate.h"
 
 @interface FirstTimeUserAddSitesViewController  : BaseViewController
-<UITableViewDataSource, UITableViewDelegate> {
-    NewsBlurAppDelegate *appDelegate;
-}
+<UITableViewDataSource, UITableViewDelegate>
 
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UIButton *googleReaderButton;
 @property (nonatomic) IBOutlet UIView *googleReaderButtonWrapper;
 @property (nonatomic) IBOutlet UIBarButtonItem *nextButton;

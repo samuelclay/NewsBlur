@@ -14,7 +14,6 @@
 #import "MCSwipeTableViewCell.h"
 #import "FeedDetailTableCell.h"
 
-@class NewsBlurAppDelegate;
 @class MCSwipeTableViewCell;
 
 @interface FeedDetailObjCViewController : BaseViewController
@@ -23,8 +22,6 @@
  MCSwipeTableViewCellDelegate,
  UIGestureRecognizerDelegate, UISearchBarDelegate,
  UITableViewDragDelegate> {
-    NewsBlurAppDelegate *appDelegate;
-    
     BOOL pageFetching;
     BOOL pageFinished;
     BOOL finishedAnimatingIn;
@@ -39,7 +36,6 @@
     NBNotifier *notifier;
 }
 
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, strong) IBOutlet UITableView *storyTitlesTable;
 @property (nonatomic) IBOutlet UIBarButtonItem * feedMarkReadButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * feedsBarButton;

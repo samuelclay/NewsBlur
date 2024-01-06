@@ -267,7 +267,7 @@
                                         <command title="Reload Sites" input="r" id="9ee-Z4-HxV">
                                             <keyModifierFlags key="modifierFlags" command="YES"/>
                                             <connections>
-                                                <action selector="reloadFeeds:" destination="J28-e1-gcC" id="Ry7-2F-Wl3"/>
+                                                <action selector="reloadFeeds:" destination="J28-e1-gcC" id="Mn6-7w-6qY"/>
                                             </connections>
                                         </command>
                                     </children>

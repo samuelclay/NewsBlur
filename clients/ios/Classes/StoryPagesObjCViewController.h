@@ -16,7 +16,6 @@
 
 @interface StoryPagesObjCViewController : BaseViewController
 <UIScrollViewDelegate, UIPopoverControllerDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate> {
-    NewsBlurAppDelegate *appDelegate;
     THCircularProgressView *circularProgressView;
     UIButton *buttonPrevious;
     UIButton *buttonNext;
@@ -37,7 +36,6 @@
     CGFloat scrollPct;
 }
 
-@property (nonatomic, strong) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) StoryDetailViewController *currentPage;
 @property (nonatomic) StoryDetailViewController *nextPage;
 @property (nonatomic) StoryDetailViewController *previousPage;

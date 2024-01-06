@@ -17,7 +17,6 @@
 @synthesize closeButton;
 @synthesize webView;
 @synthesize navBar;
-@synthesize appDelegate;
 @synthesize feedTrainer;
 @synthesize storyTrainer;
 @synthesize feedLoaded;
@@ -34,8 +33,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     UIBarButtonItem *done = [[UIBarButtonItem alloc]
                              initWithTitle:@"Done Training"

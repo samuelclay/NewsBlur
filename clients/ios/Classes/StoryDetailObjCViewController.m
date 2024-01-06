@@ -35,7 +35,6 @@
 
 @implementation StoryDetailObjCViewController
 
-@synthesize appDelegate;
 @synthesize activeStoryId;
 @synthesize activeStory;
 @synthesize innerView;
@@ -70,8 +69,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
@@ -313,6 +310,11 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+#if TARGET_OS_MACCATALYST
+    [self.navigationController setNavigationBarHidden:YES animated:animated];
+    [self.navigationController setToolbarHidden:YES animated:animated];
+#endif
     
     if (!self.isPhoneOrCompact) {
         [appDelegate.feedDetailViewController.view endEditing:YES];
@@ -1421,6 +1423,7 @@
             }
         }
         
+#if !TARGET_OS_MACCATALYST
         if (!isNavBarHidden && self.canHideNavigationBar && !nearTop) {
             [appDelegate.storyPagesViewController setNavigationBarHidden:YES];
         }
@@ -1428,6 +1431,7 @@
         if (isNavBarHidden && pullingDown) {
             [appDelegate.storyPagesViewController setNavigationBarHidden:NO];
         }
+#endif
         
         if (!atTop && !atBottom && !singlePage) {
             BOOL traversalVisible = appDelegate.storyPagesViewController.traverseView.alpha > 0;

@@ -21,7 +21,6 @@
 @synthesize twitterButton;
 @synthesize submitButton;
 @synthesize commentField;
-@synthesize appDelegate;
 @synthesize activeReplyId;
 @synthesize activeCommentId;
 @synthesize activeStoryId;
@@ -38,9 +37,7 @@
 }
 
 - (void)viewDidLoad {
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    
-    [[NSNotificationCenter defaultCenter] 
+    [[NSNotificationCenter defaultCenter]
      addObserver:self 
      selector:@selector(onTextChange:)
      name:UITextViewTextDidChangeNotification 

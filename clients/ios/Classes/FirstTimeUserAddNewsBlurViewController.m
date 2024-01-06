@@ -11,7 +11,6 @@
 
 @implementation FirstTimeUserAddNewsBlurViewController
 
-@synthesize appDelegate;
 @synthesize nextButton;
 @synthesize instructionsLabel;
 
@@ -26,8 +25,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Start reading" style:UIBarButtonItemStyleDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;

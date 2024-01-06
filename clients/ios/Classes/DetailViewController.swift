@@ -10,11 +10,6 @@ import UIKit
 
 /// Manages the detail column of the split view, with the feed detail and/or the story pages.
 class DetailViewController: BaseViewController {
-    /// Returns the shared app delegate.
-    var appDelegate: NewsBlurAppDelegate {
-        return NewsBlurAppDelegate.shared()
-    }
-    
     /// Preference keys.
     enum Key {
         /// Style of the feed detail list layout.

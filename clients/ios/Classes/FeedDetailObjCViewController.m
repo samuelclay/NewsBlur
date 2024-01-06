@@ -69,7 +69,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @synthesize separatorBarButton;
 @synthesize titleImageBarButton;
 @synthesize spacerBarButton, spacer2BarButton;
-@synthesize appDelegate;
 @synthesize pageFetching;
 @synthesize pageFinished;
 @synthesize finishedAnimatingIn;
@@ -91,8 +90,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
  
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(preferredContentSizeChanged:)
@@ -414,6 +411,11 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+#if TARGET_OS_MACCATALYST
+    [self.navigationController setNavigationBarHidden:YES animated:animated];
+    [self.navigationController setToolbarHidden:YES animated:animated];
+#endif
     
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     
@@ -2624,9 +2626,13 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     [viewController addThemeSegmentedControl];
     
+#if TARGET_OS_MACCATALYST
+    //TODO: 🚧
+#else
     UINavigationController *navController = self.navigationController ?: appDelegate.storyPagesViewController.navigationController;
     
     [viewController showFromNavigationController:navController barButtonItem:self.settingsBarButton];
+#endif
 }
 
 - (NSString *)feedIdForSearch {

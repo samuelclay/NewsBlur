@@ -30,7 +30,6 @@ static const CGFloat kFolderTitleHeight = 36.0;
 @property (nonatomic) FeedChooserSort sort;
 @property (nonatomic) BOOL ascending;
 @property (nonatomic) BOOL flat;
-@property (nonatomic, readonly) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, strong) NSUserDefaults *groupDefaults;
 @property (nonatomic, readonly) NSArray *widgetFeeds;
 
@@ -45,8 +44,6 @@ static const CGFloat kFolderTitleHeight = 36.0;
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    
     if (self.operation == FeedChooserOperationWidgetSites) {
         self.groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
     }

@@ -7,11 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BaseViewController.h"
 
 typedef void (^MenuItemHandler)(void);
 typedef void (^MenuItemSegmentedHandler)(NSUInteger selectedIndex);
 
-@interface MenuViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface MenuViewController : BaseViewController <UITableViewDataSource, UITableViewDelegate>
 
 @property (weak) IBOutlet UITableView *menuTableView;
 

@@ -16,7 +16,6 @@
 
 @implementation FirstTimeUserAddFriendsViewController
 
-@synthesize appDelegate;
 @synthesize nextButton;
 @synthesize facebookButton;
 @synthesize twitterButton;
@@ -35,8 +34,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Skip this step" style:UIBarButtonItemStyleDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;

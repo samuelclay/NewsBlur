@@ -36,7 +36,6 @@
 
 @implementation StoryPagesObjCViewController
 
-@synthesize appDelegate;
 @synthesize currentPage, nextPage, previousPage;
 @synthesize circularProgressView;
 @synthesize separatorBarButton;
@@ -76,7 +75,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
 	currentPage = [[StoryDetailViewController alloc]
                    initWithNibName:@"StoryDetailViewController"
                    bundle:nil];
@@ -251,6 +249,11 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+#if TARGET_OS_MACCATALYST
+    [self.navigationController setNavigationBarHidden:YES animated:animated];
+    [self.navigationController setToolbarHidden:YES animated:animated];
+#endif
+    
     [self updateTheme];
     
     [self updateAutoscrollButtons];
@@ -390,7 +393,10 @@
     
     previousPage.view.hidden = YES;
     appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.enabled = YES;
+    
+#if !TARGET_OS_MACCATALYST
     [appDelegate.detailViewController.parentNavigationController setNavigationBarHidden:NO animated:YES];
+#endif
     
     self.autoscrollActive = NO;
 }
@@ -484,7 +490,7 @@
 }
 
 - (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse {
-    if (self.navigationController == nil || self.navigationController.navigationBarHidden == hide || self.currentlyTogglingNavigationBar) {
+    if (appDelegate.isMac || self.navigationController == nil || self.navigationController.navigationBarHidden == hide || self.currentlyTogglingNavigationBar) {
         return;
     }
     

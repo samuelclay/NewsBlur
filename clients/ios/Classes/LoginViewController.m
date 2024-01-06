@@ -12,7 +12,6 @@
 
 @implementation LoginViewController
 
-@synthesize appDelegate;
 @synthesize usernameInput;
 @synthesize passwordInput;
 @synthesize emailInput;
@@ -44,8 +43,6 @@
     }
 
 - (void)viewDidLoad {
-    self.appDelegate = NewsBlurAppDelegate.sharedAppDelegate;
-    
     self.usernameInput.borderStyle = UITextBorderStyleRoundedRect;
     self.passwordInput.borderStyle = UITextBorderStyleRoundedRect;
     self.emailInput.borderStyle = UITextBorderStyleRoundedRect;

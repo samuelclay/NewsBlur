@@ -24,4 +24,10 @@ class SplitViewController: UISplitViewController {
     override var childForStatusBarStyle: UIViewController? {
         return nil
     }
+    
+    // Can do menu validation here.
+//    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+//        print("canPerformAction: \(action) with \(sender ?? "nil")")
+//        return true
+//    }
 }

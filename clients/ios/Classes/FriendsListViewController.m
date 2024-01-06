@@ -27,7 +27,6 @@
 
 @implementation FriendsListViewController
 
-@synthesize appDelegate;
 @synthesize friendSearchBar;
 @synthesize friendsTable;
 @synthesize suggestedUserProfiles;
@@ -44,8 +43,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     self.navigationItem.title = @"Find Friends";
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Done" 
