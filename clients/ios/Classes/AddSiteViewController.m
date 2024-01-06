@@ -8,7 +8,6 @@
 
 #import "AddSiteViewController.h"
 #import "AddSiteAutocompleteCell.h"
-#import "NewsBlurAppDelegate.h"
 #import "MenuViewController.h"
 #import "SBJson4.h"
 #import "NewsBlur-Swift.h"

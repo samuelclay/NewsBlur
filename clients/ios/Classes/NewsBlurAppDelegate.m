@@ -1173,6 +1173,7 @@
 #pragma mark View Management
 
 - (void)prepareViewControllers {
+    self.appDelegate = self;
     self.splitViewController = (SplitViewController *)self.window.rootViewController;
     
     NSArray <UIViewController *> *splitChildren = self.splitViewController.viewControllers;
@@ -2398,8 +2399,11 @@
     
     self.safariViewController = [[SFSafariViewController alloc] initWithURL:url configuration:config];
     self.safariViewController.delegate = self;
+#if TARGET_OS_MACCATALYST
+#else
     [self.storyPagesViewController setNavigationBarHidden:NO];
     [feedsNavigationController presentViewController:self.safariViewController animated:YES completion:nil];
+#endif
 }
 
 - (BOOL)showingSafariViewController {
@@ -3350,7 +3354,7 @@
     [self.navigationControllerForPopover presentViewController:viewController animated:YES completion:^{
         popoverPresentationController.passthroughViews = nil;
         // NSLog(@"%@ canBecomeFirstResponder? %d", viewController, viewController.canBecomeFirstResponder);
-        [viewController becomeFirstResponder];
+//        [viewController becomeFirstResponder];
     }];
 }
 

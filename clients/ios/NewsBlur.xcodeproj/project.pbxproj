@@ -753,6 +753,8 @@
 		1788939D249332E6004CBA4E /* g_icn_search.png in Resources */ = {isa = PBXBuildFile; fileRef = 1788939C249332E6004CBA4E /* g_icn_search.png */; };
 		1791C21526C4C7BC00D815AA /* WidgetStoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1791C21426C4C7BC00D815AA /* WidgetStoryView.swift */; };
 		17997C5827A8FDD100483E69 /* WidgetDebugTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17997C5727A8FDD100483E69 /* WidgetDebugTimer.swift */; };
+		179A88022B48E64A00916CF4 /* ToolbarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179A88012B48E64900916CF4 /* ToolbarDelegate.swift */; };
+		179A88032B48E64A00916CF4 /* ToolbarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179A88012B48E64900916CF4 /* ToolbarDelegate.swift */; };
 		179DD9CF23DFDD51007BFD21 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 179DD9CE23DFDD51007BFD21 /* CloudKit.framework */; };
 		17A396D924F86A8F0023C9E2 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 17A396D824F86A8F0023C9E2 /* MainInterface.storyboard */; };
 		17A92A3C289B7C6B00AB0A78 /* saved-stories@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17A92A3B289B7C6B00AB0A78 /* saved-stories@2x.png */; };
@@ -1534,6 +1536,7 @@
 		1788939C249332E6004CBA4E /* g_icn_search.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_search.png; sourceTree = "<group>"; };
 		1791C21426C4C7BC00D815AA /* WidgetStoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStoryView.swift; sourceTree = "<group>"; };
 		17997C5727A8FDD100483E69 /* WidgetDebugTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDebugTimer.swift; sourceTree = "<group>"; };
+		179A88012B48E64900916CF4 /* ToolbarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarDelegate.swift; sourceTree = "<group>"; };
 		179DD9CC23DFD20E007BFD21 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BridgingHeader.h; path = "Other Sources/BridgingHeader.h"; sourceTree = "<group>"; };
 		179DD9CE23DFDD51007BFD21 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		17A396D824F86A8F0023C9E2 /* MainInterface.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
@@ -3329,6 +3332,7 @@
 				1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */,
 				1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */,
 				17150E1D2B05775A004D5309 /* SceneDelegate.swift */,
+				179A88012B48E64900916CF4 /* ToolbarDelegate.swift */,
 				FFD1D72F1459B63500E46F89 /* BaseViewController.h */,
 				FFD1D7301459B63500E46F89 /* BaseViewController.m */,
 				17C074941C14C46B00CFCDB7 /* ThemeManager.h */,
@@ -5026,6 +5030,7 @@
 				1757926D2930605500490924 /* UserTagsViewController.m in Sources */,
 				1757926E2930605500490924 /* StringHelper.m in Sources */,
 				1757926F2930605500490924 /* TransparentToolbar.m in Sources */,
+				179A88032B48E64A00916CF4 /* ToolbarDelegate.swift in Sources */,
 				175792702930605500490924 /* THCircularProgressView.m in Sources */,
 				175792712930605500490924 /* IASKSpecifier.m in Sources */,
 				175792722930605500490924 /* UIView+ViewController.m in Sources */,
@@ -5226,6 +5231,7 @@
 				FF6282151A11613900271FDB /* UserTagsViewController.m in Sources */,
 				43A4C3E315B00966008787B5 /* StringHelper.m in Sources */,
 				43A4C3E415B00966008787B5 /* TransparentToolbar.m in Sources */,
+				179A88022B48E64A00916CF4 /* ToolbarDelegate.swift in Sources */,
 				FFD6604C1BACA45D006E4B8D /* THCircularProgressView.m in Sources */,
 				FF34FD681E9D93CB0062F8ED /* IASKSpecifier.m in Sources */,
 				FFA0484419CA73B700618DC4 /* UIView+ViewController.m in Sources */,

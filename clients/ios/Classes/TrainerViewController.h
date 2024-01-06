@@ -22,8 +22,6 @@
 
 
 @interface TrainerViewController : BaseViewController <WKNavigationDelegate> {
-    NewsBlurAppDelegate *appDelegate;
-    
     IBOutlet UIBarButtonItem * closeButton;
     TrainerWebView *webView;
     IBOutlet UINavigationBar *navBar;
@@ -33,7 +31,6 @@
     BOOL storyTrainer;
 }
 
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UIBarButtonItem *closeButton;
 @property (nonatomic) IBOutlet TrainerWebView *webView;
 @property (nonatomic) IBOutlet UINavigationBar *navBar;

@@ -1,7 +1,13 @@
 #import <UIKit/UIKit.h>
 #import "MBProgressHUD.h"
 
-@interface BaseViewController : UIViewController
+@class NewsBlurAppDelegate;
+
+@interface BaseViewController : UIViewController {
+    NewsBlurAppDelegate *appDelegate;
+}
+
+@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 
 @property (nonatomic, readonly) BOOL isPhone;
 @property (nonatomic, readonly) BOOL isMac;
@@ -29,6 +35,20 @@
 - (void)collectionView:(UICollectionView *)collectionView selectItemAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated;
 - (void)collectionView:(UICollectionView *)collectionView selectItemAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated scrollPosition:(UICollectionViewScrollPosition)scrollPosition;
 - (void)collectionView:(UICollectionView *)collectionView deselectItemAtIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated;
+
+- (IBAction)reloadFeeds:(id)sender;
+- (IBAction)showMuteSites:(id)sender;
+- (IBAction)showOrganizeSites:(id)sender;
+- (IBAction)showWidgetSites:(id)sender;
+- (IBAction)showNotifications:(id)sender;
+- (IBAction)showFindFriends:(id)sender;
+- (IBAction)showPremium:(id)sender;
+- (IBAction)showSupportForum:(id)sender;
+- (IBAction)showLogout:(id)sender;
+- (IBAction)chooseColumns:(id)sender;
+- (IBAction)chooseFontSize:(id)sender;
+- (IBAction)chooseSpacing:(id)sender;
+- (IBAction)chooseTheme:(id)sender;
 
 @end
 

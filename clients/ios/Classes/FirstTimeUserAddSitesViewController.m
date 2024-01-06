@@ -24,7 +24,6 @@
 
 @implementation FirstTimeUserAddSitesViewController
 
-@synthesize appDelegate;
 @synthesize googleReaderButton;
 @synthesize nextButton;
 @synthesize activityIndicator;
@@ -49,8 +48,6 @@
     self.selectedCategories_ = [[NSMutableSet alloc] init];
     
     [super viewDidLoad];
-    
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Next step" style:UIBarButtonItemStyleDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;

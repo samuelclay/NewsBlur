@@ -57,7 +57,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 @implementation FeedsObjCViewController
 
-@synthesize appDelegate;
 @synthesize feedTitlesTable;
 @synthesize feedViewToolbar;
 @synthesize feedScoreSlider;
@@ -254,6 +253,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     UITitlebar *titlebar = navController.navigationBar.window.windowScene.titlebar;
     
     titlebar.titleVisibility = UITitlebarTitleVisibilityHidden;
+    
+    [self.navigationController setNavigationBarHidden:YES animated:animated];
+    [self.navigationController setToolbarHidden:YES animated:animated];
 #endif
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -2731,10 +2733,6 @@ heightForHeaderInSection:(NSInteger)section {
 }
 #endif
 
-- (IBAction)reloadFeeds:(id)sender {
-    [appDelegate reloadFeedsView:NO];
-}
-
 - (void)finishRefresh {
     self.inPullToRefresh_ = NO;
 #if !TARGET_OS_MACCATALYST
@@ -2868,78 +2866,6 @@ heightForHeaderInSection:(NSInteger)section {
 //    NSLog(@"canPerformAction: %@ withSender: %@", NSStringFromSelector(action, sender);  // log
 //    return YES;
 //}
-
-- (IBAction)showMuteSites:(id)sender {
-    [self.appDelegate showMuteSites];
-}
-
-- (IBAction)showOrganizeSites:(id)sender {
-    [self.appDelegate showOrganizeSites];
-}
-
-- (IBAction)showWidgetSites:(id)sender {
-    [self.appDelegate showWidgetSites];
-}
-
-- (IBAction)showNotifications:(id)sender {
-    [self.appDelegate openNotificationsWithFeed:nil];
-}
-
-- (IBAction)showFindFriends:(id)sender {
-    [self.appDelegate showFindFriends];
-}
-
-- (IBAction)showPremium:(id)sender {
-    [self.appDelegate showPremiumDialog];
-}
-
-- (IBAction)showSupportForum:(id)sender {
-    NSURL *url = [NSURL URLWithString:@"https://forum.newsblur.com"];
-    [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
-}
-
-- (IBAction)showLogout:(id)sender {
-    [self.appDelegate confirmLogout];
-}
-
-- (IBAction)chooseColumns:(id)sender {
-    UICommand *command = sender;
-    NSString *string = command.propertyList;
-    
-    [[NSUserDefaults standardUserDefaults] setObject:string forKey:@"split_behavior"];
-    
-    [UIView animateWithDuration:0.5 animations:^{
-        [self.appDelegate updateSplitBehavior:YES];
-    }];
-    
-    [self.appDelegate.detailViewController updateLayoutWithReload:NO fetchFeeds:YES];
-}
-
-- (IBAction)chooseFontSize:(id)sender {
-    UICommand *command = sender;
-    NSString *string = command.propertyList;
-    
-    [[NSUserDefaults standardUserDefaults] setObject:string forKey:@"feed_list_font_size"];
-    
-    [self.appDelegate resizeFontSize];
-}
-
-- (IBAction)chooseSpacing:(id)sender {
-    UICommand *command = sender;
-    NSString *string = command.propertyList;
-    
-    [[NSUserDefaults standardUserDefaults] setObject:string forKey:@"feed_list_spacing"];
-    
-    [self reloadFeedTitlesTable];
-    [self.appDelegate.feedDetailViewController reloadWithSizing];
-}
-
-- (IBAction)chooseTheme:(id)sender {
-    UICommand *command = sender;
-    NSString *string = command.propertyList;
-    
-    [ThemeManager themeManager].theme = string;
-}
 
 - (void)resetToolbar {
 //    self.navigationItem.leftBarButtonItem = nil;
