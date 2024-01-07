@@ -8,9 +8,9 @@ server=/consul/127.0.0.1#8600
 {# dnsmasq should not needlessly read /etc/resolv.conf #}
 no-resolv
 
-interface=lo
-interface=eth0
-interface=eth1
+{% for interface in network_interfaces %}
+interface={{ interface }}
+{% endfor %}
 
 bind-interfaces
 # log-dhcp
