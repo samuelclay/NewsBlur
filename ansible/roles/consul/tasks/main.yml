@@ -1,6 +1,8 @@
 ---
 - name: Add the HashiCorp GPG key
   become: yes
+  # Only warn if fail
+  ignore_errors: yes
   apt_key:
     url: https://apt.releases.hashicorp.com/gpg
     state: present
