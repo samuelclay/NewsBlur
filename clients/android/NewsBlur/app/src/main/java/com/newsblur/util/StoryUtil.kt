@@ -1,5 +1,6 @@
 package com.newsblur.util
 
+import com.newsblur.domain.Story
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.nio.charset.CodingErrorAction
@@ -19,4 +20,7 @@ object StoryUtil {
         decoder.flush(charBuffer)
         return String(charBuffer.array(), 0, charBuffer.position())
     }
+
+    @JvmStatic
+    fun getStoryHashes(stories: List<Story>): Set<String> = stories.map { it.storyHash }.toSet()
 }
