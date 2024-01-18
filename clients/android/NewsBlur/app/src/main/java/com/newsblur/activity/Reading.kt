@@ -1,5 +1,6 @@
 package com.newsblur.activity
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -10,6 +11,7 @@ import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
@@ -32,8 +34,20 @@ import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_REBUILD
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_STATUS
 import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_STORY
 import com.newsblur.service.NBSyncService
-import com.newsblur.util.*
+import com.newsblur.util.AppConstants
+import com.newsblur.util.CursorFilters
+import com.newsblur.util.DefaultFeedView
+import com.newsblur.util.FeedSet
+import com.newsblur.util.FeedUtils
+import com.newsblur.util.ImageLoader
+import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.PrefConstants.ThemeValue
+import com.newsblur.util.PrefsUtils
+import com.newsblur.util.StateFilter
+import com.newsblur.util.UIUtils
+import com.newsblur.util.ViewUtils
+import com.newsblur.util.VolumeKeyNavigation
+import com.newsblur.util.executeAsyncTask
 import com.newsblur.view.ReadingScrollView.ScrollChangeListener
 import com.newsblur.viewModel.StoriesViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,7 +56,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import java.lang.Runnable
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -142,6 +155,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         setupViews()
         setupListeners()
         setupObservers()
+        setupOnBackPressed()
         getActiveStoriesCursor(this, true)
     }
 
@@ -224,6 +238,17 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         storiesViewModel.activeStoriesLiveData.observe(this) {
             setCursorData(it)
         }
+    }
+
+    /**
+     * Overrides on back pressed to use overridden [Reading.finish] method
+     */
+    private fun setupOnBackPressed() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(enabled = true) {
+            override fun handleOnBackPressed() {
+                finish()
+            }
+        })
     }
 
     private fun getActiveStoriesCursor(context: Context, finishOnInvalidFs: Boolean = false) {
@@ -843,6 +868,20 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         }
     }
 
+    /**
+     * Overrides the [Reading] finish method and
+     * passes back the last read item position from the pager
+     */
+    override fun finish() {
+        setResult(Activity.RESULT_OK, Intent().apply {
+            pager?.currentItem?.let { position ->
+                com.newsblur.util.Log.d(this@Reading.javaClass.name, "Finish reading at position $position")
+                putExtra(LAST_READING_POS, position)
+            }
+        })
+        super.finish()
+    }
+
     companion object {
         const val EXTRA_FEEDSET = "feed_set"
         const val EXTRA_STORY_HASH = "story_hash"
@@ -857,5 +896,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
         /** The minimum screen width (in DP) needed to show all the overlay controls.  */
         private const val OVERLAY_MIN_WIDTH_DP = 355
+
+        const val LAST_READING_POS = "last_reading_pos"
     }
 }

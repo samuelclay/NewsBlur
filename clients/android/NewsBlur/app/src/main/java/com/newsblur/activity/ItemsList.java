@@ -4,8 +4,13 @@ import static com.newsblur.service.NBSyncReceiver.UPDATE_REBUILD;
 import static com.newsblur.service.NBSyncReceiver.UPDATE_STATUS;
 import static com.newsblur.service.NBSyncReceiver.UPDATE_STORY;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -29,6 +34,7 @@ import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
+import com.newsblur.util.Log;
 import com.newsblur.util.ReadingActionListener;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.Session;
@@ -65,8 +71,13 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     private ItemListContextMenuDelegate contextMenuDelegate;
     @Nullable
     private SessionDataSource sessionDataSource;
-	
-	@Override
+
+    @NonNull
+    protected ActivityResultLauncher<Intent> readingActivityLaunch = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), this::handleReadingActivityResult
+    );
+
+    @Override
     protected void onCreate(Bundle bundle) {
         Trace.beginSection("ItemsListOnCreate");
 		super.onCreate(bundle);
@@ -84,11 +95,11 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         feedUtils.prepareReadingSession(this, fs, false);
         if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false)) {
             String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
-            UIUtils.startReadingActivity(fs, hash, this);
+            UIUtils.startReadingActivity(this, fs, hash, readingActivityLaunch);
         } else if (PrefsUtils.isAutoOpenFirstUnread(this)) {
             StateFilter intelState = PrefsUtils.getStateFilter(this);
             if (dbHelper.getUnreadCount(fs, intelState) > 0) {
-                UIUtils.startReadingActivity(fs, Reading.FIND_FIRST_UNREAD, this);
+                UIUtils.startReadingActivity(this, fs, Reading.FIND_FIRST_UNREAD, readingActivityLaunch);
             }
         }
 
@@ -283,6 +294,20 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         itemSetFragment.resetEmptyState();
         itemSetFragment.hasUpdated();
         itemSetFragment.scrollToTop();
+    }
+
+    public void startReadingActivity(FeedSet feedSet, String storyHash) {
+        UIUtils.startReadingActivity(this, feedSet, storyHash, readingActivityLaunch);
+    }
+
+    private void handleReadingActivityResult(ActivityResult result) {
+        if (result.getData() != null) {
+            int lastReadingPosition = result.getData().getIntExtra(Reading.LAST_READING_POS, -1);
+            if (lastReadingPosition > 1) {
+                Log.d(this.getClass().getName(), "Scrolling to last reading position " + lastReadingPosition);
+                itemSetFragment.scrollToPosition(lastReadingPosition);
+            }
+        }
     }
 
     @Override
