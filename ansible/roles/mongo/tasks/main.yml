@@ -103,7 +103,7 @@
       - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
       - /var/log/mongodb/:/var/log/mongodb/
       - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup/:/backup/
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-primary', 'db-mongo-secondary']
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-mongo', 'db-mongo-primary', 'db-mongo-secondary', 'hdb-mongo-secondary', 'hdb-mongo-primray']
 
 - name: Start db-mongo-analytics docker container
   become: yes
@@ -131,7 +131,7 @@
       - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
       - /var/log/mongodb/:/var/log/mongodb/
       - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup/:/backup/
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics'
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo-analytics', 'hdb-mongo-analytics']
 
 - name: Create mongo database user
   shell:

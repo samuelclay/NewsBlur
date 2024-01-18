@@ -1,0 +1,41 @@
+plugin: constructed
+strict: False
+
+groups:
+  
+  haproxy: inventory_hostname.startswith('hwww')
+
+  web: inventory_hostname.startswith('happ')
+  app: inventory_hostname.startswith('happ')
+  django: inventory_hostname.startswith('happ-django')
+  refresh: inventory_hostname.startswith('happ-refresh')
+  counts: inventory_hostname.startswith('happ-counts')
+  push: inventory_hostname.startswith('happ-push')
+  blogs: inventory_hostname.startswith('blog')
+
+  node: inventory_hostname.startswith('hnode')
+  node_socket: inventory_hostname.startswith('hnode-socket')
+  node_images: inventory_hostname.startswith('hnode-images')
+  node_text: inventory_hostname.startswith('hnode-text')
+  node_page: inventory_hostname.startswith('hnode-page')
+  node_favicons: inventory_hostname.startswith('hnode-favicons')
+
+  # debugs: inventory_hostname.startswith('hdebug')
+
+  task: inventory_hostname.startswith('htask')
+  celery: inventory_hostname.startswith('htask-celery')
+  work: inventory_hostname.startswith('htask-work')
+  
+  staging: inventory_hostname.startswith('hstaging')
+  
+  db: inventory_hostname.startswith('hdb')
+  search: inventory_hostname.startswith('hdb-elasticsearch')
+  elasticsearch: inventory_hostname.startswith('hdb-elasticsearch')
+  redis: inventory_hostname.startswith('hdb-redis')
+  redis_story: inventory_hostname.startswith('hdb-redis-story')
+  postgres: inventory_hostname.startswith('hdb-postgres')
+  mongo: inventory_hostname.startswith('hdb-mongo') and not inventory_hostname.startswith('hdb-mongo-analytics')
+  mongo_analytics: inventory_hostname.startswith('hdb-mongo-analytics')
+  consul: inventory_hostname.startswith('hdb-consul')
+  metrics: inventory_hostname.startswith('hdb-metrics')
+  sentry: inventory_hostname.startswith('hdb-sentry')
