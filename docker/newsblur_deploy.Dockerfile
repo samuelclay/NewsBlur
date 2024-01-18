@@ -6,7 +6,7 @@ RUN apt install -y curl
 
 # Install Java
 # Install OpenJDK-11
-RUN apt install -y openjdk-11-jre-headless
+RUN apt install -y default-jre
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
 RUN export JAVA_HOME
 WORKDIR /tmp

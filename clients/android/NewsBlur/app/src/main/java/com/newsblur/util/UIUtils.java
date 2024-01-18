@@ -36,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -265,7 +266,11 @@ public class UIUtils {
         });
     }
 
-    public static void startReadingActivity(FeedSet fs, String startingHash, Context context) {
+    public static void startReadingActivity(Context context, FeedSet fs, String startingHash) {
+        startReadingActivity(context, fs, startingHash, null);
+    }
+
+    public static void startReadingActivity(Context context, FeedSet fs, String startingHash, @Nullable ActivityResultLauncher<Intent> readingActivityLauncher) {
         Class activityClass;
 		if (fs.isAllSaved()) {
             activityClass = SavedStoriesReading.class;
@@ -294,7 +299,8 @@ public class UIUtils {
         Intent i = new Intent(context, activityClass);
         i.putExtra(Reading.EXTRA_FEEDSET, fs);
         i.putExtra(Reading.EXTRA_STORY_HASH, startingHash);
-        context.startActivity(i);
+        if (readingActivityLauncher != null) readingActivityLauncher.launch(i);
+        else context.startActivity(i);
     }
 
     public static String getMemoryUsageDebug(Context context) {

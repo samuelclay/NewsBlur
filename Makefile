@@ -115,7 +115,8 @@ inventory:
 	./ansible/utils/generate_inventory.py
 oldinventory:
 	OLD=1 ./ansible/utils/generate_inventory.py
-
+hinventory:
+	./ansible/utils/generate_hetzner_inventory.py
 # Docker
 pull:
 	docker pull newsblur/newsblur_python3

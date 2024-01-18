@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -15,7 +15,8 @@
         android:fullBackupContent="@xml/backupscheme"
         android:name=".NbApplication"
         android:dataExtractionRules="@xml/data_extraction_rules"
-        tools:targetApi="31">
+        android:allowBackup="true"
+        android:fullBackupOnly="true">
 
         <profileable
             android:shell="true"
