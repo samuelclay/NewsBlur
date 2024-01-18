@@ -46,6 +46,7 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StoryContentPreviewStyle;
 import com.newsblur.util.StoryListStyle;
+import com.newsblur.util.StoryUtil;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
@@ -243,14 +244,13 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 newStories = new ArrayList<>(c.getCount());
                 c.moveToPosition(-1);
 
-                Set<String> currentStoryHashes = ignoreCursorNewStories ? stories.stream()
-                        .map(story -> story.storyHash)
-                        .collect(Collectors.toSet()) : Collections.emptySet();
+                Set<String> currentStoryHashes = ignoreCursorNewStories ?
+                        StoryUtil.getStoryHashes(stories) : Collections.emptySet();
 
                 while (c.moveToNext()) {
                     if (c.isClosed()) return;
                     Story s = Story.fromCursor(c);
-                    if (ignoreCursorNewStories && !currentStoryHashes.contains(s.storyHash)) return;
+                    if (ignoreCursorNewStories && !currentStoryHashes.contains(s.storyHash)) continue;
 
                     s.bindExternValues(c);
                     newStories.add(s);
