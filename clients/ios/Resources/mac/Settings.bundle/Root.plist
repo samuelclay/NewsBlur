@@ -119,8 +119,7 @@
 			<string>Default browser</string>
 			<key>Titles</key>
 			<array>
-				<string>In-app browser</string>
-				<string>Safari</string>
+				<string>System Default</string>
 				<string>Chrome</string>
 				<string>Opera Mini</string>
 				<string>Firefox</string>
@@ -128,11 +127,10 @@
 				<string>Brave</string>
 			</array>
 			<key>DefaultValue</key>
-			<string>inapp</string>
+			<string>system</string>
 			<key>Values</key>
 			<array>
-				<string>inapp</string>
-				<string>safari</string>
+				<string>system</string>
 				<string>chrome</string>
 				<string>opera_mini</string>
 				<string>firefox</string>

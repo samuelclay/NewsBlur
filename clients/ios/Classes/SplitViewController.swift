@@ -10,6 +10,10 @@ import UIKit
 
 /// Subclass of `UISplitViewController` to enable customizations.
 class SplitViewController: UISplitViewController {
+    @objc var isFeedListHidden: Bool {
+        return [.oneBesideSecondary, .oneOverSecondary, .secondaryOnly].contains(displayMode)
+    }
+    
     /// Update the theme of the split view controller.
     @objc func updateTheme() {
         
