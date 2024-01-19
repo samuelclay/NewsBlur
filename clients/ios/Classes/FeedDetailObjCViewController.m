@@ -2400,6 +2400,21 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         visibleUnreadCount = 0;
     }
     
+#if TARGET_OS_MACCATALYST
+    UINavigationController *feedDetailNavController = appDelegate.feedDetailViewController.navigationController;
+    UIView *sourceView = feedDetailNavController.view;
+    CGRect sourceRect = CGRectMake(120, 0, 20, 20);
+    
+    if (appDelegate.splitViewController.isFeedListHidden) {
+        sourceRect = CGRectMake(192, 0, 20, 20);
+    }
+    
+    [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount sourceView:sourceView sourceRect:sourceRect completionHandler:^(BOOL marked){
+        if (marked) {
+            pop();
+        }
+    }];
+#else
     UIBarButtonItem *barButton = self.feedMarkReadButton;
     if (sender && [sender isKindOfClass:[UIBarButtonItem class]]) barButton = sender;
     
@@ -2408,6 +2423,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             pop();
         }
     }];
+#endif
 }
 
 - (IBAction)doOpenMarkReadMenu:(id)sender {
@@ -2626,11 +2642,19 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     [viewController addThemeSegmentedControl];
     
-#if TARGET_OS_MACCATALYST
-    //TODO: 🚧
-#else
     UINavigationController *navController = self.navigationController ?: appDelegate.storyPagesViewController.navigationController;
     
+#if TARGET_OS_MACCATALYST
+    UINavigationController *feedDetailNavController = appDelegate.feedDetailViewController.navigationController;
+    UIView *sourceView = feedDetailNavController.view;
+    CGRect sourceRect = CGRectMake(152, 0, 20, 20);
+    
+    if (appDelegate.splitViewController.isFeedListHidden) {
+        sourceRect = CGRectMake(224, 0, 20, 20);
+    }
+    
+    [viewController showFromNavigationController:navController barButtonItem:nil sourceView:sourceView sourceRect:sourceRect permittedArrowDirections:UIPopoverArrowDirectionDown];
+#else
     [viewController showFromNavigationController:navController barButtonItem:self.settingsBarButton];
 #endif
 }

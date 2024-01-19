@@ -14,16 +14,24 @@ class ToolbarDelegate: NSObject {
 
 extension NSToolbarItem.Identifier {
     static let reloadFeeds = NSToolbarItem.Identifier("com.newsblur.reloadFeeds")
+    static let feedDetailUnread = NSToolbarItem.Identifier("com.newsblur.feedDetailUnread")
     static let feedDetailSettings = NSToolbarItem.Identifier("com.newsblur.feedDetailSettings")
+    static let storyPagesSettings = NSToolbarItem.Identifier("com.newsblur.storyPagesSettings")
+    static let storyPagesBrowser = NSToolbarItem.Identifier("com.newsblur.storyPagesBrowser")
 }
 
 extension ToolbarDelegate: NSToolbarDelegate {
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
         let identifiers: [NSToolbarItem.Identifier] = [
             .toggleSidebar,
+            .space,
             .reloadFeeds,
+            .space,
+            .feedDetailUnread,
+            .feedDetailSettings,
             .flexibleSpace,
-            .feedDetailSettings
+            .storyPagesSettings,
+            .storyPagesBrowser
         ]
         return identifiers
     }
@@ -42,11 +50,29 @@ extension ToolbarDelegate: NSToolbarDelegate {
                                        label: "Reload Sites",
                                        action: #selector(BaseViewController.reloadFeeds(_:)))
                 
+            case .feedDetailUnread:
+                return makeToolbarItem(itemIdentifier,
+                                       image: Utilities.imageNamed("mark-read", sized: 24),
+                                       label: "Mark as Read",
+                                       action: #selector(FeedDetailViewController.doOpenMarkReadMenu(_:)))
+                
             case .feedDetailSettings:
                 return makeToolbarItem(itemIdentifier,
                                        image: Utilities.imageNamed("settings", sized: 24),
                                        label: "Site Settings",
                                        action: #selector(FeedDetailViewController.doOpenSettingsMenu(_:)))
+                
+            case .storyPagesSettings:
+                return makeToolbarItem(itemIdentifier,
+                                       image: Utilities.imageNamed("settings", sized: 24),
+                                       label: "Story Settings",
+                                       action: #selector(StoryPagesViewController.toggleFontSize(_:)))
+                
+            case .storyPagesBrowser:
+                return makeToolbarItem(itemIdentifier,
+                                       image: Utilities.imageNamed("original_button.png", sized: 24),
+                                       label: "Show Original Story",
+                                       action: #selector(StoryPagesViewController.showOriginalSubview(_:)))
                 
             default:
                 return nil

@@ -1514,13 +1514,26 @@
 #pragma mark -
 #pragma mark Styles
 
+//- (BOOL)validateToolbarItem:(NSToolbarItem *)item {
+//    if item.itemIdentifier ==
+//    return !self.currentPage.view.isHidden;
+//}
 
 - (IBAction)toggleFontSize:(id)sender {
     UINavigationController *fontSettingsNavigationController = appDelegate.fontSettingsNavigationController;
 
     [fontSettingsNavigationController popToRootViewControllerAnimated:NO];
 //    [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero sourceNavigationController:self.navigationController barButtonItem:self.fontSettingsButton sourceView:nil sourceRect:CGRectZero permittedArrowDirections:UIPopoverArrowDirectionAny];
+    
+#if TARGET_OS_MACCATALYST
+    UINavigationController *storiesNavController = appDelegate.storyPagesViewController.navigationController;
+    UIView *sourceView = storiesNavController.view;
+    CGRect sourceRect = CGRectMake(storiesNavController.view.frame.size.width - 59, 0, 20, 20);
+    
+    [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero sourceView:sourceView sourceRect:sourceRect];
+#else
     [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:self.fontSettingsButton];
+#endif
 }
 
 - (void)setFontStyle:(NSString *)fontStyle {

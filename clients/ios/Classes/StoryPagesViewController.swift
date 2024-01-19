@@ -22,4 +22,12 @@ class StoryPagesViewController: StoryPagesObjCViewController {
     @objc func reloadWidget() {
         WidgetCenter.shared.reloadAllTimelines()
     }
+    
+    @objc func validateToolbarItem(_ item: NSToolbarItem) -> Bool {
+        if [.storyPagesSettings, .storyPagesBrowser].contains(item.itemIdentifier) {
+            return !self.currentPage.view.isHidden && self.currentPage.noStoryMessage.isHidden
+        } else {
+            return true
+        }
+    }
 }

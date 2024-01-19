@@ -1441,7 +1441,7 @@
 }
 
 - (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController {
-    [self.feedsNavigationController.topViewController becomeFirstResponder];
+//    [self.feedsNavigationController.topViewController becomeFirstResponder];
 }
 
 #pragma mark - Network
@@ -2291,7 +2291,9 @@
     }
     
     NSString *storyBrowser = [preferences stringForKey:@"story_browser"];
-    if ([storyBrowser isEqualToString:@"safari"]) {
+    
+    if ([storyBrowser isEqualToString:@"system"] || [storyBrowser isEqualToString:@"safari"]) {
+        // There is no way to force opening in Safari if the default browser on macOS is not Safari.
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
         //        [[UIApplication sharedApplication] openURL:url];
         return;
@@ -2353,6 +2355,9 @@
 }
 
 - (void)showInAppBrowser:(NSURL *)url withCustomTitle:(NSString *)customTitle fromSender:(id)sender {
+#if TARGET_OS_MACCATALYST
+    [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+#else
     if (!originalStoryViewController) {
         originalStoryViewController = [[OriginalStoryViewController alloc] init];
     }
@@ -2385,9 +2390,13 @@
         [originalStoryViewController loadInitialStory];
         [feedsNavigationController showViewController:originalStoryViewController sender:self];
     }
+#endif
 }
 
 - (void)showSafariViewControllerWithURL:(NSURL *)url useReader:(BOOL)useReader {
+#if TARGET_OS_MACCATALYST
+    [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+#else
     SFSafariViewControllerConfiguration *config = [SFSafariViewControllerConfiguration new];
     config.entersReaderIfAvailable = useReader;
     
@@ -2399,9 +2408,8 @@
     
     self.safariViewController = [[SFSafariViewController alloc] initWithURL:url configuration:config];
     self.safariViewController.delegate = self;
-#if TARGET_OS_MACCATALYST
-#else
     [self.storyPagesViewController setNavigationBarHidden:NO];
+    
     [feedsNavigationController presentViewController:self.safariViewController animated:YES completion:nil];
 #endif
 }
@@ -3272,6 +3280,10 @@
 
 - (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler {
     [self showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:0 olderNewerCollection:nil olderNewerStory:nil barButtonItem:nil sourceView:sourceView sourceRect:sourceRect extraItems:nil completionHandler:completionHandler];
+}
+
+- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler {
+    [self showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount olderNewerCollection:nil olderNewerStory:nil barButtonItem:nil sourceView:sourceView sourceRect:sourceRect extraItems:nil completionHandler:completionHandler];
 }
 
 - (void)showMarkOlderNewerReadMenuWithStoriesCollection:(StoriesCollection *)olderNewerCollection story:(NSDictionary *)olderNewerStory sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect extraItems:(NSArray *)extraItems completionHandler:(void (^)(BOOL marked))completionHandler {

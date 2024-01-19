@@ -284,6 +284,10 @@ NSString * const MenuHandler = @"handler";
 }
 
 - (void)showFromNavigationController:(UINavigationController *)navigationController barButtonItem:(UIBarButtonItem *)barButtonItem permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections {
+    [self showFromNavigationController:navigationController barButtonItem:barButtonItem sourceView:nil sourceRect:CGRectZero permittedArrowDirections:permittedArrowDirections];
+}
+
+- (void)showFromNavigationController:(UINavigationController *)navigationController barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections {
     UIViewController *presentedViewController = navigationController.presentedViewController;
     if (presentedViewController && presentedViewController.presentationController.presentationStyle == UIModalPresentationPopover) {
         [presentedViewController dismissViewControllerAnimated:YES completion:nil];
@@ -300,6 +304,8 @@ NSString * const MenuHandler = @"handler";
     popoverPresentationController.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     popoverPresentationController.permittedArrowDirections = permittedArrowDirections;
     popoverPresentationController.barButtonItem = barButtonItem;
+    popoverPresentationController.sourceView = sourceView;
+    popoverPresentationController.sourceRect = sourceRect;
     
     [navigationController presentViewController:embeddedNavController animated:YES completion:nil];
 }
