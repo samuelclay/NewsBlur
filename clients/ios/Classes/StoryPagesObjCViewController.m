@@ -1086,9 +1086,12 @@
     }
     
     self.scrollingToPage = pageIndex;
-    [self.currentPage hideNoStoryMessage];
-    [self.nextPage hideNoStoryMessage];
-    [self.previousPage hideNoStoryMessage];
+    
+    if (pageIndex >= 0) {
+        [self.currentPage hideNoStoryMessage];
+        [self.nextPage hideNoStoryMessage];
+        [self.previousPage hideNoStoryMessage];
+    }
     
     // Check if already on the selected page
     if (self.isHorizontal ? offset.x == frame.origin.x : offset.y == frame.origin.y) {
@@ -1486,14 +1489,6 @@
 - (IBAction)toggleStoryUnread:(id)sender {
     [appDelegate.storiesCollection toggleStoryUnread];
     [appDelegate.feedDetailViewController reload]; // XXX only if successful?
-}
-
-- (IBAction)showTrain:(id)sender {
-    [self.appDelegate openTrainStory:self.appDelegate.storyPagesViewController.fontSettingsButton];
-}
-
-- (IBAction)showShare:(id)sender {
-    [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {

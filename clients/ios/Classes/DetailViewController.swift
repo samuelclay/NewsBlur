@@ -168,7 +168,7 @@ class DetailViewController: BaseViewController {
     
     /// How the split controller behaves.
     var behavior: Behavior {
-        switch UserDefaults.standard.string(forKey: Key.behavior) {
+        switch behaviorString {
         case BehaviorValue.tile:
             return .tile
         case BehaviorValue.displace:
@@ -178,6 +178,11 @@ class DetailViewController: BaseViewController {
         default:
             return .auto
         }
+    }
+    
+    /// The split controller behavior as a raw string.
+    @objc var behaviorString: String {
+        return UserDefaults.standard.string(forKey: Key.behavior) ?? BehaviorValue.auto
     }
     
     /// Position of the divider between the views.

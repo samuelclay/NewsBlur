@@ -346,7 +346,7 @@
                             <children>
                                 <menu title="Columns" id="Zsw-UK-Yxk">
                                     <children>
-                                        <command title="Automatic" propertyListString="auto" input="4" id="6Vl-Xq-5Ko">
+                                        <command title="Automatic" propertyListString="auto" menuElementState="on" input="4" id="6Vl-Xq-5Ko">
                                             <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
                                             <connections>
                                                 <action selector="chooseColumns:" destination="J28-e1-gcC" id="vNz-nO-9sE"/>
@@ -421,9 +421,8 @@
                                     </children>
                                 </menu>
                                 <menu title="Theme" id="k0L-se-kpA">
-                                    <menuOptions key="menuOptions" singleSelection="YES"/>
                                     <children>
-                                        <command title="Light" propertyListString="light" id="nvf-Kg-GEz">
+                                        <command title="Light" propertyListString="light" menuElementState="on" id="nvf-Kg-GEz">
                                             <connections>
                                                 <action selector="chooseTheme:" destination="J28-e1-gcC" id="AGW-N1-hqV"/>
                                             </connections>
@@ -446,6 +445,9 @@
                                     </children>
                                 </menu>
                             </children>
+                            <systemMenuChildDeletions>
+                                <menuDeletion anchor="com.apple.menu.toolbar"/>
+                            </systemMenuChildDeletions>
                         </menu>
                         <menu title="Site" identifier="site" anchor="com.apple.menu.view" id="Kg8-V5-XsH">
                             <children>

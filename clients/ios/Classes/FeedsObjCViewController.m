@@ -712,18 +712,19 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //    [settingsBarButton setCustomView:settingsButton];
     
     UIImage *activityImage = [Utilities templateImageNamed:@"dialog-notifications" sized:32];
-    NBBarButtonItem *activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    activityButton.accessibilityLabel = @"Activities";
-    [activityButton setImage:activityImage forState:UIControlStateNormal];
-    activityButton.tintColor = UIColorFromRGB(0x8F918B);
-    [activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 0, 4, 0)];
-    [activityButton addTarget:self
+    [self.activityButton removeFromSuperview];
+    self.activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+    self.activityButton.accessibilityLabel = @"Activities";
+    [self.activityButton setImage:activityImage forState:UIControlStateNormal];
+    self.activityButton.tintColor = UIColorFromRGB(0x8F918B);
+    [self.activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 0, 4, 0)];
+    [self.activityButton addTarget:self
                        action:@selector(showInteractionsPopover:)
              forControlEvents:UIControlEventTouchUpInside];
     activitiesButton = [[UIBarButtonItem alloc]
-                        initWithCustomView:activityButton];
+                        initWithCustomView:self.activityButton];
     activitiesButton.width = 32;
-//    activityButton.backgroundColor = UIColor.redColor;
+//    self.activityButton.backgroundColor = UIColor.redColor;
     self.navigationItem.rightBarButtonItem = activitiesButton;
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
@@ -2881,7 +2882,7 @@ heightForHeaderInSection:(NSInteger)section {
     [self.userInfoView removeFromSuperview];
     
     self.userInfoView = [[UIView alloc]
-                         initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 50)];
+                         initWithFrame:CGRectMake(0, 0, self.innerView.bounds.size.width, 50)];
     self.userInfoView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE0E0E0, 0xFFF8CA, 0x4F4F4F, 0x292B2C);
 #else
     if (!orientation) {
@@ -2969,15 +2970,18 @@ heightForHeaderInSection:(NSInteger)section {
     positiveCount.backgroundColor = [UIColor clearColor];
     [self.userInfoView addSubview:positiveCount];
     
-    [self.userInfoView sizeToFit];
-    
 //    self.userInfoView.backgroundColor = UIColor.blueColor;
     
 #if TARGET_OS_MACCATALYST
+    self.activityButton.frame = CGRectMake(self.innerView.bounds.size.width - 36, 10, 32, 32);
+    
+    [self.userInfoView addSubview:self.activityButton];
+    
     [self.innerView addSubview:self.userInfoView];
     
     self.feedTitlesTopConstraint.constant = 50;
 #else
+    [self.userInfoView sizeToFit];
     self.navigationItem.titleView = self.userInfoView;
 #endif
 }
