@@ -57,6 +57,7 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 @property (nonatomic) IBOutlet UIBarButtonItem * homeButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * addBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * settingsBarButton;
+@property (nonatomic) UIButton *activityButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * activitiesButton;
 #if TARGET_OS_MACCATALYST
 @property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;

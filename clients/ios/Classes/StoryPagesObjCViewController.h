@@ -156,8 +156,6 @@
 
 - (IBAction)toggleStorySaved:(id)sender;
 - (IBAction)toggleStoryUnread:(id)sender;
-- (IBAction)showTrain:(id)sender;
-- (IBAction)showShare:(id)sender;
 
 - (void)finishMarkAsSaved:(NSDictionary *)params;
 - (BOOL)failedMarkAsSaved:(NSDictionary *)params;

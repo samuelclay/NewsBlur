@@ -3853,7 +3853,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1120;
-				LastUpgradeCheck = 1510;
+				LastUpgradeCheck = 1520;
 				ORGANIZATIONNAME = NewsBlur;
 				TargetAttributes = {
 					173CB30C26BCE94700BA872A = {

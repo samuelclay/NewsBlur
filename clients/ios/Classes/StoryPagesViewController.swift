@@ -25,7 +25,7 @@ class StoryPagesViewController: StoryPagesObjCViewController {
     
     @objc func validateToolbarItem(_ item: NSToolbarItem) -> Bool {
         if [.storyPagesSettings, .storyPagesBrowser].contains(item.itemIdentifier) {
-            return !self.currentPage.view.isHidden && self.currentPage.noStoryMessage.isHidden
+            return self.isStoryShown
         } else {
             return true
         }

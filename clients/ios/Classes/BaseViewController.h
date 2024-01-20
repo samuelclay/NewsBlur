@@ -14,6 +14,8 @@
 @property (nonatomic, readonly) BOOL isVision;
 @property (nonatomic, readonly) BOOL isPortrait;
 @property (nonatomic, readonly) BOOL isCompactWidth;
+@property (nonatomic, readonly) BOOL isFeedShown;
+@property (nonatomic, readonly) BOOL isStoryShown;
 
 - (void)informError:(id)error;
 - (void)informError:(id)error statusCode:(NSInteger)statusCode;
@@ -49,6 +51,8 @@
 - (IBAction)chooseFontSize:(id)sender;
 - (IBAction)chooseSpacing:(id)sender;
 - (IBAction)chooseTheme:(id)sender;
+- (IBAction)showTrain:(id)sender;
+- (IBAction)showShare:(id)sender;
 
 @end
 

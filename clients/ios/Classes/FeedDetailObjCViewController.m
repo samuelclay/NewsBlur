@@ -3018,9 +3018,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (IBAction)openNotifications:(id)sender {
-    NSString *feedId = [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"];
+    NSString *feedIdStr = storiesCollection.activeFeedIdStr;
     
-    [appDelegate openNotificationsWithFeed:feedId];
+    [appDelegate openNotificationsWithFeed:feedIdStr];
 }
 
 - (void)openNotificationsWithFeed:(NSString *)feedId {
@@ -3028,9 +3028,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (IBAction)openStatistics:(id)sender {
-    NSString *feedId = [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"];
+    NSString *feedIdStr = storiesCollection.activeFeedIdStr;
     
-    [appDelegate openStatisticsWithFeed:feedId sender:settingsBarButton];
+    [appDelegate openStatisticsWithFeed:feedIdStr sender:settingsBarButton];
 }
 
 - (void)openStatisticsWithFeed:(NSString *)feedId {

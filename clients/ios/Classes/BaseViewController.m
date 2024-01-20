@@ -218,9 +218,61 @@
     }
 }
 
+- (BOOL)isFeedShown {
+    return appDelegate.storiesCollection.activeFeed != nil || appDelegate.storiesCollection.activeFolder != nil;
+}
+
+- (BOOL)isStoryShown {
+    return !appDelegate.storyPagesViewController.currentPage.view.isHidden && appDelegate.storyPagesViewController.currentPage.noStoryMessage.isHidden;
+}
+
 - (BOOL)isCompactWidth {
     return self.view.window.windowScene.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact;
     //return self.compactWidth > 0.0;
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+    if (action == @selector(muteSite) || action == @selector(openRenameSite)) {
+        return !appDelegate.storiesCollection.isEverything;
+    } else if (action == @selector(openTrainSite) || action == @selector(openNotifications:) || action == @selector(openStatistics:)) {
+        return !appDelegate.storiesCollection.isRiverOrSocial;
+    } else if (action == @selector(openRenameSite)) {
+        return appDelegate.storiesCollection.isSocialView;
+    } else if (action == @selector(showTrain:) || action == @selector(showShare:)) {
+        return self.isStoryShown;
+    } else {
+        return [super canPerformAction:action withSender:sender];
+    }
+}
+
+- (void)validateCommand:(UICommand *)command {
+    [super validateCommand:command];
+    
+    if (command.action == @selector(chooseColumns:)) {
+        command.state = [command.propertyList isEqualToString:appDelegate.detailViewController.behaviorString];
+    } else if (command.action == @selector(chooseFontSize:)) {
+        NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"feed_list_font_size"];
+        command.state = [command.propertyList isEqualToString:value];
+    } else if (command.action == @selector(chooseSpacing:)) {
+        NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"feed_list_spacing"];
+        command.state = [command.propertyList isEqualToString:value];
+    } else if (command.action == @selector(chooseTheme:)) {
+        command.state = [command.propertyList isEqualToString:ThemeManager.themeManager.theme];
+    } else if (command.action == @selector(toggleStorySaved:)) {
+        BOOL isRead = [[self.appDelegate.activeStory objectForKey:@"starred"] boolValue];
+        if (isRead) {
+            command.title = @"Unsave This Story";
+        } else {
+            command.title = @"Save THis Story";
+        }
+    } else if (command.action == @selector(toggleStoryUnread:)) {
+        BOOL isRead = [[self.appDelegate.activeStory objectForKey:@"read_status"] boolValue];
+        if (isRead) {
+            command.title = @"Mark as Unread";
+        } else {
+            command.title = @"Mark as Read";
+        }
+    }
 }
 
 - (IBAction)reloadFeeds:(id)sender {
@@ -297,6 +349,14 @@
     NSString *string = command.propertyList;
     
     [ThemeManager themeManager].theme = string;
+}
+
+- (IBAction)showTrain:(id)sender {
+    [self.appDelegate openTrainStory:self.appDelegate.storyPagesViewController.fontSettingsButton];
+}
+
+- (IBAction)showShare:(id)sender {
+    [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
 }
 
 @end

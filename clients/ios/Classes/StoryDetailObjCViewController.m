@@ -1405,9 +1405,11 @@
         int bottomPosition = webpageHeight - topPosition - viewportHeight;
         BOOL singlePage = webpageHeight - 200 <= viewportHeight;
         BOOL atBottom = bottomPosition < 150;
-        BOOL pullingDown = topPosition < 0;
         BOOL atTop = topPosition < 50;
+#if !TARGET_OS_MACCATALYST
+        BOOL pullingDown = topPosition < 0;
         BOOL nearTop = topPosition < 100;
+#endif
         
         if (!hasScrolled && topPosition != 0) {
             hasScrolled = YES;

@@ -3356,6 +3356,24 @@
     popoverPresentationController.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     popoverPresentationController.permittedArrowDirections = permittedArrowDirections;
     
+#if TARGET_OS_MACCATALYST
+    if (barButtonItem && barButtonItem == appDelegate.feedDetailViewController.settingsBarButton) {
+        UINavigationController *feedDetailNavController = appDelegate.feedDetailViewController.navigationController;
+        barButtonItem = nil;
+        sourceView = feedDetailNavController.view;
+        if (appDelegate.splitViewController.isFeedListHidden) {
+            sourceRect = CGRectMake(224, 0, 20, 20);
+        } else {
+            sourceRect = CGRectMake(152, 0, 20, 20);
+        }
+    } else if (barButtonItem && barButtonItem == appDelegate.storyPagesViewController.fontSettingsButton) {
+        UINavigationController *storiesNavController = appDelegate.storyPagesViewController.navigationController;
+        barButtonItem = nil;
+        sourceView = storiesNavController.view;
+        sourceRect = CGRectMake(storiesNavController.view.frame.size.width - 59, 0, 20, 20);
+    }
+#endif
+    
     if (barButtonItem) {
         popoverPresentationController.barButtonItem = barButtonItem;
     } else {

@@ -97,6 +97,10 @@
     self.savedSearchQuery = fromCollection.savedSearchQuery;
 }
 
+- (BOOL)isEverything {
+    return [activeFolder isEqualToString:@"everything"];
+}
+
 - (BOOL)isRiverOrSocial {
     return self.isRiverView || self.isSavedView || self.isReadView || self.isWidgetView || self.isSocialView || self.isSocialRiverView;
 }
@@ -230,6 +234,10 @@
     if (location == -1) return -1;
     if (location >= [activeFeedStoryLocations count]) return -1;
     return [[activeFeedStoryLocations objectAtIndex:location] intValue];
+}
+
+- (NSString *)activeFeedIdStr {
+    return [NSString stringWithFormat:@"%@", [activeFeed objectForKey:@"id"]];
 }
 
 - (NSString *)activeOrder {
