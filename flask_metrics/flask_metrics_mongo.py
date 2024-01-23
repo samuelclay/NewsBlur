@@ -1,8 +1,9 @@
-from flask import Flask, render_template, Response
 import pymongo
-from newsblur_web import settings
 import sentry_sdk
+from flask import Flask, Response, render_template
 from sentry_sdk.integrations.flask import FlaskIntegration
+
+from newsblur_web import settings
 
 if settings.FLASK_SENTRY_DSN is not None:
     sentry_sdk.init(
@@ -24,6 +25,8 @@ MONGO_HOST = settings.SERVER_NAME
 def objects():
     try:
         stats = connection.newsblur.command("dbstats")
+    except pymongo.errors.ServerSelectionTimeoutError as e:
+        return Response(f"Server selection timeout: {e}", 500)
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
     except pymongo.errors.NotMasterError as e:
