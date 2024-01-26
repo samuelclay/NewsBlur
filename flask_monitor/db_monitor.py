@@ -1,16 +1,15 @@
-from flask import Flask, abort, request, Response
 import os
-import psycopg2
-import pymysql
-import pymongo
-import redis
+
 import elasticsearch
+import psycopg2
+import pymongo
+import pymysql
+import redis
+import sentry_sdk
+from flask import Flask, Response, abort, request
+from sentry_sdk.integrations.flask import FlaskIntegration
 
 from newsblur_web import settings
-
-import sentry_sdk
-from flask import Flask
-from sentry_sdk.integrations.flask import FlaskIntegration
 
 sentry_sdk.init(
     dsn=settings.FLASK_SENTRY_DSN,
@@ -158,7 +157,7 @@ def db_check_redis_user():
         return str(1)
 
     try:
-        r = redis.Redis('db-redis-user.service.nyc1.consul', db=0)
+        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul', db=0)
     except:
         abort(Response("Can't connect to db", 503))
     
@@ -178,7 +177,7 @@ def db_check_redis_story():
         return str(1)
     
     try:
-        r = redis.Redis('db-redis-story.service.nyc1.consul', db=1)
+        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul', db=0)
     except:
         abort(Response("Can't connect to db", 503))
     
@@ -198,7 +197,7 @@ def db_check_redis_sessions():
         return str(1)
 
     try:
-        r = redis.Redis('db-redis-sessions.service.nyc1.consul', db=5)
+        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul', db=0)
     except:
         abort(Response("Can't connect to db", 503))
     
@@ -218,7 +217,7 @@ def db_check_redis_pubsub():
         return str(1)
 
     try:
-        r = redis.Redis('db-redis-pubsub.service.nyc1.consul', db=1)
+        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul', db=0)
     except:
         abort(Response("Can't connect to db", 503))
     
