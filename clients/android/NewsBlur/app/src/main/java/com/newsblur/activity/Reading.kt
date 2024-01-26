@@ -159,20 +159,20 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         getActiveStoriesCursor(this, true)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        super.onSaveInstanceState(savedInstanceState)
         if (storyHash != null) {
-            outState.putString(EXTRA_STORY_HASH, storyHash)
+            savedInstanceState.putString(EXTRA_STORY_HASH, storyHash)
         } else if (pager != null) {
             val currentItem = pager!!.currentItem
             val story = readingAdapter!!.getStory(currentItem)
             if (story != null) {
-                outState.putString(EXTRA_STORY_HASH, story.storyHash)
+                savedInstanceState.putString(EXTRA_STORY_HASH, story.storyHash)
             }
         }
 
         if (startingUnreadCount != 0) {
-            outState.putInt(BUNDLE_STARTING_UNREAD, startingUnreadCount)
+            savedInstanceState.putInt(BUNDLE_STARTING_UNREAD, startingUnreadCount)
         }
     }
 

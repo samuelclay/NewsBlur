@@ -34,7 +34,7 @@ open class NbActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreate(bundle: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         Log.offerContext(this)
         Log.d(this, "onCreate")
 
@@ -43,7 +43,7 @@ open class NbActivity : AppCompatActivity() {
         PrefsUtils.applyThemePreference(this)
         lastTheme = PrefsUtils.getSelectedTheme(this)
 
-        super.onCreate(bundle)
+        super.onCreate(savedInstanceState)
 
         // in rare cases of process interruption or DB corruption, an activity can launch without valid
         // login creds.  redirect the user back to the loging workflow.
@@ -53,7 +53,7 @@ open class NbActivity : AppCompatActivity() {
             finish()
         }
 
-        bundle?.let {
+        savedInstanceState?.let {
             uniqueLoginKey = it.getString(UNIQUE_LOGIN_KEY)
         }
 
