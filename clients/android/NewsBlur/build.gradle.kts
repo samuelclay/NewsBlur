@@ -5,6 +5,7 @@ plugins {
     kotlin(Plugins.kotlinKapt) version Version.kotlin apply false
     id(Plugins.hiltAndroid) version Version.hilt apply false
     id(Plugins.androidTest) version Version.android apply false
+    id(Plugins.benManesVersions) version Version.benManesVersions
 }
 
 allprojects {

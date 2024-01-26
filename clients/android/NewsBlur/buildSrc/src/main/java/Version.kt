@@ -1,6 +1,6 @@
 object Version {
 
-    const val android = "8.1.1"
+    const val android = "8.1.4"
 
     const val kotlin = "1.8.10"
 
@@ -31,4 +31,6 @@ object Version {
 
     const val uiAutomator = "2.2.0"
     const val benchmarkMacroJunit4 = "1.1.1"
+
+    const val benManesVersions = "0.51.0"
 }
