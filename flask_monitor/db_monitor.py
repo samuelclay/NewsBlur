@@ -177,7 +177,7 @@ def db_check_redis_story():
         return str(1)
     
     try:
-        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul', db=0)
+        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul', db=1)
     except:
         abort(Response("Can't connect to db", 503))
     
@@ -197,7 +197,7 @@ def db_check_redis_sessions():
         return str(1)
 
     try:
-        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul', db=0)
+        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul', db=5)
     except:
         abort(Response("Can't connect to db", 503))
     
@@ -217,7 +217,7 @@ def db_check_redis_pubsub():
         return str(1)
 
     try:
-        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul', db=0)
+        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul', db=1)
     except:
         abort(Response("Can't connect to db", 503))
     
