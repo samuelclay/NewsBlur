@@ -15,6 +15,5 @@
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'apns', tags: 'apns'}
-    # - {role: 'netdata', tags: 'netdata'}
     - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
     - {role: 'celery_task', tags: 'celery'}
