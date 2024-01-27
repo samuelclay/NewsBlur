@@ -48,7 +48,7 @@
       - /srv/newsblur/docker/postgres/postgres_hba-13.conf:/etc/postgresql/pg_hba.conf
       - /srv/newsblur/docker/postgres/postgres_ident-13.conf:/etc/postgresql/pg_ident.conf
     restart_policy: unless-stopped
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-postgres-primary', 'db-postgres']
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-postgres-primary', 'db-postgres', 'hdb-postgres']
 
 - name: Change ownership in postgres docker container
   become: yes

@@ -1,8 +1,9 @@
-from flask import Flask, render_template, Response
-from newsblur_web import settings
-import sentry_sdk
-from sentry_sdk.integrations.flask import FlaskIntegration
 import redis
+import sentry_sdk
+from flask import Flask, Response, render_template
+from sentry_sdk.integrations.flask import FlaskIntegration
+
+from newsblur_web import settings
 
 if settings.FLASK_SENTRY_DSN is not None:
     sentry_sdk.init(
@@ -32,9 +33,9 @@ class RedisMetric(object):
 
     def redis_servers_stats(self):
         for instance, redis_config in INSTANCES.items():
-            if not settings.DOCKERBUILD and settings.SERVER_NAME != instance:
+            if not settings.DOCKERBUILD and instance not in settings.SERVER_NAME:
                 continue
-            self.host = redis_config['host']
+            self.host = f"{settings.SERVER_NAME}.node.nyc1.consul"
             self.port = redis_config.get('port', settings.REDIS_PORT)
             stats = self.get_info()
             yield instance, stats
