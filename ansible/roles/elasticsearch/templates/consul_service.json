@@ -1,6 +1,10 @@
 {
     "service": {
+        {% if inventory_hostname in ["db-elasticsearch"] %}
         "name": "db-elasticsearch",
+        {% else %}
+        "name": "db-elasticsearch-staging",
+        {% endif %}
         "tags": [
             "db"
         ],

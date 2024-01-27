@@ -40,6 +40,7 @@
       - name: newsblurnet
         aliases: 
           - elasticsearch
+    user: "{{ ansible_effective_user_id|int }}:{{ ansible_effective_group_id|int }}"
     volumes:
       - /srv/newsblur/docker/volumes/elasticsearch:/usr/share/elasticsearch/data
       - /var/log/elasticsearch/:/var/log/elasticsearch/
