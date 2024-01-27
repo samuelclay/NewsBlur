@@ -15,7 +15,7 @@ if settings.FLASK_SENTRY_DSN is not None:
 app = Flask(__name__)
 
 INSTANCES = {
-    'db-redis-sessions': settings.REDIS_SESSIONS,
+    'db-redis-session': settings.REDIS_SESSIONS,
     'db-redis-story': settings.REDIS_STORY,
     'db-redis-pubsub': settings.REDIS_PUBSUB,
     'db-redis-user': settings.REDIS_USER,
