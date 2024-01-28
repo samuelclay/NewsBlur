@@ -51,9 +51,9 @@
 - name: Build the custom postgres docker image
   docker_image:
     name: newsblur/postgres:13
+    source: build
     build:
-      path: /srv/newsblur/docker/postgres/Dockerfile.postgres
-      pull: yes
+      path: /srv/newsblur/docker/postgres/
     force_tag: yes
     state: present
 
