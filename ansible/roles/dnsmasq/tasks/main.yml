@@ -72,6 +72,21 @@
   vars:
     network_interfaces: "{{ ansible_interfaces }}"
   notify: restart dnsmasq
+  
+- name: Create systemd override directory for dnsmasq
+  become: yes
+  file:
+    path: /etc/systemd/system/dnsmasq.service.d
+    state: directory
+    mode: 0755
+
+- name: Add override for dnsmasq service
+  become: yes
+  copy:
+    dest: /etc/systemd/system/dnsmasq.service.d/override.conf
+    content: |
+      [Unit]
+      After=docker.service
 
 - name: Launch dnsmasq
   become: yes
