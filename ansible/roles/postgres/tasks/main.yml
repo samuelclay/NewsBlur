@@ -58,6 +58,7 @@
     state: present
 
 - name: Start postgres docker containers
+  become: yes
   docker_container:
     name: postgres
     image: newsblur/postgres:13
@@ -76,7 +77,6 @@
           - postgres
     ports:
       - 5432:5432
-    user: "{{ ansible_effective_user_id|int }}:{{ ansible_effective_group_id|int }}"
     volumes:
       - /srv/newsblur/docker/volumes/postgres/data:/var/lib/postgresql/data
       - /srv/newsblur/docker/volumes/postgres/archive:/var/lib/postgresql/archive
