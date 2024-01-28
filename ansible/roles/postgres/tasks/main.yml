@@ -6,13 +6,23 @@
   notify: reload postgres
   register: updated_config
 
+- name: Ensure postgres user and group exist
+  become: yes
+  user:
+    name: postgres
+    uid: 999
+    group: postgres
+    gid: 999
+    system: yes
+    create_home: yes
+
 - name: Create Postgres docker volumes with correct permissions
   file:
     path: "{{ item  }}"
     state: directory
     recurse: yes
-    owner: "{{ ansible_effective_user_id|int }}"
-    group: "{{ ansible_effective_group_id|int }}"
+    owner: postgres
+    group: postgres
   with_items:
     - /srv/newsblur/docker/volumes/postgres/archive
     - /srv/newsblur/docker/volumes/postgres/backups
@@ -22,24 +32,24 @@
   file:
     path: /srv/newsblur/docker/volumes/postgres/data/standby.signal
     state: file
-    owner: "{{ ansible_effective_user_id|int }}"
-    group: "{{ ansible_effective_group_id|int }}"
+    owner: postgres
+    group: postgres
   when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-postgres-secondary', 'hdb-postgres']
 
 - name: Copy SSH private key
   copy:
     src: /srv/secrets-newsblur/keys/postgres.key
     dest: /home/nb/.ssh/id_rsa
-    owner: "{{ ansible_effective_user_id|int }}"
-    group: "{{ ansible_effective_group_id|int }}"
+    owner: postgres
+    group: postgres
     mode: "0600"
 
 - name: Copy SSH public key
   copy:
     src: /srv/secrets-newsblur/keys/postgres.key.pub
     dest: /home/nb/.ssh/id_rsa.pub
-    owner: "{{ ansible_effective_user_id|int }}"
-    group: "{{ ansible_effective_group_id|int }}"
+    owner: postgres
+    group: postgres
     mode: "0600"
 
 - name: Add SSH public key to authorized keys
@@ -75,6 +85,8 @@
       - name: newsblurnet
         aliases:
           - postgres
+    user: postgres
+    group: postgres
     ports:
       - 5432:5432
     volumes:
@@ -156,8 +168,8 @@
     path: /var/log/postgres_backup.log
     state: touch
     mode: 0777
-    owner: "{{ ansible_effective_user_id|int }}"
-    group: "{{ ansible_effective_group_id|int }}"
+    owner: postgres
+    group: postgres
 
 - name: Add postgres backup
   cron:
