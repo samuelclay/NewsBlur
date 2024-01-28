@@ -8,7 +8,7 @@
     - motd_role: task
   roles:
     - {role: 'base', tags: 'base'}
-    - {role: 'ufw', tags: 'ufw'}
+    # - {role: 'ufw', tags: 'ufw'}
     - {role: 'docker', tags: 'docker'}
     - {role: 'repo', tags: ['repo', 'pull']}
     - {role: 'dnsmasq', tags: 'dnsmasq'}
