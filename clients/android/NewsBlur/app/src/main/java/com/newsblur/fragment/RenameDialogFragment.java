@@ -1,6 +1,5 @@
 package com.newsblur.fragment;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -8,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
@@ -58,12 +56,10 @@ public class RenameDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Activity activity = getActivity();
-        LayoutInflater inflater = LayoutInflater.from(activity);
-        View v = inflater.inflate(R.layout.dialog_rename, null);
+        View v = getLayoutInflater().inflate(R.layout.dialog_rename, null);
         final DialogRenameBinding binding = DialogRenameBinding.bind(v);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setView(v);
         builder.setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
             @Override
@@ -78,7 +74,7 @@ public class RenameDialogFragment extends DialogFragment {
             builder.setPositiveButton(R.string.feed_name_save, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    feedUtils.renameFeed(activity, feed.feedId, binding.inputName.getText().toString());
+                    feedUtils.renameFeed(requireContext(), feed.feedId, binding.inputName.getText().toString());
                     RenameDialogFragment.this.dismiss();
                 }
             });
@@ -94,7 +90,7 @@ public class RenameDialogFragment extends DialogFragment {
                 public void onClick(DialogInterface dialogInterface, int i) {
                     String newFolderName = binding.inputName.getText().toString();
                     if (TextUtils.isEmpty(newFolderName)) {
-                        Toast.makeText(activity, R.string.add_folder_name, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), R.string.add_folder_name, Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -102,7 +98,7 @@ public class RenameDialogFragment extends DialogFragment {
                     if (!TextUtils.isEmpty(folderParentName) && !folderParentName.equals(AppConstants.ROOT_FOLDER)) {
                         inFolder = folderParentName;
                     }
-                    feedUtils.renameFolder(folderName, newFolderName, inFolder, activity);
+                    feedUtils.renameFolder(folderName, newFolderName, inFolder, requireContext());
                     RenameDialogFragment.this.dismiss();
                 }
             });
