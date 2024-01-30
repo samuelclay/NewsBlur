@@ -5,19 +5,24 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.webkit.MimeTypeMap
+import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.snackbar.Snackbar
 import com.newsblur.R
 import com.newsblur.databinding.ActivityImportExportBinding
 import com.newsblur.network.APIConstants
 import com.newsblur.network.APIManager
 import com.newsblur.service.NBSyncService
-import com.newsblur.util.*
+import com.newsblur.util.FeedUtils
+import com.newsblur.util.NBScope
+import com.newsblur.util.UIUtils
+import com.newsblur.util.executeAsyncTask
+import com.newsblur.util.setViewGone
+import com.newsblur.util.setViewVisible
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import javax.inject.Inject
-
 
 @AndroidEntryPoint
 class ImportExportActivity : NbActivity() {
@@ -25,12 +30,16 @@ class ImportExportActivity : NbActivity() {
     @Inject
     lateinit var apiManager: APIManager
 
-    private val pickXmlFileRequestCode = 10
-
     private lateinit var binding: ActivityImportExportBinding
 
-    override fun onCreate(bundle: Bundle?) {
-        super.onCreate(bundle)
+    private val filePickResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            handleFilePickResult(result.data)
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         binding = ActivityImportExportBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -53,7 +62,7 @@ class ImportExportActivity : NbActivity() {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = mineType
         }.also {
-            startActivityForResult(it, pickXmlFileRequestCode)
+            filePickResultLauncher.launch(it)
         }
     }
 
@@ -106,18 +115,14 @@ class ImportExportActivity : NbActivity() {
         )
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
-        super.onActivityResult(requestCode, resultCode, resultData)
-        if (requestCode == pickXmlFileRequestCode && resultCode == Activity.RESULT_OK) {
-            resultData?.data?.also { uri ->
-                importOpmlFile(uri)
-            }
-                    ?: Snackbar.make(
-                            binding.root,
-                            "OPML file retrieval failed!",
-                            Snackbar.LENGTH_LONG
-                    ).show()
-        }
+    private fun handleFilePickResult(resultData: Intent?) {
+        resultData?.data?.also { uri ->
+            importOpmlFile(uri)
+        } ?: Snackbar.make(
+                binding.root,
+                "OPML file retrieval failed!",
+                Snackbar.LENGTH_LONG
+        ).show()
     }
 
     override fun handleUpdate(updateType: Int) {
