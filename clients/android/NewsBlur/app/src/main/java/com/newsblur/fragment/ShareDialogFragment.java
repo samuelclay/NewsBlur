@@ -72,7 +72,7 @@ public class ShareDialogFragment extends DialogFragment {
 
         View replyView = getLayoutInflater().inflate(R.layout.share_dialog, null);
         builder.setView(replyView);
-        commentEditText = (EditText) replyView.findViewById(R.id.comment_field);
+        commentEditText = replyView.findViewById(R.id.comment_field);
 
         int positiveButtonText = R.string.share_this_story;
         int negativeButtonText = R.string.alert_dialog_cancel;

@@ -86,11 +86,11 @@ public class ChooseFoldersFragment extends DialogFragment {
             }
         });
 
-        ListAdapter adapter = new ArrayAdapter<Folder>(requireContext(), R.layout.row_choosefolders, R.id.choosefolders_foldername, folders) {
+        ListAdapter adapter = new ArrayAdapter<>(requireContext(), R.layout.row_choosefolders, R.id.choosefolders_foldername, folders) {
             @Override
             public View getView(final int position, View convertView, ViewGroup parent) {
                 View v = super.getView(position, convertView, parent);
-                CheckBox row = (CheckBox) v.findViewById(R.id.choosefolders_foldername);
+                CheckBox row = v.findViewById(R.id.choosefolders_foldername);
                 if (position == 0) {
                     row.setText(R.string.top_level);
                 }

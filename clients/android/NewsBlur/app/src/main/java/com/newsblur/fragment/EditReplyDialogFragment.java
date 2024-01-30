@@ -51,7 +51,7 @@ public class EditReplyDialogFragment extends DialogFragment {
 
         View replyView = getLayoutInflater().inflate(R.layout.reply_dialog, null);
         builder.setView(replyView);
-        final EditText reply = (EditText) replyView.findViewById(R.id.reply_field);
+        final EditText reply = replyView.findViewById(R.id.reply_field);
         reply.setText(replyText);
 
         builder.setPositiveButton(R.string.edit_reply_update, new DialogInterface.OnClickListener() {

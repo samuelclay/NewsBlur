@@ -62,7 +62,7 @@ public class FeedIntelTrainerFragment extends DialogFragment {
         // display known title classifiers
         for (Map.Entry<String, Integer> rule : classifier.title.entrySet()) {
                 View row = getLayoutInflater().inflate(R.layout.include_intel_row, null);
-                TextView label = (TextView) row.findViewById(R.id.intel_row_label);
+                TextView label = row.findViewById(R.id.intel_row_label);
                 label.setText(rule.getKey());
                 UIUtils.setupIntelDialogRow(row, classifier.title, rule.getKey());
                 binding.existingTitleIntelContainer.addView(row);
@@ -79,7 +79,7 @@ public class FeedIntelTrainerFragment extends DialogFragment {
         }
         for (String tag : allTags) {
             View row = getLayoutInflater().inflate(R.layout.include_intel_row, null);
-            TextView label = (TextView) row.findViewById(R.id.intel_row_label);
+            TextView label = row.findViewById(R.id.intel_row_label);
             label.setText(tag);
             UIUtils.setupIntelDialogRow(row, classifier.tags, tag);
             binding.existingTagIntelContainer.addView(row);
@@ -96,7 +96,7 @@ public class FeedIntelTrainerFragment extends DialogFragment {
         }
         for (String author : allAuthors) {
             View rowAuthor = getLayoutInflater().inflate(R.layout.include_intel_row, null);
-            TextView labelAuthor = (TextView) rowAuthor.findViewById(R.id.intel_row_label);
+            TextView labelAuthor = rowAuthor.findViewById(R.id.intel_row_label);
             labelAuthor.setText(author);
             UIUtils.setupIntelDialogRow(rowAuthor, classifier.authors, author);
             binding.existingAuthorIntelContainer.addView(rowAuthor);
@@ -105,7 +105,7 @@ public class FeedIntelTrainerFragment extends DialogFragment {
 
         // for feel-level intel, the label is the title and the intel identifier is the feed ID
         View rowFeed = getLayoutInflater().inflate(R.layout.include_intel_row, null);
-        TextView labelFeed = (TextView) rowFeed.findViewById(R.id.intel_row_label);
+        TextView labelFeed = rowFeed.findViewById(R.id.intel_row_label);
         labelFeed.setText(feed.title);
         UIUtils.setupIntelDialogRow(rowFeed, classifier.feeds, feed.feedId);
         binding.existingFeedIntelContainer.addView(rowFeed);

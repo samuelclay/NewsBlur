@@ -51,7 +51,7 @@ public class ReplyDialogFragment extends DialogFragment {
 
         View replyView = getLayoutInflater().inflate(R.layout.reply_dialog, null);
         builder.setView(replyView);
-        final EditText reply = (EditText) replyView.findViewById(R.id.reply_field);
+        final EditText reply = replyView.findViewById(R.id.reply_field);
 
         builder.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
             @Override
