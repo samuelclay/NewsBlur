@@ -116,7 +116,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
     override fun onCreate(savedInstanceBundle: Bundle?) {
         super.onCreate(savedInstanceBundle)
-        storiesViewModel = ViewModelProvider(this).get(StoriesViewModel::class.java)
+        storiesViewModel = ViewModelProvider(this)[StoriesViewModel::class.java]
         binding = ActivityReadingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

@@ -18,7 +18,7 @@ public class FeedSelectorFragment extends Fragment implements StateChangedListen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_intelligenceselector, null);
-        button = (StateToggleButton) v.findViewById(R.id.fragment_intelligence_statebutton);
+        button = v.findViewById(R.id.fragment_intelligence_statebutton);
         button.setStateListener(this);
         return v;
     }
