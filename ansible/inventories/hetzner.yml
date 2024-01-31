@@ -33,6 +33,8 @@ groups:
   elasticsearch: inventory_hostname.startswith('hdb-elasticsearch')
   redis: inventory_hostname.startswith('hdb-redis')
   redis_story: inventory_hostname.startswith('hdb-redis-story')
+  redis_session: inventory_hostname.startswith('hdb-redis-session')
+  redis_user: inventory_hostname.startswith('hdb-redis-user')
   postgres: inventory_hostname.startswith('hdb-postgres')
   mongo: inventory_hostname.startswith('hdb-mongo') and not inventory_hostname.startswith('hdb-mongo-analytics')
   mongo_analytics: inventory_hostname.startswith('hdb-mongo-analytics')
