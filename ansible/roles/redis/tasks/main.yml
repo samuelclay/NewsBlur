@@ -53,7 +53,6 @@
     group: "{{ ansible_effective_group_id|int }}"  
 
 - name: Start redis docker containers
-  become: yes
   docker_container:
     name: redis
     image: redis:7
@@ -72,7 +71,7 @@
     ports:
       - 6379:6379
     restart_policy: unless-stopped
-    user: 1000:1001
+    user: "{{ ansible_effective_user_id|int }}:{{ ansible_effective_group_id|int }}"
     volumes:
       - /srv/newsblur/docker/volumes/redis:/data
       - /srv/newsblur/docker/redis/redis.conf:/usr/local/etc/redis/redis_server.conf

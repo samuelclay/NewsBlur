@@ -5,51 +5,45 @@
     dest: /srv/newsblur/docker/postgres/postgres.conf
   notify: reload postgres
   register: updated_config
-
-- name: Ensure postgres user and group exist
-  become: yes
-  user:
-    name: postgres
-    uid: 999
-    group: postgres
-    gid: 999
-    system: yes
-    create_home: yes
-
+  
 - name: Create Postgres docker volumes with correct permissions
+  become: yes
   file:
-    path: "{{ item  }}"
+    path: "{{ item }}"
     state: directory
     recurse: yes
-    owner: postgres
-    group: postgres
+    owner: 999
+    group: 999
   with_items:
     - /srv/newsblur/docker/volumes/postgres/archive
     - /srv/newsblur/docker/volumes/postgres/backups
     - /srv/newsblur/docker/volumes/postgres/data
 
 - name: Template postgres secondaries with empty standby.signal file
-  file:
-    path: /srv/newsblur/docker/volumes/postgres/data/standby.signal
-    state: file
-    owner: postgres
-    group: postgres
+  become: yes
+  copy:
+    dest: /srv/newsblur/docker/volumes/postgres/data/standby.signal
+    content: ""
+    owner: 999
+    group: 999
   when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-postgres-secondary', 'hdb-postgres']
 
 - name: Copy SSH private key
+  become: yes
   copy:
     src: /srv/secrets-newsblur/keys/postgres.key
     dest: /home/nb/.ssh/id_rsa
-    owner: postgres
-    group: postgres
+    owner: 999
+    group: 999
     mode: "0600"
 
 - name: Copy SSH public key
+  become: yes
   copy:
     src: /srv/secrets-newsblur/keys/postgres.key.pub
     dest: /home/nb/.ssh/id_rsa.pub
-    owner: postgres
-    group: postgres
+    owner: 999
+    group: 999
     mode: "0600"
 
 - name: Add SSH public key to authorized keys
@@ -85,8 +79,7 @@
       - name: newsblurnet
         aliases:
           - postgres
-    user: postgres
-    group: postgres
+    user: "999:999"
     ports:
       - 5432:5432
     volumes:
@@ -168,8 +161,8 @@
     path: /var/log/postgres_backup.log
     state: touch
     mode: 0777
-    owner: postgres
-    group: postgres
+    owner: 999
+    group: 999
 
 - name: Add postgres backup
   cron:
