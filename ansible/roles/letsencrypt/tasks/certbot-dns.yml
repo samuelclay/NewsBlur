@@ -58,7 +58,7 @@
     job: >-
       [ $(date +\%d) -le 07 ] &&
       docker pull certbot/dns-{{ dns_plugin }}:{{ certbot_version }};
-      docker run --rm -it
+      docker run --rm
       -v /etc/letsencrypt:/etc/letsencrypt
       -v /var/lib/letsencrypt:/var/lib/letsencrypt
       -v /var/log/letsencrypt:/var/log/letsencrypt
