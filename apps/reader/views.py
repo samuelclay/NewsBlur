@@ -74,6 +74,7 @@ BANNED_URLS = [
 ALLOWED_SUBDOMAINS = [
     'dev', 
     'www', 
+    'hwww', 
     # 'beta',  # Comment to redirect beta -> www, uncomment to allow beta -> staging (+ dns changes)
     'staging', 
     'discovery', 
