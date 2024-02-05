@@ -290,6 +290,8 @@
     <string name="menu_newsletters">Newsletters…</string>
     <string name="menu_shortcuts">Shortcuts…</string>
 
+    <string name="newsblur_opml">NewsBlur OPML</string>
+    <string name="newsbluropml">NewsBlur-OPML</string>
     <string name="import_export_title">Import/Export OPML</string>
     <string name="notifications_title">Notifications</string>
     
