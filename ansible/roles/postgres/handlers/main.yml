@@ -10,5 +10,5 @@
 
 - name: reload postgres config
   become: yes
-  command: docker exec -u postgres postgres pg_ctl reload
+  command: docker exec postgres pg_ctl reload
   listen: reload postgres

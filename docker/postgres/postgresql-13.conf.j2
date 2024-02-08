@@ -1,3 +1,6 @@
+{% if (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ["hdb-postgres", "db-postgres-secondary"] %}
+primary_conninfo      = 'host=db-postgres.service.consul port=5432 user=postgres'
+{% endif %}
 # -----------------------------
 # PostgreSQL configuration file
 # -----------------------------
@@ -246,7 +249,8 @@ archive_command = 'test ! -f /var/lib/postgresql/archive/%f && cp -f %p /var/lib
 
 # These are only used in recovery mode.
 
-restore_command = 'cp /var/lib/postgresql/archive/%f %p'		# command to use to restore an archived logfile segment
+restore_command = 'rsync -a -e "ssh -i /var/lib/postgresql/.ssh/id_rsa" nb@db-postgres.service.consul:/srv/newsblur/docker/volumes/postgres/archive/%f "%p"'
+# restore_command = 'cp /var/lib/postgresql/archive/%f %p'		# command to use to restore an archived logfile segment
 				# placeholders: %p = path of file to restore
 				#               %f = file name only
 				# e.g. 'cp /mnt/server/archivedir/%f %p'
