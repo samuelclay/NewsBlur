@@ -9,7 +9,7 @@
   "log_file": "/var/log/consul/consul.log",
   "enable_syslog": true,
   "retry_join": [{{ consul_manager_ip.stdout|trim }}],
-  {% if inventory_hostname.startswith("h") %}
+  {% if inventory_hostname.startswith("hdb") %}
   "advertise_addr": "{% raw %}{{ GetAllInterfaces | include \"name\" \"^enp\" | include \"flags\" \"forwardable|up\" | attr \"address\" }}{% endraw %}",
   {% else %}
   "advertise_addr": "{% raw %}{{ GetAllInterfaces | include \"name\" \"^eth\" | include \"flags\" \"forwardable|up\" | attr \"address\" }}{% endraw %}",
