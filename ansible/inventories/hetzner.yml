@@ -7,7 +7,7 @@ groups:
 
   web: inventory_hostname.startswith('happ')
   app: inventory_hostname.startswith('happ')
-  django: inventory_hostname.startswith('happ-django')
+  django: inventory_hostname.startswith('happ-web')
   refresh: inventory_hostname.startswith('happ-refresh')
   counts: inventory_hostname.startswith('happ-counts')
   push: inventory_hostname.startswith('happ-push')
