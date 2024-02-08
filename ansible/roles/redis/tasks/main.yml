@@ -34,8 +34,16 @@
     dest: /srv/newsblur/docker/redis/redis_replica.conf
   notify: restart redis
   register: updated_config
-  when: "'db-redis-story1' in inventory_hostname"
+  when: "'db-redis-story2' not in inventory_hostname"
 
+- name: Create Redis docker volume directory
+  file:
+    path: /srv/newsblur/docker/volumes
+    state: directory
+    recurse: yes
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"
+    
 - name: Create Redis docker volume with correct permissions
   file:
     path: /srv/newsblur/docker/volumes/redis
@@ -45,7 +53,6 @@
     group: "{{ ansible_effective_group_id|int }}"  
 
 - name: Start redis docker containers
-  become: yes
   docker_container:
     name: redis
     image: redis:7
@@ -64,7 +71,7 @@
     ports:
       - 6379:6379
     restart_policy: unless-stopped
-    user: 1000:1001
+    user: "{{ ansible_effective_user_id|int }}:{{ ansible_effective_group_id|int }}"
     volumes:
       - /srv/newsblur/docker/volumes/redis:/data
       - /srv/newsblur/docker/redis/redis.conf:/usr/local/etc/redis/redis_server.conf

@@ -1,8 +1,9 @@
-from flask import Flask, render_template, Response
 import pymongo
-from newsblur_web import settings
 import sentry_sdk
+from flask import Flask, Response, render_template
 from sentry_sdk.integrations.flask import FlaskIntegration
+
+from newsblur_web import settings
 
 if settings.FLASK_SENTRY_DSN is not None:
     sentry_sdk.init(
@@ -24,6 +25,8 @@ MONGO_HOST = settings.SERVER_NAME
 def objects():
     try:
         stats = connection.newsblur.command("dbstats")
+    except pymongo.errors.ServerSelectionTimeoutError as e:
+        return Response(f"Server selection timeout: {e}", 500)
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
     except pymongo.errors.NotMasterError as e:
@@ -77,6 +80,8 @@ def repl_set_lag():
         oplog_length = _get_oplog_length()
         # not running with --replSet
         replication_lag = _get_max_replication_lag()
+    except pymongo.errors.ServerSelectionTimeoutError as e:
+        return Response(f"Server selection timeout: {e}", 500)
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
     except pymongo.errors.NotMasterError as e:
@@ -101,6 +106,8 @@ def repl_set_lag():
 def size():
     try:
         stats = connection.newsblur.command("dbstats")
+    except pymongo.errors.ServerSelectionTimeoutError as e:
+        return Response(f"Server selection timeout: {e}", 500)
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
     except pymongo.errors.NotMasterError as e:
@@ -123,6 +130,8 @@ def size():
 def ops():
     try:
         status = connection.admin.command('serverStatus')
+    except pymongo.errors.ServerSelectionTimeoutError as e:
+        return Response(f"Server selection timeout: {e}", 500)
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
     except pymongo.errors.NotMasterError as e:
@@ -149,6 +158,8 @@ def ops():
 def page_faults():
     try:
         status = connection.admin.command('serverStatus')
+    except pymongo.errors.ServerSelectionTimeoutError as e:
+        return Response(f"Server selection timeout: {e}", 500)
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
     except pymongo.errors.NotMasterError as e:
@@ -175,6 +186,8 @@ def page_faults():
 def page_queues():
     try:
         status = connection.admin.command('serverStatus')
+    except pymongo.errors.ServerSelectionTimeoutError as e:
+        return Response(f"Server selection timeout: {e}", 500)
     except pymongo.errors.OperationFailure as e:
         return Response(f"Operation failure: {e}", 500)
     except pymongo.errors.NotMasterError as e:
