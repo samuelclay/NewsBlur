@@ -9,7 +9,7 @@ server=/consul/127.0.0.1#8600
 no-resolv
 
 {% for interface in network_interfaces %}
-{% if not interface.startswith('veth') %}
+{% if not interface.startswith('veth') and not interface.startswith('docker') and not interface.startswith('br') %}
 interface={{ interface }}
 {% endif %}
 {% endfor %}
