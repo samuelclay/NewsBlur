@@ -14,6 +14,7 @@
 @property (nonatomic, readonly) BOOL isVision;
 @property (nonatomic, readonly) BOOL isPortrait;
 @property (nonatomic, readonly) BOOL isCompactWidth;
+@property (nonatomic, readonly) BOOL isGrid;
 @property (nonatomic, readonly) BOOL isFeedShown;
 @property (nonatomic, readonly) BOOL isStoryShown;
 
@@ -47,10 +48,28 @@
 - (IBAction)showPremium:(id)sender;
 - (IBAction)showSupportForum:(id)sender;
 - (IBAction)showLogout:(id)sender;
+
 - (IBAction)chooseColumns:(id)sender;
+- (IBAction)chooseLayout:(id)sender;
+- (IBAction)chooseTitle:(id)sender;
+- (IBAction)choosePreview:(id)sender;
+- (IBAction)chooseGridColumns:(id)sender;
+- (IBAction)chooseGridHeight:(id)sender;
 - (IBAction)chooseFontSize:(id)sender;
 - (IBAction)chooseSpacing:(id)sender;
 - (IBAction)chooseTheme:(id)sender;
+
+- (IBAction)moveSite:(id)sender;
+- (IBAction)openRenameSite:(id)sender;
+- (IBAction)muteSite:(id)sender;
+- (IBAction)deleteSite:(id)sender;
+- (IBAction)openTrainSite:(id)sender;
+- (IBAction)openNotifications:(id)sender;
+- (IBAction)openStatistics:(id)sender;
+- (IBAction)instaFetchFeed:(id)sender;
+- (IBAction)doMarkAllRead:(id)sender;
+
+- (IBAction)showSendTo:(id)sender;
 - (IBAction)showTrain:(id)sender;
 - (IBAction)showShare:(id)sender;
 

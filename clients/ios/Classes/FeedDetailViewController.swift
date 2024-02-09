@@ -29,10 +29,6 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         case loading
     }
     
-    var isGrid: Bool {
-        return appDelegate.detailViewController.layout == .grid
-    }
-    
     var wasGrid: Bool {
         return appDelegate.detailViewController.wasGrid
     }

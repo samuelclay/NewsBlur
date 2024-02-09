@@ -764,7 +764,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 }
 
 - (void)beginOfflineTimer {
-    if ([self.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
+    if (self.storiesCollection.isInfrequent) {
         return;
     }
     
@@ -2442,11 +2442,6 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     appDelegate.storiesCollection.isReadView;
 }
 
-- (BOOL)isInfrequent {
-    return appDelegate.storiesCollection.isRiverView &&
-    [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"];
-}
-
 - (IBAction)doShowFeeds:(id)sender {
     [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"showFeeds"];
 }
@@ -2461,8 +2456,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     MenuViewController *viewController = [MenuViewController new];
     __weak MenuViewController *weakViewController = viewController;
     
-    BOOL everything = [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"];
-    BOOL infrequent = [self isInfrequent];
+    BOOL everything = appDelegate.storiesCollection.isEverything;
+    BOOL infrequent = appDelegate.storiesCollection.isInfrequent;
     BOOL river = [self isRiver];
     BOOL read = appDelegate.storiesCollection.isReadView;
     BOOL widget = appDelegate.storiesCollection.isWidgetView;
@@ -3233,7 +3228,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (BOOL)canPullToRefresh {
     BOOL river = appDelegate.storiesCollection.isRiverView;
-    BOOL infrequent = [self isInfrequent];
+    BOOL infrequent = appDelegate.storiesCollection.isInfrequent;
     BOOL read = appDelegate.storiesCollection.isReadView;
     BOOL widget = appDelegate.storiesCollection.isWidgetView;
     BOOL saved = appDelegate.storiesCollection.isSavedView;
