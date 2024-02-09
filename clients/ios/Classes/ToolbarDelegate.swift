@@ -54,13 +54,13 @@ extension ToolbarDelegate: NSToolbarDelegate {
                 return makeToolbarItem(itemIdentifier,
                                        image: Utilities.imageNamed("mark-read", sized: 24),
                                        label: "Mark as Read",
-                                       action: #selector(FeedDetailViewController.doOpenMarkReadMenu(_:)))
+                                       action: #selector(BaseViewController.openMarkReadMenu(_:)))
                 
             case .feedDetailSettings:
                 return makeToolbarItem(itemIdentifier,
                                        image: Utilities.imageNamed("settings", sized: 24),
                                        label: "Site Settings",
-                                       action: #selector(FeedDetailViewController.doOpenSettingsMenu(_:)))
+                                       action: #selector(BaseViewController.openSettingsMenu(_:)))
                 
             case .storyPagesSettings:
                 return makeToolbarItem(itemIdentifier,

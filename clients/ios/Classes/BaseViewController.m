@@ -509,6 +509,15 @@
     [self.appDelegate.feedDetailViewController doMarkAllRead:sender];
 }
 
+// These two are needed for the toolbar in Grid view.
+- (IBAction)openMarkReadMenu:(id)sender {
+    [self.appDelegate.feedDetailViewController doOpenMarkReadMenu:sender];
+}
+
+- (IBAction)openSettingsMenu:(id)sender {
+    [self.appDelegate.feedDetailViewController doOpenSettingsMenu:sender];
+}
+
 #pragma mark -
 #pragma mark Story menu
 
