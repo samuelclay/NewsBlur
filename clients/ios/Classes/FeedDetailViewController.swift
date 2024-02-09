@@ -134,7 +134,15 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     
     @objc var suppressMarkAsRead = false
     
+    var scrollingDate = Date.distantPast
+    
     func deferredReload(story: Story? = nil) {
+        if let story {
+            print("🪿 queuing deferred reload for \(story)")
+        } else {
+            print("🪿 queuing deferred reload")
+        }
+        
         reloadWorkItem?.cancel()
         
         if let story {
@@ -149,6 +157,16 @@ class FeedDetailViewController: FeedDetailObjCViewController {
             }
             
             if pendingStories.isEmpty {
+                print("🪿 starting deferred reload")
+                
+                let secondsSinceScroll = -scrollingDate.timeIntervalSinceNow
+                
+                if secondsSinceScroll < 0.5 {
+                    print("🪿 too soon to reload; \(secondsSinceScroll) seconds since scroll")
+                    deferredReload(story: story)
+                    return
+                }
+                
                 configureDataSource()
             } else {
                 for story in pendingStories.values {
@@ -228,12 +246,18 @@ extension FeedDetailViewController: FeedDetailInteraction {
         let cacheCount = storyCache.before.count + storyCache.after.count
         
         if cacheCount > 0, story.index >= cacheCount - 5 {
+            let debug = Date()
+            
             if storiesCollection.isRiverView, storiesCollection.activeFolder != nil {
                 fetchRiverPage(storiesCollection.feedPage + 1, withCallback: nil)
             } else {
                 fetchFeedDetail(storiesCollection.feedPage + 1, withCallback: nil)
             }
+            
+            print("🐓 Fetching next page took \(-debug.timeIntervalSinceNow) seconds")
         }
+        
+        scrollingDate = Date()
     }
     
     func tapped(story: Story) {
