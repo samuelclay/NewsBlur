@@ -1,5 +1,6 @@
 ---
 - name: Permissions for mongo
+  become: yes
   file:
     state: directory
     mode: 0755
@@ -269,6 +270,7 @@
     - logrotate
   
 - name: Add sanity checkers cronjob for disk usage
+  become: yes
   cron:
     name: disk_usage_sanity_checker
     user: root
