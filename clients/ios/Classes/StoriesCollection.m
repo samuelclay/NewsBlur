@@ -101,8 +101,20 @@
     return [activeFolder isEqualToString:@"everything"];
 }
 
+- (BOOL)isInfrequent {
+    return [activeFolder isEqualToString:@"infrequent"];
+}
+
 - (BOOL)isRiverOrSocial {
     return self.isRiverView || self.isSavedView || self.isReadView || self.isWidgetView || self.isSocialView || self.isSocialRiverView;
+}
+
+- (BOOL)isCustomFolder {
+    return self.isRiverView && !self.isEverything && !self.isInfrequent && !self.isSavedView && !self.isReadView && !self.isSocialView && !self.isWidgetView;
+}
+
+- (BOOL)isCustomFolderOrFeed {
+    return !self.isRiverView || self.isCustomFolder;
 }
 
 #pragma mark - Story Traversal

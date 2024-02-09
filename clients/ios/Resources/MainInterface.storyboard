@@ -372,6 +372,151 @@
                                         </command>
                                     </children>
                                 </menu>
+                                <menu title="Layout" id="2UT-ZB-x5H">
+                                    <children>
+                                        <command title="Left" propertyListString="titles_on_left" menuElementState="on" id="SHF-Gm-yHM">
+                                            <connections>
+                                                <action selector="chooseLayout:" destination="J28-e1-gcC" id="v7b-YA-qHb"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Top" propertyListString="titles_on_top" id="Zeq-Nu-dqs">
+                                            <connections>
+                                                <action selector="chooseLayout:" destination="J28-e1-gcC" id="E0V-4w-fMx"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Bottom" propertyListString="titles_on_bottom" id="iQo-Uv-UPm">
+                                            <connections>
+                                                <action selector="chooseLayout:" destination="J28-e1-gcC" id="APi-KB-zyb"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Grid" propertyListString="titles_in_grid" id="hc6-3c-pEr">
+                                            <connections>
+                                                <action selector="chooseLayout:" destination="J28-e1-gcC" id="lPQ-q9-ULB"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu title="Inline Menu" id="rEb-O5-WxE">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                </menu>
+                                <menu title="Story Preview" id="11o-Ny-Ay8">
+                                    <children>
+                                        <command title="Only Title" propertyListString="title" menuElementState="on" id="3VQ-tS-tca">
+                                            <connections>
+                                                <action selector="chooseTitle:" destination="J28-e1-gcC" id="dVZ-e9-eMx"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Short" propertyListString="short" id="kKo-nO-rdD">
+                                            <connections>
+                                                <action selector="chooseTitle:" destination="J28-e1-gcC" id="L2L-i9-jJu"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Medium" propertyListString="medium" id="8kl-JH-cAR">
+                                            <connections>
+                                                <action selector="chooseTitle:" destination="J28-e1-gcC" id="cHy-Qn-qYA"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Long" propertyListString="long" id="6c5-Aa-VWc">
+                                            <connections>
+                                                <action selector="chooseTitle:" destination="J28-e1-gcC" id="laa-aj-lRm"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu title="Image Preview" id="JBe-EV-vd0">
+                                    <children>
+                                        <command title="None" propertyListString="none" menuElementState="on" id="xUQ-iP-Xav">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="choosePreview:" destination="J28-e1-gcC" id="ydY-6y-Vu7"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Small Left" propertyListString="small_left" id="pgV-T3-JgP">
+                                            <connections>
+                                                <action selector="choosePreview:" destination="J28-e1-gcC" id="6bd-eh-Jkf"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Large Left" propertyListString="large_left" id="rJC-gP-ub8">
+                                            <connections>
+                                                <action selector="choosePreview:" destination="J28-e1-gcC" id="dXF-jY-GB9"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Large Right" propertyListString="large_right" id="DHS-T6-h9f">
+                                            <connections>
+                                                <action selector="choosePreview:" destination="J28-e1-gcC" id="ZrD-28-3r7"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Small Right" propertyListString="small_right" id="0ZJ-kc-nG7">
+                                            <connections>
+                                                <action selector="choosePreview:" destination="J28-e1-gcC" id="yQ3-7h-2eZ"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu title="Inline Menu" id="uRc-h2-2ur">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                </menu>
+                                <menu title="Grid Columns" id="gPp-Vp-Aqb">
+                                    <children>
+                                        <command title="Automatic" propertyListString="auto" menuElementState="on" id="W9M-jz-7Wo">
+                                            <connections>
+                                                <action selector="chooseGridColumns:" destination="J28-e1-gcC" id="r7t-6H-NdZ"/>
+                                            </connections>
+                                        </command>
+                                        <command title="1" propertyListString="1" id="COJ-8T-jFG">
+                                            <connections>
+                                                <action selector="chooseGridColumns:" destination="J28-e1-gcC" id="sg6-ao-Ca6"/>
+                                            </connections>
+                                        </command>
+                                        <command title="2" propertyListString="2" id="Enn-ac-qRo">
+                                            <connections>
+                                                <action selector="chooseGridColumns:" destination="J28-e1-gcC" id="9uC-A2-7y3"/>
+                                            </connections>
+                                        </command>
+                                        <command title="3" propertyListString="3" id="LL9-1i-7gs">
+                                            <connections>
+                                                <action selector="chooseGridColumns:" destination="J28-e1-gcC" id="7Ki-1P-JNN"/>
+                                            </connections>
+                                        </command>
+                                        <command title="4" propertyListString="4" id="TAe-RC-Isj">
+                                            <connections>
+                                                <action selector="chooseGridColumns:" destination="J28-e1-gcC" id="8rE-3w-9G0"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu title="Grid Height" id="YgQ-8j-p4J">
+                                    <children>
+                                        <command title="Extra Short" propertyListString="xs" id="QkE-4U-qCZ">
+                                            <connections>
+                                                <action selector="chooseGridHeight:" destination="J28-e1-gcC" id="gM2-NN-oey"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Short" propertyListString="short" id="QiP-55-H7Q">
+                                            <connections>
+                                                <action selector="chooseGridHeight:" destination="J28-e1-gcC" id="ayB-De-Drm"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Medium" propertyListString="medium" id="Z1h-b3-VUc">
+                                            <connections>
+                                                <action selector="chooseGridHeight:" destination="J28-e1-gcC" id="2L5-oA-LRA"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Tall" propertyListString="tall" id="nuu-UE-jx7">
+                                            <connections>
+                                                <action selector="chooseGridHeight:" destination="J28-e1-gcC" id="NWu-Lm-Mcy"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Extra Tall" propertyListString="xl" id="7pm-OP-kNf">
+                                            <connections>
+                                                <action selector="chooseGridHeight:" destination="J28-e1-gcC" id="rZo-Hs-UjD"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu title="Inline Menu" id="gSR-Tp-3Cp">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                </menu>
                                 <menu title="Text Size" id="si2-4b-JdU">
                                     <children>
                                         <command title="Extra Small" propertyListString="xs" input="5" id="1J1-HG-ovw">
@@ -453,15 +598,14 @@
                             <children>
                                 <menu title="Manage" id="uU0-yq-BC8">
                                     <children>
-                                        <command title="Move to Another Folder…" id="LG6-8T-2ce"/>
                                         <command title="Rename Site…" id="ogl-RU-MAV">
                                             <connections>
-                                                <action selector="openRenameSite" destination="J28-e1-gcC" id="aCr-ei-bqw"/>
+                                                <action selector="openRenameSite:" destination="J28-e1-gcC" id="uUs-SK-j71"/>
                                             </connections>
                                         </command>
-                                        <command title="Mute Site" id="USf-x7-etD">
+                                        <command title="Mute Site…" id="USf-x7-etD">
                                             <connections>
-                                                <action selector="muteSite" destination="J28-e1-gcC" id="v0a-pd-QV6"/>
+                                                <action selector="muteSite:" destination="J28-e1-gcC" id="J7R-Wr-qZZ"/>
                                             </connections>
                                         </command>
                                         <menu id="HKb-sW-DLl">
@@ -469,6 +613,9 @@
                                             <children>
                                                 <command title="Delete Site…" id="RuQ-ea-MNw">
                                                     <menuElementAttributes key="attributes" destructive="YES"/>
+                                                    <connections>
+                                                        <action selector="deleteSite:" destination="J28-e1-gcC" id="iu8-R6-1oB"/>
+                                                    </connections>
                                                 </command>
                                             </children>
                                         </menu>
@@ -479,7 +626,7 @@
                                 </menu>
                                 <command title="Train…" id="hIh-yf-xP8">
                                     <connections>
-                                        <action selector="openTrainSite" destination="J28-e1-gcC" id="7OO-UO-3Ro"/>
+                                        <action selector="openTrainSite:" destination="J28-e1-gcC" id="5Ka-Ra-khJ"/>
                                     </connections>
                                 </command>
                                 <command title="Notifications…" id="zeT-bO-F72">
@@ -498,7 +645,7 @@
                                 <command title="Insta-Fetch Stories" input="r" id="skD-1M-foi">
                                     <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
                                     <connections>
-                                        <action selector="instafetchFeed" destination="J28-e1-gcC" id="kAI-0o-ni8"/>
+                                        <action selector="instaFetchFeed:" destination="J28-e1-gcC" id="soI-a3-gDT"/>
                                     </connections>
                                 </command>
                                 <menu id="ze6-Sa-c31">
@@ -528,7 +675,11 @@
                                         <action selector="toggleStoryUnread:" destination="J28-e1-gcC" id="iNX-pg-hgT"/>
                                     </connections>
                                 </command>
-                                <command title="Send To…" id="d3Y-Ik-PAB"/>
+                                <command title="Send To…" id="d3Y-Ik-PAB">
+                                    <connections>
+                                        <action selector="showSendTo:" destination="J28-e1-gcC" id="XJ8-Tz-tG6"/>
+                                    </connections>
+                                </command>
                                 <command title="Train This Story…" id="GJC-ae-c80">
                                     <connections>
                                         <action selector="showTrain:" destination="J28-e1-gcC" id="pr3-BS-f2g"/>

@@ -218,6 +218,15 @@
     }
 }
 
+- (BOOL)isCompactWidth {
+    return self.view.window.windowScene.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact;
+    //return self.compactWidth > 0.0;
+}
+
+- (BOOL)isGrid {
+    return self.appDelegate.detailViewController.storyTitlesInGrid;
+}
+
 - (BOOL)isFeedShown {
     return appDelegate.storiesCollection.activeFeed != nil || appDelegate.storiesCollection.activeFolder != nil;
 }
@@ -226,19 +235,30 @@
     return !appDelegate.storyPagesViewController.currentPage.view.isHidden && appDelegate.storyPagesViewController.currentPage.noStoryMessage.isHidden;
 }
 
-- (BOOL)isCompactWidth {
-    return self.view.window.windowScene.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact;
-    //return self.compactWidth > 0.0;
-}
-
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-    if (action == @selector(muteSite) || action == @selector(openRenameSite)) {
-        return !appDelegate.storiesCollection.isEverything;
-    } else if (action == @selector(openTrainSite) || action == @selector(openNotifications:) || action == @selector(openStatistics:)) {
-        return !appDelegate.storiesCollection.isRiverOrSocial;
-    } else if (action == @selector(openRenameSite)) {
-        return appDelegate.storiesCollection.isSocialView;
-    } else if (action == @selector(showTrain:) || action == @selector(showShare:)) {
+    if (action == @selector(chooseLayout:)) {
+        return self.isFeedShown;
+    } else if (action == @selector(chooseTitle:) || action == @selector(choosePreview:)) {
+        return self.isFeedShown && !self.isGrid;
+    } else if (action == @selector(chooseGridColumns:) || action == @selector(chooseGridHeight:)) {
+        return self.isFeedShown && self.isGrid;
+    } else if (action == @selector(openTrainSite) ||
+        action == @selector(openTrainSite:) ||
+        action == @selector(openNotifications:) ||
+        action == @selector(openStatistics:) ||
+        action == @selector(moveSite:) ||
+        action == @selector(openRenameSite:) ||
+        action == @selector(deleteSite:)) {
+        return self.isFeedShown && appDelegate.storiesCollection.isCustomFolderOrFeed;
+    } else if (action == @selector(muteSite) || 
+               action == @selector(muteSite:)) {
+        return self.isFeedShown && !appDelegate.storiesCollection.isRiverView;
+    } else if (action == @selector(instaFetchFeed:) ||
+               action == @selector(doMarkAllRead:)) {
+        return self.isFeedShown;
+    } else if (action == @selector(showSendTo:) ||
+               action == @selector(showTrain:) ||
+               action == @selector(showShare:)) {
         return self.isStoryShown;
     } else {
         return [super canPerformAction:action withSender:sender];
@@ -250,6 +270,27 @@
     
     if (command.action == @selector(chooseColumns:)) {
         command.state = [command.propertyList isEqualToString:appDelegate.detailViewController.behaviorString];
+    } else if (command.action == @selector(chooseLayout:)) {
+        NSString *value = self.appDelegate.storiesCollection.activeStoryTitlesPosition;
+        command.state = [command.propertyList isEqualToString:value];
+    } else if (command.action == @selector(chooseTitle:)) {
+        NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"story_list_preview_text_size"];
+        command.state = [command.propertyList isEqualToString:value];
+    } else if (command.action == @selector(choosePreview:)) {
+        NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"story_list_preview_images_size"];
+        command.state = [command.propertyList isEqualToString:value];
+    } else if (command.action == @selector(chooseGridColumns:)) {
+        NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"grid_columns"];
+        if (value == nil) {
+            value = @"auto";
+        }
+        command.state = [command.propertyList isEqualToString:value];
+    } else if (command.action == @selector(chooseGridHeight:)) {
+        NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"grid_height"];
+        if (value == nil) {
+            value = @"medium";
+        }
+        command.state = [command.propertyList isEqualToString:value];
     } else if (command.action == @selector(chooseFontSize:)) {
         NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"feed_list_font_size"];
         command.state = [command.propertyList isEqualToString:value];
@@ -258,12 +299,24 @@
         command.state = [command.propertyList isEqualToString:value];
     } else if (command.action == @selector(chooseTheme:)) {
         command.state = [command.propertyList isEqualToString:ThemeManager.themeManager.theme];
+    } else if (command.action == @selector(openRenameSite:)) {
+        if (appDelegate.storiesCollection.isRiverOrSocial) {
+            command.title = @"Rename Folder…";
+        } else {
+            command.title = @"Rename Site…";
+        }
+    } else if (command.action == @selector(deleteSite:)) {
+        if (appDelegate.storiesCollection.isRiverOrSocial) {
+            command.title = @"Delete Folder…";
+        } else {
+            command.title = @"Delete Site…";
+        }
     } else if (command.action == @selector(toggleStorySaved:)) {
         BOOL isRead = [[self.appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isRead) {
             command.title = @"Unsave This Story";
         } else {
-            command.title = @"Save THis Story";
+            command.title = @"Save This Story";
         }
     } else if (command.action == @selector(toggleStoryUnread:)) {
         BOOL isRead = [[self.appDelegate.activeStory objectForKey:@"read_status"] boolValue];
@@ -274,6 +327,9 @@
         }
     }
 }
+
+#pragma mark -
+#pragma mark File menu
 
 - (IBAction)reloadFeeds:(id)sender {
     [appDelegate reloadFeedsView:NO];
@@ -312,6 +368,9 @@
     [self.appDelegate confirmLogout];
 }
 
+#pragma mark -
+#pragma mark View menu
+
 - (IBAction)chooseColumns:(id)sender {
     UICommand *command = sender;
     NSString *string = command.propertyList;
@@ -323,6 +382,52 @@
     }];
     
     [self.appDelegate.detailViewController updateLayoutWithReload:NO fetchFeeds:YES];
+}
+
+- (IBAction)chooseLayout:(id)sender {
+    UICommand *command = sender;
+    NSString *string = command.propertyList;
+    NSString *key = self.appDelegate.storiesCollection.storyTitlesPositionKey;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:string forKey:key];
+    
+    [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
+}
+
+- (IBAction)chooseTitle:(id)sender {
+    UICommand *command = sender;
+    NSString *string = command.propertyList;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:string forKey:@"story_list_preview_text_size"];
+    
+    [self.appDelegate resizePreviewSize];
+}
+
+- (IBAction)choosePreview:(id)sender {
+    UICommand *command = sender;
+    NSString *string = command.propertyList;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:string forKey:@"story_list_preview_images_size"];
+    
+    [self.appDelegate resizePreviewSize];
+}
+
+- (IBAction)chooseGridColumns:(id)sender {
+    UICommand *command = sender;
+    NSString *string = command.propertyList;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:string forKey:@"grid_columns"];
+    
+    [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
+}
+
+- (IBAction)chooseGridHeight:(id)sender {
+    UICommand *command = sender;
+    NSString *string = command.propertyList;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:string forKey:@"grid_height"];
+    
+    [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
 }
 
 - (IBAction)chooseFontSize:(id)sender {
@@ -349,6 +454,66 @@
     NSString *string = command.propertyList;
     
     [ThemeManager themeManager].theme = string;
+}
+
+#pragma mark -
+#pragma mark Site menu
+
+- (IBAction)moveSite:(id)sender {
+    [self.appDelegate.feedDetailViewController openMoveView:self.appDelegate.navigationController];
+}
+
+- (IBAction)openRenameSite:(id)sender {
+    [self.appDelegate.feedDetailViewController openRenameSite];
+}
+
+- (IBAction)muteSite:(id)sender {
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Are you sure you wish to mute %@?", self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle: @"Mute Site" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+        [alertController dismissViewControllerAnimated:YES completion:nil];
+        [self.appDelegate.feedDetailViewController muteSite];
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                                        style:UIAlertActionStyleCancel handler:nil]];
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (IBAction)deleteSite:(id)sender {
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Are you sure you wish to delete %@?", self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle: @"Delete Site" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+        [alertController dismissViewControllerAnimated:YES completion:nil];
+        [self.appDelegate.feedDetailViewController deleteSite];
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                                        style:UIAlertActionStyleCancel handler:nil]];
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (IBAction)openTrainSite:(id)sender {
+    [self.appDelegate.feedDetailViewController openTrainSite];
+}
+
+- (IBAction)openNotifications:(id)sender {
+    [self.appDelegate.feedDetailViewController openNotifications:sender];
+}
+
+- (IBAction)openStatistics:(id)sender {
+    [self.appDelegate.feedDetailViewController openStatistics:sender];
+}
+
+- (IBAction)instaFetchFeed:(id)sender {
+    [self.appDelegate.feedDetailViewController instafetchFeed];
+}
+
+- (IBAction)doMarkAllRead:(id)sender {
+    [self.appDelegate.feedDetailViewController doMarkAllRead:sender];
+}
+
+#pragma mark -
+#pragma mark Story menu
+
+- (IBAction)showSendTo:(id)sender {
+    [appDelegate showSendTo:self sender:sender];
 }
 
 - (IBAction)showTrain:(id)sender {

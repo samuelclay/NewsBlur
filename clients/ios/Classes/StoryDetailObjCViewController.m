@@ -2251,9 +2251,11 @@
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-    if ([self respondsToSelector:action])
-        return self.noStoryMessage.hidden;
-    return [super canPerformAction:action withSender:sender];
+    if ([self respondsToSelector:action]) {
+        return  [super canPerformAction:action withSender:sender] && self.noStoryMessage.hidden;
+    } else {
+        return [super canPerformAction:action withSender:sender];
+    }
 }
 
 # pragma mark -

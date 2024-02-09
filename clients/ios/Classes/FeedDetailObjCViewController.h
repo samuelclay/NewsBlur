@@ -110,6 +110,7 @@
 - (void)loadStoryAtRow:(NSInteger)row;
 - (void)redrawUnreadStory;
 - (IBAction)doOpenMarkReadMenu:(id)sender;
+- (IBAction)doMarkAllRead:(id)sender;
 - (IBAction)doOpenSettingsMenu:(id)sender;
 - (void)deleteSite;
 - (void)deleteFolder;
@@ -131,5 +132,8 @@
 - (void)finishMarkAsUnsaved:(NSDictionary *)params;
 - (void)failedMarkAsUnsaved:(NSDictionary *)params;
 - (void)failedMarkAsUnread:(NSDictionary *)params;
+
+- (void)confirmDeleteSite:(UINavigationController *)menuNavigationController;
+- (void)openMoveView:(UINavigationController *)menuNavigationController;
 
 @end
