@@ -77,6 +77,7 @@ ALLOWED_SUBDOMAINS = [
     'hwww', 
     # 'beta',  # Comment to redirect beta -> www, uncomment to allow beta -> staging (+ dns changes)
     'staging', 
+    'hstaging', 
     'discovery', 
     'debug', 
     'debug3', 
