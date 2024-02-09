@@ -68,6 +68,8 @@
 - (IBAction)openStatistics:(id)sender;
 - (IBAction)instaFetchFeed:(id)sender;
 - (IBAction)doMarkAllRead:(id)sender;
+- (IBAction)openMarkReadMenu:(id)sender;
+- (IBAction)openSettingsMenu:(id)sender;
 
 - (IBAction)showSendTo:(id)sender;
 - (IBAction)showTrain:(id)sender;

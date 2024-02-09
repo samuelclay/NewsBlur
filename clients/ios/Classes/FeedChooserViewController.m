@@ -827,6 +827,36 @@ static const CGFloat kFolderTitleHeight = 36.0;
     return indexIndex;
 }
 
+#if TARGET_OS_MACCATALYST
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSArray<NSIndexPath *> *selectedRows = [tableView indexPathsForSelectedRows];
+    if ([selectedRows containsObject:indexPath]) {
+        [tableView deselectRowAtIndexPath:indexPath animated:false];
+        return nil;
+    }
+    
+    return indexPath;
+}
+
+- (NSIndexPath *)tableView:(UITableView *)tableView willDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSArray<NSIndexPath *> *selectedRows = [tableView indexPathsForSelectedRows];
+    if ([selectedRows containsObject:indexPath]) {
+        return nil;
+    }
+    
+    return indexPath;
+}
+
+- (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSArray<NSIndexPath *> *selectedRows = [tableView indexPathsForSelectedRows];
+    for (NSIndexPath *index in selectedRows) {
+        [[tableView cellForRowAtIndexPath:index] setHighlighted:YES];
+    }
+    
+    return YES;
+}
+#endif
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (self.operation == FeedChooserOperationWidgetSites) {
         [self deselectRowsOutsideSection:indexPath.section];
