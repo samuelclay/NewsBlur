@@ -179,6 +179,7 @@ class StoryCache: ObservableObject {
     }
     
     func reload() {
+        let debug = Date()
         let storyCount = Int(appDelegate.storiesCollection.storyLocationsCount)
         var beforeSelection = [Int]()
         var selectedIndex = -999
@@ -202,7 +203,7 @@ class StoryCache: ObservableObject {
         selected = selectedIndex >= 0 ? Story(index: selectedIndex) : nil
         after = afterSelection.map { Story(index: $0) }
         
-        print("🪿 Reload: \(before.count) before, \(selected == nil ? "none" : selected!.debugTitle) selected, \(after.count) after")
+        print("🪿 Reload: \(before.count) before, \(selected == nil ? "none" : selected!.debugTitle) selected, \(after.count) after, took \(-debug.timeIntervalSinceNow) seconds")
         
         
 //        
