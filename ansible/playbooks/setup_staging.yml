@@ -23,5 +23,5 @@
     - {role: 'nginx', tags: 'nginx'}
     - {role: 'node', tags: 'node'}
     - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
-    - {role: 'prometheus', tags: ['prometheus', 'metrics']}
-    - {role: 'grafana', tags: ['grafana', 'metrics']}
+    # - {role: 'prometheus', tags: ['prometheus', 'metrics']}
+    # - {role: 'grafana', tags: ['grafana', 'metrics']}
