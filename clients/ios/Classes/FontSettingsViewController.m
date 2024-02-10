@@ -439,7 +439,9 @@
     [self.fontSizeSegment setTitle:@"M" forSegmentAtIndex:2];
     [self.fontSizeSegment setTitle:@"L" forSegmentAtIndex:3];
     [self.fontSizeSegment setTitle:@"XL" forSegmentAtIndex:4];
+#if !TARGET_OS_MACCATALYST
     self.fontSizeSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
+#endif
     [self.fontSizeSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.fontSizeSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
@@ -467,7 +469,9 @@
     [self.lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_m"] forSegmentAtIndex:2];
     [self.lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_l"] forSegmentAtIndex:3];
     [self.lineSpacingSegment setImage:[UIImage imageNamed:@"line_spacing_xl"] forSegmentAtIndex:4];
+#if !TARGET_OS_MACCATALYST
     self.lineSpacingSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
+#endif
     
     [[ThemeManager themeManager] updateSegmentedControl:self.lineSpacingSegment];
     
@@ -486,7 +490,9 @@
     self.fullscreenSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
     [self.fullscreenSegment setTitle:@"Full Screen" forSegmentAtIndex:0];
     [self.fullscreenSegment setTitle:@"Toolbar" forSegmentAtIndex:1];
+#if !TARGET_OS_MACCATALYST
     self.fullscreenSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
+#endif
     [self.fullscreenSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
     [self.fullscreenSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.fullscreenSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
@@ -508,7 +514,9 @@
     self.autoscrollSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
     [self.autoscrollSegment setTitle:@"Manual scroll" forSegmentAtIndex:0];
     [self.autoscrollSegment setTitle:@"Auto scroll" forSegmentAtIndex:1];
+#if !TARGET_OS_MACCATALYST
     self.autoscrollSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
+#endif
     [self.autoscrollSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
     [self.autoscrollSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.autoscrollSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
@@ -530,7 +538,9 @@
     self.scrollOrientationSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
     [self.scrollOrientationSegment setTitle:@"⏩ Horizontal" forSegmentAtIndex:0];
     [self.scrollOrientationSegment setTitle:@"⏬ Vertical" forSegmentAtIndex:1];
+#if !TARGET_OS_MACCATALYST
     self.scrollOrientationSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
+#endif
     [self.scrollOrientationSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
     [self.scrollOrientationSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:0];
     [self.scrollOrientationSegment setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:1];
@@ -566,7 +576,9 @@
     
     [self.themeSegment setDividerImage:blankImage forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
     self.themeSegment.tintColor = [UIColor clearColor];
+#if !TARGET_OS_MACCATALYST
     self.themeSegment.backgroundColor = [UIColor clearColor];
+#endif
     
     [[ThemeManager themeManager] updateThemeSegmentedControl:self.themeSegment];
     

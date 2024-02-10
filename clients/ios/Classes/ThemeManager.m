@@ -266,7 +266,9 @@ NSString * const ThemeStyleDark = @"dark";
 
 - (void)updateSegmentedControl:(UISegmentedControl *)segmentedControl {
     segmentedControl.tintColor = UIColorFromRGB(0x8F918B);
+#if !TARGET_OS_MACCATALYST
     segmentedControl.backgroundColor = UIColorFromLightDarkRGB(0xe7e6e7, 0x303030);
+#endif
     segmentedControl.selectedSegmentTintColor = UIColorFromLightDarkRGB(0xffffff, 0x6f6f75);
     
     [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateNormal foregroundColor:UIColorFromLightDarkRGB(0x909090, 0xaaaaaa)];
@@ -275,7 +277,9 @@ NSString * const ThemeStyleDark = @"dark";
 
 - (void)updateThemeSegmentedControl:(UISegmentedControl *)segmentedControl {
     segmentedControl.tintColor = [UIColor clearColor];
+#if !TARGET_OS_MACCATALYST
     segmentedControl.backgroundColor = [UIColor clearColor];
+#endif
     segmentedControl.selectedSegmentTintColor = [UIColor clearColor];
 }
 

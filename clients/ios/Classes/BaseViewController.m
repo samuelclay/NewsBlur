@@ -273,6 +273,13 @@
     } else if (command.action == @selector(chooseLayout:)) {
         NSString *value = self.appDelegate.storiesCollection.activeStoryTitlesPosition;
         command.state = [command.propertyList isEqualToString:value];
+    } else if (command.action == @selector(toggleSidebar:)) {
+        UISplitViewController *splitViewController = self.appDelegate.splitViewController;
+        if (splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeTwoBesideSecondary) {
+            command.title = @"Show Sidebar";
+        } else {
+            command.title = @"Hide Sidebar";
+        }
     } else if (command.action == @selector(chooseTitle:)) {
         NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"story_list_preview_text_size"];
         command.state = [command.propertyList isEqualToString:value];
@@ -454,6 +461,14 @@
     NSString *string = command.propertyList;
     
     [ThemeManager themeManager].theme = string;
+}
+
+- (IBAction)toggleSidebar:(id)sender{
+    UISplitViewController *splitViewController = self.appDelegate.splitViewController;
+    
+    [UIView animateWithDuration:0.2 animations:^{
+         splitViewController.preferredDisplayMode = (splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeTwoBesideSecondary ? UISplitViewControllerDisplayModeTwoBesideSecondary : UISplitViewControllerDisplayModeOneBesideSecondary);
+    }];
 }
 
 #pragma mark -

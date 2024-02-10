@@ -204,7 +204,9 @@ NSString * const MenuHandler = @"handler";
     
     [segmentedControl setDividerImage:blankImage forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
     segmentedControl.tintColor = [UIColor clearColor];
+#if !TARGET_OS_MACCATALYST
     segmentedControl.backgroundColor = [UIColor clearColor];
+#endif
     
     segmentedControl.selectedSegmentIndex = valueIndex;
     
@@ -250,7 +252,9 @@ NSString * const MenuHandler = @"handler";
     segmentedControl.apportionsSegmentWidthsByContent = YES;
     segmentedControl.selectedSegmentIndex = [item[MenuSegmentIndex] integerValue];
     segmentedControl.tag = row;
+#if !TARGET_OS_MACCATALYST
     segmentedControl.backgroundColor = UIColorFromRGB(0xeeeeee);
+#endif
     [segmentedControl setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"WhitneySSm-Medium" size:12.0]} forState:UIControlStateNormal];
     [segmentedControl addTarget:self action:@selector(segmentedValueChanged:) forControlEvents:UIControlEventValueChanged];
     
