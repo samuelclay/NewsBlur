@@ -23,6 +23,7 @@ class StoryPagesViewController: StoryPagesObjCViewController {
         WidgetCenter.shared.reloadAllTimelines()
     }
     
+#if targetEnvironment(macCatalyst)
     @objc func validateToolbarItem(_ item: NSToolbarItem) -> Bool {
         if [.storyPagesSettings, .storyPagesBrowser].contains(item.itemIdentifier) {
             return self.isStoryShown
@@ -30,4 +31,5 @@ class StoryPagesViewController: StoryPagesObjCViewController {
             return true
         }
     }
+#endif
 }
