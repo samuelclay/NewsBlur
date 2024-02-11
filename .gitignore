@@ -53,6 +53,7 @@ docker/haproxy/haproxy.consul.cfg
 docker/nginx/nginx.consul.conf
 docker/prometheus/prometheus.yml
 docker/redis/redis_replica.conf
+docker/redis/redis_*_replica.conf
 docker/postgres/postgres.conf
 
 # Local configuration file (sdk path, etc)
