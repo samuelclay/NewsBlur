@@ -156,7 +156,7 @@ def db_check_redis_user():
     if request.args.get('consul') == '1':
         return str(1)
 
-    port = request.args.get('port', 5379)
+    port = request.args.get('port', 6381)
 
     try:
         r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul:{port}', db=0)
@@ -178,7 +178,7 @@ def db_check_redis_story():
     if request.args.get('consul') == '1':
         return str(1)
 
-    port = request.args.get('port', 5379)
+    port = request.args.get('port', 6380)
     
     try:
         r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul:{port}', db=1)
@@ -200,7 +200,7 @@ def db_check_redis_sessions():
     if request.args.get('consul') == '1':
         return str(1)
 
-    port = request.args.get('port', 5379)
+    port = request.args.get('port', 5382)
 
     try:
         r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul:{port}', db=5)
@@ -222,7 +222,7 @@ def db_check_redis_pubsub():
     if request.args.get('consul') == '1':
         return str(1)
 
-    port = request.args.get('port', 5379)
+    port = request.args.get('port', 6383)
 
     try:
         r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul:{port}', db=1)
