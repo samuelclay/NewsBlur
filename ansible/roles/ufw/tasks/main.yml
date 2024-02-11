@@ -40,7 +40,7 @@
   ufw:
     rule: allow
     src: '{{ item }}'
-  with_items: "{{ groups['NewsBlur_Hetzner'] | map('extract', hostvars, ['ansible_host']) }}"
+  with_items: "{{ groups['hall'] | map('extract', hostvars, ['ansible_host']) }}"
   tags: 
     - firewall
     - ufw
@@ -52,7 +52,7 @@
     rule: allow
     route: yes
     src: '{{ item }}'
-  with_items: "{{ groups['NewsBlur_Hetzner'] | map('extract', hostvars, ['ansible_host']) }}"
+  with_items: "{{ groups['hall'] | map('extract', hostvars, ['ansible_host']) }}"
   tags: 
     - firewall
     - ufw
