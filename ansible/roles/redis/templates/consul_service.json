@@ -1,6 +1,6 @@
 {
     "service": {
-        {% if inventory_hostname in ["db-redis-user", "db-redis-story1", "db-redis-session", "db-redis-pubsub"] %}
+        {% if not redis_secondary %}
             "name": "{{ inventory_hostname|regex_replace('\-?\d+', '')|regex_replace("hdb", "db") }}",
         {% else %}
             "name": "db-redis-{{ redis_role }}-staging",
