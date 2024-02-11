@@ -756,9 +756,17 @@ else:
 # = Redis =
 # =========
 if DOCKERBUILD:
-    REDIS_PORT = 6579
+    # REDIS_PORT = 6579
+    REDIS_STORY_PORT = 6579
+    REDIS_USER_PORT = 6579
+    REDIS_SESSION_PORT = 6579
+    REDIS_PUBSUB_PORT = 6579
 else:
-    REDIS_PORT = 6379
+    # REDIS_PORT = 6379
+    REDIS_STORY_PORT = 6380
+    REDIS_USER_PORT = 6381
+    REDIS_SESSION_PORT = 6382
+    REDIS_PUBSUB_PORT = 6383
 
 if REDIS_USER is None:
     # REDIS has been renamed to REDIS_USER. 
@@ -766,7 +774,7 @@ if REDIS_USER is None:
 
 CELERY_REDIS_DB_NUM = 4
 SESSION_REDIS_DB = 5
-CELERY_BROKER_URL = "redis://%s:%s/%s" % (REDIS_USER['host'], REDIS_PORT,CELERY_REDIS_DB_NUM)
+CELERY_BROKER_URL = "redis://%s:%s/%s" % (REDIS_USER['host'], REDIS_USER_PORT,CELERY_REDIS_DB_NUM)
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 BROKER_TRANSPORT_OPTIONS = {
     "max_retries": 3, 
@@ -777,7 +785,7 @@ BROKER_TRANSPORT_OPTIONS = {
 
 SESSION_REDIS = {
     'host': REDIS_SESSIONS['host'],
-    'port': REDIS_PORT,
+    'port': REDIS_SESSION_PORT,
     'db': SESSION_REDIS_DB,
     # 'password': 'password',
     'prefix': '',
@@ -788,21 +796,21 @@ SESSION_REDIS = {
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://%s:%s/6' % (REDIS_USER['host'], REDIS_PORT),
+        'LOCATION': 'redis://%s:%s/6' % (REDIS_USER['host'], REDIS_USER_PORT),
     },
 }
 
-REDIS_POOL                 = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=0, decode_responses=True)
-REDIS_ANALYTICS_POOL       = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=2, decode_responses=True)
-REDIS_STATISTICS_POOL      = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=3, decode_responses=True)
-REDIS_FEED_UPDATE_POOL     = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=4, decode_responses=True)
-REDIS_STORY_HASH_TEMP_POOL = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=10, decode_responses=True)
-# REDIS_CACHE_POOL         = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_PORT, db=6) # Duped in CACHES
-REDIS_STORY_HASH_POOL      = redis.ConnectionPool(host=REDIS_STORY['host'], port=REDIS_PORT, db=1, decode_responses=True)
-REDIS_FEED_READ_POOL       = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=REDIS_PORT, db=1, decode_responses=True)
-REDIS_FEED_SUB_POOL        = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=REDIS_PORT, db=2, decode_responses=True)
-REDIS_SESSION_POOL         = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=REDIS_PORT, db=5, decode_responses=True)
-REDIS_PUBSUB_POOL          = redis.ConnectionPool(host=REDIS_PUBSUB['host'], port=REDIS_PORT, db=0, decode_responses=True)
+REDIS_POOL                 = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_USER_PORT, db=0, decode_responses=True)
+REDIS_ANALYTICS_POOL       = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_USER_PORT, db=2, decode_responses=True)
+REDIS_STATISTICS_POOL      = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_USER_PORT, db=3, decode_responses=True)
+REDIS_FEED_UPDATE_POOL     = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_USER_PORT, db=4, decode_responses=True)
+REDIS_STORY_HASH_TEMP_POOL = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_USER_PORT, db=10, decode_responses=True)
+# REDIS_CACHE_POOL         = redis.ConnectionPool(host=REDIS_USER['host'], port=REDIS_USER_PORT, db=6) # Duped in CACHES
+REDIS_STORY_HASH_POOL      = redis.ConnectionPool(host=REDIS_STORY['host'], port=REDIS_STORY_PORT, db=1, decode_responses=True)
+REDIS_FEED_READ_POOL       = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=REDIS_SESSION_PORT, db=1, decode_responses=True)
+REDIS_FEED_SUB_POOL        = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=REDIS_SESSION_PORT, db=2, decode_responses=True)
+REDIS_SESSION_POOL         = redis.ConnectionPool(host=REDIS_SESSIONS['host'], port=REDIS_SESSION_PORT, db=5, decode_responses=True)
+REDIS_PUBSUB_POOL          = redis.ConnectionPool(host=REDIS_PUBSUB['host'], port=REDIS_PUBSUB_PORT, db=0, decode_responses=True)
 
 # ==========
 # = Celery =
