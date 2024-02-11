@@ -156,8 +156,10 @@ def db_check_redis_user():
     if request.args.get('consul') == '1':
         return str(1)
 
+    port = request.args.get('port', 5379)
+
     try:
-        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul', db=0)
+        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul:{port}', db=0)
     except:
         abort(Response("Can't connect to db", 503))
     
@@ -175,9 +177,11 @@ def db_check_redis_user():
 def db_check_redis_story():    
     if request.args.get('consul') == '1':
         return str(1)
+
+    port = request.args.get('port', 5379)
     
     try:
-        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul', db=1)
+        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul:{port}', db=1)
     except:
         abort(Response("Can't connect to db", 503))
     
@@ -196,8 +200,10 @@ def db_check_redis_sessions():
     if request.args.get('consul') == '1':
         return str(1)
 
+    port = request.args.get('port', 5379)
+
     try:
-        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul', db=5)
+        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul:{port}', db=5)
     except:
         abort(Response("Can't connect to db", 503))
     
@@ -216,8 +222,10 @@ def db_check_redis_pubsub():
     if request.args.get('consul') == '1':
         return str(1)
 
+    port = request.args.get('port', 5379)
+
     try:
-        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul', db=1)
+        r = redis.Redis(f'{settings.SERVER_NAME}.node.nyc1.consul:{port}', db=1)
     except:
         abort(Response("Can't connect to db", 503))
     

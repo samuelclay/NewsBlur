@@ -2,9 +2,12 @@ plugin: constructed
 strict: False
 
 groups:
+
+  hall: inventory_hostname.startswith('h')
   
   haproxy: inventory_hostname.startswith('hwww')
 
+  happ: inventory_hostname.startswith('happ')
   web: inventory_hostname.startswith('happ')
   app: inventory_hostname.startswith('happ')
   django: inventory_hostname.startswith('happ-web')
@@ -13,6 +16,7 @@ groups:
   push: inventory_hostname.startswith('happ-push')
   blogs: inventory_hostname.startswith('blog')
 
+  hnode: inventory_hostname.startswith('hnode')
   node: inventory_hostname.startswith('hnode')
   node_socket: inventory_hostname.startswith('hnode-socket')
   node_images: inventory_hostname.startswith('hnode-images')
@@ -22,12 +26,14 @@ groups:
 
   # debugs: inventory_hostname.startswith('hdebug')
 
+  htask: inventory_hostname.startswith('htask')
   task: inventory_hostname.startswith('htask')
   celery: inventory_hostname.startswith('htask-celery')
   work: inventory_hostname.startswith('htask-work')
   
   staging: inventory_hostname.startswith('hstaging')
   
+  hdb: inventory_hostname.startswith('hdb')
   db: inventory_hostname.startswith('hdb')
   search: inventory_hostname.startswith('hdb-elasticsearch')
   elasticsearch: inventory_hostname.startswith('hdb-elasticsearch')
