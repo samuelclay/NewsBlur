@@ -3,6 +3,7 @@
   set_fact:
     redis_role: "{{ inventory_hostname.split('-')[2] }}"
     redis_port: 6379
+    redis_secondary: yes
     redis_secondary_ports:
       story: 6380
       user: 6381
@@ -12,7 +13,8 @@
 - name: Set redis_port for secondary redis servers
   set_fact:
     redis_port: "{{ redis_secondary_ports[redis_role] }}"
-  when: inventory_hostname in ['hdb-redis-story-2', 'hdb-redis-user-2', 'hdb-redis-session-2', 'hdb-redis-pubsub-2']
+    redis_secondary: yes
+  when: inventory_hostname not in ["db-redis-user", "db-redis-story1", "db-redis-session", "db-redis-pubsub"]
 
 - name: Install sysfsutils for disabling transparent huge pages
   become: yes
