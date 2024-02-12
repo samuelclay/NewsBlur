@@ -230,6 +230,7 @@ backend db_redis_user
     {% for host in groups.redis_user %}
         server {{host}} {{host}}.node.nyc1.consul:5579
     {% endfor %}
+    server db-redis-secondary hdb-redis-secondary.node.nyc1.consul:5579
 
 backend db_redis_story
     option httpchk GET /db_check/redis_story
@@ -237,6 +238,7 @@ backend db_redis_story
     {% for host in groups.redis_story %}
         server {{host}} {{host}}.node.nyc1.consul:5579
     {% endfor %}
+    server db-redis-secondary hdb-redis-secondary.node.nyc1.consul:5579
 
 backend db_redis_sessions
     option httpchk GET /db_check/redis_sessions
@@ -244,10 +246,12 @@ backend db_redis_sessions
     {% for host in groups.redis_session %}
         server {{host}} {{host}}.node.nyc1.consul:5579
     {% endfor %}
+    server db-redis-secondary hdb-redis-secondary.node.nyc1.consul:5579
 
 backend db_redis_pubsub
     option httpchk GET /db_check/redis_pubsub
-    server db-redis-pubsub db-redis-pubsub.node.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    server db-redis-pubsub db-redis-pubsub.node.nyc1.consul:5579
 
 backend db_elasticsearch
     option httpchk GET /db_check/elasticsearch
