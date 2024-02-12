@@ -107,11 +107,11 @@
       - name: Create Postgres docker volumes with correct permissions
         become: yes
         file:
-          path: "{{ item  }}"
+          path: "{{ item }}"
           state: directory
           recurse: yes
-          owner: "{{ ansible_effective_user_id|int }}"
-          group: "{{ ansible_effective_group_id|int }}"  
+          owner: 999
+          group: 999
         with_items:
           - /srv/newsblur/docker/volumes/postgres/archive
           - /srv/newsblur/docker/volumes/postgres/backups
