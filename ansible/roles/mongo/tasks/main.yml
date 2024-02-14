@@ -9,7 +9,7 @@
     path: /var/log/mongodb
 
 - name: Copy MongoDB keyfile
-  # become: yes
+  become: yes
   copy:
     content: "{{ mongodb_keyfile }}"
     dest: /srv/newsblur/config/mongodb_keyfile.key
