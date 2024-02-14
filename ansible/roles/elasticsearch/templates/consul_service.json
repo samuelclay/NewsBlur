@@ -1,6 +1,6 @@
 {
     "service": {
-        {% if inventory_hostname in ["db-elasticsearch"] %}
+        {% if not elasticsearch_secondary %}
         "name": "db-elasticsearch",
         {% else %}
         "name": "db-elasticsearch-staging",
