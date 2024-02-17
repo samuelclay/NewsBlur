@@ -1,4 +1,11 @@
 ---
+- name: Set mongo_analytics_secondary
+  set_fact:
+    mongo_analytics_secondary: yes
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) not in ['db-mongo-analytics']
+  tags:
+    - consul
+
 - name: Permissions for mongo
   become: yes
   file:
@@ -259,7 +266,7 @@
   template:
     src: consul_service.analytics.json
     dest: /etc/consul.d/mongo.json
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics'
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-mongo-analytics', 'hdb-mongo-analytics']
   notify:
     - reload consul
 
