@@ -1,6 +1,7 @@
-import sys
 import os
-import yaml 
+import sys
+
+import yaml
 
 # ===========================
 # = Directory Declaractions =
@@ -25,20 +26,22 @@ if '/utils' not in ' '.join(sys.path):
 if '/vendor' not in ' '.join(sys.path):
     sys.path.append(VENDOR_ROOT)
 
-import logging
 import datetime
+import logging
+import re
+
+import boto3
+import django.http
+import paypalrestsdk
 import redis
 import sentry_sdk
-import paypalrestsdk
-from sentry_sdk.integrations.django import DjangoIntegration
-from sentry_sdk.integrations.redis import RedisIntegration
-from sentry_sdk.integrations.celery import CeleryIntegration
-import django.http
-import re
 from mongoengine import connect
 from pymongo import monitoring
+from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
+
 from utils.mongo_command_monitor import MongoCommandLogger
-import boto3
 
 # ===================
 # = Server Settings =
@@ -762,11 +765,16 @@ if DOCKERBUILD:
     REDIS_SESSION_PORT = 6579
     REDIS_PUBSUB_PORT = 6579
 else:
-    # REDIS_PORT = 6379
+    REDIS_PORT = 6379
     REDIS_STORY_PORT = 6380
     REDIS_USER_PORT = 6381
     REDIS_SESSION_PORT = 6382
     REDIS_PUBSUB_PORT = 6383
+    # Until redis moves to hetzner, use old ports
+    REDIS_STORY_PORT = REDIS_PORT
+    REDIS_USER_PORT = REDIS_PORT
+    REDIS_SESSION_PORT = REDIS_PORT
+    REDIS_PUBSUB_PORT = REDIS_PORT
 
 if REDIS_USER is None:
     # REDIS has been renamed to REDIS_USER. 
@@ -917,6 +925,7 @@ django.http.request.host_validation_re = re.compile(r"^([a-z0-9.-_\-]+|\[[a-f0-9
 
 
 from django.contrib import auth
+
 
 def monkey_patched_get_user(request):
     """
