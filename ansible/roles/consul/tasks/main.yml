@@ -12,11 +12,21 @@
   apt_repository:
     repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
 
+- name: Add the official HashiCorp Linux repository.
+  become: yes
+  apt_repository:
+    repo: "deb [arch=arm64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+
+- name: Update apt
+  become: yes
+  apt:
+    update_cache: yes
+
 - name: Installing Consul
   become: yes
   apt:
     allow_downgrades: yes
-    pkg: consul=1.10.4
+    pkg: consul=1.10.12-1
     state: present
 
 - name: Register Manager IP

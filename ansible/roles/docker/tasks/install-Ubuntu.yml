@@ -15,25 +15,37 @@
     state: present
   with_items: "{{ docker_prerequisite_packages_Ubuntu }}"
 
-- name: Install prerequisite packages (for Ubuntu 14.04 only)
-  apt:
-    name: "{{ item.package }}"
-    state: present
-  with_items: "{{ docker_prerequisite_packages_Ubuntu_1404 }}"
-  when: ansible_distribution_version == '14.04'
-
-- name: Import Docker CE repository gpg key
+- name: Download Docker GPG key
   become: yes
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
-    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
-
-- name: Add Docker CE repository
+  shell:
+    cmd: "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg"
+    creates: /usr/share/keyrings/docker-archive-keyring.gpg
+    
+- name: Set up the Docker repository with the correct GPG key
   become: yes
-  apt_repository:
-    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+  ansible.builtin.apt_repository:
+    repo: "deb [arch={{ ansible_architecture }} signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
     state: present
+    update_cache: yes
+
+- name: Set up the Docker repository with the correct GPG key
+  become: yes
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=arm64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    state: present
+    update_cache: yes
+
+- name: Set up the Docker repository with the correct GPG key
+  become: yes
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    state: present
+    update_cache: yes
+
+- name: Update APT cache
+  become: yes
+  ansible.builtin.apt:
+    update_cache: yes
 
 - name: Install Docker CE
   become: yes
