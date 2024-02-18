@@ -130,7 +130,7 @@ def read_streams(streams):
                     streams.remove(stream)
                     break
                 try:
-                    combination_message = "[%-15s] %s" % (stream.name[:13], data.decode())
+                    combination_message = "[%-15s] %s" % (stream.name[:15], data.decode())
                 except UnicodeDecodeError:
                     continue
                 sys.stdout.write(combination_message)
