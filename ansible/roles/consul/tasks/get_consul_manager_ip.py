@@ -6,7 +6,7 @@ import subprocess
 import digitalocean
 
 
-def get_host_ips_from_group(group_name, inventory_base_path='/srv/newsblur/ansible/inventories/'):
+def get_host_ips_from_group(group_name):
     """
     Fetches IP addresses of hosts from a specified group using ansible-inventory command across combined inventory.
 
@@ -14,7 +14,7 @@ def get_host_ips_from_group(group_name, inventory_base_path='/srv/newsblur/ansib
     :param inventory_base_path: Base path to the inventory directories. Defaults to the path in ansible.cfg.
     :return: A list of IP addresses belonging to the specified group.
     """
-    cmd = ['ansible-inventory', '--list']
+    cmd = ['ansible-inventory', '-i', '/srv/newsblur/ansible/inventories/hetzner.ini', '-i', '/srv/newsblur/ansible/inventories/hetzner.yml', '--list']
     
     try:
         # Execute the ansible-inventory command
