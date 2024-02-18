@@ -1,24 +1,43 @@
 #!/bin/bash
-# Apply UFW rules in batch
-ufw --force reset
-ufw default deny incoming
-ufw default allow outgoing
+# Script to apply UFW rules incrementally with regex matching for `ufw status verbose` output
 
-# Allow SSH
-ufw allow 22
+# Fetch the current UFW status once and store it
+CURRENT_UFW_STATUS=$(ufw status verbose)
 
-ufw allow from 10.0.0.0/8
-ufw allow from 172.18.0.0/16
-ufw allow from 172.17.0.0/16
+# Function to check and apply a rule with regex for forward rules
+apply_rule() {
+    local rule="$1"
+    local rule_type="$2" # "IN" for incoming, "FWD" for forwarded (route) rules
+    local ip_address="$3"
 
+    # Construct the regex pattern based on rule type
+    local regex_pattern
+    if [ "$rule_type" == "FWD" ]; then
+        regex_pattern="ALLOW FWD\\s+$ip_address"
+    else
+        regex_pattern="ALLOW IN\\s+$ip_address"
+    fi
+
+    # Use grep with -P for Perl-compatible regex, and -q to quietly check for a match
+    if echo "$CURRENT_UFW_STATUS" | grep -Pq -- "$regex_pattern"; then
+        echo "Rule already exists: $regex_pattern"
+    else
+        echo "Applying rule: $rule"
+        ufw $rule
+    fi
+}
+
+# Apply rules
+# Example for direct allow rules
+apply_rule "allow 22" "IN" "22" # IP address parameter is not used for this rule
+
+# Example for forwarded (route) rules
 {% for host in hetzner_hosts %}
-ufw allow from {{ host }}
-ufw route allow from {{ host }}
+apply_rule "allow from {{ host }}" "IN" "{{ host }}"
+apply_rule "route allow from {{ host }}" "FWD" "{{ host }}"
 {% endfor %}
 
 {% for host in do_hosts %}
-ufw allow from {{ host }}
-ufw route allow from {{ host }}
+apply_rule "allow from {{ host }}" "IN" "{{ host }}"
+apply_rule "route allow from {{ host }}" "FWD" "{{ host }}"
 {% endfor %}
-
-ufw --force enable
