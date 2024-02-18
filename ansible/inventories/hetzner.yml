@@ -12,7 +12,7 @@ groups:
   app: inventory_hostname.startswith('happ')
   django: inventory_hostname.startswith('happ-web')
   refresh: inventory_hostname.startswith('happ-refresh')
-  counts: inventory_hostname.startswith('happ-counts')
+  count: inventory_hostname.startswith('happ-count')
   push: inventory_hostname.startswith('happ-push')
   blogs: inventory_hostname.startswith('blog')
 
