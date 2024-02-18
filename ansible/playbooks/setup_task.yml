@@ -7,10 +7,10 @@
     - update_apt_cache: yes
     - motd_role: task
   roles:
-    # - {role: 'base', tags: 'base'}
-    # - {role: 'docker', tags: 'docker'}
-    # - {role: 'repo', tags: ['repo', 'pull']}
-    # - {role: 'dnsmasq', tags: 'dnsmasq'}
+    - {role: 'base', tags: 'base'}
+    - {role: 'docker', tags: 'docker'}
+    - {role: 'repo', tags: ['repo', 'pull']}
+    - {role: 'dnsmasq', tags: 'dnsmasq'}
     - {role: 'consul', tags: 'consul'}
     - {role: 'consul-client', tags: 'consul'}
     - {role: 'apns', tags: 'apns'}
