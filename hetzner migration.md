@@ -16,6 +16,9 @@ sudo exec -it mongo mongo
 rs.config()
 rs.reconfig()
 
+# Move mongo analytics
+# Edit mongo/tasks/main.yml: mongo_analytics_secondary
+aps -l db-mongo-analytics,hdb-mongo-analytics -t consul
 
 # Redis
 
@@ -32,3 +35,6 @@ aps -l hdb-redis-pubsub -t redis
 aps -l hdb-elasticsearch-1 -t elasticsearch
 # Eventually MUserSearch.remove_all()
 
+# Haproxy on DO to redirect to Hetzner
+aps -l www -t haproxy
+# Change DNS to point to Hetzner
