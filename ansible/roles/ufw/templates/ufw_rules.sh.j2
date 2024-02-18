@@ -1,0 +1,24 @@
+#!/bin/bash
+# Apply UFW rules in batch
+ufw --force reset
+ufw default deny incoming
+ufw default allow outgoing
+
+# Allow SSH
+ufw allow 22
+
+ufw allow from 10.0.0.0/8
+ufw allow from 172.18.0.0/16
+ufw allow from 172.17.0.0/16
+
+{% for host in hetzner_hosts %}
+ufw allow from {{ host }}
+ufw route allow from {{ host }}
+{% endfor %}
+
+{% for host in do_hosts %}
+ufw allow from {{ host }}
+ufw route allow from {{ host }}
+{% endfor %}
+
+ufw --force enable
