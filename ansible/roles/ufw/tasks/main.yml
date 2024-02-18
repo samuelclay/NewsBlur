@@ -1,4 +1,16 @@
 ---
+
+- name: Set hosts
+  set_fact:
+    hetzner_hosts: "{{ groups['hall'] | map('extract', hostvars, ['ansible_host']) }}"
+    do_hosts: "{{ groups['NewsBlur_Docker'] | map('extract', hostvars, ['ansible_host']) }}"
+    
+- name: Generate UFW batch script
+  template:
+    src: ufw_rules.sh.j2
+    dest: /tmp/ufw_rules.sh
+    mode: '0755'
+    
 - name: Stop ufw and delete all rules
   become: yes
   ufw: state=reset
@@ -16,83 +28,87 @@
 # - name: Set ufw policy to allow all ougoing connections
 #   ufw: policy=allow direction=outgoing
 #   tags: ufw
+
+- name: Execute UFW batch script
+  become: yes
+  command: /tmp/ufw_rules.sh
+
+# - name: Allow ssh
+#   become: yes
+#   ufw: rule=allow port=22
+#   tags: ufw
+
+# - name: Allow all access from RFC1918 networks to this host
+#   become: yes
+#   ufw:
+#     rule: allow
+#     src: '{{ item }}'
+#   with_items:
+#     - 10.0.0.0/8
+#     - 172.18.0.0/16
+#     - 172.17.0.0/16
+#   tags:
+#     - firewall
+#     - ufw
   
-- name: Allow ssh
-  become: yes
-  ufw: rule=allow port=22
-  tags: ufw
+# - name: Allow all access from Hetzner inventory hosts
+#   become: yes
+#   ufw:
+#     rule: allow
+#     src: '{{ item }}'
+#   with_items: "{{ groups['hall'] | map('extract', hostvars, ['ansible_host']) }}"
+#   tags: 
+#     - firewall
+#     - ufw
+#     - hetzner_firewall
+#     - hfirewall
 
-- name: Allow all access from RFC1918 networks to this host
-  become: yes
-  ufw:
-    rule: allow
-    src: '{{ item }}'
-  with_items:
-    - 10.0.0.0/8
-    - 172.18.0.0/16
-    - 172.17.0.0/16
-  tags:
-    - firewall
-    - ufw
-  
-- name: Allow all access from Hetzner inventory hosts
-  become: yes
-  ufw:
-    rule: allow
-    src: '{{ item }}'
-  with_items: "{{ groups['hall'] | map('extract', hostvars, ['ansible_host']) }}"
-  tags: 
-    - firewall
-    - ufw
-    - hetzner_firewall
-    - hfirewall
+# - name: Allow all access from Hetzner inventory hosts with docker
+#   become: yes
+#   ufw:
+#     rule: allow
+#     route: yes
+#     src: '{{ item }}'
+#   with_items: "{{ groups['hall'] | map('extract', hostvars, ['ansible_host']) }}"
+#   tags: 
+#     - firewall
+#     - ufw
+#     - hetzner_firewall
+#     - hfirewall
 
-- name: Allow all access from Hetzner inventory hosts with docker
-  become: yes
-  ufw:
-    rule: allow
-    route: yes
-    src: '{{ item }}'
-  with_items: "{{ groups['hall'] | map('extract', hostvars, ['ansible_host']) }}"
-  tags: 
-    - firewall
-    - ufw
-    - hetzner_firewall
-    - hfirewall
+# - name: Allow all access from inventory hosts old + new
+#   become: yes
+#   ufw:
+#     rule: allow
+#     src: '{{ item }}'
+#   with_items: "{{ groups['oldandnew'] | map('extract', hostvars, ['ansible_host']) }}"
+#   when: "'oldandnew' in groups"
+#   tags: 
+#     - firewall
+#     - ufw
 
-- name: Allow all access from inventory hosts old + new
-  become: yes
-  ufw:
-    rule: allow
-    src: '{{ item }}'
-  with_items: "{{ groups['oldandnew'] | map('extract', hostvars, ['ansible_host']) }}"
-  when: "'oldandnew' in groups"
-  tags: 
-    - firewall
-    - ufw
+# - name: Allow all access from inventory hosts
+#   become: yes
+#   ufw:
+#     rule: allow
+#     src: '{{ item }}'
+#   with_items: "{{ groups['NewsBlur_Docker'] | map('extract', hostvars, ['ansible_host']) }}"
+#   when: "'oldandnew' not in groups"
+#   tags: 
+#     - firewall
+#     - ufw
 
-- name: Allow all access from inventory hosts
-  become: yes
-  ufw:
-    rule: allow
-    src: '{{ item }}'
-  with_items: "{{ groups['NewsBlur_Docker'] | map('extract', hostvars, ['ansible_host']) }}"
-  when: "'oldandnew' not in groups"
-  tags: 
-    - firewall
-    - ufw
-
-- name: Allow all access from inventory hosts with docker
-  become: yes
-  ufw:
-    rule: allow
-    route: yes
-    src: '{{ item }}'
-  with_items: "{{ groups['NewsBlur_Docker'] | map('extract', hostvars, ['ansible_host']) }}"
-  when: "'oldandnew' not in groups"
-  tags: 
-    - firewall
-    - ufw
+# - name: Allow all access from inventory hosts with docker
+#   become: yes
+#   ufw:
+#     rule: allow
+#     route: yes
+#     src: '{{ item }}'
+#   with_items: "{{ groups['NewsBlur_Docker'] | map('extract', hostvars, ['ansible_host']) }}"
+#   when: "'oldandnew' not in groups"
+#   tags: 
+#     - firewall
+#     - ufw
 
 # Code from https://stackoverflow.com/a/51741599/8717: "What is the best practice of docker + ufw under Ubuntu"
 - name: Solving UFW and Docker issues by adding ufw after.rules
