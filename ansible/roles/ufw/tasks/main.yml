@@ -45,6 +45,7 @@
     - firewall
     - ufw
     - hetzner_firewall
+    - hfirewall
 
 - name: Allow all access from Hetzner inventory hosts with docker
   become: yes
@@ -57,6 +58,7 @@
     - firewall
     - ufw
     - hetzner_firewall
+    - hfirewall
 
 - name: Allow all access from inventory hosts old + new
   become: yes
