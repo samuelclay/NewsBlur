@@ -2,19 +2,23 @@
 - name: Extract part of hostname to determine container name
   set_fact:
     redis_role: "{{ inventory_hostname.split('-')[2] }}"
-    redis_port: 6379
+    # redis_port: 6379
     redis_secondary: yes
-    redis_secondary_ports:
+    redis_ports:
       story: 6380
       user: 6381
       session: 6382
       pubsub: 6383
 
-- name: Set redis_port for secondary redis servers
+- name: Set redis_port for redis servers
   set_fact:
-    redis_port: "{{ redis_secondary_ports[redis_role] }}"
+    redis_port: "{{ redis_ports[redis_role] }}"
+
+- name: Set redis_secondary for secondary redis servers
+  set_fact:
     redis_secondary: yes
   when: inventory_hostname not in ["db-redis-user", "db-redis-story1", "db-redis-session", "db-redis-pubsub"]
+  # when: inventory_hostname not in ["hdb-redis-user-1", "hdb-redis-story-1", "hdb-redis-session-1", "hdb-redis-pubsub"]
 
 - name: Install sysfsutils for disabling transparent huge pages
   become: yes
@@ -42,16 +46,22 @@
   copy:
     src: /srv/newsblur/docker/redis/redis.conf
     dest: /srv/newsblur/docker/redis/redis.conf
-  notify: restart redis
+  notify: "restart redis_{{ redis_role }}"
   register: updated_config
 
 - name: Template redis_replica.conf file
   template:
     src: /srv/newsblur/docker/redis/redis_replica.conf.j2
     dest: "/srv/newsblur/docker/redis/redis_{{ redis_role }}_replica.conf"
-  notify: restart redis
+  notify: "restart redis_{{ redis_role }}"
   register: updated_config
-  when: "'db-redis-story2' not in inventory_hostname"
+  when: redis_secondary
+
+- name: Remove redis_replica.conf file if not secondary
+  file:
+    path: "/srv/newsblur/docker/redis/redis_{{ redis_role }}_replica.conf"
+    state: absent
+  when: not redis_secondary
 
 - name: Create Redis docker volume directory
   file:
@@ -91,7 +101,7 @@
     user: "{{ ansible_effective_user_id|int }}:{{ ansible_effective_group_id|int }}"
     volumes:
       - "/srv/newsblur/docker/volumes/redis_{{ redis_role }}:/data"
-      - /srv/newsblur/docker/redis/redis.conf:/usr/local/etc/redis/redis_server.conf
+      - "/srv/newsblur/docker/redis/redis.conf:/usr/local/etc/redis/redis_server.conf"
       - "/srv/newsblur/docker/redis/redis_{{ redis_role }}_replica.conf:/usr/local/etc/redis/redis_replica.conf"
 
 - name: Register redis in consul
