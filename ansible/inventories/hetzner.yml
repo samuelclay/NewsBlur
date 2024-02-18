@@ -55,5 +55,6 @@ groups:
   mongo: inventory_hostname.startswith('hdb-mongo') and not inventory_hostname.startswith('hdb-mongo-analytics')
   mongo_analytics: inventory_hostname.startswith('hdb-mongo-analytics')
   consul: inventory_hostname.startswith('hdb-consul')
+  hconsul: inventory_hostname.startswith('hdb-consul')
   metrics: inventory_hostname.startswith('hdb-metrics')
   sentry: inventory_hostname.startswith('hdb-sentry')
