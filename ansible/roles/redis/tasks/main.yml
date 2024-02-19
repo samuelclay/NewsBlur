@@ -58,9 +58,9 @@
   when: redis_secondary
 
 - name: Remove redis_replica.conf file if not secondary
-  file:
-    path: "/srv/newsblur/docker/redis/redis_{{ redis_role }}_replica.conf"
-    state: absent
+  copy:
+    dest: "/srv/newsblur/docker/redis/redis_{{ redis_role }}_replica.conf"
+    content: ""
   when: not redis_secondary
 
 - name: Create Redis docker volume directory
