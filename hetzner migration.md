@@ -27,7 +27,7 @@ aps -l hdb-redis-user-1,hdb-redis-user-2 -t redis
 aps -l hdb-redis-session-1,hdb-redis-session-2 -t redis
 aps -l hdb-redis-story-1,hdb-redis-story-2 -t redis
 aps -l hdb-redis-pubsub -t redis
-# Go into each redis and `SLAVEOF NO ONE`
+apd -l hdb-redis-user-1,hdb-redis-session-1,hdb-redis-story-1,hdb-redis-pubsub -t replicaofnoone
 
 # Elasticsearch
 
