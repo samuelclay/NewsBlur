@@ -299,11 +299,11 @@ public class Story implements Serializable {
         return true;
     }
 
-    private static final Pattern ytSniff1 = Pattern.compile("youtube\\.com\\/embed\\/([A-Za-z0-9_-]+)", Pattern.CASE_INSENSITIVE);
-    private static final Pattern ytSniff2 = Pattern.compile("youtube\\.com\\/v\\/([A-Za-z0-9_-]+)", Pattern.CASE_INSENSITIVE);
-    private static final Pattern ytSniff3 = Pattern.compile("ytimg\\.com\\/vi\\/([A-Za-z0-9_-]+)", Pattern.CASE_INSENSITIVE);
-    private static final Pattern ytSniff4 = Pattern.compile("youtube\\.com\\/watch\\?v=([A-Za-z0-9_-]+)", Pattern.CASE_INSENSITIVE);
-    private static final String YT_THUMB_PRE = "http://img.youtube.com/vi/";
+    private static final Pattern ytSniff1 = Pattern.compile("youtube\\.com/embed/([A-Za-z0-9_-]+)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern ytSniff2 = Pattern.compile("youtube\\.com/v/([A-Za-z0-9_-]+)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern ytSniff3 = Pattern.compile("ytimg\\.com/vi/([A-Za-z0-9_-]+)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern ytSniff4 = Pattern.compile("youtube\\.com/watch\\?v=([A-Za-z0-9_-]+)", Pattern.CASE_INSENSITIVE);
+    private static final String YT_THUMB_PRE = "https://img.youtube.com/vi/";
     private static final String YT_THUMB_POST = "/0.jpg";
 
     public static String guessStoryThumbnailURL(Story story) {
