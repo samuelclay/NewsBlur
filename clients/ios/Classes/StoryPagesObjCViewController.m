@@ -107,6 +107,10 @@
     [self.scrollView setAlwaysBounceHorizontal:self.isHorizontal];
     [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
     
+    if (@available(macCatalyst 17.0, *)) {
+        self.scrollView.allowsKeyboardScrolling = NO;
+    }
+    
     if (!self.isPhone) {
         self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
