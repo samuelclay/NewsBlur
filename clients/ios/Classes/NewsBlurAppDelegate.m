@@ -825,7 +825,11 @@
 - (void)showColumn:(UISplitViewControllerColumn)column debugInfo:(NSString *)debugInfo {
     NSLog(@"⚠️ show column for %@: split view controller: %@ split nav: %@; split controllers: %@; detail controller: %@; detail nav: %@; detail nav controllers: %@", debugInfo, self.splitViewController, self.splitViewController.navigationController, self.splitViewController.viewControllers, self.detailViewController, self.detailViewController.navigationController, self.detailViewController.navigationController.viewControllers);  // log
     
-    [self.splitViewController showColumn:column];
+    if (self.splitViewController.displayMode != UISplitViewControllerDisplayModeSecondaryOnly && (self.splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeTwoBesideSecondary ||
+        self.splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeTwoDisplaceSecondary ||
+        self.splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeTwoOverSecondary)) {
+        [self.splitViewController showColumn:column];
+    }
     
     NSLog(@"...shown");  // log
 }
