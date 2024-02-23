@@ -19,6 +19,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.NbActivity;
@@ -41,7 +42,6 @@ import com.newsblur.util.StoryListStyle;
 import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
-import com.newsblur.view.ProgressThrobber;
 import com.newsblur.viewModel.StoriesViewModel;
 
 import javax.inject.Inject;
@@ -96,7 +96,7 @@ public class ItemSetFragment extends NbFragment {
     // R.id.top_loading_throb
 
     // loading indicator for when stories are present and fresh (at bottom of list)
-    protected ProgressThrobber bottomProgressView;
+    protected LinearProgressIndicator bottomProgressView;
 
     // the fleuron has padding that can't be calculated until after layout, but only changes
     // rarely thereafter
@@ -162,14 +162,11 @@ public class ItemSetFragment extends NbFragment {
         // disable the throbbers if animations are going to have a zero time scale
         boolean isDisableAnimations = ViewUtils.isPowerSaveMode(requireContext());
 
-        int[] colorsArray = UIUtils.getLoadingColorsArray(requireContext());
-        binding.topLoadingThrob.setEnabled(!isDisableAnimations);
-        binding.topLoadingThrob.setColors(colorsArray);
+        binding.topLoadingIndicator.setEnabled(!isDisableAnimations);
 
-        View footerView = inflater.inflate(R.layout.row_loading_throbber, null);
-        bottomProgressView = footerView.findViewById(R.id.itemlist_loading_throb);
+        View footerView = inflater.inflate(R.layout.row_loading_indicator, null);
+        bottomProgressView = footerView.findViewById(R.id.itemlist_loading);
         bottomProgressView.setEnabled(!isDisableAnimations);
-        bottomProgressView.setColors(colorsArray);
 
         fleuronBinding.getRoot().setVisibility(View.INVISIBLE);
         fleuronBinding.containerSubscribe.setOnClickListener(view -> UIUtils.startSubscriptionActivity(requireContext()));
@@ -331,7 +328,7 @@ public class ItemSetFragment extends NbFragment {
         if (cursorSeenYet && adapter.getRawStoryCount() > 0 && UIUtils.needsSubscriptionAccess(requireContext(), getFeedSet())) {
             fleuronBinding.getRoot().setVisibility(View.VISIBLE);
             fleuronBinding.containerSubscribe.setVisibility(View.VISIBLE);
-            binding.topLoadingThrob.setVisibility(View.INVISIBLE);
+            binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
             bottomProgressView.setVisibility(View.INVISIBLE);
             fleuronResized = false;
             return;
@@ -343,10 +340,10 @@ public class ItemSetFragment extends NbFragment {
             binding.emptyViewImage.setVisibility(View.INVISIBLE);
 
             if (NBSyncService.isFeedSetStoriesFresh(getFeedSet())) {
-                binding.topLoadingThrob.setVisibility(View.INVISIBLE);
+                binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
                 bottomProgressView.setVisibility(View.VISIBLE);
             } else {
-                binding.topLoadingThrob.setVisibility(View.VISIBLE);
+                binding.topLoadingIndicator.setVisibility(View.VISIBLE);
                 bottomProgressView.setVisibility(View.GONE);
             }
             fleuronBinding.getRoot().setVisibility(View.INVISIBLE);
@@ -360,7 +357,7 @@ public class ItemSetFragment extends NbFragment {
             binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.NORMAL);
             binding.emptyViewImage.setVisibility(View.VISIBLE);
 
-            binding.topLoadingThrob.setVisibility(View.INVISIBLE);
+            binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
             bottomProgressView.setVisibility(View.INVISIBLE);
             if (cursorSeenYet && NBSyncService.isFeedSetExhausted(getFeedSet()) && (adapter.getRawStoryCount() > 0)) {
                 fleuronBinding.containerSubscribe.setVisibility(View.GONE);
