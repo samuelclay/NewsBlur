@@ -248,22 +248,15 @@
                     <children>
                         <menu isSystemItem="YES" title="File" identifier="com.apple.menu.file" id="cyC-FU-wa2">
                             <children>
-                                <menu isSystemItem="YES" title="Open" identifier="com.apple.menu.open" id="kg7-Yc-6nd">
-                                    <menuOptions key="menuOptions" displayInline="YES"/>
-                                    <systemMenuChildDeletions>
-                                        <menuDeletion anchor="com.apple.menu.open-recent"/>
-                                    </systemMenuChildDeletions>
-                                </menu>
-                                <menu isSystemItem="YES" title="Document" identifier="com.apple.menu.document" id="vwX-rl-iVO">
-                                    <menuOptions key="menuOptions" displayInline="YES"/>
-                                    <systemMenuChildDeletions>
-                                        <itemDeletion anchorAction="rename:"/>
-                                        <itemDeletion anchorAction="export:"/>
-                                    </systemMenuChildDeletions>
-                                </menu>
-                                <menu anchor="com.apple.menu.document" id="ksZ-gH-4gO">
+                                <menu anchor="com.apple.menu.close" id="ksZ-gH-4gO">
                                     <menuOptions key="menuOptions" displayInline="YES"/>
                                     <children>
+                                        <command title="New Site" input="n" id="Y3F-bj-KeX">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="newSite:" destination="J28-e1-gcC" id="eEX-pv-sl0"/>
+                                            </connections>
+                                        </command>
                                         <command title="Reload Sites" input="r" id="9ee-Z4-HxV">
                                             <keyModifierFlags key="modifierFlags" command="YES"/>
                                             <connections>
@@ -272,7 +265,7 @@
                                         </command>
                                     </children>
                                 </menu>
-                                <menu anchor="com.apple.menu.document" id="6cc-W3-a06">
+                                <menu anchor="com.apple.menu.close" id="6cc-W3-a06">
                                     <menuOptions key="menuOptions" displayInline="YES"/>
                                     <children>
                                         <command title="Mute Sites" input="M" id="M7P-gv-spA">
@@ -295,7 +288,7 @@
                                         </command>
                                     </children>
                                 </menu>
-                                <menu anchor="com.apple.menu.document" id="obB-Ib-5UM">
+                                <menu anchor="com.apple.menu.close" id="obB-Ib-5UM">
                                     <menuOptions key="menuOptions" displayInline="YES"/>
                                     <children>
                                         <command title="Notifications" input="N" id="2ax-3D-3zm">
@@ -312,7 +305,7 @@
                                         </command>
                                     </children>
                                 </menu>
-                                <menu anchor="com.apple.menu.document" id="WdP-hc-0fU">
+                                <menu anchor="com.apple.menu.close" id="WdP-hc-0fU">
                                     <menuOptions key="menuOptions" displayInline="YES"/>
                                     <children>
                                         <command title="NewsBlur Premium" id="HGH-9Q-Dzh">
@@ -322,7 +315,7 @@
                                         </command>
                                     </children>
                                 </menu>
-                                <menu anchor="com.apple.menu.document" id="cRW-qu-7aj">
+                                <menu anchor="com.apple.menu.close" id="cRW-qu-7aj">
                                     <menuOptions key="menuOptions" displayInline="YES"/>
                                     <children>
                                         <command title="Logout NewsBlur" input="L" id="kvb-M9-tEl">
@@ -341,6 +334,35 @@
                                     </systemMenuChildDeletions>
                                 </menu>
                             </children>
+                            <systemMenuChildDeletions>
+                                <menuDeletion anchor="com.apple.menu.new-scene"/>
+                                <menuDeletion anchor="com.apple.menu.open"/>
+                                <menuDeletion anchor="com.apple.menu.document"/>
+                            </systemMenuChildDeletions>
+                        </menu>
+                        <menu isSystemItem="YES" title="Edit" identifier="com.apple.menu.edit" id="a13-uu-myc">
+                            <children>
+                                <menu anchor="com.apple.menu.standard-edit" id="rH8-0t-SpF">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Find in Sites" input="f" id="Oy9-Js-Eoz">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="findInFeeds:" destination="J28-e1-gcC" id="3J9-2o-DYH"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Find in Feed" input="f" id="2M3-xa-Uu2">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="findInFeedDetail:" destination="J28-e1-gcC" id="KMi-J9-3OA"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                            </children>
+                            <systemMenuChildDeletions>
+                                <menuDeletion anchor="com.apple.menu.find"/>
+                            </systemMenuChildDeletions>
                         </menu>
                         <menu isSystemItem="YES" title="View" identifier="com.apple.menu.view" id="pdl-gx-X6C">
                             <children>
@@ -392,6 +414,34 @@
                                         <command title="Grid" propertyListString="titles_in_grid" id="hc6-3c-pEr">
                                             <connections>
                                                 <action selector="chooseLayout:" destination="J28-e1-gcC" id="lPQ-q9-ULB"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu title="Show" id="yxK-59-1Mg">
+                                    <children>
+                                        <command title="All Stories" propertyListString="0" menuElementState="on" input="1" id="ccO-Ne-aJ2">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="chooseIntelligence:" destination="J28-e1-gcC" id="BEW-3n-izO"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Unread Stories" propertyListString="1" input="2" id="Flw-XS-uGO">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="chooseIntelligence:" destination="J28-e1-gcC" id="Sjf-mN-l3c"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Focus Stories" propertyListString="2" input="3" id="Pml-hQ-IST">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="chooseIntelligence:" destination="J28-e1-gcC" id="O2v-f5-adA"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Saved Stories" propertyListString="3" input="4" id="YTZ-1i-9Qj">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="chooseIntelligence:" destination="J28-e1-gcC" id="6Bm-Us-ckr"/>
                                             </connections>
                                         </command>
                                     </children>

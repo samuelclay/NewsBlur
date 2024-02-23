@@ -236,7 +236,7 @@
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-    if (action == @selector(chooseLayout:)) {
+    if (action == @selector(chooseLayout:) || action == @selector(findInFeedDetail:)) {
         return self.isFeedShown;
     } else if (action == @selector(chooseTitle:) || action == @selector(choosePreview:)) {
         return self.isFeedShown && !self.isGrid;
@@ -272,6 +272,10 @@
         command.state = [command.propertyList isEqualToString:appDelegate.detailViewController.behaviorString];
     } else if (command.action == @selector(chooseLayout:)) {
         NSString *value = self.appDelegate.storiesCollection.activeStoryTitlesPosition;
+        command.state = [command.propertyList isEqualToString:value];
+    } else if (command.action == @selector(chooseIntelligence:)) {
+        NSInteger intelligence = [[NSUserDefaults standardUserDefaults] integerForKey:@"selectedIntelligence"];
+        NSString *value = [NSString stringWithFormat:@"%@", @(intelligence + 1)];
         command.state = [command.propertyList isEqualToString:value];
     } else if (command.action == @selector(toggleSidebar:)) {
         UISplitViewController *splitViewController = self.appDelegate.splitViewController;
@@ -338,6 +342,10 @@
 #pragma mark -
 #pragma mark File menu
 
+- (IBAction)newSite:(id)sender {
+    [appDelegate.feedsViewController tapAddSite:nil];
+}
+
 - (IBAction)reloadFeeds:(id)sender {
     [appDelegate reloadFeedsView:NO];
 }
@@ -376,6 +384,19 @@
 }
 
 #pragma mark -
+#pragma mark Edit menu
+
+- (IBAction)findInFeeds:(id)sender {
+    [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"findInFeeds"];
+    [self.appDelegate.feedsViewController.searchBar becomeFirstResponder];
+}
+
+- (IBAction)findInFeedDetail:(id)sender {
+    [self.appDelegate showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"findInFeedDetail"];
+    [self.appDelegate.feedDetailViewController.searchBar becomeFirstResponder];
+}
+
+#pragma mark -
 #pragma mark View menu
 
 - (IBAction)chooseColumns:(id)sender {
@@ -399,6 +420,14 @@
     [[NSUserDefaults standardUserDefaults] setObject:string forKey:key];
     
     [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
+}
+
+- (IBAction)chooseIntelligence:(id)sender {
+    UICommand *command = sender;
+    NSInteger index = [command.propertyList integerValue];
+    
+    [self.appDelegate.feedsViewController.intelligenceControl setSelectedSegmentIndex:index];
+    [self.appDelegate.feedsViewController selectIntelligence];
 }
 
 - (IBAction)chooseTitle:(id)sender {

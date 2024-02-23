@@ -2431,6 +2431,10 @@ heightForHeaderInSection:(NSInteger)section {
 	hud.mode = MBProgressHUDModeText;
 	hud.removeFromSuperViewOnHide = YES;
     
+    if (!self.appDelegate.isPhone) {
+        hud.xOffset = 50;
+    }
+    
     NSIndexPath *topRow;
     if ([[self.feedTitlesTable indexPathsForVisibleRows] count]) {
         topRow = [[self.feedTitlesTable indexPathsForVisibleRows] objectAtIndex:0];
