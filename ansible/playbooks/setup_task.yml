@@ -8,7 +8,6 @@
     - motd_role: task
   roles:
     - {role: 'base', tags: 'base'}
-    # - {role: 'ufw', tags: 'ufw'}
     - {role: 'docker', tags: 'docker'}
     - {role: 'repo', tags: ['repo', 'pull']}
     - {role: 'dnsmasq', tags: 'dnsmasq'}
@@ -17,3 +16,4 @@
     - {role: 'apns', tags: 'apns'}
     - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
     - {role: 'celery_task', tags: 'celery'}
+    - {role: 'ufw', tags: 'ufw'}

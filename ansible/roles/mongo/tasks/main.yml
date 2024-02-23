@@ -1,5 +1,13 @@
 ---
+- name: Set mongo_analytics_secondary
+  set_fact:
+    mongo_analytics_secondary: yes
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) not in ['db-mongo-analytics']
+  tags:
+    - consul
+
 - name: Permissions for mongo
+  become: yes
   file:
     state: directory
     mode: 0755
@@ -8,7 +16,7 @@
     path: /var/log/mongodb
 
 - name: Copy MongoDB keyfile
-  # become: yes
+  become: yes
   copy:
     content: "{{ mongodb_keyfile }}"
     dest: /srv/newsblur/config/mongodb_keyfile.key
@@ -258,7 +266,7 @@
   template:
     src: consul_service.analytics.json
     dest: /etc/consul.d/mongo.json
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics'
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-mongo-analytics', 'hdb-mongo-analytics']
   notify:
     - reload consul
 
@@ -269,6 +277,7 @@
     - logrotate
   
 - name: Add sanity checkers cronjob for disk usage
+  become: yes
   cron:
     name: disk_usage_sanity_checker
     user: root

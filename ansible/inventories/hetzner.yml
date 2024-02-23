@@ -2,32 +2,48 @@ plugin: constructed
 strict: False
 
 groups:
+
+  hall: inventory_hostname.startswith('h')
   
   haproxy: inventory_hostname.startswith('hwww')
 
-  web: inventory_hostname.startswith('happ')
   app: inventory_hostname.startswith('happ')
-  django: inventory_hostname.startswith('happ-django')
+  happ: inventory_hostname.startswith('happ')
+  web: inventory_hostname.startswith('happ')
+  hweb: inventory_hostname.startswith('happ')
+  django: inventory_hostname.startswith('happ-web')
+  hdjango: inventory_hostname.startswith('happ-web')
   refresh: inventory_hostname.startswith('happ-refresh')
-  counts: inventory_hostname.startswith('happ-counts')
+  hrefresh: inventory_hostname.startswith('happ-refresh')
+  count: inventory_hostname.startswith('happ-count')
+  hcount: inventory_hostname.startswith('happ-count')
   push: inventory_hostname.startswith('happ-push')
+  hpush: inventory_hostname.startswith('happ-push')
   blogs: inventory_hostname.startswith('blog')
 
   node: inventory_hostname.startswith('hnode')
+  hnode: inventory_hostname.startswith('hnode')
   node_socket: inventory_hostname.startswith('hnode-socket')
+  hnode_socket: inventory_hostname.startswith('hnode-socket')
   node_images: inventory_hostname.startswith('hnode-images')
+  hnode_images: inventory_hostname.startswith('hnode-images')
   node_text: inventory_hostname.startswith('hnode-text')
+  hnode_text: inventory_hostname.startswith('hnode-text')
   node_page: inventory_hostname.startswith('hnode-page')
+  hnode_page: inventory_hostname.startswith('hnode-page')
   node_favicons: inventory_hostname.startswith('hnode-favicons')
+  hnode_favicons: inventory_hostname.startswith('hnode-favicons')
 
   # debugs: inventory_hostname.startswith('hdebug')
 
+  htask: inventory_hostname.startswith('htask')
   task: inventory_hostname.startswith('htask')
   celery: inventory_hostname.startswith('htask-celery')
   work: inventory_hostname.startswith('htask-work')
   
   staging: inventory_hostname.startswith('hstaging')
   
+  hdb: inventory_hostname.startswith('hdb')
   db: inventory_hostname.startswith('hdb')
   search: inventory_hostname.startswith('hdb-elasticsearch')
   elasticsearch: inventory_hostname.startswith('hdb-elasticsearch')
@@ -39,5 +55,6 @@ groups:
   mongo: inventory_hostname.startswith('hdb-mongo') and not inventory_hostname.startswith('hdb-mongo-analytics')
   mongo_analytics: inventory_hostname.startswith('hdb-mongo-analytics')
   consul: inventory_hostname.startswith('hdb-consul')
+  hconsul: inventory_hostname.startswith('hdb-consul')
   metrics: inventory_hostname.startswith('hdb-metrics')
   sentry: inventory_hostname.startswith('hdb-sentry')

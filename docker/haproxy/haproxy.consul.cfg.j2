@@ -81,7 +81,7 @@ frontend public
     use_backend consul_manager if { hdr_end(host) -i consul.newsblur.com }
     use_backend nginx if mx_mode
 
-    use_backend app_counts if is_unread_count
+    use_backend app_count if is_unread_count
     use_backend app_refresh if is_refresh_feeds
     use_backend app_refresh if is_dashboard
     use_backend app_refresh if is_original_text
@@ -92,22 +92,22 @@ backend nginx
     option httpchk GET /_nginxchk
     http-check expect rstatus 200|503
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    {% for host in groups.web %}
+    {% for host in groups.hweb %}
         server nginx-{{host}} {{host}}.node.nyc1.consul:80
     {% endfor %}
 
 backend app_django
     option httpchk GET /_haproxychk
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    {% for host in groups.django %}
+    {% for host in groups.hdjango %}
         server {{host}} {{host}}.node.nyc1.consul:8000
     {% endfor %}
 
-backend app_counts
+backend app_count
     balance roundrobin
     option httpchk GET /_haproxychk
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    {% for host in groups.counts %}
+    {% for host in groups.hcount %}
         server {{host}} {{host}}.node.nyc1.consul:8000
     {% endfor %}
     # server-template app-counts 1 _app-counts._tcp.service.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
@@ -116,7 +116,7 @@ backend app_refresh
     balance roundrobin
     option httpchk GET /_haproxychk
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    {% for host in groups.refresh %}
+    {% for host in groups.hrefresh %}
         server {{host}} {{host}}.node.nyc1.consul:8000
     {% endfor %}
     # server-template app-refresh 1 _app-refresh._tcp.service.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
@@ -125,10 +125,59 @@ backend app_push
     balance roundrobin
     option httpchk GET /_haproxychk
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    {% for host in groups.push %}
+    {% for host in groups.hpush %}
         server {{host}} {{host}}.node.nyc1.consul:8000
     {% endfor %}
     # server-template app-push 1 _app-push._tcp.service.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+
+backend node_images
+    option httpchk HEAD /sc,seLJDaKBog3LLEMDe8cjBefMhnVSibO4RA5boZhWcVZ0=/https://samuelclay.com/static/images/2019%20-%20Cuba.jpg
+    http-check expect rstatus 200|301
+    default-server check inter 10000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.hnode_images %}
+        server {{host}} {{host}}.node.nyc1.consul:8088
+    {% endfor %}
+backend node_socket
+    balance roundrobin
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.hnode_socket %}
+        server {{host}} {{host}}.node.nyc1.consul:8008
+    {% endfor %}
+
+backend node_favicons
+    http-check expect rstatus 200|503
+    option httpchk GET /rss_feeds/icon/1
+    balance roundrobin
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.hnode_favicons %}
+        server {{host}} {{host}}.node.nyc1.consul:8008
+    {% endfor %}
+
+backend node_text
+    http-check expect rstatus 200|503
+    option httpchk GET /rss_feeds/original_text_fetcher?test=1
+    balance roundrobin
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.hnode_text %}
+        server {{host}} {{host}}.node.nyc1.consul:8008
+    {% endfor %}
+
+backend node_page
+    http-check expect rstatus 200|503
+    option httpchk GET /original_page/1?test=1
+    balance roundrobin
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.hnode_page %}
+        server {{host}} {{host}}.node.nyc1.consul:8008
+    {% endfor %}
+
+backend staging
+    balance roundrobin
+    option httpchk GET /_haproxychk
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.staging %}
+        server {{host}} {{host}}.node.nyc1.consul:8000
+    {% endfor %}
 
 backend blog
     balance roundrobin
@@ -146,57 +195,16 @@ backend sentry
         server {{host}} {{host}}.node.nyc1.consul:9000
     {% endfor %}
 
-backend staging
+backend db_metrics
     balance roundrobin
-    option httpchk GET /_haproxychk
+    # option httpchk GET /_haproxychk
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    {% for host in groups.staging %}
-        server {{host}} {{host}}.node.nyc1.consul:8000
-    {% endfor %}
-
-backend node_images
-    option httpchk HEAD /sc,seLJDaKBog3LLEMDe8cjBefMhnVSibO4RA5boZhWcVZ0=/https://samuelclay.com/static/images/2019%20-%20Cuba.jpg
-    http-check expect rstatus 200|301
-    default-server check inter 10000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    {% for host in groups.node_images %}
-        server {{host}} {{host}}.node.nyc1.consul:8088
-    {% endfor %}
+    server db-grafana grafana.service.nyc1.consul:3000
 
 backend metrics
     option httpchk GET /_haproxychk
     http-check expect rstatus 200|301
     server app-django1 app-django1.node.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-
-backend node_socket
-    balance roundrobin
-    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    {% for host in groups.node_socket %}
-        server {{host}} {{host}}.node.nyc1.consul:8008
-    {% endfor %}
-
-backend node_favicons
-    http-check expect rstatus 200|503
-    option httpchk GET /rss_feeds/icon/1
-    balance roundrobin
-    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    {% for host in groups.node_favicons %}
-        server {{host}} {{host}}.node.nyc1.consul:8008
-    {% endfor %}
-
-backend node_text
-    http-check expect rstatus 200|503
-    option httpchk GET /rss_feeds/original_text_fetcher?test=1
-    balance roundrobin
-    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    {% for host in groups.node_text %}
-        server {{host}} {{host}}.node.nyc1.consul:8008
-    {% endfor %}
-
-backend node_page
-    http-check expect rstatus 200|503
-    option httpchk GET /original_page/1?test=1
-    balance roundrobin
-    server-template node-page 1 _node-page._tcp.service.nyc1.consul:8008 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 backend postgres
     option httpchk GET /db_check/postgres
@@ -225,6 +233,7 @@ backend db_redis_user
     {% for host in groups.redis_user %}
         server {{host}} {{host}}.node.nyc1.consul:5579
     {% endfor %}
+    server db-redis-secondary hdb-redis-secondary.node.nyc1.consul:5579
 
 backend db_redis_story
     option httpchk GET /db_check/redis_story
@@ -232,6 +241,7 @@ backend db_redis_story
     {% for host in groups.redis_story %}
         server {{host}} {{host}}.node.nyc1.consul:5579
     {% endfor %}
+    server db-redis-secondary hdb-redis-secondary.node.nyc1.consul:5579
 
 backend db_redis_sessions
     option httpchk GET /db_check/redis_sessions
@@ -239,10 +249,12 @@ backend db_redis_sessions
     {% for host in groups.redis_session %}
         server {{host}} {{host}}.node.nyc1.consul:5579
     {% endfor %}
+    server db-redis-secondary hdb-redis-secondary.node.nyc1.consul:5579
 
 backend db_redis_pubsub
     option httpchk GET /db_check/redis_pubsub
-    server db-redis-pubsub db-redis-pubsub.node.nyc1.consul:5579 check inter 2000ms resolvers consul resolve-opts allow-dup-ip init-addr none
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    server db-redis-pubsub db-redis-pubsub.node.nyc1.consul:5579
 
 backend db_elasticsearch
     option httpchk GET /db_check/elasticsearch
@@ -250,12 +262,6 @@ backend db_elasticsearch
     {% for host in groups.elasticsearch %}
         server {{host}} {{host}}.node.nyc1.consul:5579
     {% endfor %}
-
-backend db_metrics
-    balance roundrobin
-    # option httpchk GET /_haproxychk
-    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    server db-grafana grafana.service.nyc1.consul:3000
 
 backend consul_manager
     balance roundrobin
