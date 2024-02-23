@@ -13,9 +13,10 @@
         android:animateLayoutChanges="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.newsblur.view.ProgressThrobber
-            android:id="@+id/loading_throb"
-            android:layout_width="fill_parent"
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/loading_indicator"
+            style="@style/linearProgressIndicator"
+            android:layout_width="match_parent"
             android:layout_height="6dp"
             android:layout_alignParentTop="true" />
 
