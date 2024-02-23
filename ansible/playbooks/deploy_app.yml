@@ -127,6 +127,9 @@
         - name: Reload gunicorn
           command: "kill -HUP {{ psaux.stdout }}"
       when: not pulled.changed
+      rescue:
+        - name: Restart Docker Container
+          command: "docker restart newsblur_web"
       tags:
         - static
     
