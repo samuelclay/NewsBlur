@@ -444,7 +444,7 @@ private extension DetailViewController {
         let isTop = layout == .top
         
 #if targetEnvironment(macCatalyst)
-//        splitViewController?.primaryBackgroundStyle = .sidebar //TODO: work in progress
+        splitViewController?.primaryBackgroundStyle = .sidebar
 #endif
         
         if layout != .grid || isPhone {
