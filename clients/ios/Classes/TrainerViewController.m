@@ -159,6 +159,9 @@
     int contentWidth = self.view.frame.size.width;
     NSString *contentWidthClass;
     
+#if TARGET_OS_MACCATALYST
+    contentWidthClass = @"NB-mac";
+#else
     if (contentWidth > 700) {
         contentWidthClass = @"NB-ipad-wide";
     } else if (contentWidth > 480) {
@@ -166,6 +169,7 @@
     } else {
         contentWidthClass = @"NB-iphone";
     }
+#endif
     
     // set up layout values based on iPad/iPhone
     NSString *headerString = [NSString stringWithFormat:@

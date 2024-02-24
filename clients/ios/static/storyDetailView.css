@@ -88,6 +88,54 @@
 }
 
 /**
+ * Mac Style
+ */
+
+.NB-mac .NB-header {
+    padding: 1em 30px;
+}
+
+.NB-mac .NB-header .NB-header-inner {
+    margin: 0px 0px;
+}
+
+.NB-mac .NB-story {
+    padding: 20px 30px;
+}
+
+.NB-mac .NB-share-inner-wrapper {
+    margin: 0 30px;
+}
+
+.NB-mac#story_pane .NB-story-comments-public-teaser,
+.NB-mac#story_pane .NB-story-comments-public-header,
+.NB-mac#story_pane .NB-story-comments-friends-header,
+.NB-mac#story_pane .NB-story-comments-shares-teaser {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.NB-mac#story_pane .NB-story-comment {
+    padding: 0 30px 2px 110px;
+}
+
+.NB-mac#story_pane .NB-story-comment .NB-user-avatar,
+.NB-mac#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
+    left: 26px;
+}
+.NB-mac#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
+    left: 45px;
+}
+
+.NB-mac#story_pane .NB-story-comment .NB-button-wrapper {
+    margin-top: -5px;
+}
+
+.NB-mac .NB-button.NB-share-button a {
+    font-size: 11px;
+}
+
+/**
  * iPad Wide Style
  */
 
@@ -588,6 +636,11 @@ div + p {
 .NB-width-414 .NB-story .NB-large-image {
     margin-left: -12px !important;
     width: calc(100% + 24px) !important;
+}
+
+.NB-mac .NB-story .NB-large-image {
+    margin-left: -30px !important;
+    width: calc(100% + 60px) !important;
 }
 
 .NB-ipad-narrow .NB-story .NB-large-image {
