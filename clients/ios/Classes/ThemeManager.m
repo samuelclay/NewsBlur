@@ -136,6 +136,14 @@ NSString * const ThemeStyleDark = @"dark";
     return [theme isEqualToString:ThemeStyleDark] || [theme isEqualToString:ThemeStyleMedium];
 }
 
+- (BOOL)isSystemDark {
+    return self.appDelegate.window.windowScene.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+}
+
+- (BOOL)isLikeSystem {
+    return self.isDarkTheme == self.isSystemDark;
+}
+
 - (BOOL)isValidTheme:(NSString *)theme {
     return [theme isEqualToString:ThemeStyleLight] || [theme isEqualToString:ThemeStyleSepia] || [theme isEqualToString:ThemeStyleMedium] || [theme isEqualToString:ThemeStyleDark];
 }
@@ -444,9 +452,7 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (void)updateForSystemAppearance {
-    BOOL isDark = self.appDelegate.window.windowScene.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
-    
-    [self systemAppearanceDidChange:isDark];
+    [self systemAppearanceDidChange:self.isSystemDark];
 }
 
 - (void)systemAppearanceDidChange:(BOOL)isDark {

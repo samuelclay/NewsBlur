@@ -171,9 +171,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
                                                                UIColorFromFixedRGB(0x4C4D4A)}
                                                 forState:UIControlStateHighlighted];
 #if TARGET_OS_MACCATALYST
-//    self.view.superview.backgroundColor = UIColor.clearColor;
-//    self.view.backgroundColor = UIColor.clearColor;
-    self.view.backgroundColor = UIColorFromRGB(0xf4f4f4); //TODO: work in progress
+    self.innerView.backgroundColor = UIColor.clearColor;
+    
+    if (ThemeManager.themeManager.isLikeSystem) {
+        self.view.backgroundColor = UIColor.clearColor;
+    } else {
+        self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    }
 #else
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
 #endif
@@ -201,12 +205,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.notifier.topOffsetConstraint = [NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.feedViewToolbar attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
     [self.view addConstraint:self.notifier.topOffsetConstraint];
     
-#if TARGET_OS_MACCATALYST
-//    self.feedTitlesTable.backgroundColor = UIColor.clearColor;
-    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4); //TODO: work in progress
-#else
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
-#endif
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
     self.feedTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
     self.feedTitlesTable.estimatedRowHeight = 0;
@@ -1311,11 +1310,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (void)updateTheme {
     [super updateTheme];
    
-    // CATALYST: This prematurely dismisses the login view controller; is it really appropriate?
-//    if (![self.presentedViewController isKindOfClass:[UINavigationController class]] || (((UINavigationController *)self.presentedViewController).topViewController != (UIViewController *)self.appDelegate.fontSettingsViewController && ![((UINavigationController *)self.presentedViewController).topViewController conformsToProtocol:@protocol(IASKViewController)])) {
-//        [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
-//    }
-    
     [self.appDelegate hidePopoverAnimated:YES];
     
     UINavigationBarAppearance *appearance = [[UINavigationBarAppearance alloc] initWithIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
@@ -1333,9 +1327,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.addBarButton.tintColor = UIColorFromRGB(0x8F918B);
     self.settingsBarButton.tintColor = UIColorFromRGB(0x8F918B);
 #if TARGET_OS_MACCATALYST
-//    self.view.superview.backgroundColor = UIColor.clearColor;
-//    self.view.backgroundColor = UIColor.clearColor;
-    self.view.backgroundColor = UIColorFromRGB(0xf4f4f4); //TODO: work in progress
+    if (ThemeManager.themeManager.isLikeSystem) {
+        self.view.backgroundColor = UIColor.clearColor;
+    } else {
+        self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    }
 #else
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
@@ -1365,12 +1361,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         self.searchBar.keyboardAppearance = UIKeyboardAppearanceDefault;
     }
     
-#if TARGET_OS_MACCATALYST
-//    self.feedTitlesTable.backgroundColor = UIColor.clearColor;
-    self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4); //TODO: work in progress
-#else
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
-#endif
     
     [self reloadFeedTitlesTable];
     
