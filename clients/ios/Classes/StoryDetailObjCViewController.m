@@ -486,7 +486,7 @@
     
 #if TARGET_OS_MACCATALYST
     // CATALYST: probably will want to add custom CSS for Macs.
-    contentWidthClass = @"NB-ipad-wide NB-ipad-pro-12-wide";
+    contentWidthClass = @"NB-mac NB-ipad-pro-12-wide";
 #else
     if (UIInterfaceOrientationIsLandscape(orientation) && !self.isPhoneOrCompact) {
         if (iPadPro12) {
@@ -2421,7 +2421,7 @@
 
 #if TARGET_OS_MACCATALYST
     // CATALYST: probably will want to add custom CSS for Macs.
-    contentWidthClass = @"NB-ipad-wide NB-ipad-pro-12-wide";
+    contentWidthClass = @"NB-mac NB-ipad-pro-12-wide";
 #else
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     
