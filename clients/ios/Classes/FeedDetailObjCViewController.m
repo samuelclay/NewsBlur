@@ -164,24 +164,20 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     markReadLongPress.delegate = self;
     [view addGestureRecognizer:markReadLongPress];
     
+    titleImageBarButton = [UIBarButtonItem alloc];
+    
 #if TARGET_OS_MACCATALYST
     if (@available(macCatalyst 16.0, *)) {
         settingsBarButton.hidden = YES;
         feedMarkReadButton.hidden = YES;
     }
-#endif
-    
-    titleImageBarButton = [UIBarButtonItem alloc];
-
+#else
     UILongPressGestureRecognizer *tableLongPress = [[UILongPressGestureRecognizer alloc]
                                                initWithTarget:self action:@selector(handleTableLongPress:)];
     tableLongPress.minimumPressDuration = 1.0;
     tableLongPress.delegate = self;
     [self.storyTitlesTable addGestureRecognizer:tableLongPress];
     
-#if TARGET_OS_MACCATALYST
-    // CATALYST: support double-click; doing the following breaks clicking on rows in Catalyst.
-#else
     UITapGestureRecognizer *doubleTapGesture = [[UITapGestureRecognizer alloc]
                                                 initWithTarget:self action:nil];
     doubleTapGesture.numberOfTapsRequired = 2;
