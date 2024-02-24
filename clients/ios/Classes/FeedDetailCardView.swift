@@ -75,6 +75,7 @@ struct CardView: View {
             }
             
             Button {
+                cache.appDelegate.activeStory = story.dictionary
                 cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: false)
                 cache.appDelegate.feedDetailViewController.reload()
             } label: {
@@ -82,11 +83,14 @@ struct CardView: View {
             }
             
             Button {
+                cache.appDelegate.activeStory = story.dictionary
                 cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: true)
                 cache.appDelegate.feedDetailViewController.reload()
             } label: {
                 Label("Mark older stories read", image: "mark-read")
             }
+            
+            Divider()
             
             Button {
                 cache.appDelegate.storiesCollection.toggleStorySaved(story.dictionary)
@@ -96,13 +100,15 @@ struct CardView: View {
             }
             
             Button {
+                cache.appDelegate.activeStory = story.dictionary
                 cache.appDelegate.showSend(to: cache.appDelegate.feedDetailViewController, sender: cache.appDelegate.feedDetailViewController.view)
             } label: {
                 Label("Send this story to…", image: "email")
             }
             
             Button {
-                cache.appDelegate.openTrainStory(nil)
+                cache.appDelegate.activeStory = story.dictionary
+                cache.appDelegate.openTrainStory(cache.appDelegate.feedDetailViewController.view)
             } label: {
                 Label("Train this story", image: "train")
             }
