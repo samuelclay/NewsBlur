@@ -309,8 +309,10 @@ class PageImporter(object):
             return feed_page
     
     def save_page_node(self, html):
-        domain = Site.objects.get_current().domain
-        url = "https://%s/original_page/%s" % (
+        domain = "node-page.service.consul:8008"
+        if settings.DOCKERBUILD:
+            domain = "node:8008"
+        url = "http://%s/original_page/%s" % (
             domain,
             self.feed.pk,
         )
