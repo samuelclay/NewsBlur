@@ -2,6 +2,7 @@
 - name: Extract part of hostname to determine container name
   set_fact:
     redis_role: "{{ inventory_hostname.split('-')[2] }}"
+    redis_secondary: no
     # redis_port: 6379
     redis_ports:
       story: 6380
