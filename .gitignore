@@ -58,6 +58,7 @@ docker/postgres/postgres.conf
 
 # Local configuration file (sdk path, etc)
 /originals
+/node/originals
 media/safari/NewsBlur.safariextz
 
 # IDE files
