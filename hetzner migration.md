@@ -15,13 +15,13 @@ aps -l hdb-postgres-1 -t pg_promote
 # Mongo
 
 sshdo db-mongo-primary1
-sudo exec -it mongo mongo
+sudo docker exec -it mongo mongo
 rs.config()
 rs.reconfig()
 
 # Move mongo analytics
 # Edit mongo/tasks/main.yml: mongo_analytics_secondary
-aps -l db-mongo-analytics,hdb-mongo-analytics -t consul
+aps -l db-mongo-analytics2,hdb-mongo-analytics-1 -t consul
 
 # Redis
 
@@ -35,7 +35,7 @@ apd -l hdb-redis-user-1,hdb-redis-session-1,hdb-redis-story-1,hdb-redis-pubsub -
 # Elasticsearch
 
 # Edit elasticsearch/tasks/main.yml: elasticsearch_secondary
-aps -l hdb-elasticsearch-1 -t elasticsearch
+aps -l db-elasticsearch1,hdb-elasticsearch-1 -t consul
 # Eventually MUserSearch.remove_all()
 
 # Test hwww.newsblur.com

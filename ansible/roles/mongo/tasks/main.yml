@@ -1,6 +1,13 @@
 ---
 - name: Set mongo_analytics_secondary
   set_fact:
+    mongo_analytics_secondary: no
+  tags:
+    - consul
+    - always
+
+- name: Set mongo_analytics_secondary
+  set_fact:
     mongo_analytics_secondary: yes
   # when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) not in ['db-mongo-analytics']
   when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) not in ['hdb-mongo-analytics']

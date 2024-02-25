@@ -1,9 +1,15 @@
 ---
 - name: Set facts for secondary elasticsearch servers
   set_fact:
+    elasticsearch_secondary: no
+  tags:
+    - always
+
+- name: Set facts for secondary elasticsearch servers
+  set_fact:
     elasticsearch_secondary: yes
   # when: inventory_hostname not in ["db-elasticsearch"]
-  when: inventory_hostname not in ["hdb-elasticsearch"]
+  when: inventory_hostname not in ["hdb-elasticsearch-1"]
   tags:
     - always
 
