@@ -273,7 +273,8 @@ backend maintenance
     option httpchk HEAD /maintenance
     http-check expect status 404
     http-check send-state
-    server maintenance app-django1.node.nyc1.consul:80 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    # server maintenance app-django1.node.nyc1.consul:80 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    server maintenance happ-web-01.node.nyc1.consul:80 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 listen stats
 bind :1936 ssl crt {{ ssl_certificate }}
