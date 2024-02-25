@@ -132,7 +132,7 @@ def db_check_mongo_analytics():
         return str(1)
 
     try:
-        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{settings.SERVER_NAME}/?authSource=admin")
+        client = pymongo.MongoClient(f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{settings.SERVER_NAME}.node.consul/?authSource=admin")
         db = client.nbanalytics
     except:
         abort(Response("Can't connect to db", 503))
