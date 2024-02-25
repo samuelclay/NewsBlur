@@ -1,23 +1,28 @@
-import requests
-import re
-import traceback
-import feedparser
-import time
-import urllib.request, urllib.error, urllib.parse
 import http.client
+import re
+import time
+import traceback
+import urllib.error
+import urllib.parse
+import urllib.request
 import zlib
+from socket import error as SocketError
+
+import feedparser
+import requests
+from django.conf import settings
 from django.contrib.sites.models import Site
 from django.utils.encoding import smart_bytes
-from mongoengine.queryset import NotUniqueError
-from socket import error as SocketError
-from django.conf import settings
 from django.utils.text import compress_string as compress_string_with_gzip
-from utils import log as logging
-from apps.rss_feeds.models import MFeedPage
-from utils.feed_functions import timelimit, TimeoutError
+from mongoengine.queryset import NotUniqueError
 from OpenSSL.SSL import Error as OpenSSLError
 from pyasn1.error import PyAsn1Error
 from sentry_sdk import capture_exception, flush
+
+from apps.rss_feeds.models import MFeedPage
+from utils import log as logging
+from utils.feed_functions import TimeoutError, timelimit
+
 # from utils.feed_functions import mail_feed_error_to_admin
 
 BROKEN_PAGES = [
@@ -127,6 +132,7 @@ class PageImporter(object):
                 return
         except (ValueError, urllib.error.URLError, http.client.BadStatusLine, http.client.InvalidURL,
                 requests.exceptions.ConnectionError) as e:
+            logging.debug('   ***> [%-30s] Page fetch failed: %s' % (self.feed.log_title[:30], e))
             self.feed.save_page_history(401, "Bad URL", e)
             try:
                 fp = feedparser.parse(self.feed.feed_address)
@@ -134,10 +140,8 @@ class PageImporter(object):
                 return html
             feed_link = fp.feed.get('link', "")
             self.feed.save()
-            logging.debug('   ***> [%-30s] Page fetch failed: %s' % (self.feed.log_title[:30], e))
-        except (urllib.error.HTTPError) as e:
-            self.feed.save_page_history(e.code, e.msg, e.fp.read())
         except (http.client.IncompleteRead) as e:
+            logging.debug('   ***> [%-30s] Page fetch failed: %s' % (self.feed.log_title[:30], e))
             self.feed.save_page_history(500, "IncompleteRead", e)
         except (requests.exceptions.RequestException, 
                 requests.packages.urllib3.exceptions.HTTPError) as e:
