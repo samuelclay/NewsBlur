@@ -1,4 +1,12 @@
 ---
+- name: Set facts for secondary postgres servers
+  set_fact:
+    postgres_secondary: yes
+  # when: inventory_hostname not in ["db-postgres2"]
+  when: inventory_hostname not in ["hdb-postgres-1"]
+  tags:
+    - always
+
 - name: Template postgresql-13.conf file
   template:
     src: /srv/newsblur/docker/postgres/postgresql-13.conf.j2
