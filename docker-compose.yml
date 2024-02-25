@@ -50,6 +50,7 @@ services:
       - 8008:8008
     volumes: 
       - ${PWD}/node:/srv
+      - ${PWD}/node/originals:/srv/originals
   
   imageproxy:
     container_name: imageproxy

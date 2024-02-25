@@ -880,7 +880,6 @@ def load_feed_page(request, feed_id):
         raise Http404
     
     feed = Feed.get_by_id(feed_id)
-    
     if feed and feed.has_page and not feed.has_page_exception:
         if settings.BACKED_BY_AWS.get('pages_on_node'):
             domain = Site.objects.get_current().domain
@@ -889,8 +888,9 @@ def load_feed_page(request, feed_id):
                 feed.pk,
             )
             try:
-                page_response = requests.get(url)
-            except requests.ConnectionError:
+                page_response = requests.get(url, verify=not settings.DEBUG)
+            except requests.ConnectionError as e:
+                logging.user(request, f"~FR~SBError loading original page: {url} {e}")
                 page_response = None
             if page_response and page_response.status_code == 200:
                 response = HttpResponse(page_response.content, content_type="text/html; charset=utf-8")
