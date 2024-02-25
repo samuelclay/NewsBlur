@@ -1,4 +1,10 @@
 ---
+- name: Set facts for all postgres servers
+  set_fact:
+    postgres_secondary: no
+  tags:
+    - always
+
 - name: Set facts for secondary postgres servers
   set_fact:
     postgres_secondary: yes
