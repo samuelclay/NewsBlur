@@ -3,6 +3,9 @@
 
 "Afterwards, you shouldn't notice anything different, although these are bare metal servers, so theoretically they should be faster and more reliable."
 
+make maintenance_on
+make celery_stop
+
 # Postgres
 
 # Edit postgres/consul_service.json: db-postgres2 -> hdb-postgres-1
@@ -23,10 +26,10 @@ aps -l db-mongo-analytics,hdb-mongo-analytics -t consul
 # Redis
 
 # Edit redis/tasks/main.yml: redis_secondary
-aps -l hdb-redis-user-1,hdb-redis-user-2 -t redis
-aps -l hdb-redis-session-1,hdb-redis-session-2 -t redis
-aps -l hdb-redis-story-1,hdb-redis-story-2 -t redis
-aps -l hdb-redis-pubsub -t redis
+aps -l hdb-redis-user-1,hdb-redis-user-2,db-redis-user -t consul
+aps -l hdb-redis-session-1,hdb-redis-session-2,db-redis-sessions -t consul
+aps -l hdb-redis-story-1,hdb-redis-story-2,db-redis-story1 -t consul
+aps -l hdb-redis-pubsub,db-redis-pubsub -t consul
 apd -l hdb-redis-user-1,hdb-redis-session-1,hdb-redis-story-1,hdb-redis-pubsub -t replicaofnoone
 
 # Elasticsearch
@@ -35,6 +38,11 @@ apd -l hdb-redis-user-1,hdb-redis-session-1,hdb-redis-story-1,hdb-redis-pubsub -
 aps -l hdb-elasticsearch-1 -t elasticsearch
 # Eventually MUserSearch.remove_all()
 
+# Test hwww.newsblur.com
+ansible-playbook ansible/deploy.yml -l happ-web-01 --tags maintenance_off
+
+# Looks good? Launch
 # Haproxy on DO to redirect to Hetzner
 aps -l www -t haproxy
 # Change DNS to point to Hetzner
+make maintenance_off
