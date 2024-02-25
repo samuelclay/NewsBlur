@@ -18,7 +18,7 @@
       redis_target: "redis-user"
       redis_port: 6381
     - port: 9122
-      redis_target: "redis-sessions"
+      redis_target: "redis-session"
       redis_port: 6382
     - port: 9123
       redis_target: "redis-story"
@@ -39,7 +39,7 @@
     - port: 9121
       redis_target: "redis-user"
     - port: 9122
-      redis_target: "redis-sessions"
+      redis_target: "redis-session"
     - port: 9123
       redis_target: "redis-story"
     - port: 9124
