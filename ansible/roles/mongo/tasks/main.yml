@@ -243,7 +243,6 @@
           ]
         }
       )' admin
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics'
   register: auth_result
   changed_when:
     - auth_result.rc == 0
