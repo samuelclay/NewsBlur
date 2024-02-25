@@ -46,3 +46,5 @@ ansible-playbook ansible/deploy.yml -l happ-web-01 --tags maintenance_off
 aps -l www -t haproxy
 # Change DNS to point to Hetzner
 make maintenance_off
+
+# Setup redis replicas (replica.conf port)
