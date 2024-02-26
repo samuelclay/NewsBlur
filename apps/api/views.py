@@ -518,6 +518,6 @@ def ip_addresses(request):
     with open('/srv/newsblur/apps/api/ip_addresses.txt', 'r') as f:
         addresses = f.read()
 
-    mail_admins(f"IP Addresses accessed from {request.META['REMOTE_ADDR']} by {request.user_agent}", addresses)
+    mail_admins(f"IP Addresses accessed from {request.META['REMOTE_ADDR']} by {request.user}", addresses)
 
     return HttpResponse(addresses, content_type='text/plain')
