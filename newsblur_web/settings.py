@@ -621,7 +621,7 @@ if not started_task_or_app:
 if "task-work" in SERVER_NAME or SERVER_NAME.startswith("task-"):
     CELERY_WORKER_CONCURRENCY         = 4
 else:
-    CELERY_WORKER_CONCURRENCY         = 16
+    CELERY_WORKER_CONCURRENCY         = 24
     
 if not DEBUG:
     INSTALLED_APPS += (
