@@ -6,6 +6,7 @@
     do_hosts: "{{ groups['NewsBlur_Docker'] | map('extract', hostvars, ['ansible_host']) }}"
     
 - name: Generate UFW batch script
+  become: yes
   template:
     src: ufw_rules.sh.j2
     dest: /tmp/ufw_rules.sh
