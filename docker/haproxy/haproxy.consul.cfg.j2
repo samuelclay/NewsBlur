@@ -204,7 +204,7 @@ backend db_metrics
 backend metrics
     option httpchk GET /_haproxychk
     http-check expect rstatus 200|301
-    server app-django1 app-django1.node.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    server happ-web-01 happ-web-01.node.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 backend postgres
     option httpchk GET /db_check/postgres
@@ -254,7 +254,7 @@ backend db_redis_sessions
 backend db_redis_pubsub
     option httpchk GET /db_check/redis_pubsub
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    server hdb-redis-pubsub hdb-redis-pubsub.node.nyc1.consul:5579
+    server hdb-redis-pubsub db-redis-pubsub.service.nyc1.consul:5579
 
 backend db_elasticsearch
     option httpchk GET /db_check/elasticsearch
