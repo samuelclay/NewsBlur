@@ -69,3 +69,4 @@ media/safari/NewsBlur.safariextz
 *.tfstate*
 .terraform*
 grafana.ini
+apps/api/ip_addresses.txt
