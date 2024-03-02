@@ -618,7 +618,9 @@ except ModuleNotFoundError:
 if not started_task_or_app:
     print(" ---> Starting NewsBlur development server...")
 
-if "task-work" in SERVER_NAME or SERVER_NAME.startswith("task-"):
+if DOCKERBUILD:
+    CELERY_WORKER_CONCURRENCY         = 2
+elif "task-work" in SERVER_NAME or SERVER_NAME.startswith("task-"):
     CELERY_WORKER_CONCURRENCY         = 4
 else:
     CELERY_WORKER_CONCURRENCY         = 24
