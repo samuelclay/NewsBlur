@@ -1,58 +1,63 @@
-import time
 import datetime
-import traceback
 import multiprocessing
+import time
+import traceback
 
 import django
 
 django.setup()
 
-import urllib.request, urllib.error, urllib.parse
-import http, http.client
+import http
+import http.client
+import urllib.error
+import urllib.parse
+import urllib.request
 
 http.client._MAXHEADERS = 10000
 
-import xml.sax
-import redis
 import random
-import pymongo
 import re
-import requests
+import xml.sax
+
 import dateutil.parser
+import feedparser
 import isodate
+import pymongo
+import redis
+import requests
 from django.conf import settings
-from django.db import IntegrityError
 from django.core.cache import cache
+from django.db import IntegrityError
 from sentry_sdk import set_user
+
+from apps.notifications.models import MUserFeedNotification
+from apps.notifications.tasks import QueueNotifications
+from apps.push.models import PushSubscription
 from apps.reader.models import UserSubscription
+from apps.rss_feeds.icon_importer import IconImporter
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
-from apps.rss_feeds.icon_importer import IconImporter
-from apps.notifications.tasks import QueueNotifications
-from apps.notifications.models import MUserFeedNotification
-from apps.push.models import PushSubscription
 from apps.statistics.models import MAnalyticsFetcher, MStatistics
-
-import feedparser
 
 feedparser.sanitizer._HTMLSanitizer.acceptable_elements.update(['iframe'])
 feedparser.sanitizer._HTMLSanitizer.acceptable_elements.update(['text'])
 
-from utils.story_functions import pre_process_story, strip_tags, linkify
-from utils import log as logging
-from utils.feed_functions import timelimit, TimeoutError
-from sentry_sdk import capture_exception, flush
-from qurl import qurl
 from bs4 import BeautifulSoup
-from mongoengine import connect, connection
-from django.utils import feedgenerator
-from django.utils.html import linebreaks
-from django.utils.encoding import smart_str
-from utils import json_functions as json
 from celery.exceptions import SoftTimeLimitExceeded
-from utils.twitter_fetcher import TwitterFetcher
+from django.utils import feedgenerator
+from django.utils.encoding import smart_str
+from django.utils.html import linebreaks
+from mongoengine import connect, connection
+from qurl import qurl
+from sentry_sdk import capture_exception, flush
+
+from utils import json_functions as json
+from utils import log as logging
 from utils.facebook_fetcher import FacebookFetcher
+from utils.feed_functions import TimeoutError, timelimit
 from utils.json_fetcher import JSONFetcher
+from utils.story_functions import linkify, pre_process_story, strip_tags
+from utils.twitter_fetcher import TwitterFetcher
 
 # from utils.feed_functions import mail_feed_error_to_admin
 
@@ -319,6 +324,11 @@ class FetchFeed:
                 if not username_groups:
                     return
                 username = username_groups.group(1)
+            except IndexError:
+                return
+        elif 'youtube.com/@' in address:
+            try:
+                username = address.split('youtube.com/@')[1]
             except IndexError:
                 return
         elif 'youtube.com/feeds/videos.xml?user=' in address:
