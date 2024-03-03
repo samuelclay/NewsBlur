@@ -722,7 +722,7 @@ def load_single_feed(request, feed_id):
     
     if page > 400:
         logging.user(request, "~BR~FK~SBOver page 400 on single feed: %s" % page)
-        assert False
+        raise Http404
     
     if query:
         if user.profile.is_premium:
