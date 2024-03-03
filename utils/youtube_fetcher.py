@@ -210,9 +210,11 @@ class YoutubeFetcher:
             description = channel["items"][0]["snippet"]["description"]
             uploads_list_id = channel["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
         except (IndexError, KeyError):
-            return
+            uploads_list_id = None
 
-        if not uploads_list_id and username_key == "forUsername":
-            return self.fetch_user_videos(username, username_key="forHandle")
+        if not uploads_list_id:
+            if username_key == "forUsername":
+                return self.fetch_user_videos(username, username_key="forHandle")
+            return None, None, None
 
         return self.fetch_playlist_videos(uploads_list_id, title, description)
