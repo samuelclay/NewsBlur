@@ -85,7 +85,7 @@ class YoutubeFetcher:
                          <img src="%s" style="display:none" />""" % (
                 ("https://www.youtube.com/embed/" + video["id"]),
                 channel_url,
-                username,
+                username or title,
                 duration,
                 linkify(linebreaks(video["snippet"]["description"])),
                 thumbnail["url"] if thumbnail else "",
@@ -96,7 +96,7 @@ class YoutubeFetcher:
                 "title": video["snippet"]["title"],
                 "link": link,
                 "description": content,
-                "author_name": username,
+                "author_name": username or title,
                 "categories": [],
                 "unique_id": "tag:youtube.com,2008:video:%s" % video["id"],
                 "pubdate": dateutil.parser.parse(video["snippet"]["publishedAt"]),
