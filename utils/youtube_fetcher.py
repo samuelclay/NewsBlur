@@ -169,8 +169,9 @@ class YoutubeFetcher:
             title = channel["items"][0]["snippet"]["title"]
             description = channel["items"][0]["snippet"]["description"]
             uploads_list_id = channel["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
-        except (IndexError, KeyError):
-            return
+        except (IndexError, KeyError) as e:
+            logging.debug(" ***> ~FRYoutube channel returned an error: ~FM~SB%s: %s" % (channel, e))
+            return None, None, None
 
         return self.fetch_playlist_videos(uploads_list_id, title, description)
 
