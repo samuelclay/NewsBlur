@@ -1,22 +1,18 @@
 package com.newsblur.activity
 
 import android.app.Activity
-import android.app.DownloadManager
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.newsblur.R
 import com.newsblur.databinding.ActivityImportExportBinding
 import com.newsblur.network.APIManager
 import com.newsblur.service.NBSyncService
+import com.newsblur.util.DownloadCompleteReceiver
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.FileDownloader
 import com.newsblur.util.NBScope
@@ -38,25 +34,9 @@ class ImportExportActivity : NbActivity() {
 
     private lateinit var binding: ActivityImportExportBinding
 
-    private var fileDownloaderId: Long? = null
-
     private val filePickResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             handleFilePickResult(result.data)
-        }
-    }
-
-    private val onOpmlExportReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == DownloadManager.ACTION_DOWNLOAD_COMPLETE) {
-                val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L)
-                if (id == fileDownloaderId) {
-                    context?.let {
-                        val msg = "${it.getString(R.string.newsblur_opml)} download completed"
-                        Toast.makeText(it, msg, Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
         }
     }
 
@@ -67,10 +47,6 @@ class ImportExportActivity : NbActivity() {
 
         setupUI()
         setupListeners()
-
-        ContextCompat.registerReceiver(this, onOpmlExportReceiver, IntentFilter().apply {
-            addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
-        }, ContextCompat.RECEIVER_EXPORTED)
     }
 
     private fun setupUI() {
@@ -93,7 +69,7 @@ class ImportExportActivity : NbActivity() {
     }
 
     private fun exportOpmlFile() {
-        fileDownloaderId = FileDownloader.exportOpml(this)
+        DownloadCompleteReceiver.expectedFileDownloadId = FileDownloader.exportOpml(this)
         val msg = "${getString(R.string.newsblur_opml)} download started"
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
@@ -154,10 +130,5 @@ class ImportExportActivity : NbActivity() {
 
     override fun handleUpdate(updateType: Int) {
         // ignore
-    }
-
-    override fun onDestroy() {
-        unregisterReceiver(onOpmlExportReceiver)
-        super.onDestroy()
     }
 }
