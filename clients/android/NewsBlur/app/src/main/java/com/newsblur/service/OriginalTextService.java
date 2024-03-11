@@ -1,6 +1,6 @@
 package com.newsblur.service;
 
-import static com.newsblur.service.NBSyncReceiver.UPDATE_TEXT;
+import static com.newsblur.service.NbSyncManager.UPDATE_TEXT;
 
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.network.domain.StoryTextResponse;
