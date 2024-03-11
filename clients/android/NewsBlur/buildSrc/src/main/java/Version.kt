@@ -18,7 +18,6 @@ object Version {
     const val browser = "1.8.0"
     const val lifecycle = "2.7.0"
     const val splashScreen = "1.0.1"
-    const val coreKtx = "1.12.0"
 
     const val hilt = "2.51"
     const val profileInstaller = "1.3.1"

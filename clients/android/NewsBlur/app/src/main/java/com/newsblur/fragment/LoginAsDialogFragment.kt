@@ -13,7 +13,6 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.databinding.LoginasDialogBinding
 import com.newsblur.network.APIManager
 import com.newsblur.util.PrefsUtils
-import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -50,7 +49,7 @@ class LoginAsDialogFragment : DialogFragment() {
                             val startMain = Intent(requireContext(), Main::class.java)
                             requireContext().startActivity(startMain)
                         } else {
-                            UIUtils.safeToast(requireActivity(), "Login as $username failed", Toast.LENGTH_LONG)
+                            Toast.makeText(requireActivity(), "Login as $username failed", Toast.LENGTH_LONG).show()
                         }
                     }
             )

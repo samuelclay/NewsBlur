@@ -13,7 +13,6 @@ object Dependencies {
     const val lifecycleRuntime = "androidx.lifecycle:lifecycle-runtime-ktx:${Version.lifecycle}"
     const val lifecycleProcess = "androidx.lifecycle:lifecycle-process:${Version.lifecycle}"
     const val splashScreen = "androidx.core:core-splashscreen:${Version.splashScreen}"
-    const val coreKtx = "androidx.core:core-ktx:${Version.coreKtx}"
     const val hiltAndroid = "com.google.dagger:hilt-android:${Version.hilt}"
     const val hiltCompiler = "com.google.dagger:hilt-compiler:${Version.hilt}"
     const val profileInstaller = "androidx.profileinstaller:profileinstaller:${Version.profileInstaller}"

@@ -30,9 +30,9 @@ import com.newsblur.fragment.ReadingPagerFragment
 import com.newsblur.keyboard.KeyboardEvent
 import com.newsblur.keyboard.KeyboardListener
 import com.newsblur.keyboard.KeyboardManager
-import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_REBUILD
-import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_STATUS
-import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_STORY
+import com.newsblur.service.NbSyncManager.UPDATE_REBUILD
+import com.newsblur.service.NbSyncManager.UPDATE_STATUS
+import com.newsblur.service.NbSyncManager.UPDATE_STORY
 import com.newsblur.service.NBSyncService
 import com.newsblur.util.AppConstants
 import com.newsblur.util.CursorFilters

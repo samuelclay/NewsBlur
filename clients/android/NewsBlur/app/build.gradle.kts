@@ -51,7 +51,6 @@ android {
 }
 
 dependencies {
-    implementation(Dependencies.coreKtx)
     implementation(Dependencies.fragment)
     implementation(Dependencies.recyclerView)
     implementation(Dependencies.swipeRefreshLayout)
