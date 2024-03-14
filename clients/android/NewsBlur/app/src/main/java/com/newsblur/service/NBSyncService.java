@@ -1273,7 +1273,7 @@ public class NBSyncService extends JobService {
     }
 
     protected void sendSyncUpdate(int update) {
-        NbSyncManager.submitUpdate(UPDATE_STORY | UPDATE_STATUS);
+        NbSyncManager.submitUpdate(update);
     }
 
     protected void sendToastError(@NonNull String message) {
