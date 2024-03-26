@@ -185,7 +185,7 @@ maintenance_off:
 
 # Provision
 firewall:
-	ansible-playbook ansible/all.yml -l db --tags firewall
+	ansible-playbook ansible/all.yml -l db --tags ufw
 oldfirewall:
 	ANSIBLE_CONFIG=/srv/newsblur/ansible.old.cfg ansible-playbook ansible/all.yml  -l db --tags firewall
 repairmongo:

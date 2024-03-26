@@ -10,17 +10,17 @@
 
 - name: restart redis user
   become: yes
-  command: docker restart redis_user
+  command: docker restart redis-user
   listen: restart redis_user
 - name: restart redis story
   become: yes
-  command: docker restart redis_story
+  command: docker restart redis-story
   listen: restart redis_story
 - name: restart redis session
   become: yes
-  command: docker restart redis_session
+  command: docker restart redis-session
   listen: restart redis_session
 - name: restart redis pubsub
   become: yes
-  command: docker restart redis_pubsub
+  command: docker restart redis-pubsub
   listen: restart redis_pubsub

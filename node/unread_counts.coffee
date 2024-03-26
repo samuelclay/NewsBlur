@@ -12,7 +12,7 @@ unread_counts = (server) =>
     else if ENV_PROD
         REDIS_SERVER = 'db-redis-pubsub.service.nyc1.consul'
     SECURE = !!process.env.NODE_SSL
-    REDIS_PORT = if ENV_DOCKER then 6579 else 6379
+    REDIS_PORT = if ENV_DOCKER then 6579 else 6383
 
     # client = redis.createClient 6379, REDIS_SERVER
 

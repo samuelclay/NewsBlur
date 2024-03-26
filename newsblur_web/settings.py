@@ -618,10 +618,12 @@ except ModuleNotFoundError:
 if not started_task_or_app:
     print(" ---> Starting NewsBlur development server...")
 
-if "task-work" in SERVER_NAME:
+if DOCKERBUILD:
+    CELERY_WORKER_CONCURRENCY         = 2
+elif "task-work" in SERVER_NAME or SERVER_NAME.startswith("task-"):
     CELERY_WORKER_CONCURRENCY         = 4
 else:
-    CELERY_WORKER_CONCURRENCY         = 16
+    CELERY_WORKER_CONCURRENCY         = 24
     
 if not DEBUG:
     INSTALLED_APPS += (
@@ -769,16 +771,10 @@ if DOCKERBUILD:
     REDIS_SESSION_PORT = 6579
     REDIS_PUBSUB_PORT = 6579
 else:
-    REDIS_PORT = 6379
     REDIS_STORY_PORT = 6380
     REDIS_USER_PORT = 6381
     REDIS_SESSION_PORT = 6382
     REDIS_PUBSUB_PORT = 6383
-    # Until redis moves to hetzner, use old ports
-    REDIS_STORY_PORT = REDIS_PORT
-    REDIS_USER_PORT = REDIS_PORT
-    REDIS_SESSION_PORT = REDIS_PORT
-    REDIS_PUBSUB_PORT = REDIS_PORT
 
 if REDIS_USER is None:
     # REDIS has been renamed to REDIS_USER. 
