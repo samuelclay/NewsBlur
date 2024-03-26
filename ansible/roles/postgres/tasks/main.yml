@@ -1,4 +1,18 @@
 ---
+- name: Set facts for all postgres servers
+  set_fact:
+    postgres_secondary: no
+  tags:
+    - always
+
+- name: Set facts for secondary postgres servers
+  set_fact:
+    postgres_secondary: yes
+  # when: inventory_hostname not in ["db-postgres2"]
+  when: inventory_hostname not in ["hdb-postgres-1"]
+  tags:
+    - always
+
 - name: Template postgresql-13.conf file
   template:
     src: /srv/newsblur/docker/postgres/postgresql-13.conf.j2
@@ -91,7 +105,7 @@
       - /srv/newsblur/docker/postgres/postgres_ident-13.conf:/etc/postgresql/pg_ident.conf
       - /home/nb/.ssh/id_rsa:/var/lib/postgresql/.ssh/id_rsa
     restart_policy: unless-stopped
-  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-postgres-primary', 'db-postgres', 'hdb-postgres']
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-postgres-primary', 'db-postgres', 'hdb-postgres', 'hdb-postgres-secondary']
 
 # - name: Change ownership in postgres docker container
 #   become: yes

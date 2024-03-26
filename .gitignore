@@ -19,6 +19,7 @@ certbot.conf
 task_env.py
 app_env.py
 data/
+api/ip_addresses.txt
 .prom_cache
 config/certificates
 **/*.xcuserstate
@@ -58,6 +59,7 @@ docker/postgres/postgres.conf
 
 # Local configuration file (sdk path, etc)
 /originals
+/node/originals
 media/safari/NewsBlur.safariextz
 
 # IDE files
@@ -67,3 +69,4 @@ media/safari/NewsBlur.safariextz
 *.tfstate*
 .terraform*
 grafana.ini
+apps/api/ip_addresses.txt

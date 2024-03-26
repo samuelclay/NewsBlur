@@ -38,7 +38,8 @@ defaults
 
 frontend public
     bind :80
-    bind :443 ssl crt /srv/newsblur/config/certificates/newsblur.com.pem ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES128-SHA:AES256-SHA256:AES256-SHA no-sslv3
+    bind :443 ssl crt /srv/newsblur/config/certificates/newsblur.com.pem ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305
+
     http-response add-header Strict-Transport-Security max-age=0;\ includeSubDomains
     option http-server-close
 
@@ -204,7 +205,7 @@ backend db_metrics
 backend metrics
     option httpchk GET /_haproxychk
     http-check expect rstatus 200|301
-    server app-django1 app-django1.node.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    server happ-web-01 happ-web-01.node.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 backend postgres
     option httpchk GET /db_check/postgres
@@ -254,7 +255,7 @@ backend db_redis_sessions
 backend db_redis_pubsub
     option httpchk GET /db_check/redis_pubsub
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    server db-redis-pubsub db-redis-pubsub.node.nyc1.consul:5579
+    server hdb-redis-pubsub db-redis-pubsub.service.nyc1.consul:5579
 
 backend db_elasticsearch
     option httpchk GET /db_check/elasticsearch
@@ -273,7 +274,8 @@ backend maintenance
     option httpchk HEAD /maintenance
     http-check expect status 404
     http-check send-state
-    server maintenance app-django1.node.nyc1.consul:80 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    # server maintenance app-django1.node.nyc1.consul:80 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    server maintenance happ-web-01.node.nyc1.consul:80 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
 listen stats
 bind :1936 ssl crt {{ ssl_certificate }}
