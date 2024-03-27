@@ -130,7 +130,15 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.searchBar.nb_searchField.textColor = UIColorFromRGB(0x0);
     [self.searchBar setSearchBarStyle:UISearchBarStyleMinimal];
     [self.searchBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+#if TARGET_OS_MACCATALYST
+    // Workaround for Catalyst bug.
+    self.searchBar.frame = CGRectMake(10, 0, CGRectGetWidth(self.feedTitlesTable.frame) - 100, 44.);
+    UIView *searchContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.feedTitlesTable.frame), 44.)];
+    [searchContainerView addSubview:self.searchBar];
+    self.feedTitlesTable.tableHeaderView = searchContainerView;
+#else
     self.feedTitlesTable.tableHeaderView = self.searchBar;
+#endif
     
     userLabelFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:15.0];
     
@@ -209,6 +217,12 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
     self.feedTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
     self.feedTitlesTable.estimatedRowHeight = 0;
+    
+#if TARGET_OS_MACCATALYST
+    // Workaround for Catalyst bug.
+    self.feedTitlesLeadingConstraint.constant = -10;
+    self.feedTitlesTrailingConstraint.constant = -10;
+#endif
     
     if (@available(iOS 15.0, *)) {
         self.feedTitlesTable.sectionHeaderTopPadding = 0;

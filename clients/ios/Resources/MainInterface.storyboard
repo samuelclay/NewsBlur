@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r" initialMenu="YWi-Ju-M3z">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r" initialMenu="YWi-Ju-M3z">
     <device id="ipad11_0rounded" orientation="landscape" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="UIMenu" message="Requires Xcode 11 or later." minToolsVersion="11.0" requiredIntegratedClassName="UICommandDiff"/>
@@ -227,8 +227,10 @@
                     <navigationItem key="navigationItem" id="ejU-V5-SiF"/>
                     <connections>
                         <outlet property="addBarButton" destination="Wu8-MQ-nN6" id="mk5-Nm-bYF"/>
+                        <outlet property="feedTitlesLeadingConstraint" destination="mcu-rd-QiB" id="lNY-Ya-6pE"/>
                         <outlet property="feedTitlesTable" destination="Gil-Jz-die" id="Jby-a1-If4"/>
                         <outlet property="feedTitlesTopConstraint" destination="YMn-QK-fCb" id="Bjn-sa-Qdx"/>
+                        <outlet property="feedTitlesTrailingConstraint" destination="YOq-sh-lXt" id="nLy-3P-sgq"/>
                         <outlet property="feedViewToolbar" destination="pWr-U1-GMQ" id="FFI-k8-5iO"/>
                         <outlet property="innerView" destination="hRx-bd-6Da" id="vd8-hw-hZT"/>
                         <outlet property="intelligenceControl" destination="ADC-ot-Aao" id="8EU-ja-Dan"/>
