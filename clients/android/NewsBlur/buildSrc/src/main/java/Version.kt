@@ -1,8 +1,8 @@
 object Version {
 
-    const val android = "8.3.0"
+    const val android = "8.3.1"
 
-    const val kotlin = "1.8.10"
+    const val kotlin = "1.9.23"
 
     const val fragment = "1.6.2"
     const val recyclerView = "1.3.2"
