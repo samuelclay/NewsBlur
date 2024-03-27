@@ -381,6 +381,10 @@
         self.scrollView.frame = CGRectMake(frame.origin.x, frame.origin.y, floor(frame.size.width), floor(frame.size.height));
     }
     
+    if (self.scrollView.subviews.lastObject != self.currentPage.view) {
+        [self.scrollView bringSubviewToFront:self.currentPage.view];
+    }
+    
     [super viewDidLayoutSubviews];
 }
 
