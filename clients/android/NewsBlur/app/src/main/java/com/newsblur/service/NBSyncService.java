@@ -1279,10 +1279,4 @@ public class NBSyncService extends JobService {
     protected void sendToastError(@NonNull String message) {
         NbSyncManager.submitError(message);
     }
-
-    private void broadcastSync(@NonNull Intent intent) {
-        if (NbApplication.isAppForeground()) {
-            sendBroadcast(intent);
-        }
-    }
 }
