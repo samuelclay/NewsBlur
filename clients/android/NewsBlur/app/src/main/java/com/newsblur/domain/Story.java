@@ -16,6 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.util.StateFilter;
+import com.newsblur.util.StoryUtil;
 
 public class Story implements Serializable {
 
@@ -139,21 +140,21 @@ public class Story implements Serializable {
 		values.put(DatabaseConstants.STORY_AUTHORS, authors);
 		values.put(DatabaseConstants.STORY_SOCIAL_USER_ID, socialUserId);
 		values.put(DatabaseConstants.STORY_SOURCE_USER_ID, sourceUserId);
-		values.put(DatabaseConstants.STORY_SHARED_USER_IDS, TextUtils.join(",", sharedUserIds));
-		values.put(DatabaseConstants.STORY_FRIEND_USER_IDS, TextUtils.join(",", friendUserIds));
+		values.put(DatabaseConstants.STORY_SHARED_USER_IDS, StoryUtil.nullSafeJoin(",", sharedUserIds));
+		values.put(DatabaseConstants.STORY_FRIEND_USER_IDS, StoryUtil.nullSafeJoin(",", friendUserIds));
 		values.put(DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, intelligence.intelligenceAuthors);
 		values.put(DatabaseConstants.STORY_INTELLIGENCE_FEED, intelligence.intelligenceFeed);
 		values.put(DatabaseConstants.STORY_INTELLIGENCE_TAGS, intelligence.intelligenceTags);
 		values.put(DatabaseConstants.STORY_INTELLIGENCE_TITLE, intelligence.intelligenceTitle);
         values.put(DatabaseConstants.STORY_INTELLIGENCE_TOTAL, intelligence.calcTotalIntel());
-		values.put(DatabaseConstants.STORY_TAGS, TextUtils.join(",", tags));
-		values.put(DatabaseConstants.STORY_USER_TAGS, TextUtils.join(",", userTags));
+		values.put(DatabaseConstants.STORY_TAGS, StoryUtil.nullSafeJoin(",", tags));
+		values.put(DatabaseConstants.STORY_USER_TAGS, StoryUtil.nullSafeJoin(",", userTags));
 		values.put(DatabaseConstants.STORY_READ, read);
 		values.put(DatabaseConstants.STORY_STARRED, starred);
 		values.put(DatabaseConstants.STORY_STARRED_DATE, starredTimestamp);
 		values.put(DatabaseConstants.STORY_FEED_ID, feedId);
         values.put(DatabaseConstants.STORY_HASH, storyHash);
-        values.put(DatabaseConstants.STORY_IMAGE_URLS, TextUtils.join(",", imageUrls));
+        values.put(DatabaseConstants.STORY_IMAGE_URLS, StoryUtil.nullSafeJoin(",", imageUrls));
         values.put(DatabaseConstants.STORY_LAST_READ_DATE, lastReadTimestamp);
         values.put(DatabaseConstants.STORY_SHARED_DATE, sharedTimestamp);
 		values.put(DatabaseConstants.STORY_SEARCH_HIT, searchHit);
