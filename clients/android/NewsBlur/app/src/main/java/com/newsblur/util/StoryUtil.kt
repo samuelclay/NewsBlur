@@ -1,5 +1,6 @@
 package com.newsblur.util
 
+import android.text.TextUtils
 import com.newsblur.domain.Story
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
@@ -23,4 +24,10 @@ object StoryUtil {
 
     @JvmStatic
     fun getStoryHashes(stories: List<Story>): Set<String> = stories.map { it.storyHash }.toSet()
+
+    @JvmStatic
+    fun nullSafeJoin(delimiter: CharSequence, tokens: Array<Any?>?): String {
+        if (tokens.isNullOrEmpty()) return ""
+        return TextUtils.join(delimiter, tokens)
+    }
 }
