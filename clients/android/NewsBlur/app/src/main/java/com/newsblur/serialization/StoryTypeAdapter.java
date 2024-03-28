@@ -7,6 +7,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
+import com.newsblur.NbApplication;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIConstants;
 import com.newsblur.util.StoryUtil;
@@ -47,10 +48,12 @@ public class StoryTypeAdapter implements JsonDeserializer<Story> {
         // due to android.os.TransactionTooLargeException and
         // android.database.sqlite.SQLiteBlobTooBigException
         // truncate the story's content in case it's large
-        story.content = StoryUtil.truncateContent(story.content);
+        if (!NbApplication.isAppForeground()) {
+            story.content = StoryUtil.truncateContent(story.content);
+        }
 
         // replace http image urls with https
-        if (httpSniff.matcher(story.content).find() && story.secureImageUrls != null && story.secureImageUrls.size() > 0) {
+        if (httpSniff.matcher(story.content).find() && story.secureImageUrls != null && !story.secureImageUrls.isEmpty()) {
             for (String url : story.secureImageUrls.keySet()) {
                 if (httpSniff.matcher(url).find()) {
                     String secureUrl = story.secureImageUrls.get(url);
