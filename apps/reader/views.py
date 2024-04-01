@@ -1,72 +1,113 @@
+import base64
+import concurrent
 import datetime
+import random
+import re
+import socket
+import ssl
 import time
+import urllib.error
+import urllib.parse
+import urllib.request
+import zlib
+
 import redis
 import requests
-import random
-import zlib
-import concurrent
-import re
-import ssl
-import socket
-import base64
-import urllib.request, urllib.error, urllib.parse
-from django.shortcuts import get_object_or_404
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.template.loader import render_to_string
-from django.db import IntegrityError
-from django.db.utils import DatabaseError
-from django.db.models import Q
-from django.views.decorators.cache import never_cache
-from django.urls import reverse
+from django.conf import settings
 from django.contrib.auth import login as login_user
 from django.contrib.auth import logout as logout_user
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404, UnreadablePostError
-from django.conf import settings
+from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
 from django.core.validators import validate_email
-from django.contrib.sites.models import Site
+from django.db import IntegrityError
+from django.db.models import Q
+from django.db.utils import DatabaseError
+from django.http import (
+    Http404,
+    HttpResponse,
+    HttpResponseForbidden,
+    HttpResponseRedirect,
+    UnreadablePostError,
+)
+from django.shortcuts import get_object_or_404, render
+from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils import feedgenerator
 from django.utils.encoding import smart_str
-from mongoengine.queryset import OperationError
-from mongoengine.queryset import NotUniqueError
-from apps.recommendations.models import RecommendedFeed
-from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
-from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
-from apps.analyzer.models import apply_classifier_authors, apply_classifier_tags
-from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
-from apps.profile.models import Profile, MCustomStyling, MDashboardRiver
-from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory, RUserUnreadStory, Feature
-from apps.reader.forms import SignupForm, LoginForm, FeatureForm
-from apps.rss_feeds.models import MFeedIcon, MStarredStoryCounts, MSavedSearch
+from django.views.decorators.cache import never_cache
+from mongoengine.queryset import NotUniqueError, OperationError
+
+from apps.analyzer.models import (
+    MClassifierAuthor,
+    MClassifierFeed,
+    MClassifierTag,
+    MClassifierTitle,
+    apply_classifier_authors,
+    apply_classifier_feeds,
+    apply_classifier_tags,
+    apply_classifier_titles,
+    get_classifiers_for_user,
+    sort_classifiers_by_feed,
+)
 from apps.notifications.models import MUserFeedNotification
+from apps.profile.models import MCustomStyling, MDashboardRiver, Profile
+from apps.reader.forms import FeatureForm, LoginForm, SignupForm
+from apps.reader.models import (
+    Feature,
+    RUserStory,
+    RUserUnreadStory,
+    UserSubscription,
+    UserSubscriptionFolders,
+)
+from apps.recommendations.models import RecommendedFeed
+from apps.rss_feeds.models import MFeedIcon, MSavedSearch, MStarredStoryCounts
 from apps.search.models import MUserSearch
-from apps.statistics.models import MStatistics, MAnalyticsLoader
+from apps.statistics.models import MAnalyticsLoader, MStatistics
 from apps.statistics.rstats import RStats
+
 # from apps.search.models import SearchStarredStory
 try:
-    from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory
+    from apps.rss_feeds.models import (
+        DuplicateFeed,
+        Feed,
+        MFeedPage,
+        MStarredStory,
+        MStory,
+    )
 except:
     pass
-from apps.social.models import MSharedStory, MSocialProfile, MSocialServices
-from apps.social.models import MSocialSubscription, MActivity, MInteraction
-from apps.categories.models import MCategory
-from apps.social.views import load_social_page
-from apps.rss_feeds.tasks import ScheduleImmediateFetches
-from utils import json_functions as json
-from utils.user_functions import get_user, ajax_login_required
-from utils.user_functions import extract_user_agent
-from utils.feed_functions import relative_timesince
-from utils.story_functions import format_story_link_date__short
-from utils.story_functions import format_story_link_date__long
-from utils.story_functions import strip_tags
-from utils import log as logging
-from utils.view_functions import get_argument_or_404, render_to, is_true
-from utils.view_functions import required_params
-from utils.ratelimit import ratelimit
-from vendor.timezones.utilities import localtime_for_timezone
 import tweepy
+
+from apps.categories.models import MCategory
+from apps.rss_feeds.tasks import ScheduleImmediateFetches
+from apps.social.models import (
+    MActivity,
+    MInteraction,
+    MSharedStory,
+    MSocialProfile,
+    MSocialServices,
+    MSocialSubscription,
+)
+from apps.social.views import load_social_page
+from utils import json_functions as json
+from utils import log as logging
+from utils.feed_functions import relative_timesince
+from utils.ratelimit import ratelimit
+from utils.story_functions import (
+    format_story_link_date__long,
+    format_story_link_date__short,
+    strip_tags,
+)
+from utils.user_functions import ajax_login_required, extract_user_agent, get_user
+from utils.view_functions import (
+    get_argument_or_404,
+    is_true,
+    render_to,
+    required_params,
+)
+from vendor.timezones.utilities import localtime_for_timezone
 
 BANNED_URLS = [
     "brentozar.com",
@@ -74,8 +115,11 @@ BANNED_URLS = [
 ALLOWED_SUBDOMAINS = [
     'dev', 
     'www', 
+    'hwww', 
+    'dwww', 
     # 'beta',  # Comment to redirect beta -> www, uncomment to allow beta -> staging (+ dns changes)
     'staging', 
+    'hstaging', 
     'discovery', 
     'debug', 
     'debug3', 
@@ -671,10 +715,14 @@ def load_single_feed(request, feed_id):
     if feed.is_newsletter and not usersub:
         # User must be subscribed to a newsletter in order to read it
         raise Http404
+
+    if feed.num_subscribers == 1 and not usersub and not user.is_staff:
+        # This feed could be private so user must be subscribed in order to read it
+        raise Http404
     
     if page > 400:
         logging.user(request, "~BR~FK~SBOver page 400 on single feed: %s" % page)
-        assert False
+        raise Http404
     
     if query:
         if user.profile.is_premium:
@@ -874,7 +922,6 @@ def load_feed_page(request, feed_id):
         raise Http404
     
     feed = Feed.get_by_id(feed_id)
-    
     if feed and feed.has_page and not feed.has_page_exception:
         if settings.BACKED_BY_AWS.get('pages_on_node'):
             domain = Site.objects.get_current().domain
@@ -883,8 +930,9 @@ def load_feed_page(request, feed_id):
                 feed.pk,
             )
             try:
-                page_response = requests.get(url)
-            except requests.ConnectionError:
+                page_response = requests.get(url, verify=not settings.DEBUG)
+            except requests.ConnectionError as e:
+                logging.user(request, f"~FR~SBError loading original page: {url} {e}")
                 page_response = None
             if page_response and page_response.status_code == 200:
                 response = HttpResponse(page_response.content, content_type="text/html; charset=utf-8")

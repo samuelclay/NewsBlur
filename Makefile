@@ -115,7 +115,8 @@ inventory:
 	./ansible/utils/generate_inventory.py
 oldinventory:
 	OLD=1 ./ansible/utils/generate_inventory.py
-
+hinventory:
+	./ansible/utils/generate_hetzner_inventory.py
 # Docker
 pull:
 	docker pull newsblur/newsblur_python3
@@ -184,7 +185,7 @@ maintenance_off:
 
 # Provision
 firewall:
-	ansible-playbook ansible/all.yml -l db --tags firewall
+	ansible-playbook ansible/all.yml -l db --tags ufw
 oldfirewall:
 	ANSIBLE_CONFIG=/srv/newsblur/ansible.old.cfg ansible-playbook ansible/all.yml  -l db --tags firewall
 repairmongo:

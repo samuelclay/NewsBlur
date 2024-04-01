@@ -8,11 +8,13 @@ server=/consul/127.0.0.1#8600
 {# dnsmasq should not needlessly read /etc/resolv.conf #}
 no-resolv
 
-interface=lo
-interface=eth0
-interface=eth1
+{% for interface in network_interfaces %}
+{% if not interface.startswith('veth') and not interface.startswith('docker') and not interface.startswith('br') %}
+# interface={{ interface }}
+{% endif %}
+{% endfor %}
 
-bind-interfaces
+# bind-interfaces  # This will bind only to the interfaces that are up in interface= above
 # log-dhcp
 # log-queries
 # log-facility=/var/log/dnsmasq.log

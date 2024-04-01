@@ -1,4 +1,20 @@
 ---
+- name: Set mongo_analytics_secondary
+  set_fact:
+    mongo_analytics_secondary: no
+  tags:
+    - consul
+    - always
+
+- name: Set mongo_analytics_secondary
+  set_fact:
+    mongo_analytics_secondary: yes
+  # when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) not in ['db-mongo-analytics']
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) not in ['hdb-mongo-analytics']
+  tags:
+    - consul
+    - always
+
 - name: Permissions for mongo
   become: yes
   file:
@@ -7,6 +23,17 @@
     owner: "{{ ansible_effective_user_id|int }}"
     group: "{{ ansible_effective_group_id|int }}"
     path: /var/log/mongodb
+
+- name: Copy MongoDB keyfile
+  become: yes
+  copy:
+    content: "{{ mongodb_keyfile }}"
+    dest: /srv/newsblur/config/mongodb_keyfile.key
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"
+    mode: 0400
+  tags:
+    - keyfile
 
 - name: Block for mongo volume
   block:
@@ -37,46 +64,47 @@
         opts: defaults,discard
         state: mounted
 
+
+    - name: Set permissions on mongo volume
+      # become: yes
+      file:
+        path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}"
+        state: directory
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
+        recurse: yes
+
+    - name: Make backup directory
+      # become: yes
+      file:
+        path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup/"
+        state: directory
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
+        mode: 0755
+
+    - name: Create symlink to mounted volume for backups to live
+      file:
+        state: link
+        src: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup"
+        path: /srv/newsblur/backup
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
+        force: yes
   when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo-secondary', 'db-mongo-analytics']
 
-- name: Copy MongoDB keyfile
-  become: yes
-  copy:
-    content: "{{ mongodb_keyfile }}"
-    dest: /srv/newsblur/config/mongodb_keyfile.key
-    owner: "{{ ansible_effective_user_id|int }}"
-    group: "{{ ansible_effective_group_id|int }}"
-    mode: 0400
-  tags:
-    - keyfile
 
-- name: Set permissions on mongo volume
-  become: yes
-  file:
-    path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}"
-    state: directory
-    owner: "{{ ansible_effective_user_id|int }}"
-    group: "{{ ansible_effective_group_id|int }}"
-    recurse: yes
+- name: Block for mongo volume on hetzner
+  block:
+    - name: Create backup directory
+      file:
+        path: "/srv/newsblur/docker/volumes/mongo/backup"
+        state: directory
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
+        mode: 0755
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['hdb-mongo-secondary', 'hdb-mongo-analytics']
 
-- name: Make backup directory
-  become: yes
-  file:
-    path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup/"
-    state: directory
-    owner: "{{ ansible_effective_user_id|int }}"
-    group: "{{ ansible_effective_group_id|int }}"
-    mode: 0755
-
-- name: Create symlink to mounted volume for backups to live
-  file:
-    state: link
-    src: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup"
-    path: /srv/newsblur/backup
-    owner: "{{ ansible_effective_user_id|int }}"
-    group: "{{ ansible_effective_group_id|int }}"
-    force: yes
-    
 - name: Start db-mongo docker container
   become: yes
   docker_container:
@@ -103,7 +131,46 @@
       - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
       - /var/log/mongodb/:/var/log/mongodb/
       - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup/:/backup/
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-primary', 'db-mongo-secondary']
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-mongo', 'db-mongo-primary', 'db-mongo-secondary']
+
+- name: Start mongo and set permissions
+  block:
+    - name: Start db-mongo docker container on hetzner
+      docker_container:
+        name: mongo
+        image: mongo:4.0
+        state: started
+        container_default_behavior: no_defaults
+        hostname: "{{ inventory_hostname }}"
+        restart_policy: unless-stopped
+        networks_cli_compatible: yes
+        network_mode: host
+        # network_mode: default
+        # networks:
+        #   - name: newsblurnet
+        #     aliases: 
+        #       - mongo
+        # ports:
+        #   - "27017:27017"
+        command: --config /etc/mongod.conf
+        # user: 1000:1001
+        user: "{{ ansible_effective_user_id|int }}:{{ ansible_effective_group_id|int }}"
+        volumes:
+          - /srv/newsblur/docker/volumes/mongo:/data/db
+          - /srv/newsblur/ansible/roles/mongo/templates/mongo.conf:/etc/mongod.conf
+          - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
+          - /var/log/mongodb/:/var/log/mongodb/
+          - /srv/newsblur/docker/volumes/mongo/backup/:/backup/
+
+    - name: Set permissions on mongo volume
+      become: yes
+      file:
+        path: "/srv/newsblur/docker/volumes/"
+        state: directory
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
+        recurse: yes
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['hdb-mongo-primary', 'hdb-mongo-secondary', 'hdb-mongo-analytics']
 
 - name: Start db-mongo-analytics docker container
   become: yes
@@ -131,7 +198,35 @@
       - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
       - /var/log/mongodb/:/var/log/mongodb/
       - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup/:/backup/
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics'
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo-analytics']
+
+- name: Start db-mongo-analytics docker container on hetzner
+  become: yes
+  docker_container:
+    name: mongo
+    image: mongo:4.0
+    state: started
+    container_default_behavior: no_defaults
+    hostname: "{{ inventory_hostname }}"
+    restart_policy: unless-stopped
+    networks_cli_compatible: yes
+    # network_mode: host
+    network_mode: default
+    networks:
+      - name: newsblurnet
+        aliases: 
+          - mongo
+    ports:
+      - "27017:27017"
+    command: --config /etc/mongod.conf
+    user: 1000:1001
+    volumes:
+      - /srv/newsblur/docker/volumes/mongo:/data/db
+      - /srv/newsblur/ansible/roles/mongo/templates/mongo.analytics.conf:/etc/mongod.conf
+      - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
+      - /var/log/mongodb/:/var/log/mongodb/
+      - /srv/newsblur/docker/volumes/mongo/backup/:/backup/
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['hdb-mongo-analytics']
 
 - name: Create mongo database user
   shell:
@@ -148,7 +243,6 @@
           ]
         }
       )' admin
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics'
   register: auth_result
   changed_when:
     - auth_result.rc == 0
@@ -170,7 +264,7 @@
   template:
     src: consul_service.json
     dest: /etc/consul.d/mongo.json
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo-primary', 'db-mongo-secondary']
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-mongo-primary', 'db-mongo-secondary', 'hdb-mongo-primary', 'hdb-mongo-secondary']
   notify:
     - reload consul
 
@@ -180,7 +274,7 @@
   template:
     src: consul_service.analytics.json
     dest: /etc/consul.d/mongo.json
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics'
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-mongo-analytics', 'hdb-mongo-analytics']
   notify:
     - reload consul
 
@@ -214,7 +308,6 @@
   register: app_changed
 
 - name: Add mongo backup log
-  become: yes
   file:
     path: /var/log/mongo_backup.log
     state: touch

@@ -1,6 +1,6 @@
 {
     "service": {
-        "name": "{{ inventory_hostname|regex_replace('\d+', '') }}",
+        "name": "{{ inventory_hostname|regex_replace('\-?\d+', '')|regex_replace('htask', 'task') }}",
         "id": "{{ inventory_hostname }}",
         "tags": [
             "celery_task"

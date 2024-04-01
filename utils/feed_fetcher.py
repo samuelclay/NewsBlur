@@ -1,58 +1,62 @@
-import time
 import datetime
-import traceback
 import multiprocessing
+import time
+import traceback
 
 import django
 
 django.setup()
 
-import urllib.request, urllib.error, urllib.parse
-import http, http.client
+import http
+import http.client
+import urllib.error
+import urllib.parse
+import urllib.request
 
 http.client._MAXHEADERS = 10000
 
-import xml.sax
-import redis
 import random
-import pymongo
 import re
-import requests
-import dateutil.parser
-import isodate
-from django.conf import settings
-from django.db import IntegrityError
-from django.core.cache import cache
-from sentry_sdk import set_user
-from apps.reader.models import UserSubscription
-from apps.rss_feeds.models import Feed, MStory
-from apps.rss_feeds.page_importer import PageImporter
-from apps.rss_feeds.icon_importer import IconImporter
-from apps.notifications.tasks import QueueNotifications
-from apps.notifications.models import MUserFeedNotification
-from apps.push.models import PushSubscription
-from apps.statistics.models import MAnalyticsFetcher, MStatistics
+import xml.sax
 
 import feedparser
+import pymongo
+import redis
+import requests
+from django.conf import settings
+from django.core.cache import cache
+from django.db import IntegrityError
+from sentry_sdk import set_user
+
+from apps.notifications.models import MUserFeedNotification
+from apps.notifications.tasks import QueueNotifications
+from apps.push.models import PushSubscription
+from apps.reader.models import UserSubscription
+from apps.rss_feeds.icon_importer import IconImporter
+from apps.rss_feeds.models import Feed, MStory
+from apps.rss_feeds.page_importer import PageImporter
+from apps.statistics.models import MAnalyticsFetcher, MStatistics
 
 feedparser.sanitizer._HTMLSanitizer.acceptable_elements.update(['iframe'])
 feedparser.sanitizer._HTMLSanitizer.acceptable_elements.update(['text'])
 
-from utils.story_functions import pre_process_story, strip_tags, linkify
-from utils import log as logging
-from utils.feed_functions import timelimit, TimeoutError
-from sentry_sdk import capture_exception, flush
-from qurl import qurl
 from bs4 import BeautifulSoup
-from mongoengine import connect, connection
-from django.utils import feedgenerator
-from django.utils.html import linebreaks
-from django.utils.encoding import smart_str
-from utils import json_functions as json
 from celery.exceptions import SoftTimeLimitExceeded
-from utils.twitter_fetcher import TwitterFetcher
+from django.utils import feedgenerator
+from django.utils.encoding import smart_str
+from django.utils.html import linebreaks
+from mongoengine import connect, connection
+from qurl import qurl
+from sentry_sdk import capture_exception, flush
+
+from utils import json_functions as json
+from utils import log as logging
 from utils.facebook_fetcher import FacebookFetcher
+from utils.feed_functions import TimeoutError, timelimit
 from utils.json_fetcher import JSONFetcher
+from utils.story_functions import linkify, pre_process_story, strip_tags
+from utils.twitter_fetcher import TwitterFetcher
+from utils.youtube_fetcher import YoutubeFetcher
 
 # from utils.feed_functions import mail_feed_error_to_admin
 
@@ -126,10 +130,7 @@ class FetchFeed:
             return FEED_OK, self.fpf
 
         if 'youtube.com' in address:
-            try:
-                youtube_feed = self.fetch_youtube(address)
-            except (requests.adapters.ConnectionError):
-                youtube_feed = None
+            youtube_feed = self.fetch_youtube()
             if not youtube_feed:
                 logging.debug(
                     '   ***> [%-30s] ~FRYouTube fetch failed: %s.' % (self.feed.log_title[:30], address)
@@ -308,157 +309,9 @@ class FetchFeed:
         json_fetcher = JSONFetcher(self.feed, self.options)
         return json_fetcher.fetch(address, headers)
 
-    def fetch_youtube(self, address):
-        username = None
-        channel_id = None
-        list_id = None
-
-        if 'gdata.youtube.com' in address:
-            try:
-                username_groups = re.search(r'gdata.youtube.com/feeds/\w+/users/(\w+)/', address)
-                if not username_groups:
-                    return
-                username = username_groups.group(1)
-            except IndexError:
-                return
-        elif 'youtube.com/feeds/videos.xml?user=' in address:
-            try:
-                username = urllib.parse.parse_qs(urllib.parse.urlparse(address).query)['user'][0]
-            except IndexError:
-                return
-        elif 'youtube.com/feeds/videos.xml?channel_id=' in address:
-            try:
-                channel_id = urllib.parse.parse_qs(urllib.parse.urlparse(address).query)['channel_id'][0]
-            except (IndexError, KeyError):
-                return
-        elif 'youtube.com/playlist' in address:
-            try:
-                list_id = urllib.parse.parse_qs(urllib.parse.urlparse(address).query)['list'][0]
-            except IndexError:
-                return
-        elif 'youtube.com/feeds/videos.xml?playlist_id' in address:
-            try:
-                list_id = urllib.parse.parse_qs(urllib.parse.urlparse(address).query)['playlist_id'][0]
-            except IndexError:
-                return
-
-        if channel_id:
-            video_ids_xml = requests.get(
-                "https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id
-            )
-            channel_json = requests.get(
-                "https://www.googleapis.com/youtube/v3/channels?part=snippet&id=%s&key=%s"
-                % (channel_id, settings.YOUTUBE_API_KEY)
-            )
-            channel = json.decode(channel_json.content)
-            try:
-                username = channel['items'][0]['snippet']['title']
-                description = channel['items'][0]['snippet']['description']
-            except (IndexError, KeyError):
-                return
-        elif list_id:
-            playlist_json = requests.get(
-                "https://www.googleapis.com/youtube/v3/playlists?part=snippet&id=%s&key=%s"
-                % (list_id, settings.YOUTUBE_API_KEY)
-            )
-            playlist = json.decode(playlist_json.content)
-            try:
-                username = playlist['items'][0]['snippet']['title']
-                description = playlist['items'][0]['snippet']['description']
-            except (IndexError, KeyError):
-                return
-            channel_url = "https://www.youtube.com/playlist?list=%s" % list_id
-        elif username:
-            video_ids_xml = requests.get("https://www.youtube.com/feeds/videos.xml?user=%s" % username)
-            description = "YouTube videos uploaded by %s" % username
-        else:
-            return
-
-        if list_id:
-            playlist_json = requests.get(
-                "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=%s&key=%s"
-                % (list_id, settings.YOUTUBE_API_KEY)
-            )
-            playlist = json.decode(playlist_json.content)
-            try:
-                video_ids = [video['snippet']['resourceId']['videoId'] for video in playlist['items']]
-            except (IndexError, KeyError):
-                return
-        else:
-            if video_ids_xml.status_code != 200:
-                return
-            video_ids_soup = BeautifulSoup(video_ids_xml.content, features="lxml")
-            channel_url = video_ids_soup.find('author').find('uri').getText()
-            video_ids = []
-            for video_id in video_ids_soup.findAll('yt:videoid'):
-                video_ids.append(video_id.getText())
-
-        videos_json = requests.get(
-            "https://www.googleapis.com/youtube/v3/videos?part=contentDetails%%2Csnippet&id=%s&key=%s"
-            % (','.join(video_ids), settings.YOUTUBE_API_KEY)
-        )
-        videos = json.decode(videos_json.content)
-        if 'error' in videos:
-            logging.debug(" ***> ~FRYoutube returned an error: ~FM~SB%s" % (videos))
-            return
-
-        data = {}
-        data['title'] = "%s's YouTube Videos" % username if 'Uploads' not in username else username
-        data['link'] = channel_url
-        data['description'] = description
-        data['lastBuildDate'] = datetime.datetime.utcnow()
-        data['generator'] = 'NewsBlur YouTube API v3 Decrapifier - %s' % settings.NEWSBLUR_URL
-        data['docs'] = None
-        data['feed_url'] = address
-        rss = feedgenerator.Atom1Feed(**data)
-
-        for video in videos['items']:
-            thumbnail = video['snippet']['thumbnails'].get('maxres')
-            if not thumbnail:
-                thumbnail = video['snippet']['thumbnails'].get('high')
-            if not thumbnail:
-                thumbnail = video['snippet']['thumbnails'].get('medium')
-            duration_sec = isodate.parse_duration(video['contentDetails']['duration']).seconds
-            duration_min, seconds = divmod(duration_sec, 60)
-            hours, minutes = divmod(duration_min, 60)
-            if hours >= 1:
-                duration = "%s:%s:%s" % (
-                    hours,
-                    '{0:02d}'.format(minutes),
-                    '{0:02d}'.format(seconds),
-                )
-            else:
-                duration = "%s:%s" % (minutes, '{0:02d}'.format(seconds))
-            content = """<div class="NB-youtube-player">
-                            <iframe allowfullscreen="true" src="%s?iv_load_policy=3"></iframe>
-                         </div>
-                         <div class="NB-youtube-stats"><small>
-                             <b>From:</b> <a href="%s">%s</a><br />
-                             <b>Duration:</b> %s<br />
-                         </small></div><hr>
-                         <div class="NB-youtube-description">%s</div>
-                         <img src="%s" style="display:none" />""" % (
-                ("https://www.youtube.com/embed/" + video['id']),
-                channel_url,
-                username,
-                duration,
-                linkify(linebreaks(video['snippet']['description'])),
-                thumbnail['url'] if thumbnail else "",
-            )
-
-            link = "http://www.youtube.com/watch?v=%s" % video['id']
-            story_data = {
-                'title': video['snippet']['title'],
-                'link': link,
-                'description': content,
-                'author_name': username,
-                'categories': [],
-                'unique_id': "tag:youtube.com,2008:video:%s" % video['id'],
-                'pubdate': dateutil.parser.parse(video['snippet']['publishedAt']),
-            }
-            rss.add_item(**story_data)
-
-        return rss.writeString('utf-8')
+    def fetch_youtube(self):
+        youtube_fetcher = YoutubeFetcher(self.feed, self.options)
+        return youtube_fetcher.fetch()
 
 
 class ProcessFeed:

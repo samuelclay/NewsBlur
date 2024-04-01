@@ -618,13 +618,19 @@
     self.hasStory = NO;
     self.fullStoryHTML = htmlContent;
     
+    NSLog(@"📚 full story for: %@", self.activeStory[@"story_title"]);  // log
+    
     dispatch_async(dispatch_get_main_queue(), ^{
 //        NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
+        NSLog(@"📚 %@ story: %@", self.hasStory ? @"has" : @"hasn't", self.activeStory[@"story_title"]);  // log
+        
         if (self.hasStory)
             return;
         
         [self loadHTMLString:htmlTopAndBottom];
         [self.appDelegate.storyPagesViewController setTextButton:(StoryDetailViewController *)self];
+        
+        NSLog(@"📚 loaded top & bottom for: %@", self.activeStory[@"story_title"]);  // log
     });
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -1833,6 +1839,8 @@
     if (!self.fullStoryHTML)
         return; // if we're loading anything other than a full story, the view will be hidden
     
+    NSLog(@"📚 loaded: %@", self.activeStory[@"story_title"]);  // log
+    
     [self.activityIndicator stopAnimating];
     
     self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhone || !self.appDelegate.detailViewController.storyTitlesInGrid;
@@ -1852,6 +1860,8 @@
     }
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@"📚 showing webview for: %@; %@ current page", self.activeStory[@"story_title"], self == self.appDelegate.storyPagesViewController.currentPage ? @"is" : @"isn't");  // log
+        
         self.webView.hidden = NO;
         [self.webView setNeedsDisplay];
         
