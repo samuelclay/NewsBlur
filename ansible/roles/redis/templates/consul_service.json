@@ -1,25 +1,25 @@
 {
     "service": {
-        {% if inventory_hostname in ["db-redis-user", "db-redis-story2", "db-redis-session", "db-redis-pubsub"] %}
-            "name": "{{ inventory_hostname|regex_replace('\d+', '') }}",
+        {% if not redis_secondary %}
+            "name": "{{ inventory_hostname|regex_replace('\-?\d+', '')|regex_replace("hdb", "db") }}",
         {% else %}
-            "name": "{{ inventory_hostname|regex_replace('\d+', '') }}-staging",
+            "name": "db-redis-{{ redis_role }}-staging",
         {% endif %}
         "id": "{{ inventory_hostname }}",
         "tags": [
             "redis"
         ],
-        "port": 6379,
+        "port": {{ redis_port }},
         "checks": [{
             "id": "{{inventory_hostname}}-ping",
-            {% if inventory_hostname.startswith('db-redis-story') %}
-                "http": "http://{{ ansible_host }}:5579/db_check/redis_story?consul=1",
-            {% elif inventory_hostname.startswith('db-redis-user') %}
-                "http": "http://{{ ansible_host }}:5579/db_check/redis_user?consul=1",
-            {% elif inventory_hostname.startswith('db-redis-pubsub') %}
-                "http": "http://{{ ansible_host }}:5579/db_check/redis_pubsub?consul=1",
-            {% elif inventory_hostname.startswith('db-redis-sessions') %}
-                "http": "http://{{ ansible_host }}:5579/db_check/redis_sessions?consul=1",            
+            {% if 'db-redis-story' in inventory_hostname %}
+                "http": "http://{{ ansible_host }}:5579/db_check/redis_story?consul=1&port={{ redis_port }}",
+            {% elif 'db-redis-user' in inventory_hostname %}
+                "http": "http://{{ ansible_host }}:5579/db_check/redis_user?consul=1&port={{ redis_port }}",
+            {% elif 'db-redis-pubsub' in inventory_hostname %}
+                "http": "http://{{ ansible_host }}:5579/db_check/redis_pubsub?consul=1&port={{ redis_port }}",
+            {% elif 'db-redis-session' in inventory_hostname %}
+                "http": "http://{{ ansible_host }}:5579/db_check/redis_sessions?consul=1&port={{ redis_port }}",
             {% else %}
                 "http": "http://{{ ansible_host }}:5000/db_check/redis?consul=1",
             {% endif %}

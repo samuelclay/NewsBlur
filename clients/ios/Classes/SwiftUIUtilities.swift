@@ -59,6 +59,16 @@ extension Color {
     }
 }
 
+extension NSArray {
+    @objc(safeObjectAtIndex:) func safeObject(at index: Int) -> Any? {
+        if index >= 0, index < count {
+            return self[index]
+        } else {
+            return nil
+        }
+    }
+}
+
 // From https://www.swiftbysundell.com/articles/observing-swiftui-scrollview-content-offset/
 
 struct PositionObservingView<Content: View>: View {

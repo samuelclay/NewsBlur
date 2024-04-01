@@ -24,7 +24,7 @@ from utils.view_functions import is_true
 from utils.story_functions import truncate_chars
 from utils import log as logging
 from utils import mongoengine_fields
-from apns2.errors import BadDeviceToken, Unregistered
+from apns2.errors import BadDeviceToken, Unregistered, DeviceTokenNotForTopic
 from apns2.client import APNsClient
 from apns2.payload import Payload
 from bs4 import BeautifulSoup
@@ -306,14 +306,15 @@ class MUserFeedNotification(mongo.Document):
 
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
         # To update APNS:
+        # 0. Upgrade to latest openssl: brew install openssl
         # 1. Create certificate signing request in Keychain Access
         # 2. Upload to https://developer.apple.com/account/resources/certificates/list
         # 3. Download to secrets/certificates/ios/aps.cer
-        # 4. Open in Keychain Access:
+        # 4. Open in Keychain Access, Under "My Certificates":
         #    - export "Apple Push Service: com.newsblur.NewsBlur" as aps.p12 (or just use aps.cer in #5)
         #    - export private key as aps_key.p12 WITH A PASSPHRASE (removed later)
         # 5. openssl x509 -in aps.cer -inform DER -out aps.pem -outform PEM
-        # 6. openssl pkcs12 -nocerts -out aps_key.pem -in aps_key.p12
+        # 6. openssl pkcs12 -in aps_key.p12 -out aps_key.pem -nodes -legacy
         # 7. openssl rsa -out aps_key.noenc.pem -in aps_key.pem
         # 7. cat aps.pem aps_key.noenc.pem > aps.p12.pem
         # 8. Verify: openssl s_client -connect gateway.push.apple.com:2195 -cert aps.p12.pem
@@ -348,7 +349,7 @@ class MUserFeedNotification(mongo.Document):
             )
             try:
                 apns.send_notification(token, payload, topic="com.newsblur.NewsBlur")
-            except (BadDeviceToken, Unregistered):
+            except (BadDeviceToken, Unregistered, DeviceTokenNotForTopic):
                 logging.user(user, '~BMiOS token expired: ~FR~SB%s' % (token[:50]))
             else:
                 confirmed_ios_tokens.append(token)

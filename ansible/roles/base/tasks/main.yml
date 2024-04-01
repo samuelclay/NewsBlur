@@ -6,6 +6,17 @@
   tags: packages
   # ignore_errors: yes
 
+- name: whoami
+  debug:
+    var: ansible_user_id
+  tags: whoami
+
+- name: Set timezone
+  become: yes
+  ansible.builtin.timezone:
+    name: 'America/New_York'
+  tags: timezone
+
 - name: Copy zshrc
   template: 
     src: zshrc.txt.j2
@@ -20,10 +31,20 @@
   become: yes
   
 - name: Cloning oh-my-zsh
-  git:
-    repo: https://github.com/robbyrussell/oh-my-zsh
-    dest: /home/nb/.oh-my-zsh
-    force: yes
+  block:
+    - name: Cloning oh-my-zsh
+      git:
+        repo: https://github.com/robbyrussell/oh-my-zsh
+        dest: /home/nb/.oh-my-zsh
+        force: yes
+  rescue:
+    - name: chown oh-my-zsh
+      become: yes
+      file:
+        path: /home/nb/.oh-my-zsh
+        owner: nb
+        group: nb
+        recurse: yes
   
 - name: Copy toprc
   copy: src=toprc.txt dest=~/.toprc

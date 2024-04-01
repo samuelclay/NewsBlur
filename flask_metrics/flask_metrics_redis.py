@@ -1,8 +1,9 @@
-from flask import Flask, render_template, Response
-from newsblur_web import settings
-import sentry_sdk
-from sentry_sdk.integrations.flask import FlaskIntegration
 import redis
+import sentry_sdk
+from flask import Flask, Response, render_template
+from sentry_sdk.integrations.flask import FlaskIntegration
+
+from newsblur_web import settings
 
 if settings.FLASK_SENTRY_DSN is not None:
     sentry_sdk.init(
@@ -14,7 +15,7 @@ if settings.FLASK_SENTRY_DSN is not None:
 app = Flask(__name__)
 
 INSTANCES = {
-    'db-redis-sessions': settings.REDIS_SESSIONS,
+    'db-redis-session': settings.REDIS_SESSIONS,
     'db-redis-story': settings.REDIS_STORY,
     'db-redis-pubsub': settings.REDIS_PUBSUB,
     'db-redis-user': settings.REDIS_USER,
@@ -32,10 +33,17 @@ class RedisMetric(object):
 
     def redis_servers_stats(self):
         for instance, redis_config in INSTANCES.items():
-            if not settings.DOCKERBUILD and settings.SERVER_NAME != instance:
+            if not settings.DOCKERBUILD and instance not in settings.SERVER_NAME:
                 continue
-            self.host = redis_config['host']
-            self.port = redis_config.get('port', settings.REDIS_PORT)
+            self.host = f"{settings.SERVER_NAME}.node.nyc1.consul"
+            if instance == 'db-redis-session':
+                self.port = redis_config.get('port', settings.REDIS_SESSION_PORT)
+            elif instance == 'db-redis-story':
+                self.port = redis_config.get('port', settings.REDIS_STORY_PORT)
+            elif instance == 'db-redis-pubsub':
+                self.port = redis_config.get('port', settings.REDIS_PUBSUB_PORT)
+            elif instance == 'db-redis-user':
+                self.port = redis_config.get('port', settings.REDIS_USER_PORT)
             stats = self.get_info()
             yield instance, stats
   

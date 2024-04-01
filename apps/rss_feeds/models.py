@@ -462,6 +462,10 @@ class Feed(models.Model):
             username = re.search('youtube.com/user/(\w+)', url).group(1)
             url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
             without_rss = True
+        if url and 'youtube.com/@' in url:
+            username = url.split('youtube.com/@')[1]
+            url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
+            without_rss = True
         if url and 'youtube.com/channel/' in url:
             channel_id = re.search('youtube.com/channel/([-_\w]+)', url).group(1)
             url = "https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id

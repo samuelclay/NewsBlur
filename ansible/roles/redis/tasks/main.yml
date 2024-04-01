@@ -1,4 +1,31 @@
 ---
+- name: Extract part of hostname to determine container name
+  set_fact:
+    redis_role: "{{ inventory_hostname.split('-')[2] }}"
+    redis_secondary: no
+    # redis_port: 6379
+    redis_ports:
+      story: 6380
+      user: 6381
+      session: 6382
+      pubsub: 6383
+  tags:
+    - always
+
+- name: Set redis_port for redis servers
+  set_fact:
+    redis_port: "{{ redis_ports[redis_role] }}"
+  tags:
+    - always
+
+- name: Set redis_secondary for secondary redis servers
+  set_fact:
+    redis_secondary: yes
+  # when: inventory_hostname not in ["db-redis-user", "db-redis-story1", "db-redis-session", "db-redis-pubsub"]
+  when: inventory_hostname not in ["hdb-redis-user-1", "hdb-redis-story-1", "hdb-redis-session-1", "hdb-redis-pubsub"]
+  tags:
+    - always
+
 - name: Install sysfsutils for disabling transparent huge pages
   become: yes
   package:
@@ -25,29 +52,42 @@
   copy:
     src: /srv/newsblur/docker/redis/redis.conf
     dest: /srv/newsblur/docker/redis/redis.conf
-  notify: restart redis
+  notify: "restart redis_{{ redis_role }}"
   register: updated_config
 
 - name: Template redis_replica.conf file
   template:
     src: /srv/newsblur/docker/redis/redis_replica.conf.j2
-    dest: /srv/newsblur/docker/redis/redis_replica.conf
-  notify: restart redis
+    dest: "/srv/newsblur/docker/redis/redis_{{ redis_role }}_replica.conf"
+  notify: "restart redis_{{ redis_role }}"
   register: updated_config
-  when: "'db-redis-story1' in inventory_hostname"
+  when: redis_secondary
 
+- name: Remove redis_replica.conf file if not secondary
+  copy:
+    dest: "/srv/newsblur/docker/redis/redis_{{ redis_role }}_replica.conf"
+    content: ""
+  when: not redis_secondary
+
+- name: Create Redis docker volume directory
+  file:
+    path: /srv/newsblur/docker/volumes
+    state: directory
+    recurse: yes
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"
+    
 - name: Create Redis docker volume with correct permissions
   file:
-    path: /srv/newsblur/docker/volumes/redis
+    path: "/srv/newsblur/docker/volumes/redis_{{ redis_role }}"
     state: directory
     recurse: yes
     owner: "{{ ansible_effective_user_id|int }}"
     group: "{{ ansible_effective_group_id|int }}"  
 
 - name: Start redis docker containers
-  become: yes
   docker_container:
-    name: redis
+    name: "redis-{{ redis_role }}"
     image: redis:7
     pull: true
     state: started
@@ -62,19 +102,19 @@
         aliases: 
           - redis
     ports:
-      - 6379:6379
+      - "{{ redis_port }}:6379"
     restart_policy: unless-stopped
-    user: 1000:1001
+    user: "{{ ansible_effective_user_id|int }}:{{ ansible_effective_group_id|int }}"
     volumes:
-      - /srv/newsblur/docker/volumes/redis:/data
-      - /srv/newsblur/docker/redis/redis.conf:/usr/local/etc/redis/redis_server.conf
-      - /srv/newsblur/docker/redis/redis_replica.conf:/usr/local/etc/redis/redis_replica.conf
+      - "/srv/newsblur/docker/volumes/redis_{{ redis_role }}:/data"
+      - "/srv/newsblur/docker/redis/redis.conf:/usr/local/etc/redis/redis_server.conf"
+      - "/srv/newsblur/docker/redis/redis_{{ redis_role }}_replica.conf:/usr/local/etc/redis/redis_replica.conf"
 
 - name: Register redis in consul
   become: yes
   template:
     src: consul_service.json
-    dest: /etc/consul.d/redis.json
+    dest: "/etc/consul.d/redis_{{ redis_role }}.json"
   notify:
     - reload consul
   tags: consul
@@ -123,7 +163,7 @@
     job: >
       docker run --rm
       -v /srv/newsblur:/srv/newsblur
-      -v /srv/newsblur/docker/volumes/redis/dump.rdb:/data/dump.rdb
+      -v /srv/newsblur/docker/volumes/redis_{{ redis_role }}/dump.rdb:/data/dump.rdb
       --network=newsblurnet
       --hostname={{ ansible_hostname }}
       newsblur/newsblur_python3 python /srv/newsblur/utils/backups/backup_redis.py

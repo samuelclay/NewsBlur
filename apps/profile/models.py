@@ -1598,7 +1598,7 @@ class Profile(models.Model):
         self.save()
         
         delta      = datetime.datetime.now() - self.last_seen_on
-        months_ago = delta.days / 30
+        months_ago = round(delta.days / 30)
         user    = self.user
         data    = dict(user=user, months_ago=months_ago)
         text    = render_to_string('mail/email_premium_expire_grace.txt', data)
@@ -1627,7 +1627,7 @@ class Profile(models.Model):
                 return
         
         delta      = datetime.datetime.now() - self.last_seen_on
-        months_ago = delta.days / 30
+        months_ago = round(delta.days / 30)
         user    = self.user
         data    = dict(user=user, months_ago=months_ago)
         text    = render_to_string('mail/email_premium_expire.txt', data)

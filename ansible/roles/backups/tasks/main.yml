@@ -103,14 +103,15 @@
         become: yes
         command:
           docker run --rm --name=pg_basebackup --network=host -e POSTGRES_PASSWORD=newsblur -v /srv/newsblur/docker/volumes/postgres/data:/var/lib/postgresql/data postgres:13 pg_basebackup -h db-postgres.service.nyc1.consul -p 5432 -U newsblur -D /var/lib/postgresql/data -Fp -R -Xs -P -c fast
+      
       - name: Create Postgres docker volumes with correct permissions
         become: yes
         file:
-          path: "{{ item  }}"
+          path: "{{ item }}"
           state: directory
           recurse: yes
-          owner: "{{ ansible_effective_user_id|int }}"
-          group: "{{ ansible_effective_group_id|int }}"  
+          owner: 999
+          group: 999
         with_items:
           - /srv/newsblur/docker/volumes/postgres/archive
           - /srv/newsblur/docker/volumes/postgres/backups
@@ -129,7 +130,7 @@
       - name: pg_ctl promote
         become: yes
         command:
-          docker exec -it postgres su - postgres -c "/usr/lib/postgresql/13/bin/pg_ctl -D /var/lib/postgresql/data promote"
+          docker exec postgres su - postgres -c "/usr/lib/postgresql/13/bin/pg_ctl -D /var/lib/postgresql/data promote"
     # when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-postgres-secondary']
     tags:
       - never
