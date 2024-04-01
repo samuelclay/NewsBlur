@@ -108,7 +108,8 @@ class YoutubeFetcher:
     def extract_username(self, url):
         if "gdata.youtube.com" in url:
             try:
-                username_groups = re.search(r"gdata.youtube.com/feeds/\w+/users/(\w+)/", url)
+                #  Also handle usernames like `user-name`
+                username_groups = re.search(r"gdata.youtube.com/feeds/\w+/users/([^/]+)/", url)
                 if not username_groups:
                     return
                 return username_groups.group(1)
@@ -160,6 +161,7 @@ class YoutubeFetcher:
         return videos
 
     def fetch_channel_videos(self, channel_id):
+        logging.debug(" ***> ~FBFetching YouTube channel: ~SB%s" % channel_id)
         channel_json = requests.get(
             "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails&id=%s&key=%s"
             % (channel_id, settings.YOUTUBE_API_KEY)
@@ -176,6 +178,7 @@ class YoutubeFetcher:
         return self.fetch_playlist_videos(uploads_list_id, title, description)
 
     def fetch_playlist_videos(self, list_id, title=None, description=None):
+        logging.debug(" ***> ~FBFetching YouTube playlist: ~SB%s" % list_id)
         if not title and not description:
             playlist_json = requests.get(
                 "https://www.googleapis.com/youtube/v3/playlists?part=snippet&id=%s&key=%s"
@@ -201,6 +204,7 @@ class YoutubeFetcher:
         return video_ids, title, description
 
     def fetch_user_videos(self, username, username_key="forUsername"):
+        logging.debug(" ***> ~FBFetching YouTube user: ~SB%s" % username)
         channel_json = requests.get(
             "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails&%s=%s&key=%s"
             % (username_key, username, settings.YOUTUBE_API_KEY)
