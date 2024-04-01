@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.text.TextUtils
+import com.newsblur.NbApplication
 import com.newsblur.R
 import com.newsblur.activity.NbActivity
 import com.newsblur.database.BlurDatabaseHelper
@@ -13,10 +14,11 @@ import com.newsblur.domain.Story
 import com.newsblur.fragment.ReadingActionConfirmationFragment
 import com.newsblur.network.APIConstants
 import com.newsblur.network.APIManager
+import com.newsblur.service.NBSyncService
+import com.newsblur.service.NbSyncManager
 import com.newsblur.service.NbSyncManager.UPDATE_METADATA
 import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
-import com.newsblur.service.NBSyncService
 import com.newsblur.service.OriginalTextService
 import com.newsblur.util.FeedExt.disableNotification
 import com.newsblur.util.FeedExt.setNotifyFocus
@@ -486,8 +488,10 @@ class FeedUtils(
         UIUtils.handleUri(context, Uri.parse(url))
     }
 
-    private fun syncUpdateStatus(updateType: Int) {
-
+    private fun syncUpdateStatus(update: Int) {
+        if (NbApplication.isAppForeground) {
+            NbSyncManager.submitUpdate(update)
+        }
     }
 
     companion object {

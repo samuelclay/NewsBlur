@@ -1,6 +1,7 @@
 package com.newsblur.service
 
 import com.newsblur.util.NBScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -26,7 +27,7 @@ object NbSyncManager {
     fun submitError(msg: String) = submit(NBSync.Error(msg))
 
     private fun submit(nbSync: NBSync) {
-        NBScope.launch {
+        NBScope.launch(Dispatchers.IO) {
             _state.emit(nbSync)
         }
     }
