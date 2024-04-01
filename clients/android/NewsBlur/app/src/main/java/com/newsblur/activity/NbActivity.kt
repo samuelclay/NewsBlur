@@ -65,7 +65,7 @@ open class NbActivity : AppCompatActivity() {
 
         // Facilitates the db updates by the sync service on the UI
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
                 launch {
                     NbSyncManager.state.collectLatest {
                         withContext(Dispatchers.Main) {
