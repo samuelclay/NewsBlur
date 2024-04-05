@@ -1310,9 +1310,9 @@
 
 - (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender {
     UINavigationController *navController = self.feedsNavigationController;
-    trainerViewController.feedTrainer = YES;
-    trainerViewController.storyTrainer = NO;
-    trainerViewController.feedLoaded = feedLoaded;
+    trainerViewController.isStoryTrainer = NO;
+    trainerViewController.isFeedLoaded = feedLoaded;
+    [trainerViewController reload];
     
     if (!self.isPhone) {
         //        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
@@ -1330,9 +1330,10 @@
 
 - (void)openTrainStory:(id)sender {
     UINavigationController *navController = self.feedsNavigationController;
-    trainerViewController.feedTrainer = NO;
-    trainerViewController.storyTrainer = YES;
-    trainerViewController.feedLoaded = YES;
+    trainerViewController.isStoryTrainer = YES;
+    trainerViewController.isFeedLoaded = YES;
+    [trainerViewController reload];
+    
     if (!self.isPhone) {
         [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(500, 630) sender:sender];
     } else {
@@ -3910,7 +3911,7 @@
     [feedClassifiers setObject:authors forKey:@"authors"];
     [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
     [self.storyPagesViewController refreshHeaders];
-    [self.trainerViewController refresh];
+    [self.trainerViewController reload];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
                            self.url];
@@ -3955,7 +3956,7 @@
     [feedClassifiers setObject:tags forKey:@"tags"];
     [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
     [self.storyPagesViewController refreshHeaders];
-    [self.trainerViewController refresh];
+    [self.trainerViewController reload];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
                            self.url];
@@ -4004,7 +4005,7 @@
     [feedClassifiers setObject:titles forKey:@"titles"];
     [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
     [self.storyPagesViewController refreshHeaders];
-    [self.trainerViewController refresh];
+    [self.trainerViewController reload];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
                            self.url];
@@ -4047,7 +4048,7 @@
     [feedClassifiers setObject:feeds forKey:@"feeds"];
     [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
     [self.storyPagesViewController refreshHeaders];
-    [self.trainerViewController refresh];
+    [self.trainerViewController reload];
     
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
                            self.url];

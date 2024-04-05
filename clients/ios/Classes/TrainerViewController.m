@@ -6,13 +6,17 @@
 //  Copyright (c) 2012 NewsBlur. All rights reserved.
 //
 
+
+#warning This code is obsolete, and will be removed once the SwiftUI implementation is complete.
+
+
 #import "TrainerViewController.h"
 #import "StringHelper.h"
 #import "Utilities.h"
 #import "AFNetworking.h"
 #import "StoriesCollection.h"
 
-@implementation TrainerViewController
+@implementation OldTrainerViewController
 
 @synthesize closeButton;
 @synthesize webView;
@@ -543,7 +547,7 @@
 
 - (IBAction)doCloseDialog:(id)sender {
     [appDelegate hidePopover];
-    [appDelegate.trainerViewController dismissViewControllerAnimated:YES completion:nil];
+//    [appDelegate.trainerViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)changeTitle:(id)sender score:(int)score {
@@ -604,12 +608,12 @@
 
 - (void)focusTitle:(id)sender {
     NewsBlurAppDelegate *appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    [appDelegate.trainerViewController changeTitle:sender score:1];
+//    [appDelegate.trainerViewController changeTitle:sender score:1];
 }
 
 - (void)hideTitle:(id)sender {
     NewsBlurAppDelegate *appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    [appDelegate.trainerViewController changeTitle:sender score:-1];
+//    [appDelegate.trainerViewController changeTitle:sender score:-1];
 }
 
 // Work around iOS 9 issue where menu doesn't appear the first time

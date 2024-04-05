@@ -6,6 +6,10 @@
 //  Copyright (c) 2012 NewsBlur. All rights reserved.
 //
 
+
+#warning This code is obsolete, and will be removed once the SwiftUI implementation is complete.
+
+
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
 #import "NewsBlurAppDelegate.h"
@@ -21,7 +25,7 @@
 @end
 
 
-@interface TrainerViewController : BaseViewController <WKNavigationDelegate> {
+@interface OldTrainerViewController : BaseViewController <WKNavigationDelegate> {
     IBOutlet UIBarButtonItem * closeButton;
     TrainerWebView *webView;
     IBOutlet UINavigationBar *navBar;
