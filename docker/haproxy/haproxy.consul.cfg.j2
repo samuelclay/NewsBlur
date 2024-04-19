@@ -213,7 +213,6 @@ backend postgres
     {% for host in groups.postgres %}
         server {{host}} {{host}}.node.nyc1.consul:5579
     {% endfor %}
-    server hdb-postgres-secondary hdb-redis-secondary.node.nyc1.consul:5579
 
 backend mongo
     option httpchk GET /db_check/mongo
