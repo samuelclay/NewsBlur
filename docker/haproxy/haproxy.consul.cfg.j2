@@ -234,7 +234,7 @@ backend db_redis_user
     {% for host in groups.redis_user %}
         server {{host}} {{host}}.node.nyc1.consul:5579
     {% endfor %}
-    server db-redis-secondary hdb-redis-secondary.node.nyc1.consul:5579
+    server hdb-redis-secondary hdb-redis-secondary.node.nyc1.consul:5579
 
 backend db_redis_story
     option httpchk GET /db_check/redis_story
