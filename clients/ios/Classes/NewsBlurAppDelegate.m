@@ -650,8 +650,10 @@
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
     
+#if !TARGET_OS_MACCATALYST
     // Release any cached data, images, etc that aren't in use.
     [cachedStoryImages removeAllObjects];
+#endif
 }
 
 - (void)setupReachability {
