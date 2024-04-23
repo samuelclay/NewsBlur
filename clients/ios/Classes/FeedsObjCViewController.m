@@ -1321,6 +1321,18 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [appDelegate.feedDetailViewController reloadWithSizing];
 }
 
+- (void)systemAppearanceDidChange:(BOOL)isDark {
+    [super systemAppearanceDidChange:isDark];
+    
+#if TARGET_OS_MACCATALYST
+    if (ThemeManager.themeManager.isLikeSystem) {
+        self.view.backgroundColor = UIColor.clearColor;
+    } else {
+        self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    }
+#endif
+}
+
 - (void)updateTheme {
     [super updateTheme];
    

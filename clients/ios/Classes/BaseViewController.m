@@ -53,7 +53,7 @@
         return [self informError:@"The server barfed!"];
     } else {
         errorMessage = [error localizedDescription];
-        if ([error code] == 4 && 
+        if ([error code] == 4 &&
             [errorMessage rangeOfString:@"cancelled"].location != NSNotFound) {
             return;
         }
@@ -61,8 +61,8 @@
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    [HUD setCustomView:[[UIImageView alloc] 
-                         initWithImage:[UIImage imageNamed:@"warning.gif"]]];
+    [HUD setCustomView:[[UIImageView alloc]
+                        initWithImage:[UIImage imageNamed:@"warning.gif"]]];
     [HUD setMode:MBProgressHUDModeCustomView];
     if (details) {
         [HUD setDetailsLabelText:details];
@@ -70,19 +70,19 @@
     HUD.labelText = errorMessage;
     [HUD hide:YES afterDelay:(details ? 3 : 1)];
     
-//    UIAlertView* alertView = [[UIAlertView alloc]
-//                              initWithTitle:@"Error"
-//                              message:localizedDescription delegate:nil
-//                              cancelButtonTitle:@"OK"
-//                              otherButtonTitles:nil];
-//    [alertView show];
-//    [alertView release];
+    //    UIAlertView* alertView = [[UIAlertView alloc]
+    //                              initWithTitle:@"Error"
+    //                              message:localizedDescription delegate:nil
+    //                              cancelButtonTitle:@"OK"
+    //                              otherButtonTitles:nil];
+    //    [alertView show];
+    //    [alertView release];
 }
 
 - (void)informMessage:(NSString *)message {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-	HUD.mode = MBProgressHUDModeText;
+    HUD.mode = MBProgressHUDModeText;
     HUD.labelText = message;
     [HUD hide:YES afterDelay:.75];
 }
@@ -92,6 +92,10 @@
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = message;
     [HUD hide:YES afterDelay:2];
+}
+
+- (void)systemAppearanceDidChange:(BOOL)isDark {
+    [[ThemeManager themeManager] systemAppearanceDidChange:isDark];
 }
 
 - (void)updateTheme {
@@ -160,7 +164,7 @@
 #pragma mark UIViewController
 
 - (void) viewDidLoad {
-	[super viewDidLoad];
+    [super viewDidLoad];
     
     BOOL isDark = [NewsBlurAppDelegate sharedAppDelegate].window.windowScene.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
     
@@ -182,7 +186,7 @@
     
     BOOL isDark = [NewsBlurAppDelegate sharedAppDelegate].window.windowScene.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
     
-    [[ThemeManager themeManager] systemAppearanceDidChange:isDark];
+    [self systemAppearanceDidChange:isDark];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
