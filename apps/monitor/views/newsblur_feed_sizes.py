@@ -1,10 +1,11 @@
+import redis
 from django.conf import settings
+from django.db.models import Sum
 from django.shortcuts import render
 from django.views import View
-from django.db.models import Sum
-import redis
-from apps.rss_feeds.models import Feed, DuplicateFeed
+
 from apps.push.models import PushSubscription
+from apps.rss_feeds.models import DuplicateFeed, Feed
 from apps.statistics.models import MStatistics
 
 

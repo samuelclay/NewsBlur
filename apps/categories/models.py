@@ -1,10 +1,12 @@
-import mongoengine as mongo
 from itertools import groupby
-from apps.rss_feeds.models import Feed
+
+import mongoengine as mongo
+
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
+from apps.rss_feeds.models import Feed
 from utils import json_functions as json
-from utils.feed_functions import add_object_to_folder
 from utils import log as logging
+from utils.feed_functions import add_object_to_folder
 
 
 class MCategory(mongo.Document):

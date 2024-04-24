@@ -1,5 +1,4 @@
 from django.conf.urls import *
-
 from zebra import views
 
 app_name = "zebra"

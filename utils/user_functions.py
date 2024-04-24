@@ -1,12 +1,13 @@
 import hashlib
-from simplejson.decoder import JSONDecodeError
-from utils import json_functions as json
+
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.http import HttpResponse, HttpResponseForbidden
 from django.utils.http import urlquote
-from django.http import HttpResponseForbidden
-from django.http import HttpResponse
-from django.conf import settings
+from simplejson.decoder import JSONDecodeError
+
+from utils import json_functions as json
 
 
 def ajax_login_required(function=None):

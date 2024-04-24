@@ -1,12 +1,13 @@
 import redis
-from utils import json_functions as json
-from django.test.client import Client
-from django.test import TestCase
-from django.core import management
-from django.urls import reverse
 from django.conf import settings
-from apps.rss_feeds.models import Feed, MStory
+from django.core import management
+from django.test import TestCase
+from django.test.client import Client
+from django.urls import reverse
 from mongoengine.connection import connect, disconnect
+
+from apps.rss_feeds.models import Feed, MStory
+from utils import json_functions as json
 
 
 class Test_Feed(TestCase):

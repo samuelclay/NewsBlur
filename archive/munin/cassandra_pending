@@ -1,7 +1,9 @@
 #!/srv/newsblur/venv/newsblur3/bin/python
 
 import os
+
 from vendor.munin.cassandra import MuninCassandraPlugin
+
 
 class CassandraPendingPlugin(MuninCassandraPlugin):
     title = "thread pool pending tasks"

@@ -1,26 +1,28 @@
-import re
-import datetime
-import struct
-import dateutil
-import hashlib
 import base64
-import html
-import sys
-from random import randint
-from lxml.html.diff import tokenize, fixup_ins_del_tags, htmldiff_tokens
-from lxml.etree import ParserError, XMLSyntaxError, SerialisationError
-import lxml.html, lxml.etree
-from lxml.html.clean import Cleaner
-from itertools import chain
-from django.utils.dateformat import DateFormat
-from django.utils.html import strip_tags as strip_tags_django
-from utils.tornado_escape import linkify as linkify_tornado
-from utils.tornado_escape import xhtml_unescape as xhtml_unescape_tornado
-import feedparser
-
+import datetime
+import hashlib
 import hmac
+import html
+import re
+import struct
+import sys
 from binascii import hexlify
 from hashlib import sha1
+from itertools import chain
+from random import randint
+
+import dateutil
+import feedparser
+import lxml.etree
+import lxml.html
+from django.utils.dateformat import DateFormat
+from django.utils.html import strip_tags as strip_tags_django
+from lxml.etree import ParserError, SerialisationError, XMLSyntaxError
+from lxml.html.clean import Cleaner
+from lxml.html.diff import fixup_ins_del_tags, htmldiff_tokens, tokenize
+
+from utils.tornado_escape import linkify as linkify_tornado
+from utils.tornado_escape import xhtml_unescape as xhtml_unescape_tornado
 
 # COMMENTS_RE = re.compile('\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>')
 COMMENTS_RE = re.compile("\<!--.*?--\>")

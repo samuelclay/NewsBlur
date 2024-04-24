@@ -3,9 +3,9 @@ import re
 import string
 import time
 
-from django.core.handlers.wsgi import WSGIRequest
 from django.conf import settings
-from django.utils.encoding import smart_str, smart_str
+from django.core.handlers.wsgi import WSGIRequest
+from django.utils.encoding import smart_str
 
 from .user_functions import extract_user_agent
 

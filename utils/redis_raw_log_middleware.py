@@ -1,10 +1,11 @@
-from django.core.exceptions import MiddlewareNotUsed
-from django.conf import settings
-from django.db import connection
-from redis.connection import Connection
-from redis.client import Redis, Pipeline
-from time import time
 from pprint import pprint
+from time import time
+
+from django.conf import settings
+from django.core.exceptions import MiddlewareNotUsed
+from django.db import connection
+from redis.client import Pipeline, Redis
+from redis.connection import Connection
 
 
 class RedisDumpMiddleware(object):

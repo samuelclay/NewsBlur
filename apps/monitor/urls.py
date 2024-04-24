@@ -1,4 +1,5 @@
 from django.conf.urls import url
+
 from apps.monitor.views import (
     AppServers,
     AppTimes,
@@ -7,6 +8,7 @@ from apps.monitor.views import (
     Errors,
     FeedCounts,
     Feeds,
+    FeedSizes,
     LoadTimes,
     Stories,
     TasksCodes,
@@ -15,7 +17,6 @@ from apps.monitor.views import (
     TasksTimes,
     Updates,
     Users,
-    FeedSizes,
 )
 
 urlpatterns = [

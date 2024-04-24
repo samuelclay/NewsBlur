@@ -1,10 +1,11 @@
-from lxml.html import tostring
-import lxml.html
 import re
 
-from .cleaners import normalize_spaces, clean_attributes
-from .encoding import get_encoding
+import lxml.html
+from lxml.html import tostring
+
+from .cleaners import clean_attributes, normalize_spaces
 from .compat import str_
+from .encoding import get_encoding
 
 utf8_parser = lxml.html.HTMLParser(encoding="utf-8")
 

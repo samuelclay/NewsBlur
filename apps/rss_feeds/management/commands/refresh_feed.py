@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+
 from apps.rss_feeds.models import Feed
 from utils.management_functions import daemonize
 

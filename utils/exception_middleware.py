@@ -1,6 +1,6 @@
-import traceback
-import sys
 import inspect
+import sys
+import traceback
 from pprint import pprint
 
 

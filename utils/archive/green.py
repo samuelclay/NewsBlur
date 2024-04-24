@@ -2,10 +2,14 @@ from gevent import monkey
 
 monkey.patch_socket()
 
-from newsblur.utils import feedparser
+import urllib.error
+import urllib.parse
+import urllib.request
+
 import gevent
 from gevent import queue
-import urllib.request, urllib.error, urllib.parse
+
+from newsblur.utils import feedparser
 
 
 def fetch_title(url):

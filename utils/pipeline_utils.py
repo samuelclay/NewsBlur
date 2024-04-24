@@ -1,9 +1,9 @@
 import re
+
 from django.conf import settings
-from pipeline.finders import FileSystemFinder as PipelineFileSystemFinder
 from pipeline.finders import AppDirectoriesFinder as PipelineAppDirectoriesFinder
-from pipeline.storage import GZIPMixin
-from pipeline.storage import PipelineManifestStorage
+from pipeline.finders import FileSystemFinder as PipelineFileSystemFinder
+from pipeline.storage import GZIPMixin, PipelineManifestStorage
 
 
 class PipelineStorage(PipelineManifestStorage):

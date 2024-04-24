@@ -1,13 +1,15 @@
-import re
 import datetime
-from utils import log as logging
+import re
+
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
-from apps.recommendations.models import RecommendedFeed
+from django.shortcuts import get_object_or_404, render
+
 from apps.reader.models import UserSubscription
+from apps.recommendations.models import RecommendedFeed
 from apps.rss_feeds.models import Feed, MFeedIcon
 from utils import json_functions as json
-from utils.user_functions import get_user, ajax_login_required, admin_only
+from utils import log as logging
+from utils.user_functions import admin_only, ajax_login_required, get_user
 
 
 def load_recommended_feed(request):

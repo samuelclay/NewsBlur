@@ -1,6 +1,7 @@
 #!/srv/newsblur/venv/newsblur3/bin/python
-from utils.munin.base import MuninGraph
 import os
+
+from utils.munin.base import MuninGraph
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur_web.settings"
 import django
@@ -25,7 +26,9 @@ class NBMuninGraph(MuninGraph):
 
     def calculate_metrics(self):
         import datetime
+
         from django.contrib.auth.models import User
+
         from apps.profile.models import Profile, RNewUserQueue
 
         last_month = datetime.datetime.utcnow() - datetime.timedelta(days=30)

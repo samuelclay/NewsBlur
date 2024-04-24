@@ -4,9 +4,11 @@ try:
     import json
 except ImportError:
     import simplejson as json
+
 import os
 import sys
 import urllib.request
+
 from vendor.munin import MuninPlugin
 
 

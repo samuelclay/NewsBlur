@@ -1,10 +1,12 @@
 import datetime
-from newsblur_web.celeryapp import app
-from utils import log as logging
-from django.contrib.auth.models import User
+
 from django.conf import settings
+from django.contrib.auth.models import User
+
 from apps.reader.models import UserSubscription
 from apps.social.models import MSocialSubscription
+from newsblur_web.celeryapp import app
+from utils import log as logging
 
 
 @app.task(name="freshen-homepage")

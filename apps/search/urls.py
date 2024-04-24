@@ -1,4 +1,5 @@
 from django.conf.urls import *
+
 from apps.search import views
 
 urlpatterns = [

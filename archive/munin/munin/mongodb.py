@@ -2,6 +2,7 @@
 
 import os
 import sys
+
 from vendor.munin import MuninPlugin
 
 

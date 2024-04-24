@@ -1,12 +1,14 @@
+import pytz
 from django.conf import settings
 from django.db import models
 from django.db.models import signals
-from django.utils.encoding import smart_str, smart_bytes
-
-import pytz
+from django.utils.encoding import smart_bytes, smart_str
 
 from vendor.timezones import forms, zones
-from vendor.timezones.utilities import coerce_timezone_value, validate_timezone_max_length
+from vendor.timezones.utilities import (
+    coerce_timezone_value,
+    validate_timezone_max_length,
+)
 
 MAX_TIMEZONE_LENGTH = getattr(settings, "MAX_TIMEZONE_LENGTH", 100)
 default_tz = pytz.timezone(getattr(settings, "TIME_ZONE", "UTC"))

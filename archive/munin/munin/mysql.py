@@ -1,5 +1,8 @@
-import os, sys, re
+import os
+import re
+import sys
 from configparser import SafeConfigParser
+
 from vendor.munin import MuninPlugin
 
 

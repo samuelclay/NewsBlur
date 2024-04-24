@@ -1,8 +1,6 @@
+import pytz
 from django.conf import settings
 from django.utils.encoding import smart_str
-
-import pytz
-
 
 default_tz = pytz.timezone(getattr(settings, "TIME_ZONE", "UTC"))
 

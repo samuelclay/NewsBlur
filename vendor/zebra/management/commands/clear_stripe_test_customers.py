@@ -1,9 +1,6 @@
-from django.core.management.base import BaseCommand
-
 import stripe
-
+from django.core.management.base import BaseCommand
 from zebra.conf import options as zoptions
-
 
 CLEAR_CHUNK_SIZE = zoptions.ZEBRA_MAXIMUM_STRIPE_CUSTOMER_LIST_SIZE
 

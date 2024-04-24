@@ -23,9 +23,12 @@ inspired by:
 
 __license__ = "Python"
 
-import re, unicodedata, urllib.parse
-from url_normalize import url_normalize
+import re
+import unicodedata
+import urllib.parse
 from urllib.parse import quote, unquote
+
+from url_normalize import url_normalize
 
 default_port = {
     "ftp": 21,

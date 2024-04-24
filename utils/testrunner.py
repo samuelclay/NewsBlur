@@ -1,6 +1,6 @@
 from django.test.runner import DiscoverRunner
 from django.test.utils import setup_databases
-from mongoengine.connection import disconnect, connect
+from mongoengine.connection import connect, disconnect
 
 
 class TestRunner(DiscoverRunner):

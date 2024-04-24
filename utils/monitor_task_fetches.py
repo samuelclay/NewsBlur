@@ -4,11 +4,13 @@ import sys
 
 sys.path.append("/srv/newsblur")
 
-import requests
-from newsblur_web import settings
 import socket
-import redis
+
 import pymongo
+import redis
+import requests
+
+from newsblur_web import settings
 
 
 def main():

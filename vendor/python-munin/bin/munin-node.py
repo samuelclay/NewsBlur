@@ -6,7 +6,7 @@ import socketserver
 import sys
 import threading
 import time
-from subprocess import Popen, PIPE
+from subprocess import PIPE, Popen
 
 PLUGIN_PATH = "/etc/munin/plugins"
 

@@ -23,14 +23,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from datetime import datetime, timedelta
 import urllib
+from datetime import datetime, timedelta
 
-from django.urls import reverse
 from django.test import TestCase
+from django.urls import reverse
 
 from apps.push.models import PushSubscription, PushSubscriptionManager
-from apps.push.signals import pre_subscribe, verified, updated
+from apps.push.signals import pre_subscribe, updated, verified
 
 
 class MockResponse(object):

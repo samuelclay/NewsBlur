@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
+import json
 import os
 import re
-import time
 import select
 import subprocess
 import sys
-import json
+import time
 from pprint import pprint
+
 from requests.exceptions import ConnectionError
 
 sys.path.insert(0, "/srv/newsblur")

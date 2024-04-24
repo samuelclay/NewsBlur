@@ -5,12 +5,12 @@
 #
 
 
-from tkinter import *
-import tkinter.filedialog
-import tkinter.simpledialog
-import tkinter.messagebox
 import os
 import time
+import tkinter.filedialog
+import tkinter.messagebox
+import tkinter.simpledialog
+from tkinter import *
 
 
 class TestView(Frame):

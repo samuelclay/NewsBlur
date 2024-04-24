@@ -131,9 +131,10 @@ import argparse
 import ast
 import os
 import re
-import requests
 import sys
 from time import time
+
+import requests
 
 try:
     import ConfigParser

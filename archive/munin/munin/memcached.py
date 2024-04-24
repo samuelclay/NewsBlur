@@ -2,6 +2,7 @@
 
 import os
 import socket
+
 from vendor.munin import MuninPlugin
 
 

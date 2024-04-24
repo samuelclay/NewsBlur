@@ -1,7 +1,8 @@
 #!/srv/newsblur/venv/newsblur3/bin/python
 
-from utils.munin.base import MuninGraph
 import os
+
+from utils.munin.base import MuninGraph
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur_web.settings"
 import django

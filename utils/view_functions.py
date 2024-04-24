@@ -1,7 +1,9 @@
+import functools
+
 from django.http import Http404, HttpResponse
 from django.shortcuts import render
+
 from utils import json_functions as json
-import functools
 
 
 def get_argument_or_404(request, param, method="POST", code="404"):

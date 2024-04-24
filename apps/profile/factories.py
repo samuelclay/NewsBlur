@@ -1,6 +1,7 @@
 import factory
-from factory.django import DjangoModelFactory
 from django.contrib.auth.models import User
+from factory.django import DjangoModelFactory
+
 from apps.profile.models import Profile
 
 

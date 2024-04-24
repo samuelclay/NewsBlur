@@ -1,22 +1,17 @@
 #!/usr/bin/env python
 from __future__ import print_function
+
 import logging
 import re
 import sys
 
 from lxml.etree import tounicode
-from lxml.html import document_fromstring
-from lxml.html import fragment_fromstring
+from lxml.html import document_fromstring, fragment_fromstring
 
-from .cleaners import clean_attributes
-from .cleaners import html_cleaner
-from .htmls import build_doc
-from .htmls import get_body
-from .htmls import get_title
-from .htmls import shorten_title
-from .compat import str_, bytes_, tostring_, pattern_type
+from .cleaners import clean_attributes, html_cleaner
+from .compat import bytes_, pattern_type, str_, tostring_
 from .debug import describe, text_content
-
+from .htmls import build_doc, get_body, get_title, shorten_title
 
 log = logging.getLogger("readability.readability")
 
@@ -681,7 +676,9 @@ def main():
     if options.url:
         headers = {"User-Agent": "Mozilla/5.0"}
         if sys.version_info[0] == 3:
-            import urllib.request, urllib.parse, urllib.error
+            import urllib.error
+            import urllib.parse
+            import urllib.request
 
             request = urllib.request.Request(options.url, None, headers)
             file = urllib.request.urlopen(request)

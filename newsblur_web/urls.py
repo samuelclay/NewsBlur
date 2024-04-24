@@ -1,12 +1,13 @@
-from django.conf.urls import include, url
 from django.conf import settings
-from apps.reader import views as reader_views
-from apps.social import views as social_views
-from apps.static import views as static_views
-from apps.profile import views as profile_views
+from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
+
+from apps.profile import views as profile_views
+from apps.reader import views as reader_views
+from apps.social import views as social_views
+from apps.static import views as static_views
 
 admin.autodiscover()
 

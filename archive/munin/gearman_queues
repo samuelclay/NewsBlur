@@ -1,7 +1,9 @@
 #!/srv/newsblur/venv/newsblur3/bin/python
 
 import os
+
 from vendor.munin.gearman import MuninGearmanPlugin
+
 
 class MuninGearmanQueuesPlugin(MuninGearmanPlugin):
     title = "Gearman Queues"

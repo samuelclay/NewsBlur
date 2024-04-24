@@ -1,12 +1,19 @@
 import re
+
 import requests
 from django import forms
-from vendor.zebra.forms import StripePaymentForm
-from django.utils.safestring import mark_safe
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from apps.profile.models import change_password, blank_authenticate, MGiftCode, MCustomStyling
+from django.utils.safestring import mark_safe
+
+from apps.profile.models import (
+    MCustomStyling,
+    MGiftCode,
+    blank_authenticate,
+    change_password,
+)
 from apps.social.models import MSocialProfile
+from vendor.zebra.forms import StripePaymentForm
 
 PLANS = [
     ("newsblur-premium-36", mark_safe("$36 / year <span class='NB-small'>($3/month)</span>")),
