@@ -3,6 +3,7 @@ from locust import HttpUser, task, between
 import os
 import requests
 
+
 class NB_PerfTest(HttpUser):
     wait_time = between(1, 2.5)
 

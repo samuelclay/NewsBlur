@@ -7,6 +7,7 @@ from bson.errors import InvalidStringData
 import uuid
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
+
 # from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
@@ -29,11 +30,11 @@ def opml_upload(request):
     message = "OK"
     code = 1
     payload = {}
-    
-    if request.method == 'POST':
-        if 'file' in request.FILES:
+
+    if request.method == "POST":
+        if "file" in request.FILES:
             logging.user(request, "~FR~SBOPML upload starting...")
-            file = request.FILES['file']
+            file = request.FILES["file"]
             xml_opml = file.read()
             try:
                 UploadedOPML.objects.create(user_id=request.user.pk, opml_file=xml_opml)
@@ -41,7 +42,7 @@ def opml_upload(request):
                 folders = None
                 code = -1
                 message = "There was a Unicode decode error when reading your OPML file. Ensure it's a text file with a .opml or .xml extension. Is it a zip file?"
-            
+
             opml_importer = OPMLImporter(xml_opml, request.user)
             try:
                 folders = opml_importer.try_processing()
@@ -49,7 +50,9 @@ def opml_upload(request):
                 folders = None
                 ProcessOPML.delay(request.user.pk)
                 feed_count = opml_importer.count_feeds_in_opml()
-                logging.user(request, "~FR~SBOPML upload took too long, found %s feeds. Tasking..." % feed_count)
+                logging.user(
+                    request, "~FR~SBOPML upload took too long, found %s feeds. Tasking..." % feed_count
+                )
                 payload = dict(folders=folders, delayed=True, feed_count=feed_count)
                 code = 2
                 message = ""
@@ -64,32 +67,35 @@ def opml_upload(request):
                 payload = dict(folders=folders, feeds=feeds)
                 logging.user(request, "~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (len(feeds)))
                 from apps.social.models import MActivity
+
                 MActivity.new_opml_import(user_id=request.user.pk, count=len(feeds))
                 UserSubscription.queue_new_feeds(request.user)
                 UserSubscription.refresh_stale_feeds(request.user, exclude_new=True)
         else:
             message = "Attach an .opml file."
             code = -1
-            
-    return HttpResponse(json.encode(dict(message=message, code=code, payload=payload)),
-                        content_type='text/html')
+
+    return HttpResponse(
+        json.encode(dict(message=message, code=code, payload=payload)), content_type="text/html"
+    )
+
 
 def opml_export(request):
-    user     = get_user(request)
-    now      = datetime.datetime.now()
-    if request.GET.get('user_id') and user.is_staff:
-        user = User.objects.get(pk=request.GET['user_id'])
+    user = get_user(request)
+    now = datetime.datetime.now()
+    if request.GET.get("user_id") and user.is_staff:
+        user = User.objects.get(pk=request.GET["user_id"])
     exporter = OPMLExporter(user)
-    opml     = exporter.process()
+    opml = exporter.process()
 
     from apps.social.models import MActivity
+
     MActivity.new_opml_export(user_id=user.pk, count=exporter.feed_count)
 
-    response = HttpResponse(opml, content_type='text/xml; charset=utf-8')
-    response['Content-Disposition'] = 'attachment; filename=NewsBlur-%s-%s.opml' % (
+    response = HttpResponse(opml, content_type="text/xml; charset=utf-8")
+    response["Content-Disposition"] = "attachment; filename=NewsBlur-%s-%s.opml" % (
         user.username,
-        now.strftime('%Y-%m-%d')
+        now.strftime("%Y-%m-%d"),
     )
-    
-    return response
 
+    return response

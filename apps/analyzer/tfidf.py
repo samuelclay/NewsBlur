@@ -9,6 +9,7 @@ See the README for a usage example.
 import sys
 import os
 
+
 class tfidf:
     def __init__(self):
         self.weighted = False
@@ -19,7 +20,7 @@ class tfidf:
         # building a dictionary
         doc_dict = {}
         for w in list_of_words:
-            doc_dict[w] = doc_dict.get(w, 0.) + 1.0
+            doc_dict[w] = doc_dict.get(w, 0.0) + 1.0
             self.corpus_dict[w] = self.corpus_dict.get(w, 0.0) + 1.0
 
         # normalizing the dictionary

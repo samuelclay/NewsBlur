@@ -3,12 +3,14 @@ import time
 import digitalocean
 import subprocess
 
+
 def test_ssh(drop):
     droplet_ip_address = drop.ip_address
     result = subprocess.call(f"ssh -o StrictHostKeyChecking=no root@{droplet_ip_address} ls", shell=True)
     if result == 0:
         return True
     return False
+
 
 TOKEN_FILE = "/srv/secrets-newsblur/keys/digital_ocean.token"
 droplet_name = sys.argv[1]
@@ -25,7 +27,7 @@ ssh_works = False
 while not ssh_works:
     if timer > timeout:
         raise Exception(f"The {droplet_name} droplet was not created.")
-    
+
     droplets = [drop for drop in manager.get_all_droplets() if drop.name == droplet_name]
     if droplets:
         droplet = droplets[0]

@@ -3,6 +3,7 @@
 from django.db import migrations
 from django.conf import settings
 
+
 def set_mongo_feature_compatibility_version(apps, schema_editor):
     new_version = "4.0"
     db = settings.MONGODB.admin
@@ -13,14 +14,11 @@ def set_mongo_feature_compatibility_version(apps, schema_editor):
     if old_version != new_version:
         db.command({"setFeatureCompatibilityVersion": new_version})
         print(f" ---> Updated MongoDB featureCompatibilityVersion: {new_version}")
-    
+
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rss_feeds', '0002_remove_mongo_types'),
+        ("rss_feeds", "0002_remove_mongo_types"),
     ]
 
-    operations = [
-        migrations.RunPython(set_mongo_feature_compatibility_version, migrations.RunPython.noop)
-    ]
+    operations = [migrations.RunPython(set_mongo_feature_compatibility_version, migrations.RunPython.noop)]

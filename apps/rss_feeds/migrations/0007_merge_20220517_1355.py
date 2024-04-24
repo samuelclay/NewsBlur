@@ -4,11 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rss_feeds', '0006_feed_fs_size_bytes'),
-        ('rss_feeds', '0003_mongo_version_4_0'),
+        ("rss_feeds", "0006_feed_fs_size_bytes"),
+        ("rss_feeds", "0003_mongo_version_4_0"),
     ]
 
-    operations = [
-    ]
+    operations = []

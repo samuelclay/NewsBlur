@@ -10,8 +10,7 @@ htmlstrip = re.compile(
     "<"  # open
     "([^>]+) "  # prefix
     "(?:%s) *" % ("|".join(bad_attrs),)
-    + "= *(?:%s|%s|%s)"  # undesirable attributes
-    % (non_space, single_quoted, double_quoted)
+    + "= *(?:%s|%s|%s)" % (non_space, single_quoted, double_quoted)  # undesirable attributes
     + "([^>]*)"  # value  # postfix
     ">",  # end
     re.I,

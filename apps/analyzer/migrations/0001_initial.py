@@ -6,34 +6,49 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('rss_feeds', '0001_initial'),
+        ("rss_feeds", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Category',
+            name="Category",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('category', models.CharField(max_length=255)),
-                ('count', models.IntegerField(default=0)),
-                ('feed', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rss_feeds.Feed')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
+                ("category", models.CharField(max_length=255)),
+                ("count", models.IntegerField(default=0)),
+                ("feed", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="rss_feeds.Feed")),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='FeatureCategory',
+            name="FeatureCategory",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('feature', models.CharField(max_length=255)),
-                ('category', models.CharField(max_length=255)),
-                ('count', models.IntegerField(default=0)),
-                ('feed', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rss_feeds.Feed')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
+                ),
+                ("feature", models.CharField(max_length=255)),
+                ("category", models.CharField(max_length=255)),
+                ("count", models.IntegerField(default=0)),
+                ("feed", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="rss_feeds.Feed")),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+                    ),
+                ),
             ],
         ),
     ]

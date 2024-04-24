@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('profile', '0007_auto_20220125_2108'),
+        ("profile", "0007_auto_20220125_2108"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='paypal_sub_id',
+            model_name="profile",
+            name="paypal_sub_id",
             field=models.CharField(blank=True, max_length=24, null=True),
         ),
     ]
