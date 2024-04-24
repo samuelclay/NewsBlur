@@ -11,16 +11,18 @@ def audit_customer_subscription(customer, unknown=True):
     Default result types can be found in zebra.conf.defaults and can be
     overridden in your project's settings.
     """
-    if (hasattr(customer, 'suspended') and customer.suspended):
-        result = AUDIT_RESULTS['suspended']
+    if hasattr(customer, "suspended") and customer.suspended:
+        result = AUDIT_RESULTS["suspended"]
     else:
-        if hasattr(customer, 'subscription'):
+        if hasattr(customer, "subscription"):
             try:
                 result = AUDIT_RESULTS[customer.subscription.status]
             except KeyError as err:
                 # TODO should this be a more specific exception class?
-                raise Exception("Unable to locate a result set for \
-subscription status %s in ZEBRA_AUDIT_RESULTS") % str(err)
+                raise Exception(
+                    "Unable to locate a result set for \
+subscription status %s in ZEBRA_AUDIT_RESULTS"
+                ) % str(err)
         else:
-            result = AUDIT_RESULTS['no_subscription']
+            result = AUDIT_RESULTS["no_subscription"]
     return result

@@ -6,15 +6,19 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('profile', '0001_initial'),
+        ("profile", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='stripeids',
-            name='user',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='stripe_ids', to=settings.AUTH_USER_MODEL),
+            model_name="stripeids",
+            name="user",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="stripe_ids",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

@@ -1,15 +1,15 @@
 # Screen scrapes the Knight News Challenge entries (all 64 pages of them)
 # and counts the number of votes/hearts for each entry. Then displays them
 # in rank order.
-# 
+#
 # This script runs in about 20 seconds.
 
 import requests
 from BeautifulSoup import BeautifulSoup
 
 # Winners found on http://newschallenge.tumblr.com/post/20962258701/knight-news-challenge-on-networks-moving-to-the-next:
-# 
-#     $('.posts .MsoNormal > span').find('a[href^="http://newschallenge.tumblr.com/post"]').map(function() { 
+#
+#     $('.posts .MsoNormal > span').find('a[href^="http://newschallenge.tumblr.com/post"]').map(function() {
 #         return $(this).attr('href');
 #     });
 
@@ -70,7 +70,9 @@ winners = [
     "http://newschallenge.tumblr.com/post/19493920734/get-to-the-source",
     "http://newschallenge.tumblr.com/post/19480128205/farm-to-table-school-lunch",
     "http://newschallenge.tumblr.com/post/19477700441/partisans-org",
-    "http://newschallenge.tumblr.com/post/19345505702/protecting-journalists-and-engaging-communities"]
+    "http://newschallenge.tumblr.com/post/19345505702/protecting-journalists-and-engaging-communities",
+]
+
 
 def find_entries():
     page = 1
@@ -79,73 +81,85 @@ def find_entries():
 
     while True:
         print(" ---> Found %s entries so far. Now on page: %s" % (len(entries), page))
-    
+
         knight_url = "http://newschallenge.tumblr.com/page/%s" % (page)
         html = requests.get(knight_url).content
         soup = BeautifulSoup(html)
         postboxes = soup.findAll("div", "postbox")
-    
+
         # Done if only sticky entry is left.
         if len(postboxes) <= 1:
             break
 
         page += 1
-        
+
         # 15 entries per page, plus a sticky throwaway entry
         for entry in postboxes:
-            if 'stickyPost' in entry.get('class'): continue
-        
+            if "stickyPost" in entry.get("class"):
+                continue
+
             total_entry_count += 1
             likes = entry.find("", "home-likes")
             if likes and likes.text:
                 likes = int(likes.text)
             else:
                 likes = 0
-            
+
             comments = entry.find("", "home-comments")
             if comments and comments.text:
                 comments = int(comments.text)
             else:
                 comments = 0
-        
+
             title = entry.find("h2")
             if title:
                 title = title.text
-            
-            url = entry.find('a', "home-view")
+
+            url = entry.find("a", "home-view")
             if url:
-                url = url.get('href')
-            
+                url = url.get("href")
+
             # Only record active entries
             if comments or likes:
-                entries.append({
-                    'likes': likes,
-                    'comments': comments,
-                    'title': title,
-                    'url': url,
-                })
+                entries.append(
+                    {
+                        "likes": likes,
+                        "comments": comments,
+                        "title": title,
+                        "url": url,
+                    }
+                )
         # time.sleep(random.randint(0, 2))
-    
-    entries.sort(key=lambda e: e['comments'] + e['likes'])
+
+    entries.sort(key=lambda e: e["comments"] + e["likes"])
     entries.reverse()
     active_entry_count = len(entries)
-    
+
     found_entries = []
     winner_count = 0
     for i, entry in enumerate(entries):
-        is_winner = entry['url'] in winners
-        if is_winner: winner_count += 1
-        print(" * %s#%s: %s likes - [%s](%s)%s" % (
-            "**" if is_winner else "",
-            i + 1,
-            entry['likes'], entry['title'], 
-            entry['url'],
-            "**" if is_winner else ""))
+        is_winner = entry["url"] in winners
+        if is_winner:
+            winner_count += 1
+        print(
+            " * %s#%s: %s likes - [%s](%s)%s"
+            % (
+                "**" if is_winner else "",
+                i + 1,
+                entry["likes"],
+                entry["title"],
+                entry["url"],
+                "**" if is_winner else "",
+            )
+        )
         found_entries.append(entry)
-        
-    print(" ***> Found %s active entries among %s total applications with %s/%s winners." % (
-        active_entry_count, total_entry_count, winner_count, len(winners)))
+
+    print(
+        " ***> Found %s active entries among %s total applications with %s/%s winners."
+        % (active_entry_count, total_entry_count, winner_count, len(winners))
+    )
     return found_entries
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     find_entries()
