@@ -13,12 +13,14 @@ import base64
 import hmac
 import http.client
 import re
-import sha
 import sys
 import time
-import urllib.request, urllib.parse, urllib.error
+import urllib.error
 import urllib.parse
+import urllib.request
 import xml.sax
+
+import sha
 
 DEFAULT_HOST = "s3.amazonaws.com"
 PORTS_BY_SECURITY = {True: 443, False: 80}

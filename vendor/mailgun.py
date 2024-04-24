@@ -1,10 +1,9 @@
-import six
 import requests
+import six
 from django.conf import settings
 from django.core.mail.backends.base import BaseEmailBackend
 from django.core.mail.message import sanitize_address
 from django.utils.encoding import force_text
-
 from requests.packages.urllib3.filepost import encode_multipart_formdata
 
 __version__ = "0.8.0"

@@ -24,14 +24,13 @@ __all__ = ["run"]
 
 
 import http.server
-import gflags
 import socket
 import sys
 import webbrowser
 
-from oauth2client.client import FlowExchangeError
-from oauth2client.client import OOB_CALLBACK_URN
+import gflags
 from oauth2client import util
+from oauth2client.client import OOB_CALLBACK_URN, FlowExchangeError
 
 try:
     from urllib.parse import parse_qsl

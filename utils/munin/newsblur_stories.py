@@ -1,6 +1,7 @@
 #!/srv/newsblur/venv/newsblur3/bin/python
-from utils.munin.base import MuninGraph
 import os
+
+from utils.munin.base import MuninGraph
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur_web.settings"
 import django
@@ -21,7 +22,7 @@ class NBMuninGraph(MuninGraph):
         }
 
     def calculate_metrics(self):
-        from apps.rss_feeds.models import MStory, MStarredStory
+        from apps.rss_feeds.models import MStarredStory, MStory
 
         return {
             "stories": MStory.objects.count(),

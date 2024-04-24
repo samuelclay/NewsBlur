@@ -4,9 +4,9 @@
 # License as published by the Free Software Foundation.
 #
 
-from vendor.rfc822 import AddressList
-
 from reverend.thomas import Bayes
+
+from vendor.rfc822 import AddressList
 
 
 class EmailClassifier(Bayes):

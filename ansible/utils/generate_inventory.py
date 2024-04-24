@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 import os
-import time
-import sys
 import subprocess
+import sys
+import time
+
 import digitalocean
 
 OLD = False

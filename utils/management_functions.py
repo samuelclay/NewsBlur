@@ -1,5 +1,5 @@
-import os
 import errno
+import os
 
 
 def daemonize():

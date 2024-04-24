@@ -1,7 +1,9 @@
 #!/srv/newsblur/venv/newsblur3/bin/python
-from utils.munin.base import MuninGraph
-import redis
 import os
+
+import redis
+
+from utils.munin.base import MuninGraph
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur_web.settings"
 import django
@@ -26,9 +28,10 @@ class NBMuninGraph(MuninGraph):
         }
 
     def calculate_metrics(self):
-        from apps.rss_feeds.models import Feed, DuplicateFeed
-        from apps.push.models import PushSubscription
         from django.conf import settings
+
+        from apps.push.models import PushSubscription
+        from apps.rss_feeds.models import DuplicateFeed, Feed
         from apps.statistics.models import MStatistics
 
         exception_feeds = MStatistics.get("munin:exception_feeds")

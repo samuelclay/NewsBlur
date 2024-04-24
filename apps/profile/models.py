@@ -1,45 +1,45 @@
-import time
 import datetime
-from wsgiref.util import application_uri
-import dateutil
-import stripe
 import hashlib
 import re
-import redis
+import time
 import uuid
-import paypalrestsdk
+from wsgiref.util import application_uri
+
+import dateutil
 import mongoengine as mongo
-from django.db import models
-from django.db import IntegrityError
-from django.db.utils import DatabaseError
-from django.db.models.signals import post_save
-from django.db.models import Sum, Avg, Count
-from django.db.models import Q
+import paypalrestsdk
+import redis
+import stripe
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from django.core.mail import EmailMultiAlternatives
-from django.core.mail import mail_admins
-from django.urls import reverse
+from django.core.mail import EmailMultiAlternatives, mail_admins
+from django.db import IntegrityError, models
+from django.db.models import Avg, Count, Q, Sum
+from django.db.models.signals import post_save
+from django.db.utils import DatabaseError
 from django.template.loader import render_to_string
-from apps.rss_feeds.models import Feed, MStory, MStarredStory
-from apps.rss_feeds.tasks import SchedulePremiumSetup
-from apps.feed_import.models import OPMLExporter
-from apps.reader.models import UserSubscription
-from apps.reader.models import RUserStory
-from utils import log as logging
-from utils import json_functions as json
-from utils.user_functions import generate_secret_token
-from utils.feed_functions import chunks
-from vendor.timezones.fields import TimeZoneField
-from paypal.standard.ipn.signals import valid_ipn_received, invalid_ipn_received
+from django.urls import reverse
 from paypal.standard.ipn.models import PayPalIPN
-from zebra.signals import zebra_webhook_customer_subscription_created
-from zebra.signals import zebra_webhook_customer_subscription_updated
-from zebra.signals import zebra_webhook_charge_succeeded
-from zebra.signals import zebra_webhook_charge_refunded
-from zebra.signals import zebra_webhook_checkout_session_completed
+from paypal.standard.ipn.signals import invalid_ipn_received, valid_ipn_received
+from zebra.signals import (
+    zebra_webhook_charge_refunded,
+    zebra_webhook_charge_succeeded,
+    zebra_webhook_checkout_session_completed,
+    zebra_webhook_customer_subscription_created,
+    zebra_webhook_customer_subscription_updated,
+)
+
+from apps.feed_import.models import OPMLExporter
+from apps.reader.models import RUserStory, UserSubscription
+from apps.rss_feeds.models import Feed, MStarredStory, MStory
+from apps.rss_feeds.tasks import SchedulePremiumSetup
+from utils import json_functions as json
+from utils import log as logging
+from utils.feed_functions import chunks
+from utils.user_functions import generate_secret_token
+from vendor.timezones.fields import TimeZoneField
 
 
 class Profile(models.Model):
@@ -167,8 +167,13 @@ class Profile(models.Model):
         except:
             logging.user(self.user, "~BR~SK~FWError cancelling premium renewal for: %s" % self.user.username)
 
-        from apps.social.models import MSocialProfile, MSharedStory, MSocialSubscription
-        from apps.social.models import MActivity, MInteraction
+        from apps.social.models import (
+            MActivity,
+            MInteraction,
+            MSharedStory,
+            MSocialProfile,
+            MSocialSubscription,
+        )
 
         try:
             social_profile = MSocialProfile.objects.get(user_id=self.user.pk)
@@ -1420,7 +1425,7 @@ class Profile(models.Model):
         logging.user(self.user, "~BB~FM~SBSending OPML backup email to: %s" % self.user.email)
 
     def send_first_share_to_blurblog_email(self, force=False):
-        from apps.social.models import MSocialProfile, MSharedStory
+        from apps.social.models import MSharedStory, MSocialProfile
 
         if not self.user.email:
             return

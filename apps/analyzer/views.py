@@ -1,19 +1,24 @@
 import redis
-from utils import log as logging
-from django.shortcuts import get_object_or_404
-from django.views.decorators.http import require_POST
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
+from django.views.decorators.http import require_POST
 from mongoengine.queryset import NotUniqueError
-from apps.rss_feeds.models import Feed
-from apps.reader.models import UserSubscription
-from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
-from apps.analyzer.models import get_classifiers_for_user, MPopularityQuery
+
 from apps.analyzer.forms import PopularityQueryForm
+from apps.analyzer.models import (
+    MClassifierAuthor,
+    MClassifierFeed,
+    MClassifierTag,
+    MClassifierTitle,
+    MPopularityQuery,
+    get_classifiers_for_user,
+)
+from apps.reader.models import UserSubscription
+from apps.rss_feeds.models import Feed
 from apps.social.models import MSocialSubscription
 from utils import json_functions as json
-from utils.user_functions import get_user
-from utils.user_functions import ajax_login_required
+from utils import log as logging
+from utils.user_functions import ajax_login_required, get_user
 
 
 def index(requst):

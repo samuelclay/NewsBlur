@@ -1,9 +1,10 @@
-from faker import Faker
 import factory
+from django.conf import settings
 from factory.django import DjangoModelFactory
 from factory.fuzzy import FuzzyAttribute
+from faker import Faker
+
 from apps.rss_feeds.models import DuplicateFeed, Feed
-from django.conf import settings
 
 NEWSBLUR_DIR = settings.NEWSBLUR_DIR
 fake = Faker()

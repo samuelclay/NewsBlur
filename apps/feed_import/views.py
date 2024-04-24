@@ -1,27 +1,28 @@
+import base64
 import datetime
 import pickle
-import base64
-from utils import log as logging
-from oauth2client.client import OAuth2WebServerFlow, FlowExchangeError
-from bson.errors import InvalidStringData
 import uuid
-from django.contrib.sites.models import Site
+
+from bson.errors import InvalidStringData
+from django.conf import settings
+from django.contrib.auth import login as login_user
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 
 # from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.conf import settings
 from django.urls import reverse
-from django.contrib.auth import login as login_user
 from mongoengine.errors import ValidationError
+from oauth2client.client import FlowExchangeError, OAuth2WebServerFlow
+
+from apps.feed_import.models import OAuthToken, OPMLExporter, OPMLImporter, UploadedOPML
+from apps.feed_import.tasks import ProcessOPML
 from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
-from apps.feed_import.models import OAuthToken
-from apps.feed_import.models import OPMLImporter, OPMLExporter, UploadedOPML
-from apps.feed_import.tasks import ProcessOPML
 from utils import json_functions as json
-from utils.user_functions import ajax_login_required, get_user
+from utils import log as logging
 from utils.feed_functions import TimeoutError
+from utils.user_functions import ajax_login_required, get_user
 
 
 @ajax_login_required

@@ -1,11 +1,12 @@
 import json
-from django.http import HttpResponse
+
+import stripe
 from django.apps import apps
 from django.conf import settings
-import stripe
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from zebra.conf import options
 from zebra.signals import *
-from django.views.decorators.csrf import csrf_exempt
 
 from utils import log as logging
 

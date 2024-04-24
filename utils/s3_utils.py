@@ -1,7 +1,8 @@
+import mimetypes
 import os
 import sys
 import time
-import mimetypes
+
 from utils.image_functions import ImageOps
 
 if "/srv/newsblur" not in " ".join(sys.path):

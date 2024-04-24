@@ -4,11 +4,13 @@ import sys
 
 sys.path.append("/srv/newsblur")
 
-import os
 import datetime
-import requests
-from newsblur_web import settings
+import os
 import socket
+
+import requests
+
+from newsblur_web import settings
 
 
 def main():

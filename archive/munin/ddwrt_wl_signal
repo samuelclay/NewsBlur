@@ -2,6 +2,7 @@
 
 from vendor.munin.ddwrt import DDWrtPlugin
 
+
 class DDWrtWirelessSignalPlugin(DDWrtPlugin):
     title = "Wireless signal"
     args = "--base 1000 -l 0"

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: ascii -*-
 
-from distutils.core import setup, Extension
+from distutils.core import Extension, setup
 
 __version__ = "1.0.3x6"
 

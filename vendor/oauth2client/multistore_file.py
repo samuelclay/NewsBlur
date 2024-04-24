@@ -37,10 +37,11 @@ import logging
 import os
 import threading
 
-from .anyjson import simplejson
-from oauth2client.client import Storage as BaseStorage
-from oauth2client.client import Credentials
 from oauth2client import util
+from oauth2client.client import Credentials
+from oauth2client.client import Storage as BaseStorage
+
+from .anyjson import simplejson
 from .locked_file import LockedFile
 
 logger = logging.getLogger(__name__)

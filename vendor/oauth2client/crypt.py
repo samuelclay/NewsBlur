@@ -21,8 +21,8 @@ import logging
 import time
 
 from OpenSSL import crypto
-from .anyjson import simplejson
 
+from .anyjson import simplejson
 
 logger = logging.getLogger(__name__)
 

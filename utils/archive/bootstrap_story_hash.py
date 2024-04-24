@@ -1,7 +1,9 @@
 import time
+
 import pymongo
 from django.conf import settings
-from apps.rss_feeds.models import MStory, Feed
+
+from apps.rss_feeds.models import Feed, MStory
 
 db = settings.MONGODB
 batch = 0

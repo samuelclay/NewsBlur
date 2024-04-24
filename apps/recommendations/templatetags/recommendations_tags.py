@@ -1,9 +1,10 @@
 import datetime
-from django import template
-from apps.reader.models import UserSubscription
-from utils.user_functions import get_user
-from apps.rss_feeds.models import MFeedIcon
 
+from django import template
+
+from apps.reader.models import UserSubscription
+from apps.rss_feeds.models import MFeedIcon
+from utils.user_functions import get_user
 
 register = template.Library()
 

@@ -6,8 +6,8 @@ PayPal response parsing of list syntax.
 import logging
 import re
 
-from vendor.paypalapi.response import PayPalResponse
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
+from vendor.paypalapi.response import PayPalResponse
 
 logger = logging.getLogger("paypal.response")
 

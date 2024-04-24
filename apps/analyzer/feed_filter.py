@@ -1,10 +1,12 @@
-from django.contrib.auth.models import User
-from apps.rss_feeds.models import Feed
-from apps.reader.models import UserSubscription
-from apps.analyzer.models import Category, FeatureCategory
 import datetime
-import re
 import math
+import re
+
+from django.contrib.auth.models import User
+
+from apps.analyzer.models import Category, FeatureCategory
+from apps.reader.models import UserSubscription
+from apps.rss_feeds.models import Feed
 
 
 def entry_features(self, entry):

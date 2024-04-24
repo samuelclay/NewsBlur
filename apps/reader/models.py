@@ -1,34 +1,37 @@
 import datetime
-import time
 import re
-import redis
-import pymongo
-import celery
-import mongoengine as mongo
+import time
 from operator import itemgetter
 from pprint import pprint
-from utils import log as logging
-from utils import json_functions as json
-from django.db import models, IntegrityError
-from django.db.models import Q
-from django.db.models import Count
+
+import celery
+import mongoengine as mongo
+import pymongo
+import redis
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.db import IntegrityError, models
+from django.db.models import Count, Q
 from django.template.defaultfilters import slugify
-from mongoengine.queryset import OperationError
-from mongoengine.queryset import NotUniqueError
-from apps.reader.managers import UserSubscriptionManager
-from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
-from apps.rss_feeds.tasks import NewFeeds
-from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
+from mongoengine.queryset import NotUniqueError, OperationError
+
 from apps.analyzer.models import (
-    apply_classifier_titles,
-    apply_classifier_feeds,
+    MClassifierAuthor,
+    MClassifierFeed,
+    MClassifierTag,
+    MClassifierTitle,
     apply_classifier_authors,
+    apply_classifier_feeds,
     apply_classifier_tags,
+    apply_classifier_titles,
 )
 from apps.analyzer.tfidf import tfidf
+from apps.reader.managers import UserSubscriptionManager
+from apps.rss_feeds.models import DuplicateFeed, Feed, MStory
+from apps.rss_feeds.tasks import NewFeeds
+from utils import json_functions as json
+from utils import log as logging
 from utils.feed_functions import add_object_to_folder, chunks
 
 

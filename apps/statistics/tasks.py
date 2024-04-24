@@ -1,6 +1,5 @@
+from apps.statistics.models import MFeedback, MStatistics
 from newsblur_web.celeryapp import app
-from apps.statistics.models import MStatistics
-from apps.statistics.models import MFeedback
 from utils import log as logging
 
 

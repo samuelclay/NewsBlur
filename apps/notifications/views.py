@@ -1,12 +1,13 @@
 import redis
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
-from utils import json_functions as json
-from utils.user_functions import get_user, ajax_login_required
+
 from apps.notifications.models import MUserFeedNotification, MUserNotificationTokens
 from apps.rss_feeds.models import Feed
-from utils.view_functions import required_params
+from utils import json_functions as json
 from utils import log as logging
+from utils.user_functions import ajax_login_required, get_user
+from utils.view_functions import required_params
 
 
 @ajax_login_required

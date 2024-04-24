@@ -5,10 +5,9 @@ PayPalResponse parsing and processing.
 
 import logging
 from pprint import pformat
+from urllib.parse import parse_qs
 
 from vendor.paypalapi.compat import is_py3
-
-from urllib.parse import parse_qs
 
 logger = logging.getLogger("paypal.response")
 

@@ -1,6 +1,7 @@
 from django.conf.urls import url
-from apps.notifications import views
 from oauth2_provider import views as op_views
+
+from apps.notifications import views
 
 urlpatterns = [
     url(r"^$", views.notifications_by_feed, name="notifications-by-feed"),

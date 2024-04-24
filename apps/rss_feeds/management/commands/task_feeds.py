@@ -1,7 +1,9 @@
-from django.core.management.base import BaseCommand
-from django.conf import settings
-from apps.rss_feeds.tasks import TaskFeeds, TaskBrokenFeeds
 import datetime
+
+from django.conf import settings
+from django.core.management.base import BaseCommand
+
+from apps.rss_feeds.tasks import TaskBrokenFeeds, TaskFeeds
 
 
 class Command(BaseCommand):

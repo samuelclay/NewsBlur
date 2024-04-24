@@ -6,7 +6,6 @@ import os
 
 from django.conf import settings as _settings
 
-
 if hasattr(_settings, "STRIPE_PUBLISHABLE"):
     STRIPE_PUBLISHABLE = getattr(_settings, "STRIPE_PUBLISHABLE")
 else:
