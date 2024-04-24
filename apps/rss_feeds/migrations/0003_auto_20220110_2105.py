@@ -4,35 +4,34 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rss_feeds', '0002_remove_mongo_types'),
+        ("rss_feeds", "0002_remove_mongo_types"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='feed',
-            name='feed_address_locked',
+            model_name="feed",
+            name="feed_address_locked",
             field=models.BooleanField(blank=True, default=False, null=True),
         ),
         migrations.AlterField(
-            model_name='feed',
-            name='is_push',
+            model_name="feed",
+            name="is_push",
             field=models.BooleanField(blank=True, default=False, null=True),
         ),
         migrations.AlterField(
-            model_name='feed',
-            name='s3_icon',
+            model_name="feed",
+            name="s3_icon",
             field=models.BooleanField(blank=True, default=False, null=True),
         ),
         migrations.AlterField(
-            model_name='feed',
-            name='s3_page',
+            model_name="feed",
+            name="s3_page",
             field=models.BooleanField(blank=True, default=False, null=True),
         ),
         migrations.AlterField(
-            model_name='feed',
-            name='search_indexed',
+            model_name="feed",
+            name="search_indexed",
             field=models.BooleanField(blank=True, default=None, null=True),
         ),
     ]

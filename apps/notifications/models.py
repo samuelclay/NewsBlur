@@ -40,21 +40,21 @@ class NotificationFrequency(enum.Enum):
 
 
 class MUserNotificationTokens(mongo.Document):
-    '''A user's push notification tokens'''
+    """A user's push notification tokens"""
 
     user_id = mongo.IntField()
     ios_tokens = mongo.ListField(mongo.StringField(max_length=1024))
     use_sandbox = mongo.BooleanField(default=False)
 
     meta = {
-        'collection': 'notification_tokens',
-        'indexes': [
+        "collection": "notification_tokens",
+        "indexes": [
             {
-                'fields': ['user_id'],
-                'unique': True,
+                "fields": ["user_id"],
+                "unique": True,
             }
         ],
-        'allow_inheritance': False,
+        "allow_inheritance": False,
     }
 
     @classmethod
@@ -68,7 +68,7 @@ class MUserNotificationTokens(mongo.Document):
 
 
 class MUserFeedNotification(mongo.Document):
-    '''A user's notifications of a single feed.'''
+    """A user's notifications of a single feed."""
 
     user_id = mongo.IntField()
     feed_id = mongo.IntField()
@@ -82,32 +82,32 @@ class MUserFeedNotification(mongo.Document):
     ios_tokens = mongo.ListField(mongo.StringField(max_length=1024))
 
     meta = {
-        'collection': 'notifications',
-        'indexes': [
-            'feed_id',
+        "collection": "notifications",
+        "indexes": [
+            "feed_id",
             {
-                'fields': ['user_id', 'feed_id'],
-                'unique': True,
+                "fields": ["user_id", "feed_id"],
+                "unique": True,
             },
         ],
-        'allow_inheritance': False,
+        "allow_inheritance": False,
     }
 
     def __str__(self):
         notification_types = []
         if self.is_email:
-            notification_types.append('email')
+            notification_types.append("email")
         if self.is_web:
-            notification_types.append('web')
+            notification_types.append("web")
         if self.is_ios:
-            notification_types.append('ios')
+            notification_types.append("ios")
         if self.is_android:
-            notification_types.append('android')
+            notification_types.append("android")
 
         return "%s/%s: %s -> %s" % (
             User.objects.get(pk=self.user_id).username,
             Feed.get_by_id(self.feed_id),
-            ','.join(notification_types),
+            ",".join(notification_types),
             self.last_notification_date,
         )
 
@@ -128,17 +128,17 @@ class MUserFeedNotification(mongo.Document):
 
         for feed in notifications:
             notifications_by_feed[feed.feed_id] = {
-                'notification_types': [],
-                'notification_filter': "focus" if feed.is_focus else "unread",
+                "notification_types": [],
+                "notification_filter": "focus" if feed.is_focus else "unread",
             }
             if feed.is_email:
-                notifications_by_feed[feed.feed_id]['notification_types'].append('email')
+                notifications_by_feed[feed.feed_id]["notification_types"].append("email")
             if feed.is_web:
-                notifications_by_feed[feed.feed_id]['notification_types'].append('web')
+                notifications_by_feed[feed.feed_id]["notification_types"].append("web")
             if feed.is_ios:
-                notifications_by_feed[feed.feed_id]['notification_types'].append('ios')
+                notifications_by_feed[feed.feed_id]["notification_types"].append("ios")
             if feed.is_android:
-                notifications_by_feed[feed.feed_id]['notification_types'].append('android')
+                notifications_by_feed[feed.feed_id]["notification_types"].append("android")
 
         return notifications_by_feed
 
@@ -153,7 +153,7 @@ class MUserFeedNotification(mongo.Document):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
 
         latest_story_hashes = r.zrange("zF:%s" % feed.pk, -1 * new_stories, -1)
-        mstories = MStory.objects.filter(story_hash__in=latest_story_hashes).order_by('-story_date')
+        mstories = MStory.objects.filter(story_hash__in=latest_story_hashes).order_by("-story_date")
         stories = Feed.format_stories(mstories)
         total_sent_count = 0
 
@@ -186,19 +186,19 @@ class MUserFeedNotification(mongo.Document):
                     if settings.DEBUG:
                         logging.debug("Sent too many, ignoring...")
                     continue
-                if story['story_date'] <= last_notification_date and not force:
+                if story["story_date"] <= last_notification_date and not force:
                     if settings.DEBUG:
                         logging.debug(
                             "Story date older than last notification date: %s <= %s"
-                            % (story['story_date'], last_notification_date)
+                            % (story["story_date"], last_notification_date)
                         )
                     continue
 
-                if story['story_date'] > user_feed_notification.last_notification_date:
-                    user_feed_notification.last_notification_date = story['story_date']
+                if story["story_date"] > user_feed_notification.last_notification_date:
+                    user_feed_notification.last_notification_date = story["story_date"]
                     user_feed_notification.save()
 
-                story['story_content'] = html.unescape(story['story_content'])
+                story["story_content"] = html.unescape(story["story_content"])
 
                 sent = user_feed_notification.push_story_notification(story, classifiers, usersub)
                 if sent:
@@ -209,49 +209,40 @@ class MUserFeedNotification(mongo.Document):
     def classifiers(self, usersub):
         classifiers = {}
         if usersub.is_trained:
-            classifiers['feeds'] = list(
-                MClassifierFeed.objects(
-                    user_id=self.user_id, feed_id=self.feed_id, social_user_id=0
-                )
+            classifiers["feeds"] = list(
+                MClassifierFeed.objects(user_id=self.user_id, feed_id=self.feed_id, social_user_id=0)
             )
-            classifiers['authors'] = list(
+            classifiers["authors"] = list(
                 MClassifierAuthor.objects(user_id=self.user_id, feed_id=self.feed_id)
             )
-            classifiers['titles'] = list(
-                MClassifierTitle.objects(user_id=self.user_id, feed_id=self.feed_id)
-            )
-            classifiers['tags'] = list(
-                MClassifierTag.objects(user_id=self.user_id, feed_id=self.feed_id)
-            )
+            classifiers["titles"] = list(MClassifierTitle.objects(user_id=self.user_id, feed_id=self.feed_id))
+            classifiers["tags"] = list(MClassifierTag.objects(user_id=self.user_id, feed_id=self.feed_id))
 
         return classifiers
 
     def title_and_body(self, story, usersub, notification_title_only=False):
         def replace_with_newlines(element):
-            text = ''
+            text = ""
             for elem in element.recursiveChildGenerator():
                 if isinstance(elem, (str,)):
                     text += elem
-                elif elem.name == 'br':
-                    text += '\n'
-                elif elem.name == 'p':
-                    text += '\n\n'
-            text = re.sub(r' +', ' ', text).strip()
+                elif elem.name == "br":
+                    text += "\n"
+                elif elem.name == "p":
+                    text += "\n\n"
+            text = re.sub(r" +", " ", text).strip()
             return text
 
         feed_title = usersub.user_title or usersub.feed.feed_title
         # title = "%s: %s" % (feed_title, story['story_title'])
         title = feed_title
-        soup = BeautifulSoup(story['story_content'].strip(), features="lxml")
+        soup = BeautifulSoup(story["story_content"].strip(), features="lxml")
         # if notification_title_only:
         subtitle = None
-        body_title = html.unescape(story['story_title']).strip()
+        body_title = html.unescape(story["story_title"]).strip()
         body_content = replace_with_newlines(soup)
         if body_content:
-            if (
-                body_title == body_content[: len(body_title)]
-                or body_content[:100] == body_title[:100]
-            ):
+            if body_title == body_content[: len(body_title)] or body_content[:100] == body_title[:100]:
                 body_content = ""
             else:
                 body_content = f"\n※ {body_content}"
@@ -283,7 +274,7 @@ class MUserFeedNotification(mongo.Document):
         logging.user(
             user,
             "~FCSending push notification: %s/%s (score: %s)"
-            % (story['story_title'][:40], story['story_hash'], story_score),
+            % (story["story_title"][:40], story["story_hash"], story_score),
         )
 
         self.send_web(story, user)
@@ -298,7 +289,7 @@ class MUserFeedNotification(mongo.Document):
             return
 
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-        r.publish(user.username, 'notification:%s,%s' % (story['story_hash'], story['story_title']))
+        r.publish(user.username, "notification:%s,%s" % (story["story_hash"], story["story_title"]))
 
     def send_ios(self, story, user, usersub):
         if not self.is_ios:
@@ -319,45 +310,42 @@ class MUserFeedNotification(mongo.Document):
         # 7. cat aps.pem aps_key.noenc.pem > aps.p12.pem
         # 8. Verify: openssl s_client -connect gateway.push.apple.com:2195 -cert aps.p12.pem
         # 9. Deploy: aps -l work -t apns,repo,celery
-        apns = APNsClient(
-            '/srv/newsblur/config/certificates/aps.p12.pem', use_sandbox=tokens.use_sandbox
-        )
+        apns = APNsClient("/srv/newsblur/config/certificates/aps.p12.pem", use_sandbox=tokens.use_sandbox)
 
-        notification_title_only = is_true(user.profile.preference_value('notification_title_only'))
+        notification_title_only = is_true(user.profile.preference_value("notification_title_only"))
         title, subtitle, body = self.title_and_body(story, usersub, notification_title_only)
         image_url = None
-        if len(story['image_urls']):
-            image_url = story['image_urls'][0]
+        if len(story["image_urls"]):
+            image_url = story["image_urls"][0]
             # print image_url
 
         confirmed_ios_tokens = []
         for token in tokens.ios_tokens:
             logging.user(
                 user,
-                '~BMStory notification by iOS: ~FY~SB%s~SN~BM~FY/~SB%s'
-                % (story['story_title'][:50], usersub.feed.feed_title[:50]),
+                "~BMStory notification by iOS: ~FY~SB%s~SN~BM~FY/~SB%s"
+                % (story["story_title"][:50], usersub.feed.feed_title[:50]),
             )
             payload = Payload(
-                alert={'title': title, 'subtitle': subtitle, 'body': body},
+                alert={"title": title, "subtitle": subtitle, "body": body},
                 category="STORY_CATEGORY",
                 mutable_content=True,
                 custom={
-                    'story_hash': story['story_hash'],
-                    'story_feed_id': story['story_feed_id'],
-                    'image_url': image_url,
+                    "story_hash": story["story_hash"],
+                    "story_feed_id": story["story_feed_id"],
+                    "image_url": image_url,
                 },
             )
             try:
                 apns.send_notification(token, payload, topic="com.newsblur.NewsBlur")
             except (BadDeviceToken, Unregistered, DeviceTokenNotForTopic):
-                logging.user(user, '~BMiOS token expired: ~FR~SB%s' % (token[:50]))
+                logging.user(user, "~BMiOS token expired: ~FR~SB%s" % (token[:50]))
             else:
                 confirmed_ios_tokens.append(token)
                 if settings.DEBUG:
                     logging.user(
                         user,
-                        '~BMiOS token good: ~FB~SB%s / %s'
-                        % (token[:50], len(confirmed_ios_tokens)),
+                        "~BMiOS token good: ~FB~SB%s / %s" % (token[:50], len(confirmed_ios_tokens)),
                     )
 
         if len(confirmed_ios_tokens) < len(tokens.ios_tokens):
@@ -379,11 +367,14 @@ class MUserFeedNotification(mongo.Document):
         r.expire(emails_sent_date_key, 60 * 60 * 24)  # Keep for a day
         count = int(r.hget(emails_sent_date_key, usersub.user_id) or 0)
         if count > settings.MAX_EMAILS_SENT_PER_DAY_PER_USER:
-            logging.user(usersub.user, "~BMSent too many email Story notifications by email: ~FR~SB%s~SN~FR emails" % (count))
+            logging.user(
+                usersub.user,
+                "~BMSent too many email Story notifications by email: ~FR~SB%s~SN~FR emails" % (count),
+            )
             return
 
         feed = usersub.feed
-        story_content = self.sanitize_story(story['story_content'])
+        story_content = self.sanitize_story(story["story_content"])
 
         params = {
             "story": story,
@@ -392,14 +383,14 @@ class MUserFeedNotification(mongo.Document):
             "feed_title": usersub.user_title or feed.feed_title,
             "favicon_border": feed.favicon_color,
         }
-        from_address = 'notifications@newsblur.com'
-        to_address = '%s <%s>' % (usersub.user.username, usersub.user.email)
-        text = render_to_string('mail/email_story_notification.txt', params)
-        html = render_to_string('mail/email_story_notification.xhtml', params)
-        subject = '%s: %s' % (usersub.user_title or usersub.feed.feed_title, story['story_title'])
-        subject = subject.replace('\n', ' ')
+        from_address = "notifications@newsblur.com"
+        to_address = "%s <%s>" % (usersub.user.username, usersub.user.email)
+        text = render_to_string("mail/email_story_notification.txt", params)
+        html = render_to_string("mail/email_story_notification.xhtml", params)
+        subject = "%s: %s" % (usersub.user_title or usersub.feed.feed_title, story["story_title"])
+        subject = subject.replace("\n", " ")
         msg = EmailMultiAlternatives(
-            subject, text, from_email='NewsBlur <%s>' % from_address, to=[to_address]
+            subject, text, from_email="NewsBlur <%s>" % from_address, to=[to_address]
         )
         msg.attach_alternative(html, "text/html")
         # try:
@@ -409,8 +400,8 @@ class MUserFeedNotification(mongo.Document):
         #     return
         logging.user(
             usersub.user,
-            '~BMStory notification by email: ~FY~SB%s~SN~BM~FY/~SB%s'
-            % (story['story_title'][:50], usersub.feed.feed_title[:50]),
+            "~BMStory notification by email: ~FY~SB%s~SN~BM~FY/~SB%s"
+            % (story["story_title"][:50], usersub.feed.feed_title[:50]),
         )
 
     def sanitize_story(self, story_content):
@@ -419,15 +410,15 @@ class MUserFeedNotification(mongo.Document):
 
         # Convert videos in newsletters to images
         for iframe in soup("iframe"):
-            url = dict(iframe.attrs).get('src', "")
+            url = dict(iframe.attrs).get("src", "")
             youtube_id = self.extract_youtube_id(url)
             if youtube_id:
-                a = soup.new_tag('a', href=url)
+                a = soup.new_tag("a", href=url)
                 img = soup.new_tag(
-                    'img',
+                    "img",
                     style="display: block; 'background-image': \"url(https://%s/img/reader/youtube_play.png), url(http://img.youtube.com/vi/%s/0.jpg)\""
                     % (fqdn, youtube_id),
-                    src='http://img.youtube.com/vi/%s/0.jpg' % youtube_id,
+                    src="http://img.youtube.com/vi/%s/0.jpg" % youtube_id,
                 )
                 a.insert(0, img)
                 iframe.replaceWith(a)
@@ -439,20 +430,20 @@ class MUserFeedNotification(mongo.Document):
     def extract_youtube_id(self, url):
         youtube_id = None
 
-        if 'youtube.com' in url:
+        if "youtube.com" in url:
             youtube_parts = urllib.parse.urlparse(url)
-            if '/embed/' in youtube_parts.path:
-                youtube_id = youtube_parts.path.replace('/embed/', '')
+            if "/embed/" in youtube_parts.path:
+                youtube_id = youtube_parts.path.replace("/embed/", "")
 
         return youtube_id
 
     def story_score(self, story, classifiers):
         score = compute_story_score(
             story,
-            classifier_titles=classifiers.get('titles', []),
-            classifier_authors=classifiers.get('authors', []),
-            classifier_tags=classifiers.get('tags', []),
-            classifier_feeds=classifiers.get('feeds', []),
+            classifier_titles=classifiers.get("titles", []),
+            classifier_authors=classifiers.get("authors", []),
+            classifier_tags=classifiers.get("tags", []),
+            classifier_feeds=classifiers.get("feeds", []),
         )
 
         return score

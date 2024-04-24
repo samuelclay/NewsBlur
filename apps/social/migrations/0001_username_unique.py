@@ -4,19 +4,17 @@ from django.db import migrations
 from django.conf import settings
 import pymongo
 
+
 def remove_unique_index(apps, schema_editor):
-    social_profile =  sp = settings.MONGODB[settings.MONGO_DB_NAME].social_profile
+    social_profile = sp = settings.MONGODB[settings.MONGO_DB_NAME].social_profile
     try:
-        social_profile.drop_index('username_1')
+        social_profile.drop_index("username_1")
     except pymongo.errors.OperationFailure:
         print(" ***> Couldn't delete username_1 index on social_profile collection. Already deleted?")
         pass
 
+
 class Migration(migrations.Migration):
+    dependencies = []
 
-    dependencies = [
-    ]
-
-    operations = [
-        migrations.RunPython(remove_unique_index)
-    ]
+    operations = [migrations.RunPython(remove_unique_index)]

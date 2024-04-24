@@ -16,23 +16,37 @@ import rlcompleter
 historyPath = os.path.expanduser("~/.pyhistory")
 historyTmp = os.path.expanduser("~/.pyhisttmp.py")
 
-endMarkerStr= "# # # histDUMP # # #"
+endMarkerStr = "# # # histDUMP # # #"
 
-saveMacro= "import readline; readline.write_history_file('"+historyTmp+"'); \
+saveMacro = (
+    "import readline; readline.write_history_file('"
+    + historyTmp
+    + "'); \
     print '####>>>>>>>>>>'; print ''.join(filter(lambda lineP: \
-    not lineP.strip().endswith('"+endMarkerStr+"'),  \
-    open('"+historyTmp+"').readlines())[:])+'####<<<<<<<<<<'"+endMarkerStr
+    not lineP.strip().endswith('"
+    + endMarkerStr
+    + "'),  \
+    open('"
+    + historyTmp
+    + "').readlines())[:])+'####<<<<<<<<<<'"
+    + endMarkerStr
+)
 
-readline.parse_and_bind('tab: complete')
-readline.parse_and_bind('\C-w: "'+saveMacro+'"')
+readline.parse_and_bind("tab: complete")
+readline.parse_and_bind('\C-w: "' + saveMacro + '"')
+
 
 def save_history(historyPath=historyPath, endMarkerStr=endMarkerStr):
     import readline
+
     readline.write_history_file(historyPath)
     # Now filter out those line containing the saveMacro
-    lines= filter(lambda lineP, endMarkerStr=endMarkerStr:
-                      not lineP.strip().endswith(endMarkerStr), open(historyPath).readlines())
-    open(historyPath, 'w+').write(''.join(lines))
+    lines = filter(
+        lambda lineP, endMarkerStr=endMarkerStr: not lineP.strip().endswith(endMarkerStr),
+        open(historyPath).readlines(),
+    )
+    open(historyPath, "w+").write("".join(lines))
+
 
 if os.path.exists(historyPath):
     readline.read_history_file(historyPath)

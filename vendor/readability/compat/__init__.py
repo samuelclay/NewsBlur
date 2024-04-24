@@ -10,14 +10,16 @@ from lxml.etree import tostring
 if sys.version_info[0] == 2:
     bytes_ = str
     str_ = unicode
+
     def tostring_(s):
-        return tostring(s, encoding='utf-8').decode('utf-8')
+        return tostring(s, encoding="utf-8").decode("utf-8")
 
 elif sys.version_info[0] == 3:
     bytes_ = bytes
     str_ = str
+
     def tostring_(s):
-        return tostring(s, encoding='utf-8')
+        return tostring(s, encoding="utf-8")
 
 
 try:

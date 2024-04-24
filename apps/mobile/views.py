@@ -8,5 +8,6 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json
 from utils import log as logging
 
+
 def index(request):
-    return render(request, 'mobile/mobile_workspace.xhtml', {})
+    return render(request, "mobile/mobile_workspace.xhtml", {})
