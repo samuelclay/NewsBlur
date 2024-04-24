@@ -2,7 +2,7 @@ import os
 import re
 import socket
 import time
-from subprocess import Popen, PIPE
+from subprocess import PIPE, Popen
 
 from vendor.munin import MuninPlugin
 

@@ -1,11 +1,11 @@
 """Operations for images through the PIL."""
 
 import urllib.request
-from PIL import Image
-from PIL import ImageFile
+from io import BytesIO
+
+from PIL import Image, ImageFile
 from PIL import ImageOps as PILOps
 from PIL.ExifTags import TAGS
-from io import BytesIO
 
 PROFILE_PICTURE_SIZES = {"fullsize": (256, 256), "thumbnail": (64, 64)}
 

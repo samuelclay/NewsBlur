@@ -965,7 +965,8 @@ def formatdate(timeval=None):
 # message in RFC-822 format.
 
 if __name__ == "__main__":
-    import sys, os
+    import os
+    import sys
 
     if not "HOME" in os.environ:
         os.environ["HOME"] = os.path.join(os.environ["HOMEDRIVE"], os.environ["HOMEPATH"])

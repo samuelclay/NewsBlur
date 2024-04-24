@@ -1,22 +1,33 @@
-from fabric.api import cd, lcd, env, local, parallel, serial
-from fabric.api import put, run, settings, sudo, prefix
-from fabric.operations import prompt
-from fabric.contrib import django
-from fabric.contrib import files
-from fabric.state import connections
+import os
+import re
+import sys
+import time
+from collections import defaultdict
+from contextlib import contextmanager as _contextmanager
+from pprint import pprint
+
+import yaml
+from boto.ec2.connection import EC2Connection
 
 # from fabric.colors import red, green, blue, cyan, magenta, white, yellow
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
-from boto.ec2.connection import EC2Connection
-import yaml
-from pprint import pprint
-from collections import defaultdict
-from contextlib import contextmanager as _contextmanager
-import os
-import time
-import sys
-import re
+from fabric.api import (
+    cd,
+    env,
+    lcd,
+    local,
+    parallel,
+    prefix,
+    put,
+    run,
+    serial,
+    settings,
+    sudo,
+)
+from fabric.contrib import django, files
+from fabric.operations import prompt
+from fabric.state import connections
 
 # django.setup()
 

@@ -1,20 +1,22 @@
-import datetime
-import mongoengine as mongo
-import pickle
 import base64
-from oauth2client.client import Error as OAuthError
-from xml.etree.ElementTree import Element, SubElement, Comment, tostring
-from lxml import etree
-from django.db import models
+import datetime
+import pickle
+from xml.etree.ElementTree import Comment, Element, SubElement, tostring
+
+import mongoengine as mongo
 from django.contrib.auth.models import User
+from django.db import models
+from lxml import etree
 from mongoengine.queryset import OperationError
+from oauth2client.client import Error as OAuthError
+
 import vendor.opml as opml
-from apps.rss_feeds.models import Feed, DuplicateFeed
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
-from utils import json_functions as json, urlnorm
+from apps.rss_feeds.models import DuplicateFeed, Feed
+from utils import json_functions as json
 from utils import log as logging
-from utils.feed_functions import timelimit
-from utils.feed_functions import add_object_to_folder
+from utils import urlnorm
+from utils.feed_functions import add_object_to_folder, timelimit
 
 
 class OAuthToken(models.Model):

@@ -1,7 +1,13 @@
 from bson.objectid import ObjectId
-from newsblur_web.celeryapp import app
-from apps.social.models import MSharedStory, MSocialProfile, MSocialServices, MSocialSubscription
 from django.contrib.auth.models import User
+
+from apps.social.models import (
+    MSharedStory,
+    MSocialProfile,
+    MSocialServices,
+    MSocialSubscription,
+)
+from newsblur_web.celeryapp import app
 from utils import log as logging
 
 

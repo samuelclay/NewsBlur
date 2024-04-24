@@ -1,9 +1,10 @@
 import datetime
-from newsblur_web.celeryapp import app
+
 from apps.profile.models import Profile, RNewUserQueue
-from utils import log as logging
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
-from apps.social.models import MSocialServices, MActivity, MInteraction
+from apps.social.models import MActivity, MInteraction, MSocialServices
+from newsblur_web.celeryapp import app
+from utils import log as logging
 
 
 @app.task(name="email-new-user")

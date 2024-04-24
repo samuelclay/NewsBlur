@@ -46,11 +46,17 @@ Also Jason Diamond, Brian Lalor for bug reporting and patches"""
 
 _debug = 0
 
-import sgmllib, urllib.request, urllib.parse, urllib.error, urllib.parse, re, sys, urllib.robotparser
-import requests
+import re
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+import urllib.robotparser
 from io import StringIO
-from lxml import etree
 
+import requests
+import sgmllib
+from lxml import etree
 
 # XML-RPC support allows feedfinder to query Syndic8 for possible matches.
 # Python 2.3 now comes with this module by default, otherwise you can download it

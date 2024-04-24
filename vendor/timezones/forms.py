@@ -1,10 +1,12 @@
+import pytz
 from django import forms
 from django.conf import settings
 
-import pytz
-
 from vendor.timezones import zones
-from vendor.timezones.utilities import adjust_datetime_to_timezone, coerce_timezone_value
+from vendor.timezones.utilities import (
+    adjust_datetime_to_timezone,
+    coerce_timezone_value,
+)
 
 
 class TimeZoneField(forms.TypedChoiceField):

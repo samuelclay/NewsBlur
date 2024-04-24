@@ -6,18 +6,21 @@ with it.
 """
 
 import logging
-from pprint import pformat
 import warnings
+from pprint import pformat
+from urllib.parse import urlencode
 
 import requests
 
-from vendor.paypalapi.settings import PayPalConfig
+from vendor.paypalapi.compat import is_py3
+from vendor.paypalapi.exceptions import (
+    PayPalAPIResponseError,
+    PayPalConfigError,
+    PayPalError,
+)
 from vendor.paypalapi.response import PayPalResponse
 from vendor.paypalapi.response_list import PayPalResponseList
-from vendor.paypalapi.exceptions import PayPalError, PayPalAPIResponseError, PayPalConfigError
-from vendor.paypalapi.compat import is_py3
-
-from urllib.parse import urlencode
+from vendor.paypalapi.settings import PayPalConfig
 
 logger = logging.getLogger("paypal.interface")
 

@@ -3,6 +3,7 @@
 
 from vendor.munin.mysql import MuninMySQLPlugin
 
+
 class MuninMySQLDBRowsPlugin(MuninMySQLPlugin):
     dbname_in_args = True
     args = "-l 0 --base 1000"

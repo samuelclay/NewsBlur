@@ -2,6 +2,7 @@
 
 from vendor.munin.redis import MuninRedisPlugin
 
+
 class MuninRedisCommandsPlugin(MuninRedisPlugin):
     title = "Redis commands"
     args = "--base 1000"

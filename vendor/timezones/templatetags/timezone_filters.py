@@ -1,5 +1,4 @@
-from django.template import Node
-from django.template import Library
+from django.template import Library, Node
 
 from vendor.timezones.utilities import localtime_for_timezone
 

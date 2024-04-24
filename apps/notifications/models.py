@@ -1,34 +1,36 @@
 import datetime
 import enum
 import html
-import redis
 import re
+import urllib.parse
+
 import mongoengine as mongo
+import redis
+from apns2.client import APNsClient
+from apns2.errors import BadDeviceToken, DeviceTokenNotForTopic, Unregistered
+from apns2.payload import Payload
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 
-# from django.utils.html import strip_tags
-from apps.rss_feeds.models import MStory, Feed
-from apps.reader.models import UserSubscription
 from apps.analyzer.models import (
-    MClassifierTitle,
     MClassifierAuthor,
     MClassifierFeed,
     MClassifierTag,
+    MClassifierTitle,
+    compute_story_score,
 )
-from apps.analyzer.models import compute_story_score
-from utils.view_functions import is_true
-from utils.story_functions import truncate_chars
+from apps.reader.models import UserSubscription
+
+# from django.utils.html import strip_tags
+from apps.rss_feeds.models import Feed, MStory
 from utils import log as logging
 from utils import mongoengine_fields
-from apns2.errors import BadDeviceToken, Unregistered, DeviceTokenNotForTopic
-from apns2.client import APNsClient
-from apns2.payload import Payload
-from bs4 import BeautifulSoup
-import urllib.parse
+from utils.story_functions import truncate_chars
+from utils.view_functions import is_true
 
 
 class NotificationFrequency(enum.Enum):

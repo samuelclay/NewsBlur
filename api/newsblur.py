@@ -2,9 +2,10 @@
 # Retooled by Samuel Clay, August 2011
 # Modified by Luke Hagan, 2011-11-05
 
-import urllib.request, urllib.parse
 import http.cookiejar
 import json
+import urllib.parse
+import urllib.request
 
 __author__ = "Dananjaya Ramanayake <dananjaya86@gmail.com>, Samuel Clay <samuel@newsblur.com>"
 __version__ = "1.0"

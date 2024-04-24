@@ -1,18 +1,18 @@
 import re
-
 from datetime import datetime
 
 import pytz
-
 from django import forms
 from django.conf import settings
 from django.test import TestCase
 
 import vendor.timezones.forms
 import vendor.timezones.timezones_tests.models as test_models
-
-from vendor.timezones.utilities import localtime_for_timezone, adjust_datetime_to_timezone
 from vendor import timezones
+from vendor.timezones.utilities import (
+    adjust_datetime_to_timezone,
+    localtime_for_timezone,
+)
 
 
 class TimeZoneTestCase(TestCase):

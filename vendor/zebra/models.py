@@ -1,5 +1,4 @@
 from django.db import models
-
 from zebra import mixins
 from zebra.conf import options
 

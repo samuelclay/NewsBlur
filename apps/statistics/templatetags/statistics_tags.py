@@ -1,4 +1,5 @@
 from django import template
+
 from apps.statistics.models import MFeedback
 
 register = template.Library()

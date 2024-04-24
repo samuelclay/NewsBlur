@@ -1,4 +1,5 @@
 import sys
+
 from vendor.munin.postgres import MuninPostgresPlugin
 
 

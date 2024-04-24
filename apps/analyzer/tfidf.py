@@ -6,8 +6,8 @@ Add your documents as two-element lists `[docname, [list_of_words_in_the_documen
 See the README for a usage example.
 """
 
-import sys
 import os
+import sys
 
 
 class tfidf:

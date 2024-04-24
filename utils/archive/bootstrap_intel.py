@@ -1,10 +1,14 @@
 import sys
-from mongoengine.queryset import OperationError
+
 from mongoengine.errors import ValidationError
-from apps.analyzer.models import MClassifierFeed
-from apps.analyzer.models import MClassifierAuthor
-from apps.analyzer.models import MClassifierTag
-from apps.analyzer.models import MClassifierTitle
+from mongoengine.queryset import OperationError
+
+from apps.analyzer.models import (
+    MClassifierAuthor,
+    MClassifierFeed,
+    MClassifierTag,
+    MClassifierTitle,
+)
 
 for classifier_cls in [MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle]:
     print(" ================================================================= ")

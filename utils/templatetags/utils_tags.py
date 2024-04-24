@@ -1,20 +1,26 @@
+import datetime
 import os
+import random
 import re
 import struct
-import datetime
-import random
-from utils import log as logging
-from django.contrib.sites.models import Site
-from django.conf import settings
+
 from django import template
+from django.conf import settings
+from django.contrib.sites.models import Site
+from django.utils.safestring import mark_safe
+from pipeline.templatetags.pipeline import (
+    JavascriptNode,
+    StylesheetNode,
+    javascript,
+    stylesheet,
+)
+
 from apps.reader.forms import FeatureForm
 from apps.reader.models import Feature
 from apps.social.models import MSocialProfile
-from vendor.timezones.utilities import localtime_for_timezone
+from utils import log as logging
 from utils.user_functions import get_user
-from django.utils.safestring import mark_safe
-from pipeline.templatetags.pipeline import stylesheet, javascript
-from pipeline.templatetags.pipeline import JavascriptNode, StylesheetNode
+from vendor.timezones.utilities import localtime_for_timezone
 
 register = template.Library()
 

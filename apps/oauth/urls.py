@@ -1,6 +1,7 @@
 from django.conf.urls import url
-from apps.oauth import views
 from oauth2_provider import views as op_views
+
+from apps.oauth import views
 
 urlpatterns = [
     url(r"^twitter_connect/?$", views.twitter_connect, name="twitter-connect"),

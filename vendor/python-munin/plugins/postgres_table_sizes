@@ -5,6 +5,7 @@
 
 from vendor.munin.postgres import MuninPostgresPlugin
 
+
 class PostgresTableSizes(MuninPostgresPlugin):
     vlabel = "Table Size"
     title = "Table Sizes"

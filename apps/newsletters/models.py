@@ -1,21 +1,22 @@
 import datetime
 import re
+
 import redis
+from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
-from django.urls import reverse
-from django.conf import settings
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.html import linebreaks
-from apps.rss_feeds.models import Feed, MStory, MFetchHistory
-from apps.reader.models import UserSubscription, UserSubscriptionFolders
-from apps.profile.models import Profile, MSentEmail
-from apps.notifications.tasks import QueueNotifications
-from apps.notifications.models import MUserFeedNotification
 
+from apps.notifications.models import MUserFeedNotification
+from apps.notifications.tasks import QueueNotifications
+from apps.profile.models import MSentEmail, Profile
+from apps.reader.models import UserSubscription, UserSubscriptionFolders
+from apps.rss_feeds.models import Feed, MFetchHistory, MStory
 from utils import log as logging
-from utils.story_functions import linkify
 from utils.scrubber import Scrubber
+from utils.story_functions import linkify
 
 
 class EmailNewsletter:

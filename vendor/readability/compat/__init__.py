@@ -5,6 +5,7 @@ It mainly exists because their are certain incompatibilities in the Python
 syntax that can only be solved by conditionally importing different functions.
 """
 import sys
+
 from lxml.etree import tostring
 
 if sys.version_info[0] == 2:

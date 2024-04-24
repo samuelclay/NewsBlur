@@ -1,15 +1,17 @@
 import datetime
-import re
 import random
+import re
 import time
+
 import redis
-from utils import log as logging
-from django.http import HttpResponse
 from django.conf import settings
 from django.db import connection
-from django.template import Template, Context
+from django.http import HttpResponse
+from django.template import Context, Template
+
 from apps.statistics.rstats import round_time
 from utils import json_functions as json
+from utils import log as logging
 
 
 class LastSeenMiddleware(object):

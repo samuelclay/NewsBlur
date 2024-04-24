@@ -19,11 +19,12 @@ A Storage for Credentials that uses the keyring module.
 
 __author__ = "jcgregorio@google.com (Joe Gregorio)"
 
-import keyring
 import threading
 
-from .client import Storage as BaseStorage
+import keyring
+
 from .client import Credentials
+from .client import Storage as BaseStorage
 
 
 class Storage(BaseStorage):

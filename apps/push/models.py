@@ -1,19 +1,19 @@
 # Adapted from djpubsubhubbub. See License: http://git.participatoryculture.org/djpubsubhubbub/tree/LICENSE
 
+import hashlib
+import re
 from datetime import datetime, timedelta
+
 import feedparser
 import requests
-import re
-
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-import hashlib
 
 from apps.push import signals
 from apps.rss_feeds.models import Feed
 from utils import log as logging
-from utils.feed_functions import timelimit, TimeoutError
+from utils.feed_functions import TimeoutError, timelimit
 
 DEFAULT_LEASE_SECONDS = 10 * 24 * 60 * 60  # 10 days
 

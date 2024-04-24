@@ -1,6 +1,7 @@
 from datetime import timedelta
+
 from mongoengine.base import BaseField
-from mongoengine.fields import IntField, StringField, EmailField
+from mongoengine.fields import EmailField, IntField, StringField
 
 
 class TimedeltaField(BaseField):

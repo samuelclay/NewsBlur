@@ -1,13 +1,15 @@
 import datetime
-import mongoengine as mongo
 from collections import defaultdict
-from django.db import models
-from django.contrib.auth.models import User
-from django.template.loader import render_to_string
-from django.core.mail import EmailMultiAlternatives
+
+import mongoengine as mongo
 from django.conf import settings
-from apps.rss_feeds.models import Feed
+from django.contrib.auth.models import User
+from django.core.mail import EmailMultiAlternatives
+from django.db import models
+from django.template.loader import render_to_string
+
 from apps.analyzer.tasks import EmailPopularityQuery
+from apps.rss_feeds.models import Feed
 from utils import log as logging
 
 

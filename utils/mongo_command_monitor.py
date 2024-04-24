@@ -1,7 +1,8 @@
-from pymongo import monitoring
 import logging
+
 from django.conf import settings
 from django.db import connection
+from pymongo import monitoring
 
 
 class MongoCommandLogger(monitoring.CommandListener):

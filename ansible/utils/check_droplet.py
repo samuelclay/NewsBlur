@@ -1,7 +1,8 @@
+import subprocess
 import sys
 import time
+
 import digitalocean
-import subprocess
 
 
 def test_ssh(drop):

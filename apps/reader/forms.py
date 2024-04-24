@@ -1,17 +1,24 @@
 import datetime
+
 from django import forms
-from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
-from django.db.models import Q
 from django.conf import settings
-from apps.reader.models import Feature
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
+from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
+from dns.resolver import (
+    NXDOMAIN,
+    NoAnswer,
+    NoNameservers,
+    NoResolverConfiguration,
+    query,
+)
+
+from apps.profile.models import RNewUserQueue, blank_authenticate
 from apps.profile.tasks import EmailNewUser
+from apps.reader.models import Feature
 from apps.social.models import MActivity
-from apps.profile.models import blank_authenticate, RNewUserQueue
 from utils import log as logging
-from dns.resolver import query, NXDOMAIN, NoNameservers, NoAnswer
-from dns.resolver import NoResolverConfiguration
 
 
 class LoginForm(forms.Form):

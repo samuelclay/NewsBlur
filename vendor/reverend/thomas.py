@@ -4,9 +4,9 @@
 # License as published by the Free Software Foundation.
 #
 
+import math
 import operator
 import re
-import math
 from functools import reduce
 
 

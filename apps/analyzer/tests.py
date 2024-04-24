@@ -1,14 +1,15 @@
-from django.test.client import Client
-from apps.rss_feeds.models import MStory
-from django.test import TestCase
-from django.core import management
+from itertools import groupby
 
 # from apps.analyzer.classifier import FisherClassifier
 import nltk
-from itertools import groupby
-from apps.analyzer.tokenizer import Tokenizer
-from vendor.reverend.thomas import Bayes
+from django.core import management
+from django.test import TestCase
+from django.test.client import Client
+
 from apps.analyzer.phrase_filter import PhraseFilter
+from apps.analyzer.tokenizer import Tokenizer
+from apps.rss_feeds.models import MStory
+from vendor.reverend.thomas import Bayes
 
 
 class QuadgramCollocationFinder(nltk.collocations.AbstractCollocationFinder):

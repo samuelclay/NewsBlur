@@ -1,6 +1,8 @@
-from apps.analyzer.models import Category, FeatureCategory
-from django.db.models.aggregates import Sum
 import math
+
+from django.db.models.aggregates import Sum
+
+from apps.analyzer.models import Category, FeatureCategory
 
 
 class Classifier:

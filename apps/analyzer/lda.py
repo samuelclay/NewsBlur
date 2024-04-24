@@ -1,11 +1,13 @@
-from bs4 import BeautifulSoup
-from glob import glob
-from collections import defaultdict
-from math import log, exp
-from random import random
 import zlib
-from apps.rss_feeds.models import MStory
+from collections import defaultdict
+from glob import glob
+from math import exp, log
+from random import random
+
+from bs4 import BeautifulSoup
 from nltk import FreqDist
+
+from apps.rss_feeds.models import MStory
 
 
 def lgammln(xx):

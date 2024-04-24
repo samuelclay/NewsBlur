@@ -20,10 +20,10 @@ the Django datastore.
 
 __author__ = "jcgregorio@google.com (Joe Gregorio)"
 
-import oauth2client
 import base64
 import pickle
 
+import oauth2client
 from django.db import models
 from oauth2client.client import Storage as BaseStorage
 

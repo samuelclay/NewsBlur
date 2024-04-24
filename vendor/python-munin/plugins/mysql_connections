@@ -3,6 +3,7 @@
 
 from vendor.munin.mysql import MuninMySQLPlugin
 
+
 class MuninMySQLConnectionsPlugin(MuninMySQLPlugin):
     dbname_in_args = True
     title = "Connections"

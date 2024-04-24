@@ -24,19 +24,19 @@ https://developers.facebook.com/docs/graph-api.
 
 """
 
+import base64
+import binascii
 import hashlib
 import hmac
-import binascii
-import base64
-import requests
 import json
 import re
+
+import requests
 
 try:
     from urllib.parse import parse_qs, urlencode, urlparse
 except ImportError:
-    from urllib.parse import parse_qs, urlparse
-    from urllib.parse import urlencode
+    from urllib.parse import parse_qs, urlencode, urlparse
 
 
 __version__ = "3.2.0-pre"

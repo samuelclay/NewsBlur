@@ -1,6 +1,8 @@
-from django.core.management.base import BaseCommand
-from apps.rss_feeds.models import Feed
 import gc
+
+from django.core.management.base import BaseCommand
+
+from apps.rss_feeds.models import Feed
 
 
 class Command(BaseCommand):

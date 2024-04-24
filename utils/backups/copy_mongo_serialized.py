@@ -2,9 +2,11 @@
 # to another using only pymongo. This circumvents the mongod --repair
 # option, which can fail.
 
-import sys
-import pymongo
 import datetime
+import sys
+
+import pymongo
+
 from apps.rss_feeds.models import Feed
 
 collections = [
