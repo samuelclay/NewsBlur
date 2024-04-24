@@ -1,23 +1,24 @@
+import zlib
+from socket import error as SocketError
+from urllib.parse import urljoin
+
 import requests
 import urllib3
-import zlib
-from vendor import readability
-from simplejson.decoder import JSONDecodeError
-from requests.packages.urllib3.exceptions import LocationParseError
-from socket import error as SocketError
-from mongoengine.queryset import NotUniqueError
+from bs4 import BeautifulSoup
+from django.conf import settings
+from django.contrib.sites.models import Site
+from django.utils.encoding import smart_bytes, smart_str
 from lxml.etree import ParserError
-from vendor.readability.readability import Unparseable
-from utils import log as logging
-from utils.feed_functions import timelimit, TimeoutError
+from mongoengine.queryset import NotUniqueError
 from OpenSSL.SSL import Error as OpenSSLError
 from pyasn1.error import PyAsn1Error
-from django.utils.encoding import smart_str
-from django.conf import settings
-from django.utils.encoding import smart_bytes
-from django.contrib.sites.models import Site
-from bs4 import BeautifulSoup
-from urllib.parse import urljoin
+from requests.packages.urllib3.exceptions import LocationParseError
+from simplejson.decoder import JSONDecodeError
+
+from utils import log as logging
+from utils.feed_functions import TimeoutError, timelimit
+from vendor import readability
+from vendor.readability.readability import Unparseable
 
 BROKEN_URLS = [
     "gamespot.com",

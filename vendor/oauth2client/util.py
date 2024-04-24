@@ -25,9 +25,10 @@ __all__ = [
     "positional",
 ]
 
-import gflags
 import inspect
 import logging
+
+import gflags
 
 logger = logging.getLogger(__name__)
 

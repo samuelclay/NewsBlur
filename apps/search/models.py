@@ -1,19 +1,23 @@
+import datetime
+import html
 import re
 import time
-import datetime
-import pymongo
+
+import celery
 import elasticsearch
+import mongoengine as mongo
+import pymongo
 import redis
 import urllib3
-import celery
-import html
-import mongoengine as mongo
 from django.conf import settings
 from django.contrib.auth.models import User
-from apps.search.tasks import IndexSubscriptionsForSearch
-from apps.search.tasks import FinishIndexSubscriptionsForSearch
-from apps.search.tasks import IndexSubscriptionsChunkForSearch
-from apps.search.tasks import IndexFeedsForSearch
+
+from apps.search.tasks import (
+    FinishIndexSubscriptionsForSearch,
+    IndexFeedsForSearch,
+    IndexSubscriptionsChunkForSearch,
+    IndexSubscriptionsForSearch,
+)
 from utils import log as logging
 from utils.feed_functions import chunks
 
@@ -57,8 +61,8 @@ class MUserSearch(mongo.Document):
 
     # Should be run as a background task
     def index_subscriptions_for_search(self):
-        from apps.rss_feeds.models import Feed
         from apps.reader.models import UserSubscription
+        from apps.rss_feeds.models import Feed
 
         SearchStory.create_elasticsearch_mapping()
 
@@ -169,8 +173,8 @@ class MUserSearch(mongo.Document):
                 print(" ****> Error on search removal: %s" % e)
 
     def remove(self):
-        from apps.rss_feeds.models import Feed
         from apps.reader.models import UserSubscription
+        from apps.rss_feeds.models import Feed
 
         user = User.objects.get(pk=self.user_id)
         subscriptions = UserSubscription.objects.filter(user=self.user_id)
@@ -680,6 +684,7 @@ class SearchFeed:
     @classmethod
     def export_csv(cls):
         import djqscsv
+
         from apps.rss_feeds.models import Feed
 
         qs = Feed.objects.filter(num_subscribers__gte=20).values(

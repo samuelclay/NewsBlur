@@ -1,10 +1,12 @@
-from django.conf import settings
-from utils import log as logging
-from apps.statistics.rstats import round_time
-import pickle
 import base64
+import pickle
 import time
+
 import redis
+from django.conf import settings
+
+from apps.statistics.rstats import round_time
+from utils import log as logging
 
 IGNORE_PATHS = [
     "/_haproxychk",

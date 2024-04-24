@@ -1,9 +1,10 @@
-from flask import Flask, render_template, Response
-from newsblur_web import settings
-import sentry_sdk
-from sentry_sdk.integrations.flask import FlaskIntegration
 import requests
+import sentry_sdk
+from flask import Flask, Response, render_template
 from requests.auth import HTTPBasicAuth
+from sentry_sdk.integrations.flask import FlaskIntegration
+
+from newsblur_web import settings
 
 if settings.FLASK_SENTRY_DSN is not None:
     sentry_sdk.init(

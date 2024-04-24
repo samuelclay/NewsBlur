@@ -1,13 +1,15 @@
-import os
-from django.test.client import Client
-from django.test import TestCase
-from django.contrib.auth.models import User
-from django.urls import reverse
-from apps.reader.models import UserSubscription, UserSubscriptionFolders
-from apps.rss_feeds.models import merge_feeds, DuplicateFeed, Feed
-from utils import json_functions as json_functions
 import json
+import os
+
+from django.contrib.auth.models import User
 from django.core.management import call_command
+from django.test import TestCase
+from django.test.client import Client
+from django.urls import reverse
+
+from apps.reader.models import UserSubscription, UserSubscriptionFolders
+from apps.rss_feeds.models import DuplicateFeed, Feed, merge_feeds
+from utils import json_functions as json_functions
 
 
 class Test_Import(TestCase):

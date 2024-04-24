@@ -1,40 +1,59 @@
-import re
-import stripe
-import requests
 import datetime
+import json as python_json
+import re
+
 import dateutil
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
-from django.contrib.auth import logout as logout_user
+import requests
+import stripe
+from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login as login_user
+from django.contrib.auth import logout as logout_user
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
+from django.core.mail import mail_admins
 from django.db.models.aggregates import Sum
 from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.sites.models import Site
-from django.contrib.auth.models import User
-from django.contrib.admin.views.decorators import staff_member_required
-from django.urls import reverse
 from django.shortcuts import render
-from django.core.mail import mail_admins
-from django.conf import settings
-from apps.profile.models import Profile, PaymentHistory, RNewUserQueue, MRedeemedCode, MGiftCode, PaypalIds
-from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory
-from apps.profile.forms import StripePlusPaymentForm, PLANS, DeleteAccountForm
-from apps.profile.forms import ForgotPasswordForm, ForgotPasswordReturnForm, AccountSettingsForm
-from apps.profile.forms import RedeemCodeForm
-from apps.reader.forms import SignupForm, LoginForm
-from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
-from apps.social.models import MSocialServices, MActivity, MSocialProfile
-from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
-from utils import json_functions as json
-import json as python_json
-from utils.user_functions import ajax_login_required
-from utils.view_functions import render_to, is_true
-from utils.user_functions import get_user
-from utils import log as logging
-from vendor.paypalapi.exceptions import PayPalAPIResponseError
+from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.views.decorators.http import require_POST
 from paypal.standard.forms import PayPalPaymentsForm
 from paypal.standard.ipn.views import ipn as paypal_standard_ipn
+
+from apps.analyzer.models import (
+    MClassifierAuthor,
+    MClassifierFeed,
+    MClassifierTag,
+    MClassifierTitle,
+)
+from apps.profile.forms import (
+    PLANS,
+    AccountSettingsForm,
+    DeleteAccountForm,
+    ForgotPasswordForm,
+    ForgotPasswordReturnForm,
+    RedeemCodeForm,
+    StripePlusPaymentForm,
+)
+from apps.profile.models import (
+    MGiftCode,
+    MRedeemedCode,
+    PaymentHistory,
+    PaypalIds,
+    Profile,
+    RNewUserQueue,
+)
+from apps.reader.forms import LoginForm, SignupForm
+from apps.reader.models import RUserStory, UserSubscription, UserSubscriptionFolders
+from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
+from apps.social.models import MActivity, MSocialProfile, MSocialServices
+from utils import json_functions as json
+from utils import log as logging
+from utils.user_functions import ajax_login_required, get_user
+from utils.view_functions import is_true, render_to
+from vendor.paypalapi.exceptions import PayPalAPIResponseError
 
 INTEGER_FIELD_PREFS = ("feed_pane_size", "days_of_unread")
 SINGLE_FIELD_PREFS = (

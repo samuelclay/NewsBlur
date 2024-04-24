@@ -1,6 +1,7 @@
-import memcache
 import re
 import sys
+
+import memcache
 from settings import CACHE_BACKEND
 
 # gfranxman

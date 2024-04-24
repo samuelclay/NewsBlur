@@ -1,7 +1,8 @@
-from PIL import Image
+from pprint import pprint
+
 import scipy
 import scipy.cluster
-from pprint import pprint
+from PIL import Image
 
 image = Image.open("logo.png")
 NUM_CLUSTERS = 5

@@ -1,56 +1,63 @@
-import difflib
-import bson
-import requests
+import base64
 import datetime
-import time
+import difflib
+import hashlib
+import html
+import math
 import random
 import re
-import math
-import mongoengine as mongo
-import zlib
-import hashlib
-import redis
-import base64
-import pymongo
-import html
+import time
 import urllib.parse
+import zlib
 from collections import defaultdict
 from operator import itemgetter
-from bson.objectid import ObjectId
-from bs4 import BeautifulSoup
 
-# from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
-from django.db import models
-from django.db import IntegrityError
+import bson
+import mongoengine as mongo
+import pymongo
+import redis
+import requests
+from bs4 import BeautifulSoup
+from bson.objectid import ObjectId
 from django.conf import settings
-from django.db.models.query import QuerySet
-from django.db.utils import DatabaseError
-from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+
+# from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
+from django.db import IntegrityError, models
+from django.db.models.query import QuerySet
+from django.db.utils import DatabaseError
 from django.template.defaultfilters import slugify
-from django.utils.encoding import smart_bytes, smart_str
-from django.utils.encoding import DjangoUnicodeDecodeError
-from mongoengine.queryset import OperationError, Q, NotUniqueError
+from django.urls import reverse
+from django.utils.encoding import DjangoUnicodeDecodeError, smart_bytes, smart_str
 from mongoengine.errors import ValidationError
-from vendor.timezones.utilities import localtime_for_timezone
-from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds, ScheduleCountTagsForUser
+from mongoengine.queryset import NotUniqueError, OperationError, Q
+
+from apps.rss_feeds.tasks import PushFeeds, ScheduleCountTagsForUser, UpdateFeeds
 from apps.rss_feeds.text_importer import TextImporter
-from apps.search.models import SearchStory, SearchFeed
+from apps.search.models import SearchFeed, SearchStory
 from apps.statistics.rstats import RStats
+from utils import feedfinder_forman, feedfinder_pilgrim
 from utils import json_functions as json
-from utils import feedfinder_forman
-from utils import feedfinder_pilgrim
-from utils import urlnorm
 from utils import log as logging
+from utils import urlnorm
+from utils.feed_functions import (
+    TimeoutError,
+    levenshtein_distance,
+    relative_timesince,
+    seconds_timesince,
+    timelimit,
+)
 from utils.fields import AutoOneToOneField
-from utils.feed_functions import levenshtein_distance
-from utils.feed_functions import timelimit, TimeoutError
-from utils.feed_functions import relative_timesince
-from utils.feed_functions import seconds_timesince
-from utils.story_functions import strip_tags, htmldiff, strip_comments, strip_comments__lxml
-from utils.story_functions import prep_for_search
-from utils.story_functions import create_imageproxy_signed_url
+from utils.story_functions import (
+    create_imageproxy_signed_url,
+    htmldiff,
+    prep_for_search,
+    strip_comments,
+    strip_comments__lxml,
+    strip_tags,
+)
+from vendor.timezones.utilities import localtime_for_timezone
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = list(range(4))
 
@@ -1223,7 +1230,12 @@ class Feed(models.Model):
             self.save(update_fields=["average_stories_per_month"])
 
     def save_classifier_counts(self):
-        from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
+        from apps.analyzer.models import (
+            MClassifierAuthor,
+            MClassifierFeed,
+            MClassifierTag,
+            MClassifierTitle,
+        )
 
         def calculate_scores(cls, facet):
             map_f = """

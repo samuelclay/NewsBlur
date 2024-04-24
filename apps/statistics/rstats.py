@@ -1,7 +1,8 @@
-import redis
 import datetime
 import re
 from collections import defaultdict
+
+import redis
 from django.conf import settings
 
 

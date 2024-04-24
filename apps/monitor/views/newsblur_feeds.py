@@ -1,8 +1,8 @@
-from django.views import View
 from django.shortcuts import render
+from django.views import View
 
-from apps.rss_feeds.models import Feed
 from apps.reader.models import UserSubscription
+from apps.rss_feeds.models import Feed
 from apps.social.models import MSocialProfile, MSocialSubscription
 from apps.statistics.models import MStatistics
 

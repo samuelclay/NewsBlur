@@ -4,15 +4,14 @@
 # License as published by the Free Software Foundation.
 #
 
-from tkinter import *
-import tkinter.filedialog
-import tkinter.simpledialog
-import tkinter.messagebox
-
 import os
+import tkinter.filedialog
+import tkinter.messagebox
+import tkinter.simpledialog
+from tkinter import *
 
-from .util import Command, StatusBar, Notebook
 from .tester import TestView
+from .util import Command, Notebook, StatusBar
 
 
 class PoolView(Frame):

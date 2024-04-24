@@ -1,7 +1,7 @@
 import re
-import chardet
 import sys
 
+import chardet
 
 RE_CHARSET = re.compile(rb'<meta.*?charset=["\']*(.+?)["\'>]', flags=re.I)
 RE_PRAGMA = re.compile(rb'<meta.*?content=["\']*;?charset=(.+?)["\'>]', flags=re.I)

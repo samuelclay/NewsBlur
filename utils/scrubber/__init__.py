@@ -11,9 +11,11 @@ __version__ = "1.6.1"
 __license__ = "BSD"
 __all__ = ["Scrubber", "SelectiveScriptScrubber", "ScrubberWarning", "UnapprovedJavascript", "urlize"]
 
-import re, string
-from urllib.parse import urljoin
+import re
+import string
 from itertools import chain
+from urllib.parse import urljoin
+
 from bs4 import BeautifulSoup, Comment
 
 

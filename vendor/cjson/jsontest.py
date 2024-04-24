@@ -17,11 +17,11 @@
 ## Added unit tests for unicode encoding/decoding.
 ## More realistic, grid like data used for performance tests.
 
+import datetime
+import math
 import re
 import time
-import math
 import unittest
-import datetime
 
 import cjson
 

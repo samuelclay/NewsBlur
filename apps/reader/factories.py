@@ -1,10 +1,11 @@
 import factory
-from factory.fuzzy import FuzzyAttribute
 from factory.django import DjangoModelFactory
+from factory.fuzzy import FuzzyAttribute
 from faker import Faker
-from apps.rss_feeds.factories import FeedFactory
-from apps.reader.models import Feature, UserSubscription, UserSubscriptionFolders
+
 from apps.profile.factories import UserFactory
+from apps.reader.models import Feature, UserSubscription, UserSubscriptionFolders
+from apps.rss_feeds.factories import FeedFactory
 
 fake = Faker()
 

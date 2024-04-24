@@ -1,6 +1,12 @@
-from django.views import View
 from django.shortcuts import render
-from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
+from django.views import View
+
+from apps.analyzer.models import (
+    MClassifierAuthor,
+    MClassifierFeed,
+    MClassifierTag,
+    MClassifierTitle,
+)
 
 
 class Classifiers(View):

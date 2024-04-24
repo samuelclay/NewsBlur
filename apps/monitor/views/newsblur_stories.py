@@ -1,7 +1,7 @@
-from django.views import View
 from django.shortcuts import render
-from apps.rss_feeds.models import MStory, MStarredStory
-from apps.rss_feeds.models import MStory, MStarredStory
+from django.views import View
+
+from apps.rss_feeds.models import MStarredStory, MStory
 
 
 class Stories(View):

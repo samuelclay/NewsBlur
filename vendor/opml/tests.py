@@ -13,8 +13,8 @@
 ##############################################################################
 
 import re
-
 import unittest
+
 import zope.testing
 from zope.testing import doctest, renormalizing
 

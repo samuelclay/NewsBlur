@@ -1,7 +1,8 @@
-import time
-from locust import HttpUser, task, between
 import os
+import time
+
 import requests
+from locust import HttpUser, between, task
 
 
 class NB_PerfTest(HttpUser):

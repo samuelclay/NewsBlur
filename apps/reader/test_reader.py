@@ -1,9 +1,10 @@
-from utils import json_functions as json
-from django.test.client import Client
-from django.test import TestCase
-from django.urls import reverse
 from django.conf import settings
+from django.test import TestCase
+from django.test.client import Client
+from django.urls import reverse
 from mongoengine.connection import connect, disconnect
+
+from utils import json_functions as json
 
 
 class Test_Reader(TestCase):

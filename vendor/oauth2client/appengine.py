@@ -20,27 +20,26 @@ Utilities for making it easier to use OAuth 2.0 on Google App Engine.
 __author__ = "jcgregorio@google.com (Joe Gregorio)"
 
 import base64
-import httplib2
 import logging
 import pickle
 import time
 
-from . import clientsecrets
-
-from google.appengine.api import app_identity
-from google.appengine.api import users
-from google.appengine.ext import db
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp.util import login_required
-from google.appengine.ext.webapp.util import run_wsgi_app
+import httplib2
+from google.appengine.api import app_identity, users
+from google.appengine.ext import db, webapp
+from google.appengine.ext.webapp.util import login_required, run_wsgi_app
 from oauth2client import util
 from oauth2client.anyjson import simplejson
-from oauth2client.client import AccessTokenRefreshError
-from oauth2client.client import AssertionCredentials
-from oauth2client.client import Credentials
-from oauth2client.client import Flow
-from oauth2client.client import OAuth2WebServerFlow
-from oauth2client.client import Storage
+from oauth2client.client import (
+    AccessTokenRefreshError,
+    AssertionCredentials,
+    Credentials,
+    Flow,
+    OAuth2WebServerFlow,
+    Storage,
+)
+
+from . import clientsecrets
 
 logger = logging.getLogger(__name__)
 

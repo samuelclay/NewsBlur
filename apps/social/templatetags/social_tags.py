@@ -1,5 +1,6 @@
 from django import template
 from django.conf import settings
+
 from apps.social.models import MSocialProfile
 
 register = template.Library()

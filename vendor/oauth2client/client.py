@@ -20,25 +20,30 @@ Tools for interacting with OAuth 2.0 protected resources.
 __author__ = "jcgregorio@google.com (Joe Gregorio)"
 
 import base64
-import vendor.oauth2client.clientsecrets
 import copy
 import datetime
-import httplib2
 import logging
 import os
 import sys
 import time
-import urllib.request, urllib.parse, urllib.error
+import urllib.error
+import urllib.parse
+import urllib.request
 from urllib.parse import urlparse
 
+import httplib2
 from oauth2client import util
 from oauth2client.anyjson import simplejson
 
+import vendor.oauth2client.clientsecrets
+
 HAS_OPENSSL = False
 try:
-    from vendor.oauth2client.crypt import Signer
-    from vendor.oauth2client.crypt import make_signed_jwt
-    from vendor.oauth2client.crypt import verify_signed_jwt_with_certs
+    from vendor.oauth2client.crypt import (
+        Signer,
+        make_signed_jwt,
+        verify_signed_jwt_with_certs,
+    )
 
     HAS_OPENSSL = True
 except ImportError:

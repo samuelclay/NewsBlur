@@ -1,15 +1,17 @@
-from django.core.management.base import BaseCommand
+import datetime
+import socket
+from optparse import make_option
+
+import django
 from django.conf import settings
 from django.contrib.auth.models import User
-from apps.statistics.models import MStatistics
-from apps.rss_feeds.models import Feed
+from django.core.management.base import BaseCommand
+
 from apps.reader.models import UserSubscription
-from optparse import make_option
+from apps.rss_feeds.models import Feed
+from apps.statistics.models import MStatistics
 from utils import feed_fetcher
 from utils.management_functions import daemonize
-import django
-import socket
-import datetime
 
 
 class Command(BaseCommand):

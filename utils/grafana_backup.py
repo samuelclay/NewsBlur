@@ -1,4 +1,5 @@
 import json
+
 import requests
 
 with open("/srv/secrets-newsblur/keys/grafana_api_key", "r") as file:

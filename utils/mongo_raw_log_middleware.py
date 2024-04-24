@@ -1,14 +1,16 @@
-from django.core.exceptions import MiddlewareNotUsed
-from django.conf import settings
-from django.db import connection
-from pymongo.mongo_client import MongoClient
-from pymongo.mongo_replica_set_client import MongoReplicaSetClient
-from time import time
-from utils import log as logging
 import struct
+from time import time
+
 import bson
 import pymongo
 from bson.errors import InvalidBSON
+from django.conf import settings
+from django.core.exceptions import MiddlewareNotUsed
+from django.db import connection
+from pymongo.mongo_client import MongoClient
+from pymongo.mongo_replica_set_client import MongoReplicaSetClient
+
+from utils import log as logging
 
 
 class MongoDumpMiddleware(object):

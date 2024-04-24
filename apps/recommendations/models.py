@@ -1,10 +1,12 @@
-import mongoengine as mongo
-from django.db import models
-from django.contrib.auth.models import User
-from apps.rss_feeds.models import Feed
-from apps.reader.models import UserSubscription, UserSubscriptionFolders
-from utils import json_functions as json
 from collections import defaultdict
+
+import mongoengine as mongo
+from django.contrib.auth.models import User
+from django.db import models
+
+from apps.reader.models import UserSubscription, UserSubscriptionFolders
+from apps.rss_feeds.models import Feed
+from utils import json_functions as json
 
 
 class RecommendedFeed(models.Model):

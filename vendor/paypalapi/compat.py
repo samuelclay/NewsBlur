@@ -79,12 +79,6 @@ is_solaris = "solar==" in str(sys.platform).lower()  # Complete guess.
 
 
 # noinspection PyUnresolvedReferences,PyCompatibility
-from urllib.parse import urlparse, urlunparse, urljoin, urlsplit, urlencode, quote, unquote
-
-# noinspection PyUnresolvedReferences,PyCompatibility
-from urllib.request import parse_http_list
-
-# noinspection PyUnresolvedReferences,PyCompatibility
 from http import cookiejar as cookielib
 
 # noinspection PyUnresolvedReferences,PyCompatibility
@@ -92,3 +86,17 @@ from http.cookies import Morsel
 
 # noinspection PyUnresolvedReferences,PyCompatibility
 from io import StringIO
+
+# noinspection PyUnresolvedReferences,PyCompatibility
+from urllib.parse import (
+    quote,
+    unquote,
+    urlencode,
+    urljoin,
+    urlparse,
+    urlsplit,
+    urlunparse,
+)
+
+# noinspection PyUnresolvedReferences,PyCompatibility
+from urllib.request import parse_http_list

@@ -19,14 +19,13 @@ Utilities for making it easier to use OAuth 2.0 on Google Compute Engine.
 
 __author__ = "jcgregorio@google.com (Joe Gregorio)"
 
-import httplib2
 import logging
-import uritemplate
 
+import httplib2
+import uritemplate
 from oauth2client import util
 from oauth2client.anyjson import simplejson
-from oauth2client.client import AccessTokenRefreshError
-from oauth2client.client import AssertionCredentials
+from oauth2client.client import AccessTokenRefreshError, AssertionCredentials
 
 logger = logging.getLogger(__name__)
 
