@@ -5,6 +5,7 @@ import datetime
 import pytz
 import functools
 
+
 def localtime_for_timezone(value, timezone):
     """
     Given a ``datetime.datetime`` object in UTC and a timezone represented as
@@ -39,5 +40,6 @@ def coerce_timezone_value(value):
 def validate_timezone_max_length(max_length, zones):
     def reducer(x, y):
         return x and (len(y) <= max_length)
+
     if not functools.reduce(reducer, zones, True):
         raise Exception("timezones.fields.TimeZoneField MAX_TIMEZONE_LENGTH is too small")

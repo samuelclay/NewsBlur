@@ -14,24 +14,31 @@ def get_host_ips_from_group(group_name):
     :param inventory_base_path: Base path to the inventory directories. Defaults to the path in ansible.cfg.
     :return: A list of IP addresses belonging to the specified group.
     """
-    cmd = ['ansible-inventory', '-i', '/srv/newsblur/ansible/inventories/hetzner.ini', '-i', '/srv/newsblur/ansible/inventories/hetzner.yml', '--list']
-    
+    cmd = [
+        "ansible-inventory",
+        "-i",
+        "/srv/newsblur/ansible/inventories/hetzner.ini",
+        "-i",
+        "/srv/newsblur/ansible/inventories/hetzner.yml",
+        "--list",
+    ]
+
     try:
         # Execute the ansible-inventory command
         result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
-        
+
         # Parse the JSON output from ansible-inventory
         inventory_data = json.loads(result.stdout)
-        
+
         host_ips = []
         # Check if the group exists
         if group_name in inventory_data:
             # Get the list of hosts in the specified group
-            if 'hosts' in inventory_data[group_name]:
-                for host in inventory_data[group_name]['hosts']:
+            if "hosts" in inventory_data[group_name]:
+                for host in inventory_data[group_name]["hosts"]:
                     # Fetch the host details, specifically looking for the ansible_host variable for the IP
-                    host_vars = inventory_data['_meta']['hostvars'][host]
-                    ip_address = host_vars.get('ansible_host', None)
+                    host_vars = inventory_data["_meta"]["hostvars"][host]
+                    ip_address = host_vars.get("ansible_host", None)
                     if ip_address:
                         host_ips.append(ip_address)
                     else:
@@ -50,16 +57,19 @@ TOKEN_FILE = "/srv/secrets-newsblur/keys/digital_ocean.token"
 
 with open(TOKEN_FILE) as f:
     token = f.read().strip()
-    os.environ['DO_API_TOKEN'] = token
+    os.environ["DO_API_TOKEN"] = token
 
 manager = digitalocean.Manager(token=token)
 my_droplets = manager.get_all_droplets()
 consul_manager_droplets = [d for d in my_droplets if "db-consul" in d.name]
 
 # Use ansible-inventory to get the consul-manager ip
-group_name = 'hconsul'
+group_name = "hconsul"
 hetzner_hosts = get_host_ips_from_group(group_name)
-consul_manager_ip_address = ','.join([f"\"{droplet.ip_address}\"" for droplet in consul_manager_droplets] + [f"\"{host}\"" for host in hetzner_hosts])
+consul_manager_ip_address = ",".join(
+    [f'"{droplet.ip_address}"' for droplet in consul_manager_droplets]
+    + [f'"{host}"' for host in hetzner_hosts]
+)
 
 print(consul_manager_ip_address)
 

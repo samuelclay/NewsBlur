@@ -6,9 +6,9 @@
 
 from tkinter import *
 
+
 class StatusBar(Frame):
-    """Courtesy of Fredrik Lundh.
-    """
+    """Courtesy of Fredrik Lundh."""
 
     def __init__(self, master):
         Frame.__init__(self, master)
@@ -25,15 +25,16 @@ class StatusBar(Frame):
 
     def log(self, text, clear=0):
         # Clear after clear seconds
-        self.set('%s', text)
+        self.set("%s", text)
         if clear:
             self.label.after(clear * 1000, self.clear)
 
-    
+
 class Command:
     """Courtesy of Danny Yoo
     http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/66521
     """
+
     def __init__(self, callback, *args, **kwargs):
         self.callback = callback
         self.args = args
@@ -41,12 +42,13 @@ class Command:
 
     def __call__(self):
         return self.callback(*self.args, **self.kwargs)
-    
+
+
 class Notebook:
     """Courtesy of Iuri Wickert
     http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/188537
     """
-    
+
     # initialization. receives the master widget
     # reference and the notebook orientation
     def __init__(self, master, side=LEFT):
@@ -66,20 +68,23 @@ class Notebook:
         self.rb_fr.pack(side=side, fill=BOTH)
         self.screen_fr = Frame(master, borderwidth=2, relief=RIDGE)
         self.screen_fr.pack(fill=BOTH)
-            
 
     # return a master frame reference for the external frames (screens)
     def __call__(self):
         return self.screen_fr
 
-            
     # add a new frame (screen) to the (bottom/left of the) notebook
     def add_screen(self, fr, title):
-        b = Radiobutton(self.rb_fr, text=title, indicatoron=0, \
-            variable=self.choice, value=self.count, \
-            command=lambda: self.display(fr))
+        b = Radiobutton(
+            self.rb_fr,
+            text=title,
+            indicatoron=0,
+            variable=self.choice,
+            value=self.count,
+            command=lambda: self.display(fr),
+        )
         b.pack(fill=BOTH, side=self.side)
-        
+
         # ensures the first frame will be
         # the first selected/enabled
         if not self.active_fr:
@@ -87,12 +92,10 @@ class Notebook:
             self.active_fr = fr
 
         self.count += 1
-            
-            
-    # hides the former active frame and shows 
+
+    # hides the former active frame and shows
     # another one, keeping its reference
     def display(self, fr):
         self.active_fr.forget()
         fr.pack(fill=BOTH, expand=1)
         self.active_fr = fr
-

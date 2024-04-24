@@ -4,13 +4,12 @@ from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifier
 
 
 class Classifiers(View):
-
     def get(self, request):
         data = {
-            'feeds': MClassifierFeed.objects._collection.count(),
-            'authors': MClassifierAuthor.objects._collection.count(),
-            'tags': MClassifierTag.objects._collection.count(),
-            'titles': MClassifierTitle.objects._collection.count(),
+            "feeds": MClassifierFeed.objects._collection.count(),
+            "authors": MClassifierAuthor.objects._collection.count(),
+            "tags": MClassifierTag.objects._collection.count(),
+            "titles": MClassifierTitle.objects._collection.count(),
         }
 
         chart_name = "classifiers"
@@ -24,5 +23,4 @@ class Classifiers(View):
             "chart_name": chart_name,
             "chart_type": chart_type,
         }
-        return render(request, 'monitor/prometheus_data.html', context, content_type="text/plain")
-
+        return render(request, "monitor/prometheus_data.html", context, content_type="text/plain")
