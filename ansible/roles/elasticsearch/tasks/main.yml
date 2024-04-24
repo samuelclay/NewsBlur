@@ -1,4 +1,18 @@
 ---
+- name: Set facts for secondary elasticsearch servers
+  set_fact:
+    elasticsearch_secondary: no
+  tags:
+    - always
+
+- name: Set facts for secondary elasticsearch servers
+  set_fact:
+    elasticsearch_secondary: yes
+  # when: inventory_hostname not in ["db-elasticsearch"]
+  when: inventory_hostname not in ["hdb-elasticsearch-1"]
+  tags:
+    - always
+
 - name: Permissions for elasticsearch
   become: yes
   file:
@@ -40,6 +54,7 @@
       - name: newsblurnet
         aliases: 
           - elasticsearch
+    user: "{{ ansible_effective_user_id|int }}:{{ ansible_effective_group_id|int }}"
     volumes:
       - /srv/newsblur/docker/volumes/elasticsearch:/usr/share/elasticsearch/data
       - /var/log/elasticsearch/:/var/log/elasticsearch/

@@ -1,6 +1,10 @@
 {
     "service": {
+        {% if not elasticsearch_secondary %}
         "name": "db-elasticsearch",
+        {% else %}
+        "name": "db-elasticsearch-staging",
+        {% endif %}
         "tags": [
             "db"
         ],

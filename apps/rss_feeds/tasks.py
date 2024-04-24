@@ -2,13 +2,16 @@ import datetime
 import os
 import shutil
 import time
+
 import redis
-from newsblur_web.celeryapp import app
 from celery.exceptions import SoftTimeLimitExceeded
-from utils import log as logging
 from django.conf import settings
+
 from apps.profile.middleware import DBProfilerMiddleware
+from newsblur_web.celeryapp import app
+from utils import log as logging
 from utils.redis_raw_log_middleware import RedisDumpMiddleware
+
 FEED_TASKING_MAX = 10000
 
 @app.task(name='task-feeds')
@@ -45,6 +48,7 @@ def TaskFeeds():
     else:
         logging.debug(" ---> ~SN~FBToo many tasked feeds. ~SB%s~SN tasked." % tasked_feeds_size)
         active_count = 0
+        feeds = []
     
     logging.debug(" ---> ~SN~FBTasking %s feeds took ~SB%s~SN seconds (~SB%s~SN/~FG%s~FB~SN/%s tasked/queued/scheduled)" % (
                     active_count,

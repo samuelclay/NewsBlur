@@ -20,7 +20,7 @@
       REDIS_SERVER = 'db-redis-pubsub.service.nyc1.consul';
     }
     SECURE = !!process.env.NODE_SSL;
-    REDIS_PORT = ENV_DOCKER ? 6579 : 6379;
+    REDIS_PORT = ENV_DOCKER ? 6579 : 6383;
     // client = redis.createClient 6379, REDIS_SERVER
 
     // RedisStore  = require 'socket.io/lib/stores/redis'
