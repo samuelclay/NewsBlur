@@ -19,6 +19,7 @@ certbot.conf
 task_env.py
 app_env.py
 data/
+api/ip_addresses.txt
 .prom_cache
 config/certificates
 **/*.xcuserstate
@@ -53,10 +54,12 @@ docker/haproxy/haproxy.consul.cfg
 docker/nginx/nginx.consul.conf
 docker/prometheus/prometheus.yml
 docker/redis/redis_replica.conf
+docker/redis/redis_*_replica.conf
 docker/postgres/postgres.conf
 
 # Local configuration file (sdk path, etc)
 /originals
+/node/originals
 media/safari/NewsBlur.safariextz
 
 # IDE files
@@ -66,3 +69,4 @@ media/safari/NewsBlur.safariextz
 *.tfstate*
 .terraform*
 grafana.ini
+apps/api/ip_addresses.txt

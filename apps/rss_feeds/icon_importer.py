@@ -1,32 +1,35 @@
-import urllib.request
+import base64
+import datetime
+import gzip
+import http.client
+import operator
+import struct
 import urllib.error
 import urllib.parse
+import urllib.request
+from io import BytesIO
+from socket import error as SocketError
+
+import boto3
 import lxml.html
 import numpy
-import scipy
-import scipy.misc
-import scipy.cluster
-import struct
-import operator
-import gzip
-import datetime
 import requests
-import base64
-import http.client
-from PIL import BmpImagePlugin, PngImagePlugin, Image
-from socket import error as SocketError
-import boto3
-from io import BytesIO
+import scipy
+import scipy.cluster
+import scipy.misc
 from django.conf import settings
-from django.http import HttpResponse
 from django.contrib.sites.models import Site
-from apps.rss_feeds.models import MFeedPage, MFeedIcon
-from utils.facebook_fetcher import FacebookFetcher
-from utils import log as logging
-from utils.feed_functions import timelimit, TimeoutError
-from OpenSSL.SSL import Error as OpenSSLError, SESS_CACHE_NO_INTERNAL_STORE
+from django.http import HttpResponse
+from OpenSSL.SSL import SESS_CACHE_NO_INTERNAL_STORE
+from OpenSSL.SSL import Error as OpenSSLError
+from PIL import BmpImagePlugin, Image, PngImagePlugin
 from pyasn1.error import PyAsn1Error
 from requests.packages.urllib3.exceptions import LocationParseError
+
+from apps.rss_feeds.models import MFeedIcon, MFeedPage
+from utils import log as logging
+from utils.facebook_fetcher import FacebookFetcher
+from utils.feed_functions import TimeoutError, timelimit
 
 
 class IconImporter(object):
@@ -206,8 +209,10 @@ class IconImporter(object):
         if self.page_data:
             content = self.page_data
         elif settings.BACKED_BY_AWS.get('pages_on_node'):
-            domain = Site.objects.get_current().domain
-            url = "https://%s/original_page/%s" % (
+            domain = "node-page.service.consul:8008"
+            if settings.DOCKERBUILD:
+                domain = "node:8008"
+            url = "http://%s/original_page/%s" % (
                 domain,
                 self.feed.pk,
             )

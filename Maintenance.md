@@ -176,3 +176,17 @@ Provision a new redis server, replicate the data, take newsblur down for mainten
    aps -l db-redis-story1,db-redis-story2 -t consul
    make maintenance_off
    make task
+
+### Switching to a new postgres server
+
+   # Old
+   docker exec -it -u postgres postgres psql -c "SELECT pg_start_backup('label', true)"
+   # New
+   ## Install `openssh-client` and `rsync`
+   docker stop postgres
+   rsync -Pav --stats --progress db-postgres.service.consul:/srv/newsblur/docker/volumes/postgres/data /srv/newsblur/docker/volumes/postgres/ --exclude postmaster.pid
+   docker start postgres
+   # New
+   docker exec -it -u postgres postgres /usr/lib/postgresql/13/bin/pg_ctl -D /var/lib/postgresql/data promote
+   # Old
+   docker exec -it -u postgres postgres psql -c "SELECT pg_stop_backup()"

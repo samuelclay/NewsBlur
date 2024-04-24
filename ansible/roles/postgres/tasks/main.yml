@@ -1,4 +1,17 @@
 ---
+- name: Set facts for all postgres servers
+  set_fact:
+    postgres_secondary: no
+  tags:
+    - always
+
+- name: Set facts for secondary postgres servers
+  set_fact:
+    postgres_secondary: yes
+  # when: inventory_hostname not in ["db-postgres2"]
+  when: inventory_hostname not in ["hdb-postgres-1"]
+  tags:
+    - always
 
 - name: Template postgresql-13.conf file
   template:
@@ -6,24 +19,67 @@
     dest: /srv/newsblur/docker/postgres/postgres.conf
   notify: reload postgres
   register: updated_config
-
+  
 - name: Create Postgres docker volumes with correct permissions
   become: yes
   file:
-    path: "{{ item  }}"
+    path: "{{ item }}"
     state: directory
     recurse: yes
-    owner: "{{ ansible_effective_user_id|int }}"
-    group: "{{ ansible_effective_group_id|int }}"  
+    owner: 999
+    group: 999
   with_items:
     - /srv/newsblur/docker/volumes/postgres/archive
     - /srv/newsblur/docker/volumes/postgres/backups
     - /srv/newsblur/docker/volumes/postgres/data
 
+- name: Template postgres secondaries with empty standby.signal file
+  become: yes
+  copy:
+    dest: /srv/newsblur/docker/volumes/postgres/data/standby.signal
+    content: ""
+    owner: 999
+    group: 999
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-postgres-secondary', 'hdb-postgres']
+
+- name: Copy SSH private key
+  become: yes
+  copy:
+    src: /srv/secrets-newsblur/keys/postgres.key
+    dest: /home/nb/.ssh/id_rsa
+    owner: 999
+    group: 999
+    mode: "0600"
+
+- name: Copy SSH public key
+  become: yes
+  copy:
+    src: /srv/secrets-newsblur/keys/postgres.key.pub
+    dest: /home/nb/.ssh/id_rsa.pub
+    owner: 999
+    group: 999
+    mode: "0600"
+
+- name: Add SSH public key to authorized keys
+  authorized_key:
+    user: "nb"
+    state: present
+    key: "{{ lookup('file', '/srv/secrets-newsblur/keys/postgres.key.pub') }}"
+
+- name: Build the custom postgres docker image
+  docker_image:
+    name: newsblur/postgres:13
+    source: build
+    build:
+      path: /srv/newsblur/docker/postgres/
+    force_tag: yes
+    state: present
+
 - name: Start postgres docker containers
+  become: yes
   docker_container:
     name: postgres
-    image: postgres:13
+    image: newsblur/postgres:13
     state: started
     container_default_behavior: no_defaults
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
@@ -35,11 +91,11 @@
     network_mode: default
     networks:
       - name: newsblurnet
-        aliases: 
+        aliases:
           - postgres
+    user: "999:999"
     ports:
       - 5432:5432
-    user: 1000:1001
     volumes:
       - /srv/newsblur/docker/volumes/postgres/data:/var/lib/postgresql/data
       - /srv/newsblur/docker/volumes/postgres/archive:/var/lib/postgresql/archive
@@ -47,15 +103,16 @@
       - /srv/newsblur/docker/postgres/postgres.conf:/etc/postgresql/postgresql.conf
       - /srv/newsblur/docker/postgres/postgres_hba-13.conf:/etc/postgresql/pg_hba.conf
       - /srv/newsblur/docker/postgres/postgres_ident-13.conf:/etc/postgresql/pg_ident.conf
+      - /home/nb/.ssh/id_rsa:/var/lib/postgresql/.ssh/id_rsa
     restart_policy: unless-stopped
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-postgres-primary', 'db-postgres']
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-postgres-primary', 'db-postgres', 'hdb-postgres', 'hdb-postgres-secondary']
 
-- name: Change ownership in postgres docker container
-  become: yes
-  command: >
-    docker exec postgres chown -fR postgres.postgres /var/lib/postgresql
-  ignore_errors: yes
-  
+# - name: Change ownership in postgres docker container
+#   become: yes
+#   command: >
+#     docker exec postgres chown -fR postgres.postgres /var/lib/postgresql
+#   ignore_errors: yes
+
 - name: Ensure newsblur role in postgres
   become: yes
   shell: >
@@ -63,9 +120,10 @@
     docker exec postgres createuser -s newsblur -U postgres;
     docker exec postgres createdb newsblur -U newsblur;
   register: ensure_role
+  ignore_errors: yes
   changed_when:
-      - "ensure_role.rc == 0"
-  failed_when: 
+    - "ensure_role.rc == 0"
+  failed_when:
     - "'already exists' not in ensure_role.stderr"
     - "ensure_role.rc != 0"
 
@@ -89,7 +147,9 @@
     name: disk_usage_sanity_checker
     minute: "0"
     job: >-
-      OUTPUT=$(df / | head -n 2 |  tail -1) docker run --rm -it -v /srv/newsblur:/srv/newsblur --network=newsblurnet --hostname {{ ansible_hostname }} newsblur/newsblur_python3 /srv/newsblur/utils/monitor_disk_usage.py $OUTPUT
+      OUTPUT=$(df / | head -n 2 |  tail -1) docker run --rm -it -v /srv/newsblur:/srv/newsblur \
+      --network=newsblurnet --hostname {{ ansible_hostname }} newsblur/newsblur_python3 \
+      /srv/newsblur/utils/monitor_disk_usage.py $OUTPUT
   tags: cron
 
 - name: Add postgresql archive cleaner cronjob
@@ -115,8 +175,8 @@
     path: /var/log/postgres_backup.log
     state: touch
     mode: 0777
-    owner: 1000
-    group: 1001
+    owner: 999
+    group: 999
 
 - name: Add postgres backup
   cron:
@@ -125,4 +185,3 @@
     hour: "4"
     job: /srv/newsblur/docker/postgres/backup_postgres.sh >> /var/log/postgres_backup.log 2>&1
   tags: cron
-

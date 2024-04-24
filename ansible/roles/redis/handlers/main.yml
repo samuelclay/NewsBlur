@@ -8,7 +8,19 @@
     state: reloaded
   listen: reload consul
 
-- name: restart redis
+- name: restart redis user
   become: yes
-  command: docker restart redis
-  listen: restart redis
+  command: docker restart redis-user
+  listen: restart redis_user
+- name: restart redis story
+  become: yes
+  command: docker restart redis-story
+  listen: restart redis_story
+- name: restart redis session
+  become: yes
+  command: docker restart redis-session
+  listen: restart redis_session
+- name: restart redis pubsub
+  become: yes
+  command: docker restart redis-pubsub
+  listen: restart redis_pubsub
