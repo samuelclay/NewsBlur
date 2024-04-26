@@ -70,16 +70,12 @@ public class ItemSetFragment extends NbFragment {
     private boolean cursorSeenYet = false; // have we yet seen a valid cursor for our particular feedset?
 
     /**
-     * Signal used to indicate that on resume the adapter
-     * shouldn't exclude any new stories and just update
-     * the existing stories within the adapter.
-     * This was added to avoid adding new stories that
-     * would make the list jump and loose scroll position
-     * while adding new stories that were back filled
-     * based on their timestamp.
-     * Remove signal once broader refactoring will be considered.
+     * Flag used to ensure that when the adapter resumes,
+     * it omits any new stories that would disrupt the current order and cause the list to
+     * unexpectedly jump, thereby preserving the scroll position. This flag specifically helps
+     * manage the insertion of new stories that have been backfilled according to their timestamps.
      */
-    private boolean ignoreCursorNewStories = false;
+    private boolean skipBackFillingStories = false;
 
     private int itemGridWidthPx = 0;
     private int columnCount;
@@ -131,7 +127,7 @@ public class ItemSetFragment extends NbFragment {
         // readings and cause zero-index refreshes, wasting massive cycles. hold the refresh logic
         // until the loaders reset
         cursorSeenYet = false;
-        ignoreCursorNewStories = true;
+        skipBackFillingStories = true;
         super.onPause();
     }
 
@@ -290,7 +286,7 @@ public class ItemSetFragment extends NbFragment {
 	}
 
     protected void updateAdapter(@Nullable Cursor cursor) {
-        adapter.swapCursor(cursor, binding.itemgridfragmentGrid, gridState, ignoreCursorNewStories);
+        adapter.swapCursor(cursor, binding.itemgridfragmentGrid, gridState, skipBackFillingStories);
         gridState = null;
         adapter.updateFeedSet(getFeedSet());
         if ((cursor != null) && (cursor.getCount() > 0)) {

@@ -46,6 +46,7 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StoryContentPreviewStyle;
 import com.newsblur.util.StoryListStyle;
+import com.newsblur.util.StoryOrder;
 import com.newsblur.util.StoryUtil;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.ThumbnailStyle;
@@ -94,6 +95,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private final UserDetails user;
     private ThumbnailStyle thumbnailStyle;
     private SpacingStyle spacingStyle;
+    private StoryOrder storyOrder;
 
     public StoryViewAdapter(NbActivity context,
                             ItemSetFragment fragment,
@@ -127,6 +129,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         user = PrefsUtils.getUserDetails(context);
         thumbnailStyle = PrefsUtils.getThumbnailStyle(context);
         spacingStyle = PrefsUtils.getSpacingStyle(context);
+        storyOrder = PrefsUtils.getStoryOrder(context, fs);
 
         executorService = Executors.newFixedThreadPool(1);
 
@@ -204,7 +207,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return stories.get(position).storyHash.hashCode();
     }
 
-    public void swapCursor(final Cursor c, final RecyclerView rv, Parcelable oldScrollState, final boolean ignoreCursorNewStories) {
+    public void swapCursor(final Cursor c, final RecyclerView rv, Parcelable oldScrollState, final boolean skipBackFillingStories) {
         // cache the identity of the most recent cursor so async batches can check to
         // see if they are stale
         cursor = c;
@@ -217,7 +220,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                thawDiffUpdate(c, rv, ignoreCursorNewStories);
+                thawDiffUpdate(c, rv, skipBackFillingStories);
             }
         };
         executorService.submit(r);
@@ -227,7 +230,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
      * Attempt to thaw a new set of stories from the cursor most recently
      * seen when the that cycle started.
      */
-    private void thawDiffUpdate(final Cursor c, final RecyclerView rv, final boolean ignoreCursorNewStories) {
+    private void thawDiffUpdate(final Cursor c, final RecyclerView rv, final boolean skipBackFillingStories) {
         if (c != cursor) return;
 
         // thawed stories
@@ -244,13 +247,35 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 newStories = new ArrayList<>(c.getCount());
                 c.moveToPosition(-1);
 
-                Set<String> currentStoryHashes = ignoreCursorNewStories ?
+                // The 'skipBackFillingStories' flag is used to ensure that when the adapter resumes,
+                // it omits any new stories that would disrupt the current order and cause the list to
+                // unexpectedly jump, thereby preserving the scroll position. This flag specifically helps
+                // manage the insertion of new stories that have been backfilled according to their timestamps.
+                Set<String> currentStoryHashes = skipBackFillingStories ?
                         StoryUtil.getStoryHashes(stories) : Collections.emptySet();
+                Long storyTimestampThreshold;
+                if (skipBackFillingStories && storyOrder == StoryOrder.NEWEST) {
+                    storyTimestampThreshold = StoryUtil.getOldestStoryTimestamp(stories);
+                } else if (skipBackFillingStories && storyOrder == StoryOrder.OLDEST) {
+                    storyTimestampThreshold = StoryUtil.getNewestStoryTimestamp(stories);
+                } else {
+                    storyTimestampThreshold = null;
+                }
 
                 while (c.moveToNext()) {
                     if (c.isClosed()) return;
                     Story s = Story.fromCursor(c);
-                    if (ignoreCursorNewStories && !currentStoryHashes.contains(s.storyHash)) continue;
+                    if (skipBackFillingStories && !currentStoryHashes.contains(s.storyHash)) {
+                        if (storyOrder == StoryOrder.NEWEST &&
+                                storyTimestampThreshold != null &&
+                                s.timestamp >= storyTimestampThreshold) {
+                            continue;
+                        } else if (storyOrder == StoryOrder.OLDEST &&
+                                storyTimestampThreshold != null &&
+                                s.timestamp <= storyTimestampThreshold) {
+                            continue;
+                        }
+                    }
 
                     s.bindExternValues(c);
                     newStories.add(s);
