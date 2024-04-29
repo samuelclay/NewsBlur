@@ -23,6 +23,7 @@ object FeedExt {
 
     fun Feed.disableNotification() {
         notificationFilter = null
+        disableNotificationType(NOTIFY_ANDROID)
     }
 
     @JvmStatic
@@ -39,10 +40,12 @@ object FeedExt {
 
     fun Feed.setNotifyFocus() {
         notificationFilter = Feed.NOTIFY_FILTER_FOCUS
+        enableNotificationType(NOTIFY_ANDROID)
     }
 
     fun Feed.setNotifyUnread() {
         notificationFilter = Feed.NOTIFY_FILTER_UNREAD
+        enableNotificationType(NOTIFY_ANDROID)
     }
 
     private fun Feed.isNotify(type: String): Boolean = notificationTypes?.contains(type) ?: false

@@ -1,10 +1,8 @@
 package com.newsblur.view;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.ActionMode;
@@ -49,8 +47,7 @@ public class NewsblurWebview extends WebView {
 
         // Explicitly remove the system default web search menu item in case it's available
         // to add a custom web search menu item to ensure menu item availability
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
-                getSettings().getDisabledActionModeMenuItems() == WebSettings.MENU_ITEM_NONE) {
+        if (getSettings().getDisabledActionModeMenuItems() == WebSettings.MENU_ITEM_NONE) {
             getSettings().setDisabledActionModeMenuItems(WebSettings.MENU_ITEM_WEB_SEARCH);
         }
 
@@ -116,7 +113,6 @@ public class NewsblurWebview extends WebView {
             return true;
         }
 
-        @TargetApi(Build.VERSION_CODES.N)
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
             UIUtils.handleUri(getContext(), request.getUrl());

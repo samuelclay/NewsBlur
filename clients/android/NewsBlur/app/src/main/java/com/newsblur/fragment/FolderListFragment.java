@@ -181,7 +181,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         binding.folderfeedList.setOnGroupCollapseListener(this);
         binding.folderfeedList.setOnGroupExpandListener(this);
 
-        adapter.listBackref = new WeakReference(binding.folderfeedList); // see note in adapter about backref
+        adapter.listBackref = new WeakReference<>(binding.folderfeedList); // see note in adapter about backref
         binding.folderfeedList.setAdapter(adapter);
 
         // Main activity needs to listen for scrolls to prevent refresh from firing unnecessarily

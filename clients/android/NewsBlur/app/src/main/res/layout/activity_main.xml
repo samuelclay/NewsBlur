@@ -3,15 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    android:descendantFocusability="blocksDescendants">
+    android:animateLayoutChanges="true">
 
     <RelativeLayout
         android:id="@+id/main_top_bar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_alignParentTop="true"
-        android:background="?colorPrimary" >
+        android:background="?colorPrimary"
+        android:focusable="false">
 
         <ImageView
             android:id="@+id/main_user_image"
@@ -107,7 +107,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:tag="feedIntelligenceSelector" />
+        android:tag="feedIntelligenceSelector"
+        android:focusable="false"/>
 
     <ImageButton
         android:id="@+id/main_menu_button"
@@ -117,7 +118,8 @@
         android:background="@drawable/ic_more_vertical"
         android:contentDescription="@string/description_menu"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true" />
+        android:layout_alignParentRight="true"
+        android:focusable="false"/>
 
     <ImageButton
         android:id="@+id/main_add_button"
@@ -136,7 +138,8 @@
         android:layout_height="match_parent"
         android:layout_below="@id/main_top_bar"
         android:layout_above="@id/fragment_feedintelligenceselector"
-        style="?listBackground">
+        style="?listBackground"
+        android:focusable="false">
 
         <TextView
             android:id="@+id/empty_view_text"
@@ -183,7 +186,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/fragment_feedintelligenceselector"
-        android:layout_below="@id/feedlist_search_query">
+        android:layout_below="@id/feedlist_search_query"
+        android:focusable="false">
 
         <fragment
             android:name="com.newsblur.fragment.FolderListFragment"
@@ -198,14 +202,16 @@
         style="?delimiter"
         android:layout_width="fill_parent"
         android:layout_height="1dp"
-        android:layout_above="@id/swipe_container" />
+        android:layout_above="@id/swipe_container"
+        android:focusable="false"/>
 
     <!-- feedintelligenceselector_border -->
     <View
         style="?delimiter"
         android:layout_width="fill_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/swipe_container" />
+        android:layout_below="@id/swipe_container"
+        android:focusable="false"/>
 
     <TextView
         android:id="@+id/main_sync_status"
@@ -217,6 +223,7 @@
         android:gravity="center"
         android:textColor="@color/status_overlay_text"
         android:background="@color/status_overlay_background"
-        android:text="SYNC STATUS" />
+        android:text="SYNC STATUS"
+        android:focusable="false"/>
 
 </RelativeLayout>

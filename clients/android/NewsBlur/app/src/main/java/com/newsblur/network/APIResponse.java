@@ -88,7 +88,6 @@ public class APIResponse {
         } catch (IOException ioe) {
             com.newsblur.util.Log.e(this.getClass().getName(), "Error (" + ioe.getMessage() + ") calling " + request.url().toString(), ioe);
             this.isError = true;
-            return;
         }
     }
 
@@ -116,7 +115,7 @@ public class APIResponse {
             try {
                 T response = classOfT.newInstance();
                 response.isProtocolError = true;
-                return ((T) response);
+                return response;
             } catch (Exception e) {
                 // this should never fail unless the constructor of the base response bean fails
                 Log.wtf(this.getClass().getName(), "Failed to load class: " + classOfT);
