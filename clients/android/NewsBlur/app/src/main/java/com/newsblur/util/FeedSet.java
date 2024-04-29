@@ -80,7 +80,7 @@ public class FeedSet implements Serializable {
      */
     public static FeedSet allFeeds() {
         FeedSet fs = new FeedSet();
-        fs.feeds = Collections.EMPTY_SET;
+        fs.feeds = Collections.emptySet();
         return fs;
     }
 
@@ -107,7 +107,7 @@ public class FeedSet implements Serializable {
      */
     public static FeedSet allSaved() {
         FeedSet fs = new FeedSet();
-        fs.savedTags = Collections.EMPTY_SET;
+        fs.savedTags = Collections.emptySet();
         return fs;
     }
 
@@ -116,7 +116,7 @@ public class FeedSet implements Serializable {
      */
     public static FeedSet singleSavedTag(String tag) {
         FeedSet fs = new FeedSet();
-        fs.savedTags = new HashSet<String>(1);
+        fs.savedTags = new HashSet<>(1);
         fs.savedTags.add(tag);
         fs.savedTags = Collections.unmodifiableSet(fs.savedTags);
         return fs;
@@ -146,7 +146,7 @@ public class FeedSet implements Serializable {
      */
     public static FeedSet allSocialFeeds() {
         FeedSet fs = new FeedSet();
-        fs.socialFeeds = Collections.EMPTY_MAP;
+        fs.socialFeeds = Collections.emptyMap();
         return fs;
     }
 
@@ -161,7 +161,7 @@ public class FeedSet implements Serializable {
             fs.feeds.addAll(feedIds);
             fs.feeds = Collections.unmodifiableSet(fs.feeds);
         } else {
-            fs.feeds = Collections.EMPTY_SET;
+            fs.feeds = Collections.emptySet();
         }
         return fs;
     }

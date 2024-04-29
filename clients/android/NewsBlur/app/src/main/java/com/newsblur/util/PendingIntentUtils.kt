@@ -25,7 +25,7 @@ object PendingIntentUtils {
             requestCode: Int,
             intent: Intent,
             flags: Int,
-    ): PendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    ): PendingIntent? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         PendingIntent.getBroadcast(context, requestCode, intent, flags or PendingIntent.FLAG_IMMUTABLE)
     } else {
         PendingIntent.getBroadcast(context, requestCode, intent, flags)

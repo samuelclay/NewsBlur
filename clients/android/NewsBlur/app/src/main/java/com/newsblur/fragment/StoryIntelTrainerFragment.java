@@ -110,7 +110,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
         for (Map.Entry<String, Integer> rule : classifier.title.entrySet()) {
             if (story.title.indexOf(rule.getKey()) >= 0) {
                 View row = getLayoutInflater().inflate(R.layout.include_intel_row, null);
-                TextView label = (TextView) row.findViewById(R.id.intel_row_label);
+                TextView label = row.findViewById(R.id.intel_row_label);
                 label.setText(rule.getKey());
                 UIUtils.setupIntelDialogRow(row, classifier.title, rule.getKey());
                 binding.existingTitleIntelContainer.addView(row);
@@ -120,7 +120,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
         // list all tags for this story, trained or not
         for (String tag : story.tags) {
             View row = getLayoutInflater().inflate(R.layout.include_intel_row, null);
-            TextView label = (TextView) row.findViewById(R.id.intel_row_label);
+            TextView label = row.findViewById(R.id.intel_row_label);
             label.setText(tag);
             UIUtils.setupIntelDialogRow(row, classifier.tags, tag);
             binding.existingTagIntelContainer.addView(row);
@@ -130,7 +130,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
         // there is a single author per story
         if (!TextUtils.isEmpty(story.authors)) {
             View rowAuthor = getLayoutInflater().inflate(R.layout.include_intel_row, null);
-            TextView labelAuthor = (TextView) rowAuthor.findViewById(R.id.intel_row_label);
+            TextView labelAuthor = rowAuthor.findViewById(R.id.intel_row_label);
             labelAuthor.setText(story.authors);
             UIUtils.setupIntelDialogRow(rowAuthor, classifier.authors, story.authors);
             binding.existingAuthorIntelContainer.addView(rowAuthor);
@@ -141,7 +141,7 @@ public class StoryIntelTrainerFragment extends DialogFragment {
         // there is a single feed to be trained, but it is a bit odd in that the label is the title and
         // the intel identifier is the feed ID
         View rowFeed = getLayoutInflater().inflate(R.layout.include_intel_row, null);
-        TextView labelFeed = (TextView) rowFeed.findViewById(R.id.intel_row_label);
+        TextView labelFeed = rowFeed.findViewById(R.id.intel_row_label);
         labelFeed.setText(feedUtils.getFeedTitle(story.feedId));
         UIUtils.setupIntelDialogRow(rowFeed, classifier.feeds, story.feedId);
         binding.existingFeedIntelContainer.addView(rowFeed);
