@@ -27,8 +27,8 @@ class NotificationsActivity : NbActivity(), NotificationsAdapter.Listener {
     private lateinit var viewModel: NotificationsViewModel
     private lateinit var adapter: NotificationsAdapter
 
-    override fun onCreate(bundle: Bundle?) {
-        super.onCreate(bundle)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[NotificationsViewModel::class.java]
         binding = ActivityNotificationsBinding.inflate(layoutInflater)
         setContentView(binding.root)

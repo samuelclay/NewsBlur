@@ -107,7 +107,7 @@ class SessionDataSource private constructor(
             return null
 
         val feeds = foldersChildrenMap[nextFolderName]
-        if (feeds == null || feeds.isEmpty())
+        if (feeds.isNullOrEmpty())
         // try and get the next non empty folder name
             getNextNonEmptyFolder(nextFolderName)
         else nextFolderName to feeds

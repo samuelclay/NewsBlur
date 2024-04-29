@@ -285,6 +285,12 @@ public class PrefsUtils {
 		return user;
 	}
 
+    @Nullable
+    public static String getUserName(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        return preferences.getString(PrefConstants.USER_USERNAME, null);
+    }
+
 	private static void saveUserImage(final Context context, String pictureUrl) {
 		Bitmap bitmap;
 		try {
@@ -1079,8 +1085,13 @@ public class PrefsUtils {
      * which gets saved when a user is authenticated.
      */
     public static boolean hasCookie(Context context) {
+        return getCookie(context) != null;
+    }
+
+    @Nullable
+    public static String getCookie(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE);
-        return preferences.getString(PrefConstants.PREF_COOKIE, null) != null;
+        return preferences.getString(PrefConstants.PREF_COOKIE, null);
     }
 
     public static MarkStoryReadBehavior getMarkStoryReadBehavior(Context context) {

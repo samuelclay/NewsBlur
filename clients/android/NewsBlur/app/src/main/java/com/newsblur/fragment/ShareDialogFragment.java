@@ -1,6 +1,5 @@
 package com.newsblur.fragment;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -8,7 +7,6 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
@@ -53,9 +51,8 @@ public class ShareDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Activity activity = getActivity();
         story = (Story) getArguments().getSerializable(STORY);
-        user = PrefsUtils.getUserDetails(activity);
+        user = PrefsUtils.getUserDetails(requireContext());
         sourceUserId = getArguments().getString(SOURCE_USER_ID);
 
         boolean hasBeenShared = false;
@@ -70,13 +67,12 @@ public class ShareDialogFragment extends DialogFragment {
             previousComment = dbHelper.getComment(story.id, user.id);
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle(String.format(getResources().getString(R.string.share_save_newsblur), UIUtils.fromHtml(story.title)));
 
-        LayoutInflater layoutInflater = LayoutInflater.from(activity);
-        View replyView = layoutInflater.inflate(R.layout.share_dialog, null);
+        View replyView = getLayoutInflater().inflate(R.layout.share_dialog, null);
         builder.setView(replyView);
-        commentEditText = (EditText) replyView.findViewById(R.id.comment_field);
+        commentEditText = replyView.findViewById(R.id.comment_field);
 
         int positiveButtonText = R.string.share_this_story;
         int negativeButtonText = R.string.alert_dialog_cancel;
@@ -92,7 +88,7 @@ public class ShareDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 String shareComment = commentEditText.getText().toString();
-                feedUtils.shareStory(story, shareComment, sourceUserId, activity);
+                feedUtils.shareStory(story, shareComment, sourceUserId, requireContext());
                 ShareDialogFragment.this.dismiss();
             }
         });
@@ -101,7 +97,7 @@ public class ShareDialogFragment extends DialogFragment {
             builder.setNegativeButton(negativeButtonText, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    feedUtils.unshareStory(story, activity);
+                    feedUtils.unshareStory(story, requireContext());
                     ShareDialogFragment.this.dismiss();
                 }
             });

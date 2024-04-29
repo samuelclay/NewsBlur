@@ -3,7 +3,6 @@ package com.newsblur.fragment;
 import java.util.List;
 import java.util.Map;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
@@ -58,15 +56,13 @@ public class FeedIntelTrainerFragment extends DialogFragment {
         fs = (FeedSet) getArguments().getSerializable("feedset");
         classifier = dbHelper.getClassifierForFeed(feed.feedId);
 
-        final Activity activity = getActivity();
-        LayoutInflater inflater = LayoutInflater.from(activity);
-        View v = inflater.inflate(R.layout.dialog_trainfeed, null);
+        View v = getLayoutInflater().inflate(R.layout.dialog_trainfeed, null);
         binding = DialogTrainfeedBinding.bind(v);
 
         // display known title classifiers
         for (Map.Entry<String, Integer> rule : classifier.title.entrySet()) {
-                View row = inflater.inflate(R.layout.include_intel_row, null);
-                TextView label = (TextView) row.findViewById(R.id.intel_row_label);
+                View row = getLayoutInflater().inflate(R.layout.include_intel_row, null);
+                TextView label = row.findViewById(R.id.intel_row_label);
                 label.setText(rule.getKey());
                 UIUtils.setupIntelDialogRow(row, classifier.title, rule.getKey());
                 binding.existingTitleIntelContainer.addView(row);
@@ -82,8 +78,8 @@ public class FeedIntelTrainerFragment extends DialogFragment {
             }
         }
         for (String tag : allTags) {
-            View row = inflater.inflate(R.layout.include_intel_row, null);
-            TextView label = (TextView) row.findViewById(R.id.intel_row_label);
+            View row = getLayoutInflater().inflate(R.layout.include_intel_row, null);
+            TextView label = row.findViewById(R.id.intel_row_label);
             label.setText(tag);
             UIUtils.setupIntelDialogRow(row, classifier.tags, tag);
             binding.existingTagIntelContainer.addView(row);
@@ -99,8 +95,8 @@ public class FeedIntelTrainerFragment extends DialogFragment {
             }
         }
         for (String author : allAuthors) {
-            View rowAuthor = inflater.inflate(R.layout.include_intel_row, null);
-            TextView labelAuthor = (TextView) rowAuthor.findViewById(R.id.intel_row_label);
+            View rowAuthor = getLayoutInflater().inflate(R.layout.include_intel_row, null);
+            TextView labelAuthor = rowAuthor.findViewById(R.id.intel_row_label);
             labelAuthor.setText(author);
             UIUtils.setupIntelDialogRow(rowAuthor, classifier.authors, author);
             binding.existingAuthorIntelContainer.addView(rowAuthor);
@@ -108,13 +104,13 @@ public class FeedIntelTrainerFragment extends DialogFragment {
         if (allAuthors.size() < 1) binding.intelAuthorHeader.setVisibility(View.GONE);
 
         // for feel-level intel, the label is the title and the intel identifier is the feed ID
-        View rowFeed = inflater.inflate(R.layout.include_intel_row, null);
-        TextView labelFeed = (TextView) rowFeed.findViewById(R.id.intel_row_label);
+        View rowFeed = getLayoutInflater().inflate(R.layout.include_intel_row, null);
+        TextView labelFeed = rowFeed.findViewById(R.id.intel_row_label);
         labelFeed.setText(feed.title);
         UIUtils.setupIntelDialogRow(rowFeed, classifier.feeds, feed.feedId);
         binding.existingFeedIntelContainer.addView(rowFeed);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle(R.string.feed_intel_dialog_title);
         builder.setView(v);
 
@@ -127,7 +123,7 @@ public class FeedIntelTrainerFragment extends DialogFragment {
         builder.setPositiveButton(R.string.dialog_story_intel_save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                feedUtils.updateClassifier(feed.feedId, classifier, fs, activity);
+                feedUtils.updateClassifier(feed.feedId, classifier, fs, requireContext());
                 FeedIntelTrainerFragment.this.dismiss();
             }
         });
