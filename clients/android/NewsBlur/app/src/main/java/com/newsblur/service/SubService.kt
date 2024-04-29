@@ -36,7 +36,7 @@ abstract class SubService(
 
             if (isActive) {
                 parent.checkCompletion()
-                parent.sendSyncUpdate(NBSyncReceiver.UPDATE_STATUS)
+                parent.sendSyncUpdate(NbSyncManager.UPDATE_STATUS)
             }
         }
     }

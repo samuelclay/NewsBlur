@@ -512,6 +512,13 @@
         <item name="trackThickness">3dp</item>
     </style>
 
+    <style name="linearProgressIndicator" parent="Widget.MaterialComponents.LinearProgressIndicator">
+        <item name="android:indeterminate">true</item>
+        <item name="indeterminateAnimationType">contiguous</item>
+        <item name="indicatorColor">@array/loading_indicator_colors</item>
+        <item name="trackColor">@color/transparent</item>
+    </style>
+
     <style name="smallRoundImageShapeAppearance">
         <item name="cornerSize">20%</item>
     </style>

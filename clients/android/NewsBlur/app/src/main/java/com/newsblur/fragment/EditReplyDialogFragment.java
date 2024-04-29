@@ -1,13 +1,11 @@
 package com.newsblur.fragment;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
@@ -43,33 +41,31 @@ public class EditReplyDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Activity activity = getActivity();
         final Story story = (Story) getArguments().getSerializable(STORY);
         final String commentUserId = getArguments().getString(COMMENT_USER_ID);
         final String replyId = getArguments().getString(REPLY_ID);
         String replyText = getArguments().getString(REPLY_TEXT);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle(R.string.edit_reply);
 
-        LayoutInflater layoutInflater = LayoutInflater.from(activity);
-        View replyView = layoutInflater.inflate(R.layout.reply_dialog, null);
+        View replyView = getLayoutInflater().inflate(R.layout.reply_dialog, null);
         builder.setView(replyView);
-        final EditText reply = (EditText) replyView.findViewById(R.id.reply_field);
+        final EditText reply = replyView.findViewById(R.id.reply_field);
         reply.setText(replyText);
 
         builder.setPositiveButton(R.string.edit_reply_update, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 String replyText = reply.getText().toString();
-                feedUtils.updateReply(activity, story, commentUserId, replyId, replyText);
+                feedUtils.updateReply(requireContext(), story, commentUserId, replyId, replyText);
                 EditReplyDialogFragment.this.dismiss();
             }
         });
         builder.setNegativeButton(R.string.edit_reply_delete, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                feedUtils.deleteReply(activity, story, commentUserId, replyId);
+                feedUtils.deleteReply(requireContext(), story, commentUserId, replyId);
                 EditReplyDialogFragment.this.dismiss();
             }
         });

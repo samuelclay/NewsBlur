@@ -13,11 +13,11 @@ import com.newsblur.NbApplication;
 import com.newsblur.R;
 import com.newsblur.database.BlurDatabaseHelper;
 import static com.newsblur.database.BlurDatabaseHelper.closeQuietly;
-import static com.newsblur.service.NBSyncReceiver.UPDATE_DB_READY;
-import static com.newsblur.service.NBSyncReceiver.UPDATE_METADATA;
-import static com.newsblur.service.NBSyncReceiver.UPDATE_REBUILD;
-import static com.newsblur.service.NBSyncReceiver.UPDATE_STATUS;
-import static com.newsblur.service.NBSyncReceiver.UPDATE_STORY;
+import static com.newsblur.service.NbSyncManager.UPDATE_DB_READY;
+import static com.newsblur.service.NbSyncManager.UPDATE_METADATA;
+import static com.newsblur.service.NbSyncManager.UPDATE_REBUILD;
+import static com.newsblur.service.NbSyncManager.UPDATE_STATUS;
+import static com.newsblur.service.NbSyncManager.UPDATE_STORY;
 
 import androidx.annotation.NonNull;
 
@@ -47,10 +47,7 @@ import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.NotificationUtils;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadingAction;
-import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
-import com.newsblur.util.StoryOrder;
-import com.newsblur.util.UIUtils;
 import com.newsblur.widget.WidgetUtils;
 
 import java.util.ArrayList;
@@ -270,6 +267,12 @@ public class NBSyncService extends JobService {
         // background syncs can pick up where the last one left off and forground syncs aren't
         // run via cancellable JobScheduler invocations.
         return false;
+    }
+
+    @Override
+    public void onNetworkChanged(@NonNull JobParameters params) {
+        super.onNetworkChanged(params);
+        com.newsblur.util.Log.d(this, "onNetworkChanged");
     }
 
     /**
@@ -1160,7 +1163,7 @@ public class NBSyncService extends JobService {
                 dbHelper.prepareReadingSession(fs, cursorFilters.getStateFilter(), cursorFilters.getReadFilter());
                 // note which feedset we are loading so we can trigger another reset when it changes
                 dbHelper.setSessionFeedSet(fs);
-                UIUtils.syncUpdateStatus(context, UPDATE_STORY | UPDATE_STATUS);
+                NbSyncManager.submitUpdate(UPDATE_STORY | UPDATE_STATUS);
             }
         }
     }
@@ -1270,20 +1273,10 @@ public class NBSyncService extends JobService {
     }
 
     protected void sendSyncUpdate(int update) {
-        Intent i = new Intent(NBSyncReceiver.NB_SYNC_ACTION);
-        i.putExtra(NBSyncReceiver.NB_SYNC_UPDATE_TYPE, update);
-        broadcastSync(i);
+        NbSyncManager.submitUpdate(update);
     }
 
     protected void sendToastError(@NonNull String message) {
-        Intent i = new Intent(NBSyncReceiver.NB_SYNC_ACTION);
-        i.putExtra(NBSyncReceiver.NB_SYNC_ERROR_MESSAGE, message);
-        broadcastSync(i);
-    }
-
-    private void broadcastSync(@NonNull Intent intent) {
-        if (NbApplication.isAppForeground()) {
-            sendBroadcast(intent);
-        }
+        NbSyncManager.submitError(message);
     }
 }

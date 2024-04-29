@@ -24,9 +24,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import com.newsblur.R;
 import com.newsblur.activity.FeedItemsList;
@@ -43,6 +46,8 @@ import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StoryContentPreviewStyle;
 import com.newsblur.util.StoryListStyle;
+import com.newsblur.util.StoryOrder;
+import com.newsblur.util.StoryUtil;
 import com.newsblur.util.StoryUtils;
 import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
@@ -90,6 +95,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private final UserDetails user;
     private ThumbnailStyle thumbnailStyle;
     private SpacingStyle spacingStyle;
+    private StoryOrder storyOrder;
 
     public StoryViewAdapter(NbActivity context,
                             ItemSetFragment fragment,
@@ -123,6 +129,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         user = PrefsUtils.getUserDetails(context);
         thumbnailStyle = PrefsUtils.getThumbnailStyle(context);
         spacingStyle = PrefsUtils.getSpacingStyle(context);
+        storyOrder = PrefsUtils.getStoryOrder(context, fs);
 
         executorService = Executors.newFixedThreadPool(1);
 
@@ -195,12 +202,12 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (position >= getStoryCount()) {
             return (footerViews.get(position - getStoryCount()).hashCode());
         }
-        
+
         if (position >= stories.size() || position < 0) return 0;
         return stories.get(position).storyHash.hashCode();
     }
 
-    public void swapCursor(final Cursor c, final RecyclerView rv, Parcelable oldScrollState) {
+    public void swapCursor(final Cursor c, final RecyclerView rv, Parcelable oldScrollState, final boolean skipBackFillingStories) {
         // cache the identity of the most recent cursor so async batches can check to
         // see if they are stale
         cursor = c;
@@ -213,7 +220,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                thawDiffUpdate(c, rv);
+                thawDiffUpdate(c, rv, skipBackFillingStories);
             }
         };
         executorService.submit(r);
@@ -223,7 +230,7 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
      * Attempt to thaw a new set of stories from the cursor most recently
      * seen when the that cycle started.
      */
-    private void thawDiffUpdate(final Cursor c, final RecyclerView rv) {
+    private void thawDiffUpdate(final Cursor c, final RecyclerView rv, final boolean skipBackFillingStories) {
         if (c != cursor) return;
 
         // thawed stories
@@ -234,14 +241,42 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         // as a new one will be provided and another cycle will start.  just return.
         try {
             if (c == null) {
-                newStories = new ArrayList<Story>(0);
+                newStories = new ArrayList<>();
             } else {
                 if (c.isClosed()) return;
-                newStories = new ArrayList<Story>(c.getCount());
+                newStories = new ArrayList<>(c.getCount());
                 c.moveToPosition(-1);
+
+                // The 'skipBackFillingStories' flag is used to ensure that when the adapter resumes,
+                // it omits any new stories that would disrupt the current order and cause the list to
+                // unexpectedly jump, thereby preserving the scroll position. This flag specifically helps
+                // manage the insertion of new stories that have been backfilled according to their timestamps.
+                Set<String> currentStoryHashes = skipBackFillingStories ?
+                        StoryUtil.getStoryHashes(stories) : Collections.emptySet();
+                Long storyTimestampThreshold;
+                if (skipBackFillingStories && storyOrder == StoryOrder.NEWEST) {
+                    storyTimestampThreshold = StoryUtil.getOldestStoryTimestamp(stories);
+                } else if (skipBackFillingStories && storyOrder == StoryOrder.OLDEST) {
+                    storyTimestampThreshold = StoryUtil.getNewestStoryTimestamp(stories);
+                } else {
+                    storyTimestampThreshold = null;
+                }
+
                 while (c.moveToNext()) {
                     if (c.isClosed()) return;
                     Story s = Story.fromCursor(c);
+                    if (skipBackFillingStories && !currentStoryHashes.contains(s.storyHash)) {
+                        if (storyOrder == StoryOrder.NEWEST &&
+                                storyTimestampThreshold != null &&
+                                s.timestamp >= storyTimestampThreshold) {
+                            continue;
+                        } else if (storyOrder == StoryOrder.OLDEST &&
+                                storyTimestampThreshold != null &&
+                                s.timestamp <= storyTimestampThreshold) {
+                            continue;
+                        }
+                    }
+
                     s.bindExternValues(c);
                     newStories.add(s);
                     if (! s.read) indexOfLastUnread = c.getPosition();
@@ -336,8 +371,8 @@ public class StoryViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public class StoryViewHolder extends RecyclerView.ViewHolder
-                                 implements View.OnClickListener, 
-                                            View.OnCreateContextMenuListener, 
+                                 implements View.OnClickListener,
+                                            View.OnCreateContextMenuListener,
                                             MenuItem.OnMenuItemClickListener,
                                             View.OnTouchListener {
 
