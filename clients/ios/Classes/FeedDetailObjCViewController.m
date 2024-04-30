@@ -1637,6 +1637,35 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                                                                             toItem:fleuron
                                                                          attribute:NSLayoutAttributeBottom
                                                                         multiplier:1.0 constant:height/2]];
+        } else if (!self.isMarkReadOnScroll) {
+            UIButton *markReadButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            
+            markReadButton.titleLabel.font = [UIFont systemFontOfSize:14];
+            [markReadButton setTitle:@"   Mark All Stories as Read   " forState:UIControlStateNormal];
+            
+            [markReadButton addTarget:self action:@selector(doMarkAllRead:) forControlEvents:UIControlEventTouchUpInside];
+            
+            markReadButton.tintColor = UIColor.whiteColor;
+            markReadButton.backgroundColor = UIColorFromFixedRGB(0x939EAF);
+            markReadButton.layer.cornerRadius = 10;
+            
+            [markReadButton sizeToFit];
+            
+            markReadButton.translatesAutoresizingMaskIntoConstraints = NO;
+            
+            [cell.contentView addSubview:markReadButton];
+            [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:markReadButton
+                                                                         attribute:NSLayoutAttributeCenterX
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:cell.contentView
+                                                                         attribute:NSLayoutAttributeCenterX
+                                                                        multiplier:1.0 constant:0]];
+            [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:markReadButton
+                                                                         attribute:NSLayoutAttributeTop
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:fleuron
+                                                                         attribute:NSLayoutAttributeBottom
+                                                                        multiplier:1.0 constant:height/2]];
         }
         
         return cell;
