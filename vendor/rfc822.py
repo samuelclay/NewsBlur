@@ -53,15 +53,15 @@ There are also some utility functions here.
 
 import time
 
-__all__ = ["Message","AddressList","parsedate","parsedate_tz","mktime_tz"]
+__all__ = ["Message", "AddressList", "parsedate", "parsedate_tz", "mktime_tz"]
 
-_blanklines = ('\r\n', '\n')            # Optimization for islast()
+_blanklines = ("\r\n", "\n")  # Optimization for islast()
 
 
 class Message:
     """Represents a single RFC 2822-compliant message."""
 
-    def __init__(self, fp, seekable = 1):
+    def __init__(self, fp, seekable=1):
         """Initialize the class instance and read the headers."""
         if seekable == 1:
             # Exercise tell() to make sure it works
@@ -109,13 +109,13 @@ class Message:
         file).
         """
         self.dict = {}
-        self.unixfrom = ''
+        self.unixfrom = ""
         self.headers = lst = []
-        self.status = ''
+        self.status = ""
         headerseen = ""
         firstline = 1
         startofline = unread = tell = None
-        if hasattr(self.fp, 'unread'):
+        if hasattr(self.fp, "unread"):
             unread = self.fp.unread
         elif self.seekable:
             tell = self.fp.tell
@@ -128,17 +128,17 @@ class Message:
                     self.seekable = 0
             line = self.fp.readline()
             if not line:
-                self.status = 'EOF in headers'
+                self.status = "EOF in headers"
                 break
             # Skip unix From name time lines
-            if firstline and line.startswith('From '):
+            if firstline and line.startswith("From "):
                 self.unixfrom = self.unixfrom + line
                 continue
             firstline = 0
-            if headerseen and line[0] in ' \t':
+            if headerseen and line[0] in " \t":
                 # It's a continuation line.
                 lst.append(line)
-                x = (self.dict[headerseen] + "\n " + line.strip())
+                x = self.dict[headerseen] + "\n " + line.strip()
                 self.dict[headerseen] = x.strip()
                 continue
             elif self.iscomment(line):
@@ -151,21 +151,21 @@ class Message:
             if headerseen:
                 # It's a legal header line, save it.
                 lst.append(line)
-                self.dict[headerseen] = line[len(headerseen)+1:].strip()
+                self.dict[headerseen] = line[len(headerseen) + 1 :].strip()
                 continue
             else:
                 # It's not a header line; throw it back and stop here.
                 if not self.dict:
-                    self.status = 'No headers'
+                    self.status = "No headers"
                 else:
-                    self.status = 'Non-header line where header expected'
+                    self.status = "Non-header line where header expected"
                 # Try to undo the read.
                 if unread:
                     unread(line)
                 elif tell:
                     self.fp.seek(startofline)
                 else:
-                    self.status = self.status + '; bad seek'
+                    self.status = self.status + "; bad seek"
                 break
 
     def isheader(self, line):
@@ -174,7 +174,7 @@ class Message:
         You may override this method in order to use Message parsing on tagged
         data in RFC 2822-like formats with special header formats.
         """
-        i = line.find(':')
+        i = line.find(":")
         if i > 0:
             return line[:i].lower()
         return None
@@ -204,7 +204,7 @@ class Message:
         empty list is returned.  If the header occurs multiple times, all
         occurrences are returned.  Case is not important in the header name.
         """
-        name = name.lower() + ':'
+        name = name.lower() + ":"
         n = len(name)
         lst = []
         hit = 0
@@ -222,7 +222,7 @@ class Message:
         This is similar to getallmatchingheaders, but it returns only the
         first matching header (and its continuation lines).
         """
-        name = name.lower() + ':'
+        name = name.lower() + ":"
         n = len(name)
         lst = []
         hit = 0
@@ -247,8 +247,8 @@ class Message:
         lst = self.getfirstmatchingheader(name)
         if not lst:
             return None
-        lst[0] = lst[0][len(name) + 1:]
-        return ''.join(lst)
+        lst[0] = lst[0][len(name) + 1 :]
+        return "".join(lst)
 
     def getheader(self, name, default=None):
         """Get the header value for a name.
@@ -257,6 +257,7 @@ class Message:
         This uses the dictionary version which finds the *last* such header.
         """
         return self.dict.get(name.lower(), default)
+
     get = getheader
 
     def getheaders(self, name):
@@ -266,7 +267,7 @@ class Message:
         getheader().  If the header is not given, return an empty list.
         """
         result = []
-        current = ''
+        current = ""
         have_header = 0
         for s in self.getallmatchingheaders(name):
             if s[0].isspace():
@@ -277,7 +278,7 @@ class Message:
             else:
                 if have_header:
                     result.append(current)
-                current = s[s.find(":") + 1:].strip()
+                current = s[s.find(":") + 1 :].strip()
                 have_header = 1
         if have_header:
             result.append(current)
@@ -303,16 +304,16 @@ class Message:
         """
         raw = []
         for h in self.getallmatchingheaders(name):
-            if h[0] in ' \t':
+            if h[0] in " \t":
                 raw.append(h)
             else:
                 if raw:
-                    raw.append(', ')
-                i = h.find(':')
+                    raw.append(", ")
+                i = h.find(":")
                 if i > 0:
-                    addr = h[i+1:]
+                    addr = h[i + 1 :]
                 raw.append(addr)
-        alladdrs = ''.join(raw)
+        alladdrs = "".join(raw)
         a = AddressList(alladdrs)
         return a.addresslist
 
@@ -338,7 +339,6 @@ class Message:
             return None
         return parsedate_tz(data)
 
-
     # Access as a dictionary (only finds *last* header of each type):
 
     def __len__(self):
@@ -355,7 +355,7 @@ class Message:
         changed headers get stuck at the end of the raw-headers list rather
         than where the altered header was.
         """
-        del self[name] # Won't fail if it doesn't exist
+        del self[name]  # Won't fail if it doesn't exist
         self.dict[name.lower()] = value
         text = name + ": " + value
         for line in text.split("\n"):
@@ -367,7 +367,7 @@ class Message:
         if not name in self.dict:
             return
         del self.dict[name]
-        name = name + ':'
+        name = name + ":"
         n = len(name)
         lst = []
         hit = 0
@@ -419,7 +419,7 @@ class Message:
         return list(self.dict.items())
 
     def __str__(self):
-        return ''.join(self.headers)
+        return "".join(self.headers)
 
 
 # Utility functions
@@ -433,15 +433,15 @@ def unquote(s):
     """Remove quotes from a string."""
     if len(s) > 1:
         if s.startswith('"') and s.endswith('"'):
-            return s[1:-1].replace('\\\\', '\\').replace('\\"', '"')
-        if s.startswith('<') and s.endswith('>'):
+            return s[1:-1].replace("\\\\", "\\").replace('\\"', '"')
+        if s.startswith("<") and s.endswith(">"):
             return s[1:-1]
     return s
 
 
 def quote(s):
     """Add quotes around a string."""
-    return s.replace('\\', '\\\\').replace('"', '\\"')
+    return s.replace("\\", "\\\\").replace('"', '\\"')
 
 
 def parseaddr(address):
@@ -467,26 +467,27 @@ class AddrlistClass:
         `field' is an unparsed address header field, containing one or more
         addresses.
         """
-        self.specials = '()<>@,:;.\"[]'
+        self.specials = '()<>@,:;."[]'
         self.pos = 0
-        self.LWS = ' \t'
-        self.CR = '\r\n'
+        self.LWS = " \t"
+        self.CR = "\r\n"
         self.atomends = self.specials + self.LWS + self.CR
         # Note that RFC 2822 now specifies `.' as obs-phrase, meaning that it
         # is obsolete syntax.  RFC 2822 requires that we recognize obsolete
         # syntax, so allow dots in phrases.
-        self.phraseends = self.atomends.replace('.', '')
+        self.phraseends = self.atomends.replace(".", "")
         self.field = field
         self.commentlist = []
 
     def gotonext(self):
         """Parse up to the start of the next address."""
         while self.pos < len(self.field):
-            if self.field[self.pos] in self.LWS + '\n\r':
+            if self.field[self.pos] in self.LWS + "\n\r":
                 self.pos = self.pos + 1
-            elif self.field[self.pos] == '(':
+            elif self.field[self.pos] == "(":
                 self.commentlist.append(self.getcomment())
-            else: break
+            else:
+                break
 
     def getaddrlist(self):
         """Parse all addresses.
@@ -514,17 +515,17 @@ class AddrlistClass:
         if self.pos >= len(self.field):
             # Bad email address technically, no domain.
             if plist:
-                returnlist = [(' '.join(self.commentlist), plist[0])]
+                returnlist = [(" ".join(self.commentlist), plist[0])]
 
-        elif self.field[self.pos] in '.@':
+        elif self.field[self.pos] in ".@":
             # email address is just an addrspec
             # this isn't very efficient since we start over
             self.pos = oldpos
             self.commentlist = oldcl
             addrspec = self.getaddrspec()
-            returnlist = [(' '.join(self.commentlist), addrspec)]
+            returnlist = [(" ".join(self.commentlist), addrspec)]
 
-        elif self.field[self.pos] == ':':
+        elif self.field[self.pos] == ":":
             # address is a group
             returnlist = []
 
@@ -532,28 +533,28 @@ class AddrlistClass:
             self.pos += 1
             while self.pos < len(self.field):
                 self.gotonext()
-                if self.pos < fieldlen and self.field[self.pos] == ';':
+                if self.pos < fieldlen and self.field[self.pos] == ";":
                     self.pos += 1
                     break
                 returnlist = returnlist + self.getaddress()
 
-        elif self.field[self.pos] == '<':
+        elif self.field[self.pos] == "<":
             # Address is a phrase then a route addr
             routeaddr = self.getrouteaddr()
 
             if self.commentlist:
-                returnlist = [(' '.join(plist) + ' (' + \
-                         ' '.join(self.commentlist) + ')', routeaddr)]
-            else: returnlist = [(' '.join(plist), routeaddr)]
+                returnlist = [(" ".join(plist) + " (" + " ".join(self.commentlist) + ")", routeaddr)]
+            else:
+                returnlist = [(" ".join(plist), routeaddr)]
 
         else:
             if plist:
-                returnlist = [(' '.join(self.commentlist), plist[0])]
+                returnlist = [(" ".join(self.commentlist), plist[0])]
             elif self.field[self.pos] in self.specials:
                 self.pos += 1
 
         self.gotonext()
-        if self.pos < len(self.field) and self.field[self.pos] == ',':
+        if self.pos < len(self.field) and self.field[self.pos] == ",":
             self.pos += 1
         return returnlist
 
@@ -561,7 +562,7 @@ class AddrlistClass:
         """Parse a route address (Return-path value).
         This method just skips all the route stuff and returns the addrspec.
         """
-        if self.field[self.pos] != '<':
+        if self.field[self.pos] != "<":
             return
 
         expectroute = 0
@@ -572,13 +573,13 @@ class AddrlistClass:
             if expectroute:
                 self.getdomain()
                 expectroute = 0
-            elif self.field[self.pos] == '>':
+            elif self.field[self.pos] == ">":
                 self.pos += 1
                 break
-            elif self.field[self.pos] == '@':
+            elif self.field[self.pos] == "@":
                 self.pos += 1
                 expectroute = 1
-            elif self.field[self.pos] == ':':
+            elif self.field[self.pos] == ":":
                 self.pos += 1
             else:
                 adlist = self.getaddrspec()
@@ -594,23 +595,24 @@ class AddrlistClass:
 
         self.gotonext()
         while self.pos < len(self.field):
-            if self.field[self.pos] == '.':
-                aslist.append('.')
+            if self.field[self.pos] == ".":
+                aslist.append(".")
                 self.pos += 1
             elif self.field[self.pos] == '"':
                 aslist.append('"%s"' % self.getquote())
             elif self.field[self.pos] in self.atomends:
                 break
-            else: aslist.append(self.getatom())
+            else:
+                aslist.append(self.getatom())
             self.gotonext()
 
-        if self.pos >= len(self.field) or self.field[self.pos] != '@':
-            return ''.join(aslist)
+        if self.pos >= len(self.field) or self.field[self.pos] != "@":
+            return "".join(aslist)
 
-        aslist.append('@')
+        aslist.append("@")
         self.pos += 1
         self.gotonext()
-        return ''.join(aslist) + self.getdomain()
+        return "".join(aslist) + self.getdomain()
 
     def getdomain(self):
         """Get the complete domain name from an address."""
@@ -618,19 +620,20 @@ class AddrlistClass:
         while self.pos < len(self.field):
             if self.field[self.pos] in self.LWS:
                 self.pos += 1
-            elif self.field[self.pos] == '(':
+            elif self.field[self.pos] == "(":
                 self.commentlist.append(self.getcomment())
-            elif self.field[self.pos] == '[':
+            elif self.field[self.pos] == "[":
                 sdlist.append(self.getdomainliteral())
-            elif self.field[self.pos] == '.':
+            elif self.field[self.pos] == ".":
                 self.pos += 1
-                sdlist.append('.')
+                sdlist.append(".")
             elif self.field[self.pos] in self.atomends:
                 break
-            else: sdlist.append(self.getatom())
-        return ''.join(sdlist)
+            else:
+                sdlist.append(self.getatom())
+        return "".join(sdlist)
 
-    def getdelimited(self, beginchar, endchars, allowcomments = 1):
+    def getdelimited(self, beginchar, endchars, allowcomments=1):
         """Parse a header fragment delimited by special characters.
         `beginchar' is the start character for the fragment.  If self is not
         looking at an instance of `beginchar' then getdelimited returns the
@@ -641,9 +644,9 @@ class AddrlistClass:
         within the parsed fragment.
         """
         if self.field[self.pos] != beginchar:
-            return ''
+            return ""
 
-        slist = ['']
+        slist = [""]
         quote = 0
         self.pos += 1
         while self.pos < len(self.field):
@@ -653,16 +656,16 @@ class AddrlistClass:
             elif self.field[self.pos] in endchars:
                 self.pos += 1
                 break
-            elif allowcomments and self.field[self.pos] == '(':
+            elif allowcomments and self.field[self.pos] == "(":
                 slist.append(self.getcomment())
-                continue        # have already advanced pos from getcomment
-            elif self.field[self.pos] == '\\':
+                continue  # have already advanced pos from getcomment
+            elif self.field[self.pos] == "\\":
                 quote = 1
             else:
                 slist.append(self.field[self.pos])
             self.pos += 1
 
-        return ''.join(slist)
+        return "".join(slist)
 
     def getquote(self):
         """Get a quote-delimited fragment from self's field."""
@@ -670,11 +673,11 @@ class AddrlistClass:
 
     def getcomment(self):
         """Get a parenthesis-delimited fragment from self's field."""
-        return self.getdelimited('(', ')\r', 1)
+        return self.getdelimited("(", ")\r", 1)
 
     def getdomainliteral(self):
         """Parse an RFC 2822 domain-literal."""
-        return '[%s]' % self.getdelimited('[', ']\r', 0)
+        return "[%s]" % self.getdelimited("[", "]\r", 0)
 
     def getatom(self, atomends=None):
         """Parse an RFC 2822 atom.
@@ -682,17 +685,18 @@ class AddrlistClass:
         (the default is to use self.atomends).  This is used e.g. in
         getphraselist() since phrase endings must not include the `.' (which
         is legal in phrases)."""
-        atomlist = ['']
+        atomlist = [""]
         if atomends is None:
             atomends = self.atomends
 
         while self.pos < len(self.field):
             if self.field[self.pos] in atomends:
                 break
-            else: atomlist.append(self.field[self.pos])
+            else:
+                atomlist.append(self.field[self.pos])
             self.pos += 1
 
-        return ''.join(atomlist)
+        return "".join(atomlist)
 
     def getphraselist(self):
         """Parse a sequence of RFC 2822 phrases.
@@ -707,7 +711,7 @@ class AddrlistClass:
                 self.pos += 1
             elif self.field[self.pos] == '"':
                 plist.append(self.getquote())
-            elif self.field[self.pos] == '(':
+            elif self.field[self.pos] == "(":
                 self.commentlist.append(self.getcomment())
             elif self.field[self.pos] in self.phraseends:
                 break
@@ -716,8 +720,10 @@ class AddrlistClass:
 
         return plist
 
+
 class AddressList(AddrlistClass):
     """An AddressList encapsulates a list of parsed RFC 2822 addresses."""
+
     def __init__(self, field):
         AddrlistClass.__init__(self, field)
         if field:
@@ -766,20 +772,44 @@ class AddressList(AddrlistClass):
         # Make indexing, slices, and 'in' work
         return self.addresslist[index]
 
+
 def dump_address_pair(pair):
     """Dump a (name, address) pair in a canonicalized form."""
     if pair[0]:
-        return '"' + pair[0] + '" <' + pair[1] + '>'
+        return '"' + pair[0] + '" <' + pair[1] + ">"
     else:
         return pair[1]
 
+
 # Parse a date field
 
-_monthnames = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul',
-               'aug', 'sep', 'oct', 'nov', 'dec',
-               'january', 'february', 'march', 'april', 'may', 'june', 'july',
-               'august', 'september', 'october', 'november', 'december']
-_daynames = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+_monthnames = [
+    "jan",
+    "feb",
+    "mar",
+    "apr",
+    "may",
+    "jun",
+    "jul",
+    "aug",
+    "sep",
+    "oct",
+    "nov",
+    "dec",
+    "january",
+    "february",
+    "march",
+    "april",
+    "may",
+    "june",
+    "july",
+    "august",
+    "september",
+    "october",
+    "november",
+    "december",
+]
+_daynames = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
 
 # The timezone table does not include the military time zones defined
 # in RFC822, other than Z.  According to RFC1123, the description in
@@ -787,13 +817,22 @@ _daynames = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 # zones.  RFC1123 recommends that numeric timezone indicators be used
 # instead of timezone names.
 
-_timezones = {'UT':0, 'UTC':0, 'GMT':0, 'Z':0,
-              'AST': -400, 'ADT': -300,  # Atlantic (used in Canada)
-              'EST': -500, 'EDT': -400,  # Eastern
-              'CST': -600, 'CDT': -500,  # Central
-              'MST': -700, 'MDT': -600,  # Mountain
-              'PST': -800, 'PDT': -700   # Pacific
-              }
+_timezones = {
+    "UT": 0,
+    "UTC": 0,
+    "GMT": 0,
+    "Z": 0,
+    "AST": -400,
+    "ADT": -300,  # Atlantic (used in Canada)
+    "EST": -500,
+    "EDT": -400,  # Eastern
+    "CST": -600,
+    "CDT": -500,  # Central
+    "MST": -700,
+    "MDT": -600,  # Mountain
+    "PST": -800,
+    "PDT": -700,  # Pacific
+}
 
 
 def parsedate_tz(data):
@@ -803,25 +842,25 @@ def parsedate_tz(data):
     if not data:
         return None
     data = data.split()
-    if data[0][-1] in (',', '.') or data[0].lower() in _daynames:
+    if data[0][-1] in (",", ".") or data[0].lower() in _daynames:
         # There's a dayname here. Skip it
         del data[0]
     else:
         # no space after the "weekday,"?
-        i = data[0].rfind(',')
+        i = data[0].rfind(",")
         if i >= 0:
-            data[0] = data[0][i+1:]
-    if len(data) == 3: # RFC 850 date, deprecated
-        stuff = data[0].split('-')
+            data[0] = data[0][i + 1 :]
+    if len(data) == 3:  # RFC 850 date, deprecated
+        stuff = data[0].split("-")
         if len(stuff) == 3:
             data = stuff + data[1:]
     if len(data) == 4:
         s = data[3]
-        i = s.find('+')
+        i = s.find("+")
         if i > 0:
-            data[3:] = [s[:i], s[i+1:]]
+            data[3:] = [s[:i], s[i + 1 :]]
         else:
-            data.append('') # Dummy tz
+            data.append("")  # Dummy tz
     if len(data) < 5:
         return None
     data = data[:5]
@@ -831,23 +870,24 @@ def parsedate_tz(data):
         dd, mm = mm, dd.lower()
         if not mm in _monthnames:
             return None
-    mm = _monthnames.index(mm)+1
-    if mm > 12: mm = mm - 12
-    if dd[-1] == ',':
+    mm = _monthnames.index(mm) + 1
+    if mm > 12:
+        mm = mm - 12
+    if dd[-1] == ",":
         dd = dd[:-1]
-    i = yy.find(':')
+    i = yy.find(":")
     if i > 0:
         yy, tm = tm, yy
-    if yy[-1] == ',':
+    if yy[-1] == ",":
         yy = yy[:-1]
     if not yy[0].isdigit():
         yy, tz = tz, yy
-    if tm[-1] == ',':
+    if tm[-1] == ",":
         tm = tm[:-1]
-    tm = tm.split(':')
+    tm = tm.split(":")
     if len(tm) == 2:
         [thh, tmm] = tm
-        tss = '0'
+        tss = "0"
     elif len(tm) == 3:
         [thh, tmm, tss] = tm
     else:
@@ -876,7 +916,7 @@ def parsedate_tz(data):
             tzoffset = -tzoffset
         else:
             tzsign = 1
-        tzoffset = tzsign * ( (tzoffset//100)*3600 + (tzoffset % 100)*60)
+        tzoffset = tzsign * ((tzoffset // 100) * 3600 + (tzoffset % 100) * 60)
     return (yy, mm, dd, thh, tmm, tss, 0, 1, 0, tzoffset)
 
 
@@ -897,6 +937,7 @@ def mktime_tz(data):
         t = time.mktime(data[:8] + (0,))
         return t - data[9] - time.timezone
 
+
 def formatdate(timeval=None):
     """Returns time format preferred for Internet standards.
     Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123
@@ -909,52 +950,65 @@ def formatdate(timeval=None):
         timeval = time.time()
     timeval = time.gmtime(timeval)
     return "%s, %02d %s %04d %02d:%02d:%02d GMT" % (
-            ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")[timeval[6]],
-            timeval[2],
-            ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
-             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")[timeval[1]-1],
-                                timeval[0], timeval[3], timeval[4], timeval[5])
+        ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")[timeval[6]],
+        timeval[2],
+        ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")[timeval[1] - 1],
+        timeval[0],
+        timeval[3],
+        timeval[4],
+        timeval[5],
+    )
 
 
 # When used as script, run a small test program.
 # The first command line argument must be a filename containing one
 # message in RFC-822 format.
 
-if __name__ == '__main__':
-    import sys, os
-    if not 'HOME' in os.environ:
-        os.environ['HOME'] = os.path.join(os.environ['HOMEDRIVE'], \
-                                          os.environ['HOMEPATH'])
-    file = os.path.join(os.environ['HOME'], 'Mail/inbox/1')
-    if sys.argv[1:]: file = sys.argv[1]
-    f = open(file, 'r')
+if __name__ == "__main__":
+    import os
+    import sys
+
+    if not "HOME" in os.environ:
+        os.environ["HOME"] = os.path.join(os.environ["HOMEDRIVE"], os.environ["HOMEPATH"])
+    file = os.path.join(os.environ["HOME"], "Mail/inbox/1")
+    if sys.argv[1:]:
+        file = sys.argv[1]
+    f = open(file, "r")
     m = Message(f)
-    print(('From:', m.getaddr('from')))
-    print(('To:', m.getaddrlist('to')))
-    print(('Subject:', m.getheader('subject')))
-    print(('Date:', m.getheader('date')))
-    date = m.getdate_tz('date')
+    print(("From:", m.getaddr("from")))
+    print(("To:", m.getaddrlist("to")))
+    print(("Subject:", m.getheader("subject")))
+    print(("Date:", m.getheader("date")))
+    date = m.getdate_tz("date")
     tz = date[-1]
     date = time.localtime(mktime_tz(date))
     if date:
-        print(('ParsedDate:', time.asctime(date),))
+        print(
+            (
+                "ParsedDate:",
+                time.asctime(date),
+            )
+        )
         hhmmss = tz
         hhmm, ss = divmod(hhmmss, 60)
         hh, mm = divmod(hhmm, 60)
         print(("%+03d%02d" % (hh, mm),))
-        if ss: print((".%02d" % ss,))
+        if ss:
+            print((".%02d" % ss,))
         print()
     else:
-        print(('ParsedDate:', None))
+        print(("ParsedDate:", None))
     m.rewindbody()
     n = 0
     while f.readline():
         n += 1
-    print(('Lines:', n))
-    print(('-'*70))
-    print(('len =', len(m)))
-    if 'Date' in m: print(('Date =', m['Date']))
-    if 'X-Nonsense' in m: pass
-    print(('keys =', list(m.keys())))
-    print(('values =', list(m.values())))
-    print(('items =', list(m.items())))
+    print(("Lines:", n))
+    print(("-" * 70))
+    print(("len =", len(m)))
+    if "Date" in m:
+        print(("Date =", m["Date"]))
+    if "X-Nonsense" in m:
+        pass
+    print(("keys =", list(m.keys())))
+    print(("values =", list(m.values())))
+    print(("items =", list(m.items())))

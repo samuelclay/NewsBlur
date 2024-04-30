@@ -3,6 +3,7 @@
 
 from vendor.munin.mongodb import MuninMongoDBPlugin
 
+
 class MongoDBObjectsPlugin(MuninMongoDBPlugin):
     args = "--base 1000"
     vlabel = "objects"

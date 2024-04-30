@@ -3,6 +3,7 @@
 
 from vendor.munin.mongodb import MuninMongoDBPlugin
 
+
 class MongoDBMemoryPlugin(MuninMongoDBPlugin):
     args = "-l 0 --base 1024"
     vlabel = "bytes"

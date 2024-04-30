@@ -1,5 +1,6 @@
 import lxml.etree
 
+
 class OutlineElement(object):
     """A single outline object."""
 
@@ -9,7 +10,6 @@ class OutlineElement(object):
         self._root = root
 
     def __getattr__(self, attr):
-
         if attr in self._root.attrib:
             return self._root.attrib[attr]
 
@@ -19,13 +19,14 @@ class OutlineElement(object):
     def _outlines(self):
         """Return the available sub-outline objects as a seqeunce."""
 
-        return [OutlineElement(n) for n in self._root.xpath('./outline')]
+        return [OutlineElement(n) for n in self._root.xpath("./outline")]
 
     def __len__(self):
         return len(self._outlines)
 
     def __getitem__(self, index):
         return self._outlines[index]
+
 
 class Opml(object):
     """Python representation of an OPML file."""
@@ -36,10 +37,10 @@ class Opml(object):
         self._tree = xml_tree
 
     def __getattr__(self, attr):
-        """Fall back attribute handler -- attempt to find the attribute in 
+        """Fall back attribute handler -- attempt to find the attribute in
         the OPML <head>."""
 
-        result = self._tree.xpath('/opml/head/%s/text()' % attr)
+        result = self._tree.xpath("/opml/head/%s/text()" % attr)
         if len(result) == 1:
             return result[0]
 
@@ -49,8 +50,7 @@ class Opml(object):
     def _outlines(self):
         """Return the available sub-outline objects as a seqeunce."""
 
-        return [OutlineElement(n) for n in self._tree.xpath(
-                '/opml/body/outline')]
+        return [OutlineElement(n) for n in self._tree.xpath("/opml/body/outline")]
 
     def __len__(self):
         return len(self._outlines)
@@ -58,13 +58,11 @@ class Opml(object):
     def __getitem__(self, index):
         return self._outlines[index]
 
+
 def from_string(opml_text):
     parser = lxml.etree.XMLParser(recover=True)
     return Opml(lxml.etree.fromstring(opml_text, parser))
 
+
 def parse(opml_url):
-
     return Opml(lxml.etree.parse(opml_url))
-
-
-

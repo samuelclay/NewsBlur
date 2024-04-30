@@ -17,77 +17,73 @@
 Utilities for making it easier to use OAuth 2.0 on Google Compute Engine.
 """
 
-__author__ = 'jcgregorio@google.com (Joe Gregorio)'
+__author__ = "jcgregorio@google.com (Joe Gregorio)"
+
+import logging
 
 import httplib2
-import logging
 import uritemplate
-
 from oauth2client import util
 from oauth2client.anyjson import simplejson
-from oauth2client.client import AccessTokenRefreshError
-from oauth2client.client import AssertionCredentials
+from oauth2client.client import AccessTokenRefreshError, AssertionCredentials
 
 logger = logging.getLogger(__name__)
 
 # URI Template for the endpoint that returns access_tokens.
-META = ('http://metadata.google.internal/0.1/meta-data/service-accounts/'
-        'default/acquire{?scope}')
+META = "http://metadata.google.internal/0.1/meta-data/service-accounts/" "default/acquire{?scope}"
 
 
 class AppAssertionCredentials(AssertionCredentials):
-  """Credentials object for Compute Engine Assertion Grants
+    """Credentials object for Compute Engine Assertion Grants
 
-  This object will allow a Compute Engine instance to identify itself to
-  Google and other OAuth 2.0 servers that can verify assertions. It can be used
-  for the purpose of accessing data stored under an account assigned to the
-  Compute Engine instance itself.
+    This object will allow a Compute Engine instance to identify itself to
+    Google and other OAuth 2.0 servers that can verify assertions. It can be used
+    for the purpose of accessing data stored under an account assigned to the
+    Compute Engine instance itself.
 
-  This credential does not require a flow to instantiate because it represents
-  a two legged flow, and therefore has all of the required information to
-  generate and refresh its own access tokens.
-  """
-
-  @util.positional(2)
-  def __init__(self, scope, **kwargs):
-    """Constructor for AppAssertionCredentials
-
-    Args:
-      scope: string or list of strings, scope(s) of the credentials being
-        requested.
+    This credential does not require a flow to instantiate because it represents
+    a two legged flow, and therefore has all of the required information to
+    generate and refresh its own access tokens.
     """
-    if type(scope) is list:
-      scope = ' '.join(scope)
-    self.scope = scope
 
-    super(AppAssertionCredentials, self).__init__(
-        'ignored' # assertion_type is ignore in this subclass.
-        )
+    @util.positional(2)
+    def __init__(self, scope, **kwargs):
+        """Constructor for AppAssertionCredentials
 
-  @classmethod
-  def from_json(cls, json):
-    data = simplejson.loads(json)
-    return AppAssertionCredentials(data['scope'])
+        Args:
+          scope: string or list of strings, scope(s) of the credentials being
+            requested.
+        """
+        if type(scope) is list:
+            scope = " ".join(scope)
+        self.scope = scope
 
-  def _refresh(self, http_request):
-    """Refreshes the access_token.
+        super(AppAssertionCredentials, self).__init__("ignored")  # assertion_type is ignore in this subclass.
 
-    Skip all the storage hoops and just refresh using the API.
+    @classmethod
+    def from_json(cls, json):
+        data = simplejson.loads(json)
+        return AppAssertionCredentials(data["scope"])
 
-    Args:
-      http_request: callable, a callable that matches the method signature of
-        httplib2.Http.request, used to make the refresh request.
+    def _refresh(self, http_request):
+        """Refreshes the access_token.
 
-    Raises:
-      AccessTokenRefreshError: When the refresh fails.
-    """
-    uri = uritemplate.expand(META, {'scope': self.scope})
-    response, content = http_request(uri)
-    if response.status == 200:
-      try:
-        d = simplejson.loads(content)
-      except Exception as e:
-        raise AccessTokenRefreshError(str(e))
-      self.access_token = d['accessToken']
-    else:
-      raise AccessTokenRefreshError(content)
+        Skip all the storage hoops and just refresh using the API.
+
+        Args:
+          http_request: callable, a callable that matches the method signature of
+            httplib2.Http.request, used to make the refresh request.
+
+        Raises:
+          AccessTokenRefreshError: When the refresh fails.
+        """
+        uri = uritemplate.expand(META, {"scope": self.scope})
+        response, content = http_request(uri)
+        if response.status == 200:
+            try:
+                d = simplejson.loads(content)
+            except Exception as e:
+                raise AccessTokenRefreshError(str(e))
+            self.access_token = d["accessToken"]
+        else:
+            raise AccessTokenRefreshError(content)

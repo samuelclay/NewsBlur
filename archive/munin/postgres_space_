@@ -9,6 +9,7 @@ Plugin to monitor PostgreSQL disk usage.
 
 from vendor.munin.postgres import MuninPostgresPlugin
 
+
 class MuninPostgresSpacePlugin(MuninPostgresPlugin):
     dbname_in_args = True
     args = "-l 0 --base 1024"

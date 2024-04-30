@@ -1,13 +1,16 @@
 from pprint import pprint
-from django.http import HttpResponse, Http404
+
 from django.conf import settings
-from utils import log as logging
+from django.http import Http404, HttpResponse
+
 from apps.newsletters.models import EmailNewsletter
 from apps.rss_feeds.models import Feed, MStory
+from utils import log as logging
+
 
 def newsletter_receive(request):
     """
-    This function is called by mailgun's receive email feature. This is a 
+    This function is called by mailgun's receive email feature. This is a
     private API used for the newsletter app.
     """
     # params = {
@@ -42,23 +45,24 @@ def newsletter_receive(request):
     #     'Subject':'Test Newsletter theskimm'
     # }
     params = request.POST
-    
-    response = HttpResponse('OK')
-    
-    if settings.DEBUG or 'samuel' in params.get('To', ''):
+
+    response = HttpResponse("OK")
+
+    if settings.DEBUG or "samuel" in params.get("To", ""):
         logging.debug(" ---> Email newsletter: %s" % params)
-    
+
     if not params or not len(params.keys()):
         logging.debug(" ***> Email newsletter blank body: %s" % request.body)
         raise Http404
-    
+
     email_newsletter = EmailNewsletter()
     story = email_newsletter.receive_newsletter(params)
-    
+
     if not story:
         raise Http404
-        
+
     return response
+
 
 def newsletter_story(request, story_hash):
     try:
@@ -67,4 +71,4 @@ def newsletter_story(request, story_hash):
         raise Http404
 
     story = Feed.format_story(story)
-    return HttpResponse(story['story_content'])
+    return HttpResponse(story["story_content"])

@@ -2,6 +2,7 @@
 
 from vendor.munin.memcached import MuninMemcachedPlugin
 
+
 class MuninMemcachedCurrBytesPlugin(MuninMemcachedPlugin):
     title = "Memcached current bytes stored"
     args = "--base 1024"
