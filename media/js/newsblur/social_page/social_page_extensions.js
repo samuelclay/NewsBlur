@@ -5,7 +5,7 @@ $.fn.extend({
     // element to be absolutely positioned. Element must be visible.
     // Position string format is: "top -right".
     // You can pass an optional offset object with top and left offsets specified.
-    align : function(target, pos, offset) {
+    align: function (target, pos, offset) {
         var el = this;
         pos = pos || '';
         offset = offset || {};
@@ -16,25 +16,25 @@ $.fn.extend({
 
         if (target == window) {
             var b = {
-                left    : scrollLeft,
-                top     : scrollTop,
-                width   : $(window).width(),
-                height  : $(window).height()
+                left: scrollLeft,
+                top: scrollTop,
+                width: $(window).width(),
+                height: $(window).height()
             };
         } else {
             target = $(target);
             var targOff = target.offset();
             var b = {
-                left    : targOff.left,
-                top     : targOff.top,
-                width   : target.innerWidth(),
-                height  : target.innerHeight()
+                left: targOff.left,
+                top: targOff.top,
+                width: target.innerWidth(),
+                height: target.innerHeight()
             };
         }
 
         var elb = {
-            width : el.innerWidth(),
-            height : el.innerHeight()
+            width: el.innerWidth(),
+            height: el.innerHeight()
         };
 
         var left, top;
@@ -79,7 +79,7 @@ $.fn.extend({
         //   top -= offParent.offset().top;
         // }
 
-        $(el).css({position : 'absolute', left : left + 'px', top : top + 'px'});
+        $(el).css({ position: 'absolute', left: left + 'px', top: top + 'px' });
         return el;
     }
 

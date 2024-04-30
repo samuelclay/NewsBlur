@@ -1,6 +1,6 @@
 NEWSBLUR.Router = Backbone.Router.extend({
-    
-    routes : {
+
+    routes: {
         "": "index",
         "story/:slug/:guid": "story_slug",
         "story/:slug/:guid/": "story_slug",
@@ -9,21 +9,21 @@ NEWSBLUR.Router = Backbone.Router.extend({
         "site/:feed_id": "site",
         "site/:feed_id/": "site"
     },
-    
-    index: function() {
-        
+
+    index: function () {
+
     },
-    
-    story: function(guid) {
+
+    story: function (guid) {
         this.story_guid = guid.replace(/\?(.*)$/, '');
     },
-    
-    story_slug: function(slug, guid) {
+
+    story_slug: function (slug, guid) {
         this.story_guid = guid.replace(/\?(.*)$/, '');
     },
-    
-    site: function(feed_id) {
+
+    site: function (feed_id) {
         this.feed_id = feed_id;
     }
-    
+
 });

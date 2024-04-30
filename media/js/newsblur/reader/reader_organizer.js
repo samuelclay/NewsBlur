@@ -1,24 +1,24 @@
-NEWSBLUR.ReaderOrganizer = function(user_id, options) {
+NEWSBLUR.ReaderOrganizer = function (user_id, options) {
     var defaults = {
         width: 800,
         sorting: 'alphabetical',
-        onOpen: _.bind(function() {
+        onOpen: _.bind(function () {
             this.resize_modal();
         }, this),
         hierarchy: "nested",
         inverse_sorting: false
     };
-        
+
     this.options = $.extend({}, defaults, options);
-    this.model   = NEWSBLUR.assets;
+    this.model = NEWSBLUR.assets;
     this.init();
 };
 
 NEWSBLUR.ReaderOrganizer.prototype = new NEWSBLUR.Modal;
 
 _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
-    
-    init: function() {
+
+    init: function () {
         this.reset_feeds();
         this.make_modal();
         this.open_modal();
@@ -26,14 +26,14 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         this.$modal.bind('click', $.rescope(this.handle_click, this));
         this.$modal.bind('change', $.rescope(this.handle_change, this));
     },
-    
-    reset_feeds: function() {
-        NEWSBLUR.assets.feeds.each(function(feed) {
-            feed.highlight_in_all_folders(false, true, {silent: true});
+
+    reset_feeds: function () {
+        NEWSBLUR.assets.feeds.each(function (feed) {
+            feed.highlight_in_all_folders(false, true, { silent: true });
         });
     },
-    
-    make_modal: function() {
+
+    make_modal: function () {
         var self = this;
 
         this.$modal = $.make('div', { className: 'NB-modal NB-modal-organizer' }, [
@@ -43,14 +43,14 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
                 'Organize sites',
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
-            $.make('div', { className: 'NB-organizer-sidebar'}, [
+            $.make('div', { className: 'NB-organizer-sidebar' }, [
                 $.make('div', { className: 'NB-organizer-sidebar-hierarchy' }, [
                     $.make('div', { className: 'NB-organizer-sidebar-title' }, 'Show Folders'),
                     $.make('div', { className: 'NB-organizer-sidebar-container' }, [
                         $.make('ul', { className: 'segmented-control' }, [
                             $.make('li', { className: 'NB-organizer-hierarchy NB-organizer-hierarchy-nested NB-active' }, 'Nested'),
                             $.make('li', { className: 'NB-organizer-hierarchy NB-organizer-hierarchy-flat' }, 'Flat')
-                        ])                        
+                        ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-organizer-sidebar-move' }, [
@@ -100,8 +100,8 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             this.make_feeds()
         ]);
     },
-    
-    resize_modal: function(previous_height) {
+
+    resize_modal: function (previous_height) {
         var resize_height = 0;
         var $feedlist = $('.NB-feedchooser', this.$modal);
         var content_height = $feedlist.height() + 90;
@@ -110,19 +110,19 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             var chooser_height = $feedlist.height();
             var diff = Math.max(4, content_height - container_height);
             resize_height = chooser_height - diff;
-            $feedlist.css({'max-height': resize_height});
-            _.defer(_.bind(function() { this.resize_modal(content_height); }, this), 1);
+            $feedlist.css({ 'max-height': resize_height });
+            _.defer(_.bind(function () { this.resize_modal(content_height); }, this), 1);
         }
         if (resize_height) {
             this.options.resize = resize_height;
         }
     },
-    
+
     // =============
     // = Feed list =
     // =============
-    
-    make_feeds: function(options) {
+
+    make_feeds: function (options) {
         var feeds = this.model.feeds;
         if (this.options.hierarchy == "flat") {
             this.options.folders = new NEWSBLUR.Collections.Folders(NEWSBLUR.assets.feeds.pluck('id'));
@@ -133,68 +133,68 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         NEWSBLUR.Collections.Folders.organizer_sortorder = this.options.sorting;
         NEWSBLUR.Collections.Folders.organizer_inversesort = this.options.inverse_sorting;
         this.options.folders.sort();
-        
+
         this.feedlist = new NEWSBLUR.Views.FeedList({
             feed_chooser: true,
             organizer: true,
             hierarchy: this.options.hierarchy,
             sorting: this.options.sorting,
             inverse_sorting: this.options.inverse_sorting
-        }).make_feeds({folders: this.options.folders});
+        }).make_feeds({ folders: this.options.folders });
         var $feeds = this.feedlist.$el;
         if (this.options.resize) {
-            $feeds.css({'max-height': this.options.resize});
+            $feeds.css({ 'max-height': this.options.resize });
         }
         if ($feeds.data('sortable')) $feeds.data('sortable').disable();
-        
+
         // Expand collapsed folders
         $('.NB-folder-collapsed', $feeds).css({
             'display': 'block',
             'opacity': 1
         }).removeClass('NB-folder-collapsed');
-        
+
         // Pretend unfetched feeds are fine
         $('.NB-feed-unfetched', $feeds).removeClass('NB-feed-unfetched');
 
         // Make sure all folders are visible
         $('.NB-folder.NB-hidden', $feeds).removeClass('NB-hidden');
-        
+
         $('.NB-organizer-sorts', this.$modal).toggleClass('NB-sort-inverse', this.options.inverse_sorting);
-        
+
         NEWSBLUR.Collections.Folders.organizer_sortorder = null;
         this.options.folders.sort();
 
         NEWSBLUR.assets.feeds.off('change:highlighted')
-                             .on('change:highlighted', _.bind(this.change_selection, this));
-        
+            .on('change:highlighted', _.bind(this.change_selection, this));
+
         return $feeds;
     },
-    
-    make_folders: function() {
+
+    make_folders: function () {
         var $folders = $.make('div', { className: 'NB-organizer-sidebar-folderjump' }, [
             NEWSBLUR.utils.make_folders()
         ]);
-        
+
         return $folders;
     },
-    
-    replace_folders: function() {
+
+    replace_folders: function () {
         $(".NB-folders", this.$modal).replaceWith(NEWSBLUR.utils.make_folders());
     },
-    
+
     // =============
     // = Selecting =
     // =============
-    
-    change_select: function(select) {
+
+    change_select: function (select) {
         if (select == "all") {
-            this.feedlist.folder_view.highlight_feeds({force_highlight: true});
+            this.feedlist.folder_view.highlight_feeds({ force_highlight: true });
         } else if (select == "none") {
-            this.feedlist.folder_view.highlight_feeds({force_deselect: true});
+            this.feedlist.folder_view.highlight_feeds({ force_deselect: true });
         }
     },
-    
-    change_selection: function() {
+
+    change_selection: function () {
         var $title = $(".NB-organizer-selects .NB-organizer-action-title", this.$modal);
         var $move = $(".NB-action-move", this.$modal);
         var $error = $(".NB-error-move", this.$modal);
@@ -203,7 +203,7 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         // console.log(['change_selection', count]);
         $title.text(count ? count + " selected" : "Select");
         $error.text('');
-        
+
         if (!count) {
             $delete.text('Delete').addClass('NB-disabled');
             $move.text('Move').addClass('NB-disabled');
@@ -211,16 +211,16 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             $delete.text('Delete ' + Inflector.pluralize('site', count, true)).removeClass('NB-disabled');
             $move.text('Move ' + Inflector.pluralize('site', count, true)).removeClass('NB-disabled');
         }
-        
+
         NEWSBLUR.assets.feeds.off('change:highlighted')
-                             .on('change:highlighted', _.bind(this.change_selection, this));
+            .on('change:highlighted', _.bind(this.change_selection, this));
     },
-    
+
     // ===========
     // = Sorting =
     // ===========
-    
-    change_sort: function(sorting) {
+
+    change_sort: function (sorting) {
         var inverse = this.options.inverse_sorting;
         if (this.options.sorting == sorting) {
             this.options.inverse_sorting = !inverse;
@@ -230,39 +230,39 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         this.options.sorting = sorting;
         var $feedlist = $('.NB-feedchooser', this.$modal);
         var old_position = $feedlist.scrollTop();
-        
-        $(".NB-action-"+sorting, this.$modal).addClass('NB-active').siblings().removeClass('NB-active');
 
-        $(".NB-feedlist", this.$modal).replaceWith(this.make_feeds());        
+        $(".NB-action-" + sorting, this.$modal).addClass('NB-active').siblings().removeClass('NB-active');
+
+        $(".NB-feedlist", this.$modal).replaceWith(this.make_feeds());
         var $feedlist = $('.NB-feedchooser', this.$modal);
         $feedlist.scrollTop(old_position);
     },
-    
+
     // =============
     // = Hierarchy =
     // =============
-    
-    toggle_hierarchy: function(hierarchy) {
+
+    toggle_hierarchy: function (hierarchy) {
         this.options.hierarchy = hierarchy;
         $(".NB-organizer-hierarchy", this.$modal).removeClass('NB-active');
-        $(".NB-organizer-hierarchy-"+hierarchy, this.$modal).addClass('NB-active');
-        
+        $(".NB-organizer-hierarchy-" + hierarchy, this.$modal).addClass('NB-active');
+
         $(".NB-feedlist", this.$modal).replaceWith(this.make_feeds());
     },
-    
+
     // ==========
     // = Server =
     // ==========
-    
-    serialize: function() {
+
+    serialize: function () {
         var highlighted_feeds = this.feedlist.folder_view.highlighted_feeds({
             collection: this.options.folders
         });
-        
+
         return highlighted_feeds;
     },
-    
-    move_feeds: function() {
+
+    move_feeds: function () {
         var self = this;
         var highlighted_feeds = this.serialize();
         var $move = $('.NB-action-move', this.$modal);
@@ -275,12 +275,12 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         $loading.addClass('NB-active');
         $move.addClass('NB-disabled').text('Moving...');
         NEWSBLUR.reader.flags['reloading_feeds'] = true;
-        
+
         if (!this._open_folder) new_folder = null;
-        
+
         console.log(["Moving feeds by folder", highlighted_feeds, to_folder, new_folder]);
 
-        NEWSBLUR.assets.move_feeds_by_folder(highlighted_feeds, to_folder, new_folder, function() {
+        NEWSBLUR.assets.move_feeds_by_folder(highlighted_feeds, to_folder, new_folder, function () {
             NEWSBLUR.reader.flags['reloading_feeds'] = false;
             $loading.removeClass('NB-active');
             NEWSBLUR.assets.feeds.trigger('reset');
@@ -291,15 +291,15 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             if (self._open_folder) self.toggle_folder_add();
             self.replace_folders();
             $new_folder.val('');
-        }, function(error) {
+        }, function (error) {
             NEWSBLUR.reader.flags['reloading_feeds'] = false;
             $loading.removeClass('NB-active');
             self.change_selection();
             $error.show().text("Sorry, there was a problem moving feeds.");
         });
     },
-    
-    delete_feeds: function() {
+
+    delete_feeds: function () {
         var self = this;
         var highlighted_feeds = this.serialize();
         var $loading = $('.NB-modal-loading', this.$modal);
@@ -311,15 +311,15 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         NEWSBLUR.reader.flags['reloading_feeds'] = true;
 
         console.log(["Deleting feeds by folder", highlighted_feeds]);
-        
+
         if (this.options.hierarchy == 'flat') {
             // Ignore folder when flat, which will delte feed out of all folders
-            highlighted_feeds = _.map(highlighted_feeds, function(feed_folder) {
+            highlighted_feeds = _.map(highlighted_feeds, function (feed_folder) {
                 return [feed_folder[0], null];
             });
         }
-        
-        NEWSBLUR.assets.delete_feeds_by_folder(highlighted_feeds, function() {
+
+        NEWSBLUR.assets.delete_feeds_by_folder(highlighted_feeds, function () {
             NEWSBLUR.reader.flags['reloading_feeds'] = false;
             $loading.removeClass('NB-active');
             self.reset_feeds();
@@ -328,79 +328,79 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             NEWSBLUR.assets.feeds.trigger('reset');
             $delete.text('Deleted!');
             if (self._open_folder) self.toggle_folder_add();
-        }, function(error) {
+        }, function (error) {
             NEWSBLUR.reader.flags['reloading_feeds'] = false;
             $loading.removeClass('NB-active');
             self.change_selection();
             $error.show().text("Sorry, there was a problem deleting feeds.");
         });
     },
-    
+
     // ===========
     // = Actions =
     // ===========
 
-    handle_click: function(elem, e) {
+    handle_click: function (elem, e) {
         var self = this;
 
         $.targetIs(e, { tagSelector: '.NB-organizer-action', childOf: '.NB-organizer-sorts' },
-                   _.bind(function($t, $p) {
-            e.preventDefault();
-            
-            var sort = $t.attr('class').match(/\bNB-action-(\w+)\b/)[1];
-            this.change_sort(sort);
-        }, this));
-        
+            _.bind(function ($t, $p) {
+                e.preventDefault();
+
+                var sort = $t.attr('class').match(/\bNB-action-(\w+)\b/)[1];
+                this.change_sort(sort);
+            }, this));
+
         $.targetIs(e, { tagSelector: '.NB-organizer-action', childOf: '.NB-organizer-selects' },
-                   _.bind(function($t, $p) {
-            e.preventDefault();
-            
-            var select = $t.attr('class').match(/\bNB-action-select-(\w+)\b/)[1];
-            this.change_select(select);
-        }, this));
+            _.bind(function ($t, $p) {
+                e.preventDefault();
+
+                var select = $t.attr('class').match(/\bNB-action-select-(\w+)\b/)[1];
+                this.change_select(select);
+            }, this));
 
         $.targetIs(e, { tagSelector: '.NB-organizer-hierarchy' },
-                   _.bind(function($t, $p) {
-            e.preventDefault();
+            _.bind(function ($t, $p) {
+                e.preventDefault();
 
-            var hierarchy = $t.hasClass('NB-organizer-hierarchy-nested') ? 'nested' : 'flat';
-            if (this.options.hierarchy == hierarchy) return;
+                var hierarchy = $t.hasClass('NB-organizer-hierarchy-nested') ? 'nested' : 'flat';
+                if (this.options.hierarchy == hierarchy) return;
 
-            this.toggle_hierarchy(hierarchy);
-        }, this));
+                this.toggle_hierarchy(hierarchy);
+            }, this));
 
         $.targetIs(e, { tagSelector: '.NB-icon-add' },
-                   _.bind(function($t, $p) {
-            e.preventDefault();
-            
-            this.toggle_folder_add();
-        }, this));
-        
+            _.bind(function ($t, $p) {
+                e.preventDefault();
+
+                this.toggle_folder_add();
+            }, this));
+
         $.targetIs(e, { tagSelector: '.NB-action-move' },
-                   _.bind(function($t, $p) {
-            e.preventDefault();
-            
-            if ($t.is('.NB-disabled')) return;
-            this.move_feeds();
-        }, this));
-        
+            _.bind(function ($t, $p) {
+                e.preventDefault();
+
+                if ($t.is('.NB-disabled')) return;
+                this.move_feeds();
+            }, this));
+
         $.targetIs(e, { tagSelector: '.NB-action-delete' },
-                   _.bind(function($t, $p) {
-            e.preventDefault();
-            
-            if ($t.is('.NB-disabled')) return;
-            this.delete_feeds();
-        }, this));
-    },
-    
-    handle_change: function(elem, e) {
-        $.targetIs(e, { tagSelector: '.NB-folders', childOf: '.NB-organizer-sidebar-folderjump' },
-                   _.bind(function($t, $p) {
-            this.jump_to_folder($t.val());
-        }, this));
+            _.bind(function ($t, $p) {
+                e.preventDefault();
+
+                if ($t.is('.NB-disabled')) return;
+                this.delete_feeds();
+            }, this));
     },
 
-    toggle_folder_add: function() {
+    handle_change: function (elem, e) {
+        $.targetIs(e, { tagSelector: '.NB-folders', childOf: '.NB-organizer-sidebar-folderjump' },
+            _.bind(function ($t, $p) {
+                this.jump_to_folder($t.val());
+            }, this));
+    },
+
+    toggle_folder_add: function () {
         var $folder = $(".NB-add-folder", this.$modal);
         var $icon = $(".NB-icon-add", this.$modal);
 
@@ -414,21 +414,21 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
             $folder.slideDown(300);
         }
     },
-    
-    jump_to_folder: function(folder_title) {
+
+    jump_to_folder: function (folder_title) {
         if (this.options.hierarchy != 'nested') this.toggle_hierarchy('nested');
         var $feedlist = $('.NB-feedchooser', this.$modal);
-        var $folder_title = $(".folder_title_text", $feedlist).filter(function(i) {
+        var $folder_title = $(".folder_title_text", $feedlist).filter(function (i) {
             console.log(["folder", this, _.string.trim($(this).text()), folder_title]);
             return _.string.trim($(this).text()) == folder_title;
         });
-        if ($folder_title.length) $feedlist.scrollTo($folder_title, { 
+        if ($folder_title.length) $feedlist.scrollTo($folder_title, {
             duration: 850,
-            axis: 'y', 
-            easing: 'easeInOutCubic', 
-            offset: -4, 
+            axis: 'y',
+            easing: 'easeInOutCubic',
+            offset: -4,
             queue: false
         });
     }
-    
+
 });

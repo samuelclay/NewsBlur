@@ -1,12 +1,12 @@
 NEWSBLUR.ReaderPopover = Backbone.View.extend({
-    
+
     _open: false,
-    
+
     events: {
         "click .NB-modal-cancel": "close"
     },
-    
-    initialize: function(options) {
+
+    initialize: function (options) {
         _.bindAll(this, 'handle_esc');
         this.options = _.extend({}, {
             width: 236,
@@ -18,8 +18,8 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
         }, this.options, options);
         $(document).bind('keydown', 'esc', this.handle_esc);
     },
-    
-    render: function($content) {
+
+    render: function ($content) {
         var self = this;
         this._open = true;
 
@@ -29,14 +29,14 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
                 $.make('div', { className: "popover-content" }, $content || this.$el)
             ])
         ]);
-        
+
         this.$overlay = $.make('div', { className: 'NB-overlay fade ' + (this.options.overlay_top && "NB-top") });
         $('body').append(this.$overlay);
-        
+
         this.$popover.width(this.options.width);
-        
+
         $('body').append(this.$popover);
-        
+
         this.$popover.addClass(this.options.placement.replace('-', '').replace(' ', '-'));
         this.$popover.addClass(this.options.popover_class);
         this.$popover.align(this.anchor(), this.options.placement, this.options.offset);
@@ -44,7 +44,7 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
             clickable: true,
             onHide: _.bind(this.close, this)
         });
-        
+
         if (this.options.animate) {
             this.$popover.addClass("in");
             this.$overlay.addClass("in");
@@ -58,11 +58,11 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
                 this.$popover.width(this.options.width + 18);
             }
         }, this));
-        
+
         return this;
     },
-    
-    close: function(e, hide_callback) {
+
+    close: function (e, hide_callback) {
         var $el = window.a = this.$popover;
         var self = this;
         if (_.isFunction(e)) hide_callback = e;
@@ -106,48 +106,48 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
             this.remove();
             hide_callback();
         }
-        
+
         return false;
     },
-    
-    anchor: function() {
+
+    anchor: function () {
         if (_.isFunction(this.options.anchor)) {
             return this.options.anchor();
         } else {
             return $(this.options.anchor);
         }
     },
-    
-    handle_esc: function(e) {
+
+    handle_esc: function (e) {
         if (this._open) {
             e.preventDefault();
             e.stopPropagation();
-            
+
             this.close();
-            
+
             return false;
         }
     }
-    
+
 }, {
-    
-    create: function(options) {
+
+    create: function (options) {
         if (NEWSBLUR.ReaderPopover._popover && NEWSBLUR.ReaderPopover._popover._open) {
             NEWSBLUR.ReaderPopover._popover.close();
         }
-        
+
         NEWSBLUR.ReaderPopover._popover = new this(options);
-        
+
     },
-    
-    close: function() {
+
+    close: function () {
         if (NEWSBLUR.ReaderPopover._popover && NEWSBLUR.ReaderPopover._popover._open) {
             NEWSBLUR.ReaderPopover._popover.close();
         }
     },
-    
-    is_open: function() {
+
+    is_open: function () {
         return NEWSBLUR.ReaderPopover._popover && NEWSBLUR.ReaderPopover._popover._open;
     }
-    
+
 });
