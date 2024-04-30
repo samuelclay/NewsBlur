@@ -22,16 +22,16 @@ public class ClassifierMapTypeAdapter implements JsonDeserializer<Map<String,Cla
     @Override
     public Map<String,Classifier> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 
-        Map<String,Classifier> result = new HashMap<String,Classifier>();
+        Map<String,Classifier> result = new HashMap<>();
 
         if (jsonElement.isJsonObject()) {
             JsonObject o = jsonElement.getAsJsonObject();
             if (o.get("authors") != null) { // this is our hint that this is a bare classifiers object
-                Classifier c = (Classifier) jsonDeserializationContext.deserialize(jsonElement, Classifier.class);
+                Classifier c = jsonDeserializationContext.deserialize(jsonElement, Classifier.class);
                 result.put( "-1", c);
             } else { // otherwise, we have a map of IDs to classifiers
                 for (Map.Entry<String, JsonElement> entry : o.entrySet()) {
-                    Classifier c = (Classifier) jsonDeserializationContext.deserialize(entry.getValue(), Classifier.class);
+                    Classifier c = jsonDeserializationContext.deserialize(entry.getValue(), Classifier.class);
                     result.put(entry.getKey(), c);
                 }
             }

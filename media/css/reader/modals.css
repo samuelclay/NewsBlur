@@ -1,4 +1,3 @@
-
 /* ================ */
 /* = Modal Dialog = */
 /* ================ */
@@ -54,12 +53,14 @@
 .NB-modal.NB-signed-out .NB-fieldset.NB-anonymous-ok {
     opacity: 1;
 }
+
 fieldset {
     border: 0;
     border-top: 1px solid #E6E6E6;
     padding: 0 12px;
     margin: 12px 0 0;
 }
+
 fieldset legend {
     padding: 4px 16px;
     font-weight: bold;
@@ -117,6 +118,7 @@ fieldset legend {
     float: left;
     margin: 0 12px 0 0;
 }
+
 .NB-modal .NB-icon-dropdown {
     display: inline-block;
     padding: 0 6px;
@@ -126,6 +128,7 @@ fieldset legend {
     background-size: 8px;
     cursor: pointer;
 }
+
 .NB-modal h5,
 .NB-module h5,
 .NB-module-header {
@@ -133,7 +136,7 @@ fieldset legend {
     padding: 14px 12px;
     display: flex;
     align-items: center;
-    
+
     background-color: #EAECE5;
     border-radius: 3px;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
@@ -144,10 +147,12 @@ fieldset legend {
     text-align: center;
     position: relative;
 }
+
 .NB-module h5,
 .NB-splash-modules .NB-module-header {
     margin: 0 0 24px;
 }
+
 .NB-modal h5 {
     border: none;
     border-radius: 4px 4px 0 0;
@@ -159,8 +164,7 @@ fieldset legend {
     clear: both;
 }
 
-.NB-modal .NB-modal-field h5 {
-}
+.NB-modal .NB-modal-field h5 {}
 
 .NB-modal .NB-modal-field input[type=text] {
     width: 446px;
@@ -169,9 +173,9 @@ fieldset legend {
     padding: 2px;
     margin: 0px 4px 6px;
     border: 1px solid #606060;
-    -moz-box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
-    -webkit-box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
-    box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
+    -moz-box-shadow: 2px 2px 0 rgba(50, 50, 50, 0.15);
+    -webkit-box-shadow: 2px 2px 0 rgba(50, 50, 50, 0.15);
+    box-shadow: 2px 2px 0 rgba(50, 50, 50, 0.15);
 }
 
 .NB-modal .NB-modal-field input[type=checkbox] {
@@ -186,6 +190,7 @@ fieldset legend {
     color: #7E0418;
     padding: 0 0 12px 0;
 }
+
 .NB-modal .NB-modal-title {
     font-weight: bold;
     color: #303030;
@@ -193,18 +198,20 @@ fieldset legend {
 }
 
 .NB-modal .NB-modal-subtitle {
-    margin:12px 0 0;
-    padding:8px 12px;
+    margin: 12px 0 0;
+    padding: 8px 12px;
     font-size: 14px;
     position: relative;
     background-color: #F8F8F6;
     overflow: hidden;
     clear: both;
 }
+
 .NB-modal .NB-modal-feed-title {
     margin: 0;
     float: left;
 }
+
 .NB-modal .NB-modal-feed-subscribers {
     font-size: 12px;
     background-color: #909090;
@@ -221,6 +228,7 @@ fieldset legend {
     text-shadow: none;
     float: left;
 }
+
 .NB-modal .NB-modal-feed-heading {
     display: block;
     margin: 0 40px 0 23px;
@@ -235,17 +243,17 @@ fieldset legend {
 }
 
 .NB-modal .NB-modal-subtitle-right {
-  float: right;
-  clear: both;
-  font-size: 11px;
-  text-transform: uppercase;
-  color: #d0d0d0;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    float: right;
+    clear: both;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #d0d0d0;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
 }
 
 .NB-modal .NB-modal-subtitle-right-count {
-  color: #A8A8A8;
-  padding-right: 4px;
+    color: #A8A8A8;
+    padding-right: 4px;
 }
 
 .NB-modal-submit-bottom {
@@ -284,10 +292,12 @@ fieldset legend {
     font-weight: bold;
     color: #FCFCFC;
 }
+
 .NB-modal-submit-green:hover {
     background-color: #216200;
     background-image: linear-gradient(to top, #1E5000, #216200);
 }
+
 .NB-modal-submit-green:active {
     background-color: #1E5000;
     background-image: linear-gradient(to top, #1B3F00, #1E5000);
@@ -299,10 +309,12 @@ fieldset legend {
     color: #E4E4E4;
     font-weight: bold;
 }
+
 .NB-modal-submit-red:hover {
     background-color: #7D0D25;
     background-image: linear-gradient(to top, #68001B, #68001B);
 }
+
 .NB-modal-submit-red:active {
     background-color: #68001B;
     background-image: linear-gradient(to top, #540015, #68001B);
@@ -318,6 +330,7 @@ fieldset legend {
     background-image: linear-gradient(to top, #CBCAD3, #d5d4dB);
     color: #505050;
 }
+
 .NB-modal-submit-back:hover,
 .NB-modal-submit-reset:hover,
 .NB-modal-submit-close:hover,
@@ -325,6 +338,7 @@ fieldset legend {
     background-color: #CBCAD3;
     background-image: linear-gradient(to top, #BDBCC7, #CBCAD3);
 }
+
 .NB-modal-submit-back:active,
 .NB-modal-submit-reset:active,
 .NB-modal-submit-close:active,
@@ -332,6 +346,7 @@ fieldset legend {
     background-color: #BDBCC7;
     background-image: linear-gradient(to top, #ADACBB, #BDBCC7);
 }
+
 .NB-modal-submit-save.NB-disabled,
 .NB-modal-submit-green.NB-disabled,
 .NB-modal-submit-button.NB-disabled,
@@ -351,50 +366,41 @@ fieldset legend {
 
 .NB-modal-submit-close {
     background-color: #525255;
-    background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.16, #192716),
-        color-stop(0.84, #2E432B)
-    );
-    background-image: -moz-linear-gradient(
-        center bottom,
-        #192716 16%,
-        #2E432B 84%
-    );
+    background-image: -webkit-gradient(linear,
+            left bottom,
+            left top,
+            color-stop(0.16, #192716),
+            color-stop(0.84, #2E432B));
+    background-image: -moz-linear-gradient(center bottom,
+            #192716 16%,
+            #2E432B 84%);
     color: white;
 }
+
 .NB-modal-submit-close:hover {
     background-color: #CBCAD3;
-    background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.16, #131D10),
-        color-stop(0.84, #192716)
-    );
-    background-image: -moz-linear-gradient(
-        center bottom,
-        #131D10 16%,
-        #192716 84%
-    );
+    background-image: -webkit-gradient(linear,
+            left bottom,
+            left top,
+            color-stop(0.16, #131D10),
+            color-stop(0.84, #192716));
+    background-image: -moz-linear-gradient(center bottom,
+            #131D10 16%,
+            #192716 84%);
 }
+
 .NB-modal-submit-close:active {
     background-color: #BDBCC7;
-    background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.16, #0A0D09),
-        color-stop(0.84, #131D10)
-    );
-    background-image: -moz-linear-gradient(
-        center bottom,
-        #0A0D09 16%,
-        #131D10 84%
-    );
+    background-image: -webkit-gradient(linear,
+            left bottom,
+            left top,
+            color-stop(0.16, #0A0D09),
+            color-stop(0.84, #131D10));
+    background-image: -moz-linear-gradient(center bottom,
+            #0A0D09 16%,
+            #131D10 84%);
 }
+
 .NB-modal-submit-close,
 .NB-modal-submit-grey {
     font-weight: bold;
@@ -417,6 +423,7 @@ fieldset legend {
     margin: 24px 0 0;
     overflow: hidden;
 }
+
 .NB-modal .NB-fieldset:first-child {
     margin-top: 0;
 }
@@ -432,6 +439,7 @@ fieldset legend {
     float: right;
     margin: 3px 0 12px;
 }
+
 .NB-modal .NB-modal-feed-chooser-container .NB-modal-feed-chooser {
     width: 250px;
     margin: 0 0 12px;
@@ -463,9 +471,11 @@ fieldset legend {
 .NB-modal .NB-modal-tab:hover {
     background-color: #E4E5DF;
 }
+
 .NB-modal .NB-modal-tab:first-child {
     border-top-left-radius: 2px;
 }
+
 .NB-modal .NB-modal-tab:last-child {
     border-right: 1px solid #A0A0A0;
     border-top-right-radius: 2px;
@@ -491,8 +501,9 @@ fieldset legend {
     font-size: 14px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
-    box-sizing: border-box;    
+    box-sizing: border-box;
 }
+
 .NB-modal .NB-tab.NB-active {
     display: block;
 }

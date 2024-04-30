@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.newsblur.R;
@@ -27,11 +26,7 @@ public class AddFeedExternal extends NbActivity implements AddFeedFragment.AddFe
 
         UIUtils.setupToolbar(this, R.drawable.logo, "Add Feed", true);
 
-        binding.loadingThrob.setEnabled(!ViewUtils.isPowerSaveMode(this));
-        binding.loadingThrob.setColors(ContextCompat.getColor(this, R.color.refresh_1),
-                ContextCompat.getColor(this, R.color.refresh_2),
-                ContextCompat.getColor(this, R.color.refresh_3),
-                ContextCompat.getColor(this, R.color.refresh_4));
+        binding.loadingIndicator.setEnabled(!ViewUtils.isPowerSaveMode(this));
 
         Intent intent = getIntent();
         Uri uri = intent.getData();
@@ -53,7 +48,7 @@ public class AddFeedExternal extends NbActivity implements AddFeedFragment.AddFe
             public void run() {
                 binding.progressText.setText(R.string.adding_feed_progress);
                 binding.progressText.setVisibility(View.VISIBLE);
-                binding.loadingThrob.setVisibility(View.VISIBLE);
+                binding.loadingIndicator.setVisibility(View.VISIBLE);
             }
         });
     }

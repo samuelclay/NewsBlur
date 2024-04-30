@@ -30,9 +30,9 @@ import com.newsblur.fragment.ReadingPagerFragment
 import com.newsblur.keyboard.KeyboardEvent
 import com.newsblur.keyboard.KeyboardListener
 import com.newsblur.keyboard.KeyboardManager
-import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_REBUILD
-import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_STATUS
-import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_STORY
+import com.newsblur.service.NbSyncManager.UPDATE_REBUILD
+import com.newsblur.service.NbSyncManager.UPDATE_STATUS
+import com.newsblur.service.NbSyncManager.UPDATE_STORY
 import com.newsblur.service.NBSyncService
 import com.newsblur.util.AppConstants
 import com.newsblur.util.CursorFilters
@@ -116,7 +116,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
     override fun onCreate(savedInstanceBundle: Bundle?) {
         super.onCreate(savedInstanceBundle)
-        storiesViewModel = ViewModelProvider(this).get(StoriesViewModel::class.java)
+        storiesViewModel = ViewModelProvider(this)[StoriesViewModel::class.java]
         binding = ActivityReadingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -159,20 +159,20 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         getActiveStoriesCursor(this, true)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        super.onSaveInstanceState(savedInstanceState)
         if (storyHash != null) {
-            outState.putString(EXTRA_STORY_HASH, storyHash)
+            savedInstanceState.putString(EXTRA_STORY_HASH, storyHash)
         } else if (pager != null) {
             val currentItem = pager!!.currentItem
             val story = readingAdapter!!.getStory(currentItem)
             if (story != null) {
-                outState.putString(EXTRA_STORY_HASH, story.storyHash)
+                savedInstanceState.putString(EXTRA_STORY_HASH, story.storyHash)
             }
         }
 
         if (startingUnreadCount != 0) {
-            outState.putInt(BUNDLE_STARTING_UNREAD, startingUnreadCount)
+            savedInstanceState.putInt(BUNDLE_STARTING_UNREAD, startingUnreadCount)
         }
     }
 

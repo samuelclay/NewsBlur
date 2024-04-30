@@ -31,7 +31,9 @@ object WidgetUtils {
         val pendingIntent = getImmutableBroadcast(context, RC_WIDGET_UPDATE, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val widgetUpdateInterval = 1000 * 60 * 5
         val startAlarmAt = SystemClock.currentThreadTimeMillis() + widgetUpdateInterval
-        alarmManager.setInexactRepeating(AlarmManager.RTC, startAlarmAt, widgetUpdateInterval.toLong(), pendingIntent)
+        pendingIntent?.let {
+            alarmManager.setInexactRepeating(AlarmManager.RTC, startAlarmAt, widgetUpdateInterval.toLong(), it)
+        }
     }
 
     @JvmStatic
@@ -39,7 +41,9 @@ object WidgetUtils {
         Log.d(this.javaClass.name, "disableWidgetUpdate")
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         val pendingIntent = getImmutableBroadcast(context, RC_WIDGET_UPDATE, getUpdateIntent(context), PendingIntent.FLAG_UPDATE_CURRENT)
-        alarmManager.cancel(pendingIntent)
+        pendingIntent?.let {
+            alarmManager.cancel(it)
+        }
     }
 
     @JvmStatic
