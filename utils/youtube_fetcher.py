@@ -1,12 +1,11 @@
 import datetime
-from utils import json_functions as json
-import isodate
 import re
 import urllib.error
 import urllib.parse
 import urllib.request
 
 import dateutil.parser
+import isodate
 import requests
 from django.conf import settings
 from django.utils import feedgenerator
@@ -14,8 +13,9 @@ from django.utils.html import linebreaks
 
 from apps.reader.models import UserSubscription
 from apps.social.models import MSocialServices
-from utils.story_functions import linkify
+from utils import json_functions as json
 from utils import log as logging
+from utils.story_functions import linkify
 
 
 class YoutubeFetcher:

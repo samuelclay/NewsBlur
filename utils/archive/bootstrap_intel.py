@@ -1,13 +1,16 @@
 import sys
-from mongoengine.queryset import OperationError
-from mongoengine.errors import ValidationError
-from apps.analyzer.models import MClassifierFeed
-from apps.analyzer.models import MClassifierAuthor
-from apps.analyzer.models import MClassifierTag
-from apps.analyzer.models import MClassifierTitle
 
-for classifier_cls in [MClassifierFeed, MClassifierAuthor, 
-                       MClassifierTag, MClassifierTitle]:
+from mongoengine.errors import ValidationError
+from mongoengine.queryset import OperationError
+
+from apps.analyzer.models import (
+    MClassifierAuthor,
+    MClassifierFeed,
+    MClassifierTag,
+    MClassifierTitle,
+)
+
+for classifier_cls in [MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle]:
     print(" ================================================================= ")
     print(("                  Now on %s " % classifier_cls.__name__))
     print(" ================================================================= ")
@@ -28,4 +31,3 @@ for classifier_cls in [MClassifierFeed, MClassifierAuthor,
         except ValidationError as e:
             print((" ***> ValidationError error on: %s" % e))
             print((" ***> Original classifier: %s" % classifier.__dict__))
-

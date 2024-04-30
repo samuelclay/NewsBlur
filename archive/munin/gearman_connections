@@ -2,6 +2,7 @@
 
 from vendor.munin.gearman import MuninGearmanPlugin
 
+
 class MuninGearmanConnectionsPlugin(MuninGearmanPlugin):
     title = "Gearman Connections"
     args = "--base 1000"

@@ -3,6 +3,7 @@
 
 from vendor.munin.mongodb import MuninMongoDBPlugin
 
+
 class MongoDBIndexMissesPlugin(MuninMongoDBPlugin):
     args = "-l 0 --base 1000"
     vlabel = "misses"

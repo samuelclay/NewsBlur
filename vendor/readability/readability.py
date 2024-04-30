@@ -1,22 +1,17 @@
 #!/usr/bin/env python
 from __future__ import print_function
+
 import logging
 import re
 import sys
 
 from lxml.etree import tounicode
-from lxml.html import document_fromstring
-from lxml.html import fragment_fromstring
+from lxml.html import document_fromstring, fragment_fromstring
 
-from .cleaners import clean_attributes
-from .cleaners import html_cleaner
-from .htmls import build_doc
-from .htmls import get_body
-from .htmls import get_title
-from .htmls import shorten_title
-from .compat import str_, bytes_, tostring_, pattern_type
+from .cleaners import clean_attributes, html_cleaner
+from .compat import bytes_, pattern_type, str_, tostring_
 from .debug import describe, text_content
-
+from .htmls import build_doc, get_body, get_title, shorten_title
 
 log = logging.getLogger("readability.readability")
 
@@ -34,9 +29,7 @@ REGEXES = {
         r"combx|comment|com-|contact|foot|footer|footnote|masthead|media|meta|outbrain|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget",
         re.I,
     ),
-    "divToPElementsRe": re.compile(
-        r"<(a|blockquote|dl|div|img|ol|p|pre|table|ul)", re.I
-    ),
+    "divToPElementsRe": re.compile(r"<(a|blockquote|dl|div|img|ol|p|pre|table|ul)", re.I),
     #'replaceBrsRe': re.compile(r'(<br[^>]*>[ \n\r\t]*){2,}',re.I),
     #'replaceFontsRe': re.compile(r'<(\/?)font[^>]*>',re.I),
     #'trimRe': re.compile(r'^\s+|\s+$/'),
@@ -82,9 +75,9 @@ def compile_pattern(elements):
     elif isinstance(elements, (str_, bytes_)):
         if isinstance(elements, bytes_):
             elements = str_(elements, "utf-8")
-        elements = elements.split(u",")
+        elements = elements.split(",")
     if isinstance(elements, (list, tuple)):
-        return re.compile(u"|".join([re.escape(x.strip()) for x in elements]), re.U)
+        return re.compile("|".join([re.escape(x.strip()) for x in elements]), re.U)
     else:
         raise Exception("Unknown type for the pattern: {}".format(type(elements)))
         # assume string or string like object
@@ -223,28 +216,16 @@ class Document:
                 best_candidate = self.select_best_candidate(candidates)
 
                 if best_candidate:
-                    article = self.get_article(
-                        candidates, best_candidate, html_partial=html_partial
-                    )
+                    article = self.get_article(candidates, best_candidate, html_partial=html_partial)
                 else:
                     if ruthless:
                         log.info("ruthless removal did not work. ")
                         ruthless = False
-                        log.debug(
-                            (
-                                "ended up stripping too much - "
-                                "going for a safer _parse"
-                            )
-                        )
+                        log.debug(("ended up stripping too much - " "going for a safer _parse"))
                         # try again
                         continue
                     else:
-                        log.debug(
-                            (
-                                "Ruthless and lenient parsing did not work. "
-                                "Returning raw html"
-                            )
-                        )
+                        log.debug(("Ruthless and lenient parsing did not work. " "Returning raw html"))
                         article = self.html.find("body")
                         if article is None:
                             article = self.html
@@ -301,11 +282,7 @@ class Document:
 
                 if node_length > 80 and link_density < 0.25:
                     append = True
-                elif (
-                    node_length <= 80
-                    and link_density == 0
-                    and re.search(r"\.( |$)", node_content)
-                ):
+                elif node_length <= 80 and link_density == 0 and re.search(r"\.( |$)", node_content):
                     append = True
 
             if append:
@@ -323,9 +300,7 @@ class Document:
         if not candidates:
             return None
 
-        sorted_candidates = sorted(
-            candidates.values(), key=lambda x: x["content_score"], reverse=True
-        )
+        sorted_candidates = sorted(candidates.values(), key=lambda x: x["content_score"], reverse=True)
         for candidate in sorted_candidates[:5]:
             elem = candidate["elem"]
             log.debug("Top 5 : %6.3f %s" % (candidate["content_score"], describe(elem)))
@@ -387,8 +362,7 @@ class Document:
             ld = self.get_link_density(elem)
             score = candidate["content_score"]
             log.debug(
-                "Branch %6.3f %s link density %.3f -> %6.3f"
-                % (score, describe(elem), ld, score * (1 - ld))
+                "Branch %6.3f %s link density %.3f -> %6.3f" % (score, describe(elem), ld, score * (1 - ld))
             )
             candidate["content_score"] *= 1 - ld
 
@@ -463,9 +437,7 @@ class Document:
             # are not direct children of elem
             # This results in incorrect results in case there is an <img>
             # buried within an <a> for example
-            if not REGEXES["divToPElementsRe"].search(
-                str_(b"".join(map(tostring_, list(elem))))
-            ):
+            if not REGEXES["divToPElementsRe"].search(str_(b"".join(map(tostring_, list(elem))))):
                 # log.debug("Altering %s to p" % (describe(elem)))
                 elem.tag = "p"
                 # print "Fixed element "+describe(elem)
@@ -510,15 +482,15 @@ class Document:
 
         for elem in self.tags(node, "iframe"):
             if "src" in elem.attrib and REGEXES["videoRe"].search(elem.attrib["src"]):
-                elem.text = "VIDEO"  # ADD content to iframe text node to force <iframe></iframe> proper output
+                elem.text = (
+                    "VIDEO"  # ADD content to iframe text node to force <iframe></iframe> proper output
+                )
             else:
                 elem.drop_tree()
 
         allowed = {}
         # Conditionally clean <table>s, <ul>s, and <div>s
-        for el in self.reverse_tags(
-            node, "table", "ul", "div", "aside", "header", "footer", "section"
-        ):
+        for el in self.reverse_tags(node, "table", "ul", "div", "aside", "header", "footer", "section"):
             if el in allowed:
                 continue
             weight = self.class_weight(el)
@@ -532,7 +504,11 @@ class Document:
             if weight + content_score < 0:
                 log.debug(
                     "Removed %s with score %6.3f and weight %-3s"
-                    % (describe(el), content_score, weight,)
+                    % (
+                        describe(el),
+                        content_score,
+                        weight,
+                    )
                 )
                 el.drop_tree()
             elif el.text_content().count(",") < 10:
@@ -572,16 +548,10 @@ class Document:
                     reason = "less than 3x <p>s than <input>s"
                     to_remove = True
                 elif content_length < MIN_LEN and counts["img"] == 0:
-                    reason = (
-                        "too short content length %s without a single image"
-                        % content_length
-                    )
+                    reason = "too short content length %s without a single image" % content_length
                     to_remove = True
                 elif content_length < MIN_LEN and counts["img"] > 2:
-                    reason = (
-                        "too short content length %s and too many images"
-                        % content_length
-                    )
+                    reason = "too short content length %s and too many images" % content_length
                     to_remove = True
                 elif weight < 25 and link_density > 0.2:
                     reason = "too many links %.3f for its weight %s" % (
@@ -595,12 +565,8 @@ class Document:
                         weight,
                     )
                     to_remove = True
-                elif (counts["embed"] == 1 and content_length < 75) or counts[
-                    "embed"
-                ] > 1:
-                    reason = (
-                        "<embed>s with too short content length, or too many <embed>s"
-                    )
+                elif (counts["embed"] == 1 and content_length < 75) or counts["embed"] > 1:
+                    reason = "<embed>s with too short content length, or too many <embed>s"
                     to_remove = True
                 elif not content_length:
                     reason = "no content"
@@ -661,8 +627,7 @@ class Document:
                     el.drop_tree()
                 else:
                     log.debug(
-                        "Not removing %s of length %s: %s"
-                        % (describe(el), content_length, text_content(el))
+                        "Not removing %s of length %s: %s" % (describe(el), content_length, text_content(el))
                     )
 
         self.html = node
@@ -676,15 +641,9 @@ def main():
 
     parser = OptionParser(usage="%prog: [options] [file]")
     parser.add_option("-v", "--verbose", action="count", default=0)
-    parser.add_option(
-        "-b", "--browser", default=None, action="store_true", help="open in browser"
-    )
-    parser.add_option(
-        "-l", "--log", default=None, help="save logs into file (appended)"
-    )
-    parser.add_option(
-        "-u", "--url", default=None, help="use URL instead of a local file"
-    )
+    parser.add_option("-b", "--browser", default=None, action="store_true", help="open in browser")
+    parser.add_option("-l", "--log", default=None, help="save logs into file (appended)")
+    parser.add_option("-u", "--url", default=None, help="use URL instead of a local file")
     parser.add_option("-x", "--xpath", default=None, help="add original xpath")
     parser.add_option(
         "-p",
@@ -717,7 +676,9 @@ def main():
     if options.url:
         headers = {"User-Agent": "Mozilla/5.0"}
         if sys.version_info[0] == 3:
-            import urllib.request, urllib.parse, urllib.error
+            import urllib.error
+            import urllib.parse
+            import urllib.request
 
             request = urllib.request.Request(options.url, None, headers)
             file = urllib.request.urlopen(request)
