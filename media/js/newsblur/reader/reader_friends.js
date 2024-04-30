@@ -1,8 +1,8 @@
-NEWSBLUR.ReaderFriends = function(options) {
+NEWSBLUR.ReaderFriends = function (options) {
     var defaults = {
         width: 800
     };
-        
+
     this.options = $.extend({}, defaults, options);
     this.sync_checks = 0;
     this.runner();
@@ -11,8 +11,8 @@ NEWSBLUR.ReaderFriends = function(options) {
 NEWSBLUR.ReaderFriends.prototype = new NEWSBLUR.Modal;
 
 _.extend(NEWSBLUR.ReaderFriends.prototype, {
-    
-    runner: function() {
+
+    runner: function () {
         this.make_modal();
         this.open_modal();
         this.fetch_friends();
@@ -22,10 +22,10 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         this.$modal.bind('keyup', $.rescope(this.handle_keyup, this));
         this.handle_profile_counts();
     },
-    
-    make_modal: function() {
+
+    make_modal: function () {
         var self = this;
-        
+
         this.$modal = $.make('div', { className: 'NB-modal NB-modal-friends' }, [
             $.make('div', { className: 'NB-modal-tabs' }, [
                 $.make('div', { className: 'NB-modal-loading' }),
@@ -59,11 +59,11 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             $.make('div', { className: 'NB-tab NB-tab-profile' }, [
                 $.make('fieldset', [
                     $.make('legend', 'Profile picture'),
-                    $.make('div', { className: 'NB-modal-section NB-friends-profilephoto'})
+                    $.make('div', { className: 'NB-modal-section NB-friends-profilephoto' })
                 ]),
                 $.make('fieldset', [
                     $.make('legend', 'Profile'),
-                    $.make('div', { className: 'NB-modal-section NB-friends-profile'})
+                    $.make('div', { className: 'NB-modal-section NB-friends-profile' })
                 ]),
                 $.make('div', { className: 'NB-modal-submit-grey NB-profile-save-button NB-modal-submit-button' }, 'Save my profile')
             ]),
@@ -71,10 +71,10 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             $.make('div', { className: 'NB-tab NB-tab-followers' })
         ]);
     },
-    
-    fetch_friends: function(callback) {
+
+    fetch_friends: function (callback) {
         $('.NB-modal-loading', this.$modal).addClass('NB-active');
-        NEWSBLUR.assets.fetch_friends(_.bind(function(data) {
+        NEWSBLUR.assets.fetch_friends(_.bind(function (data) {
             this.profile = NEWSBLUR.assets.user_profile.clone();
             this.services = data.services;
             this.autofollow = data.autofollow;
@@ -85,45 +85,45 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             this.make_following_tab();
             callback && callback();
             _.defer(_.bind(this.resize, this));
-        }, this), _.bind(function(data) {
+        }, this), _.bind(function (data) {
             console.log(['Friends fetch error', data]);
             this.make_find_friends_and_services();
             this.make_profile_section();
             this.make_followers_tab();
             this.make_following_tab();
             callback && callback();
-            _.defer(_.bind(this.resize, this));            
+            _.defer(_.bind(this.resize, this));
         }, this));
     },
-    
-    check_services_sync_status: function() {
-        NEWSBLUR.assets.fetch_friends(_.bind(function(data) {
+
+    check_services_sync_status: function () {
+        NEWSBLUR.assets.fetch_friends(_.bind(function (data) {
             console.log(["Find friends", data]);
             this.profile = NEWSBLUR.assets.user_profile;
             this.services = data.services;
             // if (!this.services['twitter'].syncing && !this.services['facebook'].syncing) {
-                clearTimeout(this.sync_interval);
-                this.make_find_friends_and_services();
+            clearTimeout(this.sync_interval);
+            this.make_find_friends_and_services();
             // }
-        }, this), _.bind(function(data) {
+        }, this), _.bind(function (data) {
             console.log(['Friends fetch error', data]);
             clearTimeout(this.sync_interval);
             this.make_find_friends_and_services();
         }, this));
     },
-    
-    make_find_friends_and_services: function() {
+
+    make_find_friends_and_services: function () {
         $('.NB-modal-loading', this.$modal).removeClass('NB-active');
         var $services = $('.NB-friends-services', this.$modal).empty();
         var service_syncing = false;
-        
-        _.each(['twitter', 'facebook'], _.bind(function(service) {
+
+        _.each(['twitter', 'facebook'], _.bind(function (service) {
             var $service;
-            
-            if (this.services && this.services[service][service+'_uid']) {
+
+            if (this.services && this.services[service][service + '_uid']) {
                 var syncing = this.services[service].syncing;
                 if (syncing) service_syncing = true;
-                $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service + (this.services[service].syncing ? ' NB-friends-service-syncing' : '') }, [
+                $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-' + service + (this.services[service].syncing ? ' NB-friends-service-syncing' : '') }, [
                     $.make('div', { className: 'NB-friends-service-title' }, NEWSBLUR.utils.service_name(service)),
                     $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-grey' }, [
                         $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_service.png' }),
@@ -131,7 +131,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                     ])
                 ]);
             } else {
-                $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service }, [
+                $service = $.make('div', { className: 'NB-friends-service NB-friends-service-' + service }, [
                     $.make('div', { className: 'NB-friends-service-title' }, NEWSBLUR.utils.service_name(service)),
                     $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-green' }, [
                         $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_service_off.png' }),
@@ -141,8 +141,8 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             }
             $services.append($service);
         }, this));
-       
-        var $autofollow = $.make('div', { className: 'NB-friends-service NB-friends-autofollow'}, [
+
+        var $autofollow = $.make('div', { className: 'NB-friends-service NB-friends-autofollow' }, [
             $.make('input', { type: 'checkbox', className: 'NB-friends-autofollow-checkbox', id: 'NB-friends-autofollow-checkbox', checked: this.autofollow ? 'checked' : null }),
             $.make('label', { className: 'NB-friends-autofollow-label', 'for': 'NB-friends-autofollow-checkbox' }, [
                 'Auto-follow',
@@ -151,7 +151,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             ])
         ]);
         $services.prepend($autofollow);
-        
+
         $('.NB-friends-search').html($.make('div', [
             $.make('div', { className: "NB-module-search-input NB-module-search-people" }, [
                 $.make('div', { className: "NB-search-close" }),
@@ -163,10 +163,10 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             $.make('div', { className: 'NB-loading NB-friends-search-loading' }),
             $.make('div', { className: 'NB-friends-search-badges' })
         ]));
-        
+
         var $findlist = $('.NB-friends-findlist', this.$modal).empty();
         if (this.recommended_users && this.recommended_users.length) {
-            _.each(this.recommended_users, function(profile) {
+            _.each(this.recommended_users, function (profile) {
                 var profile_model = new NEWSBLUR.Models.User(profile);
                 var $profile_badge = new NEWSBLUR.Views.SocialProfileBadge({
                     model: profile_model
@@ -177,21 +177,21 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             var $ghost = $.make('div', { className: 'NB-ghost' }, 'Nobody left to recommend. Good job!');
             $findlist.append($ghost);
         }
-        
+
         if (service_syncing) {
             clearTimeout(this.sync_interval);
             this.sync_checks += 1;
-            this.sync_interval = _.delay(_.bind(function() {
+            this.sync_interval = _.delay(_.bind(function () {
                 this.check_services_sync_status();
             }, this), this.sync_checks * 1000);
         }
     },
-    
-    make_profile_section: function() {
+
+    make_profile_section: function () {
         var $badge = $('.NB-friends-findfriends-profile', this.$modal).empty();
         var $profile_badge;
         var profile = this.profile;
-        
+
         // if (!profile.get('location') && !profile.get('bio') && !profile.get('website')) {
         //     $profile_badge = $.make('a', { 
         //         className: 'NB-friends-profile-link NB-modal-submit-button NB-modal-submit-green', 
@@ -202,16 +202,16 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         //         $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/eye.png' })
         //     ]);
         // } else {
-            $profile_badge = new NEWSBLUR.Views.SocialProfileBadge({
-                model: profile,
-                show_edit_button: true
-            });
+        $profile_badge = new NEWSBLUR.Views.SocialProfileBadge({
+            model: profile,
+            show_edit_button: true
+        });
         // }
-        
+
         $badge.append($profile_badge);
     },
-    
-    make_followers_tab: function() {
+
+    make_followers_tab: function () {
         var $tab = $('.NB-tab-followers', this.$modal).empty();
         if (this.profile.get('follower_count') <= 0) {
             var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'Nobody has yet subscribed to your shared stories.');
@@ -224,13 +224,13 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 ])
             ]);
             $tab.append($heading);
-            NEWSBLUR.assets.follower_profiles.each(_.bind(function(profile) {
-                $tab.append(new NEWSBLUR.Views.SocialProfileBadge({model: profile}));
+            NEWSBLUR.assets.follower_profiles.each(_.bind(function (profile) {
+                $tab.append(new NEWSBLUR.Views.SocialProfileBadge({ model: profile }));
             }, this));
         }
     },
-    
-    make_following_tab: function() {
+
+    make_following_tab: function () {
         var $tab = $('.NB-tab-following', this.$modal).empty();
         if (this.profile.get('following_count') <= 0) {
             var $ghost = $.make('div', { className: 'NB-ghost NB-modal-section' }, 'You have not yet subscribed to anybody\'s shared stories.');
@@ -243,15 +243,15 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 ])
             ]);
             $tab.append($heading);
-            NEWSBLUR.assets.following_profiles.each(_.bind(function(profile) {
-                $tab.append(new NEWSBLUR.Views.SocialProfileBadge({model: profile}));
+            NEWSBLUR.assets.following_profiles.each(_.bind(function (profile) {
+                $tab.append(new NEWSBLUR.Views.SocialProfileBadge({ model: profile }));
             }, this));
         }
     },
-    
-    open_modal: function(callback) {
+
+    open_modal: function (callback) {
         var self = this;
-        
+
         this.$modal.modal({
             'minWidth': this.options.width,
             'maxWidth': this.options.width,
@@ -259,27 +259,27 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
                     dialog.container.fadeIn(200);
-                    dialog.data.fadeIn(200, function() {
+                    dialog.data.fadeIn(200, function () {
                         if (self.options.onOpen) {
                             self.options.onOpen();
                         }
                     });
-                    setTimeout(function() {
+                    setTimeout(function () {
                         $(window).resize();
                     });
                 });
             },
-            'onShow': function(dialog) {
+            'onShow': function (dialog) {
                 $('#simplemodal-container').corner('6px');
                 if (self.options.onShow) {
                     self.options.onShow();
                 }
             },
-            'onClose': _.bind(function(dialog, callback) {
+            'onClose': _.bind(function (dialog, callback) {
                 clearTimeout(this.sync_interval);
                 dialog.data.hide().empty().remove();
                 dialog.container.hide().empty().remove();
-                dialog.overlay.fadeOut(200, function() {
+                dialog.overlay.fadeOut(200, function () {
                     dialog.overlay.empty().remove();
                     $.modal.close(callback);
                 });
@@ -287,36 +287,36 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             }, this)
         });
     },
-    
-    switch_tab: function(newtab) {
+
+    switch_tab: function (newtab) {
         var $modal_tabs = $('.NB-modal-tab', this.$modal);
         var $tabs = $('.NB-tab', this.$modal);
-        
+
         $modal_tabs.removeClass('NB-active');
         $tabs.removeClass('NB-active');
-        
-        $modal_tabs.filter('.NB-modal-tab-'+newtab).addClass('NB-active');
-        $tabs.filter('.NB-tab-'+newtab).addClass('NB-active');
-        
+
+        $modal_tabs.filter('.NB-modal-tab-' + newtab).addClass('NB-active');
+        $tabs.filter('.NB-tab-' + newtab).addClass('NB-active');
+
         if (newtab == 'following') {
             this.make_following_tab();
         } else if (newtab == 'followers') {
             this.make_followers_tab();
         }
     },
-    
-    connect: function(service) {
+
+    connect: function (service) {
         var self = this;
         var options = "location=0,status=0,width=800,height=500";
         var url = "/oauth/" + service + "_connect";
         this.connect_window = window.open(url, '_blank', options);
         clearInterval(this.connect_window_timer);
         this.sync_checks = 0;
-        this.connect_window_timer = setInterval(function() {
+        this.connect_window_timer = setInterval(function () {
             console.log(["post connect window?", self, self.connect_window, self.connect_window.closed]);
             try {
-                if (!self.connect_window || 
-                    !self.connect_window.location || 
+                if (!self.connect_window ||
+                    !self.connect_window.location ||
                     self.connect_window.closed) {
                     self.post_connect({});
                 }
@@ -325,18 +325,18 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             }
         }, 1000);
     },
-    
-    disconnect: function(service) {
-        var $service = $('.NB-friends-service-'+service, this.$modal);
+
+    disconnect: function (service) {
+        var $service = $('.NB-friends-service-' + service, this.$modal);
         $('.NB-friends-service-connect', $service).text('Disconnecting...');
-        NEWSBLUR.assets.disconnect_social_service(service, _.bind(function(data) {
+        NEWSBLUR.assets.disconnect_social_service(service, _.bind(function (data) {
             this.services = data.services;
             this.make_find_friends_and_services();
             this.make_profile_section();
         }, this));
     },
-    
-    post_connect: function(data) {
+
+    post_connect: function (data) {
         data = data || {};
         console.log(["post_connect", data, this, this.connect_window_timer]);
         clearInterval(this.connect_window_timer);
@@ -347,60 +347,60 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 data.error
             ]).css('opacity', 0);
             $('.NB-friends-services', this.$modal).append($error);
-            $error.animate({'opacity': 1}, {'duration': 1000});
+            $error.animate({ 'opacity': 1 }, { 'duration': 1000 });
         } else {
             this.fetch_friends();
         }
-        
+
         NEWSBLUR.assets.preference('has_found_friends', true);
         NEWSBLUR.reader.check_hide_getting_started();
     },
 
-    search_for_friends: function(query) {
+    search_for_friends: function (query) {
         var $loading = $('.NB-friends-search .NB-friends-search-loading', this.$modal);
         var $badges = $('.NB-friends-search .NB-friends-search-badges', this.$modal);
-        
+
         if (this.last_query && this.last_query == query) {
             return;
         } else {
             this.last_query = query;
         }
-        
+
         if (!query) {
             $badges.html('');
             return;
         }
-        
+
         $loading.addClass('NB-active');
-        
-        NEWSBLUR.assets.search_for_friends(query, _.bind(function(data) {
+
+        NEWSBLUR.assets.search_for_friends(query, _.bind(function (data) {
             $loading.removeClass('NB-active');
             if (!data || !data.profiles || !data.profiles.length) {
-                $badges.html($.make('div', { 
-                    className: 'NB-friends-search-badges-empty' 
+                $badges.html($.make('div', {
+                    className: 'NB-friends-search-badges-empty'
                 }, [
                     $.make('div', { className: 'NB-raquo' }, '&raquo;'),
-                    'Sorry, nobody matches "'+query+'".'
+                    'Sorry, nobody matches "' + query + '".'
                 ]));
                 return;
             }
-            
-            $badges.html($.make('div', _.map(data.profiles, function(profile) {
+
+            $badges.html($.make('div', _.map(data.profiles, function (profile) {
                 var user = new NEWSBLUR.Models.User(profile);
-                return new NEWSBLUR.Views.SocialProfileBadge({model: user});
+                return new NEWSBLUR.Views.SocialProfileBadge({ model: user });
             })));
-            
+
         }, this));
     },
-    
+
     // ===========
     // = Actions =
     // ===========
 
-    handle_click: function(elem, e) {
+    handle_click: function (elem, e) {
         var self = this;
-        
-        $.targetIs(e, { tagSelector: '.NB-modal-tab' }, function($t, $p) {
+
+        $.targetIs(e, { tagSelector: '.NB-modal-tab' }, function ($t, $p) {
             e.preventDefault();
             var newtab;
             if ($t.hasClass('NB-modal-tab-findfriends')) {
@@ -411,8 +411,8 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 newtab = 'following';
             }
             self.switch_tab(newtab);
-        });        
-        $.targetIs(e, { tagSelector: '.NB-friends-service-connect' }, function($t, $p) {
+        });
+        $.targetIs(e, { tagSelector: '.NB-friends-service-connect' }, function ($t, $p) {
             e.preventDefault();
             var service;
             var $service = $t.closest('.NB-friends-service');
@@ -427,44 +427,44 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 self.connect(service);
             }
         });
-        $.targetIs(e, { tagSelector: '.NB-friends-profile-link' }, function($t, $p) {
+        $.targetIs(e, { tagSelector: '.NB-friends-profile-link' }, function ($t, $p) {
             e.preventDefault();
-            
-            self.close(function() {
+
+            self.close(function () {
                 NEWSBLUR.reader.open_profile_editor_modal();
             });
         });
     },
-    
-    handle_change: function(elem, e) {
+
+    handle_change: function (elem, e) {
         var self = this;
-        
-        $.targetIs(e, { tagSelector: '.NB-friends-autofollow-checkbox' }, function($t, $p) {
+
+        $.targetIs(e, { tagSelector: '.NB-friends-autofollow-checkbox' }, function ($t, $p) {
             e.preventDefault();
-            
+
             NEWSBLUR.assets.preference('autofollow_friends', $t.is(':checked'));
         });
     },
-    
-    handle_keyup: function(elem, e) {
+
+    handle_keyup: function (elem, e) {
         var self = this;
-        
-        $.targetIs(e, { tagSelector: '#NB-friends-search-input' }, function($t, $p) {
+
+        $.targetIs(e, { tagSelector: '#NB-friends-search-input' }, function ($t, $p) {
             self.search_for_friends($t.val());
         });
     },
-    
-    handle_cancel: function() {
+
+    handle_cancel: function () {
         var $cancel = $('.NB-modal-cancel', this.$modal);
-        
-        $cancel.click(function(e) {
+
+        $cancel.click(function (e) {
             e.preventDefault();
             $.modal.close();
         });
     },
-    
-    handle_profile_counts: function() {
-        var focus = function(e) {
+
+    handle_profile_counts: function () {
+        var focus = function (e) {
             var $input = $(e.currentTarget);
             var $count = $input.next('.NB-count').eq(0);
             var count = parseInt($input.data('max'), 10) - $input.val().length;
@@ -476,11 +476,11 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             .delegate('input[type=text]', 'keyup', focus)
             .delegate('input[type=text]', 'keydown', focus)
             .delegate('input[type=text]', 'change', focus)
-            .delegate('input[type=text]', 'blur', function(e) {
-            var $input = $(e.currentTarget);
-            var $count = $input.next('.NB-count').eq(0);
-            $count.hide();
-        });
+            .delegate('input[type=text]', 'blur', function (e) {
+                var $input = $(e.currentTarget);
+                var $count = $input.next('.NB-count').eq(0);
+                $count.hide();
+            });
     }
-    
+
 });
