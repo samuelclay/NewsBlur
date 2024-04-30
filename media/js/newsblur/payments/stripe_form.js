@@ -1,4 +1,4 @@
-$(function() {
+$(function () {
     if ($('.NB-stripe-form').length) {
         // $("#id_card_number").parents("form").submit(function() {
         //     if ( $("#id_card_number").is(":visible")) {
@@ -27,7 +27,7 @@ $(function() {
         // 
         //     return true;
         // });
-        
+
         function addInputNames() {
             // Not ideal, but jQuery's validate plugin requires fields to have names
             // so we add them at the last possible minute, in case any javascript 
@@ -53,13 +53,13 @@ $(function() {
             $("button[type=submit]").addClass("NB-disabled");
             $("button[type=submit]").removeClass("NB-modal-submit-green");
             $("button[type=submit]").text("Submitting...");
-            
+
             Stripe.createToken({
                 number: $('.card-number').val(),
                 cvc: $('.card-cvv').val(),
-                exp_month: $('.card-expiry-month').val(), 
+                exp_month: $('.card-expiry-month').val(),
                 exp_year: $('.card-expiry-year').val()
-            }, function(status, response) {
+            }, function (status, response) {
                 if (response.error) {
                     // re-enable the submit button
                     $("button[type=submit]").removeAttr("disabled");
@@ -86,24 +86,24 @@ $(function() {
         // add custom rules for credit card validating
         jQuery.validator.addMethod("cardNumber", Stripe.validateCardNumber, "Please enter a valid card number");
         jQuery.validator.addMethod("cardCVC", Stripe.validateCVC, "Please enter a valid security code");
-        jQuery.validator.addMethod("cardExpiry", function() {
-            return Stripe.validateExpiry($(".card-expiry-month").val(), 
-                                         $(".card-expiry-year").val());
+        jQuery.validator.addMethod("cardExpiry", function () {
+            return Stripe.validateExpiry($(".card-expiry-month").val(),
+                $(".card-expiry-year").val());
         }, "Please enter a valid expiration");
 
         // We use the jQuery validate plugin to validate required params on submit
         $("#id_card_number").parents("form").validate({
             submitHandler: submit,
             rules: {
-                "card-cvc" : {
+                "card-cvc": {
                     cardCVC: true,
                     required: true
                 },
-                "card-number" : {
+                "card-number": {
                     cardNumber: true,
                     required: true
                 },
-                "card-expiry-year" : "cardExpiry", // we don't validate month separately
+                "card-expiry-year": "cardExpiry", // we don't validate month separately
                 "email": {
                     required: true,
                     email: true
@@ -114,14 +114,14 @@ $(function() {
         // adding the input field names is the last step, in case an earlier step errors                
         addInputNames();
     }
-    
-    
+
+
     var $payextra = $("input[name=payextra]");
     var $label2 = $("label[for=id_plan_1]");
     var $label3 = $("label[for=id_plan_2]");
     var $radio2 = $("input#id_plan_1");
     var $radio3 = $("input#id_plan_2");
-    var change_payextra = function() {
+    var change_payextra = function () {
         if ($payextra.is(':checked')) {
             $label2.hide();
             $label3.show();
