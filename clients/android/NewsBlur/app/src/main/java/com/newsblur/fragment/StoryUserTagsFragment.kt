@@ -59,7 +59,7 @@ class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        storyUserTagsViewModel = ViewModelProvider(this).get(StoryUserTagsViewModel::class.java)
+        storyUserTagsViewModel = ViewModelProvider(this)[StoryUserTagsViewModel::class.java]
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
+import com.newsblur.util.StoryUtil;
 
 public class Comment implements Serializable {
     
@@ -55,7 +56,7 @@ public class Comment implements Serializable {
 		ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.COMMENT_DATE, date);
 		values.put(DatabaseConstants.COMMENT_STORYID, storyId);
-		values.put(DatabaseConstants.COMMENT_LIKING_USERS, TextUtils.join(",", likingUsers));
+		values.put(DatabaseConstants.COMMENT_LIKING_USERS, StoryUtil.nullSafeJoin(",", likingUsers));
 		values.put(DatabaseConstants.COMMENT_TEXT, commentText);
 		values.put(DatabaseConstants.COMMENT_SHAREDDATE, sharedDate);
 		values.put(DatabaseConstants.COMMENT_BYFRIEND, byFriend ? "true" : "false");

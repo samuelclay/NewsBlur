@@ -34,7 +34,6 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
@@ -48,17 +47,15 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.snackbar.Snackbar;
-import com.newsblur.NbApplication;
 import com.newsblur.R;
 import com.newsblur.activity.*;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
-import com.newsblur.service.NBSyncReceiver;
 
 public class UIUtils {
 
     private UIUtils() {} // util class - no instances
-	
+
 	public static Bitmap clipAndRound(Bitmap source, boolean roundCorners, boolean clipSquare) {
         Bitmap result = source;
         if (clipSquare) {
@@ -221,28 +218,6 @@ public class UIUtils {
         titleView.setOnClickListener(v1 -> activity.finish());
         iconView.setOnClickListener(v12 -> activity.finish());
         return iconView;
-    }
-
-    /**
-     * Shows a toast in a circumstance where the context might be null.  This can very
-     * rarely happen when toasts are done from async tasks and the context is finished
-     * before the task completes, resulting in a crash.  This prevents the crash at the 
-     * cost of the toast not being shown.
-     */
-    public static void safeToast(final Activity c, final int rid, final int duration) {
-        if (c != null) {
-            c.runOnUiThread(new Runnable() { public void run() {
-                Toast.makeText(c, rid, duration).show();
-            }});
-        }
-    }
-
-    public static void safeToast(final Activity c, final String text, final int duration) {
-        if ((c != null) && (text != null)) {
-            c.runOnUiThread(new Runnable() { public void run() {
-                Toast.makeText(c, text, duration).show();
-            }});
-        }
     }
 
     /**
@@ -605,22 +580,7 @@ public class UIUtils {
         }
     }
 
-    public static void syncUpdateStatus(Context context, int updateType) {
-        if (NbApplication.isAppForeground()) {
-            Intent intent = new Intent(NBSyncReceiver.NB_SYNC_ACTION);
-            intent.putExtra(NBSyncReceiver.NB_SYNC_UPDATE_TYPE, updateType);
-            context.sendBroadcast(intent);
-        }
-    }
-
     public static void showSnackBar(View view, String message) {
         Snackbar.make(view, message, 600).show();
-    }
-
-    public static int[] getLoadingColorsArray(Context context) {
-        return new int[]{ContextCompat.getColor(context, R.color.refresh_1),
-                ContextCompat.getColor(context, R.color.refresh_2),
-                ContextCompat.getColor(context, R.color.refresh_3),
-                ContextCompat.getColor(context, R.color.refresh_4)};
     }
 }

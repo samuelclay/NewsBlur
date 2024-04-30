@@ -1,8 +1,8 @@
 package com.newsblur.activity;
 
-import static com.newsblur.service.NBSyncReceiver.UPDATE_REBUILD;
-import static com.newsblur.service.NBSyncReceiver.UPDATE_STATUS;
-import static com.newsblur.service.NBSyncReceiver.UPDATE_STORY;
+import static com.newsblur.service.NbSyncManager.UPDATE_REBUILD;
+import static com.newsblur.service.NbSyncManager.UPDATE_STATUS;
+import static com.newsblur.service.NbSyncManager.UPDATE_STORY;
 
 import android.content.Intent;
 import android.os.Bundle;

@@ -8,14 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.activity.Profile
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.databinding.FragmentProfileactivityBinding
-import com.newsblur.databinding.RowLoadingThrobberBinding
+import com.newsblur.databinding.RowLoadingIndicatorBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.ActivityDetails
 import com.newsblur.domain.UserDetails
@@ -39,7 +38,7 @@ abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener 
     lateinit var iconLoader: ImageLoader
 
     private lateinit var binding: FragmentProfileactivityBinding
-    private lateinit var footerBinding: RowLoadingThrobberBinding
+    private lateinit var footerBinding: RowLoadingIndicatorBinding
 
     private var adapter: ActivityDetailsAdapter? = null
     private var user: UserDetails? = null
@@ -47,15 +46,12 @@ abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_profileactivity, null)
         binding = FragmentProfileactivityBinding.bind(view)
-        val colorsArray = UIUtils.getLoadingColorsArray(requireContext())
 
-        binding.emptyViewLoadingThrob.setColors(*colorsArray)
         binding.profileDetailsActivitylist.setFooterDividersEnabled(false)
         binding.profileDetailsActivitylist.emptyView = binding.emptyView
 
-        val footerView = inflater.inflate(R.layout.row_loading_throbber, null)
-        footerBinding = RowLoadingThrobberBinding.bind(footerView)
-        footerBinding.itemlistLoadingThrob.setColors(*colorsArray)
+        val footerView = inflater.inflate(R.layout.row_loading_indicator, null)
+        footerBinding = RowLoadingIndicatorBinding.bind(footerView)
         binding.profileDetailsActivitylist.addFooterView(footerView, null, false)
         if (adapter != null) {
             displayActivities()
@@ -80,8 +76,8 @@ abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener 
     private fun loadPage(pageNumber: Int) {
         lifecycleScope.executeAsyncTask(
                 onPreExecute = {
-                    binding.emptyViewLoadingThrob.visibility = View.VISIBLE
-                    footerBinding.itemlistLoadingThrob.visibility = View.VISIBLE
+                    binding.emptyViewLoading.visibility = View.VISIBLE
+                    footerBinding.itemlistLoading.visibility = View.VISIBLE
                 },
                 doInBackground = {
                     // For the logged in user user.userId is null.
@@ -106,8 +102,8 @@ abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener 
                         adapter!!.add(activity)
                     }
                     adapter!!.notifyDataSetChanged()
-                    binding.emptyViewLoadingThrob.visibility = View.GONE
-                    footerBinding.itemlistLoadingThrob.visibility = View.GONE
+                    binding.emptyViewLoading.visibility = View.GONE
+                    footerBinding.itemlistLoading.visibility = View.GONE
                 }
         )
     }

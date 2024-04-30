@@ -60,9 +60,9 @@ class Profile : NbActivity() {
         loadUserDetails()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        userId?.let { outState.putString(USER_ID, it) }
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        super.onSaveInstanceState(savedInstanceState)
+        userId?.let { savedInstanceState.putString(USER_ID, it) }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -13,7 +12,6 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -67,12 +65,10 @@ public class ChooseFoldersFragment extends DialogFragment {
             }
         }
 
-        final Activity activity = getActivity();
-        LayoutInflater inflater = LayoutInflater.from(activity);
-        View v = inflater.inflate(R.layout.dialog_choosefolders, null);
+        View v = getLayoutInflater().inflate(R.layout.dialog_choosefolders, null);
         DialogChoosefoldersBinding binding = DialogChoosefoldersBinding.bind(v);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle(String.format(getResources().getString(R.string.title_choose_folders), feed.title));
         builder.setView(v);
 
@@ -85,16 +81,16 @@ public class ChooseFoldersFragment extends DialogFragment {
         builder.setPositiveButton(R.string.dialog_folders_save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                feedUtils.moveFeedToFolders(activity, feed.feedId, newFolders, oldFolders);
+                feedUtils.moveFeedToFolders(requireContext(), feed.feedId, newFolders, oldFolders);
                 ChooseFoldersFragment.this.dismiss();
             }
         });
 
-        ListAdapter adapter = new ArrayAdapter<Folder>(getActivity(), R.layout.row_choosefolders, R.id.choosefolders_foldername, folders) {
+        ListAdapter adapter = new ArrayAdapter<>(requireContext(), R.layout.row_choosefolders, R.id.choosefolders_foldername, folders) {
             @Override
             public View getView(final int position, View convertView, ViewGroup parent) {
                 View v = super.getView(position, convertView, parent);
-                CheckBox row = (CheckBox) v.findViewById(R.id.choosefolders_foldername);
+                CheckBox row = v.findViewById(R.id.choosefolders_foldername);
                 if (position == 0) {
                     row.setText(R.string.top_level);
                 }

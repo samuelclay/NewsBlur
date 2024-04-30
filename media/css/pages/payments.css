@@ -3,35 +3,35 @@
 /* ========== */
 
 .NB-paypal-return {
-  margin: 176px 0 0;
-  background-color: #D3E7BA;
-  border-top: 1px solid #A0A0A0;
-  border-bottom: 1px solid #A0A0A0;
-  padding: 24px 0;
-  background-image: linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
-  background-image: -moz-linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
-  background-image: -webkit-linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
-  background-image: -ms-linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
-  text-align: center;
+    margin: 176px 0 0;
+    background-color: #D3E7BA;
+    border-top: 1px solid #A0A0A0;
+    border-bottom: 1px solid #A0A0A0;
+    padding: 24px 0;
+    background-image: linear-gradient(bottom, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
+    background-image: -moz-linear-gradient(bottom, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
+    background-image: -ms-linear-gradient(bottom, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
+    text-align: center;
 }
 
 .NB-paypal-return .NB-paypal-return-title {
-  font-size: 36px;
-  margin: 0 0 12px;
-  color: #303030;
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
+    font-size: 36px;
+    margin: 0 0 12px;
+    color: #303030;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
 }
 
 .NB-paypal-return .NB-paypal-return-subtitle {
-  font-size: 24px;
-  color: #324A15;
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
+    font-size: 24px;
+    color: #324A15;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
 }
 
 .NB-paypal-return .NB-paypal-return-loading {
-  margin: 18px auto 0;
-  height: 16px;
-  width: 300px;
+    margin: 18px auto 0;
+    height: 16px;
+    width: 300px;
 }
 
 /* ========== */
@@ -39,16 +39,17 @@
 /* ========== */
 
 .NB-static-form-wrapper {
-  margin: 48px 0 18px;
-  background-color: #D3E7BA;
-  border-top: 1px solid #A0A0A0;
-  border-bottom: 1px solid #A0A0A0;
-  padding: 24px 0;
-  background-image: linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
-  background-image: -moz-linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
-  background-image: -webkit-linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
-  background-image: -ms-linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
+    margin: 48px 0 18px;
+    background-color: #D3E7BA;
+    border-top: 1px solid #A0A0A0;
+    border-bottom: 1px solid #A0A0A0;
+    padding: 24px 0;
+    background-image: linear-gradient(bottom, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
+    background-image: -moz-linear-gradient(bottom, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
+    background-image: -ms-linear-gradient(bottom, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
 }
+
 .NB-static-form {
     margin: 0 auto;
     width: 360px;
@@ -73,13 +74,15 @@
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
+
 .NB-static-oauth .NB-static-form .controls input,
 .NB-stripe-form.NB-static-form .controls input {
     width: 180px;
 }
+
 .NB-static-form .NB-label-right {
     margin: 0 0 24px 206px;
-    width: 200px;    
+    width: 200px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -89,14 +92,16 @@
 .NB-static-form select.error {
     border-color: #830C0C;
 }
+
 .NB-static-form button {
     width: 200px;
     margin: 12px 0 4px 150px;
-    
-    -moz-box-shadow:2px 2px 0 #A0B998;
-    -webkit-box-shadow:2px 2px 0 #A0B998;
-    box-shadow:2px 2px 0 #A0B998;
+
+    -moz-box-shadow: 2px 2px 0 #A0B998;
+    -webkit-box-shadow: 2px 2px 0 #A0B998;
+    box-shadow: 2px 2px 0 #A0B998;
 }
+
 .NB-static-form .helptext {
     display: none;
 }
@@ -126,6 +131,7 @@
     margin: 8px 0 0 150px;
     overflow: hidden;
 }
+
 .NB-static-form .NB-creditcards img {
     float: left;
     margin-right: 4px;
@@ -145,9 +151,10 @@
     color: darkred;
 }
 
-.NB-static-form #payment-form > div {
+.NB-static-form #payment-form>div {
     clear: both;
 }
+
 .NB-static-form p {
     overflow: hidden;
 }
@@ -155,9 +162,11 @@
 .NB-static-form #id_plan {
     margin: 0;
 }
+
 .NB-static-form #id_plan label {
     margin-top: 0;
 }
+
 .NB-static-form .NB-stripe-plan-choice {
     float: left;
     width: 200px;
@@ -165,12 +174,14 @@
     padding: 0 2px;
     font-weight: bold;
 }
+
 .NB-static-form .NB-stripe-plan-choice label {
     width: auto;
     float: left;
     margin-top: 0;
     padding-top: 0;
 }
+
 .NB-static-form .NB-stripe-plan-choice input {
     width: auto;
     margin-right: 4px;
@@ -181,12 +192,14 @@
     margin-left: 4px;
     color: #575857;
 }
+
 .NB-static-form .payment-errors {
     margin: 8px 0 0 150px;
     color: #600000;
     display: block;
     font-weight: bold;
 }
+
 .NB-static-form .payment-notice {
     margin: 8px 0 0 150px;
     color: #606060;
@@ -200,10 +213,12 @@
     width: 200px;
     text-transform: none;
 }
+
 .NB-static-form .payextra-label input {
     width: auto;
     margin: 0 4px 0 0;
 }
+
 .NB-static-form input[name=plan] {
     display: none;
 }

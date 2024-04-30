@@ -1,9 +1,9 @@
 package com.newsblur.util;
 
-import static com.newsblur.service.NBSyncReceiver.UPDATE_INTEL;
-import static com.newsblur.service.NBSyncReceiver.UPDATE_METADATA;
-import static com.newsblur.service.NBSyncReceiver.UPDATE_SOCIAL;
-import static com.newsblur.service.NBSyncReceiver.UPDATE_STORY;
+import static com.newsblur.service.NbSyncManager.UPDATE_INTEL;
+import static com.newsblur.service.NbSyncManager.UPDATE_METADATA;
+import static com.newsblur.service.NbSyncManager.UPDATE_SOCIAL;
+import static com.newsblur.service.NbSyncManager.UPDATE_STORY;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -18,7 +18,7 @@ import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.APIManager;
-import com.newsblur.service.NBSyncReceiver;
+import com.newsblur.service.NbSyncManager;
 import com.newsblur.service.NBSyncService;
 
 import java.util.ArrayList;
@@ -375,7 +375,7 @@ public class ReadingAction implements Serializable {
             } else {
                 com.newsblur.util.Log.w(this, "failed to refresh story data after action");
             }
-            impact |= NBSyncReceiver.UPDATE_SOCIAL;
+            impact |= NbSyncManager.UPDATE_SOCIAL;
         }
         if (commentResponse != null) {
             result = commentResponse;
@@ -384,7 +384,7 @@ public class ReadingAction implements Serializable {
             } else {
                 com.newsblur.util.Log.w(this, "failed to refresh comment data after action");
             }
-            impact |= NBSyncReceiver.UPDATE_SOCIAL;
+            impact |= NbSyncManager.UPDATE_SOCIAL;
         }
         if (result != null && impact != 0) {
             result.impactCode = impact;

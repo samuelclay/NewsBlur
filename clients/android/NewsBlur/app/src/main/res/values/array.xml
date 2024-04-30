@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="loading_indicator_colors">
+        <item>@color/refresh_1</item>
+        <item>@color/refresh_2</item>
+        <item>@color/refresh_3</item>
+        <item>@color/refresh_4</item>
+    </integer-array>
+</resources>

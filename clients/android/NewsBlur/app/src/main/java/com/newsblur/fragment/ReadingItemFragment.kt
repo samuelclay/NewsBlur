@@ -33,10 +33,10 @@ import com.newsblur.domain.Story
 import com.newsblur.domain.UserDetails
 import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.network.APIManager
-import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_INTEL
-import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_SOCIAL
-import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_STORY
-import com.newsblur.service.NBSyncReceiver.Companion.UPDATE_TEXT
+import com.newsblur.service.NbSyncManager.UPDATE_INTEL
+import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
+import com.newsblur.service.NbSyncManager.UPDATE_STORY
+import com.newsblur.service.NbSyncManager.UPDATE_TEXT
 import com.newsblur.service.OriginalTextService
 import com.newsblur.util.*
 import com.newsblur.util.PrefConstants.ThemeValue
@@ -422,7 +422,9 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             true
         }
         R.id.menu_go_to_feed -> {
-            FeedItemsList.startActivity(context, fs, dbHelper.getFeed(story!!.feedId), null, null)
+            val feed = dbHelper.getFeed(story!!.feedId)
+            val fs = FeedSet.singleFeed(feed.feedId)
+            FeedItemsList.startActivity(requireContext(), fs, feed, null, null)
             true
         }
         else -> {
