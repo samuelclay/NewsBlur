@@ -16,6 +16,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-title": "click_link_in_story",
         "mouseenter .NB-feed-story-manage-icon": "mouseenter_manage_icon",
         "mouseleave .NB-feed-story-manage-icon": "mouseleave_manage_icon",
+        "mouseenter .NB-sideoption-thirdparty": "mouseenter_thirdparty",
+        "mouseleave .NB-sideoption-thirdparty": "mouseleave_thirdparty",
+        "mouseenter .NB-sideoption-icon": "mouseenter_thirdparty",
+        "mouseleave .NB-sideoption-icon": "mouseleave_thirdparty",
         "contextmenu .NB-feed-story-header": "show_manage_menu_rightclick",
         "mouseup .NB-story-content-wrapper": "mouseup_check_selection",
         "click .NB-feed-story-manage-icon": "show_manage_menu",
@@ -305,22 +309,30 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             </div>\
             <div class="NB-feed-story-comments-container"></div>\
             <div class="NB-feed-story-sideoptions-container">\
-                <div class="NB-sideoption NB-feed-story-email" role="button">\
-                    <div class="NB-sideoption-icon">&nbsp;</div>\
+`                <div class="NB-sideoption NB-feed-story-email" role="button">\
                     <div class="NB-sideoption-title">Email</div>\
+                    <div class="NB-sideoption-icons">\
+                        <div class="NB-sideoption-thirdparty NB-sideoption-icon">&nbsp;</div>\
+                        <% _.each(NEWSBLUR.assets.third_party_sharing_services, function(label, key) { %>\
+                            <% if (NEWSBLUR.Preferences["story_share_"+key]) { %>\
+                                <div class="NB-sideoption-thirdparty NB-sideoption-thirdparty-<%= key %>" data-service-name="<%= label %>" role="button">\
+                                </div>\
+                            <% } %>\
+                        <% }) %>\
+                    </div>\
                 </div>\
-                <div class="NB-sideoption NB-feed-story-train" role="button">\
-                    <div class="NB-sideoption-icon">&nbsp;</div>\
+`                <div class="NB-sideoption NB-feed-story-train" role="button">\
                     <div class="NB-sideoption-title">Train</div>\
+                    <div class="NB-sideoption-icon">&nbsp;</div>\
                 </div>\
                 <div class="NB-sideoption NB-feed-story-save" role="button">\
-                    <div class="NB-sideoption-icon">&nbsp;</div>\
                     <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save" %></div>\
+                    <div class="NB-sideoption-icon">&nbsp;</div>\
                 </div>\
                 <%= story_save_view %>\
                 <div class="NB-sideoption NB-feed-story-share" role="button">\
-                    <div class="NB-sideoption-icon">&nbsp;</div>\
                     <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share" %></div>\
+                    <div class="NB-sideoption-icon">&nbsp;</div>\
                 </div>\
                 <%= story_share_view %>\
             </div>\
@@ -754,6 +766,20 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     mouseleave: function () {
 
+    },
+
+    mouseenter_thirdparty: function (event) {
+        var serviceName = $(event.currentTarget).data("service-name");
+        $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-title").text(serviceName);
+        $(event.currentTarget).addClass("NB-hover");
+        $(event.currentTarget).siblings(".NB-sideoption-icon").addClass("NB-dimmed");
+    },
+
+    mouseleave_thirdparty: function (event) {
+        $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-title").text("Email");
+
+        $(event.currentTarget).siblings(".NB-sideoption-icon").removeClass("NB-dimmed");
+        $(event.currentTarget).removeClass("NB-hover");
     },
 
     mouseup_check_selection: function (e) {

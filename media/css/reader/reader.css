@@ -5186,21 +5186,16 @@ body {
 }
 
 .NB-sideoption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     cursor: pointer;
     position: relative;
     font-size: 10px;
-    white-space: nowrap;
     font-weight: bold;
     text-shadow: 0 1px 0 #000;
     background-color: white;
-    /* box-shadow: 0 1px 2px rgb(230, 230, 230);
-    border-bottom: 1px solid rgb(240,240,240); */
-    clear: both;
-    transition: background-color 0.36s ease-out;
     border-radius: 3px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -o-user-select: none;
     user-select: none;
 }
 
@@ -5208,45 +5203,24 @@ body {
     float: left;
     margin: 8px 8px 0 0;
     width: auto;
-    min-width: 90px;
     clear: right;
 }
 
-.NB-extra-narrow-content .NB-sideoption {
-    min-width: 80px;
-}
+.NB-extra-narrow-content .NB-sideoption {}
 
 .NB-extra-narrow-content .NB-sideoption-title span {
     display: none;
 }
 
-.NB-sideoption .NB-sideoption-icon {
-    width: 24px;
-    padding: 9px 4px;
-    height: 100%;
-    float: right;
-    background: transparent url('/media/embed/icons/nouns/saved-stories.svg') no-repeat 8px center;
-    background-size: 16px;
-    transition: background 0.36s ease-out;
-}
-
-.NB-sideoption.NB-feed-story-train .NB-sideoption-icon {
-    background-image: url("/media/embed/icons/nouns/train.svg");
-    background-size: 16px;
-}
-
-.NB-sideoption.NB-feed-story-email .NB-sideoption-icon {
-    background-image: url("/media/embed/icons/nouns/email.svg");
-    background-size: 16px;
-}
-
-.NB-sideoption.NB-feed-story-share .NB-sideoption-icon {
-    background-image: url('/media/embed/icons/nouns/share.svg');
-    background-size: 16px;
+.NB-sideoption-icons {
+    display: flex;
+    align-items: center;
+    order: 2;
 }
 
 .NB-sideoption .NB-sideoption-title {
-    padding: 9px 30px 8px 8px;
+    order: 1;
+    padding: 9px 8px 8px 16px;
     color: rgb(170, 170, 170);
     text-shadow: none;
     font-weight: normal;
@@ -5254,6 +5228,10 @@ body {
     box-sizing: border-box;
     transition: padding 0.36s ease-out,
         color 0.36s ease-out;
+}
+
+.NB-feed-story-email .NB-sideoption-title {
+    min-width: 80px;
 }
 
 .NB-content-narrow .NB-sideoption .NB-sideoption-title {
@@ -5283,6 +5261,125 @@ body {
     color: #90928B;
     opacity: 1;
 }
+
+
+.NB-sideoption:hover .NB-sideoption-thirdparty.NB-hover,
+.NB-sideoption:hover .NB-sideoption-thirdparty.NB-sideoption-icon {
+    opacity: 1;
+}
+
+.NB-sideoption:hover .NB-sideoption-thirdparty,
+.NB-sideoption:hover .NB-sideoption-thirdparty.NB-dimmed {
+    opacity: 0.25;
+}
+
+.NB-sideoption .NB-sideoption-icon {
+    width: 24px;
+    padding: 9px 4px;
+    height: 100%;
+    background: transparent url('/media/embed/icons/nouns/saved-stories.svg') no-repeat 8px center;
+    background-size: 16px;
+    transition: background 0.36s ease-out, opacity 0.16s ease-in-out;
+    order: 2;
+}
+
+.NB-sideoption.NB-feed-story-train .NB-sideoption-icon {
+    background-image: url("/media/embed/icons/nouns/train.svg");
+    background-size: 16px;
+}
+
+.NB-sideoption.NB-feed-story-email .NB-sideoption-icon {
+    background-image: url("/media/embed/icons/nouns/email.svg");
+    background-size: 16px;
+}
+
+.NB-sideoption.NB-feed-story-share .NB-sideoption-icon {
+    background-image: url('/media/embed/icons/nouns/share.svg');
+    background-size: 16px;
+}
+
+.NB-sideoption-thirdparty {
+    width: 24px;
+    height: 24px;
+    background-size: 16px 16px;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 4px 1px;
+    /* Space between icons */
+    filter: grayscale(100%);
+    transition: background 0.36s ease-out, opacity 0.16s ease-in-out;
+    order: 3;
+}
+
+
+.NB-sideoption .NB-sideoption-thirdparty-instapaper {
+    background: transparent url('/media/embed/reader/instapaper.png') no-repeat center center;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-readitlater {
+    background: transparent url('/media/embed/reader/pocket_ril.png') no-repeat center center;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-tumblr {
+    background: transparent url('/media/embed/reader/tumblr.png') no-repeat center center;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-blogger {
+    background: transparent url('/media/embed/reader/blogger.png') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-delicious {
+    background: transparent url('/media/embed/reader/delicious.png') no-repeat center center;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-pinboard {
+    background: transparent url('/media/embed/reader/pinboard.png') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-raindrop {
+    background: transparent url('/media/embed/reader/raindrop.svg') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-pinterest {
+    background: transparent url('/media/embed/reader/pinterest.png') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-buffer {
+    background: transparent url('/media/embed/reader/buffer.png') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-diigo {
+    background: transparent url('/media/embed/reader/diigo.png') no-repeat center center;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-evernote {
+    background: transparent url('/media/embed/reader/evernote.png') no-repeat center center;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-googleplus {
+    background: transparent url('/media/embed/reader/googleplus.png') no-repeat center center;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-email {
+    background: transparent url("/media/embed/icons/nouns/email.svg") no-repeat center center;
+    background-size: 18px;
+    filter: hue-rotate(134deg) saturate(16);
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-twitter {
+    background: transparent url('/media/embed/reader/twitter_bird.png') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-facebook {
+    background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat center center;
+}
+
 
 /* ===================== */
 /* = Sideoption - Save = */
