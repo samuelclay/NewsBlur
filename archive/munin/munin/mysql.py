@@ -1,6 +1,10 @@
-import os, sys, re
+import os
+import re
+import sys
 from configparser import SafeConfigParser
+
 from vendor.munin import MuninPlugin
+
 
 class MuninMySQLPlugin(MuninPlugin):
     dbname_in_args = False
@@ -9,12 +13,15 @@ class MuninMySQLPlugin(MuninPlugin):
     def __init__(self):
         super(MuninMySQLPlugin, self).__init__()
 
-        self.dbname = ((sys.argv[0].rsplit('_', 1)[-1] if self.dbname_in_args else None)
-            or os.environ.get('DATABASE') or self.default_table)
+        self.dbname = (
+            (sys.argv[0].rsplit("_", 1)[-1] if self.dbname_in_args else None)
+            or os.environ.get("DATABASE")
+            or self.default_table
+        )
 
         self.conninfo = dict(
-            user = "root",
-            host = "localhost",
+            user="root",
+            host="localhost",
         )
 
         cnfpath = ""
@@ -34,19 +41,25 @@ class MuninMySQLPlugin(MuninPlugin):
             for section in ["client", "munin"]:
                 if not cnf.has_section(section):
                     continue
-                for connkey, opt in [("user", "user"), ("passwd", "password"), ("host", "host"), ("port", "port")]:
+                for connkey, opt in [
+                    ("user", "user"),
+                    ("passwd", "password"),
+                    ("host", "host"),
+                    ("port", "port"),
+                ]:
                     if cnf.has_option(section, opt):
                         self.conninfo[connkey] = cnf.get(section, opt)
 
-        for k in ('user', 'passwd', 'host', 'port'):
+        for k in ("user", "passwd", "host", "port"):
             # Use lowercase because that's what the existing mysql plugins do
             v = os.environ.get(k)
             if v:
                 self.conninfo[k] = v
 
     def connection(self):
-        if not hasattr(self, '_connection'):
+        if not hasattr(self, "_connection"):
             import MySQLdb
+
             self._connection = MySQLdb.connect(**self.conninfo)
         return self._connection
 

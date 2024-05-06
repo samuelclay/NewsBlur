@@ -3,6 +3,7 @@
 
 from vendor.munin.pgbouncer import MuninPgBouncerPlugin
 
+
 class MuninPgBouncerPoolsServerPlugin(MuninPgBouncerPlugin):
     command = "SHOW POOLS"
     vlabel = "Connections"

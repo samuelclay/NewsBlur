@@ -1,5 +1,4 @@
 from django.db import models
-
 from zebra import mixins
 from zebra.conf import options
 
@@ -29,12 +28,14 @@ class StripeSubscription(models.Model, mixins.StripeMixin, mixins.StripeSubscrip
     You need to provide a stripe_customer attribute. See zebra.models for an
     example implimentation.
     """
+
     class Meta:
         abstract = True
 
 
 # Non-abstract classes must be enabled in your project's settings.py
 if options.ZEBRA_ENABLE_APP:
+
     class DatesModelBase(models.Model):
         date_created = models.DateTimeField(auto_now_add=True)
         date_modified = models.DateTimeField(auto_now=True)

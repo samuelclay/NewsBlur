@@ -2,6 +2,7 @@
 
 from vendor.munin.memcached import MuninMemcachedPlugin
 
+
 class MuninMemcachedItemsPlugin(MuninMemcachedPlugin):
     title = "Memcached new items stats"
     args = "--base 1000"

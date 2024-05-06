@@ -1,15 +1,17 @@
 import datetime
-import re
 import random
+import re
 import time
+
 import redis
-from utils import log as logging
-from django.http import HttpResponse
 from django.conf import settings
 from django.db import connection
-from django.template import Template, Context
+from django.http import HttpResponse
+from django.template import Context, Template
+
 from apps.statistics.rstats import round_time
 from utils import json_functions as json
+from utils import log as logging
 
 
 class LastSeenMiddleware(object):
@@ -19,16 +21,16 @@ class LastSeenMiddleware(object):
     def process_response(self, request, response):
         if (
             (
-                request.path == '/'
-                or request.path.startswith('/reader/refresh_feeds')
-                or request.path.startswith('/reader/load_feeds')
-                or request.path.startswith('/reader/feeds')
+                request.path == "/"
+                or request.path.startswith("/reader/refresh_feeds")
+                or request.path.startswith("/reader/load_feeds")
+                or request.path.startswith("/reader/feeds")
             )
-            and hasattr(request, 'user')
+            and hasattr(request, "user")
             and request.user.is_authenticated
         ):
             hour_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=60)
-            ip = request.META.get('HTTP_X_FORWARDED_FOR', None) or request.META['REMOTE_ADDR']
+            ip = request.META.get("HTTP_X_FORWARDED_FOR", None) or request.META["REMOTE_ADDR"]
             if request.user.profile.last_seen_on < hour_ago:
                 logging.user(
                     request, "~FG~BBRepeat visitor: ~SB%s (%s)" % (request.user.profile.last_seen_on, ip)
@@ -50,11 +52,11 @@ class LastSeenMiddleware(object):
 
     def __call__(self, request):
         response = None
-        if hasattr(self, 'process_request'):
+        if hasattr(self, "process_request"):
             response = self.process_request(request)
         if not response:
             response = self.get_response(request)
-        if hasattr(self, 'process_response'):
+        if hasattr(self, "process_response"):
             response = self.process_response(request, response)
 
         return response
@@ -65,31 +67,31 @@ class DBProfilerMiddleware:
         self.get_response = get_response
 
     def process_request(self, request):
-        setattr(request, 'activated_segments', [])
+        setattr(request, "activated_segments", [])
         if (
-            # request.path.startswith('/reader/feed') or 
-            request.path.startswith('/reader/feed/')
+            # request.path.startswith('/reader/feed') or
+            request.path.startswith("/reader/feed/")
         ) and random.random() < 0.05:
-            request.activated_segments.append('db_profiler')
+            request.activated_segments.append("db_profiler")
             connection.use_debug_cursor = True
-            setattr(settings, 'ORIGINAL_DEBUG', settings.DEBUG)
+            setattr(settings, "ORIGINAL_DEBUG", settings.DEBUG)
             settings.DEBUG = True
 
     def process_celery(self):
-        setattr(self, 'activated_segments', [])
+        setattr(self, "activated_segments", [])
         if random.random() < 0.01 or settings.DEBUG_QUERIES:
-            self.activated_segments.append('db_profiler')
+            self.activated_segments.append("db_profiler")
             connection.use_debug_cursor = True
-            setattr(settings, 'ORIGINAL_DEBUG', settings.DEBUG)
+            setattr(settings, "ORIGINAL_DEBUG", settings.DEBUG)
             settings.DEBUG = True
             return self
 
     def process_exception(self, request, exception):
-        if hasattr(request, 'sql_times_elapsed'):
+        if hasattr(request, "sql_times_elapsed"):
             self._save_times(request.sql_times_elapsed)
 
     def process_response(self, request, response):
-        if hasattr(request, 'sql_times_elapsed'):
+        if hasattr(request, "sql_times_elapsed"):
             # middleware = SQLLogToConsoleMiddleware()
             # middleware.process_celery(self)
             # logging.debug(" ---> ~FGProfiling~FB app: %s" % request.sql_times_elapsed)
@@ -99,16 +101,16 @@ class DBProfilerMiddleware:
     def process_celery_finished(self):
         middleware = SQLLogToConsoleMiddleware()
         middleware.process_celery(self)
-        if hasattr(self, 'sql_times_elapsed'):
+        if hasattr(self, "sql_times_elapsed"):
             logging.debug(" ---> ~FGProfiling~FB task: %s" % self.sql_times_elapsed)
-            self._save_times(self.sql_times_elapsed, 'task_')
+            self._save_times(self.sql_times_elapsed, "task_")
 
     def process_request_finished(self):
         middleware = SQLLogToConsoleMiddleware()
         middleware.process_celery(self)
-        if hasattr(self, 'sql_times_elapsed'):
+        if hasattr(self, "sql_times_elapsed"):
             logging.debug(" ---> ~FGProfiling~FB app: %s" % self.sql_times_elapsed)
-            self._save_times(self.sql_times_elapsed, 'app_')
+            self._save_times(self.sql_times_elapsed, "app_")
 
     def _save_times(self, db_times, prefix=""):
         if not db_times:
@@ -118,7 +120,7 @@ class DBProfilerMiddleware:
         pipe = r.pipeline()
         minute = round_time(round_to=60)
         for db, duration in list(db_times.items()):
-            key = "DB:%s%s:%s" % (prefix, db, minute.strftime('%s'))
+            key = "DB:%s%s:%s" % (prefix, db, minute.strftime("%s"))
             pipe.incr("%s:c" % key)
             pipe.expireat("%s:c" % key, (minute + datetime.timedelta(days=2)).strftime("%s"))
             if duration:
@@ -128,11 +130,11 @@ class DBProfilerMiddleware:
 
     def __call__(self, request):
         response = None
-        if hasattr(self, 'process_request'):
+        if hasattr(self, "process_request"):
             response = self.process_request(request)
         if not response:
             response = self.get_response(request)
-        if hasattr(self, 'process_response'):
+        if hasattr(self, "process_response"):
             response = self.process_response(request, response)
 
         return response
@@ -144,7 +146,7 @@ class SQLLogToConsoleMiddleware:
 
     def activated(self, request):
         return settings.DEBUG_QUERIES or (
-            hasattr(request, 'activated_segments') and 'db_profiler' in request.activated_segments
+            hasattr(request, "activated_segments") and "db_profiler" in request.activated_segments
         )
 
     def process_response(self, request, response):
@@ -152,38 +154,39 @@ class SQLLogToConsoleMiddleware:
             return response
         if connection.queries:
             queries = connection.queries
-            if getattr(connection, 'queriesx', False):
+            if getattr(connection, "queriesx", False):
                 queries.extend(connection.queriesx)
                 connection.queriesx = []
-            time_elapsed = sum([float(q['time']) for q in connection.queries])
+            time_elapsed = sum([float(q["time"]) for q in connection.queries])
             for query in queries:
-                sql_time = float(query['time'])
-                query['color'] = '~FC' if sql_time < 0.015 else '~FK~SB' if sql_time < 0.05 else '~FR~SB'
-                if query.get('mongo'):
-                    query['sql'] = "~FM%s %s: %s" % (query['mongo']['op'], query['mongo']['collection'], query['mongo']['query'])
-                elif query.get('redis_user'):
-                    query['sql'] = "~FC%s" % (query['redis_user']['query'])
-                elif query.get('redis_story'):
-                    query['sql'] = "~FC%s" % (query['redis_story']['query'])
-                elif query.get('redis_session'):
-                    query['sql'] = "~FC%s" % (query['redis_session']['query'])
-                elif query.get('redis_pubsub'):
-                    query['sql'] = "~FC%s" % (query['redis_pubsub']['query'])
-                elif query.get('db_redis'):
-                    query['sql'] = "~FC%s" % (query['db_redis']['query'])
-                elif 'sql' not in query:
+                sql_time = float(query["time"])
+                query["color"] = "~FC" if sql_time < 0.015 else "~FK~SB" if sql_time < 0.05 else "~FR~SB"
+                if query.get("mongo"):
+                    query["sql"] = "~FM%s %s: %s" % (
+                        query["mongo"]["op"],
+                        query["mongo"]["collection"],
+                        query["mongo"]["query"],
+                    )
+                elif query.get("redis_user"):
+                    query["sql"] = "~FC%s" % (query["redis_user"]["query"])
+                elif query.get("redis_story"):
+                    query["sql"] = "~FC%s" % (query["redis_story"]["query"])
+                elif query.get("redis_session"):
+                    query["sql"] = "~FC%s" % (query["redis_session"]["query"])
+                elif query.get("redis_pubsub"):
+                    query["sql"] = "~FC%s" % (query["redis_pubsub"]["query"])
+                elif query.get("db_redis"):
+                    query["sql"] = "~FC%s" % (query["db_redis"]["query"])
+                elif "sql" not in query:
                     logging.debug(" ***> Query log missing: %s" % query)
                 else:
-                    query['sql'] = re.sub(r'SELECT (.*?) FROM', 'SELECT * FROM', query['sql'])
-                    query['sql'] = re.sub(r'SELECT', '~FYSELECT', query['sql'])
-                    query['sql'] = re.sub(r'INSERT', '~FGINSERT', query['sql'])
-                    query['sql'] = re.sub(r'UPDATE', '~FY~SBUPDATE', query['sql'])
-                    query['sql'] = re.sub(r'DELETE', '~FR~SBDELETE', query['sql'])
+                    query["sql"] = re.sub(r"SELECT (.*?) FROM", "SELECT * FROM", query["sql"])
+                    query["sql"] = re.sub(r"SELECT", "~FYSELECT", query["sql"])
+                    query["sql"] = re.sub(r"INSERT", "~FGINSERT", query["sql"])
+                    query["sql"] = re.sub(r"UPDATE", "~FY~SBUPDATE", query["sql"])
+                    query["sql"] = re.sub(r"DELETE", "~FR~SBDELETE", query["sql"])
 
-            if (
-                settings.DEBUG_QUERIES
-                and not getattr(settings, 'DEBUG_QUERIES_SUMMARY_ONLY', False)
-            ):
+            if settings.DEBUG_QUERIES and not getattr(settings, "DEBUG_QUERIES_SUMMARY_ONLY", False):
                 t = Template(
                     "{% for sql in sqllog %}{% if not forloop.first %}                  {% endif %}[{{forloop.counter}}] {{sql.color}}{{sql.time}}~SN~FW: {{sql.sql|safe}}{% if not forloop.last %}\n{% endif %}{% endfor %}"
                 )
@@ -191,51 +194,51 @@ class SQLLogToConsoleMiddleware:
                     t.render(
                         Context(
                             {
-                                'sqllog': queries,
-                                'count': len(queries),
-                                'time': time_elapsed,
+                                "sqllog": queries,
+                                "count": len(queries),
+                                "time": time_elapsed,
                             }
                         )
                     )
                 )
             times_elapsed = {
-                'sql': sum(
+                "sql": sum(
                     [
-                        float(q['time'])
+                        float(q["time"])
                         for q in queries
-                        if not q.get('mongo')
-                        and not q.get('redis_user')
-                        and not q.get('redis_story')
-                        and not q.get('redis_session')
-                        and not q.get('redis_pubsub')
+                        if not q.get("mongo")
+                        and not q.get("redis_user")
+                        and not q.get("redis_story")
+                        and not q.get("redis_session")
+                        and not q.get("redis_pubsub")
                     ]
                 ),
-                'mongo': sum([float(q['time']) for q in queries if q.get('mongo')]),
-                'redis_user': sum([float(q['time']) for q in queries if q.get('redis_user')]),
-                'redis_story': sum([float(q['time']) for q in queries if q.get('redis_story')]),
-                'redis_session': sum([float(q['time']) for q in queries if q.get('redis_session')]),
-                'redis_pubsub': sum([float(q['time']) for q in queries if q.get('redis_pubsub')]),
+                "mongo": sum([float(q["time"]) for q in queries if q.get("mongo")]),
+                "redis_user": sum([float(q["time"]) for q in queries if q.get("redis_user")]),
+                "redis_story": sum([float(q["time"]) for q in queries if q.get("redis_story")]),
+                "redis_session": sum([float(q["time"]) for q in queries if q.get("redis_session")]),
+                "redis_pubsub": sum([float(q["time"]) for q in queries if q.get("redis_pubsub")]),
             }
-            setattr(request, 'sql_times_elapsed', times_elapsed)
+            setattr(request, "sql_times_elapsed", times_elapsed)
         else:
             print(" ***> No queries")
-        if not getattr(settings, 'ORIGINAL_DEBUG', settings.DEBUG):
+        if not getattr(settings, "ORIGINAL_DEBUG", settings.DEBUG):
             settings.DEBUG = False
 
         return response
 
     def process_celery(self, profiler):
         self.process_response(profiler, None)
-        if not getattr(settings, 'ORIGINAL_DEBUG', settings.DEBUG):
+        if not getattr(settings, "ORIGINAL_DEBUG", settings.DEBUG):
             settings.DEBUG = False
 
     def __call__(self, request):
         response = None
-        if hasattr(self, 'process_request'):
+        if hasattr(self, "process_request"):
             response = self.process_request(request)
         if not response:
             response = self.get_response(request)
-        if hasattr(self, 'process_response'):
+        if hasattr(self, "process_response"):
             response = self.process_response(request, response)
 
         return response
@@ -246,7 +249,7 @@ SIMPSONS_QUOTES = [
     ("Ralph", "Me fail English? That's unpossible."),
     (
         "Lionel Hutz",
-        "This is the greatest case of false advertising I've seen since I sued the movie \"The Never Ending Story.\"",
+        'This is the greatest case of false advertising I\'ve seen since I sued the movie "The Never Ending Story."',
     ),
     ("Sideshow Bob", "No children have ever meddled with the Republican Party and lived to tell about it."),
     (
@@ -261,7 +264,7 @@ SIMPSONS_QUOTES = [
     ),
     (
         "Comic Book Guy",
-        "Your questions have become more redundant and annoying than the last three \"Highlander\" movies.",
+        'Your questions have become more redundant and annoying than the last three "Highlander" movies.',
     ),
     ("Chief Wiggum", "Uh, no, you got the wrong number. This is 9-1...2."),
     (
@@ -282,11 +285,11 @@ SIMPSONS_QUOTES = [
     ),
     (
         "Lionel Hutz",
-        "Well, he's kind of had it in for me ever since I accidentally ran over his dog. Actually, replace \"accidentally\" with \"repeatedly\" and replace \"dog\" with \"son.\"",
+        'Well, he\'s kind of had it in for me ever since I accidentally ran over his dog. Actually, replace "accidentally" with "repeatedly" and replace "dog" with "son."',
     ),
     (
         "Comic Book Guy",
-        "Last night's \"Itchy and Scratchy Show\" was, without a doubt, the worst episode *ever.* Rest assured, I was on the Internet within minutes, registering my disgust throughout the world.",
+        'Last night\'s "Itchy and Scratchy Show" was, without a doubt, the worst episode *ever.* Rest assured, I was on the Internet within minutes, registering my disgust throughout the world.',
     ),
     ("Homer", "I'm normally not a praying man, but if you're up there, please save me, Superman."),
     ("Homer", "Save me, Jeebus."),
@@ -307,7 +310,7 @@ SIMPSONS_QUOTES = [
     ("Homer", "Fame was like a drug. But what was even more like a drug were the drugs."),
     (
         "Homer",
-        "Books are useless! I only ever read one book, \"To Kill A Mockingbird,\" and it gave me absolutely no insight on how to kill mockingbirds! Sure it taught me not to judge a man by the color of his skin...but what good does *that* do me?",
+        'Books are useless! I only ever read one book, "To Kill A Mockingbird," and it gave me absolutely no insight on how to kill mockingbirds! Sure it taught me not to judge a man by the color of his skin...but what good does *that* do me?',
     ),
     (
         "Chief Wiggum",
@@ -325,8 +328,8 @@ SIMPSONS_QUOTES = [
         "Homer",
         "You know, the one with all the well meaning rules that don't work out in real life, uh, Christianity.",
     ),
-    ("Smithers", "Uh, no, they're saying \"Boo-urns, Boo-urns.\""),
-    ("Hans Moleman", "I was saying \"Boo-urns.\""),
+    ("Smithers", 'Uh, no, they\'re saying "Boo-urns, Boo-urns."'),
+    ("Hans Moleman", 'I was saying "Boo-urns."'),
     ("Homer", "Kids, you tried your best and you failed miserably. The lesson is, never try."),
     ("Homer", "Here's to alcohol, the cause of - and solution to - all life's problems."),
     (
@@ -350,7 +353,7 @@ SIMPSONS_QUOTES = [
     ),
     (
         "Troy McClure",
-        "Hi. I'm Troy McClure. You may remember me from such self-help tapes as \"Smoke Yourself Thin\" and \"Get Some Confidence, Stupid!\"",
+        'Hi. I\'m Troy McClure. You may remember me from such self-help tapes as "Smoke Yourself Thin" and "Get Some Confidence, Stupid!"',
     ),
     ("Homer", "A woman is a lot like a refrigerator. Six feet tall, 300 pounds...it makes ice."),
     (
@@ -425,7 +428,7 @@ SIMPSONS_QUOTES = [
     ("Barney", "Jesus must be spinning in his grave!"),
     (
         "Superintendent Chalmers",
-        "\"Thank the Lord\"? That sounded like a prayer. A prayer in a public school. God has no place within these walls, just like facts don't have a place within an organized religion.",
+        '"Thank the Lord"? That sounded like a prayer. A prayer in a public school. God has no place within these walls, just like facts don\'t have a place within an organized religion.',
     ),
     ("Mr Burns", "[answering the phone] Ahoy hoy?"),
     ("Comic Book Guy", "Oh, a *sarcasm* detector. Oh, that's a *really* useful invention!"),
@@ -487,18 +490,18 @@ class SimpsonsMiddleware:
 
     def process_response(self, request, response):
         quote = random.choice(SIMPSONS_QUOTES)
-        source = quote[0].replace(' ', '-')
+        source = quote[0].replace(" ", "-")
         response["X-%s" % source] = quote[1]
 
         return response
 
     def __call__(self, request):
         response = None
-        if hasattr(self, 'process_request'):
+        if hasattr(self, "process_request"):
             response = self.process_request(request)
         if not response:
             response = self.get_response(request)
-        if hasattr(self, 'process_response'):
+        if hasattr(self, "process_response"):
             response = self.process_response(request, response)
 
         return response
@@ -515,11 +518,11 @@ class ServerHostnameMiddleware:
 
     def __call__(self, request):
         response = None
-        if hasattr(self, 'process_request'):
+        if hasattr(self, "process_request"):
             response = self.process_request(request)
         if not response:
             response = self.get_response(request)
-        if hasattr(self, 'process_response'):
+        if hasattr(self, "process_response"):
             response = self.process_response(request, response)
 
         return response
@@ -530,7 +533,7 @@ class TimingMiddleware:
         self.get_response = get_response
 
     def process_request(self, request):
-        setattr(request, 'start_time', time.time())
+        setattr(request, "start_time", time.time())
 
     def __call__(self, request):
         response = self.process_request(request)
@@ -541,8 +544,8 @@ class TimingMiddleware:
 
 
 BANNED_USER_AGENTS = (
-    'feed reader-background',
-    'missing',
+    "feed reader-background",
+    "missing",
 )
 
 BANNED_USERNAMES = ()
@@ -553,46 +556,46 @@ class UserAgentBanMiddleware:
         self.get_response = get_response
 
     def process_request(self, request):
-        user_agent = request.environ.get('HTTP_USER_AGENT', 'missing').lower()
+        user_agent = request.environ.get("HTTP_USER_AGENT", "missing").lower()
 
-        if 'profile' in request.path:
+        if "profile" in request.path:
             return
-        if 'haproxy' in request.path:
+        if "haproxy" in request.path:
             return
-        if 'dbcheck' in request.path:
+        if "dbcheck" in request.path:
             return
-        if 'account' in request.path:
+        if "account" in request.path:
             return
-        if 'push' in request.path:
+        if "push" in request.path:
             return
-        if getattr(settings, 'TEST_DEBUG'):
+        if getattr(settings, "TEST_DEBUG"):
             return
         if any(ua in user_agent for ua in BANNED_USER_AGENTS):
-            data = {'error': 'User agent banned: %s' % user_agent, 'code': -1}
+            data = {"error": "User agent banned: %s" % user_agent, "code": -1}
             logging.user(
                 request, "~FB~SN~BBBanned UA: ~SB%s / %s (%s)" % (user_agent, request.path, request.META)
             )
 
-            return HttpResponse(json.encode(data), status=403, content_type='text/json')
+            return HttpResponse(json.encode(data), status=403, content_type="text/json")
 
         if request.user.is_authenticated and any(
             username == request.user.username for username in BANNED_USERNAMES
         ):
-            data = {'error': 'User banned: %s' % request.user.username, 'code': -1}
+            data = {"error": "User banned: %s" % request.user.username, "code": -1}
             logging.user(
                 request,
                 "~FB~SN~BBBanned Username: ~SB%s / %s (%s)" % (request.user, request.path, request.META),
             )
 
-            return HttpResponse(json.encode(data), status=403, content_type='text/json')
+            return HttpResponse(json.encode(data), status=403, content_type="text/json")
 
     def __call__(self, request):
         response = None
-        if hasattr(self, 'process_request'):
+        if hasattr(self, "process_request"):
             response = self.process_request(request)
         if not response:
             response = self.get_response(request)
-        if hasattr(self, 'process_response'):
+        if hasattr(self, "process_response"):
             response = self.process_response(request, response)
 
         return response

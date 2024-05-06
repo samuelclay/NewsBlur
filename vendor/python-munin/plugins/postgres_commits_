@@ -24,6 +24,7 @@ Find out more at
 
 from vendor.munin.postgres import MuninPostgresPlugin
 
+
 class MuninPostgresCommitsPlugin(MuninPostgresPlugin):
     dbname_in_args = True
     args = "--base 1000"

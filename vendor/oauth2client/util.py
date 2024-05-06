@@ -17,111 +17,122 @@
 
 """Common utility library."""
 
-__author__ = ['rafek@google.com (Rafe Kaplan)',
-              'guido@google.com (Guido van Rossum)',
+__author__ = [
+    "rafek@google.com (Rafe Kaplan)",
+    "guido@google.com (Guido van Rossum)",
 ]
 __all__ = [
-  'positional',
+    "positional",
 ]
 
-import gflags
 import inspect
 import logging
+
+import gflags
 
 logger = logging.getLogger(__name__)
 
 FLAGS = gflags.FLAGS
 
-gflags.DEFINE_enum('positional_parameters_enforcement', 'WARNING',
-    ['EXCEPTION', 'WARNING', 'IGNORE'],
-    'The action when an oauth2client.util.positional declaration is violated.')
+gflags.DEFINE_enum(
+    "positional_parameters_enforcement",
+    "WARNING",
+    ["EXCEPTION", "WARNING", "IGNORE"],
+    "The action when an oauth2client.util.positional declaration is violated.",
+)
 
 
 def positional(max_positional_args):
-  """A decorator to declare that only the first N arguments my be positional.
+    """A decorator to declare that only the first N arguments my be positional.
 
-  This decorator makes it easy to support Python 3 style key-word only
-  parameters.  For example, in Python 3 it is possible to write:
+    This decorator makes it easy to support Python 3 style key-word only
+    parameters.  For example, in Python 3 it is possible to write:
 
-    def fn(pos1, *, kwonly1=None, kwonly1=None):
-      ...
-
-  All named parameters after * must be a keyword:
-
-    fn(10, 'kw1', 'kw2')  # Raises exception.
-    fn(10, kwonly1='kw1')  # Ok.
-
-  Example:
-    To define a function like above, do:
-
-      @positional(1)
-      def fn(pos1, kwonly1=None, kwonly2=None):
+      def fn(pos1, *, kwonly1=None, kwonly1=None):
         ...
 
-    If no default value is provided to a keyword argument, it becomes a required
-    keyword argument:
+    All named parameters after * must be a keyword:
 
-      @positional(0)
-      def fn(required_kw):
-        ...
+      fn(10, 'kw1', 'kw2')  # Raises exception.
+      fn(10, kwonly1='kw1')  # Ok.
 
-    This must be called with the keyword parameter:
+    Example:
+      To define a function like above, do:
 
-      fn()  # Raises exception.
-      fn(10)  # Raises exception.
-      fn(required_kw=10)  # Ok.
-
-    When defining instance or class methods always remember to account for
-    'self' and 'cls':
-
-      class MyClass(object):
-
-        @positional(2)
-        def my_method(self, pos1, kwonly1=None):
+        @positional(1)
+        def fn(pos1, kwonly1=None, kwonly2=None):
           ...
 
-        @classmethod
-        @positional(2)
-        def my_method(cls, pos1, kwonly1=None):
+      If no default value is provided to a keyword argument, it becomes a required
+      keyword argument:
+
+        @positional(0)
+        def fn(required_kw):
           ...
 
-  The positional decorator behavior is controlled by the
-  --positional_parameters_enforcement flag. The flag may be set to 'EXCEPTION',
-  'WARNING' or 'IGNORE' to raise an exception, log a warning, or do nothing,
-  respectively, if a declaration is violated.
+      This must be called with the keyword parameter:
 
-  Args:
-    max_positional_arguments: Maximum number of positional arguments.  All
-      parameters after the this index must be keyword only.
+        fn()  # Raises exception.
+        fn(10)  # Raises exception.
+        fn(required_kw=10)  # Ok.
 
-  Returns:
-    A decorator that prevents using arguments after max_positional_args from
-    being used as positional parameters.
+      When defining instance or class methods always remember to account for
+      'self' and 'cls':
 
-  Raises:
-    TypeError if a key-word only argument is provided as a positional parameter,
-    but only if the --positional_parameters_enforcement flag is set to
-    'EXCEPTION'.
-  """
-  def positional_decorator(wrapped):
-    def positional_wrapper(*args, **kwargs):
-      if len(args) > max_positional_args:
-        plural_s = ''
-        if max_positional_args != 1:
-          plural_s = 's'
-        message = '%s() takes at most %d positional argument%s (%d given)' % (
-            wrapped.__name__, max_positional_args, plural_s, len(args))
-        if FLAGS.positional_parameters_enforcement == 'EXCEPTION':
-          raise TypeError(message)
-        elif FLAGS.positional_parameters_enforcement == 'WARNING':
-          logger.warning(message)
-        else: # IGNORE
-          pass
-      return wrapped(*args, **kwargs)
-    return positional_wrapper
+        class MyClass(object):
 
-  if isinstance(max_positional_args, int):
-    return positional_decorator
-  else:
-    args, _, _, defaults = inspect.getargspec(max_positional_args)
-    return positional(len(args) - len(defaults))(max_positional_args)
+          @positional(2)
+          def my_method(self, pos1, kwonly1=None):
+            ...
+
+          @classmethod
+          @positional(2)
+          def my_method(cls, pos1, kwonly1=None):
+            ...
+
+    The positional decorator behavior is controlled by the
+    --positional_parameters_enforcement flag. The flag may be set to 'EXCEPTION',
+    'WARNING' or 'IGNORE' to raise an exception, log a warning, or do nothing,
+    respectively, if a declaration is violated.
+
+    Args:
+      max_positional_arguments: Maximum number of positional arguments.  All
+        parameters after the this index must be keyword only.
+
+    Returns:
+      A decorator that prevents using arguments after max_positional_args from
+      being used as positional parameters.
+
+    Raises:
+      TypeError if a key-word only argument is provided as a positional parameter,
+      but only if the --positional_parameters_enforcement flag is set to
+      'EXCEPTION'.
+    """
+
+    def positional_decorator(wrapped):
+        def positional_wrapper(*args, **kwargs):
+            if len(args) > max_positional_args:
+                plural_s = ""
+                if max_positional_args != 1:
+                    plural_s = "s"
+                message = "%s() takes at most %d positional argument%s (%d given)" % (
+                    wrapped.__name__,
+                    max_positional_args,
+                    plural_s,
+                    len(args),
+                )
+                if FLAGS.positional_parameters_enforcement == "EXCEPTION":
+                    raise TypeError(message)
+                elif FLAGS.positional_parameters_enforcement == "WARNING":
+                    logger.warning(message)
+                else:  # IGNORE
+                    pass
+            return wrapped(*args, **kwargs)
+
+        return positional_wrapper
+
+    if isinstance(max_positional_args, int):
+        return positional_decorator
+    else:
+        args, _, _, defaults = inspect.getargspec(max_positional_args)
+        return positional(len(args) - len(defaults))(max_positional_args)

@@ -3,18 +3,20 @@
 import os
 import re
 import socket
+
 from vendor.munin import MuninPlugin
 
-worker_re = re.compile(r'^(?P<fd>\d+) (?P<ip>[\d\.]+) (?P<client_id>[^\s]+) :\s?(?P<abilities>.*)$')
+worker_re = re.compile(r"^(?P<fd>\d+) (?P<ip>[\d\.]+) (?P<client_id>[^\s]+) :\s?(?P<abilities>.*)$")
+
 
 class MuninGearmanPlugin(MuninPlugin):
     category = "Gearman"
 
     def __init__(self):
         super(MuninGearmanPlugin, self).__init__()
-        addr = os.environ.get('GM_SERVER') or "127.0.0.1"
-        port = int(addr.split(':')[-1]) if ':' in addr else 4730
-        host = addr.split(':')[0]
+        addr = os.environ.get("GM_SERVER") or "127.0.0.1"
+        port = int(addr.split(":")[-1]) if ":" in addr else 4730
+        host = addr.split(":")[0]
         self.addr = (host, port)
         self._sock = None
 
@@ -36,12 +38,12 @@ class MuninGearmanPlugin(MuninPlugin):
             buf += sock.recv(8192)
 
         info = []
-        for l in buf.split('\n'):
-            if l.strip() == '.':
+        for l in buf.split("\n"):
+            if l.strip() == ".":
                 break
             m = worker_re.match(l)
             i = m.groupdict()
-            i['abilities'] = [x for x in i['abilities'].split(' ') if x]
+            i["abilities"] = [x for x in i["abilities"].split(" ") if x]
             info.append(i)
         return info
 
@@ -53,14 +55,14 @@ class MuninGearmanPlugin(MuninPlugin):
             buf += sock.recv(8192)
 
         info = {}
-        for l in buf.split('\n'):
+        for l in buf.split("\n"):
             l = l.strip()
-            if l == '.':
+            if l == ".":
                 break
-            counts = l.split('\t')
+            counts = l.split("\t")
             info[counts[0]] = dict(
-                total = int(counts[1]),
-                running = int(counts[2]),
-                workers = int(counts[3]),
+                total=int(counts[1]),
+                running=int(counts[2]),
+                workers=int(counts[3]),
             )
         return info

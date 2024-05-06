@@ -1,19 +1,22 @@
-#-*- coding: utf-8 -*-
-from django.db import models
-from django.utils.functional import Promise
-from django.utils.encoding import force_text, smart_str
+# -*- coding: utf-8 -*-
+import datetime
 import json
+import sys
 from decimal import Decimal
-from django.core import serializers
+
+from bson.objectid import ObjectId
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseForbidden, Http404
+from django.core import serializers
+from django.db import models
 from django.db.models.query import QuerySet
+from django.http import Http404, HttpResponse, HttpResponseForbidden
+from django.utils.encoding import force_text, smart_str
+from django.utils.functional import Promise
+
 # from django.utils.deprecation import CallableBool
 from mongoengine.queryset.queryset import QuerySet as MongoQuerySet
-from bson.objectid import ObjectId
+
 from utils import log as logging
-import sys
-import datetime
 
 
 def decode(data):
@@ -42,7 +45,7 @@ def json_encode(data, *args, **kwargs):
         # Opps, we used to check if it is of type list, but that fails
         # i.e. in the case of django.newforms.utils.ErrorList, which extends
         # the type "list". Oh man, that was a dumb mistake!
-        if hasattr(data, 'canonical'):
+        if hasattr(data, "canonical"):
             ret = _any(data.canonical())
         elif isinstance(data, list):
             ret = _list(data)
@@ -66,7 +69,7 @@ def json_encode(data, *args, **kwargs):
             ret = _model(data)
         # here we need to encode the string as unicode (otherwise we get utf-16 in the json-response)
         elif isinstance(data, bytes):
-            ret = data.decode('utf-8', 'ignore')
+            ret = data.decode("utf-8", "ignore")
         elif isinstance(data, str):
             ret = smart_str(data)
         elif isinstance(data, Exception):
@@ -76,7 +79,7 @@ def json_encode(data, *args, **kwargs):
             ret = force_text(data)
         elif isinstance(data, datetime.datetime) or isinstance(data, datetime.date):
             ret = str(data)
-        elif hasattr(data, 'to_json'):
+        elif hasattr(data, "to_json"):
             ret = data.to_json()
         else:
             ret = data
@@ -106,7 +109,7 @@ def json_encode(data, *args, **kwargs):
             ret[str(k)] = _any(v)
         return ret
 
-    if hasattr(data, 'to_json'):
+    if hasattr(data, "to_json"):
         data = data.to_json()
     ret = _any(data)
     return json.dumps(ret)
@@ -132,12 +135,12 @@ def json_response(request, response=None):
     try:
         if isinstance(response, dict):
             response = dict(response)
-            if 'result' not in response:
-                response['result'] = 'ok'
+            if "result" not in response:
+                response["result"] = "ok"
             authenticated = request.user.is_authenticated
-            response['authenticated'] = authenticated
+            response["authenticated"] = authenticated
             if authenticated:
-                response['user_id'] = request.user.pk
+                response["user_id"] = request.user.pk
     except KeyboardInterrupt:
         # Allow keyboard interrupts through for debugging.
         raise
@@ -146,28 +149,28 @@ def json_response(request, response=None):
     except Exception as e:
         # Mail the admins with the error
         exc_info = sys.exc_info()
-        subject = 'JSON view error: %s' % request.path
+        subject = "JSON view error: %s" % request.path
         try:
             request_repr = repr(request)
         except:
-            request_repr = 'Request repr() unavailable'
+            request_repr = "Request repr() unavailable"
         import traceback
-        message = 'Traceback:\n%s\n\nRequest:\n%s' % (
-            '\n'.join(traceback.format_exception(*exc_info)),
-            request_repr,
-            )
 
-        response = {'result': 'error',
-                    'text': str(e)}
+        message = "Traceback:\n%s\n\nRequest:\n%s" % (
+            "\n".join(traceback.format_exception(*exc_info)),
+            request_repr,
+        )
+
+        response = {"result": "error", "text": str(e)}
         code = 500
         if not settings.DEBUG:
             logging.debug(f" ***> JSON exception {subject}: {message}")
-            logging.debug('\n'.join(traceback.format_exception(*exc_info)))
+            logging.debug("\n".join(traceback.format_exception(*exc_info)))
         else:
-            print('\n'.join(traceback.format_exception(*exc_info)))
+            print("\n".join(traceback.format_exception(*exc_info)))
 
     json = json_encode(response)
-    return HttpResponse(json, content_type='application/json; charset=utf-8', status=code)
+    return HttpResponse(json, content_type="application/json; charset=utf-8", status=code)
 
 
 def main():
@@ -182,5 +185,5 @@ def main():
     print(test, json_test)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
