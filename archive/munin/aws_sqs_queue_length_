@@ -8,6 +8,7 @@ from boto.sqs.connection import SQSConnection
 
 from vendor.munin import MuninPlugin
 
+
 class AWSSQSQueueLengthPlugin(MuninPlugin):
     category = "AWS"
     args = "-l 0 --base 1000"

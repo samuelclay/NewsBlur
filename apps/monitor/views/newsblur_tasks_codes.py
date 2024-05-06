@@ -1,12 +1,13 @@
 import datetime
+
 from django.conf import settings
 from django.shortcuts import render
 from django.views import View
 
-class TasksCodes(View):
 
+class TasksCodes(View):
     def get(self, request):
-        data = dict((("_%s" % s['_id'], s['feeds']) for s in self.stats))
+        data = dict((("_%s" % s["_id"], s["feeds"]) for s in self.stats))
         chart_name = "task_codes"
         chart_type = "counter"
         formatted_data = {}
@@ -18,22 +19,26 @@ class TasksCodes(View):
             "chart_name": chart_name,
             "chart_type": chart_type,
         }
-        return render(request, 'monitor/prometheus_data.html', context, content_type="text/plain")
-    
+        return render(request, "monitor/prometheus_data.html", context, content_type="text/plain")
+
     @property
-    def stats(self):        
-        stats = settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.aggregate([{
-            "$match": {
-                "date": {
-                    "$gt": datetime.datetime.now() - datetime.timedelta(minutes=5),
+    def stats(self):
+        stats = settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.aggregate(
+            [
+                {
+                    "$match": {
+                        "date": {
+                            "$gt": datetime.datetime.now() - datetime.timedelta(minutes=5),
+                        },
+                    },
                 },
-            },
-        }, {
-            "$group": {
-                "_id"   : "$feed_code",
-                "feeds" : {"$sum": 1},
-            },
-        }])
-        
+                {
+                    "$group": {
+                        "_id": "$feed_code",
+                        "feeds": {"$sum": 1},
+                    },
+                },
+            ]
+        )
+
         return list(stats)
-        

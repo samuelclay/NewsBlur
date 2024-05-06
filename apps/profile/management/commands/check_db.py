@@ -1,12 +1,13 @@
 import time
+
 from django.core.management.base import BaseCommand
 from django.db import connections
 from django.db.utils import OperationalError
 
-class Command(BaseCommand):
 
+class Command(BaseCommand):
     def handle(self, *args, **options):
-        db_conn = connections['default']
+        db_conn = connections["default"]
         connected = False
         while not connected:
             try:

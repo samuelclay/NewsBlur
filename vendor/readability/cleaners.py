@@ -1,5 +1,6 @@
 # strip out a set of nuisance html attributes that can mess up rendering in RSS feeds
 import re
+
 from lxml.html.clean import Cleaner
 
 bad_attrs = ["width", "height", "style", "[-a-z]*color", "background[-a-z]*", "on*"]
@@ -10,8 +11,7 @@ htmlstrip = re.compile(
     "<"  # open
     "([^>]+) "  # prefix
     "(?:%s) *" % ("|".join(bad_attrs),)
-    + "= *(?:%s|%s|%s)"  # undesirable attributes
-    % (non_space, single_quoted, double_quoted)
+    + "= *(?:%s|%s|%s)" % (non_space, single_quoted, double_quoted)  # undesirable attributes
     + "([^>]*)"  # value  # postfix
     ">",  # end
     re.I,

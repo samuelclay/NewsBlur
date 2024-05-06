@@ -3,6 +3,7 @@
 
 from vendor.munin.pgbouncer import MuninPgBouncerPlugin
 
+
 class MuninPgBouncerStatsQueryServerPlugin(MuninPgBouncerPlugin):
     command = "SHOW STATS"
     vlabel = "Microseconds"

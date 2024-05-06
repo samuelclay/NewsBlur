@@ -21,47 +21,51 @@ have crept in over time.
 """
 
 
-
 import html.entities
 import re
 import sys
-import  urllib.parse
-
+import urllib.parse
 from urllib.parse import parse_qs
+
 # json module is in the standard library as of python 2.6; fall back to
 # simplejson if present for older versions.
 try:
     import json
+
     assert hasattr(json, "loads") and hasattr(json, "dumps")
     _json_decode = json.loads
     _json_encode = json.dumps
 except Exception:
     try:
         import simplejson
+
         _json_decode = lambda s: simplejson.loads(_unicode(s))
         _json_encode = lambda v: simplejson.dumps(v)
     except ImportError:
         try:
             # For Google AppEngine
             from django.utils import simplejson
+
             _json_decode = lambda s: simplejson.loads(_unicode(s))
             _json_encode = lambda v: simplejson.dumps(v)
         except ImportError:
+
             def _json_decode(s):
                 raise NotImplementedError(
                     "A JSON parser is required, e.g., simplejson at "
-                    "http://pypi.python.org/pypi/simplejson/")
+                    "http://pypi.python.org/pypi/simplejson/"
+                )
+
             _json_encode = _json_decode
 
 
 _XHTML_ESCAPE_RE = re.compile('[&<>"]')
-_XHTML_ESCAPE_DICT = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}
+_XHTML_ESCAPE_DICT = {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}
 
 
 def xhtml_escape(value):
     """Escapes a string so it is valid within XML or XHTML."""
-    return _XHTML_ESCAPE_RE.sub(lambda match: _XHTML_ESCAPE_DICT[match.group(0)],
-                                to_basestring(value))
+    return _XHTML_ESCAPE_RE.sub(lambda match: _XHTML_ESCAPE_DICT[match.group(0)], to_basestring(value))
 
 
 def xhtml_unescape(value):
@@ -94,11 +98,13 @@ def url_escape(value):
     """Returns a valid URL-encoded version of the given value."""
     return urllib.parse.quote_plus(utf8(value))
 
+
 # python 3 changed things around enough that we need two separate
 # implementations of url_unescape.  We also need our own implementation
 # of parse_qs since python 3's version insists on decoding everything.
 if sys.version_info[0] < 3:
-    def url_unescape(value, encoding='utf-8'):
+
+    def url_unescape(value, encoding="utf-8"):
         """Decodes the given value from a URL.
 
         The argument may be either a byte or unicode string.
@@ -113,7 +119,8 @@ if sys.version_info[0] < 3:
 
     parse_qs_bytes = parse_qs
 else:
-    def url_unescape(value, encoding='utf-8'):
+
+    def url_unescape(value, encoding="utf-8"):
         """Decodes the given value from a URL.
 
         The argument may be either a byte or unicode string.
@@ -136,11 +143,10 @@ else:
         """
         # This is gross, but python3 doesn't give us another way.
         # Latin1 is the universal donor of character encodings.
-        result = parse_qs(qs, keep_blank_values, strict_parsing,
-                          encoding='latin1', errors='strict')
+        result = parse_qs(qs, keep_blank_values, strict_parsing, encoding="latin1", errors="strict")
         encoded = {}
         for k, v in result.items():
-            encoded[k] = [i.encode('latin1') for i in v]
+            encoded[k] = [i.encode("latin1") for i in v]
         return encoded
 
 
@@ -158,6 +164,7 @@ def utf8(value):
     assert isinstance(value, str)
     return value.encode("utf-8")
 
+
 _TO_UNICODE_TYPES = (str, type(None))
 
 
@@ -171,6 +178,7 @@ def to_unicode(value):
         return value
     assert isinstance(value, bytes)
     return value.decode("utf-8")
+
 
 # to_unicode was previously named _unicode not because it was private,
 # but to avoid conflicts with the built-in unicode() function/type
@@ -217,16 +225,20 @@ def recursive_unicode(obj):
     else:
         return obj
 
+
 # I originally used the regex from
 # http://daringfireball.net/2010/07/improved_regex_for_matching_urls
 # but it gets all exponential on certain patterns (such as too many trailing
 # dots), causing the regex matcher to never return.
 # This regex should avoid those problems.
-_URL_RE = re.compile(r"""\b((?:([\w-]+):(/{1,3})|www[.])(?:(?:(?:[^\s&()]|&amp;|&quot;)*(?:[^!"#$%&'()*+,.:;<=>?@\[\]^`{|}~\s]))|(?:\((?:[^\s&()]|&amp;|&quot;)*\)))+)""")
+_URL_RE = re.compile(
+    r"""\b((?:([\w-]+):(/{1,3})|www[.])(?:(?:(?:[^\s&()]|&amp;|&quot;)*(?:[^!"#$%&'()*+,.:;<=>?@\[\]^`{|}~\s]))|(?:\((?:[^\s&()]|&amp;|&quot;)*\)))+)"""
+)
 
 
-def linkify(text, shorten=False, extra_params="",
-            require_protocol=False, permitted_protocols=["http", "https"]):
+def linkify(
+    text, shorten=False, extra_params="", require_protocol=False, permitted_protocols=["http", "https"]
+):
     """Converts plain text into HTML with links.
 
     For example: ``linkify("Hello http://tornadoweb.org!")`` would return
@@ -269,7 +281,7 @@ def linkify(text, shorten=False, extra_params="",
 
         href = m.group(1)
         if not proto:
-            href = "http://" + href   # no proto specified, use http
+            href = "http://" + href  # no proto specified, use http
 
         if callable(extra_params):
             params = " " + extra_params(href).strip()
@@ -291,14 +303,13 @@ def linkify(text, shorten=False, extra_params="",
                 # The path is usually not that interesting once shortened
                 # (no more slug, etc), so it really just provides a little
                 # extra indication of shortening.
-                url = url[:proto_len] + parts[0] + "/" + \
-                        parts[1][:8].split('?')[0].split('.')[0]
+                url = url[:proto_len] + parts[0] + "/" + parts[1][:8].split("?")[0].split(".")[0]
 
             if len(url) > max_len * 1.5:  # still too long
                 url = url[:max_len]
 
             if url != before_clip:
-                amp = url.rfind('&')
+                amp = url.rfind("&")
                 # avoid splitting html char entities
                 if amp > max_len - 5:
                     url = url[:amp]
@@ -337,5 +348,6 @@ def _build_unicode_map():
     for name, value in html.entities.name2codepoint.items():
         unicode_map[name] = chr(value)
     return unicode_map
+
 
 _HTML_UNICODE_MAP = _build_unicode_map()

@@ -1,11 +1,11 @@
 import re
-import chardet
 import sys
 
+import chardet
 
-RE_CHARSET = re.compile(br'<meta.*?charset=["\']*(.+?)["\'>]', flags=re.I)
-RE_PRAGMA = re.compile(br'<meta.*?content=["\']*;?charset=(.+?)["\'>]', flags=re.I)
-RE_XML = re.compile(br'^<\?xml.*?encoding=["\']*(.+?)["\'>]')
+RE_CHARSET = re.compile(rb'<meta.*?charset=["\']*(.+?)["\'>]', flags=re.I)
+RE_PRAGMA = re.compile(rb'<meta.*?content=["\']*;?charset=(.+?)["\'>]', flags=re.I)
+RE_XML = re.compile(rb'^<\?xml.*?encoding=["\']*(.+?)["\'>]')
 
 CHARSETS = {
     "big5": "big5hkscs",
@@ -20,17 +20,15 @@ CHARSETS = {
 
 def fix_charset(encoding):
     """Overrides encoding when charset declaration
-       or charset determination is a subset of a larger
-       charset.  Created because of issues with Chinese websites"""
+    or charset determination is a subset of a larger
+    charset.  Created because of issues with Chinese websites"""
     encoding = encoding.lower()
     return CHARSETS.get(encoding, encoding)
 
 
 def get_encoding(page):
     # Regex for XML and HTML Meta charset declaration
-    declared_encodings = (
-        RE_CHARSET.findall(page) + RE_PRAGMA.findall(page) + RE_XML.findall(page)
-    )
+    declared_encodings = RE_CHARSET.findall(page) + RE_PRAGMA.findall(page) + RE_XML.findall(page)
 
     # Try any declared encodings
     for declared_encoding in declared_encodings:
@@ -52,7 +50,7 @@ def get_encoding(page):
 
     # Fallback to chardet if declared encodings fail
     # Remove all HTML tags, and leave only text for chardet
-    text = re.sub(br"(\s*</?[^>]*>)+\s*", b" ", page).strip()
+    text = re.sub(rb"(\s*</?[^>]*>)+\s*", b" ", page).strip()
     enc = "utf-8"
     if len(text) < 10:
         return enc  # can't guess
