@@ -1,25 +1,28 @@
-import os
 import base64
-import urllib.parse
 import datetime
+import os
+import urllib.parse
+
 import lxml.html
 from django import forms
 from django.conf import settings
-from django.http import HttpResponse
-from django.shortcuts import render
 from django.contrib.auth import login as login_user
 from django.contrib.auth import logout as logout_user
-from apps.reader.forms import SignupForm, LoginForm
+from django.core.mail import mail_admins
+from django.http import HttpResponse
+from django.shortcuts import render
+
 from apps.profile.models import Profile
-from apps.social.models import MSocialProfile, MSharedStory, MSocialSubscription
-from apps.rss_feeds.models import Feed, MStarredStoryCounts, MStarredStory
+from apps.reader.forms import LoginForm, SignupForm
+from apps.reader.models import RUserStory, UserSubscription, UserSubscriptionFolders
+from apps.rss_feeds.models import Feed, MStarredStory, MStarredStoryCounts
 from apps.rss_feeds.text_importer import TextImporter
-from apps.reader.models import UserSubscription, UserSubscriptionFolders, RUserStory
+from apps.social.models import MSharedStory, MSocialProfile, MSocialSubscription
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import relative_timesince
+from utils.user_functions import ajax_login_required, get_user
 from utils.view_functions import required_params
-from utils.user_functions import get_user, ajax_login_required
 
 
 @json.json_view
@@ -511,8 +514,11 @@ def save_story(request, token=None):
     return response
 
 def ip_addresses(request):
-    import digitalocean
-    doapi = digitalocean.Manager(token=settings.DO_TOKEN_API_IPADDRESSES)
-    droplets = doapi.get_all_droplets()
-    addresses = '\n'.join([d.ip_address for d in droplets if any(name in d.name for name in ['task', 'staging', 'app', 'node'])])
+    # Read local file /srv/newsblur/apps/api/ip_addresses.txt and return that
+    with open('/srv/newsblur/apps/api/ip_addresses.txt', 'r') as f:
+        addresses = f.read()
+
+    if request.user.is_authenticated:
+        mail_admins(f"IP Addresses accessed from {request.META['REMOTE_ADDR']} by {request.user}", addresses)
+
     return HttpResponse(addresses, content_type='text/plain')

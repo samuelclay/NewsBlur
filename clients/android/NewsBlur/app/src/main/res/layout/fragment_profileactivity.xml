@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    style="?layoutBackground" >
+    style="?layoutBackground">
 
     <RelativeLayout
         android:id="@+id/empty_view"
@@ -21,11 +22,12 @@
             android:textSize="13sp"
             android:textStyle="italic" />
 
-        <com.newsblur.view.ProgressThrobber
-            android:id="@+id/empty_view_loading_throb"
-            android:layout_width="fill_parent"
-            android:layout_alignParentTop="true"
-            android:layout_height="6dp" />
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/empty_view_loading"
+            style="@style/linearProgressIndicator"
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:layout_alignParentTop="true" />
 
     </RelativeLayout>
 

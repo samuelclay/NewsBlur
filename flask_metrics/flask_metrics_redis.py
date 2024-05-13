@@ -36,7 +36,14 @@ class RedisMetric(object):
             if not settings.DOCKERBUILD and instance not in settings.SERVER_NAME:
                 continue
             self.host = f"{settings.SERVER_NAME}.node.nyc1.consul"
-            self.port = redis_config.get('port', settings.REDIS_PORT)
+            if instance == 'db-redis-session':
+                self.port = redis_config.get('port', settings.REDIS_SESSION_PORT)
+            elif instance == 'db-redis-story':
+                self.port = redis_config.get('port', settings.REDIS_STORY_PORT)
+            elif instance == 'db-redis-pubsub':
+                self.port = redis_config.get('port', settings.REDIS_PUBSUB_PORT)
+            elif instance == 'db-redis-user':
+                self.port = redis_config.get('port', settings.REDIS_USER_PORT)
             stats = self.get_info()
             yield instance, stats
   

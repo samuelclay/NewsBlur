@@ -6,7 +6,7 @@
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
     env:
-      REDIS_ADDR: "db-{{item.redis_target}}.service.nyc1.consul:6379"
+      REDIS_ADDR: "db-{{item.redis_target}}.service.nyc1.consul:{{ item.redis_port }}"
     networks_cli_compatible: yes
     network_mode: default
     networks:
@@ -16,12 +16,16 @@
   with_items:
     - port: 9121
       redis_target: "redis-user"
+      redis_port: 6381
     - port: 9122
-      redis_target: "redis-sessions"
+      redis_target: "redis-session"
+      redis_port: 6382
     - port: 9123
       redis_target: "redis-story"
+      redis_port: 6380
     - port: 9124
       redis_target: "redis-pubsub"
+      redis_port: 6383
 
 - name: Register redis-exporters in consul
   tags: consul
@@ -35,7 +39,7 @@
     - port: 9121
       redis_target: "redis-user"
     - port: 9122
-      redis_target: "redis-sessions"
+      redis_target: "redis-session"
     - port: 9123
       redis_target: "redis-story"
     - port: 9124

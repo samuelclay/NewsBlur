@@ -1,14 +1,23 @@
 ---
+- name: Ensure /srv exists and is owned by user
+  become: yes
+  file:
+    path: /srv
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+
 - name: Pull sentry self-hosted github
   git:
     repo: https://github.com/getsentry/self-hosted.git
     dest: /srv/sentry/
-    version: master
+    version: 24.4.1
 
 - name: Updating Sentry
   command:
     chdir: /srv/sentry/
-    cmd: ./install.sh
+    cmd: ./install.sh --no-report-self-hosted-issues
 
 - name: docker-compuse up -d
   command:
@@ -24,4 +33,3 @@
   notify:
     - reload consul
   when: disable_consul_services_ie_staging is not defined
-

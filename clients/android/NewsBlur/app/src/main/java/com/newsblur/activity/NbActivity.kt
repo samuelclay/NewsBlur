@@ -1,17 +1,24 @@
 package com.newsblur.activity
 
-import android.content.IntentFilter
-import androidx.appcompat.app.AppCompatActivity
-import com.newsblur.util.PrefConstants.ThemeValue
 import android.os.Bundle
-import androidx.core.content.ContextCompat
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.newsblur.database.BlurDatabaseHelper
-import com.newsblur.util.PrefsUtils
-import com.newsblur.util.UIUtils
-import com.newsblur.service.NBSyncReceiver
+import com.newsblur.service.NBSync
+import com.newsblur.service.NbSyncManager
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.Log
+import com.newsblur.util.PrefConstants.ThemeValue
+import com.newsblur.util.PrefsUtils
+import com.newsblur.util.UIUtils
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -27,14 +34,7 @@ open class NbActivity : AppCompatActivity() {
     private var uniqueLoginKey: String? = null
     private var lastTheme: ThemeValue? = null
 
-    // Facilitates the db updates by the sync service on the UI
-    private val serviceSyncReceiver = object : NBSyncReceiver() {
-        override fun handleUpdateType(updateType: Int) {
-            runOnUiThread { handleUpdate(updateType) }
-        }
-    }
-
-    override fun onCreate(bundle: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         Log.offerContext(this)
         Log.d(this, "onCreate")
 
@@ -43,7 +43,7 @@ open class NbActivity : AppCompatActivity() {
         PrefsUtils.applyThemePreference(this)
         lastTheme = PrefsUtils.getSelectedTheme(this)
 
-        super.onCreate(bundle)
+        super.onCreate(savedInstanceState)
 
         // in rare cases of process interruption or DB corruption, an activity can launch without valid
         // login creds.  redirect the user back to the loging workflow.
@@ -53,7 +53,7 @@ open class NbActivity : AppCompatActivity() {
             finish()
         }
 
-        bundle?.let {
+        savedInstanceState?.let {
             uniqueLoginKey = it.getString(UNIQUE_LOGIN_KEY)
         }
 
@@ -62,6 +62,19 @@ open class NbActivity : AppCompatActivity() {
         }
 
         finishIfNotLoggedIn()
+
+        // Facilitates the db updates by the sync service on the UI
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                launch {
+                    NbSyncManager.state.collectLatest {
+                        withContext(Dispatchers.Main) {
+                            handleSyncUpdate(it)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun onResume() {
@@ -76,16 +89,11 @@ open class NbActivity : AppCompatActivity() {
             PrefsUtils.applyThemePreference(this)
             UIUtils.restartActivity(this)
         }
-
-        ContextCompat.registerReceiver(this, serviceSyncReceiver, IntentFilter().apply {
-            addAction(NBSyncReceiver.NB_SYNC_ACTION)
-        }, ContextCompat.RECEIVER_NOT_EXPORTED)
     }
 
     override fun onPause() {
         Log.d(this.javaClass.name, "onPause")
         super.onPause()
-        unregisterReceiver(serviceSyncReceiver)
     }
 
     private fun finishIfNotLoggedIn() {
@@ -109,14 +117,17 @@ open class NbActivity : AppCompatActivity() {
         FeedUtils.triggerSync(this)
     }
 
-    /**
-     * Called on each NB activity after the DB has been updated by the sync service.
-     *
-     * @param updateType one or more of the UPDATE_* flags in this class to indicate the
-     * type of update being broadcast.
-     */
+    private fun handleSyncUpdate(nbSync: NBSync) = when (nbSync) {
+        is NBSync.Update -> handleUpdate(nbSync.type)
+        is NBSync.Error -> handleErrorMsg(nbSync.msg)
+    }
+
     protected open fun handleUpdate(updateType: Int) {
         Log.w(this, "activity doesn't implement handleUpdate")
+    }
+
+    private fun handleErrorMsg(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 }
 

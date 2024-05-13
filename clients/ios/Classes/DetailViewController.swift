@@ -10,11 +10,6 @@ import UIKit
 
 /// Manages the detail column of the split view, with the feed detail and/or the story pages.
 class DetailViewController: BaseViewController {
-    /// Returns the shared app delegate.
-    var appDelegate: NewsBlurAppDelegate {
-        return NewsBlurAppDelegate.shared()
-    }
-    
     /// Preference keys.
     enum Key {
         /// Style of the feed detail list layout.
@@ -173,7 +168,7 @@ class DetailViewController: BaseViewController {
     
     /// How the split controller behaves.
     var behavior: Behavior {
-        switch UserDefaults.standard.string(forKey: Key.behavior) {
+        switch behaviorString {
         case BehaviorValue.tile:
             return .tile
         case BehaviorValue.displace:
@@ -185,20 +180,15 @@ class DetailViewController: BaseViewController {
         }
     }
     
-    /// Returns `true` if the device is an iPhone, otherwise `false`.
-    @objc var isPhone: Bool {
-        return UIDevice.current.userInterfaceIdiom == .phone
-    }
-    
-    /// Returns `true` if the window is in portrait orientation, otherwise `false`.
-    @objc var isPortraitOrientation: Bool {
-        return view.window?.windowScene?.interfaceOrientation.isPortrait ?? false
+    /// The split controller behavior as a raw string.
+    @objc var behaviorString: String {
+        return UserDefaults.standard.string(forKey: Key.behavior) ?? BehaviorValue.auto
     }
     
     /// Position of the divider between the views.
     var dividerPosition: CGFloat {
         get {
-            let key = isPortraitOrientation ? Key.verticalPosition : Key.horizontalPosition
+            let key = isPortrait ? Key.verticalPosition : Key.horizontalPosition
             let value = CGFloat(UserDefaults.standard.float(forKey: key))
             
             if value == 0 {
@@ -212,7 +202,7 @@ class DetailViewController: BaseViewController {
                 return
             }
             
-            let key = isPortraitOrientation ? Key.verticalPosition : Key.horizontalPosition
+            let key = isPortrait ? Key.verticalPosition : Key.horizontalPosition
             
             UserDefaults.standard.set(Float(newValue), forKey: key)
         }
@@ -452,6 +442,10 @@ class DetailViewController: BaseViewController {
 private extension DetailViewController {
     func checkViewControllers() {
         let isTop = layout == .top
+        
+#if targetEnvironment(macCatalyst)
+        splitViewController?.primaryBackgroundStyle = .sidebar
+#endif
         
         if layout != .grid || isPhone {
             storyPagesViewController = listStoryPagesViewController

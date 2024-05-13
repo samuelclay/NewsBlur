@@ -70,7 +70,7 @@ class LoginProgress : FragmentActivity() {
                         val startMain = Intent(this, Main::class.java)
                         startActivity(startMain)
                     } else {
-                        UIUtils.safeToast(this, it.getErrorMessage(getString(R.string.login_message_error)), Toast.LENGTH_LONG)
+                        Toast.makeText(this, it.getErrorMessage(getString(R.string.login_message_error)), Toast.LENGTH_LONG).show()
                         startActivity(Intent(this, Login::class.java))
                     }
                 }

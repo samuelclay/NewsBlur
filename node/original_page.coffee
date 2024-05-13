@@ -4,56 +4,66 @@ fs = require 'fs'
 mkdirp = require 'mkdirp'
 log    = require './log.js'
 
+fsPromises = fs.promises
+mkdirpPromise = require('util').promisify(mkdirp)
+
 original_page = (app) =>
     DEV = process.env.NODE_ENV == 'development' || process.env.NODE_ENV == 'docker' || process.env.NODE_ENV == 'debug'
 
-    DB_PATH = if DEV then 'originals' else '/srv/originals'
+    DB_PATH = '/srv/originals'
 
     app.use busboy()
 
-    app.get /^\/original_page\/(\d+)\/?/, (req, res) =>
-        if req.query.test
-            return res.end "OK"
+    app.get /^\/original_page\/(\d+)\/?/, (req, res) ->
+        return res.end "OK" if req.query.test
 
-        feedId = parseInt(req.params[0], 10)
-        etag = req.header('If-None-Match')
-        lastModified = req.header('If-Modified-Since')
+        feedId = parseInt req.params[0], 10
+        etag = req.header 'If-None-Match'
+        lastModified = req.header 'If-Modified-Since'
         feedIdDir = splitFeedId feedId
         filePath = "#{DB_PATH}/#{feedIdDir}.zhtml"
-        
-        fs.exists filePath, (exists, err) ->
-            log.debug "Loading: #{feedId} (#{filePath}). " +
-                        "#{if exists then "" else "NOT FOUND"}"
-            if not exists
-                return res.sendStatus 404
-            fs.stat filePath, (err, stats) ->
-                if not err and etag and stats.mtime == etag
-                    return res.sendStatus 304
-                if not err and lastModified and stats.mtime == lastModified
-                    return res.sendStatus 304
-            
-                fs.readFile filePath, (err, content) ->
-                    res.header 'Etag', Date.parse(stats.mtime)
+
+        # Convert to async flow with try/catch using CoffeeScript's then/catch for Promises
+        fsPromises.stat(filePath).then (stats) ->
+            fileEtag = Date.parse(stats.mtime).toString()
+            if etag is fileEtag or lastModified is stats.mtime.toISOString()
+                log.debug "Not modified: #{feedId} (#{filePath})"
+                res.sendStatus 304
+            else
+                fsPromises.readFile(filePath).then (content) ->
+                    log.debug "Sending: #{feedId} (#{filePath}) #{stats.size} bytes"
+                    res.header 'Etag', fileEtag
                     res.send content
+        .catch (err) ->
+            if err.code is 'ENOENT'
+                log.debug "Original page not found: #{feedId} (#{filePath})"
+                res.sendStatus 404
+            else
+                log.debug "Error reading original page: #{feedId} (#{filePath}) #{err}"
+                res.sendStatus 500
 
 
-    app.post /^\/original_page\/(\d+)\/?/, (req, res) =>
-        feedId = parseInt(req.params[0], 10)
+    app.post /^\/original_page\/(\d+)\/?/, (req, res) ->
+        feedId = parseInt req.params[0], 10
         feedIdDir = splitFeedId feedId
-        req.pipe req.busboy
-        req.busboy.on 'file', (fieldname, file, filename) ->
-            # log.debug "Uploading #{fieldname} / #{file} / #{filename}"
-            filePath = "#{DB_PATH}/#{feedIdDir}.zhtml"
-            filePathDir = path.dirname filePath
-            mkdirp filePathDir, (err) ->
-                log.debug err if err
-                fstream = fs.createWriteStream filePath
+        filePath = "#{DB_PATH}/#{feedIdDir}.zhtml"
+        filePathDir = path.dirname filePath
+
+        # Ensure directory exists before proceeding
+        mkdirpPromise(filePathDir).then ->
+            fstream = fs.createWriteStream filePath
+            req.pipe req.busboy
+
+            req.busboy.on 'file', (fieldname, file, filename) ->
                 file.pipe fstream
+
                 fstream.on 'close', ->
-                    fs.stat filePath, (err, stats) ->
-                        log.debug err if err
+                    fsPromises.stat(filePath).then (stats) ->
                         log.debug "Saving: #{feedId} (#{filePath}) #{stats.size} bytes"
                         res.send "OK"
+        .catch (err) ->
+            log.debug err
+            res.sendStatus 500
 
 
     splitFeedId = (feedId) ->

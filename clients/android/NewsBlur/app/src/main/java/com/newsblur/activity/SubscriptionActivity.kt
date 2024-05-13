@@ -60,8 +60,8 @@ class SubscriptionActivity : NbActivity() {
         }
     }
 
-    override fun onCreate(bundle: Bundle?) {
-        super.onCreate(bundle)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         binding = ActivitySubscriptionBinding.inflate(layoutInflater)
         bindingPremium = ViewPremiumSubscriptionBinding.bind(binding.containerPremiumSubscription.root)
         bindingArchive = ViewArchiveSubscriptionBinding.bind(binding.containerArchiveSubscription.root)
