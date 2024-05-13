@@ -1,23 +1,16 @@
 {
-    "black-formatter.args": [
-        "--line-length 110"
-    ],
     "isort.args": [
         "--profile",
         "black"
     ],
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-        "source.organizeImports": "explicit"
-    },
-    "python.linting.enabled": true,
-    "python.linting.pylintEnabled": false,
-    "python.linting.flake8Enabled": true,
-    "python.linting.pylamaEnabled": false,
-    "python.linting.flake8Args": [
-        "--ignore=E501,W293,W503,W504,E302,E722,E226,E221,E402,E401"
-    ],
-    "python.pythonPath": "~/.virtualenvs/newsblur3/bin/python",
+    // "python.linting.enabled": true,
+    // "python.linting.pylintEnabled": false,
+    // "python.linting.flake8Enabled": true,
+    // "python.linting.pylamaEnabled": false,
+    // "python.linting.flake8Args": [
+    //     "--ignore=E501,W293,W503,W504,E302,E722,E226,E221,E402,E401"
+    // ],
+    // "python.pythonPath": "~/.virtualenvs/newsblur/bin/python",
     "editor.bracketPairColorization.enabled": true,
     "editor.guides.bracketPairs": "active",
     "git.ignoreLimitWarning": true,
@@ -38,15 +31,12 @@
         "docker/volumes": true,
         "requirements.txt": true, // It's just a symlink to config/requirements.txt, which has git history
     },
-    "python.formatting.blackArgs": [
-        "--line-length=110",
-        "--skip-string-normalization"
-    ],
+    // "python.formatting.blackArgs": [
+    //     "--line-length=110",
+    //     "--skip-string-normalization"
+    // ],
     "files.associations": {
         "*.yml": "ansible"
     },
-    "nrf-connect.toolchain.path": "${nrf-connect.toolchain:1.9.1}",
-    "C_Cpp.default.configurationProvider": "nrf-connect",
-    "editor.formatOnSave": false,
     "ansible.python.interpreterPath": "/opt/homebrew/bin/python3",
 }

@@ -1,4 +1,13 @@
 ---
+- name: Ensure 'nb' user owns /srv/ recursively
+  become: yes
+  file:
+    path: /srv
+    owner: nb
+    group: nb
+    recurse: yes
+    state: directory
+
 - name: Copy node secrets
   copy:
     src: /srv/secrets-newsblur/settings/node_settings.env
@@ -34,22 +43,22 @@
 - name: Get the volume name
   shell: ls /dev/disk/by-id/ | grep -v part
   register: volume_name_raw
-  when: '"node-page" in inventory_hostname'
+  when: '"node-page" in inventory_hostname and not inventory_hostname.startswith("hnode")'
 
 - set_fact:
     volume_name: "{{ volume_name_raw.stdout }}"
-  when: '"node-page" in inventory_hostname'
+  when: '"node-page" in inventory_hostname and not inventory_hostname.startswith("hnode")'
 
 - debug:
     msg: "{{ volume_name }}"
-  when: '"node-page" in inventory_hostname'
+  when: '"node-page" in inventory_hostname and not inventory_hostname.startswith("hnode")'
 
 - name: Create the mount point
   become: yes
   file: 
     path: "/mnt/{{ inventory_hostname | regex_replace('-', '') }}"
     state: directory
-  when: '"node-page" in inventory_hostname'
+  when: '"node-page" in inventory_hostname and not inventory_hostname.startswith("hnode")'
 
 - name: Mount volume read-write
   become: yes
@@ -59,7 +68,7 @@
     fstype: xfs
     opts: defaults,discard
     state: mounted
-  when: '"node-page" in inventory_hostname'
+  when: '"node-page" in inventory_hostname and not inventory_hostname.startswith("hnode")'
 
 - name: Symlink node-page volume from /srv/originals
   become: yes
@@ -67,10 +76,9 @@
     dest: /srv/originals
     src: "/mnt/{{ inventory_hostname | regex_replace('-', '') }}"
     state: link  
-  when: '"node-page" in inventory_hostname'
+  when: '"node-page" in inventory_hostname and not inventory_hostname.startswith("hnode")'
 
 - name: Start node docker containers
-  become: yes
   docker_container:
     name: node
     image: newsblur/newsblur_node
@@ -104,7 +112,6 @@
   when: item in inventory_hostname
 
 - name: Start non-newsblur node docker containers
-  become: yes
   docker_container:
     name: "{{ item.container_name }}"
     image: "{{ item.image }}"

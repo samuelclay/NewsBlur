@@ -1,0 +1,5 @@
+{%- for item in hostvars %}
+{% if "happ" in item or "hnode" in item or "hwww" in item or "htask" in item %}
+{{ hostvars[item].ansible_host }}
+{% endif %}
+{%- endfor %}

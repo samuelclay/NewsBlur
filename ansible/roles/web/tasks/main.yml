@@ -29,6 +29,14 @@
   tags:
     - static
 
+- name: "Write out ips from ansible inventory of all servers with app/node/www/task in name into addresses.txt file"
+  template:
+    src: ip_addresses.txt.j2
+    dest: /srv/newsblur/apps/api/ip_addresses.txt
+  tags:
+    - inventory
+    
+
 - name: Prune docker
   become: yes
   community.docker.docker_prune:

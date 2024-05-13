@@ -1,4 +1,3 @@
-
 - name: Start mongo-exporter container
   become: yes
   docker_container:
@@ -12,9 +11,9 @@
       - name: newsblurnet
     env:
       # MONGODB_URI: 'mongodb://{{ inventory_hostname }}.node.nyc1.consul:27017/admin?'
-      MONGODB_URI: 'mongodb://{{ mongodb_username }}:{{ mongodb_password }}@{{ inventory_hostname }}.node.nyc1.consul:27017/admin?authSource=admin'
+      MONGODB_URI: "mongodb://{{ mongodb_username }}:{{ mongodb_password }}@{{ inventory_hostname }}.node.nyc1.consul:27017/admin?authSource=admin"
     ports:
-    - '9216:9216'
+      - "9216:9216"
 
 - name: Register mongo-exporter in consul
   tags: consul
@@ -24,5 +23,5 @@
     dest: /etc/consul.d/mongo-exporter.json
   notify:
     - reload consul
-- name: Command to register mongo-exporter
-  command: "consul services register /etc/consul.d/mongo-exporter.json"
+# - name: Command to register mongo-exporter
+#   command: "consul services register /etc/consul.d/mongo-exporter.json"

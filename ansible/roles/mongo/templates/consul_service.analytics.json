@@ -1,6 +1,10 @@
 {
     "service": {
-        "name": "db-mongo-analytics",
+        {% if not mongo_analytics_secondary %}
+            "name": "db-mongo-analytics",
+        {% else %}
+            "name": "db-mongo-analytics-secondary",
+        {% endif %}
         "id": "{{ inventory_hostname }}",
         "tags": [
             "db"

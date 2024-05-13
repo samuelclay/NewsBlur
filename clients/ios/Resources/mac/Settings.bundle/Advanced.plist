@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>Title</key>
+			<string>Offline stories</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Download stories</string>
+			<key>Key</key>
+			<string>offline_allowed</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Download text</string>
+			<key>Key</key>
+			<string>offline_text_download</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Download images</string>
+			<key>Key</key>
+			<string>offline_image_download</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>More stories take more disk space, but otherwise storing more stories has no noticable effect on performance.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Store</string>
+			<key>Titles</key>
+			<array>
+				<string>100 stories</string>
+				<string>500 stories</string>
+				<string>1,000 stories</string>
+				<string>2,000 stories</string>
+				<string>5,000 stories</string>
+				<string>10,000 stories</string>
+			</array>
+			<key>DefaultValue</key>
+			<integer>1000</integer>
+			<key>Values</key>
+			<array>
+				<integer>100</integer>
+				<integer>500</integer>
+				<integer>1000</integer>
+				<integer>2000</integer>
+				<integer>5000</integer>
+				<integer>10000</integer>
+			</array>
+			<key>Key</key>
+			<string>offline_store_limit</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>Title</key>
+			<string>Delete offline stories...</string>
+			<key>Key</key>
+			<string>offline_cache_empty_stories</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Custom Domain</string>
+			<key>FooterText</key>
+			<string>Leave blank to use the NewsBlur site, or enter the URL of your self-hosted NewsBlur installation, e.g. &quot;https://www.domain.com&quot;. Takes effect next time app is opened.</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>KeyboardType</key>
+			<string>URL</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>Title</key>
+			<string>URL</string>
+			<key>Key</key>
+			<string>custom_domain</string>
+		</dict>
+	</array>
+	<key>StringsTable</key>
+	<string>Root</string>
+	<key>Icon</key>
+	<string>AdvancedTemplate</string>
+</dict>
+</plist>

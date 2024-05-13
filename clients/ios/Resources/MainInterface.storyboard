@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r" initialMenu="YWi-Ju-M3z">
     <device id="ipad11_0rounded" orientation="landscape" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="UIMenu" message="Requires Xcode 11 or later." minToolsVersion="11.0" requiredIntegratedClassName="UICommandDiff"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -226,7 +227,10 @@
                     <navigationItem key="navigationItem" id="ejU-V5-SiF"/>
                     <connections>
                         <outlet property="addBarButton" destination="Wu8-MQ-nN6" id="mk5-Nm-bYF"/>
+                        <outlet property="feedTitlesLeadingConstraint" destination="mcu-rd-QiB" id="lNY-Ya-6pE"/>
                         <outlet property="feedTitlesTable" destination="Gil-Jz-die" id="Jby-a1-If4"/>
+                        <outlet property="feedTitlesTopConstraint" destination="YMn-QK-fCb" id="Bjn-sa-Qdx"/>
+                        <outlet property="feedTitlesTrailingConstraint" destination="YOq-sh-lXt" id="nLy-3P-sgq"/>
                         <outlet property="feedViewToolbar" destination="pWr-U1-GMQ" id="FFI-k8-5iO"/>
                         <outlet property="innerView" destination="hRx-bd-6Da" id="vd8-hw-hZT"/>
                         <outlet property="intelligenceControl" destination="ADC-ot-Aao" id="8EU-ja-Dan"/>
@@ -238,6 +242,525 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eVD-bM-t3D" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="180.90452261306532" y="285.61151079136692"/>
+        </scene>
+        <!--Root-->
+        <scene sceneID="eNE-X1-NXV">
+            <objects>
+                <menu isSystemItem="YES" title="Root" identifier="com.apple.menu.root" id="YWi-Ju-M3z" sceneMemberID="viewController">
+                    <children>
+                        <menu isSystemItem="YES" title="File" identifier="com.apple.menu.file" id="cyC-FU-wa2">
+                            <children>
+                                <menu anchor="com.apple.menu.close" id="ksZ-gH-4gO">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="New Site" input="n" id="Y3F-bj-KeX">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="newSite:" destination="J28-e1-gcC" id="eEX-pv-sl0"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Reload Sites" input="r" id="9ee-Z4-HxV">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="reloadFeeds:" destination="J28-e1-gcC" id="Mn6-7w-6qY"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu anchor="com.apple.menu.close" id="6cc-W3-a06">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Mute Sites" input="M" id="M7P-gv-spA">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="showMuteSites:" destination="J28-e1-gcC" id="sE9-iR-0dr"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Organize Sites" input="O" id="Wte-kG-AH2">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="showOrganizeSites:" destination="J28-e1-gcC" id="9cl-DR-gBb"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Widget Sites" input="W" id="4CD-Pc-fDT">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="showWidgetSites:" destination="J28-e1-gcC" id="V7w-If-8Cv"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu anchor="com.apple.menu.close" id="obB-Ib-5UM">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Notifications" input="N" id="2ax-3D-3zm">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="showNotifications:" destination="J28-e1-gcC" id="GHY-vF-j44"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Find Friends" input="F" id="0eN-vR-Gok">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="showFindFriends:" destination="J28-e1-gcC" id="b0r-KD-HkV"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu anchor="com.apple.menu.close" id="WdP-hc-0fU">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="NewsBlur Premium" id="HGH-9Q-Dzh">
+                                            <connections>
+                                                <action selector="showPremium:" destination="J28-e1-gcC" id="adm-3i-APm"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu anchor="com.apple.menu.close" id="cRW-qu-7aj">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Logout NewsBlur" input="L" id="kvb-M9-tEl">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="showLogout:" destination="J28-e1-gcC" id="wkE-Rx-OAt"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu isSystemItem="YES" title="Print" identifier="com.apple.menu.print" id="L8Z-gR-6rG">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <systemMenuChildDeletions>
+                                        <itemDeletion anchorAction="_saveDocumentToPDF:"/>
+                                        <itemDeletion anchorAction="_printDocument:"/>
+                                    </systemMenuChildDeletions>
+                                </menu>
+                            </children>
+                            <systemMenuChildDeletions>
+                                <menuDeletion anchor="com.apple.menu.new-scene"/>
+                                <menuDeletion anchor="com.apple.menu.open"/>
+                                <menuDeletion anchor="com.apple.menu.document"/>
+                            </systemMenuChildDeletions>
+                        </menu>
+                        <menu isSystemItem="YES" title="Edit" identifier="com.apple.menu.edit" id="a13-uu-myc">
+                            <children>
+                                <menu anchor="com.apple.menu.standard-edit" id="rH8-0t-SpF">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Find in Sites" input="f" id="Oy9-Js-Eoz">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="findInFeeds:" destination="J28-e1-gcC" id="3J9-2o-DYH"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Find in Feed" input="f" id="2M3-xa-Uu2">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="findInFeedDetail:" destination="J28-e1-gcC" id="KMi-J9-3OA"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                            </children>
+                            <systemMenuChildDeletions>
+                                <menuDeletion anchor="com.apple.menu.find"/>
+                            </systemMenuChildDeletions>
+                        </menu>
+                        <menu isSystemItem="YES" title="View" identifier="com.apple.menu.view" id="pdl-gx-X6C">
+                            <children>
+                                <menu title="Columns" id="Zsw-UK-Yxk">
+                                    <children>
+                                        <command title="Automatic" propertyListString="auto" menuElementState="on" input="4" id="6Vl-Xq-5Ko">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="chooseColumns:" destination="J28-e1-gcC" id="vNz-nO-9sE"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Three" propertyListString="tile" input="3" id="UGQ-RS-mbs">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="chooseColumns:" destination="J28-e1-gcC" id="ihd-Wz-zxe"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Two" propertyListString="displace" input="2" id="coF-9M-sfo">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="chooseColumns:" destination="J28-e1-gcC" id="ejV-aM-O5L"/>
+                                            </connections>
+                                        </command>
+                                        <command title="One" propertyListString="overlay" input="1" id="uQ4-TQ-9rv">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="chooseColumns:" destination="J28-e1-gcC" id="hwz-R7-v1M"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu title="Layout" id="2UT-ZB-x5H">
+                                    <children>
+                                        <command title="Left" propertyListString="titles_on_left" menuElementState="on" id="SHF-Gm-yHM">
+                                            <connections>
+                                                <action selector="chooseLayout:" destination="J28-e1-gcC" id="v7b-YA-qHb"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Top" propertyListString="titles_on_top" id="Zeq-Nu-dqs">
+                                            <connections>
+                                                <action selector="chooseLayout:" destination="J28-e1-gcC" id="E0V-4w-fMx"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Bottom" propertyListString="titles_on_bottom" id="iQo-Uv-UPm">
+                                            <connections>
+                                                <action selector="chooseLayout:" destination="J28-e1-gcC" id="APi-KB-zyb"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Grid" propertyListString="titles_in_grid" id="hc6-3c-pEr">
+                                            <connections>
+                                                <action selector="chooseLayout:" destination="J28-e1-gcC" id="lPQ-q9-ULB"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu title="Show" id="yxK-59-1Mg">
+                                    <children>
+                                        <command title="All Stories" propertyListString="0" menuElementState="on" input="1" id="ccO-Ne-aJ2">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="chooseIntelligence:" destination="J28-e1-gcC" id="BEW-3n-izO"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Unread Stories" propertyListString="1" input="2" id="Flw-XS-uGO">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="chooseIntelligence:" destination="J28-e1-gcC" id="Sjf-mN-l3c"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Focus Stories" propertyListString="2" input="3" id="Pml-hQ-IST">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="chooseIntelligence:" destination="J28-e1-gcC" id="O2v-f5-adA"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Saved Stories" propertyListString="3" input="4" id="YTZ-1i-9Qj">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="chooseIntelligence:" destination="J28-e1-gcC" id="6Bm-Us-ckr"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu title="Inline Menu" id="rEb-O5-WxE">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                </menu>
+                                <menu title="Story Preview" id="11o-Ny-Ay8">
+                                    <children>
+                                        <command title="Only Title" propertyListString="title" menuElementState="on" id="3VQ-tS-tca">
+                                            <connections>
+                                                <action selector="chooseTitle:" destination="J28-e1-gcC" id="dVZ-e9-eMx"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Short" propertyListString="short" id="kKo-nO-rdD">
+                                            <connections>
+                                                <action selector="chooseTitle:" destination="J28-e1-gcC" id="L2L-i9-jJu"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Medium" propertyListString="medium" id="8kl-JH-cAR">
+                                            <connections>
+                                                <action selector="chooseTitle:" destination="J28-e1-gcC" id="cHy-Qn-qYA"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Long" propertyListString="long" id="6c5-Aa-VWc">
+                                            <connections>
+                                                <action selector="chooseTitle:" destination="J28-e1-gcC" id="laa-aj-lRm"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu title="Image Preview" id="JBe-EV-vd0">
+                                    <children>
+                                        <command title="None" propertyListString="none" menuElementState="on" id="xUQ-iP-Xav">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="choosePreview:" destination="J28-e1-gcC" id="ydY-6y-Vu7"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Small Left" propertyListString="small_left" id="pgV-T3-JgP">
+                                            <connections>
+                                                <action selector="choosePreview:" destination="J28-e1-gcC" id="6bd-eh-Jkf"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Large Left" propertyListString="large_left" id="rJC-gP-ub8">
+                                            <connections>
+                                                <action selector="choosePreview:" destination="J28-e1-gcC" id="dXF-jY-GB9"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Large Right" propertyListString="large_right" id="DHS-T6-h9f">
+                                            <connections>
+                                                <action selector="choosePreview:" destination="J28-e1-gcC" id="ZrD-28-3r7"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Small Right" propertyListString="small_right" id="0ZJ-kc-nG7">
+                                            <connections>
+                                                <action selector="choosePreview:" destination="J28-e1-gcC" id="yQ3-7h-2eZ"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu title="Inline Menu" id="uRc-h2-2ur">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                </menu>
+                                <menu title="Grid Columns" id="gPp-Vp-Aqb">
+                                    <children>
+                                        <command title="Automatic" propertyListString="auto" menuElementState="on" id="W9M-jz-7Wo">
+                                            <connections>
+                                                <action selector="chooseGridColumns:" destination="J28-e1-gcC" id="r7t-6H-NdZ"/>
+                                            </connections>
+                                        </command>
+                                        <command title="1" propertyListString="1" id="COJ-8T-jFG">
+                                            <connections>
+                                                <action selector="chooseGridColumns:" destination="J28-e1-gcC" id="sg6-ao-Ca6"/>
+                                            </connections>
+                                        </command>
+                                        <command title="2" propertyListString="2" id="Enn-ac-qRo">
+                                            <connections>
+                                                <action selector="chooseGridColumns:" destination="J28-e1-gcC" id="9uC-A2-7y3"/>
+                                            </connections>
+                                        </command>
+                                        <command title="3" propertyListString="3" id="LL9-1i-7gs">
+                                            <connections>
+                                                <action selector="chooseGridColumns:" destination="J28-e1-gcC" id="7Ki-1P-JNN"/>
+                                            </connections>
+                                        </command>
+                                        <command title="4" propertyListString="4" id="TAe-RC-Isj">
+                                            <connections>
+                                                <action selector="chooseGridColumns:" destination="J28-e1-gcC" id="8rE-3w-9G0"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu title="Grid Height" id="YgQ-8j-p4J">
+                                    <children>
+                                        <command title="Extra Short" propertyListString="xs" id="QkE-4U-qCZ">
+                                            <connections>
+                                                <action selector="chooseGridHeight:" destination="J28-e1-gcC" id="gM2-NN-oey"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Short" propertyListString="short" id="QiP-55-H7Q">
+                                            <connections>
+                                                <action selector="chooseGridHeight:" destination="J28-e1-gcC" id="ayB-De-Drm"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Medium" propertyListString="medium" id="Z1h-b3-VUc">
+                                            <connections>
+                                                <action selector="chooseGridHeight:" destination="J28-e1-gcC" id="2L5-oA-LRA"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Tall" propertyListString="tall" id="nuu-UE-jx7">
+                                            <connections>
+                                                <action selector="chooseGridHeight:" destination="J28-e1-gcC" id="NWu-Lm-Mcy"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Extra Tall" propertyListString="xl" id="7pm-OP-kNf">
+                                            <connections>
+                                                <action selector="chooseGridHeight:" destination="J28-e1-gcC" id="rZo-Hs-UjD"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu title="Inline Menu" id="gSR-Tp-3Cp">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                </menu>
+                                <menu title="Text Size" id="si2-4b-JdU">
+                                    <children>
+                                        <command title="Extra Small" propertyListString="xs" input="5" id="1J1-HG-ovw">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="chooseFontSize:" destination="J28-e1-gcC" id="Fq4-fK-3Bs"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Small" propertyListString="small" input="6" id="M7K-32-93Q">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="chooseFontSize:" destination="J28-e1-gcC" id="syn-70-bmd"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Medium" propertyListString="medium" input="7" id="EOM-3c-Cjp">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="chooseFontSize:" destination="J28-e1-gcC" id="Qe4-E0-Qhz"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Large" propertyListString="large" input="8" id="PWP-X9-KBw">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="chooseFontSize:" destination="J28-e1-gcC" id="Lnl-mp-hOV"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Extra Large" propertyListString="xl" input="9" id="yfW-eZ-Rax">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="chooseFontSize:" destination="J28-e1-gcC" id="cl8-ay-saj"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu title="Spacing" id="MQ7-6f-UwT">
+                                    <children>
+                                        <command title="Compact" propertyListString="compact" id="FEf-Wk-caC">
+                                            <connections>
+                                                <action selector="chooseSpacing:" destination="J28-e1-gcC" id="qx2-aa-FAd"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Comfortable" propertyListString="comfortable" id="A5r-hu-lBP">
+                                            <connections>
+                                                <action selector="chooseSpacing:" destination="J28-e1-gcC" id="Idm-Ge-25T"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu title="Theme" id="k0L-se-kpA">
+                                    <children>
+                                        <command title="Light" propertyListString="light" menuElementState="on" id="nvf-Kg-GEz">
+                                            <connections>
+                                                <action selector="chooseTheme:" destination="J28-e1-gcC" id="AGW-N1-hqV"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Sepia" propertyListString="sepia" id="Nvo-zG-r0S">
+                                            <connections>
+                                                <action selector="chooseTheme:" destination="J28-e1-gcC" id="F6m-fp-d1B"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Medium" propertyListString="medium" id="u5z-am-9MT">
+                                            <connections>
+                                                <action selector="chooseTheme:" destination="J28-e1-gcC" id="fOO-Pu-NR6"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Dark" propertyListString="dark" id="roz-8B-xfb">
+                                            <connections>
+                                                <action selector="chooseTheme:" destination="J28-e1-gcC" id="Zpe-za-poM"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                            </children>
+                            <systemMenuChildDeletions>
+                                <menuDeletion anchor="com.apple.menu.toolbar"/>
+                            </systemMenuChildDeletions>
+                        </menu>
+                        <menu title="Site" identifier="site" anchor="com.apple.menu.view" id="Kg8-V5-XsH">
+                            <children>
+                                <menu title="Manage" id="uU0-yq-BC8">
+                                    <children>
+                                        <command title="Rename Site…" id="ogl-RU-MAV">
+                                            <connections>
+                                                <action selector="openRenameSite:" destination="J28-e1-gcC" id="uUs-SK-j71"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Mute Site…" id="USf-x7-etD">
+                                            <connections>
+                                                <action selector="muteSite:" destination="J28-e1-gcC" id="J7R-Wr-qZZ"/>
+                                            </connections>
+                                        </command>
+                                        <menu id="HKb-sW-DLl">
+                                            <menuOptions key="menuOptions" displayInline="YES"/>
+                                            <children>
+                                                <command title="Delete Site…" id="RuQ-ea-MNw">
+                                                    <menuElementAttributes key="attributes" destructive="YES"/>
+                                                    <connections>
+                                                        <action selector="deleteSite:" destination="J28-e1-gcC" id="iu8-R6-1oB"/>
+                                                    </connections>
+                                                </command>
+                                            </children>
+                                        </menu>
+                                    </children>
+                                </menu>
+                                <menu id="CCe-ei-YVh">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                </menu>
+                                <command title="Train…" id="hIh-yf-xP8">
+                                    <connections>
+                                        <action selector="openTrainSite:" destination="J28-e1-gcC" id="5Ka-Ra-khJ"/>
+                                    </connections>
+                                </command>
+                                <command title="Notifications…" id="zeT-bO-F72">
+                                    <connections>
+                                        <action selector="openNotifications:" destination="J28-e1-gcC" id="4dl-l2-1n6"/>
+                                    </connections>
+                                </command>
+                                <command title="Statistics…" id="IRg-Uz-w76">
+                                    <connections>
+                                        <action selector="openStatistics:" destination="J28-e1-gcC" id="4ps-fi-6FI"/>
+                                    </connections>
+                                </command>
+                                <menu id="ffV-Jd-hmj">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                </menu>
+                                <command title="Insta-Fetch Stories" input="r" id="skD-1M-foi">
+                                    <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                    <connections>
+                                        <action selector="instaFetchFeed:" destination="J28-e1-gcC" id="soI-a3-gDT"/>
+                                    </connections>
+                                </command>
+                                <menu id="ze6-Sa-c31">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Mark All as Read" input="a" id="BDX-7T-oPE">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="doMarkAllRead:" destination="J28-e1-gcC" id="2eI-UY-pbY"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                            </children>
+                        </menu>
+                        <menu title="Story" identifier="story" anchor="com.apple.menu.view" id="KgH-xe-mTD">
+                            <children>
+                                <command title="Save This Story" input="s" id="mRM-X6-xCI">
+                                    <keyModifierFlags key="modifierFlags" command="YES"/>
+                                    <connections>
+                                        <action selector="toggleStorySaved:" destination="J28-e1-gcC" id="w9j-wM-yXJ"/>
+                                    </connections>
+                                </command>
+                                <command title="Mark as Read" input="m" id="MOV-1R-tmb">
+                                    <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                    <connections>
+                                        <action selector="toggleStoryUnread:" destination="J28-e1-gcC" id="iNX-pg-hgT"/>
+                                    </connections>
+                                </command>
+                                <command title="Send To…" id="d3Y-Ik-PAB">
+                                    <connections>
+                                        <action selector="showSendTo:" destination="J28-e1-gcC" id="XJ8-Tz-tG6"/>
+                                    </connections>
+                                </command>
+                                <command title="Train This Story…" id="GJC-ae-c80">
+                                    <connections>
+                                        <action selector="showTrain:" destination="J28-e1-gcC" id="pr3-BS-f2g"/>
+                                    </connections>
+                                </command>
+                                <command title="Share This Story…" id="wmQ-3e-8h8">
+                                    <connections>
+                                        <action selector="showShare:" destination="J28-e1-gcC" id="UGy-Xo-sDK"/>
+                                    </connections>
+                                </command>
+                            </children>
+                        </menu>
+                        <menu isSystemItem="YES" title="Help" identifier="com.apple.menu.help" id="2fJ-ya-vwD">
+                            <children>
+                                <command title="Support Forum" anchorAction="showHelp:" id="eDw-yh-3PE">
+                                    <connections>
+                                        <action selector="showSupportForum:" destination="J28-e1-gcC" id="sW1-ne-jja"/>
+                                    </connections>
+                                </command>
+                            </children>
+                        </menu>
+                    </children>
+                    <systemMenuChildDeletions>
+                        <menuDeletion anchor="com.apple.menu.format"/>
+                    </systemMenuChildDeletions>
+                </menu>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="J28-e1-gcC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1484" y="632"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="gvC-iq-nYU">

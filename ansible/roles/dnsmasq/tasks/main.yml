@@ -80,14 +80,20 @@
     state: directory
     mode: 0755
 
-- name: Add override for dnsmasq service
-  become: yes
-  copy:
-    dest: /etc/systemd/system/dnsmasq.service.d/override.conf
-    content: |
-      [Unit]
-      After=docker.service
+# - name: Add override for dnsmasq service
+#   become: yes
+#   copy:
+#     dest: /etc/systemd/system/dnsmasq.service.d/override.conf
+#     content: |
+#       [Unit]
+#       After=docker.service
 
+- name: Remove override for dnsmasq service
+  become: yes
+  file:
+    path: /etc/systemd/system/dnsmasq.service.d/override.conf
+    state: absent
+    
 - name: Launch dnsmasq
   become: yes
   service:

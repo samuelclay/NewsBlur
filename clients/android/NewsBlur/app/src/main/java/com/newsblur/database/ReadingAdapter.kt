@@ -15,15 +15,13 @@ import com.newsblur.domain.Story
 import com.newsblur.fragment.LoadingFragment
 import com.newsblur.fragment.ReadingItemFragment
 import com.newsblur.fragment.ReadingItemFragment.Companion.newInstance
-import com.newsblur.service.NBSyncReceiver
+import com.newsblur.service.NbSyncManager
 import com.newsblur.util.Log
 import com.newsblur.util.NBScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 /**
  * An adapter to display stories in a ViewPager. Loosely based upon FragmentStatePagerAdapter, but
@@ -228,7 +226,7 @@ class ReadingAdapter(
         for (s in stories) {
             fragments[s.storyHash]?.let { rif ->
                 rif.offerStoryUpdate(s)
-                rif.handleUpdate(NBSyncReceiver.UPDATE_STORY)
+                rif.handleUpdate(NbSyncManager.UPDATE_STORY)
             }
         }
     }

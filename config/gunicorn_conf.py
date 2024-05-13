@@ -1,6 +1,7 @@
-import os
-import psutil
 import math
+import os
+
+import psutil
 
 GIGS_OF_MEMORY = psutil.virtual_memory().total/1024/1024/1024.
 NUM_CPUS = psutil.cpu_count()
@@ -23,8 +24,8 @@ reload = True
 
 workers = max(int(math.floor(GIGS_OF_MEMORY * 2)), 3)
 
-if workers > 4:
-    workers = 4
+if workers > 16:
+    workers = 16
 
 if os.environ.get('DOCKERBUILD', False):
     workers = 2
@@ -43,6 +44,7 @@ for filename in os.listdir(prom_folder):
         print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 from prometheus_client import multiprocess
+
 
 def child_exit(server, worker):
     multiprocess.mark_process_dead(worker.pid)

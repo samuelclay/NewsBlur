@@ -26,4 +26,4 @@
 - import_playbook: playbooks/setup_metrics.yml
   when: "'metrics' in inventory_hostname"
 - import_playbook: playbooks/setup_sentry.yml
-  when: "'sentry' in inventory_hostname"
+  when: "'sentry' in inventory_hostname or 'metrics' in inventory_hostname"
