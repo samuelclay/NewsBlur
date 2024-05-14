@@ -275,7 +275,7 @@ public class ItemSetFragment extends NbFragment {
     }
 
     protected FeedSet getFeedSet() {
-        return ((ItemsList) getActivity()).getFeedSet();
+        return ((ItemsList) requireActivity()).getFeedSet();
     }
 
 	public void hasUpdated() {
