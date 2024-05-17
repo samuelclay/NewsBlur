@@ -743,7 +743,7 @@ def stripe_checkout(request):
     if plan == "change_stripe":
         checkout_session = stripe.billing_portal.Session.create(
             customer=request.user.profile.stripe_id,
-            return_url="http://%s%s?next=payments" % (domain, reverse("index")),
+            return_url="https://%s%s?next=payments" % (domain, reverse('index')),
         )
         return HttpResponseRedirect(checkout_session.url, status=303)
 
@@ -758,8 +758,8 @@ def stripe_checkout(request):
         ],
         "mode": "subscription",
         "metadata": {"newsblur_user_id": request.user.pk},
-        "success_url": "http://%s%s" % (domain, reverse("stripe-return")),
-        "cancel_url": "http://%s%s" % (domain, reverse("index")),
+        "success_url": "https://%s%s" % (domain, reverse('stripe-return')),
+        "cancel_url": "https://%s%s" % (domain, reverse('index')),
     }
     if request.user.profile.stripe_id:
         session_dict["customer"] = request.user.profile.stripe_id
