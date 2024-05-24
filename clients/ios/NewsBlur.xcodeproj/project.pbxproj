@@ -3885,7 +3885,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1120;
-				LastUpgradeCheck = 1530;
+				LastUpgradeCheck = 1540;
 				ORGANIZATIONNAME = NewsBlur;
 				TargetAttributes = {
 					173CB30C26BCE94700BA872A = {
@@ -6085,7 +6085,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LAUNCH_SCREEN_NAME = LaunchScreen;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 13.0;
+				MARKETING_VERSION = 13.1;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PROVISIONING_PROFILE = "";
@@ -6140,7 +6140,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LAUNCH_SCREEN_NAME = LaunchScreen;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 13.0;
+				MARKETING_VERSION = 13.1;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "-ObjC";
