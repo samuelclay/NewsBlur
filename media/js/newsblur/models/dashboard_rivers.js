@@ -1,14 +1,14 @@
 NEWSBLUR.Models.DashboardRiver = Backbone.Model.extend({
-    
-    initialize: function() {
+
+    initialize: function () {
         var feed_title = NEWSBLUR.reader.feed_title(this.get('river_id'));
         this.set('feed_title', "\"<b>" + this.get('query') + "</b>\" in <b>" + feed_title + "</b>");
     },
-    
-    favicon_url: function() {
+
+    favicon_url: function () {
         var url;
         var river_id = this.get('river_id');
-        
+
         return $.favicon(river_id);
     },
 
@@ -21,10 +21,10 @@ NEWSBLUR.Models.DashboardRiver = Backbone.Model.extend({
 });
 
 NEWSBLUR.Collections.DashboardRivers = Backbone.Collection.extend({
-    
+
     model: NEWSBLUR.Models.DashboardRiver,
-        
-    comparator: function(a, b) {
+
+    comparator: function (a, b) {
         if (a.get('sort_order') > b.get('sort_order'))
             return 1;
         else if (a.get('sort_order') < b.get('sort_order')) return -1;
@@ -43,10 +43,10 @@ NEWSBLUR.Collections.DashboardRivers = Backbone.Collection.extend({
         return this.side('right');
     },
 
-    side: function(side) {
+    side: function (side) {
         return this.select(function (river) {
             return river.get('river_side') == side;
         });
     }
-        
+
 });

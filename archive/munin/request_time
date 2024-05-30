@@ -2,9 +2,11 @@
 
 import os
 from time import time
-from urllib2 import urlopen, Request
+
+from urllib2 import Request, urlopen
 
 from vendor.munin import MuninPlugin
+
 
 class MuninRequestTimePlugin(MuninPlugin):
     title = "Request Time"

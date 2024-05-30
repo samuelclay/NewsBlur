@@ -2,6 +2,7 @@
 
 from vendor.munin.memcached import MuninMemcachedPlugin
 
+
 class MuninMemcachedBytesPlugin(MuninMemcachedPlugin):
     title = "Memcached bytes read/written stats"
     args = "--base 1024"

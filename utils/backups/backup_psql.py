@@ -1,13 +1,15 @@
 #!/usr/bin/python3
 import os
-import sys
 import socket
+import sys
+
 CURRENT_DIR  = os.path.dirname(__file__)
 NEWSBLUR_DIR = ''.join([CURRENT_DIR, '/../../'])
 sys.path.insert(0, NEWSBLUR_DIR)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'newsblur_web.settings'
 
 import threading
+
 
 class ProgressPercentage(object):
 
@@ -29,6 +31,7 @@ class ProgressPercentage(object):
             sys.stdout.flush()
 
 import time
+
 import boto3
 from django.conf import settings
 

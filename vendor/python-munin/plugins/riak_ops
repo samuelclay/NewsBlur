@@ -3,6 +3,7 @@
 
 from vendor.munin.riak import MuninRiakPlugin
 
+
 class RiakOpsPlugin(MuninRiakPlugin):
     args = "-l 0 --base 1000"
     vlabel = "ops/sec"

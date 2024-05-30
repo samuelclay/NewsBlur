@@ -2,6 +2,7 @@
 
 from vendor.munin.redis import MuninRedisPlugin
 
+
 class MuninRedisUsedMemoryPlugin(MuninRedisPlugin):
     title = "Redis used memory"
     args = "--base 1024"

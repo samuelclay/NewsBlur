@@ -9,12 +9,15 @@ See LICENSE for license details.
 __author__ = "Samuel Stauffer <samuel@lefora.com>"
 __version__ = "1.6.1"
 __license__ = "BSD"
-__all__ = ['Scrubber', 'SelectiveScriptScrubber', 'ScrubberWarning', 'UnapprovedJavascript', 'urlize']
+__all__ = ["Scrubber", "SelectiveScriptScrubber", "ScrubberWarning", "UnapprovedJavascript", "urlize"]
 
-import re, string
-from urllib.parse import urljoin
+import re
+import string
 from itertools import chain
+from urllib.parse import urljoin
+
 from bs4 import BeautifulSoup, Comment
+
 
 def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
     """Converts any URLs in text into clickable links.
@@ -30,42 +33,59 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
     *Modified from Django*
     """
     from urllib.parse import quote as urlquote
-    
-    LEADING_PUNCTUATION  = ['(', '<', '&lt;']
-    TRAILING_PUNCTUATION = ['.', ',', ')', '>', '\n', '&gt;']
-    
-    word_split_re = re.compile(r'([\s\xa0]+|&nbsp;)') # a0 == NBSP
-    punctuation_re = re.compile('^(?P<lead>(?:%s)*)(?P<middle>.*?)(?P<trail>(?:%s)*)$' % \
-        ('|'.join([re.escape(x) for x in LEADING_PUNCTUATION]),
-        '|'.join([re.escape(x) for x in TRAILING_PUNCTUATION])))
-    simple_email_re = re.compile(r'^\S+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+$')
+
+    LEADING_PUNCTUATION = ["(", "<", "&lt;"]
+    TRAILING_PUNCTUATION = [".", ",", ")", ">", "\n", "&gt;"]
+
+    word_split_re = re.compile(r"([\s\xa0]+|&nbsp;)")  # a0 == NBSP
+    punctuation_re = re.compile(
+        "^(?P<lead>(?:%s)*)(?P<middle>.*?)(?P<trail>(?:%s)*)$"
+        % (
+            "|".join([re.escape(x) for x in LEADING_PUNCTUATION]),
+            "|".join([re.escape(x) for x in TRAILING_PUNCTUATION]),
+        )
+    )
+    simple_email_re = re.compile(r"^\S+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+$")
     # del x # Temporary variable
 
     def escape(html):
-        return html.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#39;')
+        return (
+            html.replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace('"', "&quot;")
+            .replace("'", "&#39;")
+        )
 
-    trim_url = lambda x, limit=trim_url_limit: limit is not None and (len(x) > limit and ('%s...' % x[:max(0, limit - 3)])) or x
+    trim_url = (
+        lambda x, limit=trim_url_limit: limit is not None
+        and (len(x) > limit and ("%s..." % x[: max(0, limit - 3)]))
+        or x
+    )
     words = word_split_re.split(text)
-    nofollow_attr = nofollow and ' rel="nofollow"' or ''
+    nofollow_attr = nofollow and ' rel="nofollow"' or ""
     for i, word in enumerate(words):
         match = None
-        if '.' in word or '@' in word or ':' in word:
-            match = punctuation_re.match(word.replace('\u2019', "'"))
+        if "." in word or "@" in word or ":" in word:
+            match = punctuation_re.match(word.replace("\u2019", "'"))
         if match:
             lead, middle, trail = match.groups()
-            middle = middle.encode('utf-8')
-            middle = middle.decode('utf-8') # Bytes to str
+            middle = middle.encode("utf-8")
+            middle = middle.decode("utf-8")  # Bytes to str
             # Make URL we want to point to.
             url = None
-            if middle.startswith('http://') or middle.startswith('https://'):
-                url = urlquote(middle, safe='%/&=:;#?+*')
-            elif middle.startswith('www.') or ('@' not in middle and \
-                    middle and middle[0] in string.ascii_letters + string.digits and \
-                    (middle.endswith('.org') or middle.endswith('.net') or middle.endswith('.com'))):
-                url = urlquote('http://%s' % middle, safe='%/&=:;#?+*')
-            elif '@' in middle and not ':' in middle and simple_email_re.match(middle):
-                url = 'mailto:%s' % middle
-                nofollow_attr = ''
+            if middle.startswith("http://") or middle.startswith("https://"):
+                url = urlquote(middle, safe="%/&=:;#?+*")
+            elif middle.startswith("www.") or (
+                "@" not in middle
+                and middle
+                and middle[0] in string.ascii_letters + string.digits
+                and (middle.endswith(".org") or middle.endswith(".net") or middle.endswith(".com"))
+            ):
+                url = urlquote("http://%s" % middle, safe="%/&=:;#?+*")
+            elif "@" in middle and not ":" in middle and simple_email_re.match(middle):
+                url = "mailto:%s" % middle
+                nofollow_attr = ""
             # Make link.
             if url:
                 trimmed = trim_url(middle)
@@ -73,40 +93,117 @@ def urlize(text, trim_url_limit=None, nofollow=False, autoescape=False):
                     lead, trail = escape(lead), escape(trail)
                     url, trimmed = escape(url), escape(trimmed)
                 middle = '<a href="%s"%s>%s</a>' % (url, nofollow_attr, trimmed)
-                words[i] = '%s%s%s' % (lead, middle, trail)
+                words[i] = "%s%s%s" % (lead, middle, trail)
             elif autoescape:
                 words[i] = escape(word)
         elif autoescape:
             words[i] = escape(word)
     return "".join(words)
-    
+
+
 class ScrubberWarning(object):
     pass
 
+
 class Scrubber(object):
-    allowed_tags = set((
-            'a', 'abbr', 'acronym', 'b', 'bdo', 'big', 'blockquote', 'br',
-            'center', 'cite', 'code',
-            'dd', 'del', 'dfn', 'div', 'dl', 'dt', 'em', 'embed', 'font',
-            'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img', 'ins',
-            'kbd', 'li', 'object', 'ol', 'param', 'pre', 'p', 'q',
-            's', 'samp', 'small', 'span', 'strike', 'strong', 'sub', 'sup',
-            'table', 'tbody', 'td', 'th', 'thead', 'tr', 'tt', 'ul', 'u',
-            'var', 'wbr',
-        ))
-    disallowed_tags_save_content = set((
-            'blink', 'body', 'html',
-        ))
-    allowed_attributes = set((
-            'align', 'alt', 'border', 'cite', 'class', 'dir',
-            'height', 'href', 'src', 'style', 'title', 'type', 'width',
-            'face', 'size', # font tags
-            'flashvars', # Not sure about flashvars - if any harm can come from it
-            'classid', # FF needs the classid on object tags for flash
-            'name', 'value', 'quality', 'data', 'scale', # for flash embed param tags, could limit to just param if this is harmful
-            'salign', 'align', 'wmode',
-        )) # Bad attributes: 'allowscriptaccess', 'xmlns', 'target'
-    normalized_tag_replacements = {'b': 'strong', 'i': 'em'}
+    allowed_tags = set(
+        (
+            "a",
+            "abbr",
+            "acronym",
+            "b",
+            "bdo",
+            "big",
+            "blockquote",
+            "br",
+            "center",
+            "cite",
+            "code",
+            "dd",
+            "del",
+            "dfn",
+            "div",
+            "dl",
+            "dt",
+            "em",
+            "embed",
+            "font",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "hr",
+            "i",
+            "img",
+            "ins",
+            "kbd",
+            "li",
+            "object",
+            "ol",
+            "param",
+            "pre",
+            "p",
+            "q",
+            "s",
+            "samp",
+            "small",
+            "span",
+            "strike",
+            "strong",
+            "sub",
+            "sup",
+            "table",
+            "tbody",
+            "td",
+            "th",
+            "thead",
+            "tr",
+            "tt",
+            "ul",
+            "u",
+            "var",
+            "wbr",
+        )
+    )
+    disallowed_tags_save_content = set(
+        (
+            "blink",
+            "body",
+            "html",
+        )
+    )
+    allowed_attributes = set(
+        (
+            "align",
+            "alt",
+            "border",
+            "cite",
+            "class",
+            "dir",
+            "height",
+            "href",
+            "src",
+            "style",
+            "title",
+            "type",
+            "width",
+            "face",
+            "size",  # font tags
+            "flashvars",  # Not sure about flashvars - if any harm can come from it
+            "classid",  # FF needs the classid on object tags for flash
+            "name",
+            "value",
+            "quality",
+            "data",
+            "scale",  # for flash embed param tags, could limit to just param if this is harmful
+            "salign",
+            "align",
+            "wmode",
+        )
+    )  # Bad attributes: 'allowscriptaccess', 'xmlns', 'target'
+    normalized_tag_replacements = {"b": "strong", "i": "em"}
 
     def __init__(self, base_url=None, autolink=True, nofollow=True, remove_comments=True):
         self.base_url = base_url
@@ -122,11 +219,12 @@ class Scrubber(object):
         # Find all _scrub_tab_<name> methods
         self.tag_scrubbers = {}
         for k in chain(*[cls.__dict__ for cls in self.__class__.__mro__]):
-            if k.startswith('_scrub_tag_'):
+            if k.startswith("_scrub_tag_"):
                 self.tag_scrubbers[k[11:]] = [getattr(self, k)]
 
     def autolink_soup(self, soup):
         """Autolink urls in text nodes that aren't already linked (inside anchor tags)."""
+
         def _autolink(node):
             if isinstance(node, str):
                 text = node
@@ -139,6 +237,7 @@ class Scrubber(object):
 
                 for child in node.contents:
                     _autolink(child)
+
         _autolink(soup)
 
     def strip_disallowed(self, soup):
@@ -159,7 +258,7 @@ class Scrubber(object):
 
             # Remove disallowed attributes
             attrs = {}
-            if hasattr(node, 'attrs') and isinstance(node.attrs, dict):
+            if hasattr(node, "attrs") and isinstance(node.attrs, dict):
                 for k, v in list(node.attrs.items()):
                     if not v:
                         continue
@@ -170,7 +269,7 @@ class Scrubber(object):
                     # TODO: This probably needs to be more robust
                     if isinstance(v, str):
                         v2 = v.lower()
-                        if any(x in v2 for x in ('javascript:', 'vbscript:', 'expression(')):
+                        if any(x in v2 for x in ("javascript:", "vbscript:", "expression(")):
                             continue
 
                     attrs[k] = v
@@ -190,46 +289,48 @@ class Scrubber(object):
         for keep_contentes, node in nodes:
             if keep_contentes and node.contents:
                 idx = node.parent.contents.index(node)
-                for n in reversed(list(node.contents)): # Copy the contents list to avoid modifying while traversing
+                for n in reversed(
+                    list(node.contents)
+                ):  # Copy the contents list to avoid modifying while traversing
                     node.parent.insert(idx, n)
             node.extract()
 
     def _clean_path(self, node, attrname):
         url = node.get(attrname)
-        if url and '://' not in url and not url.startswith('mailto:'):
+        if url and "://" not in url and not url.startswith("mailto:"):
             print(url)
-            if url[0] not in ('/', '.') and not self.base_url:
+            if url[0] not in ("/", ".") and not self.base_url:
                 node[attrname] = "http://" + url
-            elif not url.startswith('http') and self.base_url:
+            elif not url.startswith("http") and self.base_url:
                 print(self.base_url)
                 node[attrname] = urljoin(self.base_url, url)
 
     def _scrub_tag_a(self, a):
         if self.nofollow:
-            a['rel'] = ["nofollow"]
+            a["rel"] = ["nofollow"]
 
-        if not a.get('class', None):
-            a['class'] = ["external"]
+        if not a.get("class", None):
+            a["class"] = ["external"]
 
-        self._clean_path(a, 'href')
+        self._clean_path(a, "href")
 
     def _scrub_tag_img(self, img):
         try:
-            if img['src'].lower().startswith('chrome://'):
+            if img["src"].lower().startswith("chrome://"):
                 return True
         except KeyError:
             return True
 
         # Make sure images always have an 'alt' attribute
-        img['alt'] = img.get('alt', '')
+        img["alt"] = img.get("alt", "")
 
-        self._clean_path(img, 'src')
+        self._clean_path(img, "src")
 
     def _scrub_tag_font(self, node):
         attrs = {}
-        if hasattr(node, 'attrs') and isinstance(node.attrs, dict):
+        if hasattr(node, "attrs") and isinstance(node.attrs, dict):
             for k, v in list(node.attrs.items()):
-                if k.lower() == 'size' and v.startswith('+'):
+                if k.lower() == "size" and v.startswith("+"):
                     # Remove "size=+0"
                     continue
                 attrs[k] = v
@@ -277,49 +378,59 @@ class Scrubber(object):
         html = str(soup)
         return self._scrub_html_post(html)
 
+
 class UnapprovedJavascript(ScrubberWarning):
     def __init__(self, src):
         self.src = src
-        self.path = src[:src.rfind('/')]
+        self.path = src[: src.rfind("/")]
+
 
 class SelectiveScriptScrubber(Scrubber):
-    allowed_tags = Scrubber.allowed_tags | set(('script', 'noscript', 'iframe'))
-    allowed_attributes = Scrubber.allowed_attributes | set(('scrolling', 'frameborder'))
+    allowed_tags = Scrubber.allowed_tags | set(("script", "noscript", "iframe"))
+    allowed_attributes = Scrubber.allowed_attributes | set(("scrolling", "frameborder"))
 
     def __init__(self, *args, **kwargs):
         super(SelectiveScriptScrubber, self).__init__(*args, **kwargs)
 
-        self.allowed_script_srcs = set((
-            'http://www.statcounter.com/counter/counter_xhtml.js',
-            # 'http://www.google-analytics.com/urchin.js',
-            'http://pub.mybloglog.com/',
-            'http://rpc.bloglines.com/blogroll',
-            'http://widget.blogrush.com/show.js',
-            'http://re.adroll.com/',
-            'http://widgetserver.com/',
-            'http://pagead2.googlesyndication.com/pagead/show_ads.js', # are there pageadX for all kinds of numbers?
-        ))
+        self.allowed_script_srcs = set(
+            (
+                "http://www.statcounter.com/counter/counter_xhtml.js",
+                # 'http://www.google-analytics.com/urchin.js',
+                "http://pub.mybloglog.com/",
+                "http://rpc.bloglines.com/blogroll",
+                "http://widget.blogrush.com/show.js",
+                "http://re.adroll.com/",
+                "http://widgetserver.com/",
+                "http://pagead2.googlesyndication.com/pagead/show_ads.js",  # are there pageadX for all kinds of numbers?
+            )
+        )
 
-        self.allowed_script_line_res = set(re.compile(text) for text in (
-             r"^(var )?sc_project\=\d+;$",
-             r"^(var )?sc_invisible\=\d;$",
-             r"^(var )?sc_partition\=\d+;$",
-             r'^(var )?sc_security\="[A-Za-z0-9]+";$',
-             # """^_uacct \= "[^"]+";$""",
-             # """^urchinTracker\(\);$""",
-             r'^blogrush_feed = "[^"]+";$',
-             # """^!--$""",
-             # """^//-->$""",
-        ))
+        self.allowed_script_line_res = set(
+            re.compile(text)
+            for text in (
+                r"^(var )?sc_project\=\d+;$",
+                r"^(var )?sc_invisible\=\d;$",
+                r"^(var )?sc_partition\=\d+;$",
+                r'^(var )?sc_security\="[A-Za-z0-9]+";$',
+                # """^_uacct \= "[^"]+";$""",
+                # """^urchinTracker\(\);$""",
+                r'^blogrush_feed = "[^"]+";$',
+                # """^!--$""",
+                # """^//-->$""",
+            )
+        )
 
-        self.allowed_iframe_srcs = set(re.compile(text) for text in (
-            r'^http://www\.google\.com/calendar/embed\?[\w&;=\%]+$', # Google Calendar
-            r'^https?://www\.youtube\.com/', # YouTube
-            r'^http://player\.vimeo\.com/', # Vimeo
-        ))
+        self.allowed_iframe_srcs = set(
+            re.compile(text)
+            for text in (
+                r"^http://www\.google\.com/calendar/embed\?[\w&;=\%]+$",  # Google Calendar
+                r"^https?://www\.youtube\.com/",  # YouTube
+                r"^http://player\.vimeo\.com/",  # Vimeo
+            )
+        )
 
     def _scrub_tag_script(self, script):
-        src = script.get('src', None)
+        src = script.get("src", None)
         if src:
             for asrc in self.allowed_script_srcs:
                 # TODO: It could be dangerous to only check "start" of string
@@ -330,7 +441,7 @@ class SelectiveScriptScrubber(Scrubber):
             else:
                 self.warnings.append(UnapprovedJavascript(src))
                 script.extract()
-        elif script.get('type', '') != 'text/javascript':
+        elif script.get("type", "") != "text/javascript":
             script.extract()
         else:
             for line in script.string.splitlines():
@@ -345,6 +456,6 @@ class SelectiveScriptScrubber(Scrubber):
                     break
 
     def _scrub_tag_iframe(self, iframe):
-        src = iframe.get('src', None)
+        src = iframe.get("src", None)
         if not src or not any(asrc.match(src) for asrc in self.allowed_iframe_srcs):
             iframe.extract()

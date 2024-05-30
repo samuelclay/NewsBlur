@@ -6,33 +6,34 @@ with it.
 """
 
 import logging
-from pprint import pformat
 import warnings
+from pprint import pformat
+from urllib.parse import urlencode
 
 import requests
 
-from vendor.paypalapi.settings import PayPalConfig
+from vendor.paypalapi.compat import is_py3
+from vendor.paypalapi.exceptions import (
+    PayPalAPIResponseError,
+    PayPalConfigError,
+    PayPalError,
+)
 from vendor.paypalapi.response import PayPalResponse
 from vendor.paypalapi.response_list import PayPalResponseList
-from vendor.paypalapi.exceptions import (PayPalError,
-                               PayPalAPIResponseError,
-                               PayPalConfigError)
-from vendor.paypalapi.compat import is_py3
+from vendor.paypalapi.settings import PayPalConfig
 
-from urllib.parse import urlencode
-
-logger = logging.getLogger('paypal.interface')
+logger = logging.getLogger("paypal.interface")
 
 
 class PayPalInterface(object):
-
-    __credentials = ['USER', 'PWD', 'SIGNATURE', 'SUBJECT']
+    __credentials = ["USER", "PWD", "SIGNATURE", "SUBJECT"]
 
     """
     The end developers will do 95% of their work through this class. API
     queries, configuration, etc, all go through here. See the __init__ method
     for config related details.
     """
+
     def __init__(self, config=None, **kwargs):
         """
         Constructor, which passes all config directives to the config class
@@ -61,9 +62,9 @@ class PayPalInterface(object):
 
         unencoded_pairs = kwargs
         for i in list(unencoded_pairs.keys()):
-            #noinspection PyUnresolvedReferences
+            # noinspection PyUnresolvedReferences
             if isinstance(unencoded_pairs[i], str):
-                unencoded_pairs[i] = unencoded_pairs[i].encode('utf-8')
+                unencoded_pairs[i] = unencoded_pairs[i].encode("utf-8")
         return unencoded_pairs
 
     def _check_required(self, requires, **kwargs):
@@ -74,16 +75,16 @@ class PayPalInterface(object):
         for req in requires:
             # PayPal api is never mixed-case.
             if req.lower() not in kwargs and req.upper() not in kwargs:
-                raise PayPalError('missing required : %s' % req)
+                raise PayPalError("missing required : %s" % req)
 
     def _sanitize_locals(self, data):
         """
         Remove the 'self' key in locals()
         It's more explicit to do it in one function
         """
-        if 'self' in data:
+        if "self" in data:
             data = data.copy()
-            del data['self']
+            del data["self"]
 
         return data
 
@@ -98,24 +99,24 @@ class PayPalInterface(object):
         ``kwargs`` the actual call parameters
         """
         post_params = self._get_call_params(method, **kwargs)
-        payload = post_params['data']
-        api_endpoint = post_params['url']
+        payload = post_params["data"]
+        api_endpoint = post_params["url"]
 
         # This shows all of the key/val pairs we're sending to PayPal.
         if logger.isEnabledFor(logging.DEBUG):
-            logger.debug('PayPal NVP Query Key/Vals:\n%s' % pformat(payload))
+            logger.debug("PayPal NVP Query Key/Vals:\n%s" % pformat(payload))
 
         http_response = requests.post(**post_params)
         response = PayPalResponse(http_response.text, self.config)
-        logger.debug('PayPal NVP API Endpoint: %s' % api_endpoint)
+        logger.debug("PayPal NVP API Endpoint: %s" % api_endpoint)
 
         if not response.success:
-            logger.error('A PayPal API error was encountered.')
-            safe_payload = dict((p, 'X' * len(v) if p in \
-                self.__credentials else v) for (p, v) in list(payload.items()))
-            logger.error('PayPal NVP Query Key/Vals (credentials removed):' \
-                '\n%s' % pformat(safe_payload))
-            logger.error('PayPal NVP Query Response')
+            logger.error("A PayPal API error was encountered.")
+            safe_payload = dict(
+                (p, "X" * len(v) if p in self.__credentials else v) for (p, v) in list(payload.items())
+            )
+            logger.error("PayPal NVP Query Key/Vals (credentials removed):" "\n%s" % pformat(safe_payload))
+            logger.error("PayPal NVP Query Response")
             logger.error(response)
             raise PayPalAPIResponseError(response)
 
@@ -129,38 +130,37 @@ class PayPalInterface(object):
         ``method`` the NVP method
         ``kwargs`` the actual call parameters
         """
-        payload = {'METHOD': method,
-                   'VERSION': self.config.API_VERSION}
+        payload = {"METHOD": method, "VERSION": self.config.API_VERSION}
         certificate = None
 
         if self.config.API_AUTHENTICATION_MODE == "3TOKEN":
-            payload['USER'] = self.config.API_USERNAME
-            payload['PWD'] = self.config.API_PASSWORD
-            payload['SIGNATURE'] = self.config.API_SIGNATURE
+            payload["USER"] = self.config.API_USERNAME
+            payload["PWD"] = self.config.API_PASSWORD
+            payload["SIGNATURE"] = self.config.API_SIGNATURE
         elif self.config.API_AUTHENTICATION_MODE == "CERTIFICATE":
-            payload['USER'] = self.config.API_USERNAME
-            payload['PWD'] = self.config.API_PASSWORD
-            certificate = (self.config.API_CERTIFICATE_FILENAME,
-                           self.config.API_KEY_FILENAME)
+            payload["USER"] = self.config.API_USERNAME
+            payload["PWD"] = self.config.API_PASSWORD
+            certificate = (self.config.API_CERTIFICATE_FILENAME, self.config.API_KEY_FILENAME)
         elif self.config.API_AUTHENTICATION_MODE == "UNIPAY":
-            payload['SUBJECT'] = self.config.UNIPAY_SUBJECT
+            payload["SUBJECT"] = self.config.UNIPAY_SUBJECT
 
-        none_configs = [config for config, value in list(payload.items())\
-                        if value is None]
+        none_configs = [config for config, value in list(payload.items()) if value is None]
         if none_configs:
             raise PayPalConfigError(
-                "Config(s) %s cannot be None. Please, check this "
-                "interface's config." % none_configs)
+                "Config(s) %s cannot be None. Please, check this " "interface's config." % none_configs
+            )
 
         # all keys in the payload must be uppercase
         for key, value in list(kwargs.items()):
             payload[key.upper()] = value
 
-        return {'data': payload,
-                'cert': certificate,
-                'url': self.config.API_ENDPOINT,
-                'timeout': self.config.HTTP_TIMEOUT,
-                'verify': self.config.API_CA_CERTS}
+        return {
+            "data": payload,
+            "cert": certificate,
+            "url": self.config.API_ENDPOINT,
+            "timeout": self.config.HTTP_TIMEOUT,
+            "verify": self.config.API_CA_CERTS,
+        }
 
     def address_verify(self, email, street, zip):
         """Shortcut for the AddressVerify method.
@@ -189,7 +189,7 @@ class PayPalInterface(object):
             Whitespace and case of input value are ignored.
         """
         args = self._sanitize_locals(locals())
-        return self._call('AddressVerify', **args)
+        return self._call("AddressVerify", **args)
 
     def create_recurring_payments_profile(self, **kwargs):
         """Shortcut for the CreateRecurringPaymentsProfile method.
@@ -225,7 +225,7 @@ class PayPalInterface(object):
             profile. For the complete list of parameters, visit this URI:
             https://www.x.com/docs/DOC-1168
         """
-        return self._call('CreateRecurringPaymentsProfile', **kwargs)
+        return self._call("CreateRecurringPaymentsProfile", **kwargs)
 
     def do_authorization(self, transactionid, amt):
         """Shortcut for the DoAuthorization method.
@@ -250,9 +250,9 @@ class PayPalInterface(object):
 
         """
         args = self._sanitize_locals(locals())
-        return self._call('DoAuthorization', **args)
+        return self._call("DoAuthorization", **args)
 
-    def do_capture(self, authorizationid, amt, completetype='Complete', **kwargs):
+    def do_capture(self, authorizationid, amt, completetype="Complete", **kwargs):
         """Shortcut for the DoCapture method.
 
         Use the TRANSACTIONID from DoAuthorization, DoDirectPayment or
@@ -261,7 +261,7 @@ class PayPalInterface(object):
         The `amt` should be the same as the authorized transaction.
         """
         kwargs.update(self._sanitize_locals(locals()))
-        return self._call('DoCapture', **kwargs)
+        return self._call("DoCapture", **kwargs)
 
     def do_direct_payment(self, paymentaction="Sale", **kwargs):
         """Shortcut for the DoDirectPayment method.
@@ -299,7 +299,7 @@ class PayPalInterface(object):
             direct_payment(paymentaction="Sale", **charge)
         """
         kwargs.update(self._sanitize_locals(locals()))
-        return self._call('DoDirectPayment', **kwargs)
+        return self._call("DoDirectPayment", **kwargs)
 
     def do_void(self, **kwargs):
         """Shortcut for the DoVoid method.
@@ -311,7 +311,7 @@ class PayPalInterface(object):
         ---------------
         * AUTHORIZATIONID
         """
-        return self._call('DoVoid', **kwargs)
+        return self._call("DoVoid", **kwargs)
 
     def get_express_checkout_details(self, **kwargs):
         """Shortcut for the GetExpressCheckoutDetails method.
@@ -320,7 +320,7 @@ class PayPalInterface(object):
         ---------------
         * TOKEN
         """
-        return self._call('GetExpressCheckoutDetails', **kwargs)
+        return self._call("GetExpressCheckoutDetails", **kwargs)
 
     def get_transaction_details(self, **kwargs):
         """Shortcut for the GetTransactionDetails method.
@@ -333,7 +333,7 @@ class PayPalInterface(object):
 
         * TRANSACTIONID
         """
-        return self._call('GetTransactionDetails', **kwargs)
+        return self._call("GetTransactionDetails", **kwargs)
 
     def transaction_search(self, **kwargs):
         """Shortcut for the TransactionSearch method.
@@ -351,7 +351,7 @@ class PayPalInterface(object):
         STATUS = one of ['Pending','Processing','Success','Denied','Reversed']
 
         """
-        plain = self._call('TransactionSearch', **kwargs)
+        plain = self._call("TransactionSearch", **kwargs)
         return PayPalResponseList(plain.raw, self.config)
 
     def set_express_checkout(self, **kwargs):
@@ -370,39 +370,42 @@ class PayPalInterface(object):
         * RETURNURL
         * CANCELURL
         """
-        return self._call('SetExpressCheckout', **kwargs)
+        return self._call("SetExpressCheckout", **kwargs)
 
     def refund_transaction(self, transactionid=None, payerid=None, **kwargs):
         """Shortcut for RefundTransaction method.
-           Note new API supports passing a PayerID instead of a transaction id, exactly one must be provided.
-           Optional:
-               INVOICEID
-               REFUNDTYPE
-               AMT
-               CURRENCYCODE
-               NOTE
-               RETRYUNTIL
-               REFUNDSOURCE
-               MERCHANTSTOREDETAILS
-               REFUNDADVICE
-               REFUNDITEMDETAILS
-               MSGSUBID
+        Note new API supports passing a PayerID instead of a transaction id, exactly one must be provided.
+        Optional:
+            INVOICEID
+            REFUNDTYPE
+            AMT
+            CURRENCYCODE
+            NOTE
+            RETRYUNTIL
+            REFUNDSOURCE
+            MERCHANTSTOREDETAILS
+            REFUNDADVICE
+            REFUNDITEMDETAILS
+            MSGSUBID
 
-           MERCHANSTOREDETAILS has two fields:
-               STOREID
-               TERMINALID
-           """
-        #this line seems like a complete waste of time... kwargs should not be populated
+        MERCHANSTOREDETAILS has two fields:
+            STOREID
+            TERMINALID
+        """
+        # this line seems like a complete waste of time... kwargs should not be populated
         if (transactionid is None) and (payerid is None):
-            raise PayPalError('RefundTransaction requires either a transactionid or a payerid')
+            raise PayPalError("RefundTransaction requires either a transactionid or a payerid")
         if (transactionid is not None) and (payerid is not None):
-            raise PayPalError('RefundTransaction requires only one of transactionid %s and payerid %s' % (transactionid, payerid))
+            raise PayPalError(
+                "RefundTransaction requires only one of transactionid %s and payerid %s"
+                % (transactionid, payerid)
+            )
         if transactionid is not None:
-            kwargs['TRANSACTIONID'] = transactionid
+            kwargs["TRANSACTIONID"] = transactionid
         else:
-            kwargs['PAYERID'] = payerid
+            kwargs["PAYERID"] = payerid
 
-        return self._call('RefundTransaction', **kwargs)
+        return self._call("RefundTransaction", **kwargs)
 
     def do_express_checkout_payment(self, **kwargs):
         """Finishes an Express checkout.
@@ -418,7 +421,7 @@ class PayPalInterface(object):
         * AMT
 
         """
-        return self._call('DoExpressCheckoutPayment', **kwargs)
+        return self._call("DoExpressCheckoutPayment", **kwargs)
 
     def generate_express_checkout_redirect_url(self, token, useraction=None):
         """Returns the URL to redirect the user to for the Express checkout.
@@ -440,18 +443,17 @@ class PayPalInterface(object):
         url_vars = (self.config.PAYPAL_URL_BASE, token)
         url = "%s?cmd=_express-checkout&token=%s" % url_vars
         if useraction:
-            if not useraction.lower() in ('commit', 'continue'):
-                warnings.warn('useraction=%s is not documented' % useraction,
-                              RuntimeWarning)
-            url += '&useraction=%s' % useraction
+            if not useraction.lower() in ("commit", "continue"):
+                warnings.warn("useraction=%s is not documented" % useraction, RuntimeWarning)
+            url += "&useraction=%s" % useraction
         return url
 
     def generate_cart_upload_redirect_url(self, **kwargs):
         """https://www.sandbox.paypal.com/webscr
-            ?cmd=_cart
-            &upload=1
+        ?cmd=_cart
+        &upload=1
         """
-        required_vals = ('business', 'item_name_1', 'amount_1', 'quantity_1')
+        required_vals = ("business", "item_name_1", "amount_1", "quantity_1")
         self._check_required(required_vals, **kwargs)
         url = "%s?cmd=_cart&upload=1" % self.config.PAYPAL_URL_BASE
         additional = self._encode_utf8(**kwargs)
@@ -477,7 +479,7 @@ class PayPalInterface(object):
         https://www.x.com/docs/DOC-1194
         """
         args = self._sanitize_locals(locals())
-        return self._call('GetRecurringPaymentsProfileDetails', **args)
+        return self._call("GetRecurringPaymentsProfileDetails", **args)
 
     def manage_recurring_payments_profile_status(self, profileid, action, note=None):
         """Shortcut to the ManageRecurringPaymentsProfileStatus method.
@@ -488,8 +490,8 @@ class PayPalInterface(object):
         """
         args = self._sanitize_locals(locals())
         if not note:
-            del args['note']
-        return self._call('ManageRecurringPaymentsProfileStatus', **args)
+            del args["note"]
+        return self._call("ManageRecurringPaymentsProfileStatus", **args)
 
     def update_recurring_payments_profile(self, profileid, **kwargs):
         """Shortcut to the UpdateRecurringPaymentsProfile method.
@@ -504,7 +506,7 @@ class PayPalInterface(object):
         https://www.x.com/docs/DOC-1212
         """
         kwargs.update(self._sanitize_locals(locals()))
-        return self._call('UpdateRecurringPaymentsProfile', **kwargs)
+        return self._call("UpdateRecurringPaymentsProfile", **kwargs)
 
     def bm_create_button(self, **kwargs):
         """Shortcut to the BMButtonSearch method.
@@ -516,4 +518,4 @@ class PayPalInterface(object):
         read those and act accordingly. See unit tests for some examples.
         """
         kwargs.update(self._sanitize_locals(locals()))
-        return self._call('BMCreateButton', **kwargs)
+        return self._call("BMCreateButton", **kwargs)

@@ -21,6 +21,7 @@ for a (short) description.
 
 from vendor.munin.postgres import MuninPostgresPlugin
 
+
 class MuninPostgresBlockReadPlugin(MuninPostgresPlugin):
     dbname_in_args = True
     args = "--base 1000"

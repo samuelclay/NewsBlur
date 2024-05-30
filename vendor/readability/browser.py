@@ -5,8 +5,8 @@ def open_in_browser(html):
     use.  This is mainly meant for debugging.
     """
     import os
-    import webbrowser
     import tempfile
+    import webbrowser
 
     handle, fn = tempfile.mkstemp(suffix=".html")
     f = os.fdopen(handle, "wb")

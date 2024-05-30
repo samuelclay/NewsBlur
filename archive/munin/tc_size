@@ -5,6 +5,7 @@ import subprocess
 
 from vendor.munin import MuninPlugin
 
+
 class MuninTokyoCabinetSizePlugin(MuninPlugin):
     title = "Size of Tokyo Cabinet database"
     args = "--base 1024"
