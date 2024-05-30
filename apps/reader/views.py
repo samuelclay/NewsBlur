@@ -1818,7 +1818,7 @@ def load_river_stories_widget(request):
         conn = None
         try:
             conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
-        except (urllib.error.URLError, socket.timeout):
+        except (urllib.error.URLError, socket.timeout, UnicodeEncodeError):
             pass
         if not conn:
             # logging.user(request.user, '"%s" wasn\'t fetched, trying again: %s' % (url, e))
