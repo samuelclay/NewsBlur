@@ -132,7 +132,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self.searchBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 #if TARGET_OS_MACCATALYST
     // Workaround for Catalyst bug.
-    self.searchBar.frame = CGRectMake(10, 0, CGRectGetWidth(self.feedTitlesTable.frame) - 100, 44.);
+    self.searchBar.frame = CGRectMake(10, 0, CGRectGetWidth(self.feedTitlesTable.frame) - 20, 44.);
+    self.searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     UIView *searchContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.feedTitlesTable.frame), 44.)];
     [searchContainerView addSubview:self.searchBar];
     self.feedTitlesTable.tableHeaderView = searchContainerView;
@@ -2999,6 +3000,9 @@ heightForHeaderInSection:(NSInteger)section {
     [self.userInfoView addSubview:self.activityButton];
     
     [self.innerView addSubview:self.userInfoView];
+    
+    self.activityButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+    self.userInfoView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
     self.feedTitlesTopConstraint.constant = 50;
 #else

@@ -23,6 +23,9 @@ class DetailViewController: BaseViewController {
         
         /// Position of the divider between the views when in vertical orientation. Only used for `.top` and `.bottom` layouts.
         static let verticalPosition = "story_titles_divider_vertical"
+        
+        /// Width of the feeds view, i.e. the primary split column.
+        static let feedsWidth = "split_primary_width"
     }
     
     /// Preference values.
@@ -208,6 +211,26 @@ class DetailViewController: BaseViewController {
         }
     }
     
+    /// Width of the feeds view, i.e. the primary split column.
+    var feedsWidth: CGFloat {
+        get {
+            let value = CGFloat(UserDefaults.standard.float(forKey: Key.feedsWidth))
+            
+            if value == 0 {
+                return 320
+            } else {
+                return value
+            }
+        }
+        set {
+            guard newValue != feedsWidth else {
+                return
+            }
+            
+            UserDefaults.standard.set(Float(newValue), forKey: Key.feedsWidth)
+        }
+    }
+    
     /// Top container view.
     @IBOutlet weak var topContainerView: UIView!
     
@@ -385,6 +408,16 @@ class DetailViewController: BaseViewController {
         }
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        let width = splitViewController?.primaryColumnWidth ?? 320
+        
+        if width != feedsWidth {
+            feedsWidth = width
+        }
+    }
+    
     private func adjustTopConstraint() {
         guard let scene = view.window?.windowScene else {
             return
@@ -445,6 +478,9 @@ private extension DetailViewController {
         
 #if targetEnvironment(macCatalyst)
         splitViewController?.primaryBackgroundStyle = .sidebar
+        splitViewController?.minimumPrimaryColumnWidth = 250
+        splitViewController?.maximumPrimaryColumnWidth = 700
+        splitViewController?.preferredPrimaryColumnWidth = feedsWidth
 #endif
         
         if layout != .grid || isPhone {
