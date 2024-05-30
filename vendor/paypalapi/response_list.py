@@ -6,10 +6,11 @@ PayPal response parsing of list syntax.
 import logging
 import re
 
-from vendor.paypalapi.response import PayPalResponse
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
+from vendor.paypalapi.response import PayPalResponse
 
-logger = logging.getLogger('paypal.response')
+logger = logging.getLogger("paypal.response")
+
 
 class PayPalResponseList(PayPalResponse):
     """
@@ -19,6 +20,7 @@ class PayPalResponseList(PayPalResponse):
     NOTE: Don't access self.raw directly. Just do something like
     PayPalResponse.someattr, going through PayPalResponse.__getattr__().
     """
+
     def __init__(self, raw, config):
         self.raw = raw
         self.config = config
@@ -40,27 +42,27 @@ class PayPalResponseList(PayPalResponse):
                     d_val = self.raw[key][0]
                 else:
                     d_val = self.raw[key]
-            
-                #skip error codes
-                if d_key in ['ERRORCODE','SHORTMESSAGE','LONGMESSAGE','SEVERITYCODE']:
+
+                # skip error codes
+                if d_key in ["ERRORCODE", "SHORTMESSAGE", "LONGMESSAGE", "SEVERITYCODE"]:
                     continue
 
                 if index in self.list_items_dict:
-                    #dict for index exists, update
+                    # dict for index exists, update
                     self.list_items_dict[index][d_key] = d_val
                 else:
-                    #create new dict 
+                    # create new dict
                     self.list_items_dict[index] = {d_key: d_val}
 
-        #log ResponseErrors from warning keys
-        if self.raw['ACK'][0].upper() == self.config.ACK_SUCCESS_WITH_WARNING:
+        # log ResponseErrors from warning keys
+        if self.raw["ACK"][0].upper() == self.config.ACK_SUCCESS_WITH_WARNING:
             self.errors = [PayPalAPIResponseError(self)]
             logger.error(self.errors)
 
     def items(self):
-        #convert dict like {'1':{},'2':{}, ...} to list
+        # convert dict like {'1':{},'2':{}, ...} to list
         return list(self.list_items_dict.values())
-        
+
     def iteritems(self):
-         for key in list(self.list_items_dict.keys()):
+        for key in list(self.list_items_dict.keys()):
             yield (key, self.list_items_dict[key])

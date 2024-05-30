@@ -1,14 +1,16 @@
 #!/usr/bin/python3
-from datetime import datetime, timedelta
-import os
-import sys
-import re
 import logging
 import mimetypes
-import boto3
-import threading
+import os
+import re
 import shutil
+import sys
+import threading
+from datetime import datetime, timedelta
+
+import boto3
 from boto3.s3.transfer import S3Transfer
+
 from newsblur_web import settings
 
 logger = logging.getLogger(__name__)

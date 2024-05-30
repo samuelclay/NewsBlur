@@ -2,6 +2,7 @@
 
 from vendor.munin.redis import MuninRedisPlugin
 
+
 class MuninRedisTotalConnectionsPlugin(MuninRedisPlugin):
     title = "Redis connects"
     args = "--base 1000"

@@ -10,7 +10,9 @@ First tries reading from /proc/loadavg if it exists. Otherwise, execute
 """
 
 import os
+
 from vendor.munin import MuninPlugin
+
 
 class LoadAVGPlugin(MuninPlugin):
     title = "Load average"
@@ -35,7 +37,7 @@ class LoadAVGPlugin(MuninPlugin):
         if os.path.exists("/proc/loadavg"):
             loadavg = open("/proc/loadavg", "r").read().strip().split(' ')
         else:
-            from subprocess import Popen, PIPE
+            from subprocess import PIPE, Popen
             output = Popen(["uptime"], stdout=PIPE).communicate()[0]
             loadavg = output.rsplit(':', 1)[1].strip().split(' ')[:3]
         return dict(load=loadavg[1])

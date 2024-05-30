@@ -3,7 +3,9 @@
 import os
 import re
 import urllib
+
 from vendor.munin.nginx import MuninNginxPlugin
+
 
 class MuninNginxConnectionsPlugin(MuninNginxPlugin):
     title = "Nginx Connections"

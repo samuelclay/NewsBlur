@@ -1,10 +1,11 @@
-from pymongo import monitoring
 import logging
+
 from django.conf import settings
 from django.db import connection
+from pymongo import monitoring
+
 
 class MongoCommandLogger(monitoring.CommandListener):
-
     def __init__(self):
         self.seen_request_ids = dict()
 
@@ -24,13 +25,13 @@ class MongoCommandLogger(monitoring.CommandListener):
         op = event.command_name
         collection = command_dict[op]
 
-        command_filter = command_dict.get('filter', None)
-        command_documents = command_dict.get('documents', None)
-        command_indexes = command_dict.get('indexes', None)
-        command_insert = command_dict.get('updates', None)
-        command_update = command_dict.get('updates', None)
-        command_sort = command_dict.get('sort', None)
-        command_get_more = command_dict.get('getMore', None)
+        command_filter = command_dict.get("filter", None)
+        command_documents = command_dict.get("documents", None)
+        command_indexes = command_dict.get("indexes", None)
+        command_insert = command_dict.get("updates", None)
+        command_update = command_dict.get("updates", None)
+        command_sort = command_dict.get("sort", None)
+        command_get_more = command_dict.get("getMore", None)
         if command_sort:
             command_sort = dict(command_sort)
 
@@ -55,19 +56,17 @@ class MongoCommandLogger(monitoring.CommandListener):
 
         if op == "insert" or op == "update":
             op = f"~SB{op}"
-        
-        message = {
-            "op": op,
-            "query": query,
-            "collection": collection
-        }
 
-        if not getattr(connection, 'queriesx', False):
+        message = {"op": op, "query": query, "collection": collection}
+
+        if not getattr(connection, "queriesx", False):
             connection.queriesx = []
-        connection.queriesx.append({
-            'mongo': message,
-            'time': '%.6f' % (int(event.duration_micros) / 1000000),
-        })
+        connection.queriesx.append(
+            {
+                "mongo": message,
+                "time": "%.6f" % (int(event.duration_micros) / 1000000),
+            }
+        )
 
         # logging.info("Command {0.command_name} with request id "
         #              "{0.request_id} on server {0.connection_id} "
@@ -75,18 +74,21 @@ class MongoCommandLogger(monitoring.CommandListener):
         #              "microseconds".format(event))
 
     def failed(self, event):
-        logging.info("Command {0.command_name} with request id "
-                     "{0.request_id} on server {0.connection_id} "
-                     "failed in {0.duration_micros} "
-                     "microseconds".format(event))
+        logging.info(
+            "Command {0.command_name} with request id "
+            "{0.request_id} on server {0.connection_id} "
+            "failed in {0.duration_micros} "
+            "microseconds".format(event)
+        )
 
     def activated(self, request):
-        return (settings.DEBUG_QUERIES or 
-                (hasattr(request, 'activated_segments') and
-                 'db_profiler' in request.activated_segments))
-        
+        return settings.DEBUG_QUERIES or (
+            hasattr(request, "activated_segments") and "db_profiler" in request.activated_segments
+        )
+
     def process_celery(self, profiler):
-        if not self.activated(profiler): return
+        if not self.activated(profiler):
+            return
 
         connection.queriesx = []
 

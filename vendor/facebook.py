@@ -24,20 +24,19 @@ https://developers.facebook.com/docs/graph-api.
 
 """
 
+import base64
+import binascii
 import hashlib
 import hmac
-import binascii
-import base64
-import requests
 import json
 import re
+
+import requests
 
 try:
     from urllib.parse import parse_qs, urlencode, urlparse
 except ImportError:
-    from urllib.parse import parse_qs, urlparse
-    from urllib.parse import urlencode
-
+    from urllib.parse import parse_qs, urlencode, urlparse
 
 
 __version__ = "3.2.0-pre"
@@ -99,25 +98,17 @@ class GraphAPI(object):
             match = version_regex.search(str(version))
             if match is not None:
                 if str(version) not in VALID_API_VERSIONS:
-                    raise GraphAPIError(
-                        "Valid API versions are "
-                        + str(VALID_API_VERSIONS).strip("[]")
-                    )
+                    raise GraphAPIError("Valid API versions are " + str(VALID_API_VERSIONS).strip("[]"))
                 else:
                     self.version = "v" + str(version)
             else:
-                raise GraphAPIError(
-                    "Version number should be in the"
-                    " following format: #.# (e.g. 2.0)."
-                )
+                raise GraphAPIError("Version number should be in the" " following format: #.# (e.g. 2.0).")
         else:
             self.version = "v" + default_version
 
     def get_permissions(self, user_id):
         """Fetches the permissions object from the graph."""
-        response = self.request(
-            "{0}/{1}/permissions".format(self.version, user_id), {}
-        )["data"]
+        response = self.request("{0}/{1}/permissions".format(self.version, user_id), {})["data"]
         return {x["permission"] for x in response if x["status"] == "granted"}
 
     def get_object(self, id, **args):
@@ -136,18 +127,14 @@ class GraphAPI(object):
     def search(self, type, **args):
         """https://developers.facebook.com/docs/places/search"""
         if type not in VALID_SEARCH_TYPES:
-            raise GraphAPIError(
-                "Valid types are: %s" % ", ".join(VALID_SEARCH_TYPES)
-            )
+            raise GraphAPIError("Valid types are: %s" % ", ".join(VALID_SEARCH_TYPES))
 
         args["type"] = type
         return self.request(self.version + "/search/", args)
 
     def get_connections(self, id, connection_name, **args):
         """Fetches the connections for given object."""
-        return self.request(
-            "{0}/{1}/{2}".format(self.version, id, connection_name), args
-        )
+        return self.request("{0}/{1}/{2}".format(self.version, id, connection_name), args)
 
     def get_all_connections(self, id, connection_name, **args):
         """Get all pages from a get_connections call
@@ -201,15 +188,11 @@ class GraphAPI(object):
 
     def delete_object(self, id):
         """Deletes the object with the given ID from the graph."""
-        return self.request(
-            "{0}/{1}".format(self.version, id), method="DELETE"
-        )
+        return self.request("{0}/{1}".format(self.version, id), method="DELETE")
 
     def delete_request(self, user_id, request_id):
         """Deletes the Request with the given ID for the given user."""
-        return self.request(
-            "{0}_{1}".format(request_id, user_id), method="DELETE"
-        )
+        return self.request("{0}_{1}".format(request_id, user_id), method="DELETE")
 
     def put_photo(self, image, album_path="me/photos", **kwargs):
         """
@@ -248,9 +231,7 @@ class GraphAPI(object):
         except Exception:
             raise GraphAPIError("API version number not available")
 
-    def request(
-        self, path, args=None, post_args=None, files=None, method=None
-    ):
+    def request(self, path, args=None, post_args=None, files=None, method=None):
         """Fetches the given path in the Graph API.
 
         We translate args to a valid query string. If post_args is
@@ -329,13 +310,9 @@ class GraphAPI(object):
                 "client_secret": app_secret,
             }
 
-            return self.request(
-                "{0}/oauth/access_token".format(self.version), args=args
-            )["access_token"]
+            return self.request("{0}/oauth/access_token".format(self.version), args=args)["access_token"]
 
-    def get_access_token_from_code(
-        self, code, redirect_uri, app_id, app_secret
-    ):
+    def get_access_token_from_code(self, code, redirect_uri, app_id, app_secret):
         """Get an access token from the "code" returned from an OAuth dialog.
 
         Returns a dict containing the user-specific access token and its
@@ -349,9 +326,7 @@ class GraphAPI(object):
             "client_secret": app_secret,
         }
 
-        return self.request(
-            "{0}/oauth/access_token".format(self.version), args
-        )
+        return self.request("{0}/oauth/access_token".format(self.version), args)
 
     def extend_access_token(self, app_id, app_secret):
         """
@@ -367,9 +342,7 @@ class GraphAPI(object):
             "fb_exchange_token": self.access_token,
         }
 
-        return self.request(
-            "{0}/oauth/access_token".format(self.version), args=args
-        )
+        return self.request("{0}/oauth/access_token".format(self.version), args=args)
 
     def debug_access_token(self, token, app_id, app_secret):
         """
@@ -390,9 +363,7 @@ class GraphAPI(object):
 
     def get_auth_url(self, app_id, canvas_url, perms=None, **kwargs):
         """Build a URL to create an OAuth dialog."""
-        url = "{0}{1}/{2}".format(
-            FACEBOOK_WWW_URL, self.version, FACEBOOK_OAUTH_DIALOG_PATH
-        )
+        url = "{0}{1}/{2}".format(FACEBOOK_WWW_URL, self.version, FACEBOOK_OAUTH_DIALOG_PATH)
 
         args = {"client_id": app_id, "redirect_uri": canvas_url}
         if perms:
@@ -453,9 +424,7 @@ def get_user_from_cookie(cookies, app_id, app_secret):
     if not parsed_request:
         return None
     try:
-        result = GraphAPI().get_access_token_from_code(
-            parsed_request["code"], "", app_id, app_secret
-        )
+        result = GraphAPI().get_access_token_from_code(parsed_request["code"], "", app_id, app_secret)
     except GraphAPIError:
         return None
     result["uid"] = parsed_request["user_id"]
@@ -463,7 +432,7 @@ def get_user_from_cookie(cookies, app_id, app_secret):
 
 
 def parse_signed_request(signed_request, app_secret):
-    """ Return dictionary with signed request data.
+    """Return dictionary with signed request data.
 
     We return a dictionary containing the information in the
     signed_request. This includes a user_id if the user has authorised
@@ -475,12 +444,8 @@ def parse_signed_request(signed_request, app_secret):
     try:
         encoded_sig, payload = list(map(str, signed_request.split(".", 1)))
 
-        sig = base64.urlsafe_b64decode(
-            encoded_sig + "=" * ((4 - len(encoded_sig) % 4) % 4)
-        )
-        data = base64.urlsafe_b64decode(
-            payload + "=" * ((4 - len(payload) % 4) % 4)
-        )
+        sig = base64.urlsafe_b64decode(encoded_sig + "=" * ((4 - len(encoded_sig) % 4) % 4))
+        data = base64.urlsafe_b64decode(payload + "=" * ((4 - len(payload) % 4) % 4))
     except IndexError:
         # Signed request was malformed.
         return False
@@ -500,9 +465,7 @@ def parse_signed_request(signed_request, app_secret):
     app_secret = app_secret.encode("ascii")
     payload = payload.encode("ascii")
 
-    expected_sig = hmac.new(
-        app_secret, msg=payload, digestmod=hashlib.sha256
-    ).digest()
+    expected_sig = hmac.new(app_secret, msg=payload, digestmod=hashlib.sha256).digest()
     if sig != expected_sig:
         return False
 
