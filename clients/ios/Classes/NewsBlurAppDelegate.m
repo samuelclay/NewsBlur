@@ -1358,6 +1358,7 @@
 
 - (void)openNotificationsWithFeed:(NSString *)feedId sender:(id)sender {
     UINavigationController *navController = self.feedsNavigationController;
+    self.notificationsViewController.feedId = feedId;
     
     if (!self.isPhone) {
         [self showPopoverWithViewController:self.notificationsViewController contentSize:CGSizeMake(420, 382) sender:sender];
@@ -1367,7 +1368,6 @@
                                                       initWithRootViewController:self.notificationsViewController];
         }
         self.notificationsNavigationController.navigationBar.translucent = NO;
-        self.notificationsViewController.feedId = feedId;
         [navController presentViewController:self.notificationsNavigationController animated:YES completion:nil];
     }
 }
