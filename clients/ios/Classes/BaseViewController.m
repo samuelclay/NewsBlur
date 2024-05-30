@@ -214,7 +214,8 @@
 }
 
 - (BOOL)isPortrait {
-    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
+    UIWindow *window = [NewsBlurAppDelegate sharedAppDelegate].window;
+    UIInterfaceOrientation orientation = window.windowScene.interfaceOrientation;
     if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown) {
         return YES;
     } else {
@@ -223,7 +224,10 @@
 }
 
 - (BOOL)isCompactWidth {
-    return self.view.window.windowScene.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact;
+    UIWindow *window = [NewsBlurAppDelegate sharedAppDelegate].window;
+    UITraitCollection *traits = window.windowScene.traitCollection;
+    
+    return traits.horizontalSizeClass == UIUserInterfaceSizeClassCompact;
     //return self.compactWidth > 0.0;
 }
 
