@@ -964,7 +964,7 @@ def forgot_password(request):
             user.profile.send_forgot_password_email()
             return HttpResponseRedirect(reverse("index"))
         else:
-            logging.user(request.user, "~BC~FRFailed forgot password: ~SB%s~SN" % request.POST["email"])
+            logging.user(request.user, "~BC~FRFailed forgot password: ~SB%s~SN" % request.POST.get("email"))
     else:
         logging.user(request.user, "~BC~FRAttempting to retrieve forgotton password.")
         form = ForgotPasswordForm()
