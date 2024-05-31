@@ -284,6 +284,10 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     [self.feedsViewController refreshHeaderCounts];
+    
+#if TARGET_OS_MACCATALYST
+    [SceneDelegate closeAuxWindows];
+#endif
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
@@ -359,6 +363,20 @@
 
 - (void)application:(UIApplication *)application didDecodeRestorableStateWithCoder:(NSCoder *)coder {
     // All done; could do any cleanup here
+}
+
+- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
+    if ([options.userActivities.anyObject.activityType isEqualToString:@"aux"]) {
+        UISceneConfiguration *configuration = [UISceneConfiguration configurationWithName:@"Default Configuration" sessionRole:connectingSceneSession.role];
+        configuration.delegateClass = [AuxSceneDelegate class];
+        configuration.storyboard = [UIStoryboard storyboardWithName:@"AuxInterface" bundle:[NSBundle mainBundle]];
+        return configuration;
+    } else {
+        UISceneConfiguration *configuration = [UISceneConfiguration configurationWithName:@"Default Configuration" sessionRole:connectingSceneSession.role];
+        configuration.delegateClass = [SceneDelegate class];
+        configuration.storyboard = [UIStoryboard storyboardWithName:@"MainInterface" bundle:[NSBundle mainBundle]];
+        return configuration;
+    }
 }
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> *restorableObjects))restorationHandler {
@@ -2363,7 +2381,8 @@
 
 - (void)showInAppBrowser:(NSURL *)url withCustomTitle:(NSString *)customTitle fromSender:(id)sender {
 #if TARGET_OS_MACCATALYST
-    [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+//    [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+    [AuxSceneDelegate openWindowForURL:url customTitle:customTitle];
 #else
     if (!originalStoryViewController) {
         originalStoryViewController = [[OriginalStoryViewController alloc] init];
