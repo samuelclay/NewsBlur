@@ -764,6 +764,10 @@
 		179A88022B48E64A00916CF4 /* ToolbarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179A88012B48E64900916CF4 /* ToolbarDelegate.swift */; };
 		179A88032B48E64A00916CF4 /* ToolbarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179A88012B48E64900916CF4 /* ToolbarDelegate.swift */; };
 		179DD9CF23DFDD51007BFD21 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 179DD9CE23DFDD51007BFD21 /* CloudKit.framework */; };
+		17A0518A2C095B20000994E9 /* AuxSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17A051892C095B20000994E9 /* AuxSceneDelegate.swift */; };
+		17A0518B2C095B20000994E9 /* AuxSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17A051892C095B20000994E9 /* AuxSceneDelegate.swift */; };
+		17A0518D2C095E78000994E9 /* AuxInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 17A0518C2C095E78000994E9 /* AuxInterface.storyboard */; };
+		17A0518E2C095E78000994E9 /* AuxInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 17A0518C2C095E78000994E9 /* AuxInterface.storyboard */; };
 		17A396D924F86A8F0023C9E2 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 17A396D824F86A8F0023C9E2 /* MainInterface.storyboard */; };
 		17A92A3C289B7C6B00AB0A78 /* saved-stories@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17A92A3B289B7C6B00AB0A78 /* saved-stories@2x.png */; };
 		17AACFE122279A3C00DE6EA4 /* autoscroll_resume@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17AACFD722279A3900DE6EA4 /* autoscroll_resume@2x.png */; };
@@ -1559,6 +1563,8 @@
 		179A88012B48E64900916CF4 /* ToolbarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarDelegate.swift; sourceTree = "<group>"; };
 		179DD9CC23DFD20E007BFD21 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BridgingHeader.h; path = "Other Sources/BridgingHeader.h"; sourceTree = "<group>"; };
 		179DD9CE23DFDD51007BFD21 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		17A051892C095B20000994E9 /* AuxSceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuxSceneDelegate.swift; sourceTree = "<group>"; };
+		17A0518C2C095E78000994E9 /* AuxInterface.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AuxInterface.storyboard; sourceTree = "<group>"; };
 		17A396D824F86A8F0023C9E2 /* MainInterface.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
 		17A92A3B289B7C6B00AB0A78 /* saved-stories@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "saved-stories@2x.png"; sourceTree = "<group>"; };
 		17AACFD722279A3900DE6EA4 /* autoscroll_resume@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "autoscroll_resume@2x.png"; sourceTree = "<group>"; };
@@ -2713,6 +2719,7 @@
 			isa = PBXGroup;
 			children = (
 				17A396D824F86A8F0023C9E2 /* MainInterface.storyboard */,
+				17A0518C2C095E78000994E9 /* AuxInterface.storyboard */,
 				FF191E4E18A323F400473252 /* Images.xcassets */,
 				17EE11CD2B28011D00E7C0CC /* Credits.rtf */,
 				430C4BBE15D7208000B9F63B /* FTUX */,
@@ -3364,6 +3371,7 @@
 				1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */,
 				1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */,
 				17150E1D2B05775A004D5309 /* SceneDelegate.swift */,
+				17A051892C095B20000994E9 /* AuxSceneDelegate.swift */,
 				179A88012B48E64900916CF4 /* ToolbarDelegate.swift */,
 				FFD1D72F1459B63500E46F89 /* BaseViewController.h */,
 				FFD1D7301459B63500E46F89 /* BaseViewController.m */,
@@ -4011,6 +4019,7 @@
 				175790642930605500490924 /* WhitneySSm-Book-Bas.otf in Resources */,
 				175790652930605500490924 /* ChronicleSSm-BookItalic.otf in Resources */,
 				175790662930605500490924 /* WhitneySSm-Medium-Bas.otf in Resources */,
+				17A0518E2C095E78000994E9 /* AuxInterface.storyboard in Resources */,
 				175790672930605500490924 /* icons8-stack-of-paper-100.png in Resources */,
 				17EE11C92B27FA0C00E7C0CC /* Settings.bundle in Resources */,
 				175790682930605500490924 /* WhitneySSm-MediumItalic-Bas.otf in Resources */,
@@ -4788,6 +4797,7 @@
 				FF22FE6E16E554540046165A /* barbutton_refresh.png in Resources */,
 				FF22FE6F16E554540046165A /* barbutton_refresh@2x.png in Resources */,
 				FF22FE7216E554FD0046165A /* barbutton_sendto.png in Resources */,
+				17A0518D2C095E78000994E9 /* AuxInterface.storyboard in Resources */,
 				FFB9BE4D17F4B65B00FE0A36 /* logo_120@2x.png in Resources */,
 				FF03AFFF19F881380063002A /* ARChromeActivity@2x.png in Resources */,
 				FF83FF1B1FB54693008DAC0F /* g_icn_privacy.png in Resources */,
@@ -5148,6 +5158,7 @@
 				175792B52930605500490924 /* IASKTextViewCell.m in Sources */,
 				175792B62930605500490924 /* StoriesCollection.m in Sources */,
 				175792B72930605500490924 /* IASKTextView.m in Sources */,
+				17A0518B2C095B20000994E9 /* AuxSceneDelegate.swift in Sources */,
 				175792B82930605500490924 /* OfflineSyncUnreads.m in Sources */,
 				175792B92930605500490924 /* IASKPSSliderSpecifierViewCell.m in Sources */,
 				17BC56AB2BBF6BC000A30C41 /* Feed.swift in Sources */,
@@ -5356,6 +5367,7 @@
 				FF34FD701E9D93CB0062F8ED /* IASKTextViewCell.m in Sources */,
 				FFAD89C218AC45A100D68567 /* StoriesCollection.m in Sources */,
 				FF34FD6F1E9D93CB0062F8ED /* IASKTextView.m in Sources */,
+				17A0518A2C095B20000994E9 /* AuxSceneDelegate.swift in Sources */,
 				FF855B5B1794B0670098D48A /* OfflineSyncUnreads.m in Sources */,
 				FF34FD6A1E9D93CB0062F8ED /* IASKPSSliderSpecifierViewCell.m in Sources */,
 				17BC56AA2BBF6BC000A30C41 /* Feed.swift in Sources */,
