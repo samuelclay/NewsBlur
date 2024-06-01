@@ -266,7 +266,12 @@
         return self.isFeedShown;
     } else if (action == @selector(showSendTo:) ||
                action == @selector(showTrain:) ||
-               action == @selector(showShare:)) {
+               action == @selector(showShare:) ||
+               action == @selector(nextUnreadStory:) ||
+               action == @selector(nextStory:) ||
+               action == @selector(previousStory:) ||
+               action == @selector(toggleTextStory:) ||
+               action == @selector(openInBrowser:)) {
         return self.isStoryShown;
     } else {
         return [super canPerformAction:action withSender:sender];
