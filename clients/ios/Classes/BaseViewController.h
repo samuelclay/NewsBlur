@@ -75,10 +75,20 @@
 - (IBAction)doMarkAllRead:(id)sender;
 - (IBAction)openMarkReadMenu:(id)sender;
 - (IBAction)openSettingsMenu:(id)sender;
+- (IBAction)nextSite:(id)sender;
+- (IBAction)previousSite:(id)sender;
+- (IBAction)nextFolder:(id)sender;
+- (IBAction)previousFolder:(id)sender;
+- (IBAction)openAllStories:(id)sender;
 
 - (IBAction)showSendTo:(id)sender;
 - (IBAction)showTrain:(id)sender;
 - (IBAction)showShare:(id)sender;
+- (IBAction)nextUnreadStory:(id)sender;
+- (IBAction)nextStory:(id)sender;
+- (IBAction)previousStory:(id)sender;
+- (IBAction)toggleTextStory:(id)sender;
+- (IBAction)openInBrowser:(id)sender;
 
 @end
 

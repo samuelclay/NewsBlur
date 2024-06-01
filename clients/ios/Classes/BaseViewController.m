@@ -596,6 +596,26 @@
     [self.appDelegate.feedDetailViewController doOpenSettingsMenu:sender];
 }
 
+- (IBAction)nextSite:(id)sender {
+    [self.appDelegate.feedsViewController selectNextFeed:sender];
+}
+
+- (IBAction)previousSite:(id)sender {
+    [self.appDelegate.feedsViewController selectPreviousFeed:sender];
+}
+
+- (IBAction)nextFolder:(id)sender {
+    [self.appDelegate.feedsViewController selectNextFolder:sender];
+}
+
+- (IBAction)previousFolder:(id)sender {
+    [self.appDelegate.feedsViewController selectPreviousFolder:sender];
+}
+
+- (IBAction)openAllStories:(id)sender {
+    [self.appDelegate.feedsViewController selectEverything:sender];
+}
+
 #pragma mark -
 #pragma mark Story menu
 
@@ -609,6 +629,26 @@
 
 - (IBAction)showShare:(id)sender {
     [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
+}
+
+- (IBAction)nextUnreadStory:(id)sender {
+    [self.appDelegate.storyPagesViewController doNextUnreadStory:sender];
+}
+
+- (IBAction)nextStory:(id)sender {
+    [self.appDelegate.storyPagesViewController changeToNextPage:sender];
+}
+
+- (IBAction)previousStory:(id)sender {
+    [self.appDelegate.storyPagesViewController changeToPreviousPage:sender];
+}
+
+- (IBAction)toggleTextStory:(id)sender {
+    [self.appDelegate.storyPagesViewController toggleTextView:sender];
+}
+
+- (IBAction)openInBrowser:(id)sender {
+    [self.appDelegate.storyPagesViewController showOriginalSubview:sender];
 }
 
 @end
