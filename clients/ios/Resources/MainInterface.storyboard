@@ -254,7 +254,7 @@
                                     <menuOptions key="menuOptions" displayInline="YES"/>
                                     <children>
                                         <command title="New Site" input="n" id="Y3F-bj-KeX">
-                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
                                             <connections>
                                                 <action selector="newSite:" destination="J28-e1-gcC" id="eEX-pv-sl0"/>
                                             </connections>
@@ -711,6 +711,46 @@
                                         </command>
                                     </children>
                                 </menu>
+                                <menu id="dAb-4p-3Qc">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Next Site" input="j" id="Ux2-qi-iV3">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="nextSite:" destination="J28-e1-gcC" id="p14-gh-luF"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Previous Site" input="k" id="cvB-e9-ie9">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="previousSite:" destination="J28-e1-gcC" id="9N0-gQ-7bR"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Next Folder" input="J" id="dcy-Oz-PFw">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="nextFolder:" destination="J28-e1-gcC" id="fbT-o2-ZNT"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Previous Folder" input="K" id="CEJ-G9-fRi">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="previousFolder:" destination="J28-e1-gcC" id="ynW-dP-UuT"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu id="IGD-cP-sh8">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Open All Stories" input="E" id="sW2-Jm-pRP">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="openAllStories:" destination="J28-e1-gcC" id="m4I-zj-Kta"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
                             </children>
                         </menu>
                         <menu title="Story" identifier="story" anchor="com.apple.menu.view" id="KgH-xe-mTD">
@@ -742,6 +782,46 @@
                                         <action selector="showShare:" destination="J28-e1-gcC" id="UGy-Xo-sDK"/>
                                     </connections>
                                 </command>
+                                <menu id="nKV-Y3-j73">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Next Unread Story" input="n" id="ofa-dG-qfi">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="nextUnreadStory:" destination="J28-e1-gcC" id="us7-1R-z9P"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Next Story" input="j" id="FyB-cA-EZJ">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="nextStory:" destination="J28-e1-gcC" id="yl9-dW-g5i"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Previous Story" input="k" id="Tfg-Wu-4wp">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="previousStory:" destination="J28-e1-gcC" id="Ymu-C3-BYE"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu id="XRI-fA-vEa">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Text View" input="t" id="G4z-4B-Qeb">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="toggleTextStory:" destination="J28-e1-gcC" id="QJp-Jw-8hd"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Open in Browser" input="o" id="Dvp-0s-e2A">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="openInBrowser:" destination="J28-e1-gcC" id="ZIJ-IW-Ybq"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
                             </children>
                         </menu>
                         <menu isSystemItem="YES" title="Help" identifier="com.apple.menu.help" id="2fJ-ya-vwD">

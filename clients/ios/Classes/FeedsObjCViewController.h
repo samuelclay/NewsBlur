@@ -102,6 +102,11 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)selectNextFolderOrFeed;
 
 - (IBAction)selectIntelligence;
+- (void)selectEverything:(id)sender;
+- (void)selectNextFeed:(id)sender;
+- (void)selectPreviousFeed:(id)sender;
+- (void)selectNextFolder:(id)sender;
+- (void)selectPreviousFolder:(id)sender;
 
 - (void)markFeedRead:(NSString *)feedId cutoffDays:(NSInteger)days;
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days;

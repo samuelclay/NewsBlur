@@ -39,7 +39,7 @@ class AuxSceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
 #if targetEnvironment(macCatalyst)
-        guard let windowScene = scene as? UIWindowScene, let titlebar = windowScene.titlebar,
+        guard let windowScene = scene as? UIWindowScene, //let titlebar = windowScene.titlebar,
         let userInfo = connectionOptions.userActivities.first?.userInfo else {
             return
         }
