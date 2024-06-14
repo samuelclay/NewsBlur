@@ -299,7 +299,7 @@ public class ItemSetFragment extends NbFragment {
         ensureSufficientStories();
     }
 
-    private void setCursor(Cursor cursor) {
+    private void setCursor(@Nullable Cursor cursor) {
         if (cursor != null) {
             if (!dbHelper.isFeedSetReady(getFeedSet())) {
                 // the DB hasn't caught up yet from the last story list; don't display stale stories.
