@@ -3,7 +3,7 @@
     <device id="ipad11_0rounded" orientation="landscape" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="UIMenu" message="Requires Xcode 11 or later." minToolsVersion="11.0" requiredIntegratedClassName="UICommandDiff"/>
@@ -15,39 +15,39 @@
             <objects>
                 <viewController storyboardIdentifier="DetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="djW-7k-haK" customClass="DetailViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jTZ-4O-xyT">
-                        <rect key="frame" x="0.0" y="0.0" width="818.5" height="834"/>
+                        <rect key="frame" x="0.0" y="0.0" width="514" height="834"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bPa-u1-Aml">
-                                <rect key="frame" x="0.0" y="74" width="1194" height="580"/>
+                                <rect key="frame" x="0.0" y="74" width="1210" height="580"/>
                                 <connections>
                                     <segue destination="afA-W0-XsQ" kind="embed" id="jh9-xN-7qk"/>
                                 </connections>
                             </containerView>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5M7-bO-MVK">
-                                <rect key="frame" x="0.0" y="666" width="1194" height="168"/>
+                                <rect key="frame" x="0.0" y="666" width="1210" height="168"/>
                                 <connections>
                                     <segue destination="1tQ-fy-A3c" kind="embed" id="VHY-vp-wSt"/>
                                 </connections>
                             </containerView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tFd-Uv-aMP">
-                                <rect key="frame" x="0.0" y="654" width="1194" height="12"/>
+                                <rect key="frame" x="0.0" y="654" width="1210" height="12"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qGY-je-8bb">
-                                        <rect key="frame" x="0.0" y="-1" width="1194" height="1"/>
+                                        <rect key="frame" x="0.0" y="-1" width="1210" height="1"/>
                                         <color key="backgroundColor" red="0.75644385810000003" green="0.75644385810000003" blue="0.75644385810000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="1" id="rXL-Rl-xkq"/>
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bSN-6S-SA0">
-                                        <rect key="frame" x="0.0" y="12" width="1194" height="1"/>
+                                        <rect key="frame" x="0.0" y="12" width="1210" height="1"/>
                                         <color key="backgroundColor" red="0.75644385810000003" green="0.75644385810000003" blue="0.75644385810000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="1" id="tto-L2-TaQ"/>
                                         </constraints>
                                     </view>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="drag_icon.png" translatesAutoresizingMaskIntoConstraints="NO" id="xeQ-Iz-FR0">
-                                        <rect key="frame" x="580" y="2" width="34" height="9"/>
+                                        <rect key="frame" x="588" y="2" width="34" height="9"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="9" id="dFD-2h-iag"/>
                                             <constraint firstAttribute="width" constant="34" id="wAd-rJ-dVL"/>
@@ -254,7 +254,7 @@
                                     <menuOptions key="menuOptions" displayInline="YES"/>
                                     <children>
                                         <command title="New Site" input="n" id="Y3F-bj-KeX">
-                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
                                             <connections>
                                                 <action selector="newSite:" destination="J28-e1-gcC" id="eEX-pv-sl0"/>
                                             </connections>
@@ -711,6 +711,46 @@
                                         </command>
                                     </children>
                                 </menu>
+                                <menu id="dAb-4p-3Qc">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Next Site" input="j" id="Ux2-qi-iV3">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="nextSite:" destination="J28-e1-gcC" id="p14-gh-luF"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Previous Site" input="k" id="cvB-e9-ie9">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="previousSite:" destination="J28-e1-gcC" id="9N0-gQ-7bR"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Next Folder" input="J" id="dcy-Oz-PFw">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="nextFolder:" destination="J28-e1-gcC" id="fbT-o2-ZNT"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Previous Folder" input="K" id="CEJ-G9-fRi">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="previousFolder:" destination="J28-e1-gcC" id="ynW-dP-UuT"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu id="IGD-cP-sh8">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Open All Stories" input="E" id="sW2-Jm-pRP">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="openAllStories:" destination="J28-e1-gcC" id="m4I-zj-Kta"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
                             </children>
                         </menu>
                         <menu title="Story" identifier="story" anchor="com.apple.menu.view" id="KgH-xe-mTD">
@@ -742,6 +782,46 @@
                                         <action selector="showShare:" destination="J28-e1-gcC" id="UGy-Xo-sDK"/>
                                     </connections>
                                 </command>
+                                <menu id="nKV-Y3-j73">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Next Unread Story" input="n" id="ofa-dG-qfi">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="nextUnreadStory:" destination="J28-e1-gcC" id="us7-1R-z9P"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Next Story" input="j" id="FyB-cA-EZJ">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="nextStory:" destination="J28-e1-gcC" id="yl9-dW-g5i"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Previous Story" input="k" id="Tfg-Wu-4wp">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="previousStory:" destination="J28-e1-gcC" id="Ymu-C3-BYE"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
+                                <menu id="XRI-fA-vEa">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Text View" input="t" id="G4z-4B-Qeb">
+                                            <keyModifierFlags key="modifierFlags" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="toggleTextStory:" destination="J28-e1-gcC" id="QJp-Jw-8hd"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Open in Browser" input="o" id="Dvp-0s-e2A">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="openInBrowser:" destination="J28-e1-gcC" id="ZIJ-IW-Ybq"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
                             </children>
                         </menu>
                         <menu isSystemItem="YES" title="Help" identifier="com.apple.menu.help" id="2fJ-ya-vwD">
@@ -815,7 +895,7 @@
             <objects>
                 <navigationController storyboardIdentifier="DetailNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="HsP-cn-nIY" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Noh-2M-34G">
-                        <rect key="frame" x="0.0" y="24" width="818.5" height="50"/>
+                        <rect key="frame" x="0.0" y="24" width="514" height="50"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -928,7 +1008,7 @@
             <objects>
                 <viewController id="afA-W0-XsQ" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="jBw-7b-YGl">
-                        <rect key="frame" x="0.0" y="0.0" width="1194" height="580"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1210" height="580"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="xqp-qa-ugn"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -943,7 +1023,7 @@
             <objects>
                 <viewController id="1tQ-fy-A3c" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="jdW-Cp-Pkg">
-                        <rect key="frame" x="0.0" y="0.0" width="1194" height="168"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1210" height="168"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="k4r-Od-mPr"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>

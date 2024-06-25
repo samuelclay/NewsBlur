@@ -764,6 +764,10 @@
 		179A88022B48E64A00916CF4 /* ToolbarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179A88012B48E64900916CF4 /* ToolbarDelegate.swift */; };
 		179A88032B48E64A00916CF4 /* ToolbarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179A88012B48E64900916CF4 /* ToolbarDelegate.swift */; };
 		179DD9CF23DFDD51007BFD21 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 179DD9CE23DFDD51007BFD21 /* CloudKit.framework */; };
+		17A0518A2C095B20000994E9 /* AuxSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17A051892C095B20000994E9 /* AuxSceneDelegate.swift */; };
+		17A0518B2C095B20000994E9 /* AuxSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17A051892C095B20000994E9 /* AuxSceneDelegate.swift */; };
+		17A0518D2C095E78000994E9 /* AuxInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 17A0518C2C095E78000994E9 /* AuxInterface.storyboard */; };
+		17A0518E2C095E78000994E9 /* AuxInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 17A0518C2C095E78000994E9 /* AuxInterface.storyboard */; };
 		17A396D924F86A8F0023C9E2 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 17A396D824F86A8F0023C9E2 /* MainInterface.storyboard */; };
 		17A92A3C289B7C6B00AB0A78 /* saved-stories@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17A92A3B289B7C6B00AB0A78 /* saved-stories@2x.png */; };
 		17AACFE122279A3C00DE6EA4 /* autoscroll_resume@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17AACFD722279A3900DE6EA4 /* autoscroll_resume@2x.png */; };
@@ -864,7 +868,7 @@
 		17EB505D1BE4411E0021358B /* choose_font@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17EB505B1BE4411E0021358B /* choose_font@2x.png */; };
 		17EB50601BE46A900021358B /* FontListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17EB505F1BE46A900021358B /* FontListViewController.m */; };
 		17EB50621BE46BB00021358B /* FontListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17EB50611BE46BB00021358B /* FontListViewController.xib */; };
-		17EE11C82B27FA0C00E7C0CC /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 17EE11C72B27FA0C00E7C0CC /* Settings.bundle */; };
+		17EE11C82B27FA0C00E7C0CC /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 17EE11C72B27FA0C00E7C0CC /* Settings.bundle */; platformFilter = maccatalyst; };
 		17EE11C92B27FA0C00E7C0CC /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 17EE11C72B27FA0C00E7C0CC /* Settings.bundle */; platformFilter = maccatalyst; };
 		17EE11CE2B28011D00E7C0CC /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 17EE11CD2B28011D00E7C0CC /* Credits.rtf */; };
 		17EE11CF2B28011D00E7C0CC /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 17EE11CD2B28011D00E7C0CC /* Credits.rtf */; };
@@ -1358,7 +1362,7 @@
 		FFEA5AEC19D340BC00ED87A0 /* logo_newsblur_512.png in Resources */ = {isa = PBXBuildFile; fileRef = FFEA5AEB19D340BC00ED87A0 /* logo_newsblur_512.png */; };
 		FFECD019172B105800D45A62 /* UIActivitySafari.png in Resources */ = {isa = PBXBuildFile; fileRef = FFECD017172B105800D45A62 /* UIActivitySafari.png */; };
 		FFECD01A172B105800D45A62 /* UIActivitySafari@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFECD018172B105800D45A62 /* UIActivitySafari@2x.png */; };
-		FFF1E4C817750BDD00BF59D3 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4C717750BDD00BF59D3 /* Settings.bundle */; };
+		FFF1E4C817750BDD00BF59D3 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4C717750BDD00BF59D3 /* Settings.bundle */; platformFilter = ios; };
 		FFF1E4CB17750D2C00BF59D3 /* menu_icn_preferences.png in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4C917750D2C00BF59D3 /* menu_icn_preferences.png */; };
 		FFF1E4CC17750D2C00BF59D3 /* menu_icn_preferences@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4CA17750D2C00BF59D3 /* menu_icn_preferences@2x.png */; };
 		FFF8B3AF1F847505001AB95E /* NBDashboardNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF8B3AE1F847505001AB95E /* NBDashboardNavigationBar.m */; };
@@ -1559,6 +1563,8 @@
 		179A88012B48E64900916CF4 /* ToolbarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarDelegate.swift; sourceTree = "<group>"; };
 		179DD9CC23DFD20E007BFD21 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BridgingHeader.h; path = "Other Sources/BridgingHeader.h"; sourceTree = "<group>"; };
 		179DD9CE23DFDD51007BFD21 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		17A051892C095B20000994E9 /* AuxSceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuxSceneDelegate.swift; sourceTree = "<group>"; };
+		17A0518C2C095E78000994E9 /* AuxInterface.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AuxInterface.storyboard; sourceTree = "<group>"; };
 		17A396D824F86A8F0023C9E2 /* MainInterface.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
 		17A92A3B289B7C6B00AB0A78 /* saved-stories@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "saved-stories@2x.png"; sourceTree = "<group>"; };
 		17AACFD722279A3900DE6EA4 /* autoscroll_resume@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "autoscroll_resume@2x.png"; sourceTree = "<group>"; };
@@ -2713,6 +2719,7 @@
 			isa = PBXGroup;
 			children = (
 				17A396D824F86A8F0023C9E2 /* MainInterface.storyboard */,
+				17A0518C2C095E78000994E9 /* AuxInterface.storyboard */,
 				FF191E4E18A323F400473252 /* Images.xcassets */,
 				17EE11CD2B28011D00E7C0CC /* Credits.rtf */,
 				430C4BBE15D7208000B9F63B /* FTUX */,
@@ -3364,6 +3371,7 @@
 				1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */,
 				1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */,
 				17150E1D2B05775A004D5309 /* SceneDelegate.swift */,
+				17A051892C095B20000994E9 /* AuxSceneDelegate.swift */,
 				179A88012B48E64900916CF4 /* ToolbarDelegate.swift */,
 				FFD1D72F1459B63500E46F89 /* BaseViewController.h */,
 				FFD1D7301459B63500E46F89 /* BaseViewController.m */,
@@ -3885,7 +3893,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1120;
-				LastUpgradeCheck = 1520;
+				LastUpgradeCheck = 1540;
 				ORGANIZATIONNAME = NewsBlur;
 				TargetAttributes = {
 					173CB30C26BCE94700BA872A = {
@@ -4011,6 +4019,7 @@
 				175790642930605500490924 /* WhitneySSm-Book-Bas.otf in Resources */,
 				175790652930605500490924 /* ChronicleSSm-BookItalic.otf in Resources */,
 				175790662930605500490924 /* WhitneySSm-Medium-Bas.otf in Resources */,
+				17A0518E2C095E78000994E9 /* AuxInterface.storyboard in Resources */,
 				175790672930605500490924 /* icons8-stack-of-paper-100.png in Resources */,
 				17EE11C92B27FA0C00E7C0CC /* Settings.bundle in Resources */,
 				175790682930605500490924 /* WhitneySSm-MediumItalic-Bas.otf in Resources */,
@@ -4788,6 +4797,7 @@
 				FF22FE6E16E554540046165A /* barbutton_refresh.png in Resources */,
 				FF22FE6F16E554540046165A /* barbutton_refresh@2x.png in Resources */,
 				FF22FE7216E554FD0046165A /* barbutton_sendto.png in Resources */,
+				17A0518D2C095E78000994E9 /* AuxInterface.storyboard in Resources */,
 				FFB9BE4D17F4B65B00FE0A36 /* logo_120@2x.png in Resources */,
 				FF03AFFF19F881380063002A /* ARChromeActivity@2x.png in Resources */,
 				FF83FF1B1FB54693008DAC0F /* g_icn_privacy.png in Resources */,
@@ -5148,6 +5158,7 @@
 				175792B52930605500490924 /* IASKTextViewCell.m in Sources */,
 				175792B62930605500490924 /* StoriesCollection.m in Sources */,
 				175792B72930605500490924 /* IASKTextView.m in Sources */,
+				17A0518B2C095B20000994E9 /* AuxSceneDelegate.swift in Sources */,
 				175792B82930605500490924 /* OfflineSyncUnreads.m in Sources */,
 				175792B92930605500490924 /* IASKPSSliderSpecifierViewCell.m in Sources */,
 				17BC56AB2BBF6BC000A30C41 /* Feed.swift in Sources */,
@@ -5356,6 +5367,7 @@
 				FF34FD701E9D93CB0062F8ED /* IASKTextViewCell.m in Sources */,
 				FFAD89C218AC45A100D68567 /* StoriesCollection.m in Sources */,
 				FF34FD6F1E9D93CB0062F8ED /* IASKTextView.m in Sources */,
+				17A0518A2C095B20000994E9 /* AuxSceneDelegate.swift in Sources */,
 				FF855B5B1794B0670098D48A /* OfflineSyncUnreads.m in Sources */,
 				FF34FD6A1E9D93CB0062F8ED /* IASKPSSliderSpecifierViewCell.m in Sources */,
 				17BC56AA2BBF6BC000A30C41 /* Feed.swift in Sources */,
@@ -5493,6 +5505,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "Widget Extension/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5536,6 +5549,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "Widget Extension/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5984,7 +5998,8 @@
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Other Sources/BridgingHeader.h";
 				TARGETED_DEVICE_FAMILY = "1,2,6";
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
@@ -6030,7 +6045,8 @@
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Other Sources/BridgingHeader.h";
 				TARGETED_DEVICE_FAMILY = "1,2,6";
 				VALIDATE_PRODUCT = YES;
@@ -6081,7 +6097,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LAUNCH_SCREEN_NAME = LaunchScreen;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 13.0;
+				MARKETING_VERSION = 13.1;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PROVISIONING_PROFILE = "";
@@ -6136,7 +6152,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LAUNCH_SCREEN_NAME = LaunchScreen;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 13.0;
+				MARKETING_VERSION = 13.1;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "-ObjC";
