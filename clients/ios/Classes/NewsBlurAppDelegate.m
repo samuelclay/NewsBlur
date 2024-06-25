@@ -13,7 +13,6 @@
 #import "LoginViewController.h"
 #import "AddSiteViewController.h"
 #import "MoveSiteViewController.h"
-#import "TrainerViewController.h"
 #import "NotificationsViewController.h"
 #import "UserTagsViewController.h"
 #import "OriginalStoryViewController.h"
@@ -1141,7 +1140,7 @@
             popPC.sourceView = self.storyPagesViewController.view;
         } else {
             popPC.sourceRect = [sender frame];
-            popPC.sourceView = [sender superview];
+            popPC.sourceView = (UIView *)[sender superview];
             
             //            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
         }
