@@ -651,7 +651,6 @@
 		175792982930605500490924 /* NBDashboardNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF8B3AE1F847505001AB95E /* NBDashboardNavigationBar.m */; };
 		175792992930605500490924 /* FeedChooserItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 17E635AE1C548C580075338E /* FeedChooserItem.m */; };
 		1757929A2930605500490924 /* StoryPagesObjCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6A233116448E0700E15989 /* StoryPagesObjCViewController.m */; };
-		1757929B2930605500490924 /* TrainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF67D3B1168924C40057A7DA /* TrainerViewController.m */; };
 		1757929C2930605500490924 /* SmallInteractionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1660CC16D6FD8A00AF8541 /* SmallInteractionCell.m */; };
 		1757929D2930605500490924 /* IASKTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = FF34FD5B1E9D93CB0062F8ED /* IASKTextField.m */; };
 		1757929E2930605500490924 /* SBJson4StreamParserState.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EC31BAA311000725D8A /* SBJson4StreamParserState.m */; };
@@ -1163,7 +1162,6 @@
 		FF62820F1A1160DD00271FDB /* add_tag@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF62820D1A1160DD00271FDB /* add_tag@2x.png */; };
 		FF6282151A11613900271FDB /* UserTagsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6282141A11613900271FDB /* UserTagsViewController.m */; };
 		FF6618C8176184560039913B /* NBNotifier.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6618C7176184560039913B /* NBNotifier.m */; };
-		FF67D3B2168924C40057A7DA /* TrainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF67D3B1168924C40057A7DA /* TrainerViewController.m */; };
 		FF67D3B7168977690057A7DA /* TrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3B6168977690057A7DA /* TrainerViewController.xib */; };
 		FF67D3BB168A70630057A7DA /* trainer.css in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BA168A70630057A7DA /* trainer.css */; };
 		FF67D3C1168A708D0057A7DA /* storyDetailView.css in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BD168A708D0057A7DA /* storyDetailView.css */; };
@@ -2071,8 +2069,6 @@
 		FF6282141A11613900271FDB /* UserTagsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserTagsViewController.m; sourceTree = "<group>"; };
 		FF6618C6176184560039913B /* NBNotifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBNotifier.h; sourceTree = "<group>"; };
 		FF6618C7176184560039913B /* NBNotifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBNotifier.m; sourceTree = "<group>"; };
-		FF67D3B0168924C40057A7DA /* TrainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrainerViewController.h; sourceTree = "<group>"; };
-		FF67D3B1168924C40057A7DA /* TrainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrainerViewController.m; sourceTree = "<group>"; };
 		FF67D3B6168977690057A7DA /* TrainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TrainerViewController.xib; sourceTree = "<group>"; };
 		FF67D3BA168A70630057A7DA /* trainer.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = trainer.css; path = ../static/trainer.css; sourceTree = "<group>"; };
 		FF67D3BD168A708D0057A7DA /* storyDetailView.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailView.css; path = ../static/storyDetailView.css; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.css; };
@@ -2862,8 +2858,6 @@
 				171904B42BBC8D4E004CCC96 /* TrainerView.swift */,
 				171904B72BBCA712004CCC96 /* TrainerCapsule.swift */,
 				17BC56A62BBE4A5600A30C41 /* TrainerWord.swift */,
-				FF67D3B0168924C40057A7DA /* TrainerViewController.h */,
-				FF67D3B1168924C40057A7DA /* TrainerViewController.m */,
 				FF6282131A11613900271FDB /* UserTagsViewController.h */,
 				FF6282141A11613900271FDB /* UserTagsViewController.m */,
 				E1C44B09200147ED002128AD /* StoryTitleAttributedString.h */,
@@ -5127,7 +5121,6 @@
 				172ECBFE298B14B1006371BC /* FeedDetailStoryView.swift in Sources */,
 				175792992930605500490924 /* FeedChooserItem.m in Sources */,
 				1757929A2930605500490924 /* StoryPagesObjCViewController.m in Sources */,
-				1757929B2930605500490924 /* TrainerViewController.m in Sources */,
 				1757929C2930605500490924 /* SmallInteractionCell.m in Sources */,
 				1757929D2930605500490924 /* IASKTextField.m in Sources */,
 				1757929E2930605500490924 /* SBJson4StreamParserState.m in Sources */,
@@ -5336,7 +5329,6 @@
 				172ECBFD298B14B1006371BC /* FeedDetailStoryView.swift in Sources */,
 				17E635AF1C548C580075338E /* FeedChooserItem.m in Sources */,
 				FF6A233216448E0700E15989 /* StoryPagesObjCViewController.m in Sources */,
-				FF67D3B2168924C40057A7DA /* TrainerViewController.m in Sources */,
 				FF1660CD16D6FD8A00AF8541 /* SmallInteractionCell.m in Sources */,
 				FF34FD6E1E9D93CB0062F8ED /* IASKTextField.m in Sources */,
 				FF8D1ECE1BAA311000725D8A /* SBJson4StreamParserState.m in Sources */,
