@@ -151,6 +151,8 @@
 - (IBAction)openSendToDialog:(id)sender;
 - (IBAction)doNextUnreadStory:(id)sender;
 - (IBAction)doPreviousStory:(id)sender;
+- (void)changeToNextPage:(id)sender;
+- (void)changeToPreviousPage:(id)sender;
 - (IBAction)tapProgressBar:(id)sender;
 - (IBAction)toggleTextView:(id)sender;
 

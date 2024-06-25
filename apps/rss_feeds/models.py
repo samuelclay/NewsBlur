@@ -1754,9 +1754,11 @@ class Feed(models.Model):
                         self.log_title[:30],
                         cutoff,
                         original_cutoff,
-                        self.last_story_date.strftime("%Y-%m-%d")
-                        if self.last_story_date
-                        else "No last story date",
+                        (
+                            self.last_story_date.strftime("%Y-%m-%d")
+                            if self.last_story_date
+                            else "No last story date"
+                        ),
                     )
                 )
             except ValueError as e:
@@ -3319,7 +3321,10 @@ class MStory(mongo.Document):
                 continue
             if "feedburner.com" in image_url:
                 continue
-            image_url = urllib.parse.urljoin(self.story_permalink, image_url)
+            try:
+                image_url = urllib.parse.urljoin(self.story_permalink, image_url)
+            except ValueError:
+                continue
             image_urls.append(image_url)
 
         if not image_urls:

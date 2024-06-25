@@ -214,7 +214,8 @@
 }
 
 - (BOOL)isPortrait {
-    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
+    UIWindow *window = [NewsBlurAppDelegate sharedAppDelegate].window;
+    UIInterfaceOrientation orientation = window.windowScene.interfaceOrientation;
     if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown) {
         return YES;
     } else {
@@ -223,7 +224,10 @@
 }
 
 - (BOOL)isCompactWidth {
-    return self.view.window.windowScene.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact;
+    UIWindow *window = [NewsBlurAppDelegate sharedAppDelegate].window;
+    UITraitCollection *traits = window.windowScene.traitCollection;
+    
+    return traits.horizontalSizeClass == UIUserInterfaceSizeClassCompact;
     //return self.compactWidth > 0.0;
 }
 
@@ -262,7 +266,12 @@
         return self.isFeedShown;
     } else if (action == @selector(showSendTo:) ||
                action == @selector(showTrain:) ||
-               action == @selector(showShare:)) {
+               action == @selector(showShare:) ||
+               action == @selector(nextUnreadStory:) ||
+               action == @selector(nextStory:) ||
+               action == @selector(previousStory:) ||
+               action == @selector(toggleTextStory:) ||
+               action == @selector(openInBrowser:)) {
         return self.isStoryShown;
     } else {
         return [super canPerformAction:action withSender:sender];
@@ -592,6 +601,26 @@
     [self.appDelegate.feedDetailViewController doOpenSettingsMenu:sender];
 }
 
+- (IBAction)nextSite:(id)sender {
+    [self.appDelegate.feedsViewController selectNextFeed:sender];
+}
+
+- (IBAction)previousSite:(id)sender {
+    [self.appDelegate.feedsViewController selectPreviousFeed:sender];
+}
+
+- (IBAction)nextFolder:(id)sender {
+    [self.appDelegate.feedsViewController selectNextFolder:sender];
+}
+
+- (IBAction)previousFolder:(id)sender {
+    [self.appDelegate.feedsViewController selectPreviousFolder:sender];
+}
+
+- (IBAction)openAllStories:(id)sender {
+    [self.appDelegate.feedsViewController selectEverything:sender];
+}
+
 #pragma mark -
 #pragma mark Story menu
 
@@ -605,6 +634,26 @@
 
 - (IBAction)showShare:(id)sender {
     [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
+}
+
+- (IBAction)nextUnreadStory:(id)sender {
+    [self.appDelegate.storyPagesViewController doNextUnreadStory:sender];
+}
+
+- (IBAction)nextStory:(id)sender {
+    [self.appDelegate.storyPagesViewController changeToNextPage:sender];
+}
+
+- (IBAction)previousStory:(id)sender {
+    [self.appDelegate.storyPagesViewController changeToPreviousPage:sender];
+}
+
+- (IBAction)toggleTextStory:(id)sender {
+    [self.appDelegate.storyPagesViewController toggleTextView:sender];
+}
+
+- (IBAction)openInBrowser:(id)sender {
+    [self.appDelegate.storyPagesViewController showOriginalSubview:sender];
 }
 
 @end

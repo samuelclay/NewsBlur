@@ -17,7 +17,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var toolbarDelegate = ToolbarDelegate()
 #endif
     
+    @objc(closeAuxWindows) class func closeAuxWindows() {
+        for window in UIApplication.shared.windows {
+            if window.windowScene?.delegate is AuxSceneDelegate, let session = window.windowScene?.session {
+                window.isHidden = true
+                UIApplication.shared.requestSceneSessionDestruction(session, options: .none)
+            }
+        }
+    }
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        if appDelegate.window != nil {
+            DispatchQueue.main.async {
+                self.window?.isHidden = true
+                UIApplication.shared.requestSceneSessionDestruction(session, options: .none)
+            }
+            return
+        }
+        
         appDelegate.window = window
         
 #if targetEnvironment(macCatalyst)
@@ -25,13 +42,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
         
+        if #available(macCatalyst 16.0, *) {
+            windowScene.windowingBehaviors?.isClosable = false
+        }
+        
         toolbar.delegate = toolbarDelegate
         toolbar.displayMode = .iconOnly
         
         titlebar.toolbar = toolbar
         titlebar.toolbarStyle = .automatic
-        
 #endif
+        
         appDelegate.prepareViewControllers()
     }
 }

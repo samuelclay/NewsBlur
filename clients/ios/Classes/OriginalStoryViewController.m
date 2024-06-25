@@ -362,7 +362,7 @@
 
 - (void)updateTitle:(WKWebView*)aWebView
 {
-    if (self.customPageTitle != nil) {
+    if (self.customPageTitle.length > 0) {
         titleView.text = self.customPageTitle;
     } else {
         NSString *pageTitleValue = webView.title;
@@ -370,6 +370,10 @@
     }
     
     [titleView sizeToFit];
+    
+#if TARGET_OS_MACCATALYST
+    self.view.window.windowScene.title = titleView.text;
+#endif
 }
 
 - (IBAction)loadAddress:(id)sender {

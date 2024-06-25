@@ -125,6 +125,7 @@
 				<string>Firefox</string>
 				<string>Edge</string>
 				<string>Brave</string>
+				<string>In-app browser</string>
 			</array>
 			<key>DefaultValue</key>
 			<string>system</string>
@@ -136,6 +137,7 @@
 				<string>firefox</string>
 				<string>edge</string>
 				<string>brave</string>
+				<string>inapp</string>
 			</array>
 			<key>Key</key>
 			<string>story_browser</string>
