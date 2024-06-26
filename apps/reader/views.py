@@ -337,7 +337,7 @@ def load_feeds(request):
         return load_feeds_flat(request)
 
     platform = extract_user_agent(request)
-    if platform in ["iPhone", "iPad", "Androd"]:
+    if platform in ["iPhone", "iPad", "Android"]:
         # Remove this check once the iOS and Android updates go out which have update_counts=False
         # and then guarantee a refresh_feeds call
         update_counts = False
