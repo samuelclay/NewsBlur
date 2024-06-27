@@ -297,6 +297,8 @@ SFSafariViewControllerDelegate>  {
 - (void)finishBackground;
 - (void)prepareViewControllers;
 
+- (BOOL)openURL:(NSURL *)url;
+
 - (void)showFirstTimeUser;
 - (void)showLogin;
 - (void)setupReachability;
