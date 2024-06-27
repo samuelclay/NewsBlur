@@ -10,7 +10,7 @@ import Foundation
 
 // The Feed, Story, and StoryCache classes could be quite useful going forward; Rather than calling getStory() to get the dictionary, could have a variation that returns a Story instance. Could fetch from the cache if available, or make and cache one from the dictionary. Would need to remove it from the cache when changing anything about a story. Could perhaps make the cache part of StoriesCollection.
 
-/// A cache of stories for the feed detail grid view.
+/// A cache of stories for the feed detail grid-based view.
 class StoryCache: ObservableObject {
     let appDelegate = NewsBlurAppDelegate.shared!
     
@@ -20,8 +20,24 @@ class StoryCache: ObservableObject {
         return ThemeManager.shared.isDarkTheme
     }
     
+    /// Using a list-style grid view layout for the story titles and story pages.
+    var isList: Bool {
+        return appDelegate.detailViewController.layout == .list
+    }
+    
+    /// Using a magazine-style grid view layout for the story titles and story pages.
+    var isMagazine: Bool {
+        return appDelegate.detailViewController.layout == .magazine
+    }
+    
+    /// Using a grid-style grid view layout for the story titles and story pages.
     var isGrid: Bool {
         return appDelegate.detailViewController.layout == .grid
+    }
+    
+    /// Using the list, magazine, or grid layout based on the grid view.
+    var isGridView: Bool {
+        return appDelegate.detailViewController.storyTitlesInGridView
     }
     
     var isPhone: Bool {

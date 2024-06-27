@@ -87,7 +87,7 @@ struct FeedDetailGridView: View {
                                 }
                             }
                             
-                            if cache.isGrid && !cache.isPhone {
+                            if cache.isGridView && !cache.isPhone {
                                 EmptyView()
                                     .id(storyViewID)
                             } else if let story = cache.selected {
@@ -112,7 +112,7 @@ struct FeedDetailGridView: View {
                         Task {
                             if newSelected == nil, !cache.isPhone, let oldSelected, let story = cache.story(with: oldSelected.index) {
                                 scroller.scrollTo(story.id, anchor: .top)
-                            } else if let newSelected, !cache.isGrid {
+                            } else if let newSelected, !cache.isGridView {
                                 withAnimation(Animation.spring().delay(0.5)) {
                                     scroller.scrollTo(newSelected.id)
                                 }
@@ -126,7 +126,7 @@ struct FeedDetailGridView: View {
                         }
                     }
                     .onAppear() {
-                        if cache.isGrid {
+                        if cache.isGridView {
                             scroller.scrollTo(storyViewID, anchor: .top)
                         }
                     }
@@ -148,7 +148,7 @@ struct FeedDetailGridView: View {
             })
         }
         .background(Color.themed([0xE0E0E0, 0xFFF8CA, 0x363636, 0x101010]))
-        .if(cache.isGrid) { view in
+        .if(cache.isGridView) { view in
             view.lazyPop()
         }
     }
@@ -191,7 +191,7 @@ struct FeedDetailGridView: View {
     
     @ViewBuilder
     func makeStoryView() -> some View {
-        if cache.isGrid, !cache.isPhone, let story = cache.selected {
+        if cache.isGridView, !cache.isPhone, let story = cache.selected {
             StoryView(cache: cache, story: story, interaction: feedDetailInteraction)
         }
     }

@@ -236,6 +236,8 @@
 				<string>Titles on left</string>
 				<string>Titles on top</string>
 				<string>Titles on bottom</string>
+				<string>Titles in list</string>
+				<string>Titles in magazine</string>
 				<string>Titles in grid</string>
 			</array>
 			<key>DefaultValue</key>
@@ -245,6 +247,8 @@
 				<string>titles_on_left</string>
 				<string>titles_on_top</string>
 				<string>titles_on_bottom</string>
+				<string>titles_in_list</string>
+				<string>titles_in_magazine</string>
 				<string>titles_in_grid</string>
 			</array>
 			<key>Key</key>

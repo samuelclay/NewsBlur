@@ -15,7 +15,7 @@
             <objects>
                 <viewController storyboardIdentifier="DetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="djW-7k-haK" customClass="DetailViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jTZ-4O-xyT">
-                        <rect key="frame" x="0.0" y="0.0" width="1210" height="834"/>
+                        <rect key="frame" x="0.0" y="0.0" width="514" height="834"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bPa-u1-Aml">
                                 <rect key="frame" x="0.0" y="74" width="1210" height="580"/>
@@ -411,6 +411,16 @@
                                         <command title="Bottom" propertyListString="titles_on_bottom" id="iQo-Uv-UPm">
                                             <connections>
                                                 <action selector="chooseLayout:" destination="J28-e1-gcC" id="APi-KB-zyb"/>
+                                            </connections>
+                                        </command>
+                                        <command title="List" propertyListString="titles_in_list" id="wpd-w1-HsI">
+                                            <connections>
+                                                <action selector="chooseLayout:" destination="J28-e1-gcC" id="eSm-n4-m2R"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Magazine" propertyListString="titles_in_magazine" id="fLf-C5-T41">
+                                            <connections>
+                                                <action selector="chooseLayout:" destination="J28-e1-gcC" id="1Vj-dQ-GqU"/>
                                             </connections>
                                         </command>
                                         <command title="Grid" propertyListString="titles_in_grid" id="hc6-3c-pEr">

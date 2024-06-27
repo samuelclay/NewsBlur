@@ -33,6 +33,8 @@ class DetailViewController: BaseViewController {
         static let left = "titles_on_left"
         static let top = "titles_on_top"
         static let bottom = "titles_on_bottom"
+        static let list = "titles_in_list"
+        static let magazine = "titles_in_magazine"
         static let grid = "titles_in_grid"
     }
     
@@ -47,7 +49,13 @@ class DetailViewController: BaseViewController {
         /// The story pages are at the top, the feed detail at the bottom.
         case bottom
         
-        /// Using a grid view for the story titles and story pages.
+        /// Using a list-style grid view for the story titles and story pages.
+        case list
+        
+        /// Using a magazine-style grid view for the story titles and story pages.
+        case magazine
+        
+        /// Using a grid-style grid view for the story titles and story pages.
         case grid
     }
     
@@ -55,14 +63,18 @@ class DetailViewController: BaseViewController {
     var layout: Layout {
         get {
             switch appDelegate.storiesCollection.activeStoryTitlesPosition {
-            case LayoutValue.top:
-                return .top
-            case LayoutValue.bottom:
-                return .bottom
-            case LayoutValue.grid:
-                return .grid
-            default:
-                return .left
+                case LayoutValue.top:
+                    return .top
+                case LayoutValue.bottom:
+                    return .bottom
+                case LayoutValue.list:
+                    return .list
+                case LayoutValue.magazine:
+                    return .magazine
+                case LayoutValue.grid:
+                    return .grid
+                default:
+                    return .left
             }
         }
         set {
@@ -71,14 +83,18 @@ class DetailViewController: BaseViewController {
             }
             
             switch newValue {
-            case .top:
-                UserDefaults.standard.set(LayoutValue.top, forKey: key)
-            case .bottom:
-                UserDefaults.standard.set(LayoutValue.bottom, forKey: key)
-            case .grid:
-                UserDefaults.standard.set(LayoutValue.grid, forKey: key)
-            default:
-                UserDefaults.standard.set(LayoutValue.left, forKey: key)
+                case .top:
+                    UserDefaults.standard.set(LayoutValue.top, forKey: key)
+                case .bottom:
+                    UserDefaults.standard.set(LayoutValue.bottom, forKey: key)
+                case .list:
+                    UserDefaults.standard.set(LayoutValue.list, forKey: key)
+                case .magazine:
+                    UserDefaults.standard.set(LayoutValue.magazine, forKey: key)
+                case .grid:
+                    UserDefaults.standard.set(LayoutValue.grid, forKey: key)
+                default:
+                    UserDefaults.standard.set(LayoutValue.left, forKey: key)
             }
             
             updateLayout(reload: true, fetchFeeds: true)
@@ -95,9 +111,29 @@ class DetailViewController: BaseViewController {
         return layout == .top
     }
     
+    /// Whether or not using the list layout; see also the previous properties.
+    @objc var storyTitlesInList: Bool {
+        return layout == .list
+    }
+    
+    /// Whether or not using the magazine layout; see also the previous properties.
+    @objc var storyTitlesInMagazine: Bool {
+        return layout == .magazine
+    }
+    
     /// Whether or not using the grid layout; see also the previous properties.
     @objc var storyTitlesInGrid: Bool {
         return layout == .grid
+    }
+    
+    /// Whether or not using the list, magazine, or grid layout; see also the previous properties.
+    @objc var storyTitlesInGridView: Bool {
+        return [.list, .magazine, .grid].contains(layout)
+    }
+    
+    /// Whether or not using the legacy list for non-grid layout.
+    @objc var storyTitlesInLegacyTable: Bool {
+        return !storyTitlesInGridView && style != .experimental
     }
     
     /// Preference values.
@@ -141,12 +177,7 @@ class DetailViewController: BaseViewController {
         }
     }
     
-    /// Whether or not using the legacy list for non-grid layout.
-    @objc var storyTitlesInLegacyTable: Bool {
-        return layout != .grid && style != .experimental
-    }
-    
-    /// Preference values.
+   /// Preference values.
     enum BehaviorValue {
         static let auto = "auto"
         static let tile = "tile"
@@ -260,11 +291,11 @@ class DetailViewController: BaseViewController {
     /// The feed detail view controller in the supplementary pane, loaded from the storyboard.
     var supplementaryFeedDetailViewController: FeedDetailViewController?
     
-    /// The feed detail view controller, if using `top`, `bottom`, or `grid` layout. `nil` if using `left` layout.
+    /// The feed detail view controller, if using `top`, `bottom`, `.list`, `.magazine`, or `grid` layout. `nil` if using `left` layout.
     var feedDetailViewController: FeedDetailViewController?
     
-    /// Whether or not the grid layout was used the last time checking the view controllers.
-    var wasGrid = false
+    /// Whether or not a grid view-based layout was used the last time checking the view controllers.
+    var wasGridView = false
     
     /// The horizontal page view controller. [Not currently used; might be used for #1351 (gestures in vertical scrolling).]
 //    var horizontalPageViewController: HorizontalPageViewController?
@@ -272,7 +303,7 @@ class DetailViewController: BaseViewController {
     /// An instance of the story pages view controller for list layouts.
     lazy var listStoryPagesViewController = StoryPagesViewController()
     
-    /// A separate instance of the story pages view controller for use in the grid layout.
+    /// A separate instance of the story pages view controller for use in a grid view-based layout.
     lazy var gridStoryPagesViewController = StoryPagesViewController()
     
     /// The story pages view controller, that manages the previous, current, and next story view controllers.
@@ -483,7 +514,7 @@ private extension DetailViewController {
         splitViewController?.preferredPrimaryColumnWidth = feedsWidth
 #endif
         
-        if layout != .grid || isPhone {
+        if !storyTitlesInGridView || isPhone {
             storyPagesViewController = listStoryPagesViewController
             _ = storyPagesViewController?.view
             
@@ -510,16 +541,16 @@ private extension DetailViewController {
                 appDelegate.show(.supplementary, debugInfo: "checkViewControllers")
             }
             
-            if wasGrid && !isPhone {
+            if wasGridView && !isPhone {
                 DispatchQueue.main.async {
                     self.appDelegate.loadStoryDetailView()
                 }
             }
             
             dividerViewBottomConstraint.constant = -13
-            wasGrid = false
-        } else if layout == .grid {
-            if feedDetailViewController == nil || !wasGrid {
+            wasGridView = false
+        } else if storyTitlesInGridView {
+            if feedDetailViewController == nil || !wasGridView {
                 remove(viewController: feedDetailViewController)
                 
                 feedDetailViewController = Storyboards.shared.controller(withIdentifier: .feedDetail) as? FeedDetailViewController
@@ -540,9 +571,9 @@ private extension DetailViewController {
             }
             
             dividerViewBottomConstraint.constant = -13
-            wasGrid = true
+            wasGridView = true
         } else {
-            if feedDetailViewController == nil || wasGrid {
+            if feedDetailViewController == nil || wasGridView {
                 remove(viewController: feedDetailViewController)
                 
                 feedDetailViewController = Storyboards.shared.controller(withIdentifier: .feedDetail) as? FeedDetailViewController
@@ -569,7 +600,7 @@ private extension DetailViewController {
             dividerViewBottomConstraint.constant = dividerPosition
             
             appDelegate.updateSplitBehavior(true)
-            wasGrid = false
+            wasGridView = false
         }
         
         appDelegate.feedDetailViewController.changedLayout()
