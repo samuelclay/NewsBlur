@@ -235,6 +235,10 @@
     return self.appDelegate.detailViewController.storyTitlesInGrid;
 }
 
+- (BOOL)isGridView {
+    return self.appDelegate.detailViewController.storyTitlesInGridView;
+}
+
 - (BOOL)isFeedShown {
     return appDelegate.storiesCollection.activeFeed != nil || appDelegate.storiesCollection.activeFolder != nil;
 }

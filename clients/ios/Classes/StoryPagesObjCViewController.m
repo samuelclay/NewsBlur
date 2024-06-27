@@ -391,7 +391,7 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
-    if (!appDelegate.detailViewController.storyTitlesInGrid) {
+    if (!appDelegate.detailViewController.storyTitlesInGridView) {
         appDelegate.detailViewController.navigationItem.leftBarButtonItem = nil;
     }
 }

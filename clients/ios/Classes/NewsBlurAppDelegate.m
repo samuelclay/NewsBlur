@@ -1690,7 +1690,7 @@
         [self adjustStoryDetailWebView];
         [self.feedDetailViewController loadingFeed];
         
-        if (detailViewController.storyTitlesOnLeft || detailViewController.storyTitlesInGrid) {
+        if (detailViewController.storyTitlesOnLeft || detailViewController.storyTitlesInGridView) {
             [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadFeedDetailView"];
         }
     }

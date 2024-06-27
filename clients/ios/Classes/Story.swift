@@ -20,7 +20,8 @@ class Story: Identifiable {
     var feed: Feed?
     
     var title = ""
-    var content = ""
+    var shortContent = ""
+    var longContent = ""
     var dateString = ""
     var timestamp = 0
     var isRead = false
@@ -113,8 +114,23 @@ class Story: Identifiable {
             }
         }
         
+        let tempContent: String = string(for: "story_content")
+        let components = tempContent.components(separatedBy: .newlines)
+        let filteredContent = components.filter { !$0.isEmpty }.joined(separator: "[:*CR*:]")
+        
         title = (string(for: "story_title") as NSString).decodingHTMLEntities()
-        content = String(string(for: "story_content").convertHTML().decodingXMLEntities().decodingHTMLEntities().replacingOccurrences(of: "\n", with: " ").prefix(500))
+        longContent = String(filteredContent
+            .convertHTML()
+            .decodingXMLEntities()
+            .decodingHTMLEntities()
+            .replacingOccurrences(of: "[:*CR*:]", with: "\n")
+            .prefix(1500))
+        shortContent = String(tempContent
+            .convertHTML()
+            .decodingXMLEntities()
+            .decodingHTMLEntities()
+            .replacingOccurrences(of: "\n", with: " ")
+            .prefix(500))
         author = string(for: "story_authors").replacingOccurrences(of: "\"", with: "")
         timestamp = int(for:"story_timestamp")
         dateString = Utilities.formatShortDate(fromTimestamp: timestamp) ?? ""

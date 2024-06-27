@@ -241,6 +241,10 @@ NSString * const MenuHandler = @"handler";
         if ([title hasSuffix:@".png"]) {
             UIImage *image = [UIImage imageNamed:title];
             
+            if (image.size.width > 50) {
+                image = [Utilities imageWithImage:image convertToSize:CGSizeMake(16, 16)];
+            }
+            
             [segmentedControl insertSegmentWithImage:image atIndex:idx animated:NO];
         } else {
             [segmentedControl insertSegmentWithTitle:title atIndex:idx animated:NO];

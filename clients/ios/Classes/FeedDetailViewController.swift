@@ -29,8 +29,8 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         case loading
     }
     
-    var wasGrid: Bool {
-        return appDelegate.detailViewController.wasGrid
+    var wasGridView: Bool {
+        return appDelegate.detailViewController.wasGridView
     }
     
     var isExperimental: Bool {
@@ -38,7 +38,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     }
     
     var isSwiftUI: Bool {
-        return isGrid || isExperimental
+        return isGridView || isExperimental
     }
     
     var feedColumns: Int {
@@ -104,11 +104,11 @@ class FeedDetailViewController: FeedDetailObjCViewController {
                 self.reload()
             }
         } else {
-            let wasGrid = wasGrid
+            let wasGridView = wasGridView
             
             self.appDelegate.detailViewController.updateLayout(reload: false, fetchFeeds: false)
             
-            if wasGrid != isGrid {
+            if wasGridView != isGridView {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                     self.appDelegate.detailViewController.updateLayout(reload: true, fetchFeeds: false)
                 }

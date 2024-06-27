@@ -21,16 +21,16 @@ class StorySettings {
         
         static let contentLimit = 10
         
-        var limit: Int {
+        var baseLimit: Int {
             switch self {
                 case .title:
-                    return 6
-                case .short:
                     return 2
+                case .short:
+                    return 1
                 case .medium:
-                    return 4
+                    return 2
                 case .long:
-                    return 6
+                    return 3
             }
         }
     }

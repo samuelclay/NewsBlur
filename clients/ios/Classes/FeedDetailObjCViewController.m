@@ -1950,7 +1950,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 //        FeedDetailCollectionCell *cell = (FeedDetailCollectionCell*) [collectionView cellForItemAtIndexPath:indexPath];
         NSInteger storyIndex = [storiesCollection indexFromLocation:location];
         NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
-        BOOL isGrid = appDelegate.detailViewController.storyTitlesInGrid;
+        BOOL isGridView = appDelegate.detailViewController.storyTitlesInGridView;
         
         if (!self.isPhoneOrCompact &&
             appDelegate.activeStory &&
@@ -1960,14 +1960,14 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                 [storiesCollection markStoryRead:story];
                 [storiesCollection syncStoryAsRead:story];
                 
-                if (!isGrid) {
+                if (!isGridView) {
                     [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationFade];
                 }
             }
             
             [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"tap selected row"];
             
-            if (!isGrid) {
+            if (!isGridView) {
                 return;
             }
         }
@@ -2573,8 +2573,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         titles = @[@"List", @"Grid"];
         values = @[@"titles_on_left", @"titles_in_grid"];
     } else {
-        titles = @[@"Left", @"Top", @"Bottom", @"Grid"];
-        values = @[@"titles_on_left", @"titles_on_top", @"titles_on_bottom", @"titles_in_grid"];
+        titles = @[@"layout-split.png", @"layout-top2.png", @"layout-full.png", @"layout-list.png", @"layout-magazine.png", @"layout-grid.png"];
+        values = @[@"titles_on_left", @"titles_on_top", @"titles_on_bottom", @"titles_in_list", @"titles_in_magazine", @"titles_in_grid"];
     }
     
     [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"titles_on_left" selectValue:self.appDelegate.storiesCollection.activeStoryTitlesPosition preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
