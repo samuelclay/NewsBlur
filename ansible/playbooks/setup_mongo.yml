@@ -6,18 +6,18 @@
     - motd_role: db
   vars_files:
     - ../env_vars/base.yml
-  
+
   roles:
-    - {role: 'base', tags: 'base'}
-    - {role: 'ufw', tags: 'ufw'}
-    - {role: 'docker', tags: 'docker'}
-    - {role: 'repo', tags: ['repo', 'pull']}
-    - {role: 'dnsmasq', tags: 'dnsmasq'}
-    - {role: 'consul', tags: 'consul'}
-    - {role: 'consul-client', tags: 'consul'}
-    - {role: 'mongo', tags: 'mongo'}
-    - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
-    - {role: 'mongo-exporter', tags: ['mongo-exporter', 'metrics']}
-    - {role: 'monitor', tags: 'monitor'}
-    - {role: 'flask_metrics', tags: ['flask-metrics', 'metrics']}
+    - { role: "base", tags: "base" }
+    - { role: "ufw", tags: "ufw" }
+    - { role: "docker", tags: "docker" }
+    - { role: "repo", tags: ["repo", "pull"] }
+    - { role: "dnsmasq", tags: "dnsmasq" }
+    - { role: "consul", tags: "consul" }
+    - { role: "consul-client", tags: "consul" }
+    - { role: "mongo", tags: "mongo" }
+    - { role: "node-exporter", tags: ["node-exporter", "metrics"] }
+    - { role: "mongo-exporter", tags: ["mongo-exporter", "metrics"] }
+    - { role: "monitor", tags: "monitor" }
+    - { role: "flask_metrics", tags: ["flask-metrics", "metrics"] }
     # - {role: 'benchmark', tags: 'benchmark'}

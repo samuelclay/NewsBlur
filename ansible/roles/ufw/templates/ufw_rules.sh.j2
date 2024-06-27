@@ -41,3 +41,7 @@ apply_rule "route allow from {{ host }}" "FWD" "{{ host }}"
 apply_rule "allow from {{ host }}" "IN" "{{ host }}"
 apply_rule "route allow from {{ host }}" "FWD" "{{ host }}"
 {% endfor %}
+
+# Allow traffic on docker0 interface
+apply_rule "allow in on docker0" "IN" "docker0"
+apply_rule "allow out on docker0" "IN" "docker0"
