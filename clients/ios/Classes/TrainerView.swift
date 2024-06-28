@@ -51,7 +51,7 @@ struct TrainerView: View {
                             if !addingTitle.isEmpty {
                                 HStack {
                                     Button(action: {
-                                        cache.appDelegate.toggleTitleClassifier(addingTitle, feedId: cache.currentFeed?.id, score: 0)
+                                        cache.appDelegate.toggleTitleClassifier(addingTitle, feedId: feed?.id, score: 0)
                                         addingTitle = ""
                                     }, label: {
                                         TrainerCapsule(score: .none, header: "Title", value: addingTitle)
@@ -72,7 +72,7 @@ struct TrainerView: View {
                         
                         WrappingHStack(models: titles) { title in
                             Button(action: {
-                                cache.appDelegate.toggleTitleClassifier(title.name, feedId: cache.currentFeed?.id, score: 0)
+                                cache.appDelegate.toggleTitleClassifier(title.name, feedId: feed?.id, score: 0)
                             }, label: {
                                 TrainerCapsule(score: title.score, header: "Title", value: title.name, count: title.count)
                             })
@@ -87,7 +87,7 @@ struct TrainerView: View {
                 Section(content: {
                     WrappingHStack(models: authors) { author in
                         Button(action: {
-                            cache.appDelegate.toggleAuthorClassifier(author.name, feedId: cache.currentFeed?.id)
+                            cache.appDelegate.toggleAuthorClassifier(author.name, feedId: feed?.id)
                         }, label: {
                             TrainerCapsule(score: author.score, header: "Author", value: author.name, count: author.count)
                         })
@@ -101,7 +101,7 @@ struct TrainerView: View {
                 Section(content: {
                     WrappingHStack(models: tags) { tag in
                         Button(action: {
-                            cache.appDelegate.toggleTagClassifier(tag.name, feedId: cache.currentFeed?.id)
+                            cache.appDelegate.toggleTagClassifier(tag.name, feedId: feed?.id)
                         }, label: {
                             TrainerCapsule(score: tag.score, header: "Tag", value: tag.name, count: tag.count)
                         })
@@ -114,7 +114,7 @@ struct TrainerView: View {
                 
                 Section(content: {
                     HStack {
-                        if let feed = cache.currentFeed {
+                        if let feed = feed {
                             Button(action: {
                                 cache.appDelegate.toggleFeedClassifier(feed.id)
                             }, label: {
@@ -160,7 +160,7 @@ struct TrainerView: View {
     }
     
     func score(key: String, value: String) -> Feed.Score {
-        guard let classifiers = cache.currentFeed?.classifiers(for: key),
+        guard let classifiers = feed?.classifiers(for: key),
               let score = classifiers[value] as? Int else {
             return .none
         }
@@ -184,11 +184,15 @@ struct TrainerView: View {
     
     @State private var addingTitle = ""
     
+    var feed: Feed? {
+        return cache.currentFeed ?? cache.selected?.feed
+    }
+    
     var titles: [Feed.Training] {
         if interaction.isStoryTrainer {
             return cache.selected?.titles ?? []
         } else {
-            return cache.currentFeed?.titles ?? []
+            return feed?.titles ?? []
         }
     }
     
@@ -196,7 +200,7 @@ struct TrainerView: View {
         if interaction.isStoryTrainer {
             return cache.selected?.authors ?? []
         } else {
-            return cache.currentFeed?.authors ?? []
+            return feed?.authors ?? []
         }
     }
     
@@ -204,7 +208,7 @@ struct TrainerView: View {
         if interaction.isStoryTrainer {
             return cache.selected?.tags ?? []
         } else {
-            return cache.currentFeed?.tags ?? []
+            return feed?.tags ?? []
         }
     }
 }

@@ -853,6 +853,11 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                 continue;
             }
             
+            if (indexPath.row > storiesCollection.storyLocationsCount) {
+                NSLog(@"⚠️ row %@ is greater than the story locations count: %@", @(indexPath.row), @(storiesCollection.storyLocationsCount));  // log
+                continue;
+            }
+            
             [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationNone];
             break;
         }
