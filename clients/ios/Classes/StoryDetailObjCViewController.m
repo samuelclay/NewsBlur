@@ -1888,6 +1888,12 @@
     [self scrollToLastPosition:YES];
 }
 
+- (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView {
+    NSLog(@"Web content process did terminate: %@", webView);  // log
+    
+    [self drawStory];
+}
+
 - (void)checkTryFeedStory {
     // see if it's a tryfeed for animation
     if (!self.webView.hidden &&
