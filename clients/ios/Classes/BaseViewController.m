@@ -100,6 +100,8 @@
 
 - (void)updateTheme {
     // Subclasses should override this, calling super, to update their nav bar, table, etc
+    
+    appDelegate.splitViewController.view.backgroundColor = UIColorFromLightDarkRGB(0x555555, 0x777777);
 }
 
 - (void)tableView:(UITableView *)tableView redisplayCellAtIndexPath:(NSIndexPath *)indexPath {
