@@ -514,9 +514,10 @@
     contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
                          contentWidthClass, (int)floorf(CGRectGetWidth(self.view.frame))];
     
-    if (appDelegate.feedsViewController.isOffline) {
+    // if (appDelegate.feedsViewController.isOffline) {
         NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
         NSArray *imageUrls = [appDelegate.activeCachedImages objectForKey:storyHash];
+        // NSLog(@"📚 imageUrls: %@", imageUrls);
         if (imageUrls) {
             NSString *storyImagesDirectory = [appDelegate.documentsURL.path
                                               stringByAppendingPathComponent:@"story_images"];
@@ -530,7 +531,7 @@
                                 withString:cachedUrl.absoluteString];
             }
         }
-    }
+    // }
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [self.activeStory
@@ -620,7 +621,7 @@
     
     NSString *htmlTopAndBottom = [htmlTop stringByAppendingString:htmlBottom];
     
-//    NSLog(@"\n\n\n\nStory html (%@):\n\n\n%@\n\n\n", self.activeStory[@"story_title"], htmlContent);
+    // NSLog(@"\n\n\n\nStory html (%@):\n\n\n%@\n\n\n", self.activeStory[@"story_title"], htmlContent);
     self.hasStory = NO;
     self.fullStoryHTML = htmlContent;
     
