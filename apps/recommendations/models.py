@@ -7,10 +7,15 @@ import mongoengine as mongo
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db import models
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
 
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import Feed
 from utils import json_functions as json
+
+# from surprise import NMF, SVD, Dataset, KNNBasic, KNNWithMeans, Reader, accuracy
+# from surprise.model_selection import cross_validate, train_test_split
 
 
 class RecommendedFeed(models.Model):
