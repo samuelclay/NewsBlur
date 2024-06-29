@@ -55,4 +55,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         appDelegate.prepareViewControllers()
     }
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let url = URLContexts.first?.url else {
+            return
+        }
+        
+        appDelegate.open(url)
+    }
 }
