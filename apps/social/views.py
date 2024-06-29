@@ -489,10 +489,10 @@ def load_social_page(request, user_id, username=None, **kwargs):
         mstories = MStory.find_by_story_hashes(story_ids)
         story_id_to_dates = dict(list(zip(story_ids, story_dates)))
 
-        def sort_stories_by_id(a, b):
-            return int(story_id_to_dates[str(b.story_hash)]) - int(story_id_to_dates[str(a.story_hash)])
+        def sort_stories_by_id(story):
+            return int(story_id_to_dates[str(story.story_hash)])
 
-        sorted_mstories = sorted(mstories, key=sort_stories_by_id)
+        sorted_mstories = sorted(mstories, key=sort_stories_by_id, reverse=True)
         stories = Feed.format_stories(sorted_mstories)
         for story in stories:
             story["shared_date"] = story["story_date"]

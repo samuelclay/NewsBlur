@@ -49,7 +49,7 @@
 
     - name: Create the mount point
       become: yes
-      file: 
+      file:
         path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}"
         state: directory
         owner: "{{ ansible_effective_user_id|int }}"
@@ -63,7 +63,6 @@
         fstype: xfs
         opts: defaults,discard
         state: mounted
-
 
     - name: Set permissions on mongo volume
       # become: yes
@@ -93,7 +92,6 @@
         force: yes
   when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo-secondary', 'db-mongo-analytics']
 
-
 - name: Block for mongo volume on hetzner
   block:
     - name: Create backup directory
@@ -119,7 +117,7 @@
     # network_mode: default
     # networks:
     #   - name: newsblurnet
-    #     aliases: 
+    #     aliases:
     #       - mongo
     # ports:
     #   - "27017:27017"
@@ -148,7 +146,7 @@
         # network_mode: default
         # networks:
         #   - name: newsblurnet
-        #     aliases: 
+        #     aliases:
         #       - mongo
         # ports:
         #   - "27017:27017"
@@ -186,7 +184,7 @@
     network_mode: default
     networks:
       - name: newsblurnet
-        aliases: 
+        aliases:
           - mongo
     ports:
       - "27017:27017"
@@ -214,7 +212,7 @@
     network_mode: default
     networks:
       - name: newsblurnet
-        aliases: 
+        aliases:
           - mongo
     ports:
       - "27017:27017"
@@ -231,7 +229,7 @@
 - name: Create mongo database user
   shell:
     # Don't use this line below as it means there is already a username and password, so no need to set one
-    # sleep 2; docker exec mongo mongo -u "{{ mongodb_username }}" -p "{{ mongodb_password }}" --eval ' 
+    # sleep 2; docker exec mongo mongo -u "{{ mongodb_username }}" -p "{{ mongodb_password }}" --eval '
     cmd: >-
       sleep 2; docker exec mongo mongo --eval '
       db.createUser(
@@ -252,8 +250,9 @@
     - "'there are no users authenticated' not in auth_result.stdout"
   tags:
     - mongoauth
+    - never
 
-# - debug: 
+# - debug:
 #     msg: "{{ auth_result }}"
 #   tags:
 #     - mongoauth
@@ -281,9 +280,9 @@
 - name: Setup logrotate for mongo
   become: yes
   copy: src=logrotate.conf dest=/etc/logrotate.d/mongodb mode=0755
-  tags: 
+  tags:
     - logrotate
-  
+
 - name: Add sanity checkers cronjob for disk usage
   become: yes
   cron:
@@ -326,7 +325,6 @@
   tags:
     - mongo-backup
     - cron
-
 # - name: Add mongo starred_stories+stories backup
 #   cron:
 #     name: mongo starred/shared/all stories backup
@@ -338,7 +336,7 @@
 #     - mongo-backup
 
 # Renaming a db-mongo-primary3 to db-mongo-primary2:
-#  - Change hostname to db-mongo-primary2 on Digital Ocean 
+#  - Change hostname to db-mongo-primary2 on Digital Ocean
 #  -     make list; doctl compute droplet-action rename <id>  --droplet-name db-mongo-primary2
 #  - Change hostname to db-mongo-primary2 in /etc/hostname
 #  - make inventory
@@ -352,7 +350,7 @@
 #  - doctl compute droplet delete db-mongo3
 #  - tf state rm "digitalocean_droplet.db-mongo-primary-s[1]"
 #  - tf state rm "digitalocean_droplet.db-mongo-primary-s[2]"
-#  - tf state mv "digitalocean_droplet.db-mongo-primary-s[3]" "digitalocean_droplet.db-mongo-primary-s[1]" 
+#  - tf state mv "digitalocean_droplet.db-mongo-primary-s[3]" "digitalocean_droplet.db-mongo-primary-s[1]"
 #  - Change hostname to db-mongo2 in /etc/hostname
 #  - sudo hostname db-mongo-primary2
 
