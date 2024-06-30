@@ -410,7 +410,7 @@ class IconImporter(object):
         vecs, _ = scipy.cluster.vq.vq(ar, codes)
 
         # Count occurences of each clustered vector.
-        counts, bins = scipy.histogram(vecs, len(codes))
+        counts, bins = np.histogram(vecs, len(codes))
 
         # Show colors for each code in its hex value.
         # colors = [''.join(chr(c) for c in code).encode('hex') for code in codes]
@@ -418,7 +418,7 @@ class IconImporter(object):
         # print dict(zip(colors, [count/float(total) for count in counts]))
 
         # Find the most frequent color, based on the counts.
-        index_max = scipy.argmax(counts)
+        index_max = np.argmax(counts)
         peak = codes.astype(int)[index_max]
         color = "{:02x}{:02x}{:02x}".format(peak[0], peak[1], peak[2])
         color = self.feed.adjust_color(color[:6], 21)
