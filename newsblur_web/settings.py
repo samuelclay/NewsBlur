@@ -110,6 +110,13 @@ MAX_EMAILS_SENT_PER_DAY_PER_USER = 20  # Most are story notifications
 # = Django-specific Modules =
 # ===========================
 
+SHELL_PLUS_IMPORTS = [
+    "from apps.search.models import SearchFeed, SearchStory",
+    "import redis",
+    "import datetime",
+    "from pprint import pprint",
+]
+# SHELL_PLUS_PRINT_SQL = True
 
 MIDDLEWARE = (
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
