@@ -10,6 +10,7 @@ import urllib.request
 from io import BytesIO
 from socket import error as SocketError
 
+import numpy as np
 import boto3
 import lxml.html
 import numpy
@@ -380,16 +381,16 @@ class IconImporter(object):
 
         # Reshape array of values to merge color bands. [[R], [G], [B], [A]] => [R, G, B, A]
         if len(shape) > 2:
-            ar = ar.reshape(scipy.product(shape[:2]), shape[2])
+            ar = ar.reshape(np.product(shape[:2]), shape[2])
 
         # Get NUM_CLUSTERS worth of centroids.
-        ar = ar.astype(numpy.float)
+        ar = ar.astype(float)
         codes, _ = scipy.cluster.vq.kmeans(ar, NUM_CLUSTERS)
 
         # Pare centroids, removing blacks and whites and shades of really dark and really light.
         original_codes = codes
         for low, hi in [(60, 200), (35, 230), (10, 250)]:
-            codes = scipy.array(
+            codes = np.array(
                 [
                     code
                     for code in codes
