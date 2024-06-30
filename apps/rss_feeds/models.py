@@ -46,6 +46,7 @@ from utils.feed_functions import (
     levenshtein_distance,
     relative_timesince,
     seconds_timesince,
+    strip_underscore_from_feed_address,
     timelimit,
 )
 from utils.fields import AutoOneToOneField
@@ -744,7 +745,7 @@ class Feed(models.Model):
                     logging.debug("  ---> Feed points to 'Wierdo' or 'feedsportal', ignoring.")
                     return False, self
                 try:
-                    self.feed_address = feed_address
+                    self.feed_address = strip_underscore_from_feed_address(feed_address)
                     feed = self.save()
                     feed.count_subscribers()
                     # feed.schedule_feed_fetch_immediately() # Don't fetch as it can get stuck in a loop
@@ -3936,7 +3937,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         original_feed, duplicate_feed = duplicate_feed, original_feed
         original_feed_id, duplicate_feed_id = duplicate_feed_id, original_feed_id
         if branched_original:
-            original_feed.feed_address = duplicate_feed.feed_address
+            original_feed.feed_address = strip_underscore_from_feed_address(duplicate_feed.feed_address)
 
     logging.info(
         " ---> Feed: [%s - %s] %s - %s"
