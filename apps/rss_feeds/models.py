@@ -368,8 +368,8 @@ class Feed(models.Model):
         self.search_indexed = True
         self.save()
 
-    def sync_redis(self):
-        return MStory.sync_feed_redis(self.pk)
+    def sync_redis(self, allow_skip_resync=False):
+        return MStory.sync_feed_redis(self.pk, allow_skip_resync=allow_skip_resync)
 
     def expire_redis(self, r=None):
         if not r:
@@ -710,10 +710,10 @@ class Feed(models.Model):
         for feed in feeds:
             feed.setup_feed_for_premium_subscribers()
 
-    def setup_feed_for_premium_subscribers(self):
+    def setup_feed_for_premium_subscribers(self, allow_skip_resync=False):
         self.count_subscribers()
         self.set_next_scheduled_update(verbose=settings.DEBUG)
-        self.sync_redis()
+        self.sync_redis(allow_skip_resync=allow_skip_resync)
 
     def check_feed_link_for_feed_address(self):
         @timelimit(10)
@@ -3213,10 +3213,16 @@ class MStory(mongo.Document):
             r.zrem("zF:%s" % self.story_feed_id, self.story_hash)
 
     @classmethod
-    def sync_feed_redis(cls, story_feed_id):
+    def sync_feed_redis(cls, story_feed_id, allow_skip_resync=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         feed = Feed.get_by_id(story_feed_id)
         stories = cls.objects.filter(story_feed_id=story_feed_id, story_date__gte=feed.unread_cutoff)
+
+        if allow_skip_resync and stories.count() > 1000:
+            logging.debug(
+                f" ---> [{feed.log_title[:30]}] ~FYSkipping resync of ~SB{stories.count()}~SN stories because it already had archive subscribers"
+            )
+            return
 
         # Don't delete redis keys because they take time to rebuild and subs can
         # be counted incorrectly during that time.
