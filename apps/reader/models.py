@@ -466,7 +466,7 @@ class UserSubscription(models.Model):
                 message = "This address does not point to an RSS feed or a website with an RSS feed."
         else:
             allow_skip_resync = False
-            if user.profile.is_archive and feed.active_archive_subscribers != 0:
+            if user.profile.is_archive and feed.active_premium_subscribers != 0:
                 # Skip resync if there are already active archive subscribers
                 allow_skip_resync = True
 
