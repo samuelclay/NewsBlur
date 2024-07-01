@@ -1091,6 +1091,29 @@ class Feed(models.Model):
         if not force and self.similar_feeds.count():
             return self.similar_feeds.all()
 
+        content_vector = SearchFeed.fetch_feed_content_vector(self.pk)
+        if not content_vector:
+            content_vector = SearchFeed.generate_feed_content_vector(self.pk)
+        results = SearchFeed.vector_query(content_vector)
+        logging.debug(
+            f"Found {len(results)} recommendations for feed {self}: {r['_source']['title'] for r in results}"
+        )
+
+        self.similar_feeds.clear()
+        for result in results:
+            feed_id = result['_source']['feed_id']
+            try:
+                self.similar_feeds.add(feed_id)
+            except IntegrityError:
+                logging.debug(f" ---> ~FRIntegrity error adding similar feed: {feed_id}")
+                pass
+        return self.similar_feeds.all()
+
+        
+    def similarity_matrix_count_similar_feeds(self, force=False, csv_path=None):
+        if not force and self.similar_feeds.count():
+            return self.similar_feeds.all()
+
         user_feed_matrix = self.load_user_feed_similarity_model(csv_path=csv_path, force=force)
 
         def calculate_similarity(user_feed_matrix):

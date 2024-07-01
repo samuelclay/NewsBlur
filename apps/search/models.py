@@ -722,23 +722,50 @@ class SearchFeed:
         return results["hits"]["hits"]
 
     @classmethod
-    def generate_feed_content_vector(cls, feed_id, text=None):
+    def fetch_feed_content_vector(cls, feed_id):
+        # Fetch the content vector from ES for the specified feed_id
+        try:
+            cls.ES().indices.flush(index=cls.index_name())
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.debug(f" ***> ~FRNo search server available: {e}")
+            return []
+
+        body = {
+            "query": {
+                "term": {
+                    "feed_id": feed_id,
+                }
+            }
+        }
+        try:
+            results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
+        logging.debug(f"Results: {results}")
+        if len(results["hits"]["hits"]) == 0:
+            logging.debug(f" ---> ~FRNo content vector found for feed {feed_id}")
+            return []
+        return results["hits"]["hits"][0]["_source"]["content_vector"]
+
+    @classmethod
+    def generate_feed_content_vector(cls, feed_id):
         from apps.rss_feeds.models import Feed
 
         if cls.model is None:
             cls.model = SentenceTransformer("all-MiniLM-L6-v2")
 
-        if text is None:
-            feed = Feed.objects.get(id=feed_id)
+        feed = Feed.objects.get(id=feed_id)
 
-            # cross_encoder = CrossEncoder("BAAI/bge-large-zh-v2", device="cpu")
-            # cross_encoder.encode([feed.feed_title, feed.feed_content], convert_to_tensors="all")
+        # cross_encoder = CrossEncoder("BAAI/bge-large-zh-v2", device="cpu")
+        # cross_encoder.encode([feed.feed_title, feed.feed_content], convert_to_tensors="all")
 
-            stories = feed.get_stories()
-            stories_text = ""
-            for story in stories:
-                stories_text += f"{story['story_title']} {story['story_authors']} {story['story_content']}"
-            text = f"{feed.feed_title} {stories_text}"
+        stories = feed.get_stories()
+        stories_text = ""
+        for story in stories:
+            # stories_text += f"{story['story_title']} {story['story_authors']} {story['story_content']}"
+            stories_text += f"{story['story_title']} {' '.join([tag for tag in story['story_tags']])}"
+        text = f"{feed.feed_title} {feed.data.feed_tagline} {stories_text}"
 
         # Remove URLs
         text = re.sub(r"http\S+", "", text)
