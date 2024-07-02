@@ -1333,6 +1333,9 @@
                 'select_story_in_feed': 0
             });
 
+            if (options.select_story_in_feed) {
+                this.flags['select_story_in_feed'] = options.select_story_in_feed;
+            }
             // console.log(['reset feed', options, options.search]);
 
             if (_.isUndefined(options.search)) {
@@ -3964,10 +3967,10 @@
                         }, this)).bind('mouseleave', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-evernote');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_googleplus'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-googleplus' }).bind('mouseenter', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Google+').parent().addClass('NB-menu-manage-highlight-googleplus');
+                        (NEWSBLUR.Preferences['story_share_pocket'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-pocket' }).bind('mouseenter', _.bind(function (e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Pocket').parent().addClass('NB-menu-manage-highlight-pocket');
                         }, this)).bind('mouseleave', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-googleplus');
+                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-pocket');
                         }, this))),
                         (NEWSBLUR.Preferences['story_share_instapaper'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-instapaper' }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Instapaper').parent().addClass('NB-menu-manage-highlight-instapaper');
@@ -5914,8 +5917,8 @@
         hide_tryfeed_view: function () {
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
             $tryfeed_container.slideUp(350);
-            this.$s.$story_taskbar.find('.NB-tryfeed-add').remove();
-            this.$s.$story_taskbar.find('.NB-tryfeed-follow').remove();
+            this.$s.$story_taskbar.find('.NB-tryfeed-add').hide();
+            this.$s.$story_taskbar.find('.NB-tryfeed-follow').hide();
             this.flags['showing_feed_in_tryfeed_view'] = false;
             this.flags['showing_social_feed_in_tryfeed_view'] = false;
         },
@@ -5923,11 +5926,10 @@
         show_tryfeed_add_button: function () {
             if (this.$s.$story_taskbar.find('.NB-tryfeed-add:visible').length) return;
 
-            var $add = $.make('div', { className: 'NB-modal-submit' }, [
-                $.make('div', { className: 'NB-tryfeed-add NB-modal-submit-green NB-modal-submit-button' }, 'Subscribe')
-            ]).css({ 'opacity': 0 });
-            this.$s.$story_taskbar.append($add);
-            $add.animate({ 'opacity': 1 }, { 'duration': 600 });
+            this.$s.$story_taskbar.find(".NB-tryfeed-add")
+                .css({ 'opacity': 0 })
+                .show()
+                .animate({ 'opacity': 1 }, { 'duration': 600 });
         },
 
         correct_tryfeed_title: function () {
@@ -5939,21 +5941,19 @@
         show_tryfeed_follow_button: function () {
             if (this.$s.$story_taskbar.find('.NB-tryfeed-follow:visible').length) return;
 
-            var $add = $.make('div', { className: 'NB-modal-submit' }, [
-                $.make('div', { className: 'NB-tryfeed-follow NB-modal-submit-green NB-modal-submit-button' }, 'Follow')
-            ]).css({ 'opacity': 0 });
-            this.$s.$story_taskbar.append($add);
-            $add.animate({ 'opacity': 1 }, { 'duration': 600 });
+            this.$s.$story_taskbar.find(".NB-tryfeed-follow")
+                .css({ 'opacity': 0 })
+                .show()
+                .animate({ 'opacity': 1 }, { 'duration': 600 });
         },
 
         show_tryout_signup_button: function () {
             if (this.$s.$story_taskbar.find('.NB-tryout-signup:visible').length) return;
 
-            var $add = $.make('div', { className: 'NB-modal-submit' }, [
-                $.make('div', { className: 'NB-tryout-signup NB-modal-submit-green NB-modal-submit-button' }, 'Sign Up')
-            ]).css({ 'opacity': 0 });
-            this.$s.$story_taskbar.append($add);
-            $add.animate({ 'opacity': 1 }, { 'duration': 600 });
+            this.$s.$story_taskbar.find(".NB-tryfeed-signup")
+                .css({ 'opacity': 0 })
+                .show()
+                .animate({ 'opacity': 1 }, { 'duration': 600 });
         },
 
         hide_tryout_signup_button: function () {

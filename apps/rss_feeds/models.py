@@ -1,9 +1,12 @@
 import base64
+import csv
 import datetime
 import difflib
 import hashlib
 import html
 import math
+import os
+import pickle
 import random
 import re
 import time
@@ -14,6 +17,7 @@ from operator import itemgetter
 
 import bson
 import mongoengine as mongo
+import numpy as np
 import pymongo
 import redis
 import requests
@@ -22,8 +26,7 @@ from bson.objectid import ObjectId
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-
-# from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
+from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError, models
 from django.db.models.query import QuerySet
 from django.db.utils import DatabaseError
@@ -32,6 +35,9 @@ from django.urls import reverse
 from django.utils.encoding import DjangoUnicodeDecodeError, smart_bytes, smart_str
 from mongoengine.errors import ValidationError
 from mongoengine.queryset import NotUniqueError, OperationError, Q
+from scipy.sparse import coo_matrix, csr_matrix
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.neighbors import NearestNeighbors
 
 from apps.rss_feeds.tasks import PushFeeds, ScheduleCountTagsForUser, UpdateFeeds
 from apps.rss_feeds.text_importer import TextImporter
@@ -106,6 +112,9 @@ class Feed(models.Model):
     search_indexed = models.BooleanField(default=None, null=True, blank=True)
     fs_size_bytes = models.IntegerField(null=True, blank=True)
     archive_count = models.IntegerField(null=True, blank=True)
+    similar_feeds = models.ManyToManyField(
+        "self", related_name="feeds_by_similarity", symmetrical=False, blank=True
+    )
 
     class Meta:
         db_table = "feeds"
@@ -241,6 +250,7 @@ class Feed(models.Model):
             "s3_page": self.s3_page,
             "s3_icon": self.s3_icon,
             "disabled_page": not self.has_page,
+            "similar_feeds": [f["pk"] for f in self.similar_feeds.values("pk")],
         }
 
         if include_favicon:
@@ -332,14 +342,14 @@ class Feed(models.Model):
             SearchFeed.create_elasticsearch_mapping(delete=True)
 
         last_pk = cls.objects.latest("pk").pk
-        for f in range(offset, last_pk, 1000):
+        for f in range(offset, last_pk, 10):
             print(
                 " ---> {f} / {last_pk} ({pct}%)".format(
                     f=f, last_pk=last_pk, pct=str(float(f) / last_pk * 100)[:2]
                 )
             )
             feeds = Feed.objects.filter(
-                pk__in=range(f, f + 1000), active=True, active_subscribers__gte=subscribers
+                pk__in=range(f, f + 10), active=True, active_subscribers__gte=subscribers
             ).values_list("pk")
             for (feed_id,) in feeds:
                 Feed.objects.get(pk=feed_id).index_feed_for_search()
@@ -355,6 +365,7 @@ class Feed(models.Model):
                 address=self.feed_address,
                 link=self.feed_link,
                 num_subscribers=self.num_subscribers,
+                content_vector=SearchFeed.generate_feed_content_vector(self.pk),
             )
 
     def index_stories_for_search(self):
@@ -668,6 +679,9 @@ class Feed(models.Model):
         self.count_subscribers(recount=recount)
         self.calculate_last_story_date()
 
+        if force or count_extra:
+            self.count_similar_feeds()
+
         if force or has_new_stories or count_extra:
             self.save_feed_stories_last_month()
 
@@ -712,6 +726,7 @@ class Feed(models.Model):
 
     def setup_feed_for_premium_subscribers(self, allow_skip_resync=False):
         self.count_subscribers()
+        self.count_similar_feeds()
         self.set_next_scheduled_update(verbose=settings.DEBUG)
         self.sync_redis(allow_skip_resync=allow_skip_resync)
 
@@ -1043,6 +1058,104 @@ class Feed(models.Model):
                     ),
                     end=" ",
                 )
+
+    def load_user_feed_similarity_model(self, csv_path=None, force=False):
+        if not csv_path:
+            csv_path = os.path.join(settings.DISCOVER_DATA_FOLDER, "user_feed_rating.csv")
+
+        if not os.path.exists(csv_path):
+            logging.debug(f" ---> ~FRDiscover CSV file not found: {csv_path}")
+            return
+
+        with open(csv_path, newline="") as csvfile:
+            data_reader = csv.reader(csvfile)
+            user_ids, feed_ids, ratings = [], [], []
+
+            for row in data_reader:
+                user_id, feed_id, rating = map(int, row)
+                user_ids.append(user_id)
+                feed_ids.append(feed_id)
+                ratings.append(np.log1p(float(rating)))
+
+        user_ids = np.array(user_ids)
+        feed_ids = np.array(feed_ids)
+        ratings = np.array(ratings)
+
+        # Create a sparse matrix
+        user_feed_matrix = coo_matrix((ratings, (user_ids, feed_ids))).tocsr()
+        logging.debug("Successfully loaded and transformed data")
+
+        return user_feed_matrix
+
+    def count_similar_feeds(self, force=False, csv_path=None):
+        if not force and self.similar_feeds.count():
+            return self.similar_feeds.all()
+
+        content_vector = SearchFeed.fetch_feed_content_vector(self.pk)
+        if not content_vector:
+            content_vector = SearchFeed.generate_feed_content_vector(self.pk)
+        results = SearchFeed.vector_query(content_vector)
+        logging.debug(
+            f"Found {len(results)} recommendations for feed {self}: {r['_source']['title'] for r in results}"
+        )
+
+        self.similar_feeds.clear()
+        for result in results:
+            feed_id = result['_source']['feed_id']
+            try:
+                self.similar_feeds.add(feed_id)
+            except IntegrityError:
+                logging.debug(f" ---> ~FRIntegrity error adding similar feed: {feed_id}")
+                pass
+        return self.similar_feeds.all()
+
+        
+    def similarity_matrix_count_similar_feeds(self, force=False, csv_path=None):
+        if not force and self.similar_feeds.count():
+            return self.similar_feeds.all()
+
+        user_feed_matrix = self.load_user_feed_similarity_model(csv_path=csv_path, force=force)
+
+        def calculate_similarity(user_feed_matrix):
+            # Ensure the matrix is in CSR format for efficient row-wise operations
+            if not isinstance(user_feed_matrix, csr_matrix):
+                user_feed_matrix = csr_matrix(user_feed_matrix)
+
+            # Compute the cosine similarity matrix (result is dense, handle with care)
+            similarity_matrix = cosine_similarity(user_feed_matrix.T, dense_output=False)
+            return similarity_matrix
+
+        def recommend_feeds_knn(feed_id, user_feed_matrix, n_items=10):
+            model_knn = NearestNeighbors(metric="cosine", algorithm="brute", n_neighbors=n_items, n_jobs=-1)
+
+            # Fit the model
+            model_knn.fit(user_feed_matrix.T)  # Transpose to get feed-wise neighbors
+
+            # Find neighbors for the specified feed
+            distances, indices = model_knn.kneighbors(user_feed_matrix.T[feed_id], n_neighbors=n_items + 1)
+
+            # Exclude the feed itself and return the indices of recommended feeds
+            recommended_feeds = [idx for idx in indices[0] if idx != feed_id]
+
+            return recommended_feeds[:n_items]
+
+        # Recommend for a specific feed ID
+        logging.debug(f"Generating recommendations for feed: {self}")
+        # Create a NumPy array for the number of subscribers per feed
+        similarity_matrix = calculate_similarity(user_feed_matrix)
+        top_recommended_feeds = recommend_feeds_knn(self.pk, similarity_matrix)
+        logging.debug(
+            f"Found {len(top_recommended_feeds)} recommendations for feed {self}: {top_recommended_feeds}"
+        )
+
+        self.similar_feeds.clear()
+        for feed_id in top_recommended_feeds:
+            try:
+                self.similar_feeds.add(feed_id)
+            except IntegrityError:
+                logging.debug(f" ---> ~FRIntegrity error adding similar feed: {feed_id}")
+                pass
+        return self.similar_feeds.all()
 
     def _split_favicon_color(self, color=None):
         if not color:
@@ -1851,7 +1964,7 @@ class Feed(models.Model):
     #     for f, u in urls:
     #         print "db.stories.remove({\"story_feed_id\": %s, \"_id\": \"%s\"})" % (f, u)
 
-    def get_stories(self, offset=0, limit=25, order="neweat", force=False):
+    def get_stories(self, offset=0, limit=25, order="newest", force=False):
         if order == "newest":
             stories_db = MStory.objects(story_feed_id=self.pk)[offset : offset + limit]
         elif order == "oldest":
@@ -1973,7 +2086,7 @@ class Feed(models.Model):
         # pprint(sorted_popularity)
         return sorted_popularity
 
-    def well_read_score(self):
+    def well_read_score(self, user_id=None):
         """Average percentage of stories read vs published across recently active subscribers"""
         from apps.reader.models import UserSubscription
         from apps.social.models import MSharedStory
@@ -1986,7 +2099,9 @@ class Feed(models.Model):
         subscribing_users = UserSubscription.objects.filter(feed_id=self.pk).values("user_id")
         subscribing_user_ids = [sub["user_id"] for sub in subscribing_users]
 
-        for user_id in subscribing_user_ids:
+        for sub_user_id in subscribing_user_ids:
+            if user_id and sub_user_id != user_id:
+                continue
             user_rs = "RS:%s:%s" % (user_id, self.pk)
             p.scard(user_rs)
 
@@ -2002,7 +2117,7 @@ class Feed(models.Model):
         else:
             average_pct = 0
 
-        reach_score = average_pct * reader_count * story_count
+        reach_score = round(average_pct * reader_count * story_count)
 
         return {
             "read_pct": average_pct,

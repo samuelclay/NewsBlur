@@ -1506,7 +1506,7 @@ img.feed_favicon {
 }
 
 .NB-story-titles-expand-sidebar {
-    background: url(/media/img/reader/chevron_sq_right.png) no-repeat center center;
+    background: url(/media/img/icons/nouns/nav-right.svg) no-repeat center center;
     background-size: 16px;
     width: 36px;
     height: 36px;
@@ -1537,7 +1537,7 @@ img.feed_favicon {
     background-image: linear-gradient(180deg, #F3F3EE, #f0f3ed);
 }
 
-.NB-feedbar .feed .feed_favicon {
+.NB-feedbar .feed>.feed_favicon {
     margin: 4px 4px 0 6px;
     vertical-align: top;
     float: left;
@@ -1545,7 +1545,7 @@ img.feed_favicon {
     height: 16px;
 }
 
-.NB-feedbar .feed.NB-feed-social .feed_favicon {
+.NB-feedbar .feed.NB-feed-social>.feed_favicon {
     border-radius: 3px;
 }
 
@@ -1580,7 +1580,7 @@ img.feed_favicon {
     font-size: 10px;
     padding: 1px 4px 1px 8px;
     line-height: 14px;
-    margin: 3px 0 0;
+    margin: 3px 0 0 12px;
     white-space: nowrap;
 }
 
@@ -1733,12 +1733,12 @@ img.feed_favicon {
     opacity: 0;
 }
 
-.NB-feedbar:hover .feed_favicon,
+.NB-feedbar:hover .feed>.feed_favicon,
 .NB-feedbar:hover .NB-folder-icon {
     display: none;
 }
 
-.NB-feedbar:hover .NB-no-hover .feed_favicon,
+.NB-feedbar:hover .feed.NB-no-hover .feed_favicon,
 .NB-feedbar:hover .NB-no-hover .NB-folder-icon {
     display: block;
 }
@@ -1807,7 +1807,7 @@ img.feed_favicon {
     text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
 }
 
-.NB-feedbar .NB-folder .feed_favicon {
+.NB-feedbar .NB-folder .NB-folder-icon .feed_favicon {
     vertical-align: text-bottom;
     width: 16px;
     height: 16px;
@@ -1820,6 +1820,106 @@ img.feed_favicon {
 .NB-feedbar .folder .NB-feedlist-collapse-icon,
 .NB-feeds-header .NB-feedlist-collapse-icon {
     display: none;
+}
+
+/* ================== */
+/* = Discover Feeds = */
+/* ================== */
+
+.NB-feedbar .NB-feedbar-discover-container {
+    float: right;
+    cursor: pointer;
+    color: rgba(0, 0, 0, .5);
+    border: 1px solid rgba(0, 0, 0, .1);
+    border-radius: 16px;
+    text-transform: uppercase;
+    font-size: 10px;
+    padding: 1px 4px 1px 8px;
+    line-height: 14px;
+    margin: 3px 0 0 12px;
+}
+
+.NB-feedbar .NB-feedbar-discover-container:hover {
+    background-color: rgba(0, 0, 0, .1);
+}
+
+.NB-feedbar .NB-feedbar-discover-container .feed_favicon {
+    width: 12px;
+    height: 12px;
+    display: block;
+    float: left;
+    margin: 1px 2px 1px 0;
+    filter: grayscale();
+    transition: filter 0.2s ease-in-out;
+}
+
+.NB-feedbar:hover .NB-feedbar-discover-container .feed_favicon {
+    filter: none;
+}
+
+.NB-feedbar .NB-feedbar-discover-container .NB-icon {
+    float: right;
+    width: 16px;
+    height: 12px;
+    background: transparent url('/media/embed/icons/nouns/down.svg') no-repeat 3px 2px;
+    background-size: 9px;
+    margin: 0;
+}
+
+.NB-feedbar .NB-feedbar-discover-container .NB-feedbar-discover-icon {
+    float: left;
+    width: 16px;
+    height: 14px;
+    background: transparent url('/media/embed/icons/nouns/discover.svg') no-repeat 1px 1px;
+    background-size: 12px;
+    margin: 0;
+}
+
+.NB-discover-popover .NB-discover-loading {
+    margin: 24px 0;
+}
+
+.NB-discover-popover .NB-loading.NB-active {
+    width: 32px;
+    height: 32px;
+    background-size: 32px;
+    margin: 24px auto;
+}
+
+.NB-discover-popover .NB-popover-section-title .NB-icon {
+    float: left;
+    width: 24px;
+    height: 24px;
+    background: transparent url(/media/embed/icons/nouns/discover.svg) no-repeat 0 0;
+    background-size: 24px;
+    margin: -1px 8px 0 0;
+}
+
+.NB-discover-feed-badges .NB-story-titles {
+    margin: 0 24px;
+}
+
+.NB-discover-feed-badges .NB-folders {
+    float: left;
+    width: 180px;
+    font-size: 16px;
+    margin: 8px 0 0 1px;
+}
+
+.NB-discover-feed-badges .NB-feed-badge {
+    padding-top: 30px;
+    padding-left: 0;
+    padding-right: 0;
+    border-bottom: none;
+}
+
+.NB-discover-feed-badges .NB-error {
+    clear: both;
+    font-size: 12px;
+    color: #6A1000;
+    padding: 4px 0 0;
+    line-height: 14px;
+    font-weight: bold;
 }
 
 /* ============================= */
@@ -1837,7 +1937,7 @@ img.feed_favicon {
     font-size: 10px;
     padding: 1px 8px;
     line-height: 14px;
-    margin: 3px 12px 0;
+    margin: 3px 0 0 12px;
 }
 
 .NB-feedbar .NB-story-title-indicator:hover {
@@ -4229,6 +4329,7 @@ body {
 .NB-feed-story .NB-feed-story-header .NB-feed-story-date-line {
     clear: left;
     display: flex;
+    flex-wrap: wrap;
 }
 
 .NB-pref-story-position-center .NB-feed-story .NB-feed-story-header .NB-feed-story-date-line {
@@ -5085,21 +5186,16 @@ body {
 }
 
 .NB-sideoption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     cursor: pointer;
     position: relative;
     font-size: 10px;
-    white-space: nowrap;
     font-weight: bold;
     text-shadow: 0 1px 0 #000;
     background-color: white;
-    /* box-shadow: 0 1px 2px rgb(230, 230, 230);
-    border-bottom: 1px solid rgb(240,240,240); */
-    clear: both;
-    transition: background-color 0.36s ease-out;
     border-radius: 3px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -o-user-select: none;
     user-select: none;
 }
 
@@ -5107,45 +5203,24 @@ body {
     float: left;
     margin: 8px 8px 0 0;
     width: auto;
-    min-width: 90px;
     clear: right;
 }
 
-.NB-extra-narrow-content .NB-sideoption {
-    min-width: 80px;
-}
+.NB-extra-narrow-content .NB-sideoption {}
 
 .NB-extra-narrow-content .NB-sideoption-title span {
     display: none;
 }
 
-.NB-sideoption .NB-sideoption-icon {
-    width: 24px;
-    padding: 9px 4px;
-    height: 100%;
-    float: right;
-    background: transparent url('/media/embed/icons/nouns/saved-stories.svg') no-repeat 8px center;
-    background-size: 16px;
-    transition: background 0.36s ease-out;
-}
-
-.NB-sideoption.NB-feed-story-train .NB-sideoption-icon {
-    background-image: url("/media/embed/icons/nouns/train.svg");
-    background-size: 16px;
-}
-
-.NB-sideoption.NB-feed-story-email .NB-sideoption-icon {
-    background-image: url("/media/embed/icons/nouns/email.svg");
-    background-size: 16px;
-}
-
-.NB-sideoption.NB-feed-story-share .NB-sideoption-icon {
-    background-image: url('/media/embed/icons/nouns/share.svg');
-    background-size: 16px;
+.NB-sideoption-icons {
+    display: flex;
+    align-items: center;
+    order: 2;
 }
 
 .NB-sideoption .NB-sideoption-title {
-    padding: 9px 30px 8px 8px;
+    order: 1;
+    padding: 9px 8px 8px 16px;
     color: rgb(170, 170, 170);
     text-shadow: none;
     font-weight: normal;
@@ -5153,6 +5228,10 @@ body {
     box-sizing: border-box;
     transition: padding 0.36s ease-out,
         color 0.36s ease-out;
+}
+
+.NB-feed-story-email .NB-sideoption-title {
+    min-width: 80px;
 }
 
 .NB-content-narrow .NB-sideoption .NB-sideoption-title {
@@ -5182,6 +5261,125 @@ body {
     color: #90928B;
     opacity: 1;
 }
+
+
+.NB-sideoption:hover .NB-sideoption-thirdparty.NB-hover,
+.NB-sideoption:hover .NB-sideoption-thirdparty.NB-sideoption-icon {
+    opacity: 1;
+}
+
+.NB-sideoption:hover .NB-sideoption-thirdparty,
+.NB-sideoption:hover .NB-sideoption-thirdparty.NB-dimmed {
+    opacity: 0.25;
+}
+
+.NB-sideoption .NB-sideoption-icon {
+    width: 24px;
+    padding: 9px 4px;
+    height: 100%;
+    background: transparent url('/media/embed/icons/nouns/saved-stories.svg') no-repeat 8px center;
+    background-size: 16px;
+    transition: background 0.36s ease-out, opacity 0.16s ease-in-out;
+    order: 2;
+}
+
+.NB-sideoption.NB-feed-story-train .NB-sideoption-icon {
+    background-image: url("/media/embed/icons/nouns/train.svg");
+    background-size: 16px;
+}
+
+.NB-sideoption.NB-feed-story-email .NB-sideoption-icon {
+    background-image: url("/media/embed/icons/nouns/email.svg");
+    background-size: 16px;
+}
+
+.NB-sideoption.NB-feed-story-share .NB-sideoption-icon {
+    background-image: url('/media/embed/icons/nouns/share.svg');
+    background-size: 16px;
+}
+
+.NB-sideoption-thirdparty {
+    width: 24px;
+    height: 24px;
+    background-size: 16px 16px;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 4px 1px;
+    /* Space between icons */
+    filter: grayscale(100%);
+    transition: background 0.36s ease-out, opacity 0.16s ease-in-out;
+    order: 3;
+}
+
+
+.NB-sideoption .NB-sideoption-thirdparty-instapaper {
+    background: transparent url('/media/embed/reader/instapaper.png') no-repeat center center;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-readitlater {
+    background: transparent url('/media/embed/reader/pocket_ril.png') no-repeat center center;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-tumblr {
+    background: transparent url('/media/embed/reader/tumblr.png') no-repeat center center;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-blogger {
+    background: transparent url('/media/embed/reader/blogger.png') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-delicious {
+    background: transparent url('/media/embed/reader/delicious.png') no-repeat center center;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-pinboard {
+    background: transparent url('/media/embed/reader/pinboard.png') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-raindrop {
+    background: transparent url('/media/embed/reader/raindrop.svg') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-pinterest {
+    background: transparent url('/media/embed/reader/pinterest.png') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-buffer {
+    background: transparent url('/media/embed/reader/buffer.png') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-diigo {
+    background: transparent url('/media/embed/reader/diigo.png') no-repeat center center;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-evernote {
+    background: transparent url('/media/embed/reader/evernote.png') no-repeat center center;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-googleplus {
+    background: transparent url('/media/embed/reader/googleplus.png') no-repeat center center;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-email {
+    background: transparent url("/media/embed/icons/nouns/email.svg") no-repeat center center;
+    background-size: 18px;
+    filter: hue-rotate(134deg) saturate(16);
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-twitter {
+    background: transparent url('/media/embed/reader/twitter_bird.png') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-facebook {
+    background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat center center;
+}
+
 
 /* ===================== */
 /* = Sideoption - Save = */
@@ -5521,6 +5719,7 @@ body {
 }
 
 .NB-feeds-header-user-interactions {
+    padding: 8px 0;
     right: 32px;
 }
 
@@ -5529,6 +5728,11 @@ body {
     width: 16px;
     height: 16px;
     opacity: .7;
+}
+
+.NB-feeds-header-user-interactions img {
+    width: 20px;
+    height: 20px;
 }
 
 .NB-feeds-header-collapse-sidebar:hover img,
@@ -5942,6 +6146,10 @@ body {
     border-top: 1px solid #dbdbda;
 }
 
+#story_taskbar .NB-taskbar-flex {
+    display: flex;
+}
+
 #story_taskbar .NB-taskbar {
     margin: 5px 0 0 0;
 }
@@ -5965,8 +6173,14 @@ body {
 }
 
 #story_taskbar .NB-taskbar-view {
-    float: left;
-    margin-left: 6px;
+    margin: 0 8px 0 6px;
+    align-self: flex-end;
+}
+
+#story_taskbar .NB-tryfeed-add,
+#story_taskbar .NB-tryfeed-follow,
+#story_taskbar .NB-tryfeed-signup {
+    display: none;
 }
 
 .NB-feedbar .NB-taskbar-nav {
@@ -5976,7 +6190,6 @@ body {
 }
 
 #story_taskbar .NB-taskbar-layout {
-    float: right;
     margin-right: 18px;
 }
 
@@ -6172,14 +6385,11 @@ body {
 #story_taskbar .NB-tryfeed-add,
 #story_taskbar .NB-tryfeed-follow,
 #story_taskbar .NB-tryout-signup {
-    margin: 2px auto 0px;
+    margin: 0px auto 0px;
     width: 80px;
     height: 14px;
     text-align: center;
     cursor: pointer;
-    -webkit-box-shadow: #9A9A9A 2px 2px 0px;
-    -moz-box-shadow: #9A9A9A 2px 2px 0px;
-    box-shadow: #9A9A9A 2px 2px 0px;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .4);
 }
 
@@ -6191,14 +6401,22 @@ body {
     padding: 0;
 }
 
+#story_taskbar .NB-modal-submit {
+    flex-grow: 1;
+    margin: 0 6px;
+    display: flex;
+    align-items: center;
+    /* height: 100%; */
+    place-self: flex-end;
+}
+
 #story_taskbar .NB-taskbar-options-container {
-    float: right;
-    margin: 3px 24px 0 0;
+    flex-shrink: 1;
+    margin: 3px 12px;
 }
 
 #story_taskbar .NB-taskbar-options {
     cursor: pointer;
-    float: right;
     color: rgba(0, 0, 0, .5);
     border: 1px solid rgba(0, 0, 0, .1);
     border-radius: 16px;
@@ -6208,6 +6426,8 @@ body {
     padding: 1px 4px 1px 8px;
     line-height: 14px;
     margin: 6px 0 0;
+    display: flex;
+    flex-direction: row-reverse;
 }
 
 #story_taskbar .NB-taskbar-options:hover,
@@ -15574,9 +15794,8 @@ form.opml_import_form input {
 
 .NB-popover-section-title {
     color: #585A55;
-    text-transform: uppercase;
     margin: 12px 0 10px;
-    font-size: 12px;
+    font-size: 15px;
     font-weight: bold;
 }
 
@@ -15599,7 +15818,7 @@ form.opml_import_form input {
     float: right;
     width: 18px;
     height: 18px;
-    margin-top: 8px;
+    margin-top: 14px;
     cursor: pointer;
     background-size: 18px;
 }
@@ -15889,7 +16108,6 @@ form.opml_import_form input {
     clear: both;
     overflow: hidden;
     border-bottom: 1px solid #F0F0F0;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .NB-feed-badge:last-child {
@@ -15942,7 +16160,6 @@ form.opml_import_form input {
 .NB-feed-badge .NB-feed-badge-stats {
     position: relative;
     float: right;
-    text-transform: uppercase;
     font-size: 11px;
     color: #808080;
     margin: 0 0 0 0;

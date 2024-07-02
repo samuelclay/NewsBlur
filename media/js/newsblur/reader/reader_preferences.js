@@ -688,8 +688,26 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-label' }, [
                             'After marking feed/folder read'
                         ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-showdiscover' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showdiscover-1', type: 'radio', name: 'show_discover', value: "true" }),
+                                $.make('label', { 'for': 'NB-preference-showdiscover-1' }, [
+                                    'Show discover sites popover above story titles'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showdiscover-0', type: 'radio', name: 'show_discover', value: "false" }),
+                                $.make('label', { 'for': 'NB-preference-showdiscover-0' }, [
+                                    'Hide discover sites popover'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Discover sites'
+                        ])
                     ])
-
                 ]),
                 $.make('div', { className: 'NB-tab NB-tab-stories' }, [
                     $.make('div', { className: 'NB-preference NB-preference-story-share' }, [
@@ -1071,6 +1089,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=open_feed_action]', $modal).each(function () {
             if ($(this).val() == NEWSBLUR.Preferences.open_feed_action) {
+                $(this).prop('checked', true);
+                return false;
+            }
+        });
+        $('input[name=show_discover]', $modal).each(function () {
+            if ($(this).val() == "" + NEWSBLUR.Preferences.show_discover) {
                 $(this).prop('checked', true);
                 return false;
             }
