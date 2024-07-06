@@ -113,8 +113,9 @@ class FetchFeed:
                 address = self.options["archive_page_link"]
             elif self.options.get("archive_page", None):
                 address = qurl(address, add={self.options["archive_page_key"]: self.options["archive_page"]})
-            elif address.startswith("http") and not any(item in address for item in NO_UNDERSCORE_ADDRESSES):
-                address = qurl(address, add={"_": random.randint(0, 10000)})
+            # Don't use the underscore cache buster: https://forum.newsblur.com/t/jwz-feed-broken-hes-mad-about-url-parameters/10742/15
+            # elif address.startswith("http") and not any(item in address for item in NO_UNDERSCORE_ADDRESSES):
+            #     address = qurl(address, add={"_": random.randint(0, 10000)})
             logging.debug("   ---> [%-30s] ~FBForcing fetch: %s" % (self.feed.log_title[:30], address))
         elif not self.feed.fetched_once or not self.feed.known_good:
             modified = None
