@@ -35,9 +35,6 @@ from django.urls import reverse
 from django.utils.encoding import DjangoUnicodeDecodeError, smart_bytes, smart_str
 from mongoengine.errors import ValidationError
 from mongoengine.queryset import NotUniqueError, OperationError, Q
-from scipy.sparse import coo_matrix, csr_matrix
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.neighbors import NearestNeighbors
 
 from apps.rss_feeds.tasks import PushFeeds, ScheduleCountTagsForUser, UpdateFeeds
 from apps.rss_feeds.text_importer import TextImporter
@@ -1059,34 +1056,6 @@ class Feed(models.Model):
                     end=" ",
                 )
 
-    def load_user_feed_similarity_model(self, csv_path=None, force=False):
-        if not csv_path:
-            csv_path = os.path.join(settings.DISCOVER_DATA_FOLDER, "user_feed_rating.csv")
-
-        if not os.path.exists(csv_path):
-            logging.debug(f" ---> ~FRDiscover CSV file not found: {csv_path}")
-            return
-
-        with open(csv_path, newline="") as csvfile:
-            data_reader = csv.reader(csvfile)
-            user_ids, feed_ids, ratings = [], [], []
-
-            for row in data_reader:
-                user_id, feed_id, rating = map(int, row)
-                user_ids.append(user_id)
-                feed_ids.append(feed_id)
-                ratings.append(np.log1p(float(rating)))
-
-        user_ids = np.array(user_ids)
-        feed_ids = np.array(feed_ids)
-        ratings = np.array(ratings)
-
-        # Create a sparse matrix
-        user_feed_matrix = coo_matrix((ratings, (user_ids, feed_ids))).tocsr()
-        logging.debug("Successfully loaded and transformed data")
-
-        return user_feed_matrix
-
     def count_similar_feeds(self, force=False, csv_path=None):
         if not force and self.similar_feeds.count():
             return self.similar_feeds.all()
@@ -1102,54 +1071,6 @@ class Feed(models.Model):
         self.similar_feeds.clear()
         for result in results:
             feed_id = result['_source']['feed_id']
-            try:
-                self.similar_feeds.add(feed_id)
-            except IntegrityError:
-                logging.debug(f" ---> ~FRIntegrity error adding similar feed: {feed_id}")
-                pass
-        return self.similar_feeds.all()
-
-        
-    def similarity_matrix_count_similar_feeds(self, force=False, csv_path=None):
-        if not force and self.similar_feeds.count():
-            return self.similar_feeds.all()
-
-        user_feed_matrix = self.load_user_feed_similarity_model(csv_path=csv_path, force=force)
-
-        def calculate_similarity(user_feed_matrix):
-            # Ensure the matrix is in CSR format for efficient row-wise operations
-            if not isinstance(user_feed_matrix, csr_matrix):
-                user_feed_matrix = csr_matrix(user_feed_matrix)
-
-            # Compute the cosine similarity matrix (result is dense, handle with care)
-            similarity_matrix = cosine_similarity(user_feed_matrix.T, dense_output=False)
-            return similarity_matrix
-
-        def recommend_feeds_knn(feed_id, user_feed_matrix, n_items=10):
-            model_knn = NearestNeighbors(metric="cosine", algorithm="brute", n_neighbors=n_items, n_jobs=-1)
-
-            # Fit the model
-            model_knn.fit(user_feed_matrix.T)  # Transpose to get feed-wise neighbors
-
-            # Find neighbors for the specified feed
-            distances, indices = model_knn.kneighbors(user_feed_matrix.T[feed_id], n_neighbors=n_items + 1)
-
-            # Exclude the feed itself and return the indices of recommended feeds
-            recommended_feeds = [idx for idx in indices[0] if idx != feed_id]
-
-            return recommended_feeds[:n_items]
-
-        # Recommend for a specific feed ID
-        logging.debug(f"Generating recommendations for feed: {self}")
-        # Create a NumPy array for the number of subscribers per feed
-        similarity_matrix = calculate_similarity(user_feed_matrix)
-        top_recommended_feeds = recommend_feeds_knn(self.pk, similarity_matrix)
-        logging.debug(
-            f"Found {len(top_recommended_feeds)} recommendations for feed {self}: {top_recommended_feeds}"
-        )
-
-        self.similar_feeds.clear()
-        for feed_id in top_recommended_feeds:
             try:
                 self.similar_feeds.add(feed_id)
             except IntegrityError:

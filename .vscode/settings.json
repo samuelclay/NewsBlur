@@ -8,7 +8,7 @@
     ],
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-        "source.organizeImports": true
+        "source.organizeImports": "explicit"
     },
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": false,
