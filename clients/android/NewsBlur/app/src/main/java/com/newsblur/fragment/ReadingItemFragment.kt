@@ -166,7 +166,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     override fun onDestroyView() {
         sampledQueue?.close()
-        binding.readingWebview.destroy()
+        binding.readingWebview.webChromeClient = null
         _readingItemActionsBinding = null
         _binding = null
         super.onDestroyView()
