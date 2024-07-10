@@ -492,7 +492,7 @@ class SearchStory:
 
 class SearchFeed:
     _es_client = None
-    name = "feeds"
+    name = "discover-feeds"
     model = None
 
     @classmethod

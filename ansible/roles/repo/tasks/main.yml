@@ -12,4 +12,5 @@
   git:
     repo: https://github.com/samuelclay/NewsBlur.git
     dest: /srv/newsblur/
-    version: master
+    # version: master
+    version: discover
