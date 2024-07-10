@@ -107,14 +107,14 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                         on_discover: discover_feed,
                         in_popover: self
                     });
-                    return [
+                    return $.make('div', { className: 'NB-discover-feed-badge' }, [
                         new NEWSBLUR.Views.FeedBadge({
                             model: discover_feed.get("feed"),
                             show_folders: true,
                             in_popover: self
                         }),
                         story_titles_view.render().el
-                    ];
+                    ]);
                 })))
             ])
         ]));
