@@ -609,6 +609,8 @@ AWS_SECRET_ACCESS_KEY = S3_SECRET
 os.environ["AWS_ACCESS_KEY_ID"] = AWS_ACCESS_KEY_ID
 os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
 
+os.environ["TRANSFORMERS_CACHE"] = "/srv/newsblur/docker/volumes/discover"
+
 
 def clear_prometheus_aggregation_stats():
     prom_folder = "/srv/newsblur/.prom_cache"
