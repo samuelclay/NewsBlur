@@ -1896,7 +1896,7 @@ img.feed_favicon {
 }
 
 .NB-discover-feed-badges .NB-story-titles {
-    margin: 0 24px;
+    margin: 0 24px 20px;
 }
 
 .NB-discover-feed-badges .NB-folders {
@@ -1907,10 +1907,17 @@ img.feed_favicon {
 }
 
 .NB-discover-feed-badges .NB-feed-badge {
-    padding-top: 30px;
+    padding-top: 10px;
     padding-left: 0;
     padding-right: 0;
     border-bottom: none;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.NB-discover-feed-badges .NB-discover-feed-badge {
+    position: relative;
 }
 
 .NB-discover-feed-badges .NB-error {
@@ -15806,7 +15813,7 @@ form.opml_import_form input {
 .NB-popover-section {
     padding: 22px 18px 22px;
     border-bottom: 1px solid #E8EAE4;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .NB-popover-section:last-child {
@@ -16102,7 +16109,6 @@ form.opml_import_form input {
 
 .NB-feed-badge {
     padding: 12px;
-    position: relative;
     font-size: 13px;
     background-color: white;
     clear: both;

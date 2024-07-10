@@ -113,7 +113,6 @@ ul.segmented-control-vertical {
 }
 
 .segmented-control-vertical li {
-    float: left;
     cursor: pointer;
     margin-bottom: 2px;
     width: 100%;
