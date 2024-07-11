@@ -46,13 +46,13 @@ import java.util.concurrent.Executors;
 
 /**
  * Utility class for executing DB operations on the local, private NB database.
- *
  * It is the intent of this class to be the single location of SQL executed on
  * our DB, replacing the deprecated ContentProvider access pattern.
  */
 public class BlurDatabaseHelper {
 
-    // manual synchro isn't needed if you only use one DBHelper, but at present the app uses several
+    // Removing the manual synchro will cause ANRs
+    // because the db transactions are made on the main thread
     public final static Object RW_MUTEX = new Object();
 
     private final BlurDatabase dbWrapper;
