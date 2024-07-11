@@ -122,10 +122,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     private var savedScrollPosRel = 0f
     private val webViewContentMutex = Any()
 
-    private var _binding: FragmentReadingitemBinding? = null
-    private var _readingItemActionsBinding: ReadingItemActionsBinding? = null
-    private val binding get() = _binding!!
-    private val readingItemActionsBinding get() = _readingItemActionsBinding!!
+    private lateinit var binding: FragmentReadingitemBinding
+    private lateinit var readingItemActionsBinding: ReadingItemActionsBinding
 
 
     private lateinit var markStoryReadBehavior: MarkStoryReadBehavior
@@ -166,9 +164,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     override fun onDestroyView() {
         sampledQueue?.close()
-        binding.readingWebview.webChromeClient = null
-        _readingItemActionsBinding = null
-        _binding = null
         super.onDestroyView()
     }
 
@@ -186,8 +181,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        _binding = FragmentReadingitemBinding.inflate(inflater, container, false)
-        _readingItemActionsBinding = ReadingItemActionsBinding.bind(binding.root)
+        binding = FragmentReadingitemBinding.inflate(inflater, container, false)
+        readingItemActionsBinding = ReadingItemActionsBinding.bind(binding.root)
 
         val readingActivity = requireActivity() as Reading
         fs = readingActivity.fs
