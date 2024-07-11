@@ -63,23 +63,26 @@ class YoutubeFetcher:
                 thumbnail = video["snippet"]["thumbnails"].get("high")
             if not thumbnail:
                 thumbnail = video["snippet"]["thumbnails"].get("medium")
-            duration_sec = isodate.parse_duration(video["contentDetails"]["duration"]).seconds
-            duration_min, seconds = divmod(duration_sec, 60)
-            hours, minutes = divmod(duration_min, 60)
-            if hours >= 1:
-                duration = "%s:%s:%s" % (
-                    hours,
-                    "{0:02d}".format(minutes),
-                    "{0:02d}".format(seconds),
-                )
-            else:
-                duration = "%s:%s" % (minutes, "{0:02d}".format(seconds))
+            duration = ""
+            if "duration" in video["contentDetails"]:
+                duration_sec = isodate.parse_duration(video["contentDetails"]["duration"]).seconds
+                duration_min, seconds = divmod(duration_sec, 60)
+                hours, minutes = divmod(duration_min, 60)
+                if hours >= 1:
+                    duration = "%s:%s:%s" % (
+                        hours,
+                        "{0:02d}".format(minutes),
+                        "{0:02d}".format(seconds),
+                    )
+                else:
+                    duration = "%s:%s" % (minutes, "{0:02d}".format(seconds))
+                duration = f"<b>Duration:</b> {duration}<br />"
             content = """<div class="NB-youtube-player">
                             <iframe allowfullscreen="true" src="%s?iv_load_policy=3"></iframe>
                          </div>
                          <div class="NB-youtube-stats"><small>
                              <b>From:</b> <a href="%s">%s</a><br />
-                             <b>Duration:</b> %s<br />
+                             %s
                          </small></div><hr>
                          <div class="NB-youtube-description">%s</div>
                          <img src="%s" style="display:none" />""" % (
