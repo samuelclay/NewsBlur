@@ -651,13 +651,20 @@ def story_changes(request):
 @ajax_login_required
 @json.json_view
 def discover_feeds(request, feed_id=None):
-    feed_ids = request.GET.getlist("feed_id") or request.GET.getlist("feed_id[]")
-    if not feed_ids:
-        feed_ids = Feed.get_by_id(feed_id).count_similar_feeds(force=True).values_list("pk", flat=True)
-    feeds = Feed.objects.filter(pk__in=feed_ids)
+    if request.method == "GET" and feed_id:
+        similar_feed_ids = (
+            Feed.get_by_id(feed_id).count_similar_feeds(force=True).values_list("pk", flat=True)
+        )
+    elif request.method == "POST":
+        feed_ids = request.POST.getlist("feed_ids")
+        similar_feeds = Feed.find_similar_feeds(feed_ids=feed_ids)
+        similar_feed_ids = [result["_source"]["feed_id"] for result in similar_feeds]
+    else:
+        return {"code": -1, "message": "Missing feed_ids.", "discover_feeds": None, "failed": True}
+    feeds = Feed.objects.filter(pk__in=similar_feed_ids)
     discover_feeds = defaultdict(dict)
     for feed in feeds:
         discover_feeds[feed.pk]["feed"] = feed.canonical(include_favicon=False)
         discover_feeds[feed.pk]["stories"] = feed.get_stories(limit=5)
-    logging.user(request, "~FCDiscovering similar feeds: ~SB%s" % feed_ids)
+    logging.user(request, "~FCDiscovering similar feeds: ~SB%s" % similar_feed_ids)
     return {"discover_feeds": discover_feeds}

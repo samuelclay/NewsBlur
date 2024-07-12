@@ -36,15 +36,21 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
     fetchData: function () {
         var self = this;
 
-        var feed = this.model.get_feed(this.options.feed_id);
-        this.discover_feeds_model.feed_ids = feed.get("similar_feeds");;
-        this.discover_feeds_model.similar_to_feed_id = feed.get("id");;
+        if (this.options.feed_id) {
+            var feed = this.model.get_feed(this.options.feed_id);
+            // this.discover_feeds_model.feed_ids = feed.get("similar_feeds"); // Let the server include this
+            this.discover_feeds_model.similar_to_feed_id = feed.get("id");
+        } else if (this.options.feed_ids) {
+            this.discover_feeds_model.similar_to_feed_ids = this.options.feed_ids;
+        }
 
         NEWSBLUR.ReaderPopover.prototype.render.call(this);
 
         this.showLoading();
         try {
             this.discover_feeds_model.fetch({
+                type: this.discover_feeds_model.similar_to_feed_ids ? 'POST' : 'GET',
+                data: { feed_ids: this.discover_feeds_model.similar_to_feed_ids },
                 success: function () {
                     self.hideLoading();
                     self.render();

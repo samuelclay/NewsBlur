@@ -690,21 +690,30 @@ class SearchFeed:
         return results["hits"]["hits"]
 
     @classmethod
-    def vector_query(cls, query_vector, max_results=10):
+    def vector_query(cls, query_vector, max_results=10, feed_ids_to_exclude=None):
         try:
             cls.ES().indices.flush(index=cls.index_name())
         except elasticsearch.exceptions.NotFoundError as e:
             logging.debug(f" ***> ~FRNo search server available: {e}")
             return []
 
+        must_not_clauses = []
+        if feed_ids_to_exclude:
+            must_not_clauses.append({"terms": {"feed_id": feed_ids_to_exclude}})
+
         body = {
             "query": {
-                "script_score": {
-                    "query": {"match_all": {}},
-                    "script": {
-                        "source": "cosineSimilarity(params.query_vector, 'content_vector') + 1.0",
-                        "params": {"query_vector": query_vector},
+                "bool": {
+                    "must": {
+                        "script_score": {
+                            "query": {"match_all": {}},
+                            "script": {
+                                "source": "cosineSimilarity(params.query_vector, 'content_vector') + 1.0",
+                                "params": {"query_vector": query_vector},
+                            },
+                        }
                     },
+                    "must_not": must_not_clauses,
                 }
             },
             "size": max_results,
@@ -747,6 +756,20 @@ class SearchFeed:
             logging.debug(f" ---> ~FRNo content vector found for feed {feed_id}")
             return []
         return results["hits"]["hits"][0]["_source"]["content_vector"]
+
+    @classmethod
+    def generate_combined_feed_content_vector(cls, feed_ids):
+        vectors = []
+        for feed_id in feed_ids:
+            vector = cls.fetch_feed_content_vector(feed_id)
+            if not vector:
+                vector = cls.generate_feed_content_vector(feed_id)
+            vectors.append(vector)
+
+        combined_vector = np.mean(vectors, axis=0)
+        normalized_combined_vector = combined_vector / np.linalg.norm(combined_vector)
+
+        return normalized_combined_vector
 
     @classmethod
     def generate_feed_content_vector(cls, feed_id):
