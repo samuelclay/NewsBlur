@@ -1056,17 +1056,17 @@ class Feed(models.Model):
                     end=" ",
                 )
 
-    def count_similar_feeds(self, force=False, csv_path=None):
+    def count_similar_feeds(self, feed_ids=None, force=False):
         if not force and self.similar_feeds.count():
+            logging.debug(f"Found {self.similar_feeds.count()} cached similar feeds for {self}")
             return self.similar_feeds.all()
 
-        content_vector = SearchFeed.fetch_feed_content_vector(self.pk)
-        if not content_vector:
-            content_vector = SearchFeed.generate_feed_content_vector(self.pk)
-        results = SearchFeed.vector_query(content_vector)
-        logging.debug(
-            f"Found {len(results)} recommendations for feed {self}: {r['_source']['title'] for r in results}"
-        )
+        if not feed_ids:
+            feed_ids = [self.pk]
+        if self.pk not in feed_ids:
+            feed_ids.append(self.pk)
+
+        results = self.find_similar_feeds(feed_ids=feed_ids)
 
         self.similar_feeds.clear()
         for result in results:
@@ -1076,8 +1076,19 @@ class Feed(models.Model):
             except IntegrityError:
                 logging.debug(f" ---> ~FRIntegrity error adding similar feed: {feed_id}")
                 pass
+
         return self.similar_feeds.all()
 
+    @classmethod
+    def find_similar_feeds(cls, feed_ids=None):
+        combined_content_vector = SearchFeed.generate_combined_feed_content_vector(feed_ids)
+        results = SearchFeed.vector_query(combined_content_vector, feed_ids_to_exclude=feed_ids)
+        logging.debug(
+            f"Found {len(results)} recommendations for feeds {feed_ids}: {r['_source']['title'] for r in results}"
+        )
+
+        return results
+    
     def _split_favicon_color(self, color=None):
         if not color:
             color = self.favicon_color

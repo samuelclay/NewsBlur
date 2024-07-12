@@ -95,6 +95,7 @@
 - name: Block for mongo volume on hetzner
   block:
     - name: Create backup directory
+      become: yes
       file:
         path: "/srv/newsblur/docker/volumes/mongo/backup"
         state: directory

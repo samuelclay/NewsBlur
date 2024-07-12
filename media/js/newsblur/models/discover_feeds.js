@@ -13,16 +13,14 @@ NEWSBLUR.Collections.DiscoverFeeds = Backbone.Collection.extend({
     model: NEWSBLUR.Models.DiscoverFeed,
 
     url: function () {
-        // if (!this.feed_ids || this.feed_ids.length === 0) {
-        //     throw new Error("feed_ids are required to fetch the data");
-        // }
-
-        // Assuming your base endpoint is /api/feed
-        var url = '/rss_feeds/discover/' + this.similar_to_feed_id + '/';
-        if (this.feed_ids && this.feed_ids.length > 0) {
-            url += '?feed_id=' + this.feed_ids.join("&feed_id=");
+        if (this.similar_to_feed_id) {
+            var url = '/rss_feeds/discover/' + this.similar_to_feed_id + '/';
+            if (this.feed_ids && this.feed_ids.length > 0) {
+                url += '?feed_id=' + this.feed_ids.join("&feed_id=");
+            }
+        } else if (this.similar_to_feed_ids) {
+            var url = '/rss_feeds/discover/feeds/';
         }
-
         return url;
     },
 
