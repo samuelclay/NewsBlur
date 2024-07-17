@@ -179,6 +179,8 @@ monitor: deploy_monitor
 deploy_staging:
 	ansible-playbook ansible/deploy.yml -l staging
 staging: deploy_staging
+staging_static:
+	ansible-playbook ansible/deploy.yml -l staging --tags static
 celery_stop:
 	ansible-playbook ansible/deploy.yml -l task --tags stop
 sentry:
