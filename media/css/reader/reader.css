@@ -5194,7 +5194,8 @@ body {
 
 .NB-sideoption {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    justify-content: space-around;
     align-items: center;
     cursor: pointer;
     position: relative;
@@ -5235,10 +5236,11 @@ body {
     box-sizing: border-box;
     transition: padding 0.36s ease-out,
         color 0.36s ease-out;
+    min-width: 80px;
 }
 
-.NB-feed-story-email .NB-sideoption-title {
-    min-width: 80px;
+.NB-feed-story-email {
+    /* align-items: flex-start; */
 }
 
 .NB-content-narrow .NB-sideoption .NB-sideoption-title {
@@ -5318,6 +5320,18 @@ body {
     order: 3;
 }
 
+.NB-wide-content .NB-flex-break {
+    flex-basis: 100%;
+    height: 0;
+    order: 3;
+}
+
+.NB-wide-content .NB-sideoption-thirdparty-services {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    order: 4;
+}
 
 .NB-sideoption .NB-sideoption-thirdparty-instapaper {
     background: transparent url('/media/embed/reader/instapaper.png') no-repeat center center;

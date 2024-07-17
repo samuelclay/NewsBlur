@@ -311,17 +311,20 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             <div class="NB-feed-story-sideoptions-container">\
 `                <div class="NB-sideoption NB-feed-story-email" role="button">\
                     <div class="NB-sideoption-title">Email</div>\
-                    <div class="NB-sideoption-icons">\
-                        <div class="NB-sideoption-thirdparty NB-sideoption-icon">&nbsp;</div>\
-                        <% _.each(NEWSBLUR.assets.third_party_sharing_services, function(label, key) { %>\
-                            <% if (NEWSBLUR.Preferences["story_share_"+key]) { %>\
-                                <div class="NB-sideoption-thirdparty NB-sideoption-thirdparty-<%= key %>" data-service-name="<%= label %>" role="button">\
-                                </div>\
-                            <% } %>\
-                        <% }) %>\
+                    <div class="NB-sideoption-thirdparty NB-sideoption-icon">&nbsp;</div>\
+                    <div class="NB-flex-break"></div>\
+                    <div class="NB-sideoption-thirdparty-services">\
+                        <div class="NB-sideoption-icons">\
+                            <% _.each(NEWSBLUR.assets.third_party_sharing_services, function(label, key) { %>\
+                                <% if (NEWSBLUR.Preferences["story_share_"+key]) { %>\
+                                    <div class="NB-sideoption-thirdparty NB-sideoption-thirdparty-<%= key %>" data-service-name="<%= label %>" role="button">\
+                                    </div>\
+                                <% } %>\
+                            <% }) %>\
+                        </div>\
                     </div>\
                 </div>\
-`                <div class="NB-sideoption NB-feed-story-train" role="button">\
+                <div class="NB-sideoption NB-feed-story-train" role="button">\
                     <div class="NB-sideoption-title">Train</div>\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
                 </div>\

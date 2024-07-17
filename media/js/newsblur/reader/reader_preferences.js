@@ -720,6 +720,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-facebook', name: 'story_share_facebook' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-facebook' })
                             ]),
+                            $.make('div', { className: 'NB-preference-option', title: 'Pocket' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-readitlater', name: 'story_share_readitlater' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-readitlater' })
+                            ]),
                             $.make('div', { className: 'NB-preference-option', title: 'Instapaper' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-instapaper', name: 'story_share_instapaper' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-instapaper' })
@@ -731,6 +735,14 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', { className: 'NB-preference-option', title: 'Raindrop.io' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-raindrop', name: 'story_share_raindrop' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-raindrop' })
+                            ]),
+                            $.make('div', { className: 'NB-preference-option', title: 'WhatsApp' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-whatsapp', name: 'story_share_whatsapp' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-whatsapp' })
+                            ]),
+                            $.make('div', { className: 'NB-preference-option', title: 'LinkedIn' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-linkedin', name: 'story_share_linkedin' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-linkedin' })
                             ]),
                             $.make('div', { className: 'NB-preference-option', title: 'Pinterest' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-pinterest', name: 'story_share_pinterest' }),
@@ -747,14 +759,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', { className: 'NB-preference-option', title: 'Evernote' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-evernote', name: 'story_share_evernote' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-evernote' })
-                            ]),
-                            $.make('div', { className: 'NB-preference-option', title: 'Google+' }, [
-                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-googleplus', name: 'story_share_googleplus' }),
-                                $.make('label', { 'for': 'NB-preference-story-share-googleplus' })
-                            ]),
-                            $.make('div', { className: 'NB-preference-option', title: 'Pocket (RIL)' }, [
-                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-readitlater', name: 'story_share_readitlater' }),
-                                $.make('label', { 'for': 'NB-preference-story-share-readitlater' })
                             ]),
                             $.make('div', { className: 'NB-preference-option', title: 'Tumblr' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-tumblr', name: 'story_share_tumblr' }),
