@@ -57,6 +57,8 @@
 @property (nonatomic) CGFloat storyHeight;
 @property (nonatomic, readonly) BOOL canPullToRefresh;
 @property (nonatomic, readonly) BOOL isMarkReadOnScroll;
+@property (nonatomic, readonly) BOOL isMarkReadAfterInterval;
+@property (nonatomic, readonly) BOOL isMarkReadManually;
 @property (nonatomic, readonly) BOOL isLegacyTable;
 
 @property (nonatomic, readwrite) BOOL pageFetching;

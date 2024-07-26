@@ -2115,18 +2115,45 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         UIInterfaceOrientationIsPortrait(orientation);
 }
 
-- (BOOL)isMarkReadOnScroll {
+- (NSString *)markReadValue {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     if ([userPreferences boolForKey:@"override_scroll_read_filter"]) {
-        NSNumber *markRead = [userPreferences objectForKey:appDelegate.storiesCollection.scrollReadFilterKey];
+        NSString *markRead = [userPreferences objectForKey:appDelegate.storiesCollection.scrollReadFilterKey];
         
         if (markRead != nil) {
-            return markRead.boolValue;
+            if ([markRead isKindOfClass:[NSNumber class]]) {
+                return [markRead boolValue] ? @"scroll" : @"selection";
+            } else {
+                return markRead;
+            }
         }
     }
     
-    return [userPreferences boolForKey:@"default_scroll_read_filter"];
+    NSString *markRead = [userPreferences stringForKey:@"default_scroll_read_filter"];
+    
+    if ([markRead isKindOfClass:[NSNumber class]]) {
+        return [markRead boolValue] ? @"scroll" : @"selection";
+    }
+    
+    return markRead;
+}
+
+- (BOOL)isMarkReadOnScroll {
+    return [[self markReadValue] isEqualToString:@"scroll"];
+}
+
+- (NSTimeInterval)markReadAfterInterval {
+    NSString *markRead = [self markReadValue];
+    if ([markRead hasPrefix:@"after"]) {
+        return [[markRead substringFromIndex:5] integerValue];
+    } else {
+        return 0;
+    }
+}
+
+- (BOOL)isMarkReadManually {
+    return [[self markReadValue] isEqualToString:@"manually"];
 }
 
 - (void)checkScroll {
@@ -2507,7 +2534,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }
     
     if ((!everything || !appDelegate.storiesCollection.isRiverView) && !infrequent && !saved && !read && !social && !widget) {
-        NSString *manageText = [NSString stringWithFormat:@"Manage this %@", appDelegate.storiesCollection.isRiverView ? @"folder" : @"site"];
+        NSString *manageText = [NSString stringWithFormat:@"Manage this %@…", appDelegate.storiesCollection.isRiverView ? @"folder" : @"site"];
         
         [viewController addTitle:manageText iconName:@"menu_icn_move.png" selectionShouldDismiss:NO handler:^{
             [self manageSite:weakViewController.navigationController manageText:manageText everything:everything];
@@ -2542,6 +2569,14 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
     
+    NSString *preferenceKey = self.appDelegate.storiesCollection.scrollReadFilterKey;
+    NSArray *titles = @[@"On scroll or selection", @"Only on selection", @"After 1 second", @"After 2 seconds", @"After 3 seconds", @"After 4 seconds", @"After 5 seconds", @"After 10 seconds", @"After 15 seconds", @"After 30 seconds", @"After 45 seconds", @"After 60 seconds", @"Manually"];
+    NSArray *values = @[ @"scroll", @"selection", @"after1", @"after2", @"after3", @"after4", @"after5", @"after10", @"after15", @"after30", @"after45", @"after60", @"manually"];
+    
+    [viewController addTitle:@"Mark story read…" iconName:@"indicator-unread" iconColor:UIColorFromRGB(0xD58B4F) submenuTitles:titles values:values overrideSelectedValue:self.markReadValue defaultValue:@"scroll" preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(id selectedValue) {
+        // Nothing to do.
+    }];
+    
     [viewController addSegmentedControlWithTitles:@[@"Newest first", @"Oldest"] selectIndex:[appDelegate.storiesCollection.activeOrder isEqualToString:@"newest"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         if (selectedIndex == 0) {
             [userPreferences setObject:@"newest" forKey:[self.appDelegate.storiesCollection orderKey]];
@@ -2562,17 +2597,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             
             [self reloadStories];
         }];
-        
-        [viewController addSegmentedControlWithTitles:@[@"Read on scroll", @"Leave unread"] selectIndex:self.isMarkReadOnScroll ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
-            [userPreferences setBool:selectedIndex == 0 forKey:self.appDelegate.storiesCollection.scrollReadFilterKey];
-        }];
     }
     
     [appDelegate addSplitControlToMenuController:viewController];
     
-    NSString *preferenceKey = self.appDelegate.storiesCollection.storyTitlesPositionKey;
-    NSArray *titles;
-    NSArray *values;
+    preferenceKey = self.appDelegate.storiesCollection.storyTitlesPositionKey;
     
     if (appDelegate.detailViewController.isPhone) {
         titles = @[@"List", @"Grid"];
