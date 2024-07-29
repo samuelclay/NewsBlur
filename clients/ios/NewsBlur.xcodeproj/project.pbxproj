@@ -750,6 +750,8 @@
 		1785524A2A1F115800A8CD92 /* FeedDetailTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 178552472A1F115800A8CD92 /* FeedDetailTableCell.m */; };
 		1785524C2A21693300A8CD92 /* FeedDetailLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1785524B2A21693300A8CD92 /* FeedDetailLoadingView.swift */; };
 		1785524D2A21693300A8CD92 /* FeedDetailLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1785524B2A21693300A8CD92 /* FeedDetailLoadingView.swift */; };
+		17867D162C58394200A99F4C /* AppDelegateHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17867D152C58394100A99F4C /* AppDelegateHelper.swift */; };
+		17867D172C58394200A99F4C /* AppDelegateHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17867D152C58394100A99F4C /* AppDelegateHelper.swift */; };
 		1787083024F8B3A50000C82B /* StoryDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1787082F24F8B3A50000C82B /* StoryDetailViewController.swift */; };
 		17876B9E1C9911D40055DD15 /* g_icn_folder_rss_sm.png in Resources */ = {isa = PBXBuildFile; fileRef = 17876B9A1C9911D40055DD15 /* g_icn_folder_rss_sm.png */; };
 		17876B9F1C9911D40055DD15 /* g_icn_folder_rss_sm@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17876B9B1C9911D40055DD15 /* g_icn_folder_rss_sm@2x.png */; };
@@ -1548,6 +1550,7 @@
 		178552472A1F115800A8CD92 /* FeedDetailTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailTableCell.m; sourceTree = "<group>"; };
 		178552482A1F115800A8CD92 /* FeedDetailTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailTableCell.h; sourceTree = "<group>"; };
 		1785524B2A21693300A8CD92 /* FeedDetailLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailLoadingView.swift; sourceTree = "<group>"; };
+		17867D152C58394100A99F4C /* AppDelegateHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegateHelper.swift; sourceTree = "<group>"; };
 		1787082F24F8B3A50000C82B /* StoryDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryDetailViewController.swift; sourceTree = "<group>"; };
 		17876B9A1C9911D40055DD15 /* g_icn_folder_rss_sm.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = g_icn_folder_rss_sm.png; sourceTree = "<group>"; };
 		17876B9B1C9911D40055DD15 /* g_icn_folder_rss_sm@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "g_icn_folder_rss_sm@2x.png"; sourceTree = "<group>"; };
@@ -3364,6 +3367,7 @@
 				175792E62930611B00490924 /* LaunchScreenDev.xib */,
 				1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */,
 				1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */,
+				17867D152C58394100A99F4C /* AppDelegateHelper.swift */,
 				17150E1D2B05775A004D5309 /* SceneDelegate.swift */,
 				17A051892C095B20000994E9 /* AuxSceneDelegate.swift */,
 				179A88012B48E64900916CF4 /* ToolbarDelegate.swift */,
@@ -4993,6 +4997,7 @@
 			files = (
 				175792262930605500490924 /* AFAutoPurgingImageCache.m in Sources */,
 				175792272930605500490924 /* AFHTTPSessionManager.m in Sources */,
+				17867D172C58394200A99F4C /* AppDelegateHelper.swift in Sources */,
 				175792282930605500490924 /* AFImageDownloader.m in Sources */,
 				175792292930605500490924 /* AFNetworkActivityIndicatorManager.m in Sources */,
 				1757922A2930605500490924 /* AFNetworkReachabilityManager.m in Sources */,
@@ -5201,6 +5206,7 @@
 			files = (
 				FFC0E5A81F7AC00A0023B9D9 /* AFAutoPurgingImageCache.m in Sources */,
 				FFC0E5AA1F7AC00A0023B9D9 /* AFHTTPSessionManager.m in Sources */,
+				17867D162C58394200A99F4C /* AppDelegateHelper.swift in Sources */,
 				FFC0E5AC1F7AC00A0023B9D9 /* AFImageDownloader.m in Sources */,
 				FFC0E5AE1F7AC00A0023B9D9 /* AFNetworkActivityIndicatorManager.m in Sources */,
 				FFC0E5B11F7AC00A0023B9D9 /* AFNetworkReachabilityManager.m in Sources */,

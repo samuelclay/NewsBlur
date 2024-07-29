@@ -216,7 +216,7 @@
 			<key>DefaultValue</key>
 			<string>scroll</string>
 			<key>Key</key>
-			<string>default_scroll_read_filter</string>
+			<string>default_mark_read_filter</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -226,7 +226,7 @@
 			<key>DefaultValue</key>
 			<string>YES</string>
 			<key>Key</key>
-			<string>override_scroll_read_filter</string>
+			<string>override_mark_read_filter</string>
 		</dict>
 		<dict>
 			<key>Type</key>

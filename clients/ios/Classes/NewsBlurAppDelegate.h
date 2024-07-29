@@ -20,6 +20,7 @@
 #define STORY_TITLES_HEIGHT 240
 #define DASHBOARD_TITLE @"NewsBlur"
 
+@class AppDelegateHelper;
 @class SplitViewController;
 @class FeedsViewController;
 @class DashboardViewController;
@@ -157,6 +158,8 @@ SFSafariViewControllerDelegate>  {
 }
 
 @property (class, nonatomic, readonly) NewsBlurAppDelegate *shared;
+@property (class, nonatomic, readonly) AppDelegateHelper *helper;
+@property (nonatomic, readonly) AppDelegateHelper *helper;
 
 @property (nonatomic, readonly) NSURL *documentsURL;
 @property (nonatomic) SplitViewController *splitViewController;
