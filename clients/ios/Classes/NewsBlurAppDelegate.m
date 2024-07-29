@@ -198,6 +198,14 @@
     return (NewsBlurAppDelegate *)[UIApplication sharedApplication].delegate;
 }
 
++ (AppDelegateHelper *)helper {
+    return [AppDelegateHelper shared];
+}
+
+- (AppDelegateHelper *)helper {
+    return [AppDelegateHelper shared];
+}
+
 - (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [self registerDefaultsFromSettingsBundle];
     
@@ -487,7 +495,11 @@
     }
     
     NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    NSInteger release = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue];
     [[NSUserDefaults standardUserDefaults] setObject:version forKey:@"version"];
+    [[NSUserDefaults standardUserDefaults] setInteger:release forKey:@"release"];
+    
+    [self.helper upgradeSettingsFrom:release];
 }
 
 - (void)registerDefaultsFromSettingsBundle:(NSString *)settingsPath withPlistName:(NSString *)name {

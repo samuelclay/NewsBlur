@@ -74,7 +74,7 @@
 @property (nonatomic, readonly) NSString *activeStoryView;
 @property (nonatomic, readonly) NSString *orderKey;
 @property (nonatomic, readonly) NSString *readFilterKey;
-@property (nonatomic, readonly) NSString *scrollReadFilterKey;
+@property (nonatomic, readonly) NSString *markReadFilterKey;
 @property (nonatomic, readonly) NSString *storyTitlesPositionKey;
 @property (nonatomic, readonly) NSString *storyViewKey;
 

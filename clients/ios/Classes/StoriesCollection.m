@@ -334,16 +334,16 @@
     }
 }
 
-- (NSString *)scrollReadFilterKey {
+- (NSString *)markReadFilterKey {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    BOOL shouldOverride = [userPreferences boolForKey:@"override_scroll_read_filter"];
+    BOOL shouldOverride = [userPreferences boolForKey:@"override_mark_read_filter"];
     
     if (!shouldOverride) {
-        return @"default_scroll_read_filter";
+        return @"default_mark_read_filter";
     } else if (self.isRiverView) {
-        return [NSString stringWithFormat:@"folder:%@:scroll_read_filter", self.activeFolder];
+        return [NSString stringWithFormat:@"folder:%@:mark_read_filter", self.activeFolder];
     } else {
-        return [NSString stringWithFormat:@"%@:scroll_read_filter", [self.activeFeed objectForKey:@"id"]];
+        return [NSString stringWithFormat:@"%@:mark_read_filter", [self.activeFeed objectForKey:@"id"]];
     }
 }
 

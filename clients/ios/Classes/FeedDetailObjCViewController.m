@@ -2118,23 +2118,15 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 - (NSString *)markReadValue {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
-    if ([userPreferences boolForKey:@"override_scroll_read_filter"]) {
-        NSString *markRead = [userPreferences objectForKey:appDelegate.storiesCollection.scrollReadFilterKey];
+    if ([userPreferences boolForKey:@"override_mark_read_filter"]) {
+        NSString *markRead = [userPreferences objectForKey:appDelegate.storiesCollection.markReadFilterKey];
         
         if (markRead != nil) {
-            if ([markRead isKindOfClass:[NSNumber class]]) {
-                return [markRead boolValue] ? @"scroll" : @"selection";
-            } else {
-                return markRead;
-            }
+            return markRead;
         }
     }
     
-    NSString *markRead = [userPreferences stringForKey:@"default_scroll_read_filter"];
-    
-    if ([markRead isKindOfClass:[NSNumber class]]) {
-        return [markRead boolValue] ? @"scroll" : @"selection";
-    }
+    NSString *markRead = [userPreferences stringForKey:@"default_mark_read_filter"];
     
     return markRead;
 }
@@ -2569,7 +2561,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
     
-    NSString *preferenceKey = self.appDelegate.storiesCollection.scrollReadFilterKey;
+    NSString *preferenceKey = self.appDelegate.storiesCollection.markReadFilterKey;
     NSArray *titles = @[@"On scroll or selection", @"Only on selection", @"After 1 second", @"After 2 seconds", @"After 3 seconds", @"After 4 seconds", @"After 5 seconds", @"After 10 seconds", @"After 15 seconds", @"After 30 seconds", @"After 45 seconds", @"After 60 seconds", @"Manually"];
     NSArray *values = @[ @"scroll", @"selection", @"after1", @"after2", @"after3", @"after4", @"after5", @"after10", @"after15", @"after30", @"after45", @"after60", @"manually"];
     
