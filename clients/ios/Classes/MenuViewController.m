@@ -379,7 +379,7 @@ NSString * const MenuHandler = @"handler";
         
         cell.indentationLevel = indent;
         cell.destructive = [item[MenuDestructive] boolValue];
-        cell.tintColor = UIColorFromFixedRGB(0x303030);
+        cell.tintColor = UIColorFromRGB(0x303030);
         cell.textLabel.text = title;
         cell.imageView.image = item[MenuIcon];
         

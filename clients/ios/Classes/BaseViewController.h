@@ -69,6 +69,7 @@
 - (IBAction)openRenameSite:(id)sender;
 - (IBAction)muteSite:(id)sender;
 - (IBAction)deleteSite:(id)sender;
+- (IBAction)chooseMarkRead:(id)sender;
 - (IBAction)openTrainSite:(id)sender;
 - (IBAction)openNotifications:(id)sender;
 - (IBAction)openStatistics:(id)sender;
