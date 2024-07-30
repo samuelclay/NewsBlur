@@ -59,6 +59,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (nonatomic) BOOL isFadingTable;
 @property (nonatomic, strong) NSString *restoringFolder;
 @property (nonatomic, strong) NSString *restoringFeedID;
+@property (nonatomic, strong) NSTimer *markStoryReadTimer;
 
 @end
 
@@ -499,6 +500,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     } else {
         feedMarkReadButton.enabled = YES;
     }
+    
+    [self cancelMarkStoryReadTimer];
     
     [self.notifier setNeedsLayout];
     
@@ -1843,10 +1846,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 - (void)loadStoryAtRow:(NSInteger)row {
     NSInteger storyIndex = [storiesCollection indexFromLocation:row];
     appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
-    if ([storiesCollection isStoryUnread:appDelegate.activeStory]) {
-        [storiesCollection markStoryRead:appDelegate.activeStory];
-        [storiesCollection syncStoryAsRead:appDelegate.activeStory];
-    }
+    [self markStoryReadIfNeeded:appDelegate.activeStory isScrolling:NO];
     [self setTitleForBackButton];
     [appDelegate loadStoryDetailView];
     [self redrawUnreadStory];
@@ -1961,13 +1961,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             appDelegate.activeStory &&
             [[story objectForKey:@"story_hash"]
              isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
-            if ([storiesCollection isStoryUnread:story]) {
-                [storiesCollection markStoryRead:story];
-                [storiesCollection syncStoryAsRead:story];
-                
-                if (!isGridView) {
-                    [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationFade];
-                }
+            if ([self markStoryReadIfNeeded:story isScrolling:NO] && !isGridView) {
+                [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationFade];
             }
             
             [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"tap selected row"];
@@ -2131,8 +2126,53 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     return markRead;
 }
 
+- (void)cancelMarkStoryReadTimer {
+    [self.markStoryReadTimer invalidate];
+    self.markStoryReadTimer = nil;
+}
+
+- (BOOL)markStoryReadIfNeeded:(NSDictionary *)story isScrolling:(BOOL)isScrolling {
+    if (!isScrolling) {
+        [self cancelMarkStoryReadTimer];
+    }
+    
+    if (![storiesCollection isStoryUnread:story]) {
+        return NO;
+    }
+    
+    NSTimeInterval interval = self.markReadAfterInterval;
+    
+    if (interval > 0) {
+        if (isScrolling && self.markStoryReadTimer != nil) {
+            return NO;
+        }
+        
+        self.markStoryReadTimer = [NSTimer scheduledTimerWithTimeInterval:interval repeats:NO block:^(NSTimer * _Nonnull timer) {
+            [self.storiesCollection markStoryRead:story];
+            [self.storiesCollection syncStoryAsRead:story];
+            
+            [self reload];
+            [self.appDelegate.storyPagesViewController.currentPage setActiveStoryAtIndex:-1];
+            [self.appDelegate.storyPagesViewController.currentPage refreshHeader];
+        }];
+        
+        return NO;
+    } else if (self.isMarkReadManually) {
+        return NO;
+    } else {
+        [storiesCollection markStoryRead:story];
+        [storiesCollection syncStoryAsRead:story];
+        
+        return YES;
+    }
+}
+
 - (BOOL)isMarkReadOnScroll {
     return [[self markReadValue] isEqualToString:@"scroll"];
+}
+
+- (BOOL)isMarkReadOnScrollOrSelection {
+    return [[self markReadValue] isEqualToString:@"scroll"] || [[self markReadValue] isEqualToString:@"selection"];
 }
 
 - (NSTimeInterval)markReadAfterInterval {
@@ -2182,9 +2222,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                 NSInteger storyIndex = [storiesCollection indexFromLocation:thisRow];
                 NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
                 
-                if ([storiesCollection isStoryUnread:story]) {
-                    [storiesCollection markStoryRead:story];
-                    [storiesCollection syncStoryAsRead:story];
+                if ([self markStoryReadIfNeeded:story isScrolling:YES]) {
                     NSIndexPath *reloadIndexPath = [NSIndexPath indexPathForRow:thisRow inSection:0];
                     NSLog(@" --> Reloading indexPath: %@", reloadIndexPath);
                     [self reloadIndexPath:reloadIndexPath withRowAnimation:UITableViewRowAnimationFade];

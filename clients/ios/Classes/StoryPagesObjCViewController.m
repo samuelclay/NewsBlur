@@ -1209,11 +1209,9 @@
         
         appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:storyIndex];
         [self updatePageWithActiveStory:currentPage.pageIndex updateFeedDetail:YES];
-        if ([appDelegate.storiesCollection isStoryUnread:appDelegate.activeStory]) {
-            [appDelegate.storiesCollection markStoryRead:appDelegate.activeStory];
-            [appDelegate.storiesCollection syncStoryAsRead:appDelegate.activeStory];
-        }
+        [appDelegate.feedDetailViewController markStoryReadIfNeeded:appDelegate.activeStory isScrolling:NO];
         [appDelegate.feedDetailViewController redrawUnreadStory];
+        [appDelegate.storyPagesViewController.currentPage refreshHeader];
     }
     
     if (!appDelegate.storiesCollection.inSearch) {

@@ -28,7 +28,7 @@ class AppDelegateHelper: NSObject {
         let isScroll = settings.bool(forKey: "default_scroll_read_filter")
         let isOverride = settings.bool(forKey: "override_scroll_read_filter")
         
-        settings.set(isScroll ? "scroll" : "select", forKey: "default_mark_read_filter")
+        settings.set(isScroll ? "scroll" : "selection", forKey: "default_mark_read_filter")
         settings.set(isOverride, forKey: "override_mark_read_filter")
         
         let dictionary = settings.dictionaryRepresentation()
@@ -39,7 +39,7 @@ class AppDelegateHelper: NSObject {
             let newKey = "\(key.dropLast(dropLength)):mark_read_filter"
             let isScroll = value as? Bool ?? false
             
-            settings.set(isScroll ? "scroll" : "select", forKey: newKey)
+            settings.set(isScroll ? "scroll" : "selection", forKey: newKey)
         }
     }
 }
