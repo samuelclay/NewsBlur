@@ -1682,6 +1682,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         return;
     }
     
+    [self.appDelegate.feedDetailViewController cancelMarkStoryReadTimer];
     [appDelegate.storiesCollection reset];
     
     [self clearSelectedHeader];
@@ -1977,6 +1978,7 @@ heightForHeaderInSection:(NSInteger)section {
         [self fadeCellWithIndexPath:self.currentRowAtIndexPath];
     }
     
+    [self.appDelegate.feedDetailViewController cancelMarkStoryReadTimer];
     [self clearSelectedHeader];
     
     // reset pointer to the cells

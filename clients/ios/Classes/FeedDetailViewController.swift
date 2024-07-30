@@ -338,11 +338,8 @@ extension FeedDetailViewController: FeedDetailInteraction {
         
         let dict = story.dictionary
         
-        if isSwiftUI, storiesCollection.isStoryUnread(dict) {
+        if isSwiftUI, appDelegate.feedDetailViewController.markStoryReadIfNeeded(dict, isScrolling: false) {
             print("🪿 Marking as read \(story.debugTitle)")
-            
-            storiesCollection.markStoryRead(dict)
-            storiesCollection.syncStory(asRead: dict)
             
             deferredReload(story: story)
         }

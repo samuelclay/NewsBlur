@@ -854,6 +854,11 @@ a.NB-show-profile {
     margin: 0 auto;
 }
 
+.NB-button.NB-read-button {
+    margin: 0;
+    width: 100%;
+}
+
 .NB-button a {
     display: inline-block;
     padding-top: 1px;
@@ -920,7 +925,7 @@ a.NB-show-profile {
     padding-bottom: 0px;
 }
 
-.NB-button.NB-share-button div { 
+.NB-button.NB-share-button div {
     padding: 8px 0px 8px;
     border-radius: 2px;
     text-align: center;
@@ -933,7 +938,7 @@ a.NB-show-profile {
     display: inline-block;
     height: 18px;
     margin: 0 2px 0 12px;
-    vertical-align: text-bottom;
+    vertical-align: text-top;
     opacity: .7;
 }
 
@@ -944,6 +949,11 @@ a.NB-show-profile {
 
 .NB-button.NB-save-button .NB-icon {
     background: url("saved-stories@2x.png") no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-button.NB-read-button .NB-icon {
+    background: url("markread@2x.png") no-repeat 0 0;
     background-size: 16px;
 }
 

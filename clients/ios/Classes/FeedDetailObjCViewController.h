@@ -57,7 +57,8 @@
 @property (nonatomic) CGFloat storyHeight;
 @property (nonatomic, readonly) BOOL canPullToRefresh;
 @property (nonatomic, readonly) BOOL isMarkReadOnScroll;
-@property (nonatomic, readonly) BOOL isMarkReadAfterInterval;
+@property (nonatomic, readonly) BOOL isMarkReadOnScrollOrSelection;
+@property (nonatomic, readonly) NSTimeInterval markReadAfterInterval;
 @property (nonatomic, readonly) BOOL isMarkReadManually;
 @property (nonatomic, readonly) BOOL isLegacyTable;
 
@@ -129,6 +130,8 @@
 - (void)didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
 - (void)loadFaviconsFromActiveFeed;
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older;
+- (void)cancelMarkStoryReadTimer;
+- (BOOL)markStoryReadIfNeeded:(NSDictionary *)story isScrolling:(BOOL)isScrolling;
 - (void)finishMarkAsSaved:(NSDictionary *)params;
 - (void)failedMarkAsSaved:(NSDictionary *)params;
 - (void)finishMarkAsUnsaved:(NSDictionary *)params;

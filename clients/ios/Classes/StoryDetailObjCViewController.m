@@ -817,7 +817,7 @@
     }
     
     NSString *storyUnread = @"";
-    if (self.isRecentlyUnread && [appDelegate.storiesCollection isStoryUnread:self.activeStory]) {
+    if ([appDelegate.storiesCollection isStoryUnread:self.activeStory]) {
         NSInteger score = [NewsBlurAppDelegate computeStoryScore:[self.activeStory objectForKey:@"intelligence"]];
         storyUnread = [NSString stringWithFormat:@"<div class=\"NB-story-unread NB-%@\"></div>",
                        score > 0 ? @"positive" : score < 0 ? @"negative" : @"neutral"];
@@ -871,10 +871,28 @@
 }
 
 - (NSString *)getSideOptions {
+    BOOL isRead = [[self.activeStory objectForKey:@"read_status"] boolValue];
     BOOL isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
     BOOL isShared = [[self.activeStory objectForKey:@"shared"] boolValue];
+    NSString *markReadButton = @"";
     
-    NSString *sideOptions = [NSString stringWithFormat:@
+    if (appDelegate.feedDetailViewController.isMarkReadManually) {
+        markReadButton = [NSString stringWithFormat:@
+                          "<div class='NB-sideoptions'>"
+                          "<div class='NB-share-header'></div>"
+                          "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
+                          "  <div id=\"NB-share-button-id\" class='NB-share-button NB-read-button NB-button'>"
+                          "    <a href=\"http://ios.newsblur.com/read\"><div>"
+                          "      <span class=\"NB-icon\"></span>"
+                          "      <span class=\"NB-sideoption-text\">%@</span>"
+                          "    </div></a>"
+                          "  </div>"
+                          "</div></div></div>",
+                          isRead ? @"Read" : @"Mark Story Read"
+        ];
+    }
+    
+    NSString *sideOptions = [NSString stringWithFormat:@"%@"
                              "<div class='NB-sideoptions'>"
                              "<div class='NB-share-header'></div>"
                              "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
@@ -897,6 +915,7 @@
                              "    </div></a>"
                              "  </div>"
                              "</div></div></div>",
+                             markReadButton,
                              isShared ? @"NB-button-active" : @"",
                              isShared ? @"Shared" : @"Share",
                              isSaved ? @"NB-button-active" : @"",
@@ -1416,10 +1435,7 @@
             hasScrolled = YES;
         }
         
-        if (hasScrolled && !atTop && [appDelegate.storiesCollection isStoryUnread:activeStory]) {
-            [appDelegate.storiesCollection markStoryRead:activeStory];
-            [appDelegate.storiesCollection syncStoryAsRead:activeStory];
-            
+        if (hasScrolled && !atTop && [appDelegate.feedDetailViewController markStoryReadIfNeeded:activeStory isScrolling:YES]) {
             NSIndexPath *reloadIndexPath = appDelegate.feedDetailViewController.storyTitlesTable.indexPathForSelectedRow;
             if (reloadIndexPath != nil) {
                 [appDelegate.feedDetailViewController reloadIndexPath:reloadIndexPath withRowAnimation:UITableViewRowAnimationNone];
@@ -1689,6 +1705,20 @@
             } else {
                 [self fetchStoryChanges];
             }
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
+        } else if ([action isEqualToString:@"read"]) {
+            if ([[activeStory objectForKey:@"read_status"] boolValue]) {
+                [appDelegate.storiesCollection markStoryUnread:activeStory];
+                [appDelegate.storiesCollection syncStoryAsUnread:activeStory];
+            } else {
+                [appDelegate.storiesCollection markStoryRead:activeStory];
+                [appDelegate.storiesCollection syncStoryAsRead:activeStory];
+            }
+            [self setActiveStoryAtIndex:-1];
+            [self refreshHeader];
+            [self refreshSideOptions];
+            [appDelegate.feedDetailViewController reload];
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
         } else if ([action isEqualToString:@"share"]) {
