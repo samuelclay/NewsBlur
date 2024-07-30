@@ -355,6 +355,16 @@
         } else {
             command.title = @"Mark as Read";
         }
+    } else if (command.action == @selector(chooseMarkRead:)) {
+        NSString *preferenceKey = self.appDelegate.storiesCollection.markReadFilterKey;
+        NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:preferenceKey];
+        
+        if (value == nil) {
+            preferenceKey = @"default_mark_read_filter";
+            value = [[NSUserDefaults standardUserDefaults] objectForKey:preferenceKey];
+        }
+        
+        command.state = [command.propertyList isEqualToString:value];
     }
 }
 
@@ -576,6 +586,14 @@
     [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                                         style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (IBAction)chooseMarkRead:(id)sender {
+    UICommand *command = sender;
+    NSString *string = command.propertyList;
+    NSString *preferenceKey = self.appDelegate.storiesCollection.markReadFilterKey;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:string forKey:preferenceKey];
 }
 
 - (IBAction)openTrainSite:(id)sender {

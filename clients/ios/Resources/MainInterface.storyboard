@@ -683,6 +683,75 @@
                                         </menu>
                                     </children>
                                 </menu>
+                                <menu title="Mark Story Read" id="F58-l2-PKW">
+                                    <children>
+                                        <command title="On Scroll or Selection" propertyListString="scroll" menuElementState="on" id="4KY-qs-fqy">
+                                            <connections>
+                                                <action selector="chooseMarkRead:" destination="J28-e1-gcC" id="8CC-2A-86p"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Only On Selection" propertyListString="selection" id="Oxs-gH-8uW">
+                                            <connections>
+                                                <action selector="chooseMarkRead:" destination="J28-e1-gcC" id="tUJ-o6-93x"/>
+                                            </connections>
+                                        </command>
+                                        <command title="After 1 Second" propertyListString="after1" id="8N2-NM-0oH">
+                                            <connections>
+                                                <action selector="chooseMarkRead:" destination="J28-e1-gcC" id="OOx-Ia-Z4F"/>
+                                            </connections>
+                                        </command>
+                                        <command title="After 2 Seconds" propertyListString="after2" id="NpG-QU-JWP">
+                                            <connections>
+                                                <action selector="chooseMarkRead:" destination="J28-e1-gcC" id="Hib-0Y-aOk"/>
+                                            </connections>
+                                        </command>
+                                        <command title="After 3 Seconds" propertyListString="after3" id="8XU-mD-ewj">
+                                            <connections>
+                                                <action selector="chooseMarkRead:" destination="J28-e1-gcC" id="ULM-Tx-ocu"/>
+                                            </connections>
+                                        </command>
+                                        <command title="After 4 Seconds" propertyListString="after4" id="Fi0-hg-qE4">
+                                            <connections>
+                                                <action selector="chooseMarkRead:" destination="J28-e1-gcC" id="I23-Ch-Axv"/>
+                                            </connections>
+                                        </command>
+                                        <command title="After 5 Seconds" propertyListString="after5" id="crp-Mk-3Uc">
+                                            <connections>
+                                                <action selector="chooseMarkRead:" destination="J28-e1-gcC" id="0ue-Wx-fDG"/>
+                                            </connections>
+                                        </command>
+                                        <command title="After 10 Seconds" propertyListString="after10" id="M0e-aS-ZKr">
+                                            <connections>
+                                                <action selector="chooseMarkRead:" destination="J28-e1-gcC" id="WzB-OL-eOP"/>
+                                            </connections>
+                                        </command>
+                                        <command title="After 15 Seconds" propertyListString="after15" id="CXR-nA-oPj">
+                                            <connections>
+                                                <action selector="chooseMarkRead:" destination="J28-e1-gcC" id="ap2-kb-Vyk"/>
+                                            </connections>
+                                        </command>
+                                        <command title="After 30 Seconds" propertyListString="after30" id="zQf-ni-TIX">
+                                            <connections>
+                                                <action selector="chooseMarkRead:" destination="J28-e1-gcC" id="3Pz-IZ-vaV"/>
+                                            </connections>
+                                        </command>
+                                        <command title="After 45 Seconds" propertyListString="after45" id="SC8-5i-roM">
+                                            <connections>
+                                                <action selector="chooseMarkRead:" destination="J28-e1-gcC" id="2Jn-Nz-Fks"/>
+                                            </connections>
+                                        </command>
+                                        <command title="After 60 Seconds" propertyListString="after60" id="YMx-p9-Oo9">
+                                            <connections>
+                                                <action selector="chooseMarkRead:" destination="J28-e1-gcC" id="ggn-Ro-TAp"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Manually" propertyListString="manually" id="EeF-4m-Vff">
+                                            <connections>
+                                                <action selector="chooseMarkRead:" destination="J28-e1-gcC" id="Rud-J3-gmm"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
                                 <menu id="CCe-ei-YVh">
                                     <menuOptions key="menuOptions" displayInline="YES"/>
                                 </menu>
