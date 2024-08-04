@@ -2590,6 +2590,14 @@
         // = Send To =
         // ===========
 
+        send_story_to_thirdparty: function (story_id, service) {
+            if (this['send_story_to_' + service]) {
+                this['send_story_to_' + service](story_id);
+            } else {
+                this.send_story_to_email(story_id);
+            }
+        },
+
         send_story_to_instapaper: function (story_id) {
             var story = this.model.get_story(story_id);
             var url = 'https://www.instapaper.com/edit';
@@ -2807,6 +2815,10 @@
         },
 
         send_story_to_email: function (story) {
+            // If story is a story_id (string), get the story object
+            if (_.isString(story)) {
+                story = this.model.get_story(story);
+            }
             NEWSBLUR.reader_send_email = new NEWSBLUR.ReaderSendEmail(story);
             NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
         },
@@ -3918,127 +3930,96 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, starred_title)
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-story-thirdparty' }, [
-                        (NEWSBLUR.Preferences['story_share_facebook'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-facebook' }).bind('mouseenter', _.bind(function (e) {
+                        (NEWSBLUR.Preferences['story_share_facebook'] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-facebook' }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Facebook').parent().addClass('NB-menu-manage-highlight-facebook');
                         }, this)).bind('mouseleave', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-facebook');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_twitter'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-twitter' }).bind('mouseenter', _.bind(function (e) {
+                        (NEWSBLUR.Preferences['story_share_twitter'] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-twitter' }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Twitter').parent().addClass('NB-menu-manage-highlight-twitter');
                         }, this)).bind('mouseleave', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-twitter');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_readitlater'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-readitlater' }).bind('mouseenter', _.bind(function (e) {
+                        (NEWSBLUR.Preferences['story_share_readitlater'] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-readitlater' }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Pocket (RIL)').parent().addClass('NB-menu-manage-highlight-readitlater');
                         }, this)).bind('mouseleave', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-readitlater');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_tumblr'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-tumblr' }).bind('mouseenter', _.bind(function (e) {
+                        (NEWSBLUR.Preferences['story_share_tumblr'] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-tumblr' }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Tumblr').parent().addClass('NB-menu-manage-highlight-tumblr');
                         }, this)).bind('mouseleave', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-tumblr');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_blogger'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-blogger' }).bind('mouseenter', _.bind(function (e) {
+                        (NEWSBLUR.Preferences['story_share_blogger'] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-blogger' }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Blogger').parent().addClass('NB-menu-manage-highlight-blogger');
                         }, this)).bind('mouseleave', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-blogger');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_delicious'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-delicious' }).bind('mouseenter', _.bind(function (e) {
+                        (NEWSBLUR.Preferences['story_share_delicious'] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-delicious' }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Delicious').parent().addClass('NB-menu-manage-highlight-delicious');
                         }, this)).bind('mouseleave', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-delicious');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_pinboard'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-pinboard' }).bind('mouseenter', _.bind(function (e) {
+                        (NEWSBLUR.Preferences['story_share_pinboard'] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-pinboard' }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Pinboard').parent().addClass('NB-menu-manage-highlight-pinboard');
                         }, this)).bind('mouseleave', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-pinboard');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_raindrop'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-raindrop' }).bind('mouseenter', _.bind(function (e) {
+                        (NEWSBLUR.Preferences['story_share_raindrop'] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-raindrop' }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Raindrop.io').parent().addClass('NB-menu-manage-highlight-raindrop');
                         }, this)).bind('mouseleave', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-raindrop');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_whatsapp'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-whatsapp' }).bind('mouseenter', _.bind(function (e) {
+                        (NEWSBLUR.Preferences['story_share_whatsapp'] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-whatsapp' }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('WhatsApp').parent().addClass('NB-menu-manage-highlight-whatsapp');
                         }, this)).bind('mouseleave', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-whatsapp');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_linkedin'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-linkedin' }).bind('mouseenter', _.bind(function (e) {
+                        (NEWSBLUR.Preferences['story_share_linkedin'] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-linkedin' }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('LinkedIn').parent().addClass('NB-menu-manage-highlight-linkedin');
                         }, this)).bind('mouseleave', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-linkedin');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_pinterest'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-pinterest' }).bind('mouseenter', _.bind(function (e) {
+                        (NEWSBLUR.Preferences['story_share_pinterest'] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-pinterest' }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Pinterest').parent().addClass('NB-menu-manage-highlight-pinterest');
                         }, this)).bind('mouseleave', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-pinterest');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_buffer'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-buffer' }).bind('mouseenter', _.bind(function (e) {
+                        (NEWSBLUR.Preferences['story_share_buffer'] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-buffer' }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Buffer').parent().addClass('NB-menu-manage-highlight-buffer');
                         }, this)).bind('mouseleave', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-buffer');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_diigo'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-diigo' }).bind('mouseenter', _.bind(function (e) {
+                        (NEWSBLUR.Preferences['story_share_diigo'] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-diigo' }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Diigo').parent().addClass('NB-menu-manage-highlight-diigo');
                         }, this)).bind('mouseleave', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-diigo');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_evernote'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-evernote' }).bind('mouseenter', _.bind(function (e) {
+                        (NEWSBLUR.Preferences['story_share_evernote'] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-evernote' }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Evernote').parent().addClass('NB-menu-manage-highlight-evernote');
                         }, this)).bind('mouseleave', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-evernote');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_pocket'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-pocket' }).bind('mouseenter', _.bind(function (e) {
+                        (NEWSBLUR.Preferences['story_share_pocket'] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-pocket' }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Pocket').parent().addClass('NB-menu-manage-highlight-pocket');
                         }, this)).bind('mouseleave', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-pocket');
                         }, this))),
-                        (NEWSBLUR.Preferences['story_share_instapaper'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-instapaper' }).bind('mouseenter', _.bind(function (e) {
+                        (NEWSBLUR.Preferences['story_share_instapaper'] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-instapaper' }).bind('mouseenter', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Instapaper').parent().addClass('NB-menu-manage-highlight-instapaper');
                         }, this)).bind('mouseleave', _.bind(function (e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-instapaper');
                         }, this))),
-                        $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-email', role: "button" }),
+                        $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-email', role: "button" }),
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Email story')
                     ]).bind('click', _.bind(function (e) {
                         e.preventDefault();
                         e.stopPropagation();
                         var $target = $(e.target);
-                        if ($target.hasClass('NB-menu-manage-thirdparty-facebook')) {
-                            this.send_story_to_facebook(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-twitter')) {
-                            this.send_story_to_twitter(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-readitlater')) {
-                            this.send_story_to_readitlater(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-tumblr')) {
-                            this.send_story_to_tumblr(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-blogger')) {
-                            this.send_story_to_blogger(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-delicious')) {
-                            this.send_story_to_delicious(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-pinboard')) {
-                            this.send_story_to_pinboard(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-raindrop')) {
-                            this.send_story_to_raindrop(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-linkedin')) {
-                            this.send_story_to_linkedin(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-whatsapp')) {
-                            this.send_story_to_whatsapp(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-pinterest')) {
-                            this.send_story_to_pinterest(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-buffer')) {
-                            this.send_story_to_buffer(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-diigo')) {
-                            this.send_story_to_diigo(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-evernote')) {
-                            this.send_story_to_evernote(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-googleplus')) {
-                            this.send_story_to_googleplus(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-instapaper')) {
-                            this.send_story_to_instapaper(story.id);
-                        } else {
-                            this.send_story_to_email(story);
+                        var service = $target.hasClass('NB-menu-manage-thirdpartyicon') ? $target.attr('class').match(/NB-menu-manage-thirdparty-(\w+)/)[1] : 'email';
+                        if (service && service.length > 0) {
+                            this.send_story_to_thirdparty(story.id, service);
                         }
                     }, this)),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-story NB-menu-manage-story-share', role: "button" }, [
