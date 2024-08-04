@@ -441,6 +441,5 @@ def chunks(l, n):
 
 def strip_underscore_from_feed_address(feed_address):
     # Strip _=#### from feed_address
-    parsed_url = qurl(feed_address)
-    parsed_url.remove_query_param("_")
-    return parsed_url.url
+    parsed_url = qurl(feed_address, remove="_")
+    return parsed_url
