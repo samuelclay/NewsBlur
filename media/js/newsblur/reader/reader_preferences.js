@@ -720,6 +720,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-facebook', name: 'story_share_facebook' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-facebook' })
                             ]),
+                            $.make('div', { className: 'NB-preference-option', title: 'Reddit' }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-reddit', name: 'story_share_reddit' }),
+                                $.make('label', { 'for': 'NB-preference-story-share-reddit' })
+                            ]),
                             $.make('div', { className: 'NB-preference-option', title: 'Pocket' }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-readitlater', name: 'story_share_readitlater' }),
                                 $.make('label', { 'for': 'NB-preference-story-share-readitlater' })

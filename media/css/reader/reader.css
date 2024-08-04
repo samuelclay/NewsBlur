@@ -5402,6 +5402,11 @@ body {
     background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat center center;
 }
 
+.NB-sideoption .NB-sideoption-thirdparty-reddit {
+    background: transparent url('/media/embed/reader/reddit.png') no-repeat center center;
+    background-size: 16px;
+}
+
 
 /* ===================== */
 /* = Sideoption - Save = */
@@ -10002,6 +10007,11 @@ form.opml_import_form input {
     background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat 0 0;
 }
 
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-reddit {
+    background: transparent url('/media/embed/reader/reddit.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdpartyicon {
     opacity: .2;
 }
@@ -10012,6 +10022,7 @@ form.opml_import_form input {
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-twitter .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-facebook .NB-menu-manage-thirdparty-email,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-reddit .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readitlater .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-tumblr .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-blogger .NB-menu-manage-thirdparty-email,
@@ -10032,6 +10043,10 @@ form.opml_import_form input {
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-facebook .NB-menu-manage-thirdparty-facebook {
+    opacity: 1;
+}
+
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-reddit .NB-menu-manage-thirdparty-reddit {
     opacity: 1;
 }
 
@@ -13027,6 +13042,11 @@ form.opml_import_form input {
 
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-facebook] {
     background: transparent url('/media/embed/reader/facebook.gif') no-repeat 0 0;
+}
+
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-reddit] {
+    background: transparent url('/media/embed/reader/reddit.png') no-repeat 0 0;
+    background-size: 16px;
 }
 
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readitlater] {

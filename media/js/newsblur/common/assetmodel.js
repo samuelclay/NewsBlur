@@ -6,6 +6,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         "pdf": "PDF",
         "facebook": "Facebook",
         "twitter": "Twitter",
+        "reddit": "Reddit",
         "readitlater": "Pocket",
         "tumblr": "Tumblr",
         "delicious": "Delicious",
