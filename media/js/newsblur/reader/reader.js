@@ -2790,6 +2790,18 @@
             NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
         },
 
+        send_story_to_flipboard: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = [
+                'https://share.flipboard.com/bookmarklet/popout?v=2&title=',
+                encodeURIComponent(story.get('story_title')),
+                "&url=",
+                encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
         send_story_to_pinterest: function (story_id) {
             var story = this.model.get_story(story_id);
             var url = 'https://www.pinterest.com/pin/find/?';
