@@ -18,8 +18,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "mouseleave .NB-feed-story-manage-icon": "mouseleave_manage_icon",
         "mouseenter .NB-sideoption-thirdparty": "mouseenter_thirdparty",
         "mouseleave .NB-sideoption-thirdparty": "mouseleave_thirdparty",
-        "mouseenter .NB-sideoption-icon": "mouseenter_thirdparty",
-        "mouseleave .NB-sideoption-icon": "mouseleave_thirdparty",
         "contextmenu .NB-feed-story-header": "show_manage_menu_rightclick",
         "mouseup .NB-story-content-wrapper": "mouseup_check_selection",
         "click .NB-feed-story-manage-icon": "show_manage_menu",
@@ -309,7 +307,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             </div>\
             <div class="NB-feed-story-comments-container"></div>\
             <div class="NB-feed-story-sideoptions-container">\
-`                <div class="NB-sideoption NB-feed-story-email" role="button">\
+                <div class="NB-sideoption NB-feed-story-email" role="button">\
                     <div class="NB-sideoption-title">Email</div>\
                     <div class="NB-sideoption-thirdparty NB-sideoption-icon">&nbsp;</div>\
                     <div class="NB-flex-break"></div>\
