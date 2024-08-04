@@ -2766,6 +2766,30 @@
             NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
         },
 
+        send_story_to_livejournal: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = [
+                'http://www.livejournal.com/update.bml?subject=',
+                encodeURIComponent(story.get('story_title')),
+                "&event=",
+                encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
+        send_story_to_hackernews: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = [
+                'https://news.ycombinator.com/submitlink?u=',
+                encodeURIComponent(story.get('story_title')),
+                "&t=",
+                encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
         send_story_to_pinterest: function (story_id) {
             var story = this.model.get_story(story_id);
             var url = 'https://www.pinterest.com/pin/find/?';

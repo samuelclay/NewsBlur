@@ -19,6 +19,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         "diigo": "Diigo",
         "evernote": "Evernote",
         "instapaper": "Instapaper",
+        "livejournal": "LiveJournal",
+        "hackernews": "Hacker News",
         "readwise": "Readwise",
         "telegram": "Telegram",
         "linkedin": "LinkedIn",
