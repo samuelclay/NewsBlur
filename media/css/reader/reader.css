@@ -5342,6 +5342,11 @@ body {
     background: transparent url('/media/embed/reader/pocket_ril.png') no-repeat center center;
 }
 
+.NB-sideoption .NB-sideoption-thirdparty-linkedin {
+    background: transparent url('/media/embed/reader/linkedin.jpg') no-repeat center center;
+    background-size: 16px;
+}
+
 .NB-sideoption .NB-sideoption-thirdparty-tumblr {
     background: transparent url('/media/embed/reader/tumblr.png') no-repeat center center;
 }
@@ -9947,6 +9952,11 @@ form.opml_import_form input {
     background: transparent url('/media/embed/reader/pocket_ril.png') no-repeat 0 0;
 }
 
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-linkedin {
+    background: transparent url('/media/embed/reader/linkedin.jpg') no-repeat 0 0;
+    background-size: 16px;
+}
+
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-tumblr {
     background: transparent url('/media/embed/reader/tumblr.png') no-repeat 0 0;
 }
@@ -10024,6 +10034,7 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-facebook .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-reddit .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readitlater .NB-menu-manage-thirdparty-email,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-linkedin .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-tumblr .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-blogger .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-delicious .NB-menu-manage-thirdparty-email,
@@ -10051,6 +10062,10 @@ form.opml_import_form input {
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readitlater .NB-menu-manage-thirdparty-readitlater {
+    opacity: 1;
+}
+
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-linkedin .NB-menu-manage-thirdparty-linkedin {
     opacity: 1;
 }
 
@@ -13021,8 +13036,8 @@ form.opml_import_form input {
 }
 
 .NB-modal-preferences .NB-preference.NB-preference-story-share .NB-preference-option {
-    float: left;
     margin: 0 8px 4px 0;
+    clear: both;
 }
 
 .NB-modal-preferences .NB-preference.NB-preference-story-share input {
@@ -13030,9 +13045,8 @@ form.opml_import_form input {
 }
 
 .NB-modal-preferences .NB-preference.NB-preference-story-share label {
-    width: 16px;
-    height: 16px;
     margin: 0 0 0 2px;
+    padding-left: 20px;
 }
 
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-twitter] {
@@ -13051,6 +13065,11 @@ form.opml_import_form input {
 
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readitlater] {
     background: transparent url('/media/embed/reader/pocket_ril.png') no-repeat 0 0;
+}
+
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-linkedin] {
+    background: transparent url('/media/embed/reader/linkedin.jpg') no-repeat 0 0;
+    background-size: 16px;
 }
 
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-tumblr] {
