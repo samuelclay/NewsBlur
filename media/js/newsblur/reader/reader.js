@@ -2754,6 +2754,18 @@
             NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
         },
 
+        send_story_to_whatsapp: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = [
+                'https://api.whatsapp.com/send?text=',
+                encodeURIComponent(story.get('story_title')),
+                "%20",
+                encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
         send_story_to_pinterest: function (story_id) {
             var story = this.model.get_story(story_id);
             var url = 'https://www.pinterest.com/pin/find/?';
