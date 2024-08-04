@@ -26,7 +26,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-tag": "save_classifier",
         "click .NB-feed-story-author": "save_classifier",
         "click .NB-feed-story-train": "open_story_trainer",
-        "click .NB-feed-story-email": "open_email",
+        "click .NB-feed-story-email": "maybe_open_email",
         "click .NB-feed-story-save": "toggle_starred",
         "click .NB-story-comments-label": "scroll_to_comments",
         "click .NB-story-content-expander": "expand_story",
@@ -315,7 +315,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                         <div class="NB-sideoption-icons">\
                             <% _.each(NEWSBLUR.assets.third_party_sharing_services, function(label, key) { %>\
                                 <% if (NEWSBLUR.Preferences["story_share_"+key]) { %>\
-                                    <div class="NB-sideoption-thirdparty NB-sideoption-thirdparty-<%= key %>" data-service-name="<%= label %>" role="button">\
+                                    <div class="NB-sideoption-thirdparty NB-sideoption-thirdparty-<%= key %>" data-service-name="<%= key %>" data-service-label="<%= label %>" role="button">\
                                     </div>\
                                 <% } %>\
                             <% }) %>\
@@ -770,7 +770,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     mouseenter_thirdparty: function (event) {
-        var serviceName = $(event.currentTarget).data("service-name");
+        var serviceName = $(event.currentTarget).data("service-label");
         $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-title").text(serviceName);
         $(event.currentTarget).addClass("NB-hover");
         $(event.currentTarget).siblings(".NB-sideoption-icon").addClass("NB-dimmed");
@@ -1025,6 +1025,17 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             options['feed_loaded'] = true;
         }
         NEWSBLUR.reader.open_story_trainer(this.model.id, feed_id, options);
+    },
+
+    maybe_open_email: function (e) {
+        // Check if target has .NB-sideoption-thirdparty class
+        if (!$(e.target).hasClass('NB-sideoption-thirdparty')) {
+            return this.open_email();
+        }
+
+        var service = $(e.target).data('service-name');
+        console.log(['maybe_open_email', e.target, service]);
+        NEWSBLUR.reader.send_story_to_thirdparty(this.model.id, service);
     },
 
     open_email: function () {

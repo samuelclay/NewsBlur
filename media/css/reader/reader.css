@@ -9920,7 +9920,7 @@ form.opml_import_form input {
     filter: hue-rotate(338deg) saturate(18);
 }
 
-.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-icon {
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdpartyicon {
     width: 16px;
     height: 16px;
     float: right;
@@ -10002,7 +10002,7 @@ form.opml_import_form input {
     background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat 0 0;
 }
 
-.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-icon {
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdpartyicon {
     opacity: .2;
 }
 
