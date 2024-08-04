@@ -5352,6 +5352,16 @@ body {
     background-size: 16px;
 }
 
+.NB-sideoption .NB-sideoption-thirdparty-livejournal {
+    background: transparent url('/media/embed/reader/livejournal.png') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-hackernews {
+    background: transparent url('/media/embed/reader/hackernews.png') no-repeat center center;
+    background-size: 16px;
+}
+
 .NB-sideoption .NB-sideoption-thirdparty-tumblr {
     background: transparent url('/media/embed/reader/tumblr.png') no-repeat center center;
 }
@@ -9967,6 +9977,16 @@ form.opml_import_form input {
     background-size: 16px;
 }
 
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-livejournal {
+    background: transparent url('/media/embed/reader/livejournal.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-hackernews {
+    background: transparent url('/media/embed/reader/hackernews.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-tumblr {
     background: transparent url('/media/embed/reader/tumblr.png') no-repeat 0 0;
 }
@@ -10046,6 +10066,8 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readitlater .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-linkedin .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-whatsapp .NB-menu-manage-thirdparty-email,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-livejournal .NB-menu-manage-thirdparty-email,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-hackernews .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-tumblr .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-blogger .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-delicious .NB-menu-manage-thirdparty-email,
@@ -10081,6 +10103,14 @@ form.opml_import_form input {
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-whatsapp .NB-menu-manage-thirdparty-whatsapp {
+    opacity: 1;
+}
+
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-livejournal .NB-menu-manage-thirdparty-livejournal {
+    opacity: 1;
+}
+
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-hackernews .NB-menu-manage-thirdparty-hackernews {
     opacity: 1;
 }
 
@@ -13089,6 +13119,16 @@ form.opml_import_form input {
 
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-whatsapp] {
     background: transparent url('/media/embed/reader/whatsapp.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-livejournal] {
+    background: transparent url('/media/embed/reader/livejournal.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-hackernews] {
+    background: transparent url('/media/embed/reader/hackernews.png') no-repeat 0 0;
     background-size: 16px;
 }
 
