@@ -245,7 +245,7 @@
                 $windows.toggleClass('NB-narrow-content', narrow);
                 var extranarrow = center_width < 666;
                 $windows.toggleClass('NB-extra-narrow-content', extranarrow);
-                var wide = center_width > 860;
+                var wide = center_width > 980;
                 $windows.toggleClass('NB-wide-content', wide);
                 var extrawide = center_width > 1180;
                 $windows.toggleClass('NB-extra-wide-content', extrawide);
