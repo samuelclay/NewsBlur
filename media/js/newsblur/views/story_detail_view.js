@@ -1036,6 +1036,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var service = $(e.target).data('service-name');
         console.log(['maybe_open_email', e.target, service]);
         NEWSBLUR.reader.send_story_to_thirdparty(this.model.id, service);
+
+        if (service == 'copyurl') {
+            this.$(".NB-feed-story-email .NB-sideoption-title").text("Copied");
+        } else if (service == 'copytext') {
+            this.$(".NB-feed-story-email .NB-sideoption-title").text("Copied");
+        }
     },
 
     open_email: function () {

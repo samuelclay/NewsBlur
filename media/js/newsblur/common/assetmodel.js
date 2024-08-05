@@ -2,6 +2,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
     third_party_sharing_services: {
         "copyurl": "Copy URL",
+        "copytext": "Copy Text",
         "print": "Print",
         "pdf": "PDF",
         "facebook": "Facebook",
