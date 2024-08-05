@@ -5225,6 +5225,7 @@ body {
     display: flex;
     align-items: center;
     order: 2;
+    flex-wrap: wrap;
 }
 
 .NB-sideoption .NB-sideoption-title {
@@ -5339,7 +5340,8 @@ body {
 }
 
 .NB-sideoption .NB-sideoption-thirdparty-readitlater {
-    background: transparent url('/media/embed/reader/pocket_ril.png') no-repeat center center;
+    background: transparent url('/media/embed/reader/pocket.png') no-repeat center center;
+    background-size: 16px;
 }
 
 .NB-sideoption .NB-sideoption-thirdparty-linkedin {
@@ -5374,6 +5376,16 @@ body {
 
 .NB-sideoption .NB-sideoption-thirdparty-telegram {
     background: transparent url('/media/embed/reader/telegram.png') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-copyurl {
+    background: transparent url('/media/embed/reader/copyurl.png') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-copytext {
+    background: transparent url('/media/embed/reader/copytext.png') no-repeat center center;
     background-size: 16px;
 }
 
@@ -9979,7 +9991,8 @@ form.opml_import_form input {
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-readitlater {
-    background: transparent url('/media/embed/reader/pocket_ril.png') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/pocket.png') no-repeat 0 0;
+    background-size: 16px;
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-linkedin {
@@ -10014,6 +10027,16 @@ form.opml_import_form input {
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-telegram {
     background: transparent url('/media/embed/reader/telegram.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-copyurl {
+    background: transparent url('/media/embed/reader/copyurl.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-copytext {
+    background: transparent url('/media/embed/reader/copytext.png') no-repeat 0 0;
     background-size: 16px;
 }
 
@@ -10101,6 +10124,8 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-flipboard .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-lineme .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-telegram .NB-menu-manage-thirdparty-email,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-copyurl .NB-menu-manage-thirdparty-email,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-copytext .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-tumblr .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-blogger .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-delicious .NB-menu-manage-thirdparty-email,
@@ -10156,6 +10181,14 @@ form.opml_import_form input {
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-telegram .NB-menu-manage-thirdparty-telegram {
+    opacity: 1;
+}
+
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-copyurl .NB-menu-manage-thirdparty-copyurl {
+    opacity: 1;
+}
+
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-copytext .NB-menu-manage-thirdparty-copytext {
     opacity: 1;
 }
 
@@ -13154,7 +13187,8 @@ form.opml_import_form input {
 }
 
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readitlater] {
-    background: transparent url('/media/embed/reader/pocket_ril.png') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/pocket.png') no-repeat 0 0;
+    background-size: 16px;
 }
 
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-linkedin] {
@@ -13189,6 +13223,16 @@ form.opml_import_form input {
 
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-telegram] {
     background: transparent url('/media/embed/reader/telegram.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-copyurl] {
+    background: transparent url('/media/embed/reader/copyurl.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-copytext] {
+    background: transparent url('/media/embed/reader/copytext.png') no-repeat 0 0;
     background-size: 16px;
 }
 

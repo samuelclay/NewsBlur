@@ -2812,6 +2812,20 @@
             NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
         },
 
+        send_story_to_copyurl: function (story_id) {
+            // Copy story url to clipboard
+            var story = this.model.get_story(story_id);
+            navigator.clipboard.writeText(story.get('story_permalink'));
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
+        send_story_to_copytext: function (story_id) {
+            // Copy story title to clipboard
+            var story = this.model.get_story(story_id);
+            navigator.clipboard.writeText(story.get('story_title') + "\n\n" + story.get('story_content') + "\n\n" + story.get('story_permalink'));
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
         send_story_to_telegram: function (story_id) {
             var story = this.model.get_story(story_id);
             var url = [
