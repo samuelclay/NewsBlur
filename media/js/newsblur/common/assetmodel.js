@@ -5,7 +5,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         "copytext": "Copy Text",
         "print": "Print",
         "facebook": "Facebook",
-        "twitter": "Twitter",
+        "twitter": "X / Twitter",
         "reddit": "Reddit",
         "readitlater": "Pocket",
         "tumblr": "Tumblr",

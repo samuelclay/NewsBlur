@@ -6,8 +6,8 @@ attrs==21.1.0
 beautifulsoup4==4.9.3
 billiard==3.6.4.0
 bleach==3.2.1
-boto3==1.18.12
-botocore==1.21.12
+boto3==1.34.153
+botocore==1.34.153
 black~=23.1.0
 celery==4.4.7
 certifi==2020.12.5
