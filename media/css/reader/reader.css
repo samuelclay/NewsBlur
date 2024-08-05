@@ -5333,6 +5333,8 @@ body {
     flex-direction: column;
     gap: 4px;
     order: 4;
+    margin-left: auto;
+    margin-right: 8px;
 }
 
 .NB-sideoption .NB-sideoption-thirdparty-instapaper {
@@ -5386,6 +5388,16 @@ body {
 
 .NB-sideoption .NB-sideoption-thirdparty-copytext {
     background: transparent url('/media/embed/reader/copytext.png') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-print {
+    background: transparent url('/media/embed/reader/print.png') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-pdf {
+    background: transparent url('/media/embed/reader/pdf.png') no-repeat center center;
     background-size: 16px;
 }
 
@@ -10040,6 +10052,16 @@ form.opml_import_form input {
     background-size: 16px;
 }
 
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-pdf {
+    background: transparent url('/media/embed/reader/pdf.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-print {
+    background: transparent url('/media/embed/reader/print.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-tumblr {
     background: transparent url('/media/embed/reader/tumblr.png') no-repeat 0 0;
 }
@@ -10126,6 +10148,8 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-telegram .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-copyurl .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-copytext .NB-menu-manage-thirdparty-email,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-print .NB-menu-manage-thirdparty-email,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-pdf .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-tumblr .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-blogger .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-delicious .NB-menu-manage-thirdparty-email,
@@ -10189,6 +10213,14 @@ form.opml_import_form input {
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-copytext .NB-menu-manage-thirdparty-copytext {
+    opacity: 1;
+}
+
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-print .NB-menu-manage-thirdparty-print {
+    opacity: 1;
+}
+
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-pdf .NB-menu-manage-thirdparty-pdf {
     opacity: 1;
 }
 
@@ -12977,6 +13009,10 @@ form.opml_import_form input {
     padding: 2px 0;
 }
 
+.NB-modal-preferences .NB-preference-story-share .NB-preference-options {
+    column-count: 2;
+}
+
 .NB-modal-preferences .NB-preference .NB-preference-label {
     float: left;
     width: 176px;
@@ -13233,6 +13269,16 @@ form.opml_import_form input {
 
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-copytext] {
     background: transparent url('/media/embed/reader/copytext.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-pdf] {
+    background: transparent url('/media/embed/reader/pdf.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-print] {
+    background: transparent url('/media/embed/reader/print.png') no-repeat 0 0;
     background-size: 16px;
 }
 

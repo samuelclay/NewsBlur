@@ -1,7 +1,7 @@
-import http.client
 import base64
 import concurrent
 import datetime
+import http.client
 import random
 import re
 import socket
@@ -3196,3 +3196,16 @@ def remove_dashboard_river(request):
     return {
         "dashboard_rivers": dashboard_rivers,
     }
+
+
+def print_story(request):
+    story_hash = request.GET["story_hash"]
+    try:
+        story = MStory.objects.get(story_hash=story_hash)
+    except MStory.DoesNotExist:
+        raise Http404
+
+    story = Feed.format_story(story, story.story_feed_id, text=True)
+    return render(request, "reader/print.xhtml", {"story": story})
+
+
