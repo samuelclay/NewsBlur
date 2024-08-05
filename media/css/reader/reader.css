@@ -5367,6 +5367,16 @@ body {
     background-size: 16px;
 }
 
+.NB-sideoption .NB-sideoption-thirdparty-lineme {
+    background: transparent url('/media/embed/reader/lineme.png') no-repeat center center;
+    background-size: 16px;
+}
+
+.NB-sideoption .NB-sideoption-thirdparty-telegram {
+    background: transparent url('/media/embed/reader/telegram.png') no-repeat center center;
+    background-size: 16px;
+}
+
 .NB-sideoption .NB-sideoption-thirdparty-tumblr {
     background: transparent url('/media/embed/reader/tumblr.png') no-repeat center center;
 }
@@ -9997,6 +10007,16 @@ form.opml_import_form input {
     background-size: 16px;
 }
 
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-lineme {
+    background: transparent url('/media/embed/reader/lineme.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-telegram {
+    background: transparent url('/media/embed/reader/telegram.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-tumblr {
     background: transparent url('/media/embed/reader/tumblr.png') no-repeat 0 0;
 }
@@ -10079,6 +10099,8 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-livejournal .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-hackernews .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-flipboard .NB-menu-manage-thirdparty-email,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-lineme .NB-menu-manage-thirdparty-email,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-telegram .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-tumblr .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-blogger .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-delicious .NB-menu-manage-thirdparty-email,
@@ -10126,6 +10148,14 @@ form.opml_import_form input {
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-flipboard .NB-menu-manage-thirdparty-flipboard {
+    opacity: 1;
+}
+
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-lineme .NB-menu-manage-thirdparty-lineme {
+    opacity: 1;
+}
+
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-telegram .NB-menu-manage-thirdparty-telegram {
     opacity: 1;
 }
 
@@ -13149,6 +13179,16 @@ form.opml_import_form input {
 
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-flipboard] {
     background: transparent url('/media/embed/reader/flipboard.jpg') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-lineme] {
+    background: transparent url('/media/embed/reader/lineme.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-telegram] {
+    background: transparent url('/media/embed/reader/telegram.png') no-repeat 0 0;
     background-size: 16px;
 }
 
