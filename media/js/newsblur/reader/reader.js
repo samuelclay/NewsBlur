@@ -2822,7 +2822,16 @@
         send_story_to_copytext: function (story_id) {
             // Copy story title to clipboard
             var story = this.model.get_story(story_id);
-            navigator.clipboard.writeText(story.get('story_title') + "\n\n" + story.get('story_content') + "\n\n" + story.get('story_permalink'));
+            var content_text = story.get('story_content');
+            content_text = $(content_text).text();
+            navigator.clipboard.writeText(story.get('story_title') + "\n\n" + story.get('story_permalink') + "\n\n" + content_text);
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
+        send_story_to_print: function (story_id) {
+            var story = this.model.get_story(story_id);
+            // Open /rss_feeds/print?story_id=story_id
+            window.open('/reader/print?story_hash=' + story.get('story_hash'), '_blank');
             NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
         },
 

@@ -1,0 +1,25 @@
+<html>
+<head>
+    <title>{{ story.story_title }}</title>
+    <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+
+    <style>
+        body {
+            font-family: 'Whitney SSm A', 'Whitney SSm B', "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+<h1>{{ story.story_title }}</h1>
+<h4>{{ story.story_permalink }}</h4>
+<p>{{ story.story_content|safe }}</p>
+
+<button onclick="window.print()">Print</button>
+
+<script>
+    window.print();
+</script>
+
+</body>
+</html>
