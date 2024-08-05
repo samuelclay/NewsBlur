@@ -2802,6 +2802,28 @@
             NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
         },
 
+        send_story_to_lineme: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = [
+                'https://social-plugins.line.me/lineit/share?url=',
+                encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
+        send_story_to_telegram: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = [
+                'https://telegram.me/share/url?url=',
+                encodeURIComponent(story.get('story_permalink')),
+                "&text=",
+                encodeURIComponent(story.get('story_title'))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
         send_story_to_pinterest: function (story_id) {
             var story = this.model.get_story(story_id);
             var url = 'https://www.pinterest.com/pin/find/?';
