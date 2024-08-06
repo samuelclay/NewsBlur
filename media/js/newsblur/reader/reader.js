@@ -2817,6 +2817,8 @@
             var story = this.model.get_story(story_id);
             navigator.clipboard.writeText(story.get('story_permalink'));
             NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+            var $thirdparty = $('.NB-menu-manage-story-thirdparty');
+            $('.NB-menu-manage-title', $thirdparty).text('Copied URL');
         },
 
         send_story_to_copytext: function (story_id) {
@@ -2826,6 +2828,9 @@
             content_text = $(content_text).text();
             navigator.clipboard.writeText(story.get('story_title') + "\n\n" + story.get('story_permalink') + "\n\n" + content_text);
             NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+            var $thirdparty = $('.NB-menu-manage-story-thirdparty');
+            $('.NB-menu-manage-title', $thirdparty).text('Copied text');
+
         },
 
         send_story_to_print: function (story_id) {

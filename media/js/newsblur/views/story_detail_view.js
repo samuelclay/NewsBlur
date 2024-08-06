@@ -309,7 +309,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             <div class="NB-feed-story-sideoptions-container">\
                 <div class="NB-sideoption NB-feed-story-email" role="button">\
                     <div class="NB-sideoption-title">Email</div>\
-                    <div class="NB-sideoption-thirdparty NB-sideoption-icon">&nbsp;</div>\
+                    <div class="NB-sideoption-thirdparty NB-sideoption-icon NB-sideoption-icon-email">&nbsp;</div>\
                     <div class="NB-flex-break"></div>\
                     <div class="NB-sideoption-thirdparty-services">\
                         <div class="NB-sideoption-icons">\
@@ -774,6 +774,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-title").text(serviceName);
         $(event.currentTarget).addClass("NB-hover");
         $(event.currentTarget).siblings(".NB-sideoption-icon").addClass("NB-dimmed");
+        if ($(event.currentTarget).closest(".NB-sideoption-thirdparty-services").length) {
+            $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-icon-email").addClass("NB-dimmed");
+        } else {
+            $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-icon-email").removeClass("NB-dimmed");
+        }
     },
 
     mouseleave_thirdparty: function (event) {
@@ -781,6 +786,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
         $(event.currentTarget).siblings(".NB-sideoption-icon").removeClass("NB-dimmed");
         $(event.currentTarget).removeClass("NB-hover");
+        $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-icon-email").removeClass("NB-dimmed");
     },
 
     mouseup_check_selection: function (e) {
