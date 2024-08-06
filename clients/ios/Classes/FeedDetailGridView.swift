@@ -109,18 +109,29 @@ struct FeedDetailGridView: View {
                         
                         print("🪿 Selection: '\(oldSelected?.title ?? "none")' -> '\(newSelected?.title ?? "none")'")
                         
-                        Task {
-                            if newSelected == nil, !cache.isPhone, let oldSelected, let story = cache.story(with: oldSelected.index) {
-                                scroller.scrollTo(story.id, anchor: .top)
-                            } else if let newSelected, !cache.isGridView {
+                        if newSelected == nil, !cache.isPhone, let oldSelected, let story = cache.story(with: oldSelected.index) {
+                            scroller.scrollTo(story.id, anchor: .top)
+                        } else if let newSelected, !cache.isGridView {
+                            Task {
                                 withAnimation(Animation.spring().delay(0.5)) {
                                     scroller.scrollTo(newSelected.id)
                                 }
-                            } else if !cache.isPhone {
-                                withAnimation(Animation.spring().delay(0.5)) {
+                            }
+                        } else if !cache.isPhone {
+                            if cache.isGrid {
+                                Task {
+                                    withAnimation(Animation.spring().delay(0.5)) {
+                                        scroller.scrollTo(storyViewID, anchor: .top)
+                                    }
+                                }
+                            } else {
+                                scroller.scrollTo(storyViewID, anchor: .top)
+                                Task {
                                     scroller.scrollTo(storyViewID, anchor: .top)
                                 }
-                            } else if let newSelected {
+                            }
+                        } else if let newSelected {
+                            Task {
                                 scroller.scrollTo(newSelected.id, anchor: .top)
                             }
                         }
