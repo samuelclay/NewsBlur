@@ -2830,8 +2830,13 @@
 
         send_story_to_print: function (story_id) {
             var story = this.model.get_story(story_id);
+            var text_view = this.story_view == 'text';
             // Open /rss_feeds/print?story_id=story_id
-            window.open('/reader/print?story_hash=' + story.get('story_hash'), '_blank');
+            var url = '/reader/print?story_hash=' + story.get('story_hash');
+            if (text_view) {
+                url += '&text=true';
+            }
+            window.open(url, '_blank');
             NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
         },
 

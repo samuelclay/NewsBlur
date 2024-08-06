@@ -2837,7 +2837,7 @@ img.feed_favicon {
 }
 
 .NB-story-title {
-    transition: transform 0.12s ease-out, border-radius 0.12s ease-out, height 0.36s ease-out;
+    transition: transform 0.12s ease-out, border-radius 0.12s ease-out, height 0.36s ease-out, background-color 0.22s ease-out;
 }
 
 .NB-story-title.NB-selected,
@@ -2854,6 +2854,8 @@ img.feed_favicon {
 .NB-story-title:hover:not(.NB-selected) {
     background-color: #F7F7F6;
     /*    border-top: 1px solid transparent;*/
+
+    transition: background-color 0s ease-out;
 }
 
 .NB-story-title.read:hover:not(.NB-selected) {
