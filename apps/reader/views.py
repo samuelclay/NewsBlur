@@ -3201,10 +3201,13 @@ def remove_dashboard_river(request):
 def print_story(request):
     story_hash = request.GET["story_hash"]
     text_view = request.GET.get("text", False)
+    timezone = request.user.profile.timezone
     try:
         story = MStory.objects.get(story_hash=story_hash)
     except MStory.DoesNotExist:
         raise Http404
+
+    story_date = story.story_date
 
     if text_view:
         original_text = story.fetch_original_text(request=request)
@@ -3212,4 +3215,8 @@ def print_story(request):
         story["story_content"] = original_text.decode("utf-8")
     else:
         story = Feed.format_story(story, story.story_feed_id)
-    return render(request, "reader/print.xhtml", {"story": story})
+    return render(
+        request,
+        "reader/print.xhtml",
+        {"story": story, "local_datetime": localtime_for_timezone(story_date, timezone)},
+    )
