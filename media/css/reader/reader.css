@@ -2320,7 +2320,7 @@ img.feed_favicon {
 .NB-story-title.read.NB-story-shared .NB-storytitles-share {
     width: 16px;
     height: 16px;
-    margin: -1px 6px 0 0;
+    margin: 1px 6px 0 0;
     background: transparent url('/media/embed/icons/nouns/share.svg') no-repeat 0 0;
     background-size: 16px;
     float: left;
@@ -2855,7 +2855,8 @@ img.feed_favicon {
     background-color: #F7F7F6;
     /*    border-top: 1px solid transparent;*/
 
-    transition: background-color 0s ease-out;
+    transition: transform 0.12s ease-out, border-radius 0.12s ease-out, height 0.36s ease-out, background-color 0s ease-out;
+
 }
 
 .NB-story-title.read:hover:not(.NB-selected) {
@@ -9991,144 +9992,126 @@ form.opml_import_form input {
     width: 16px;
     height: 16px;
     float: right;
-    margin: 6px 0 0 0;
-    padding: 0 4px 0 0;
+    margin: 0 0 0 0;
+    padding: 6px 4px 6px 0;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 18px;
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-email {
-    background: transparent url("/media/embed/icons/nouns/email.svg") no-repeat center center;
-    background-size: 18px;
+    background-image: url("/media/embed/icons/nouns/email.svg");
     filter: hue-rotate(134deg) saturate(16);
+    margin-right: 4px;
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-instapaper {
-    background: transparent url('/media/embed/reader/instapaper.png') no-repeat 0 0;
+    background-image: url('/media/embed/reader/instapaper.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-readitlater {
-    background: transparent url('/media/embed/reader/pocket.png') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/pocket.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-linkedin {
-    background: transparent url('/media/embed/reader/linkedin.jpg') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/linkedin.jpg');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-whatsapp {
-    background: transparent url('/media/embed/reader/whatsapp.png') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/whatsapp.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-livejournal {
-    background: transparent url('/media/embed/reader/livejournal.png') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/livejournal.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-hackernews {
-    background: transparent url('/media/embed/reader/hackernews.png') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/hackernews.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-flipboard {
-    background: transparent url('/media/embed/reader/flipboard.jpg') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/flipboard.jpg');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-lineme {
-    background: transparent url('/media/embed/reader/lineme.png') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/lineme.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-telegram {
-    background: transparent url('/media/embed/reader/telegram.png') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/telegram.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-copyurl {
-    background: transparent url('/media/embed/reader/copyurl.png') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/copyurl.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-copytext {
-    background: transparent url('/media/embed/reader/copytext.png') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/copytext.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-pdf {
-    background: transparent url('/media/embed/reader/pdf.png') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/pdf.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-print {
-    background: transparent url('/media/embed/reader/print.png') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/print.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-tumblr {
-    background: transparent url('/media/embed/reader/tumblr.png') no-repeat 0 0;
+    background-image: url('/media/embed/reader/tumblr.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-blogger {
-    background: transparent url('/media/embed/reader/blogger.png') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/blogger.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-delicious {
-    background: transparent url('/media/embed/reader/delicious.png') no-repeat 0 0;
+    background-image: url('/media/embed/reader/delicious.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-pinboard {
-    background: transparent url('/media/embed/reader/pinboard.png') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/pinboard.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-raindrop {
-    background: transparent url('/media/embed/reader/raindrop.svg') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/raindrop.svg');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-pinterest {
-    background: transparent url('/media/embed/reader/pinterest.png') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/pinterest.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-buffer {
-    background: transparent url('/media/embed/reader/buffer.png') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/buffer.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-diigo {
-    background: transparent url('/media/embed/reader/diigo.png') no-repeat 0 0;
+    background-image: url('/media/embed/reader/diigo.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-evernote {
-    background: transparent url('/media/embed/reader/evernote.png') no-repeat 0 0;
+    background-image: url('/media/embed/reader/evernote.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-googleplus {
-    background: transparent url('/media/embed/reader/googleplus.png') no-repeat 0 0;
+    background-image: url('/media/embed/reader/googleplus.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-email {
-    background: transparent url("/media/embed/icons/nouns/email.svg") no-repeat center center;
-    background-size: 18px;
+    background-image: url("/media/embed/icons/nouns/email.svg");
     filter: hue-rotate(134deg) saturate(16);
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-twitter {
-    background: transparent url('/media/embed/reader/twitter.png') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/twitter.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-facebook {
-    background: transparent url('/media/embed/reader/facebook.png') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/facebook.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-reddit {
-    background: transparent url('/media/embed/reader/reddit.png') no-repeat 0 0;
-    background-size: 16px;
+    background-image: url('/media/embed/reader/reddit.png');
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdpartyicon {
