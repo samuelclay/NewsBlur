@@ -12,7 +12,6 @@ import redis
 import urllib3
 from django.conf import settings
 from django.contrib.auth.models import User
-from sentence_transformers import SentenceTransformer
 
 from apps.search.tasks import (
     FinishIndexSubscriptionsForSearch,
@@ -776,6 +775,8 @@ class SearchFeed:
         from apps.rss_feeds.models import Feed
 
         if cls.model is None:
+            from sentence_transformers import SentenceTransformer
+
             cls.model = SentenceTransformer("all-MiniLM-L6-v2")
 
         feed = Feed.objects.get(id=feed_id)
