@@ -750,7 +750,7 @@ class SearchFeed:
         except elasticsearch.exceptions.RequestError as e:
             logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
             return []
-        logging.debug(f"Results: {results}")
+        # logging.debug(f"Results: {results}")
         if len(results["hits"]["hits"]) == 0:
             logging.debug(f" ---> ~FRNo content vector found for feed {feed_id}")
             return []
@@ -775,9 +775,16 @@ class SearchFeed:
         from apps.rss_feeds.models import Feed
 
         if cls.model is None:
+            logging.debug(" ---> ~BG~FBLoading SentenceTransformer model")
+            start_time = time.time()
             from sentence_transformers import SentenceTransformer
 
+            logging.debug(" ---> ~BG~FGDownloading SentenceTransformer model")
+
             cls.model = SentenceTransformer("all-MiniLM-L6-v2")
+            logging.debug(
+                f" ---> ~FG~SNModel loaded, took ~SB{round(time.time() - start_time, 2)}~SN seconds"
+            )
 
         feed = Feed.objects.get(id=feed_id)
 
