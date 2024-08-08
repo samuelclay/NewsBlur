@@ -21,8 +21,6 @@ static enum {
     NewsBlurTopSectionAllStories = 1
 } NewsBlurTopSection;
 
-@class NewsBlurAppDelegate;
-
 @interface FeedsObjCViewController : BaseViewController
 <UITableViewDelegate, UITableViewDataSource,
 NSCacheDelegate,
@@ -30,8 +28,6 @@ UIPopoverControllerDelegate,
 IASKSettingsDelegate,
 MCSwipeTableViewCellDelegate,
 UIGestureRecognizerDelegate, UISearchBarDelegate> {
-    NewsBlurAppDelegate *appDelegate;
-    
     NSMutableDictionary * activeFeedLocations;
     NSMutableDictionary *stillVisibleFeeds;
     NSMutableDictionary *visibleFolders;
@@ -53,15 +49,23 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
     NBNotifier *notifier;
 }
 
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UIView *innerView;
 @property (nonatomic) IBOutlet UITableView *feedTitlesTable;
+@property (nonatomic) IBOutlet NSLayoutConstraint *feedTitlesTopConstraint;
+@property (nonatomic) IBOutlet NSLayoutConstraint *feedTitlesLeadingConstraint;
+@property (nonatomic) IBOutlet NSLayoutConstraint *feedTitlesTrailingConstraint;
 @property (nonatomic) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic) IBOutlet UIBarButtonItem * homeButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * addBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * settingsBarButton;
+@property (nonatomic) UIButton *activityButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * activitiesButton;
+#if TARGET_OS_MACCATALYST
+@property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * userBarButton;
+#endif
+@property (nonatomic) IBOutlet UIView *userInfoView;
 @property (nonatomic) IBOutlet UIButton *userAvatarButton;
 @property (nonatomic) IBOutlet UILabel *neutralCount;
 @property (nonatomic) IBOutlet UILabel *positiveCount;
@@ -74,7 +78,9 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 @property (nonatomic, readwrite) BOOL viewShowingAllFeeds;
 @property (nonatomic, readwrite) BOOL interactiveFeedDetailTransition;
 @property (nonatomic, readwrite) BOOL isOffline;
+#if !TARGET_OS_MACCATALYST
 @property (nonatomic) UIRefreshControl *refreshControl;
+#endif
 @property (nonatomic) UISearchBar *searchBar;
 @property (nonatomic, strong) NSArray<NSString *> *searchFeedIds;
 @property (nonatomic) NSCache *imageCache;
@@ -94,7 +100,14 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (void)didSelectSectionHeaderWithTag:(NSInteger)tag;
 - (void)selectNextFolderOrFeed;
+
 - (IBAction)selectIntelligence;
+- (void)selectEverything:(id)sender;
+- (void)selectNextFeed:(id)sender;
+- (void)selectPreviousFeed:(id)sender;
+- (void)selectNextFolder:(id)sender;
+- (void)selectPreviousFolder:(id)sender;
+
 - (void)markFeedRead:(NSString *)feedId cutoffDays:(NSInteger)days;
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days;
 - (void)markEverythingReadWithDays:(NSInteger)days;

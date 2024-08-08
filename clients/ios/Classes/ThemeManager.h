@@ -31,6 +31,8 @@ extern NSString * const ThemeStyleDark;
 @property (nonatomic, readonly) NSString *themeDisplayName;
 @property (nonatomic, readonly) NSString *themeCSSSuffix;
 @property (nonatomic, readonly) BOOL isDarkTheme;
+@property (nonatomic, readonly) BOOL isSystemDark;
+@property (nonatomic, readonly) BOOL isLikeSystem;
 
 + (instancetype)themeManager;
 

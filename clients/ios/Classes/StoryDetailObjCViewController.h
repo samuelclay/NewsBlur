@@ -11,13 +11,9 @@
 #import "BaseViewController.h"
 @import WebKit;
 
-@class NewsBlurAppDelegate;
-
 @interface StoryDetailObjCViewController : BaseViewController
 <UIScrollViewDelegate, UIGestureRecognizerDelegate,
 UIActionSheetDelegate, WKNavigationDelegate> {
-    NewsBlurAppDelegate *appDelegate;
-    
     NSString *activeStoryId;
     NSMutableDictionary *activeStory;
     UIView *innerView;
@@ -34,7 +30,6 @@ UIActionSheetDelegate, WKNavigationDelegate> {
     UIInterfaceOrientation _orientation;
 }
 
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) NSString *activeStoryId;
 @property (nonatomic, readwrite) NSMutableDictionary *activeStory;
 @property (nonatomic) IBOutlet UIView *innerView;

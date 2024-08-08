@@ -57,7 +57,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 @implementation FeedsObjCViewController
 
-@synthesize appDelegate;
 @synthesize feedTitlesTable;
 @synthesize feedViewToolbar;
 @synthesize feedScoreSlider;
@@ -113,12 +112,14 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.rowHeights = [NSMutableDictionary dictionary];
     self.folderTitleViews = [NSMutableDictionary dictionary];
     
+#if !TARGET_OS_MACCATALYST
     self.refreshControl = [UIRefreshControl new];
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
     [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
     self.feedTitlesTable.refreshControl = self.refreshControl;
     self.feedViewToolbar.translatesAutoresizingMaskIntoConstraints = NO;
+#endif
     
     self.searchBar = [[UISearchBar alloc]
                       initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.feedTitlesTable.frame), 44.)];
@@ -129,7 +130,16 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.searchBar.nb_searchField.textColor = UIColorFromRGB(0x0);
     [self.searchBar setSearchBarStyle:UISearchBarStyleMinimal];
     [self.searchBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+#if TARGET_OS_MACCATALYST
+    // Workaround for Catalyst bug.
+    self.searchBar.frame = CGRectMake(10, 0, CGRectGetWidth(self.feedTitlesTable.frame) - 20, 44.);
+    self.searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    UIView *searchContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.feedTitlesTable.frame), 44.)];
+    [searchContainerView addSubview:self.searchBar];
+    self.feedTitlesTable.tableHeaderView = searchContainerView;
+#else
     self.feedTitlesTable.tableHeaderView = self.searchBar;
+#endif
     
     userLabelFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:15.0];
     
@@ -169,7 +179,17 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
                                                                UIColorFromFixedRGB(0x4C4D4A)}
                                                 forState:UIControlStateHighlighted];
+#if TARGET_OS_MACCATALYST
+    self.innerView.backgroundColor = UIColor.clearColor;
+    
+    if (ThemeManager.themeManager.isLikeSystem) {
+        self.view.backgroundColor = UIColor.clearColor;
+    } else {
+        self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    }
+#else
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
+#endif
     self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
     self.navigationController.navigationBar.translucent = NO;
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
@@ -198,6 +218,12 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
     self.feedTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
     self.feedTitlesTable.estimatedRowHeight = 0;
+    
+#if TARGET_OS_MACCATALYST
+    // Workaround for Catalyst bug.
+    self.feedTitlesLeadingConstraint.constant = -10;
+    self.feedTitlesTrailingConstraint.constant = -10;
+#endif
     
     if (@available(iOS 15.0, *)) {
         self.feedTitlesTable.sectionHeaderTopPadding = 0;
@@ -228,13 +254,23 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     [self resetRowHeights];
     
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad &&
+//    if (!self.isPhone &&
 //        !self.interactiveFeedDetailTransition) {
 //
 //        [appDelegate.masterContainerViewController transitionFromFeedDetail];
 //    }
 //    NSLog(@"Feed List timing 0: %f", [NSDate timeIntervalSinceReferenceDate] - start);
     [super viewWillAppear:animated];
+    
+#if TARGET_OS_MACCATALYST
+    UINavigationController *navController = self.navigationController;
+    UITitlebar *titlebar = navController.navigationBar.window.windowScene.titlebar;
+    
+    titlebar.titleVisibility = UITitlebarTitleVisibilityHidden;
+    
+    [self.navigationController setNavigationBarHidden:YES animated:animated];
+    [self.navigationController setToolbarHidden:YES animated:animated];
+#endif
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSInteger intelligenceLevel = [userPreferences integerForKey:@"selectedIntelligence"];
@@ -425,7 +461,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 //    CGSize toolbarSize = [self.feedViewToolbar sizeThatFits:self.view.frame.size];
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//    if (!self.isPhone) {
 //        self.feedViewToolbar.frame = CGRectMake(-10.0f,
 //                                                CGRectGetHeight(self.view.frame) - toolbarSize.height,
 //                                                toolbarSize.width + 20, toolbarSize.height);
@@ -434,7 +470,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //    }
 //    self.innerView.frame = (CGRect){CGPointZero, CGSizeMake(CGRectGetWidth(self.view.frame), CGRectGetMinY(self.feedViewToolbar.frame))};
     
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !appDelegate.isCompactWidth) {
+//    if (!self.isPhone && !appDelegate.isCompactWidth) {
 //        CGRect navFrame = appDelegate.navigationController.view.frame;
 //        CGFloat limit = appDelegate.masterContainerViewController.rightBorder.frame.origin.x + 1;
 //
@@ -456,7 +492,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         orientation = self.view.window.windowScene.interfaceOrientation;
     }
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && !UIInterfaceOrientationIsLandscape(orientation)) {
+    if (!self.isPhone && !UIInterfaceOrientationIsLandscape(orientation)) {
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_yellow_icn.png"] forSegmentAtIndex:1];
         [self.intelligenceControl setImage:[Utilities imageNamed:@"indicator-focus" sized:14] forSegmentAtIndex:2];
         [self.intelligenceControl setImage:[Utilities imageNamed:@"unread_blue_icn.png" sized:14] forSegmentAtIndex:3];
@@ -492,6 +528,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 // allow keyboard comands
 - (BOOL)canBecomeFirstResponder {
     return YES;
+}
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+    
 }
 
 #pragma mark -
@@ -686,18 +726,19 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //    [settingsBarButton setCustomView:settingsButton];
     
     UIImage *activityImage = [Utilities templateImageNamed:@"dialog-notifications" sized:32];
-    NBBarButtonItem *activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    activityButton.accessibilityLabel = @"Activities";
-    [activityButton setImage:activityImage forState:UIControlStateNormal];
-    activityButton.tintColor = UIColorFromRGB(0x8F918B);
-    [activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 0, 4, 0)];
-    [activityButton addTarget:self
+    [self.activityButton removeFromSuperview];
+    self.activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+    self.activityButton.accessibilityLabel = @"Activities";
+    [self.activityButton setImage:activityImage forState:UIControlStateNormal];
+    self.activityButton.tintColor = UIColorFromRGB(0x8F918B);
+    [self.activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 0, 4, 0)];
+    [self.activityButton addTarget:self
                        action:@selector(showInteractionsPopover:)
              forControlEvents:UIControlEventTouchUpInside];
     activitiesButton = [[UIBarButtonItem alloc]
-                        initWithCustomView:activityButton];
+                        initWithCustomView:self.activityButton];
     activitiesButton.width = 32;
-//    activityButton.backgroundColor = UIColor.redColor;
+//    self.activityButton.backgroundColor = UIColor.redColor;
     self.navigationItem.rightBarButtonItem = activitiesButton;
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
@@ -901,7 +942,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self refreshHeaderCounts];
     [appDelegate checkForFeedNotifications];
 
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad && finished) {
+    if (!self.isPhone && finished) {
         [self cacheFeedRowLocations];
     }
     
@@ -1035,7 +1076,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"username"]];
 //    appDelegate.activeUserProfileName = @"You";
-    [appDelegate showUserProfileModal:self.navigationItem.titleView];
+#if TARGET_OS_MACCATALYST
+        [appDelegate showUserProfileModal:self.userAvatarButton];
+#else
+        [appDelegate showUserProfileModal:self.navigationItem.titleView];
+#endif
 }
 
 - (IBAction)tapAddSite:(id)sender {
@@ -1056,9 +1101,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     MenuViewController *viewController = [MenuViewController new];
     
-    [viewController addTitle:@"Preferences" iconName:@"dialog-preferences" iconColor:UIColorFromRGB(0xDF8566) selectionShouldDismiss:YES handler:^{
-        [self.appDelegate showPreferences];
-    }];
+    if (!self.isMac) {
+        [viewController addTitle:@"Preferences" iconName:@"dialog-preferences" iconColor:UIColorFromRGB(0xDF8566) selectionShouldDismiss:YES handler:^{
+            [self.appDelegate showPreferences];
+        }];
+    }
     
     [viewController addTitle:@"Mute Sites" iconName:@"menu_icn_mute.png" selectionShouldDismiss:YES handler:^{
         [self.appDelegate showMuteSites];
@@ -1275,14 +1322,21 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [appDelegate.feedDetailViewController reloadWithSizing];
 }
 
+- (void)systemAppearanceDidChange:(BOOL)isDark {
+    [super systemAppearanceDidChange:isDark];
+    
+#if TARGET_OS_MACCATALYST
+    if (ThemeManager.themeManager.isLikeSystem) {
+        self.view.backgroundColor = UIColor.clearColor;
+    } else {
+        self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    }
+#endif
+}
+
 - (void)updateTheme {
     [super updateTheme];
    
-    // CATALYST: This prematurely dismisses the login view controller; is it really appropriate?
-//    if (![self.presentedViewController isKindOfClass:[UINavigationController class]] || (((UINavigationController *)self.presentedViewController).topViewController != (UIViewController *)self.appDelegate.fontSettingsViewController && ![((UINavigationController *)self.presentedViewController).topViewController conformsToProtocol:@protocol(IASKViewController)])) {
-//        [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
-//    }
-    
     [self.appDelegate hidePopoverAnimated:YES];
     
     UINavigationBarAppearance *appearance = [[UINavigationBarAppearance alloc] initWithIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
@@ -1299,16 +1353,24 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.feedViewToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
     self.addBarButton.tintColor = UIColorFromRGB(0x8F918B);
     self.settingsBarButton.tintColor = UIColorFromRGB(0x8F918B);
+#if TARGET_OS_MACCATALYST
+    if (ThemeManager.themeManager.isLikeSystem) {
+        self.view.backgroundColor = UIColor.clearColor;
+    } else {
+        self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    }
+#else
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
+#endif
     
     [[ThemeManager themeManager] updateSegmentedControl:self.intelligenceControl];
     
     NBBarButtonItem *barButton = self.addBarButton.customView;
     [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_add.png"]] forState:UIControlStateNormal];
     
-    self.settingsBarButton.image = [Utilities imageNamed:@"settings" sized:30];
+    self.settingsBarButton.image = [Utilities imageNamed:@"settings" sized:self.isMac ? 24 : 30];
     
     [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
@@ -1327,6 +1389,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     }
     
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
+    
     [self reloadFeedTitlesTable];
     
     [self resetupGestures];
@@ -1682,7 +1745,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (CGFloat)calculateHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (appDelegate.hasNoSites) {
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!self.isPhone) {
             return kBlurblogTableViewRowHeight;            
         } else {
             return kPhoneBlurblogTableViewRowHeight;
@@ -1726,13 +1789,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     if ([folderName isEqualToString:@"river_blurblogs"] ||
         [folderName isEqualToString:@"river_global"]) { // blurblogs
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!self.isPhone) {
             height = kBlurblogTableViewRowHeight;
         } else {
             height = kPhoneBlurblogTableViewRowHeight;
         }
     } else {
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!self.isPhone) {
             height = kTableViewRowHeight;
         } else {
             height = kPhoneTableViewRowHeight;
@@ -2386,6 +2449,10 @@ heightForHeaderInSection:(NSInteger)section {
 	hud.mode = MBProgressHUDModeText;
 	hud.removeFromSuperViewOnHide = YES;
     
+    if (!self.appDelegate.isPhone) {
+        hud.xOffset = 50;
+    }
+    
     NSIndexPath *topRow;
     if ([[self.feedTitlesTable indexPathsForVisibleRows] count]) {
         topRow = [[self.feedTitlesTable indexPathsForVisibleRows] objectAtIndex:0];
@@ -2452,7 +2519,7 @@ heightForHeaderInSection:(NSInteger)section {
 	[hud hide:YES afterDelay:0.5];
     [self showExplainerOnEmptyFeedlist];
     
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//    if (!self.isPhone) {
 //        FeedDetailViewController *storiesModule = self.appDelegate.dashboardViewController.storiesModule;
 //
 //        storiesModule.storiesCollection.feedPage = 0;
@@ -2681,15 +2748,19 @@ heightForHeaderInSection:(NSInteger)section {
 #pragma mark -
 #pragma mark PullToRefresh
 
+#if !TARGET_OS_MACCATALYST
 - (void)refresh:(UIRefreshControl *)refreshControl {
     self.inPullToRefresh_ = YES;
     [appDelegate reloadFeedsView:NO];
     [appDelegate donateRefresh];
 }
+#endif
 
 - (void)finishRefresh {
     self.inPullToRefresh_ = NO;
+#if !TARGET_OS_MACCATALYST
     [self.refreshControl endRefreshing];
+#endif
 }
 
 - (void)refreshFeedList {
@@ -2814,6 +2885,11 @@ heightForHeaderInSection:(NSInteger)section {
     });
 }
 
+//- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+//    NSLog(@"canPerformAction: %@ withSender: %@", NSStringFromSelector(action, sender);  // log
+//    return YES;
+//}
+
 - (void)resetToolbar {
 //    self.navigationItem.leftBarButtonItem = nil;
     self.navigationItem.titleView = nil;
@@ -2821,6 +2897,16 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation {
+#if TARGET_OS_MACCATALYST
+    int xOffset = 60;
+    int yOffset = 10;
+    
+    [self.userInfoView removeFromSuperview];
+    
+    self.userInfoView = [[UIView alloc]
+                         initWithFrame:CGRectMake(0, 0, self.innerView.bounds.size.width, 50)];
+    self.userInfoView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE0E0E0, 0xFFF8CA, 0x4F4F4F, 0x292B2C);
+#else
     if (!orientation) {
         orientation = self.view.window.windowScene.interfaceOrientation;
     }
@@ -2831,22 +2917,33 @@ heightForHeaderInSection:(NSInteger)section {
         isShort = YES;
     }
     
+    int xOffset = 50;
     int yOffset = isShort ? 0 : 6;
-    UIView *userInfoView = [[UIView alloc]
-                            initWithFrame:CGRectMake(0, 0,
-                                                     self.navigationController.navigationBar.frame.size.width,
-                                                     self.navigationController.navigationBar.frame.size.height)];
+    
+    self.userInfoView = [[UIView alloc]
+                         initWithFrame:CGRectMake(0, 0,
+                                                  self.navigationController.navigationBar.frame.size.width,
+                                                  self.navigationController.navigationBar.frame.size.height)];
+#endif
+    
     // adding user avatar to left
     NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@",
                                             [appDelegate.dictSocialProfile
                                              objectForKey:@"large_photo_url"]]];
     userAvatarButton = [UIButton systemButtonWithImage:[UIImage imageNamed:@"user"]
-                                                target:self action:@selector((showUserProfile))];
+                                                target:self action:@selector(showUserProfile)];
     userAvatarButton.pointerInteractionEnabled = YES;
     userAvatarButton.accessibilityLabel = @"User info";
+#if TARGET_OS_MACCATALYST
+    userAvatarButton.accessibilityHint = @"Double-click for information about your account.";
+    CGRect frame = userAvatarButton.frame;
+    userAvatarButton.frame = frame;
+#else
     userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
     UIEdgeInsets insets = UIEdgeInsetsMake(0, -10, 10, 0);
     userAvatarButton.contentEdgeInsets = insets;
+#endif
+//    userAvatarButton.backgroundColor = UIColor.blueColor;
     
     NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL];
     [avatarRequest addValue:@"image/*" forHTTPHeaderField:@"Accept"];
@@ -2857,49 +2954,61 @@ heightForHeaderInSection:(NSInteger)section {
         typeof(weakSelf) __strong strongSelf = weakSelf;
         image = [Utilities roundCorneredImage:image radius:6 convertToSize:CGSizeMake(38, 38)];
         image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-        [(UIButton *)strongSelf.userAvatarButton setImage:image forState:UIControlStateNormal];
-        
+        UIButton *button = strongSelf.userAvatarButton;
+        [button setImage:image forState:UIControlStateNormal];
     } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nonnull response, NSError * _Nonnull error) {
         NSLog(@"Could not fetch user avatar: %@", error);
     }];
     
-    [userInfoView addSubview:userAvatarButton];
+    [self.userInfoView addSubview:userAvatarButton];
     
-    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(50, yOffset, userInfoView.frame.size.width, 16)];
+    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(xOffset, yOffset, self.userInfoView.frame.size.width, 16)];
     userLabel.text = appDelegate.activeUsername;
     userLabel.font = userLabelFont;
     userLabel.textColor = UIColorFromRGB(0x404040);
     userLabel.backgroundColor = [UIColor clearColor];
     userLabel.accessibilityLabel = [NSString stringWithFormat:@"Logged in as %@", appDelegate.activeUsername];
     [userLabel sizeToFit];
-    [userInfoView addSubview:userLabel];
+    [self.userInfoView addSubview:userLabel];
     
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
     yellowIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_unread"]];
-    [userInfoView addSubview:yellowIcon];
+    [self.userInfoView addSubview:yellowIcon];
     yellowIcon.hidden = YES;
     
     neutralCount = [[UILabel alloc] init];
     neutralCount.font = [UIFont fontWithName:@"WhitneySSm-Book" size:12];
     neutralCount.textColor = UIColorFromRGB(0x707070);
     neutralCount.backgroundColor = [UIColor clearColor];
-    [userInfoView addSubview:neutralCount];
+    [self.userInfoView addSubview:neutralCount];
     
     greenIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_focus"]];
-    [userInfoView addSubview:greenIcon];
+    [self.userInfoView addSubview:greenIcon];
     greenIcon.hidden = YES;
     
     positiveCount = [[UILabel alloc] init];
     positiveCount.font = [UIFont fontWithName:@"WhitneySSm-Book" size:12];
     positiveCount.textColor = UIColorFromRGB(0x707070);
     positiveCount.backgroundColor = [UIColor clearColor];
-    [userInfoView addSubview:positiveCount];
+    [self.userInfoView addSubview:positiveCount];
     
-    [userInfoView sizeToFit];
+//    self.userInfoView.backgroundColor = UIColor.blueColor;
     
-//    userInfoView.backgroundColor = UIColor.blueColor;
+#if TARGET_OS_MACCATALYST
+    self.activityButton.frame = CGRectMake(self.innerView.bounds.size.width - 36, 10, 32, 32);
     
-    self.navigationItem.titleView = userInfoView;
+    [self.userInfoView addSubview:self.activityButton];
+    
+    [self.innerView addSubview:self.userInfoView];
+    
+    self.activityButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+    self.userInfoView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    
+    self.feedTitlesTopConstraint.constant = 50;
+#else
+    [self.userInfoView sizeToFit];
+    self.navigationItem.titleView = self.userInfoView;
+#endif
 }
 
 - (void)refreshHeaderCounts {
@@ -2907,6 +3016,12 @@ heightForHeaderInSection:(NSInteger)section {
         userAvatarButton.hidden = YES;
         return;
     }
+    
+#if TARGET_OS_MACCATALYST
+    int yOffset = 2;
+#else
+    int yOffset = 0;
+#endif
     
     userAvatarButton.hidden = NO;
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
@@ -2924,13 +3039,13 @@ heightForHeaderInSection:(NSInteger)section {
     yellowIcon.frame = CGRectMake(CGRectGetMinX(userLabel.frame), CGRectGetMaxY(userLabel.frame) + 4, 8, 8);
 
     neutralCount.frame = CGRectMake(CGRectGetMaxX(yellowIcon.frame) + 2,
-                                    CGRectGetMinY(yellowIcon.frame) - 2, 100, 16);
+                                    CGRectGetMinY(yellowIcon.frame) - 2 - yOffset, 100, 16);
     [neutralCount sizeToFit];
     
     greenIcon.frame = CGRectMake(CGRectGetMaxX(neutralCount.frame) + 8,
                                  CGRectGetMinY(yellowIcon.frame), 8, 8);
     positiveCount.frame = CGRectMake(CGRectGetMaxX(greenIcon.frame) + 2,
-                                     CGRectGetMinY(greenIcon.frame) - 2, 100, 16);
+                                     CGRectGetMinY(greenIcon.frame) - 2 - yOffset, 100, 16);
     [positiveCount sizeToFit];
     
     yellowIcon.hidden = NO;

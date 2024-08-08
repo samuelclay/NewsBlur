@@ -9,6 +9,7 @@
 #import "SmallInteractionCell.h"
 #import "UIImageView+AFNetworking.h"
 #import <QuartzCore/QuartzCore.h>
+#import "NewsBlurAppDelegate.h"
 
 @implementation SmallInteractionCell
 
@@ -57,8 +58,8 @@
     labelFrame.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin - 20;
     labelFrame.size.height = contentRect.size.height;
     self.interactionLabel.frame = labelFrame;
-
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    
+    if (!((NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]).isPhone) {
         self.interactionLabel.backgroundColor = UIColorFromRGB(0xd7dadf);
     } else {
         self.interactionLabel.backgroundColor = UIColorFromRGB(0xf6f6f6);

@@ -154,7 +154,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {    
     NSInteger activitiesCount = [appDelegate.userActivitiesArray count];
     int minimumHeight;
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!appDelegate.isPhone) {
         minimumHeight = MINIMUM_ACTIVITY_HEIGHT_IPAD;
     } else {
         minimumHeight = MINIMUM_ACTIVITY_HEIGHT_IPHONE;
@@ -165,7 +165,7 @@
     }
     
     id activityCell;
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!appDelegate.isPhone) {
         activityCell = [[ActivityCell alloc] init];
     } else {
         activityCell = [[SmallActivityCell alloc] init];
@@ -185,7 +185,7 @@
     ActivityCell *cell = [tableView
                           dequeueReusableCellWithIdentifier:@"ActivityCell"];
     if (cell == nil) {
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!appDelegate.isPhone) {
             cell = [[ActivityCell alloc]
                      initWithStyle:UITableViewCellStyleDefault 
                      reuseIdentifier:@"ActivityCell"];
@@ -304,7 +304,7 @@
         UIImage *img = [UIImage imageNamed:@"fleuron.png"];
         UIImageView *fleuron = [[UIImageView alloc] initWithImage:img];
         int height;
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!appDelegate.isPhone) {
             height = MINIMUM_ACTIVITY_HEIGHT_IPAD;
         } else {
             height = MINIMUM_ACTIVITY_HEIGHT_IPHONE;
