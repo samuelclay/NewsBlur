@@ -9,6 +9,7 @@
 #import "SmallActivityCell.h"
 #import "UIImageView+AFNetworking.h"
 #import <QuartzCore/QuartzCore.h>
+#import "NewsBlurAppDelegate.h"
 
 @implementation SmallActivityCell
 
@@ -62,7 +63,7 @@
     labelFrame.size.height = contentRect.size.height;
     self.activityLabel.frame = labelFrame;
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!((NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]).isPhone) {
         self.activityLabel.backgroundColor = UIColorFromRGB(0xd7dadf);
     } else {
         self.activityLabel.backgroundColor = UIColorFromRGB(0xf6f6f6);

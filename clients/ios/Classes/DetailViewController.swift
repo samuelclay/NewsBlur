@@ -10,11 +10,6 @@ import UIKit
 
 /// Manages the detail column of the split view, with the feed detail and/or the story pages.
 class DetailViewController: BaseViewController {
-    /// Returns the shared app delegate.
-    var appDelegate: NewsBlurAppDelegate {
-        return NewsBlurAppDelegate.shared()
-    }
-    
     /// Preference keys.
     enum Key {
         /// Style of the feed detail list layout.
@@ -28,6 +23,9 @@ class DetailViewController: BaseViewController {
         
         /// Position of the divider between the views when in vertical orientation. Only used for `.top` and `.bottom` layouts.
         static let verticalPosition = "story_titles_divider_vertical"
+        
+        /// Width of the feeds view, i.e. the primary split column.
+        static let feedsWidth = "split_primary_width"
     }
     
     /// Preference values.
@@ -173,7 +171,7 @@ class DetailViewController: BaseViewController {
     
     /// How the split controller behaves.
     var behavior: Behavior {
-        switch UserDefaults.standard.string(forKey: Key.behavior) {
+        switch behaviorString {
         case BehaviorValue.tile:
             return .tile
         case BehaviorValue.displace:
@@ -185,20 +183,15 @@ class DetailViewController: BaseViewController {
         }
     }
     
-    /// Returns `true` if the device is an iPhone, otherwise `false`.
-    @objc var isPhone: Bool {
-        return UIDevice.current.userInterfaceIdiom == .phone
-    }
-    
-    /// Returns `true` if the window is in portrait orientation, otherwise `false`.
-    @objc var isPortraitOrientation: Bool {
-        return view.window?.windowScene?.interfaceOrientation.isPortrait ?? false
+    /// The split controller behavior as a raw string.
+    @objc var behaviorString: String {
+        return UserDefaults.standard.string(forKey: Key.behavior) ?? BehaviorValue.auto
     }
     
     /// Position of the divider between the views.
     var dividerPosition: CGFloat {
         get {
-            let key = isPortraitOrientation ? Key.verticalPosition : Key.horizontalPosition
+            let key = isPortrait ? Key.verticalPosition : Key.horizontalPosition
             let value = CGFloat(UserDefaults.standard.float(forKey: key))
             
             if value == 0 {
@@ -212,9 +205,29 @@ class DetailViewController: BaseViewController {
                 return
             }
             
-            let key = isPortraitOrientation ? Key.verticalPosition : Key.horizontalPosition
+            let key = isPortrait ? Key.verticalPosition : Key.horizontalPosition
             
             UserDefaults.standard.set(Float(newValue), forKey: key)
+        }
+    }
+    
+    /// Width of the feeds view, i.e. the primary split column.
+    var feedsWidth: CGFloat {
+        get {
+            let value = CGFloat(UserDefaults.standard.float(forKey: Key.feedsWidth))
+            
+            if value == 0 {
+                return 320
+            } else {
+                return value
+            }
+        }
+        set {
+            guard newValue != feedsWidth else {
+                return
+            }
+            
+            UserDefaults.standard.set(Float(newValue), forKey: Key.feedsWidth)
         }
     }
     
@@ -395,6 +408,16 @@ class DetailViewController: BaseViewController {
         }
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        let width = splitViewController?.primaryColumnWidth ?? 320
+        
+        if width != feedsWidth {
+            feedsWidth = width
+        }
+    }
+    
     private func adjustTopConstraint() {
         guard let scene = view.window?.windowScene else {
             return
@@ -452,6 +475,13 @@ class DetailViewController: BaseViewController {
 private extension DetailViewController {
     func checkViewControllers() {
         let isTop = layout == .top
+        
+#if targetEnvironment(macCatalyst)
+        splitViewController?.primaryBackgroundStyle = .sidebar
+        splitViewController?.minimumPrimaryColumnWidth = 250
+        splitViewController?.maximumPrimaryColumnWidth = 700
+        splitViewController?.preferredPrimaryColumnWidth = feedsWidth
+#endif
         
         if layout != .grid || isPhone {
             storyPagesViewController = listStoryPagesViewController

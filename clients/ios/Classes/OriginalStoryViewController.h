@@ -10,13 +10,10 @@
 #import "BaseViewController.h"
 #import <WebKit/WebKit.h>
 
-@class NewsBlurAppDelegate;
-
 @interface OriginalStoryViewController : BaseViewController
 <UITextFieldDelegate, WKNavigationDelegate, WKUIDelegate,
 UIGestureRecognizerDelegate> {
     
-    NewsBlurAppDelegate *appDelegate;
     NSString *activeUrl;
     NSMutableArray *visitedUrls;
     WKWebView *webView;
@@ -27,7 +24,6 @@ UIGestureRecognizerDelegate> {
     BOOL finishedLoading;
 }
 
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet WKWebView *webView;
 //@property (strong, nonatomic) SloppySwiper *swiper;
 @property (nonatomic) UIProgressView *progressView;

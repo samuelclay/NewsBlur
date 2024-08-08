@@ -21,7 +21,6 @@
 @synthesize twitterButton;
 @synthesize submitButton;
 @synthesize commentField;
-@synthesize appDelegate;
 @synthesize activeReplyId;
 @synthesize activeCommentId;
 @synthesize activeStoryId;
@@ -38,9 +37,7 @@
 }
 
 - (void)viewDidLoad {
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    
-    [[NSNotificationCenter defaultCenter] 
+    [[NSNotificationCenter defaultCenter]
      addObserver:self 
      selector:@selector(onTextChange:)
      name:UITextViewTextDidChangeNotification 
@@ -202,7 +199,7 @@
         self.storyTitle.frame = CGRectMake(20, 8, v.width - 20*2, 24);
         stOffset = self.storyTitle.frame.origin.y + self.storyTitle.frame.size.height;
         stHeight = self.storyTitle.frame.size.height;
-    } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    } else if (!self.isPhone) {
         k = 0;
     }
     NSLog(@"Share type: %@", self.currentType);

@@ -20,6 +20,16 @@ class StoryPagesViewController: StoryPagesObjCViewController {
     
     /// Reload the widget timeline.
     @objc func reloadWidget() {
-        WidgetCenter.shared.reloadTimelines(ofKind: "Latest")
+        WidgetCenter.shared.reloadAllTimelines()
     }
+    
+#if targetEnvironment(macCatalyst)
+    @objc func validateToolbarItem(_ item: NSToolbarItem) -> Bool {
+        if [.storyPagesSettings, .storyPagesBrowser].contains(item.itemIdentifier) {
+            return self.isStoryShown
+        } else {
+            return true
+        }
+    }
+#endif
 }

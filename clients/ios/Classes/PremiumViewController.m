@@ -24,8 +24,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Done"
                                                                      style: UIBarButtonItemStylePlain
                                                                     target: self
