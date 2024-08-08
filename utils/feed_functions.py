@@ -9,6 +9,7 @@ import urllib.parse
 import urllib.request
 import warnings
 
+from qurl import qurl
 from django.utils.encoding import smart_str
 from django.utils.translation import ungettext
 
@@ -436,3 +437,9 @@ if __name__ == "__main__":
 def chunks(l, n):
     for i in range(0, len(l), n):
         yield l[i : i + n]
+
+
+def strip_underscore_from_feed_address(feed_address):
+    # Strip _=#### from feed_address
+    parsed_url = qurl(feed_address, remove="_")
+    return parsed_url

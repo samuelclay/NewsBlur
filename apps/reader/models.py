@@ -465,6 +465,11 @@ class UserSubscription(models.Model):
             else:
                 message = "This address does not point to an RSS feed or a website with an RSS feed."
         else:
+            allow_skip_resync = False
+            if user.profile.is_archive and feed.active_premium_subscribers != 0:
+                # Skip resync if there are already active archive subscribers
+                allow_skip_resync = True
+
             us, subscription_created = cls.objects.get_or_create(
                 feed=feed,
                 user=user,
@@ -499,7 +504,7 @@ class UserSubscription(models.Model):
 
             MActivity.new_feed_subscription(user_id=user.pk, feed_id=feed.pk, feed_title=feed.title)
 
-            feed.setup_feed_for_premium_subscribers()
+            feed.setup_feed_for_premium_subscribers(allow_skip_resync=allow_skip_resync)
             feed.count_subscribers()
 
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
