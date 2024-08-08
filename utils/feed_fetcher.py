@@ -52,7 +52,7 @@ from sentry_sdk import capture_exception, flush
 from utils import json_functions as json
 from utils import log as logging
 from utils.facebook_fetcher import FacebookFetcher
-from utils.feed_functions import TimeoutError, timelimit
+from utils.feed_functions import TimeoutError, strip_underscore_from_feed_address, timelimit
 from utils.json_fetcher import JSONFetcher
 from utils.story_functions import linkify, pre_process_story, strip_tags
 from utils.twitter_fetcher import TwitterFetcher
@@ -65,6 +65,8 @@ from utils.youtube_fetcher import YoutubeFetcher
 # http://feedjack.googlecode.com
 
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = list(range(5))
+
+NO_UNDERSCORE_ADDRESSES = ["jwz"]
 
 
 class FetchFeed:
@@ -111,8 +113,9 @@ class FetchFeed:
                 address = self.options["archive_page_link"]
             elif self.options.get("archive_page", None):
                 address = qurl(address, add={self.options["archive_page_key"]: self.options["archive_page"]})
-            elif address.startswith("http"):
-                address = qurl(address, add={"_": random.randint(0, 10000)})
+            # Don't use the underscore cache buster: https://forum.newsblur.com/t/jwz-feed-broken-hes-mad-about-url-parameters/10742/15
+            # elif address.startswith("http") and not any(item in address for item in NO_UNDERSCORE_ADDRESSES):
+            #     address = qurl(address, add={"_": random.randint(0, 10000)})
             logging.debug("   ---> [%-30s] ~FBForcing fetch: %s" % (self.feed.log_title[:30], address))
         elif not self.feed.fetched_once or not self.feed.known_good:
             modified = None
@@ -521,7 +524,7 @@ class ProcessFeed:
                     address = self.fpf.href
                     if self.options["force"] and address:
                         address = qurl(address, remove=["_"])
-                    self.feed.feed_address = address
+                    self.feed.feed_address = strip_underscore_from_feed_address(address)
                 if not self.feed.known_good:
                     self.feed.fetched_once = True
                     logging.debug(

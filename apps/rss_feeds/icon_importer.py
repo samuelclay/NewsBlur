@@ -10,6 +10,7 @@ import urllib.request
 from io import BytesIO
 from socket import error as SocketError
 
+import numpy as np
 import boto3
 import lxml.html
 import numpy
@@ -380,16 +381,16 @@ class IconImporter(object):
 
         # Reshape array of values to merge color bands. [[R], [G], [B], [A]] => [R, G, B, A]
         if len(shape) > 2:
-            ar = ar.reshape(scipy.product(shape[:2]), shape[2])
+            ar = ar.reshape(np.product(shape[:2]), shape[2])
 
         # Get NUM_CLUSTERS worth of centroids.
-        ar = ar.astype(numpy.float)
+        ar = ar.astype(float)
         codes, _ = scipy.cluster.vq.kmeans(ar, NUM_CLUSTERS)
 
         # Pare centroids, removing blacks and whites and shades of really dark and really light.
         original_codes = codes
         for low, hi in [(60, 200), (35, 230), (10, 250)]:
-            codes = scipy.array(
+            codes = np.array(
                 [
                     code
                     for code in codes
@@ -409,7 +410,7 @@ class IconImporter(object):
         vecs, _ = scipy.cluster.vq.vq(ar, codes)
 
         # Count occurences of each clustered vector.
-        counts, bins = scipy.histogram(vecs, len(codes))
+        counts, bins = np.histogram(vecs, len(codes))
 
         # Show colors for each code in its hex value.
         # colors = [''.join(chr(c) for c in code).encode('hex') for code in codes]
@@ -417,7 +418,7 @@ class IconImporter(object):
         # print dict(zip(colors, [count/float(total) for count in counts]))
 
         # Find the most frequent color, based on the counts.
-        index_max = scipy.argmax(counts)
+        index_max = np.argmax(counts)
         peak = codes.astype(int)[index_max]
         color = "{:02x}{:02x}{:02x}".format(peak[0], peak[1], peak[2])
         color = self.feed.adjust_color(color[:6], 21)
