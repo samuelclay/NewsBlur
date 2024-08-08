@@ -14,16 +14,18 @@ RUN       set -ex \
                     libffi-dev \
                     libjpeg-dev \
                     libpq-dev \
+                    libev-dev \
                     libreadline6-dev \
                     liblapack-dev \
                     libxml2-dev \
                     libxslt1-dev \
                     ncurses-dev \
                     zlib1g-dev \
-                            ' \
+                    ' \
             && apt-get update \
             && apt-get install -y $rundDeps $buildDeps --no-install-recommends
 COPY      config/requirements.txt /srv/newsblur/
+RUN       pip install -U pip==24
 RUN       pip install --no-cache-dir -r requirements.txt
 RUN       pip cache purge
 RUN       apt-get purge -y --auto-remove ${buildDeps}

@@ -18,11 +18,11 @@
                 </div>
                 <div class="NB-feeds-header-user-name">{{ social_profile.username }}</div>
                 <div class="NB-feeds-header-collapse-sidebar" role="button">
-                    <img src="{{ MEDIA_URL }}/img/reader/chevron_sq_left.png">
+                    <img src="{{ MEDIA_URL }}/img/icons/nouns/nav-left.svg">
                 </div>
                 <div class="NB-feeds-header-user-interactions" role="button">
                     <div class="NB-feeds-header-user-interactions-badge NB-hidden"></div>
-                    <img src="{{ MEDIA_URL }}/img/icons/circular/nav_icn_activity_active.png">
+                    <img src="{{ MEDIA_URL }}/img/icons/nouns/pulse.svg">
                 </div>
                 <div class="NB-feeds-header-dashboard"></div>
             </div>
@@ -236,70 +236,78 @@
         </div>
 
         <div id="story_taskbar" class="NB-taskbar-container content-south">
-            <ul class="segmented-control NB-taskbar NB-taskbar-view">
-                <li class="NB-taskbar-button task_view_page NB-tipsy" tipsy-title="Original">
-                    <div class="NB-task-image"></div>
-                    <span class="NB-task-title">Original</span>
-                    <span class="NB-task-original-return NB-task-title">
-                        Return
-                    </span>
-                    <div class="NB-task-view-switch-arrow NB-task-view-page-to-feed-arrow"></div>
-                </li>
-                <li class="NB-taskbar-button task_view_feed NB-active NB-tipsy" tipsy-title="Feed">
-                    <div class="NB-task-image"></div>
-                    <span class="NB-task-title">Feed</span>
-                    <div class="NB-task-view-switch-arrow NB-task-view-to-feed-arrow"></div>
-                </li>
-                <li class="NB-taskbar-button task_view_text NB-tipsy" tipsy-title="Text">
-                    <div class="NB-task-image"></div>
-                    <span class="NB-task-title">Text</span>
-                    <div class="NB-task-view-switch-arrow NB-task-view-to-text-arrow"></div>
-                </li>
-                <li class="NB-taskbar-button task_view_story NB-tipsy" tipsy-title="Story">
-                    <div class="NB-task-image"></div>
-                    <span class="NB-task-title">Story</span>
-                    <div class="NB-task-view-switch-arrow NB-task-view-to-story-arrow"></div>
-                </li>
-            </ul>
+            <div class="NB-taskbar-flex">
+                <ul class="segmented-control NB-taskbar NB-taskbar-view">
+                    <li class="NB-taskbar-button task_view_page NB-tipsy" tipsy-title="Original">
+                        <div class="NB-task-image"></div>
+                        <span class="NB-task-title">Original</span>
+                        <span class="NB-task-original-return NB-task-title">
+                            Return
+                        </span>
+                        <div class="NB-task-view-switch-arrow NB-task-view-page-to-feed-arrow"></div>
+                    </li>
+                    <li class="NB-taskbar-button task_view_feed NB-active NB-tipsy" tipsy-title="Feed">
+                        <div class="NB-task-image"></div>
+                        <span class="NB-task-title">Feed</span>
+                        <div class="NB-task-view-switch-arrow NB-task-view-to-feed-arrow"></div>
+                    </li>
+                    <li class="NB-taskbar-button task_view_text NB-tipsy" tipsy-title="Text">
+                        <div class="NB-task-image"></div>
+                        <span class="NB-task-title">Text</span>
+                        <div class="NB-task-view-switch-arrow NB-task-view-to-text-arrow"></div>
+                    </li>
+                    <li class="NB-taskbar-button task_view_story NB-tipsy" tipsy-title="Story">
+                        <div class="NB-task-image"></div>
+                        <span class="NB-task-title">Story</span>
+                        <div class="NB-task-view-switch-arrow NB-task-view-to-story-arrow"></div>
+                    </li>
+                </ul>
 
-            <ul class="segmented-control NB-taskbar NB-taskbar-layout">
-                <li class="NB-taskbar-button NB-task-layout-full NB-tipsy" tipsy-title="Full">
-                    <div class="NB-task-image"></div>
-                    <span class="NB-task-title">Full</span>
-                </li>
-                <li class="NB-taskbar-button NB-task-layout-split NB-active NB-tipsy" tipsy-title="Split">
-                    <div class="NB-task-image"></div>
-                    <span class="NB-task-title">Split</span>
-                </li>
-                <li class="NB-taskbar-button NB-task-layout-list NB-tipsy" tipsy-title="List">
-                    <div class="NB-task-image"></div>
-                    <span class="NB-task-title">List</span>
-                </li>
-                <li class="NB-taskbar-button NB-task-layout-magazine NB-tipsy" tipsy-title="Magazine">
-                    <div class="NB-task-image"></div>
-                    <span class="NB-task-title">Magazine</span>
-                </li>
-                <li class="NB-taskbar-button NB-task-layout-grid NB-tipsy" tipsy-title="Grid">
-                    <div class="NB-task-image"></div>
-                    <span class="NB-task-title">Grid</span>
-                </li>
-            </ul>
-            
-            <div class="NB-taskbar-options-container">
-                <span class="NB-taskbar-options" role="button">
-                    <div class="NB-icon"></div>
-                    Style
-                </span>
-            </div>
-            
-            {% if not user.is_authenticated %}
-            <div class="NB-callout-ftux-signup NB-callout">
-                <div class="NB-callout-container">
-                    <div class="NB-callout-text"></div>
-                    <div class="NB-callout-arrow"></div>
+                <div class="NB-modal-submit">
+                    <div class="NB-tryfeed-add NB-modal-submit-green NB-modal-submit-button">Subscribe</div>
+                    <div class="NB-tryfeed-follow NB-modal-submit-green NB-modal-submit-button">Follow</div>
+                    <div class="NB-tryfeed-signup NB-modal-submit-green NB-modal-submit-button">Sign up</div>
                 </div>
+
+                <div class="NB-taskbar-options-container">
+                    <span class="NB-taskbar-options" role="button">
+                        <div class="NB-icon"></div>
+                        Style
+                    </span>
+                </div>
+                
+                {% if not user.is_authenticated %}
+                <div class="NB-callout-ftux-signup NB-callout">
+                    <div class="NB-callout-container">
+                        <div class="NB-callout-text"></div>
+                        <div class="NB-callout-arrow"></div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <ul class="segmented-control NB-taskbar NB-taskbar-layout">
+                    <li class="NB-taskbar-button NB-task-layout-full NB-tipsy" tipsy-title="Full">
+                        <div class="NB-task-image"></div>
+                        <span class="NB-task-title">Full</span>
+                    </li>
+                    <li class="NB-taskbar-button NB-task-layout-split NB-active NB-tipsy" tipsy-title="Split">
+                        <div class="NB-task-image"></div>
+                        <span class="NB-task-title">Split</span>
+                    </li>
+                    <li class="NB-taskbar-button NB-task-layout-list NB-tipsy" tipsy-title="List">
+                        <div class="NB-task-image"></div>
+                        <span class="NB-task-title">List</span>
+                    </li>
+                    <li class="NB-taskbar-button NB-task-layout-magazine NB-tipsy" tipsy-title="Magazine">
+                        <div class="NB-task-image"></div>
+                        <span class="NB-task-title">Magazine</span>
+                    </li>
+                    <li class="NB-taskbar-button NB-task-layout-grid NB-tipsy" tipsy-title="Grid">
+                        <div class="NB-task-image"></div>
+                        <span class="NB-task-title">Grid</span>
+                    </li>
+                </ul>
             </div>
-            {% endif %}
         </div>
 
         <div class="content-pane">

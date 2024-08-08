@@ -6,6 +6,7 @@ import time
 import celery
 import elasticsearch
 import mongoengine as mongo
+import numpy as np
 import pymongo
 import redis
 import urllib3
@@ -490,7 +491,8 @@ class SearchStory:
 
 class SearchFeed:
     _es_client = None
-    name = "feeds"
+    name = "discover-feeds"
+    model = None
 
     @classmethod
     def ES(cls):
@@ -574,6 +576,10 @@ class SearchFeed:
                 "term_vector": "with_positions_offsets",
                 "type": "text",
             },
+            "content_vector": {
+                "type": "dense_vector",
+                "dims": 384,  # Numbers of dims from all-MiniLM-L6-v2
+            },
         }
         cls.ES().indices.put_mapping(
             body={
@@ -584,13 +590,14 @@ class SearchFeed:
         cls.ES().indices.flush(cls.index_name())
 
     @classmethod
-    def index(cls, feed_id, title, address, link, num_subscribers):
+    def index(cls, feed_id, title, address, link, num_subscribers, content_vector):
         doc = {
             "feed_id": feed_id,
             "title": title,
             "feed_address": address,
             "link": link,
             "num_subscribers": num_subscribers,
+            "content_vector": content_vector,
         }
         try:
             cls.ES().create(index=cls.index_name(), id=feed_id, body=doc, doc_type=cls.doc_type())
@@ -680,6 +687,135 @@ class SearchFeed:
         )
 
         return results["hits"]["hits"]
+
+    @classmethod
+    def vector_query(cls, query_vector, max_results=10, feed_ids_to_exclude=None):
+        try:
+            cls.ES().indices.flush(index=cls.index_name())
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.debug(f" ***> ~FRNo search server available: {e}")
+            return []
+
+        must_not_clauses = []
+        if feed_ids_to_exclude:
+            must_not_clauses.append({"terms": {"feed_id": feed_ids_to_exclude}})
+
+        body = {
+            "query": {
+                "bool": {
+                    "must": {
+                        "script_score": {
+                            "query": {"match_all": {}},
+                            "script": {
+                                "source": "cosineSimilarity(params.query_vector, 'content_vector') + 1.0",
+                                "params": {"query_vector": query_vector},
+                            },
+                        }
+                    },
+                    "must_not": must_not_clauses,
+                }
+            },
+            "size": max_results,
+        }
+        try:
+            results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
+
+        logging.info(
+            f"~FGVector search ~FCfeeds~FG: ~SB{max_results}~SN requested, ~SB{len(results['hits']['hits'])}~SN results"
+        )
+
+        return results["hits"]["hits"]
+
+    @classmethod
+    def fetch_feed_content_vector(cls, feed_id):
+        # Fetch the content vector from ES for the specified feed_id
+        try:
+            cls.ES().indices.flush(index=cls.index_name())
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.debug(f" ***> ~FRNo search server available: {e}")
+            return []
+
+        body = {
+            "query": {
+                "term": {
+                    "feed_id": feed_id,
+                }
+            }
+        }
+        try:
+            results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
+        # logging.debug(f"Results: {results}")
+        if len(results["hits"]["hits"]) == 0:
+            logging.debug(f" ---> ~FRNo content vector found for feed {feed_id}")
+            return []
+        return results["hits"]["hits"][0]["_source"]["content_vector"]
+
+    @classmethod
+    def generate_combined_feed_content_vector(cls, feed_ids):
+        vectors = []
+        for feed_id in feed_ids:
+            vector = cls.fetch_feed_content_vector(feed_id)
+            if not vector:
+                vector = cls.generate_feed_content_vector(feed_id)
+            vectors.append(vector)
+
+        combined_vector = np.mean(vectors, axis=0)
+        normalized_combined_vector = combined_vector / np.linalg.norm(combined_vector)
+
+        return normalized_combined_vector
+
+    @classmethod
+    def generate_feed_content_vector(cls, feed_id):
+        from apps.rss_feeds.models import Feed
+
+        if cls.model is None:
+            logging.debug(" ---> ~BG~FBLoading SentenceTransformer model")
+            start_time = time.time()
+            from sentence_transformers import SentenceTransformer
+
+            logging.debug(" ---> ~BG~FGDownloading SentenceTransformer model")
+
+            cls.model = SentenceTransformer("all-MiniLM-L6-v2")
+            logging.debug(
+                f" ---> ~FG~SNModel loaded, took ~SB{round(time.time() - start_time, 2)}~SN seconds"
+            )
+
+        feed = Feed.objects.get(id=feed_id)
+
+        # cross_encoder = CrossEncoder("BAAI/bge-large-zh-v2", device="cpu")
+        # cross_encoder.encode([feed.feed_title, feed.feed_content], convert_to_tensors="all")
+
+        stories = feed.get_stories()
+        stories_text = ""
+        for story in stories:
+            # stories_text += f"{story['story_title']} {story['story_authors']} {story['story_content']}"
+            stories_text += f"{story['story_title']} {' '.join([tag for tag in story['story_tags']])}"
+        text = f"{feed.feed_title} {feed.data.feed_tagline} {stories_text}"
+
+        # Remove URLs
+        text = re.sub(r"http\S+", "", text)
+
+        # Remove special characters
+        text = re.sub(r"[^\w\s]", "", text)
+
+        # Convert to lowercase
+        text = text.lower()
+
+        # Remove extra whitespace
+        text = " ".join(text.split())
+
+        encoded_text = cls.model.encode(text)
+        normalized_embedding = encoded_text / np.linalg.norm(encoded_text)
+
+        # logging.debug(f" ---> ~FGNormalized embedding for feed {feed_id}: {normalized_embedding}")
+
+        return normalized_embedding
 
     @classmethod
     def export_csv(cls):
