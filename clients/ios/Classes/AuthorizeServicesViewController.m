@@ -53,7 +53,7 @@
         [self.webView loadRequest:requestObj];
     }];
     
-    if (self.fromStory && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (self.fromStory && !appDelegate.isPhone) {
         UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]
                                          initWithTitle: @"Cancel"
                                          style: UIBarButtonItemStylePlain
@@ -75,6 +75,7 @@
 }
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    BOOL isPhone = appDelegate.isPhone;
     NSURLRequest *request = navigationAction.request;
     NSString *URLString = [[request URL] absoluteString];
     NSLog(@"URL STRING IS %@", URLString);
@@ -86,7 +87,7 @@
             
             if (self.fromStory) {
                 [self.appDelegate refreshUserProfile:^{
-                    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+                    if (!isPhone) {
                         [self.appDelegate.shareNavigationController viewWillAppear:YES];
                         [self.appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
                     } else {

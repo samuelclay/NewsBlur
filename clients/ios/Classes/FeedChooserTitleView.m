@@ -79,7 +79,7 @@
     UIImage *folderImage = [UIImage imageNamed:@"folder-open"];
     CGFloat folderImageViewX = 10.0;
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad) {
+    if (((NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]).isPhone) {
         folderImageViewX = 7.0;
     }
     

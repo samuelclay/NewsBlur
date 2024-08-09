@@ -8,7 +8,6 @@
 
 #import "AddSiteViewController.h"
 #import "AddSiteAutocompleteCell.h"
-#import "NewsBlurAppDelegate.h"
 #import "MenuViewController.h"
 #import "SBJson4.h"
 #import "NewsBlur-Swift.h"
@@ -93,7 +92,7 @@
 
 //- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 //    // Return YES for supported orientations
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//    if (!self.isPhone) {
 //        return YES;
 //    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
 //        return YES;
@@ -130,7 +129,7 @@
 }
 
 - (IBAction)doCancelButton {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!self.isPhone) {
         [appDelegate hidePopover];
     } else {
         [appDelegate hidePopoverAnimated:YES];
@@ -272,7 +271,7 @@
             [self.errorLabel setText:[responseObject valueForKey:@"message"]];
             [self.errorLabel setHidden:NO];
         } else {
-            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            if (!self.isPhone) {
                 [self->appDelegate hidePopover];
             } else {
                 [self->appDelegate hidePopoverAnimated:YES];

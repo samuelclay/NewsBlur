@@ -287,7 +287,6 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, readwrite) BOOL hasQueuedReadStories;
 @property (nonatomic, readwrite) BOOL hasQueuedSavedStories;
 @property (nonatomic, readonly) BOOL showingSafariViewController;
-@property (nonatomic, readonly) BOOL isCompactWidth;
 //@property (nonatomic) CGFloat compactWidth;
 
 @property (nonatomic, strong) BGAppRefreshTask *backgroundAppRefreshTask;
@@ -296,6 +295,9 @@ SFSafariViewControllerDelegate>  {
 
 - (void)registerDefaultsFromSettingsBundle;
 - (void)finishBackground;
+- (void)prepareViewControllers;
+
+- (BOOL)openURL:(NSURL *)url;
 
 - (void)showFirstTimeUser;
 - (void)showLogin;
@@ -395,7 +397,6 @@ SFSafariViewControllerDelegate>  {
 - (BOOL)isSavedStoriesIntelligenceMode;
 - (NSArray *)allFeedIds;
 - (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle;
-- (BOOL)isPortrait;
 - (void)confirmLogout;
 - (void)showConnectToService:(NSString *)serviceName;
 - (void)showAlert:(UIAlertController *)alert withViewController:(UIViewController *)vc;
@@ -439,6 +440,7 @@ SFSafariViewControllerDelegate>  {
 - (void)renameFolder:(NSString *)newTitle;
 
 - (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount barButtonItem:(UIBarButtonItem *)barButtonItem completionHandler:(void (^)(BOOL marked))completionHandler;
+- (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle visibleUnreadCount:(NSInteger)visibleUnreadCount sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler;
 - (void)showMarkReadMenuWithFeedIds:(NSArray *)feedIds collectionTitle:(NSString *)collectionTitle sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect completionHandler:(void (^)(BOOL marked))completionHandler;
 - (void)showMarkOlderNewerReadMenuWithStoriesCollection:(StoriesCollection *)olderNewerCollection story:(NSDictionary *)olderNewerStory sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect extraItems:(NSArray *)extraItems completionHandler:(void (^)(BOOL marked))completionHandler;
 
@@ -446,6 +448,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize barButtonItem:(UIBarButtonItem *)barButtonItem;
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect;
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections;
+
 - (void)hidePopoverAnimated:(BOOL)animated completion:(void (^)(void))completion;
 - (BOOL)hidePopoverAnimated:(BOOL)animated;
 - (void)hidePopover;

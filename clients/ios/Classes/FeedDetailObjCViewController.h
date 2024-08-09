@@ -14,7 +14,6 @@
 #import "MCSwipeTableViewCell.h"
 #import "FeedDetailTableCell.h"
 
-@class NewsBlurAppDelegate;
 @class MCSwipeTableViewCell;
 
 @interface FeedDetailObjCViewController : BaseViewController
@@ -23,8 +22,6 @@
  MCSwipeTableViewCellDelegate,
  UIGestureRecognizerDelegate, UISearchBarDelegate,
  UITableViewDragDelegate> {
-    NewsBlurAppDelegate *appDelegate;
-    
     BOOL pageFetching;
     BOOL pageFinished;
     BOOL finishedAnimatingIn;
@@ -39,7 +36,6 @@
     NBNotifier *notifier;
 }
 
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, strong) IBOutlet UITableView *storyTitlesTable;
 @property (nonatomic) IBOutlet UIBarButtonItem * feedMarkReadButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * feedsBarButton;
@@ -50,7 +46,9 @@
 @property (nonatomic) IBOutlet UIBarButtonItem * titleImageBarButton;
 @property (nonatomic, retain) NBNotifier *notifier;
 @property (nonatomic, retain) StoriesCollection *storiesCollection;
+#if !TARGET_OS_MACCATALYST
 @property (nonatomic) UIRefreshControl *refreshControl;
+#endif
 @property (nonatomic) UISearchBar *searchBar;
 @property (nonatomic) IBOutlet UIView *messageView;
 @property (nonatomic) IBOutlet UILabel *messageLabel;
@@ -112,16 +110,19 @@
 - (void)loadStoryAtRow:(NSInteger)row;
 - (void)redrawUnreadStory;
 - (IBAction)doOpenMarkReadMenu:(id)sender;
+- (IBAction)doMarkAllRead:(id)sender;
 - (IBAction)doOpenSettingsMenu:(id)sender;
 - (void)deleteSite;
 - (void)deleteFolder;
-- (void)muteSite;
-- (void)openTrainSite;
+- (IBAction)muteSite;
+- (IBAction)openTrainSite;
+- (IBAction)openNotifications:(id)sender;
 - (void)openNotificationsWithFeed:(NSString *)feedId;
-- (void)openRenameSite;
+- (IBAction)openStatistics:(id)sender;
+- (IBAction)openRenameSite;
 - (void)showUserProfile;
 - (void)changeActiveFeedDetailRow;
-- (void)instafetchFeed;
+- (IBAction)instafetchFeed;
 - (void)changeActiveStoryTitleCellLayout;
 - (void)didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
 - (void)loadFaviconsFromActiveFeed;
@@ -131,5 +132,8 @@
 - (void)finishMarkAsUnsaved:(NSDictionary *)params;
 - (void)failedMarkAsUnsaved:(NSDictionary *)params;
 - (void)failedMarkAsUnread:(NSDictionary *)params;
+
+- (void)confirmDeleteSite:(UINavigationController *)menuNavigationController;
+- (void)openMoveView:(UINavigationController *)menuNavigationController;
 
 @end

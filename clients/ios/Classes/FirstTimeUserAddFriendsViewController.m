@@ -16,7 +16,6 @@
 
 @implementation FirstTimeUserAddFriendsViewController
 
-@synthesize appDelegate;
 @synthesize nextButton;
 @synthesize facebookButton;
 @synthesize twitterButton;
@@ -36,8 +35,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    
     UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Skip this step" style:UIBarButtonItemStyleDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
@@ -53,7 +50,7 @@
 
 //- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 //    // Return YES for supported orientations
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//    if (!self.isPhone) {
 //        return YES;
 //    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
 //        return YES;

@@ -12,7 +12,6 @@
 
 @implementation LoginViewController
 
-@synthesize appDelegate;
 @synthesize usernameInput;
 @synthesize passwordInput;
 @synthesize emailInput;
@@ -44,8 +43,6 @@
     }
 
 - (void)viewDidLoad {
-    self.appDelegate = NewsBlurAppDelegate.sharedAppDelegate;
-    
     self.usernameInput.borderStyle = UITextBorderStyleRoundedRect;
     self.passwordInput.borderStyle = UITextBorderStyleRoundedRect;
     self.emailInput.borderStyle = UITextBorderStyleRoundedRect;
@@ -71,7 +68,7 @@
 }
 
 - (void)rearrangeViews {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!self.isPhone) {
         CGSize viewSize = self.view.bounds.size;
         CGFloat viewWidth = viewSize.width;
         CGFloat yOffset = 0;
@@ -98,7 +95,7 @@
 
 //- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 //    // Return YES for supported orientations
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//    if (!self.isPhone) {
 //        return YES;
 //    }
 //    return NO;
@@ -108,7 +105,7 @@
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [super viewDidAppear:animated];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!self.isPhone) {
         [self updateControls];
         [self rearrangeViews];
     }
@@ -141,7 +138,7 @@
     self.errorLabel.hidden = !hasError;
     self.forgotPasswordButton.hidden = !hasError;
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!self.isPhone) {
         self.loginOptionalLabel.hidden = hasError;
     }
 }
@@ -166,7 +163,7 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
-    if  ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if  (!self.isPhone) {
         if(textField == usernameInput) {
             [passwordInput becomeFirstResponder];
         } else if (textField == passwordInput) {
@@ -244,7 +241,7 @@
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
 
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!self.isPhone) {
         [params setObject:[signUpUsernameInput text] forKey:@"username"];
         [params setObject:[signUpPasswordInput text] forKey:@"password"];
     } else {
