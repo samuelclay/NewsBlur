@@ -14,7 +14,6 @@
 
 @interface PremiumViewController : BaseViewController <UITableViewDelegate, UITableViewDataSource>
 
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UITableView *premiumTable;
 
 

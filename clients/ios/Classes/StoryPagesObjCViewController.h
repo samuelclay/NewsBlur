@@ -16,7 +16,6 @@
 
 @interface StoryPagesObjCViewController : BaseViewController
 <UIScrollViewDelegate, UIPopoverControllerDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate> {
-    NewsBlurAppDelegate *appDelegate;
     THCircularProgressView *circularProgressView;
     UIButton *buttonPrevious;
     UIButton *buttonNext;
@@ -37,7 +36,6 @@
     CGFloat scrollPct;
 }
 
-@property (nonatomic, strong) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) StoryDetailViewController *currentPage;
 @property (nonatomic) StoryDetailViewController *nextPage;
 @property (nonatomic) StoryDetailViewController *previousPage;
@@ -153,8 +151,13 @@
 - (IBAction)openSendToDialog:(id)sender;
 - (IBAction)doNextUnreadStory:(id)sender;
 - (IBAction)doPreviousStory:(id)sender;
+- (void)changeToNextPage:(id)sender;
+- (void)changeToPreviousPage:(id)sender;
 - (IBAction)tapProgressBar:(id)sender;
 - (IBAction)toggleTextView:(id)sender;
+
+- (IBAction)toggleStorySaved:(id)sender;
+- (IBAction)toggleStoryUnread:(id)sender;
 
 - (void)finishMarkAsSaved:(NSDictionary *)params;
 - (BOOL)failedMarkAsSaved:(NSDictionary *)params;

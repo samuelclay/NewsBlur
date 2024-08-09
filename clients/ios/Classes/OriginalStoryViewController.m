@@ -17,7 +17,6 @@
 
 @implementation OriginalStoryViewController
 
-@synthesize appDelegate;
 @synthesize webView;
 //@synthesize swiper;
 @synthesize progressView;
@@ -25,14 +24,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-
     self.view.layer.masksToBounds = NO;
     self.view.layer.shadowRadius = 5;
     self.view.layer.shadowOpacity = 0.5;
     self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!self.isPhone) {
         closeButton = [UIBarButtonItem barItemWithImage:[UIImage imageNamed:@"ios7_back_button"]
                                                  target:self
                                                  action:@selector(closeOriginalView)];
@@ -70,7 +67,7 @@
 //    UIGestureRecognizer *themeGesture = [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
 //    [self.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:themeGesture];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!self.isPhone) {
         UIPanGestureRecognizer *gesture = [[UIPanGestureRecognizer alloc]
                                            initWithTarget:self action:@selector(handlePanGesture:)];
         gesture.delegate = self;
@@ -215,7 +212,7 @@
                              center.y);
         self.view.center = center;
         [recognizer setTranslation:CGPointZero inView:self.view];
-//        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        if (!self.isPhone) {
 //            [appDelegate.masterContainerViewController interactiveTransitionFromOriginalView:percentage];
 //        } else {
 //
@@ -231,7 +228,7 @@
             [self transitionToFeedDetail:recognizer];
         } else {
 //            NSLog(@"Original velocity: %f (at %.2f%%)", velocity, percentage*100);
-//            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//            if (!self.isPhone) {
 //                [appDelegate.masterContainerViewController transitionToOriginalView:NO];
 //            } else {
 //
@@ -241,7 +238,7 @@
 }
 
 - (void)transitionToFeedDetail:(UIGestureRecognizer *)recognizer {
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//    if (!self.isPhone) {
 //        [appDelegate.masterContainerViewController transitionFromOriginalView];
 //    } else {
 //        
@@ -365,7 +362,7 @@
 
 - (void)updateTitle:(WKWebView*)aWebView
 {
-    if (self.customPageTitle != nil) {
+    if (self.customPageTitle.length > 0) {
         titleView.text = self.customPageTitle;
     } else {
         NSString *pageTitleValue = webView.title;
@@ -373,6 +370,10 @@
     }
     
     [titleView sizeToFit];
+    
+#if TARGET_OS_MACCATALYST
+    self.view.window.windowScene.title = titleView.text;
+#endif
 }
 
 - (IBAction)loadAddress:(id)sender {

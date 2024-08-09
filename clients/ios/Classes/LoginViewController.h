@@ -12,8 +12,6 @@
 #define LANDSCAPE_MARGIN 128
 
 @interface LoginViewController : BaseViewController {
-    NewsBlurAppDelegate *appDelegate;
-    
     BOOL isOnSignUpScreen;
     UITextField *usernameInput;
     UITextField *passwordInput;
@@ -45,8 +43,6 @@
 
 
 - (void)animateLoop;
-
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 
 @property (nonatomic) IBOutlet UITextField *usernameInput;
 @property (nonatomic) IBOutlet UITextField *passwordInput;

@@ -9,11 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
 
-@interface FirstTimeUserAddNewsBlurViewController  : BaseViewController {
-    NewsBlurAppDelegate *appDelegate;
-}
+@interface FirstTimeUserAddNewsBlurViewController  : BaseViewController
 
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UIBarButtonItem *nextButton;
 @property (strong, nonatomic) IBOutlet UILabel *instructionsLabel;
 

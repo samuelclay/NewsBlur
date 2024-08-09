@@ -11,11 +11,8 @@
 #import "NewsBlurAppDelegate.h"
 #import "NewsBlur-Swift.h"
 
-@interface FirstTimeUserAddFriendsViewController  : BaseViewController {
-    NewsBlurAppDelegate *appDelegate;
-}
+@interface FirstTimeUserAddFriendsViewController  : BaseViewController
 
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UIBarButtonItem *nextButton;
 @property (weak, nonatomic) IBOutlet UIButton *facebookButton;
 @property (weak, nonatomic) IBOutlet UIButton *twitterButton;

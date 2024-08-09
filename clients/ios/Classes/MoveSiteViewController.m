@@ -7,13 +7,11 @@
 //
 
 #import "MoveSiteViewController.h"
-#import "NewsBlurAppDelegate.h"
 #import "StringHelper.h"
 #import "StoriesCollection.h"
 
 @implementation MoveSiteViewController
 
-@synthesize appDelegate;
 @synthesize toFolderInput;
 @synthesize fromFolderInput;
 @synthesize titleLabel;
@@ -34,8 +32,6 @@
 }
 
 - (void)viewDidLoad {
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    
     UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"folder-open"]];
     folderImage.frame = CGRectMake(0, 0, 24, 16);
     [folderImage setContentMode:UIViewContentModeRight];
@@ -54,14 +50,12 @@
     frame.size.height += 20;
     self.navBar.frame = frame;
     
-    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    
     [super viewDidLoad];
 }
 
 //- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 //    // Return YES for supported orientations
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//    if (!self.isPhone) {
 //        return YES;
 //    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
 //        return YES;

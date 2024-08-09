@@ -13,7 +13,6 @@
 @class NewsBlurAppDelegate;
 
 @interface FriendsListViewController : BaseViewController <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate> {
-    NewsBlurAppDelegate *appDelegate;
     UISearchBar *friendSearchBar;
     UITableView *friendsTable;
     NSArray *suggestedUserProfiles;
@@ -21,7 +20,6 @@
     NSArray *userProfileIds;
 }
 
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UISearchBar *friendSearchBar;
 @property (nonatomic) IBOutlet UITableView *friendsTable;
 

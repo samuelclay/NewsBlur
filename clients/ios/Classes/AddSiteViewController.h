@@ -7,15 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "NewsBlurAppDelegate.h"
 #import "NewsBlur-Swift.h"
 
-@class NewsBlurAppDelegate;
-
 @interface AddSiteViewController : BaseViewController
-<UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource> {
-    NewsBlurAppDelegate *appDelegate;
-}
+<UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource>
 
 - (void)reload;
 - (IBAction)addSite;
