@@ -107,7 +107,7 @@
     [self.scrollView setAlwaysBounceHorizontal:self.isHorizontal];
     [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
     
-    if (@available(macCatalyst 17.0, *)) {
+    if (@available(iOS 17.0, *)) {
         self.scrollView.allowsKeyboardScrolling = NO;
     }
     
