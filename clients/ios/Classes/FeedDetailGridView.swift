@@ -136,6 +136,7 @@ struct FeedDetailGridView: View {
                 }
             }
             .modify({ view in
+#if !targetEnvironment(macCatalyst)
                 if #available(iOS 15.0, *) {
                     view.refreshable {
                         if cache.canPullToRefresh {
@@ -143,6 +144,7 @@ struct FeedDetailGridView: View {
                         }
                     }
                 }
+#endif
             })
         }
         .background(Color.themed([0xE0E0E0, 0xFFF8CA, 0x363636, 0x101010]))

@@ -24,7 +24,9 @@ def main():
             # this is a remote location
             hostname, path = arg.split(":", 1)
             if options.identity:
-                s = subprocess.Popen(["ssh", "-i", options.identity, hostname, "tail -f " + path], stdout=subprocess.PIPE)
+                s = subprocess.Popen(
+                    ["ssh", "-i", options.identity, hostname, "tail -f " + path], stdout=subprocess.PIPE
+                )
             else:
                 s = subprocess.Popen(["ssh", hostname, "tail -f " + path], stdout=subprocess.PIPE)
             s.name = arg
@@ -36,8 +38,7 @@ def main():
 
     try:
         while True:
-            r, _, _ = select.select(
-                [stream.stdout.fileno() for stream in streams], [], [])
+            r, _, _ = select.select([stream.stdout.fileno() for stream in streams], [], [])
             for fileno in r:
                 for stream in streams:
                     if stream.stdout.fileno() != fileno:
@@ -46,12 +47,13 @@ def main():
                     if not data:
                         streams.remove(stream)
                         break
-                    host = re.match(r'^(.*?)\.', stream.name)
+                    host = re.match(r"^(.*?)\.", stream.name)
                     combination_message = "[%-6s] %s" % (host.group(1)[:6], data)
                     sys.stdout.write(combination_message)
                     break
     except KeyboardInterrupt:
         print(" --- End of Logging ---")
+
 
 if __name__ == "__main__":
     main()

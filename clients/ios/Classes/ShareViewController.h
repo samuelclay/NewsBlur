@@ -15,7 +15,6 @@
 }
 
 @property (nonatomic) IBOutlet UITextView *commentField;
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UIButton *facebookButton;
 @property (nonatomic) IBOutlet UIButton *twitterButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *submitButton;

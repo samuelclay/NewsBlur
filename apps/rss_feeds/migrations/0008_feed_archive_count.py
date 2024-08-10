@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rss_feeds', '0007_merge_20220517_1355'),
+        ("rss_feeds", "0007_merge_20220517_1355"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='feed',
-            name='archive_count',
+            model_name="feed",
+            name="archive_count",
             field=models.IntegerField(blank=True, null=True),
         ),
     ]

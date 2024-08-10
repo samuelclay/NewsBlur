@@ -2,6 +2,7 @@
 
 from vendor.munin.memcached import MuninMemcachedPlugin
 
+
 class MuninMemcachedQueriesPlugin(MuninMemcachedPlugin):
     title = "Memcached query stats"
     args = "--base 1000"

@@ -1,4 +1,5 @@
 import math
+
 import redis
 from django.conf import settings
 from django.contrib.sessions.models import Session
@@ -8,7 +9,7 @@ print((" ---> %s sessions in Django" % sessions_count))
 batch_size = 1000
 r = redis.Redis(connection_pool=settings.REDIS_SESSION_POOL)
 
-for batch in range(int(math.ceil(sessions_count / batch_size))+1):
+for batch in range(int(math.ceil(sessions_count / batch_size)) + 1):
     start = batch * batch_size
     end = (batch + 1) * batch_size
     print((" ---> Loading sessions #%s - #%s" % (start, end)))

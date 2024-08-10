@@ -97,8 +97,24 @@
     self.savedSearchQuery = fromCollection.savedSearchQuery;
 }
 
+- (BOOL)isEverything {
+    return [activeFolder isEqualToString:@"everything"];
+}
+
+- (BOOL)isInfrequent {
+    return [activeFolder isEqualToString:@"infrequent"];
+}
+
 - (BOOL)isRiverOrSocial {
     return self.isRiverView || self.isSavedView || self.isReadView || self.isWidgetView || self.isSocialView || self.isSocialRiverView;
+}
+
+- (BOOL)isCustomFolder {
+    return self.isRiverView && !self.isEverything && !self.isInfrequent && !self.isSavedView && !self.isReadView && !self.isSocialView && !self.isWidgetView;
+}
+
+- (BOOL)isCustomFolderOrFeed {
+    return !self.isRiverView || self.isCustomFolder;
 }
 
 #pragma mark - Story Traversal
@@ -230,6 +246,10 @@
     if (location == -1) return -1;
     if (location >= [activeFeedStoryLocations count]) return -1;
     return [[activeFeedStoryLocations objectAtIndex:location] intValue];
+}
+
+- (NSString *)activeFeedIdStr {
+    return [NSString stringWithFormat:@"%@", [activeFeed objectForKey:@"id"]];
 }
 
 - (NSString *)activeOrder {

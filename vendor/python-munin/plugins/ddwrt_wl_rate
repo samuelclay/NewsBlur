@@ -2,6 +2,7 @@
 
 from vendor.munin.ddwrt import DDWrtPlugin
 
+
 class DDWrtWirelessRate(DDWrtPlugin):
     title = "Wireless rate"
     args = "--base 1000 -l 0"

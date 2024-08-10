@@ -174,11 +174,18 @@ static UIFont *textFont = nil;
     BOOL isHighlighted = cell.highlighted || cell.selected;
     UIColor *backgroundColor;
     
+#if TARGET_OS_MACCATALYST
+    backgroundColor = cell.isSocial ? UIColorFromRGB(0xD8E3DB) :
+                      cell.isSearch ? UIColorFromRGB(0xDBDFE6) :
+                      cell.isSaved ? UIColorFromRGB(0xDFDCD6) :
+                      UIColor.clearColor;
+#else
     backgroundColor = cell.isSocial ? UIColorFromRGB(0xD8E3DB) :
                       cell.isSearch ? UIColorFromRGB(0xDBDFE6) :
                       cell.isSaved ? UIColorFromRGB(0xDFDCD6) :
                       UIColorFromRGB(0xF7F8F5);
-
+#endif
+    
 //    [backgroundColor set];
     self.backgroundColor = backgroundColor;
     cell.backgroundColor = backgroundColor;
@@ -219,7 +226,7 @@ static UIFont *textFont = nil;
     paragraphStyle.alignment = NSTextAlignmentLeft;
     CGSize faviconSize;
     if (cell.isSocial) {
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!cell.appDelegate.isPhone) {
             faviconSize = CGSizeMake(28, 28);
             UIImage *feedIcon = [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
             [feedIcon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
@@ -239,7 +246,7 @@ static UIFont *textFont = nil;
     } else {
         faviconSize = CGSizeMake(16, 16);
         UIImage *feedIcon = [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        if (!cell.appDelegate.isPhone) {
             [feedIcon drawInRect:CGRectMake(12.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
             [cell.feedTitle drawInRect:CGRectMake(36.0, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,

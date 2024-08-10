@@ -28,8 +28,9 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-from pymongo import Connection
 import os
+
+from pymongo import Connection
 
 settings_host = os.environ.get("host", "127.0.0.1")
 settings_port = 27017
@@ -72,8 +73,8 @@ def doConfig():
 
 
 if __name__ == "__main__":
-    from sys import argv
     from os import environ
+    from sys import argv
 
     # Could be done by a for loop 
     # but i think if's are faster

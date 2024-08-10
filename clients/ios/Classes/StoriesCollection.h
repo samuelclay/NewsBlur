@@ -59,10 +59,15 @@
 @property (nonatomic, readwrite) BOOL transferredFromDashboard;
 @property (nonatomic, readwrite) BOOL showHiddenStories;
 @property (nonatomic, readwrite) BOOL inSearch;
+@property (nonatomic, readonly) BOOL isEverything;
+@property (nonatomic, readonly) BOOL isInfrequent;
 @property (nonatomic, readonly) BOOL isRiverOrSocial;
+@property (nonatomic, readonly) BOOL isCustomFolder;
+@property (nonatomic, readonly) BOOL isCustomFolderOrFeed;
 @property (nonatomic) NSString *searchQuery;
 @property (nonatomic) NSString *savedSearchQuery;
 
+@property (nonatomic, readonly) NSString *activeFeedIdStr;
 @property (nonatomic, readonly) NSString *activeOrder;
 @property (nonatomic, readonly) NSString *activeReadFilter;
 @property (nonatomic, readonly) NSString *activeStoryTitlesPosition;

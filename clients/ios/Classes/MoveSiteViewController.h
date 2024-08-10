@@ -9,16 +9,12 @@
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
 
-@class NewsBlurAppDelegate;
-
 @interface FolderTextField : UITextField
 
 @end
 
 @interface MoveSiteViewController : BaseViewController
-<UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource> {
-    NewsBlurAppDelegate *appDelegate;
-}
+<UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource>
 
 - (void)reload;
 - (IBAction)moveSite;
@@ -27,7 +23,6 @@
 - (IBAction)doMoveButton;
 - (NSArray *)pickerFolders;
 
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UITextField *fromFolderInput;
 @property (nonatomic) IBOutlet FolderTextField *toFolderInput;
 @property (nonatomic) IBOutlet UILabel *titleLabel;

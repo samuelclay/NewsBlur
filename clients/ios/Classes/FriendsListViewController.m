@@ -27,7 +27,6 @@
 
 @implementation FriendsListViewController
 
-@synthesize appDelegate;
 @synthesize friendSearchBar;
 @synthesize friendsTable;
 @synthesize suggestedUserProfiles;
@@ -44,8 +43,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     self.navigationItem.title = @"Find Friends";
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Done" 
@@ -156,7 +153,7 @@
 //    if (self.inSearch_){
 //        return 0;
 //    } else {
-//        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad){
+//        if (!self.isPhone){
 //            return 28;
 //        }else{
 //            return 21;
@@ -168,7 +165,7 @@
 viewForHeaderInSection:(NSInteger)section {
     int headerLabelHeight, folderImageViewY;
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!self.isPhone) {
         headerLabelHeight = 28;
         folderImageViewY = 3;
     } else {
@@ -280,7 +277,7 @@ viewForHeaderInSection:(NSInteger)section {
             
             // add a NO FRIENDS TO SUGGEST message on either the first or second row depending on iphone/ipad
             int row = 0;
-            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+            if (!self.isPhone) {
                 row = 1;
             }
             

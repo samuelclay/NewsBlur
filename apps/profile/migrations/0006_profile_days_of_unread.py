@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('profile', '0005_profile_is_archive'),
+        ("profile", "0005_profile_is_archive"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='days_of_unread',
+            model_name="profile",
+            name="days_of_unread",
             field=models.IntegerField(default=30, blank=True, null=True),
         ),
     ]

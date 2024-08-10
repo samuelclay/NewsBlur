@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 import os
+
 from vendor.munin.cassandra import MuninCassandraPlugin
+
 
 class CassandraKeyCacheRatioPlugin(MuninCassandraPlugin):
     title = "key cache hit ratio"

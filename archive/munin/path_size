@@ -2,7 +2,9 @@
 
 import os
 import subprocess
+
 from vendor.munin import MuninPlugin
+
 
 class PathSizePlugin(MuninPlugin):
     args = "--base 1024 -l 0"

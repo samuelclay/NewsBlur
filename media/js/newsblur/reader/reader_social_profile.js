@@ -1,10 +1,10 @@
-NEWSBLUR.ReaderSocialProfile = function(user_id, options) {
+NEWSBLUR.ReaderSocialProfile = function (user_id, options) {
     var defaults = {
         width: 800
     };
-        
+
     this.options = $.extend({}, defaults, options);
-    this.model   = NEWSBLUR.assets;
+    this.model = NEWSBLUR.assets;
     this.profiles = new NEWSBLUR.Collections.Users();
     user_id = parseInt(_.string.ltrim(user_id, 'social:'), 10);
     this.runner(user_id);
@@ -13,10 +13,10 @@ NEWSBLUR.ReaderSocialProfile = function(user_id, options) {
 NEWSBLUR.ReaderSocialProfile.prototype = new NEWSBLUR.Modal;
 
 _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
-    
-    runner: function(user_id) {
+
+    runner: function (user_id) {
         if (!this.model.user_profiles.find(user_id)) {
-            this.model.add_user_profiles([{user_id: user_id}]);
+            this.model.add_user_profiles([{ user_id: user_id }]);
         }
         this.profile = this.model.user_profiles.find(user_id).clone();
         this.make_modal();
@@ -26,8 +26,8 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
         this.profile.bind('change', _.bind(this.populate_friends, this));
         this.$modal.bind('click', $.rescope(this.handle_click, this));
     },
-    
-    make_modal: function() {
+
+    make_modal: function () {
         var self = this;
         this.$profile = new NEWSBLUR.Views.SocialProfileBadge({
             model: this.profile,
@@ -85,11 +85,11 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
             ])
         ]);
     },
-    
-    fetch_profile: function(user_id, callback) {
+
+    fetch_profile: function (user_id, callback) {
         $('.NB-modal-loading', this.$modal).addClass('NB-active');
 
-        this.model.fetch_user_profile(user_id, _.bind(function(data) {
+        this.model.fetch_user_profile(user_id, _.bind(function (data) {
             $('.NB-modal-loading', this.$modal).removeClass('NB-active');
             this.profiles = data.profiles;
             this.activities = data.activities;
@@ -102,12 +102,12 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
             callback && callback();
         }, this));
     },
-    
-    populate_friends: function() {
+
+    populate_friends: function () {
         // NEWSBLUR.log(["populate_friends", this.profile.get('followers_youknow')]);
-        _.each(['following_youknow', 'following_everybody', 'followers_youknow', 'followers_everybody'], _.bind(function(f) {
+        _.each(['following_youknow', 'following_everybody', 'followers_youknow', 'followers_everybody'], _.bind(function (f) {
             var user_ids = this.profile.get(f);
-            var $f = $('.NB-profile-'+f.replace('_', '-'), this.$modal);
+            var $f = $('.NB-profile-' + f.replace('_', '-'), this.$modal);
             $f.html(this.make_profile_badges(user_ids, this.profiles));
             $f.closest('fieldset').toggle(!!user_ids.length);
         }, this));
@@ -115,11 +115,11 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
         $('.NB-profile-following-count', this.$modal).text(this.profile.get('following_count'));
         _.defer(_.bind(this.resize, this));
     },
-    
-    populate_activities: function(activities_html) {
+
+    populate_activities: function (activities_html) {
         var $activities = $('.NB-profile-activities', this.$modal).empty();
         var $section = $(".NB-profile-section-activities", this.$modal);
-        
+
         if (!this.activities.length) {
             $section.hide();
         } else {
@@ -128,11 +128,11 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
             $activities.html(activities_html);
         }
     },
-    
-    load_images_and_resize: function() {
+
+    load_images_and_resize: function () {
         var $images = $('img', this.$modal);
         var image_count = $images.length;
-        $images.on('load', _.bind(function() {
+        $images.on('load', _.bind(function () {
             if (image_count > 1) {
                 image_count -= 1;
             } else {
@@ -140,10 +140,10 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
             }
         }, this));
     },
-    
-    make_profile_badges: function(user_ids, profiles) {
+
+    make_profile_badges: function (user_ids, profiles) {
         $('.tipsy').remove();
-        var $badges = $.make('div', { className: 'NB-profile-links' }, _.map(user_ids, function(user_id) {
+        var $badges = $.make('div', { className: 'NB-profile-links' }, _.map(user_ids, function (user_id) {
             var user = new NEWSBLUR.Models.User(profiles[user_id]);
             return $.make('div', { className: 'NB-profile-link', title: user.get('username') }, [
                 $.make('img', { src: user.get('photo_url') })
@@ -159,10 +159,10 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
     // ===========
     // = Actions =
     // ===========
-    
-    open_modal: function(callback) {
+
+    open_modal: function (callback) {
         var self = this;
-        
+
         this.$modal.modal({
             'minWidth': this.options.width,
             'maxWidth': this.options.width,
@@ -170,7 +170,7 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
                     dialog.container.fadeIn(200);
-                    dialog.data.fadeIn(200, function() {
+                    dialog.data.fadeIn(200, function () {
                         if (self.options.onOpen) {
                             self.options.onOpen();
                         }
@@ -179,16 +179,16 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
                     self.resize();
                 });
             },
-            'onShow': function(dialog) {
+            'onShow': function (dialog) {
                 $('#simplemodal-container').corner('6px');
                 if (self.options.onShow) {
                     self.options.onShow();
                 }
             },
-            'onClose': function(dialog, callback) {
+            'onClose': function (dialog, callback) {
                 dialog.data.hide().empty().remove();
                 dialog.container.hide().empty().remove();
-                dialog.overlay.fadeOut(200, function() {
+                dialog.overlay.fadeOut(200, function () {
                     dialog.overlay.empty().remove();
                     $.modal.close(callback);
                 });
@@ -196,35 +196,35 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
             }
         });
     },
-    
+
     // ===========
     // = Actions =
     // ===========
 
-    handle_click: function(elem, e) {
+    handle_click: function (elem, e) {
         var self = this;
-        
-        $.targetIs(e, { tagSelector: '.NB-account-link' }, function($t, $p) {
+
+        $.targetIs(e, { tagSelector: '.NB-account-link' }, function ($t, $p) {
             e.preventDefault();
-            
+
             self.close_and_load_account();
         });
-        $.targetIs(e, { tagSelector: '.NB-profile-link' }, function($t, $p) {
+        $.targetIs(e, { tagSelector: '.NB-profile-link' }, function ($t, $p) {
             e.preventDefault();
-            
+
             var user_id = $t.data('user_id');
             $t.tipsy('hide').tipsy('disable');
             self.fetch_profile(user_id);
         });
-        $.targetIs(e, { tagSelector: '.NB-activity-follow' }, function($t, $p) {
+        $.targetIs(e, { tagSelector: '.NB-activity-follow' }, function ($t, $p) {
             e.preventDefault();
             e.stopPropagation();
-            
+
             var user_id = $t.data('userId');
             $t.tipsy('hide').tipsy('disable');
             self.fetch_profile(user_id);
         });
 
     }
-    
+
 });

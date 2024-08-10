@@ -85,6 +85,8 @@ struct SimpleEntry: TimelineEntry {
 struct WidgetEntryView : View {
     var entry: Provider.Entry
     
+    @Environment(\.widgetRenderingMode) var renderingMode
+    @Environment(\.widgetContentMargins) var margins
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.widgetFamily) private var family
     
@@ -94,14 +96,19 @@ struct WidgetEntryView : View {
     
     var body: some View {
         ZStack {
-            Color("WidgetBackground")
-                .ignoresSafeArea()
+//            switch renderingMode {
+//                case .accented:
+//                case .fullColor:
+//                case .vibrant:
+//                    break
+//            }
             
             if let error = entry.cache.error {
                 Link(destination: URL(string: "newsblurwidget://?error=\(error)")!) {
                         Text(message(for: error))
                         .font(.headline)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
+                        .containerBackground(.fill, for: .widget)
                 }
             } else {
                 VStack(alignment: .leading, spacing: 0, content: {
@@ -112,8 +119,18 @@ struct WidgetEntryView : View {
                         Divider()
                     }
                 })
-                    .widgetURL(URL(string: "newsblurwidget://open"))
+                .padding(.top, 5)
+                .padding(.bottom, 5)
+                .containerBackground(for: .widget) {
+                    Color("WidgetBackground")
+                }
+                .widgetURL(URL(string: "newsblurwidget://open"))
             }
+        }
+//        .environment(\.colorScheme, colorScheme)
+        .containerBackground(for: .widget) {
+            Color("WidgetBackground")
+//                .ignoresSafeArea()
         }
     }
     
@@ -142,6 +159,7 @@ struct WidgetExtension: Widget {
         .configurationDisplayName("NewsBlur")
         .description("The latest stories from NewsBlur.")
         .supportedFamilies([.systemMedium, .systemLarge])
+        .contentMarginsDisabled()
     }
 }
 

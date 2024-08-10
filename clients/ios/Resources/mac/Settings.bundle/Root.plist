@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+			<key>Title</key>
+			<string>Story List</string>
+			<key>File</key>
+			<string>StoryList</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+			<key>Title</key>
+			<string>Appearance</string>
+			<key>File</key>
+			<string>Appearance</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+			<key>Title</key>
+			<string>Advanced</string>
+			<key>File</key>
+			<string>Advanced</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Feed list</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Feed list order</string>
+			<key>Titles</key>
+			<array>
+				<string>Alphabetical</string>
+				<string>Most used then alphabetical</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>title</string>
+			<key>Values</key>
+			<array>
+				<string>title</string>
+				<string>usage</string>
+			</array>
+			<key>Key</key>
+			<string>feed_list_sort_order</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show feeds after being read</string>
+			<key>Key</key>
+			<string>show_feeds_after_being_read</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>When opening app</string>
+			<key>WantUpdate</key>
+			<true/>
+			<key>Titles</key>
+			<array>
+				<string>Show feed list</string>
+				<string>Open All Stories</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>everything</string>
+			<key>Values</key>
+			<array>
+				<string>feeds</string>
+				<string>everything</string>
+			</array>
+			<key>Key</key>
+			<string>app_opening</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Reading Stories</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Scroll horizontally</string>
+			<key>Key</key>
+			<string>scroll_stories_horizontally</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show public comments</string>
+			<key>Key</key>
+			<string>show_public_comments</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Default browser</string>
+			<key>Titles</key>
+			<array>
+				<string>System Default</string>
+				<string>Chrome</string>
+				<string>Opera Mini</string>
+				<string>Firefox</string>
+				<string>Edge</string>
+				<string>Brave</string>
+				<string>In-app browser</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>system</string>
+			<key>Values</key>
+			<array>
+				<string>system</string>
+				<string>chrome</string>
+				<string>opera_mini</string>
+				<string>firefox</string>
+				<string>edge</string>
+				<string>brave</string>
+				<string>inapp</string>
+			</array>
+			<key>Key</key>
+			<string>story_browser</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>This setting only applies after the app is restarted.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Play videos</string>
+			<key>Titles</key>
+			<array>
+				<string>Inline</string>
+				<string>Full-screen</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>inline</string>
+			<key>Values</key>
+			<array>
+				<string>inline</string>
+				<string>fullscreen</string>
+			</array>
+			<key>Key</key>
+			<string>video_playback</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show autoscroll</string>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>story_autoscroll</string>
+		</dict>
+	</array>
+	<key>StringsTable</key>
+	<string>Root</string>
+</dict>
+</plist>

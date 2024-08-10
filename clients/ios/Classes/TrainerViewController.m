@@ -6,18 +6,21 @@
 //  Copyright (c) 2012 NewsBlur. All rights reserved.
 //
 
+
+#warning This code is obsolete, and will be removed once the SwiftUI implementation is complete.
+
+
 #import "TrainerViewController.h"
 #import "StringHelper.h"
 #import "Utilities.h"
 #import "AFNetworking.h"
 #import "StoriesCollection.h"
 
-@implementation TrainerViewController
+@implementation OldTrainerViewController
 
 @synthesize closeButton;
 @synthesize webView;
 @synthesize navBar;
-@synthesize appDelegate;
 @synthesize feedTrainer;
 @synthesize storyTrainer;
 @synthesize feedLoaded;
@@ -34,8 +37,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     UIBarButtonItem *done = [[UIBarButtonItem alloc]
                              initWithTitle:@"Done Training"
@@ -99,7 +100,7 @@
             [self informError:@"Could not load trainer"];
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^() {
-                               if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+                               if (!self.isPhone) {
                                    [self.appDelegate hidePopover];
                                } else {
                                    [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
@@ -162,6 +163,9 @@
     int contentWidth = self.view.frame.size.width;
     NSString *contentWidthClass;
     
+#if TARGET_OS_MACCATALYST
+    contentWidthClass = @"NB-mac";
+#else
     if (contentWidth > 700) {
         contentWidthClass = @"NB-ipad-wide";
     } else if (contentWidth > 480) {
@@ -169,6 +173,7 @@
     } else {
         contentWidthClass = @"NB-iphone";
     }
+#endif
     
     // set up layout values based on iPad/iPhone
     NSString *headerString = [NSString stringWithFormat:@
@@ -542,7 +547,7 @@
 
 - (IBAction)doCloseDialog:(id)sender {
     [appDelegate hidePopover];
-    [appDelegate.trainerViewController dismissViewControllerAnimated:YES completion:nil];
+//    [appDelegate.trainerViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)changeTitle:(id)sender score:(int)score {
@@ -603,12 +608,12 @@
 
 - (void)focusTitle:(id)sender {
     NewsBlurAppDelegate *appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    [appDelegate.trainerViewController changeTitle:sender score:1];
+//    [appDelegate.trainerViewController changeTitle:sender score:1];
 }
 
 - (void)hideTitle:(id)sender {
     NewsBlurAppDelegate *appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    [appDelegate.trainerViewController changeTitle:sender score:-1];
+//    [appDelegate.trainerViewController changeTitle:sender score:-1];
 }
 
 // Work around iOS 9 issue where menu doesn't appear the first time

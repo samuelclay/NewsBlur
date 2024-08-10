@@ -16,13 +16,10 @@
 @implementation NotificationsViewController
 
 @synthesize notificationsTable;
-@synthesize appDelegate;
 @synthesize feedId;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     self.navigationItem.title = @"Notifications";
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Done"
@@ -30,9 +27,6 @@
                                                                     target: self
                                                                     action: @selector(doCancelButton)];
     [self.navigationItem setRightBarButtonItem:cancelButton];
-    
-    // Do any additional setup after loading the view from its nib.
-    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     
     notificationsTable = [[UITableView alloc] init];
     notificationsTable.delegate = self;
@@ -85,7 +79,7 @@
 viewForHeaderInSection:(NSInteger)section {
     int headerLabelHeight, folderImageViewY;
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!self.isPhone) {
         headerLabelHeight = 36;
         folderImageViewY = 8;
     } else {

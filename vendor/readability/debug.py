@@ -1,6 +1,5 @@
 import re
 
-
 # FIXME: use with caution, can leak memory
 uids = {}
 uids_document = None

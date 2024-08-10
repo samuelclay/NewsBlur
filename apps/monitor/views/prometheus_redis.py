@@ -1,8 +1,8 @@
 import os
 import socket
 
-from django.views import View
 from django.shortcuts import render
+from django.views import View
 
 """
 RedisActiveConnections
@@ -11,6 +11,7 @@ RedisConnects
 RedisUsedMemory
 RedisSize
 """
+
 
 class RedisGrafanaMetric(View):
     category = "Redis"
@@ -23,9 +24,9 @@ class RedisGrafanaMetric(View):
         return True
 
     def get_info(self):
-        host = os.environ.get('REDIS_HOST') or '127.0.0.1'
-        port = int(os.environ.get('REDIS_PORT') or '6379')
-        if host.startswith('/'):
+        host = os.environ.get("REDIS_HOST") or "127.0.0.1"
+        port = int(os.environ.get("REDIS_PORT") or "6379")
+        if host.startswith("/"):
             s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             s.connect(host)
         else:
@@ -33,9 +34,9 @@ class RedisGrafanaMetric(View):
             s.connect((host, port))
         s.send("*1\r\n$4\r\ninfo\r\n")
         buf = ""
-        while '\r\n' not in buf:
+        while "\r\n" not in buf:
             buf += s.recv(1024)
-        l, buf = buf.split('\r\n', 1)
+        l, buf = buf.split("\r\n", 1)
         if l[0] != "$":
             s.close()
             raise Exception("Protocol error")
@@ -43,7 +44,7 @@ class RedisGrafanaMetric(View):
         if remaining > 0:
             buf += s.recv(remaining)
         s.close()
-        return dict(x.split(':', 1) for x in buf.split('\r\n') if ':' in x)
+        return dict(x.split(":", 1) for x in buf.split("\r\n") if ":" in x)
 
     def execute(self):
         stats = self.get_info()
@@ -57,25 +58,28 @@ class RedisGrafanaMetric(View):
         return values
 
     def get_fields(self):
-        raise NotImplementedError('You must implement the get_fields function')
+        raise NotImplementedError("You must implement the get_fields function")
 
     def get_context(self):
-        raise NotImplementedError('You must implement the get_context function')
-    
+        raise NotImplementedError("You must implement the get_context function")
+
     def get(self, request):
         context = self.get_context()
-        return render(request, 'monitor/prometheus_data.html', context, content_type="text/plain")
+        return render(request, "monitor/prometheus_data.html", context, content_type="text/plain")
+
 
 class RedisActiveConnection(RedisGrafanaMetric):
-    
     def get_fields(self):
         return (
-            ('connected_clients', dict(
-                label = "connections",
-                info = "connections",
-                type = "GAUGE",
-            )),
+            (
+                "connected_clients",
+                dict(
+                    label="connections",
+                    info="connections",
+                    type="GAUGE",
+                ),
+            ),
         )
 
     def get_context(self):
-        raise NotImplementedError('You must implement the get_context function')
+        raise NotImplementedError("You must implement the get_context function")
