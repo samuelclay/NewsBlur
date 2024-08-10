@@ -9,6 +9,7 @@ from boto.ec2.cloudwatch import CloudWatchConnection
 
 from vendor.munin import MuninPlugin
 
+
 class AWSCloudWatchELBRequestsPlugin(MuninPlugin):
     category = "AWS"
     args = "-l 0 --base 1000"

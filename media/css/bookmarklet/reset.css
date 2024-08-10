@@ -22,6 +22,7 @@ Source: http://meyerweb.com/eric/thoughts/2007/05/01/reset-reloaded/
 .NB-modal :focus {
   outline: 0;
 }
+
 .NB-modal {
   line-height: 1;
   color: black;

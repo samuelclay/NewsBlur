@@ -13,17 +13,17 @@
 ##############################################################################
 
 import re
-
 import unittest
+
 import zope.testing
 from zope.testing import doctest, renormalizing
 
+
 def test_suite():
-    return unittest.TestSuite((
-        doctest.DocFileSuite('README',
-                   optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
+    return unittest.TestSuite(
+        (doctest.DocFileSuite("README", optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS),)
+    )
 
-        ))
 
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
+if __name__ == "__main__":
+    unittest.main(defaultTest="test_suite")

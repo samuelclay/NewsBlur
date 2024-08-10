@@ -1,10 +1,11 @@
-from lxml.html import tostring
-import lxml.html
 import re
 
-from .cleaners import normalize_spaces, clean_attributes
-from .encoding import get_encoding
+import lxml.html
+from lxml.html import tostring
+
+from .cleaners import clean_attributes, normalize_spaces
 from .compat import str_
+from .encoding import get_encoding
 
 utf8_parser = lxml.html.HTMLParser(encoding="utf-8")
 
@@ -18,9 +19,7 @@ def build_doc(page):
         decoded_page = page.decode(encoding, "replace")
 
     # XXX: we have to do .decode and .encode even for utf-8 pages to remove bad characters
-    doc = lxml.html.document_fromstring(
-        decoded_page.encode("utf-8", "replace"), parser=utf8_parser
-    )
+    doc = lxml.html.document_fromstring(decoded_page.encode("utf-8", "replace"), parser=utf8_parser)
     return doc, encoding
 
 
@@ -30,14 +29,14 @@ def js_re(src, pattern, flags, repl):
 
 def normalize_entities(cur_title):
     entities = {
-        u"\u2014": "-",
-        u"\u2013": "-",
-        u"&mdash;": "-",
-        u"&ndash;": "-",
-        u"\u00A0": " ",
-        u"\u00AB": '"',
-        u"\u00BB": '"',
-        u"&quot;": '"',
+        "\u2014": "-",
+        "\u2013": "-",
+        "&mdash;": "-",
+        "&ndash;": "-",
+        "\u00A0": " ",
+        "\u00AB": '"',
+        "\u00BB": '"',
+        "&quot;": '"',
     }
     for c, r in entities.items():
         if c in cur_title:

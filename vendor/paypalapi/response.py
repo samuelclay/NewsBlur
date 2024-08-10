@@ -5,12 +5,11 @@ PayPalResponse parsing and processing.
 
 import logging
 from pprint import pformat
+from urllib.parse import parse_qs
 
 from vendor.paypalapi.compat import is_py3
 
-from urllib.parse import parse_qs
-
-logger = logging.getLogger('paypal.response')
+logger = logging.getLogger("paypal.response")
 
 
 class PayPalResponse(object):
@@ -21,6 +20,7 @@ class PayPalResponse(object):
     NOTE: Don't access self.raw directly. Just do something like
     PayPalResponse.someattr, going through PayPalResponse.__getattr__().
     """
+
     def __init__(self, query_string, config):
         """
         query_string is the response from the API, in NVP format. This is
@@ -89,13 +89,13 @@ class PayPalResponse(object):
             # of each one. Hasn't failed us so far.
             return value[0]
         return value
-        
+
     def items(self):
         items_list = []
         for key in list(self.raw.keys()):
             items_list.append((key, self.__getitem__(key)))
         return items_list
-        
+
     def iteritems(self):
         for key in list(self.raw.keys()):
             yield (key, self.__getitem__(key))
@@ -108,6 +108,6 @@ class PayPalResponse(object):
         :rtype: bool
         :returns ``True`` if PayPal says our query was successful.
         """
-        return self.ack.upper() in (self.config.ACK_SUCCESS,
-                                    self.config.ACK_SUCCESS_WITH_WARNING)
+        return self.ack.upper() in (self.config.ACK_SUCCESS, self.config.ACK_SUCCESS_WITH_WARNING)
+
     success = property(success)

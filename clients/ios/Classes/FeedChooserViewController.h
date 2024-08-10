@@ -18,9 +18,7 @@ typedef NS_ENUM(NSUInteger, FeedChooserOperation)
 };
 
 
-@interface FeedChooserViewController : BaseViewController {
-    NewsBlurAppDelegate *appDelegate;
-}
+@interface FeedChooserViewController : BaseViewController
 
 @property (weak) IBOutlet UITableView *tableView;
 

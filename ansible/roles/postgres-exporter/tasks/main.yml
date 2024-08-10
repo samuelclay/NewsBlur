@@ -1,14 +1,14 @@
-
 - name: Register Postgres user and password
   become: no
   run_once: yes
   register: postgres_credentials
   local_action: command /srv/newsblur/ansible/roles/postgres-exporter/tasks/get_credentials.py postgres_credentials
+
 - name: Start postgres-exporter container
   become: yes
   docker_container:
     name: postgres-exporter
-    image:  prometheuscommunity/postgres-exporter
+    image: prometheuscommunity/postgres-exporter
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
     networks_cli_compatible: yes
@@ -16,9 +16,9 @@
     networks:
       - name: newsblurnet
     env:
-      DATA_SOURCE_NAME: 'postgresql://{{ postgres_credentials.stdout }}@db-postgres.service.nyc1.consul:5432/postgres?sslmode=disable'
+      DATA_SOURCE_NAME: "postgresql://{{ postgres_credentials.stdout }}@db-postgres.service.nyc1.consul:5432/postgres?sslmode=disable"
     ports:
-    - '9187:9187'
+      - "9187:9187"
 
 - name: Register postgres-exporter in consul
   tags: consul

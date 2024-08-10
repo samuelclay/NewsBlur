@@ -6,15 +6,16 @@ import socketserver
 import sys
 import threading
 import time
-from subprocess import Popen, PIPE
+from subprocess import PIPE, Popen
 
 PLUGIN_PATH = "/etc/munin/plugins"
 
+
 def parse_args():
     from optparse import OptionParser
+
     parser = OptionParser()
-    parser.add_option("-p", "--pluginpath", dest="plugin_path",
-                      help="path to plugins", default=PLUGIN_PATH)
+    parser.add_option("-p", "--pluginpath", dest="plugin_path", help="path to plugins", default=PLUGIN_PATH)
     (options, args) = parser.parse_args()
     return options, args
 
@@ -27,14 +28,15 @@ def execute_plugin(path, cmd=""):
     output = p.communicate()[0]
     return output
 
-if os.name == 'posix':
-    def become_daemon(our_home_dir='.', out_log='/dev/null',
-                      err_log='/dev/null', umask=0o22):
+
+if os.name == "posix":
+
+    def become_daemon(our_home_dir=".", out_log="/dev/null", err_log="/dev/null", umask=0o22):
         "Robustly turn into a UNIX daemon, running in our_home_dir."
         # First fork
         try:
             if os.fork() > 0:
-                sys.exit(0)     # kill off parent
+                sys.exit(0)  # kill off parent
         except OSError as e:
             sys.stderr.write("fork #1 failed: (%d) %s\n" % (e.errno, e.strerror))
             sys.exit(1)
@@ -50,16 +52,18 @@ if os.name == 'posix':
             sys.stderr.write("fork #2 failed: (%d) %s\n" % (e.errno, e.strerror))
             os._exit(1)
 
-        si = open('/dev/null', 'r')
-        so = open(out_log, 'a+', 0)
-        se = open(err_log, 'a+', 0)
+        si = open("/dev/null", "r")
+        so = open(out_log, "a+", 0)
+        se = open(err_log, "a+", 0)
         os.dup2(si.fileno(), sys.stdin.fileno())
         os.dup2(so.fileno(), sys.stdout.fileno())
         os.dup2(se.fileno(), sys.stderr.fileno())
         # Set custom file descriptors so that they get proper buffering.
         sys.stdout, sys.stderr = so, se
+
 else:
-    def become_daemon(our_home_dir='.', out_log=None, err_log=None, umask=0o22):
+
+    def become_daemon(our_home_dir=".", out_log=None, err_log=None, umask=0o22):
         """
         If we're not running under a POSIX system, just simulate the daemon
         mode by doing redirections and directory changing.
@@ -70,18 +74,20 @@ else:
         sys.stdout.close()
         sys.stderr.close()
         if err_log:
-            sys.stderr = open(err_log, 'a', 0)
+            sys.stderr = open(err_log, "a", 0)
         else:
             sys.stderr = NullDevice()
         if out_log:
-            sys.stdout = open(out_log, 'a', 0)
+            sys.stdout = open(out_log, "a", 0)
         else:
             sys.stdout = NullDevice()
 
     class NullDevice:
         "A writeable object that writes to nowhere -- like /dev/null."
+
         def write(self, s):
             pass
+
 
 class MuninRequestHandler(socketserver.StreamRequestHandler):
     def handle(self):
@@ -89,14 +95,14 @@ class MuninRequestHandler(socketserver.StreamRequestHandler):
         # we can now use e.g. readline() instead of raw recv() calls
         plugins = []
         for x in os.listdir(self.server.options.plugin_path):
-            if x.startswith('.'):
+            if x.startswith("."):
                 continue
             fullpath = os.path.join(self.server.options.plugin_path, x)
             if not os.path.isfile(fullpath):
                 continue
             plugins.append(x)
-            
-        node_name = socket.gethostname().split('.')[0]
+
+        node_name = socket.gethostname().split(".")[0]
         self.wfile.write("# munin node at %s\n" % node_name)
         while True:
             line = self.rfile.readline()
@@ -104,7 +110,7 @@ class MuninRequestHandler(socketserver.StreamRequestHandler):
                 break
             line = line.strip()
 
-            cmd = line.split(' ', 1)
+            cmd = line.split(" ", 1)
             plugin = (len(cmd) > 1) and cmd[1] or None
 
             if cmd[0] == "list":
@@ -131,6 +137,7 @@ class MuninRequestHandler(socketserver.StreamRequestHandler):
 
 class MuninServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass
+
 
 if __name__ == "__main__":
     HOST, PORT = "0.0.0.0", 4949

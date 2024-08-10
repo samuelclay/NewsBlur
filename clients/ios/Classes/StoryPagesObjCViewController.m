@@ -36,7 +36,6 @@
 
 @implementation StoryPagesObjCViewController
 
-@synthesize appDelegate;
 @synthesize currentPage, nextPage, previousPage;
 @synthesize circularProgressView;
 @synthesize separatorBarButton;
@@ -76,7 +75,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
 	currentPage = [[StoryDetailViewController alloc]
                    initWithNibName:@"StoryDetailViewController"
                    bundle:nil];
@@ -109,7 +107,11 @@
     [self.scrollView setAlwaysBounceHorizontal:self.isHorizontal];
     [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (@available(iOS 17.0, *)) {
+        self.scrollView.allowsKeyboardScrolling = NO;
+    }
+    
+    if (!self.isPhone) {
         self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
     
@@ -172,13 +174,13 @@
     [separatorBarButton setEnabled:NO];
     separatorBarButton.isAccessibilityElement = NO;
     
-    UIImage *settingsImage = [Utilities imageNamed:@"settings" sized:30];
+    UIImage *settingsImage = [Utilities imageNamed:@"settings" sized:self.isMac ? 24 : 30];
     fontSettingsButton = [UIBarButtonItem barItemWithImage:settingsImage
                                                     target:self
                                                     action:@selector(toggleFontSize:)];
     fontSettingsButton.accessibilityLabel = @"Story settings";
     
-    UIImage *markreadImage = [UIImage imageNamed:@"original_button.png"];
+    UIImage *markreadImage = [Utilities imageNamed:@"original_button.png" sized:self.isMac ? 24 : 30];
     originalStoryButton = [UIBarButtonItem barItemWithImage:markreadImage
                                                      target:self
                                                      action:@selector(showOriginalSubview:)];
@@ -250,6 +252,11 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+#if TARGET_OS_MACCATALYST
+    [self.navigationController setNavigationBarHidden:YES animated:animated];
+    [self.navigationController setToolbarHidden:YES animated:animated];
+#endif
     
     [self updateTheme];
     
@@ -374,6 +381,10 @@
         self.scrollView.frame = CGRectMake(frame.origin.x, frame.origin.y, floor(frame.size.width), floor(frame.size.height));
     }
     
+    if (self.scrollView.subviews.lastObject != self.currentPage.view) {
+        [self.scrollView bringSubviewToFront:self.currentPage.view];
+    }
+    
     [super viewDidLayoutSubviews];
 }
 
@@ -390,7 +401,10 @@
     
     previousPage.view.hidden = YES;
     appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.enabled = YES;
+    
+#if !TARGET_OS_MACCATALYST
     [appDelegate.detailViewController.parentNavigationController setNavigationBarHidden:NO animated:YES];
+#endif
     
     self.autoscrollActive = NO;
 }
@@ -484,7 +498,7 @@
 }
 
 - (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse {
-    if (self.navigationController == nil || self.navigationController.navigationBarHidden == hide || self.currentlyTogglingNavigationBar) {
+    if (appDelegate.isMac || self.navigationController == nil || self.navigationController.navigationBarHidden == hide || self.currentlyTogglingNavigationBar) {
         return;
     }
     
@@ -662,7 +676,7 @@
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [self hideNotifier];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!self.isPhone) {
         [currentPage realignScroll];
     }
 }
@@ -771,7 +785,7 @@
         
         if (pageIndex >= 0) {
             [self changePage:pageIndex animated:NO];
-        } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        } else if (!self.isPhone) {
             // If the story can't be found, don't show anything; uncomment this to instead show the first unread story:
 //            [self doNextUnreadStory:nil];
         } else {
@@ -1080,9 +1094,12 @@
     }
     
     self.scrollingToPage = pageIndex;
-    [self.currentPage hideNoStoryMessage];
-    [self.nextPage hideNoStoryMessage];
-    [self.previousPage hideNoStoryMessage];
+    
+    if (pageIndex >= 0) {
+        [self.currentPage hideNoStoryMessage];
+        [self.nextPage hideNoStoryMessage];
+        [self.previousPage hideNoStoryMessage];
+    }
     
     // Check if already on the selected page
     if (self.isHorizontal ? offset.x == frame.origin.x : offset.y == frame.origin.y) {
@@ -1225,7 +1242,11 @@
     
     [appDelegate.storiesCollection pushReadStory:[appDelegate.activeStory objectForKey:@"story_hash"]];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+#if TARGET_OS_MACCATALYST
+    self.appDelegate.detailViewController.navigationItem.leftBarButtonItems = @[[[UIBarButtonItem alloc] initWithCustomView:[UIView new]]];
+#endif
+    
+    if (!self.isPhone) {
         if (appDelegate.detailViewController.storyTitlesOnLeft) {
             appDelegate.detailViewController.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
                                                        originalStoryButton,
@@ -1327,6 +1348,13 @@
         
         fontSettingsButton.enabled = YES;
         originalStoryButton.enabled = YES;
+        
+#if TARGET_OS_MACCATALYST
+        if (@available(macCatalyst 16.0, *)) {
+            fontSettingsButton.hidden = NO;
+            originalStoryButton.hidden = NO;
+        }
+#endif
     } else {
         [buttonText setEnabled:NO];
         [buttonText setAlpha:.4];
@@ -1335,6 +1363,13 @@
         
         fontSettingsButton.enabled = NO;
         originalStoryButton.enabled = NO;
+        
+#if TARGET_OS_MACCATALYST
+        if (@available(macCatalyst 16.0, *)) {
+            fontSettingsButton.hidden = YES;
+            originalStoryButton.hidden = YES;
+        }
+#endif
     }
     
     [buttonSend setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_send.png"]]
@@ -1455,11 +1490,11 @@
 //    [self.appDelegate.feedDetailViewController changedStoryHeight:currentPage.webView.scrollView.contentSize.height];
 }
 
-- (void)toggleStorySaved:(id)sender {
+- (IBAction)toggleStorySaved:(id)sender {
     [appDelegate.storiesCollection toggleStorySaved];
 }
 
-- (void)toggleStoryUnread:(id)sender {
+- (IBAction)toggleStoryUnread:(id)sender {
     [appDelegate.storiesCollection toggleStoryUnread];
     [appDelegate.feedDetailViewController reload]; // XXX only if successful?
 }
@@ -1482,12 +1517,26 @@
 #pragma mark -
 #pragma mark Styles
 
+//- (BOOL)validateToolbarItem:(NSToolbarItem *)item {
+//    if item.itemIdentifier ==
+//    return !self.currentPage.view.isHidden;
+//}
 
 - (IBAction)toggleFontSize:(id)sender {
     UINavigationController *fontSettingsNavigationController = appDelegate.fontSettingsNavigationController;
 
     [fontSettingsNavigationController popToRootViewControllerAnimated:NO];
+//    [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero sourceNavigationController:self.navigationController barButtonItem:self.fontSettingsButton sourceView:nil sourceRect:CGRectZero permittedArrowDirections:UIPopoverArrowDirectionAny];
+    
+#if TARGET_OS_MACCATALYST
+    UINavigationController *storiesNavController = appDelegate.storyPagesViewController.navigationController;
+    UIView *sourceView = storiesNavController.view;
+    CGRect sourceRect = CGRectMake(storiesNavController.view.frame.size.width - 59, 0, 20, 20);
+    
+    [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero sourceView:sourceView sourceRect:sourceRect];
+#else
     [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:self.fontSettingsButton];
+#endif
 }
 
 - (void)setFontStyle:(NSString *)fontStyle {

@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
 import os
-from vendor.munin import MuninPlugin
+
 from indextank import ApiClient
+
+from vendor.munin import MuninPlugin
+
 
 class IndexTankIndexSizePlugin(MuninPlugin):
     title = "Indextank Index Size"

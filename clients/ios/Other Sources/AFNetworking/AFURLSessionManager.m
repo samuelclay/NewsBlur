@@ -28,7 +28,7 @@
 #define NSFoundationVersionNumber_With_Fixed_5871104061079552_bug NSFoundationVersionNumber_iOS_8_0
 #endif
 
-static dispatch_queue_t url_session_manager_creation_queue() {
+static dispatch_queue_t url_session_manager_creation_queue(void) {
     static dispatch_queue_t af_url_session_manager_creation_queue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -49,7 +49,7 @@ static void url_session_manager_create_task_safely(dispatch_block_t block) {
     }
 }
 
-static dispatch_queue_t url_session_manager_processing_queue() {
+static dispatch_queue_t url_session_manager_processing_queue(void) {
     static dispatch_queue_t af_url_session_manager_processing_queue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -59,7 +59,7 @@ static dispatch_queue_t url_session_manager_processing_queue() {
     return af_url_session_manager_processing_queue;
 }
 
-static dispatch_group_t url_session_manager_completion_group() {
+static dispatch_group_t url_session_manager_completion_group(void) {
     static dispatch_group_t af_url_session_manager_completion_group;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{

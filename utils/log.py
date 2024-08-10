@@ -3,9 +3,9 @@ import re
 import string
 import time
 
-from django.core.handlers.wsgi import WSGIRequest
 from django.conf import settings
-from django.utils.encoding import smart_str, smart_str
+from django.core.handlers.wsgi import WSGIRequest
+from django.utils.encoding import smart_str
 
 from .user_functions import extract_user_agent
 
@@ -16,7 +16,7 @@ class NullHandler(logging.Handler):  # exists in python 3.1
 
 
 def getlogger():
-    logger = logging.getLogger('newsblur')
+    logger = logging.getLogger("newsblur")
     return logger
 
 
@@ -25,7 +25,7 @@ def user(u, msg, request=None, warn_color=True):
     if not u:
         return debug(msg)
 
-    platform = '------'
+    platform = "------"
     time_elapsed = ""
     if isinstance(u, WSGIRequest) or request:
         if not request:
@@ -33,24 +33,24 @@ def user(u, msg, request=None, warn_color=True):
             u = request.user
         platform = extract_user_agent(request)
 
-        if hasattr(request, 'start_time'):
+        if hasattr(request, "start_time"):
             seconds = time.time() - request.start_time
-            color = '~FB'
+            color = "~FB"
             if warn_color:
                 if seconds >= 5:
-                    color = '~FR'
+                    color = "~FR"
                 elif seconds > 1:
-                    color = '~SB~FK'
+                    color = "~SB~FK"
             time_elapsed = "[%s%.4ss~SB] " % (
                 color,
                 seconds,
             )
     is_premium = u.is_authenticated and u.profile.is_premium
-    premium = '*' if is_premium else ''
+    premium = "*" if is_premium else ""
     if is_premium and u.profile.is_archive:
         premium = "^"
     username = cipher(str(u)) if settings.CIPHER_USERNAMES else str(u)
-    info(' ---> [~FB~SN%-6s~SB] %s[%s%s] %s' % (platform, time_elapsed, username, premium, msg))
+    info(" ---> [~FB~SN%-6s~SB] %s[%s%s] %s" % (platform, time_elapsed, username, premium, msg))
 
 
 def cipher(msg):
@@ -82,90 +82,96 @@ def error(msg):
 
 def colorize(msg):
     params = {
-        r'\-\-\->'        : '~FB~SB--->~FW',
-        r'\*\*\*>'        : '~FB~SB~BB--->~BT~FW',
-        r'\['             : '~SB~FB[~SN~FM',
-        r'AnonymousUser'  : '~FBAnonymousUser',
-        r'\*\]'           : r'~SN~FR*~FB~SB]',
-        r'\^\]'           : r'~SN~FR^~FB~SB]',
-        r'\]'             : '~FB~SB]~FW~SN',
+        r"\-\-\->": "~FB~SB--->~FW",
+        r"\*\*\*>": "~FB~SB~BB--->~BT~FW",
+        r"\[": "~SB~FB[~SN~FM",
+        r"AnonymousUser": "~FBAnonymousUser",
+        r"\*\]": r"~SN~FR*~FB~SB]",
+        r"\^\]": r"~SN~FR^~FB~SB]",
+        r"\]": "~FB~SB]~FW~SN",
     }
     colors = {
-        '~SB' : Style.BRIGHT,
-        '~SN' : Style.NORMAL,
-        '~SK' : Style.BLINK,
-        '~SU' : Style.UNDERLINE,
-        '~ST' : Style.RESET_ALL,
-        '~FK': Fore.BLACK,
-        '~FR': Fore.RED,
-        '~FG': Fore.GREEN,
-        '~FY': Fore.YELLOW,
-        '~FB': Fore.BLUE,
-        '~FM': Fore.MAGENTA,
-        '~FC': Fore.CYAN,
-        '~FW': Fore.WHITE,
-        '~FT': Fore.RESET,
-        '~BK': Back.BLACK,
-        '~BR': Back.RED,
-        '~BG': Back.GREEN,
-        '~BY': Back.YELLOW,
-        '~BB': Back.BLUE,
-        '~BM': Back.MAGENTA,
-        '~BC': Back.CYAN,
-        '~BW': Back.WHITE,
-        '~BT': Back.RESET,
+        "~SB": Style.BRIGHT,
+        "~SN": Style.NORMAL,
+        "~SK": Style.BLINK,
+        "~SU": Style.UNDERLINE,
+        "~ST": Style.RESET_ALL,
+        "~FK": Fore.BLACK,
+        "~FR": Fore.RED,
+        "~FG": Fore.GREEN,
+        "~FY": Fore.YELLOW,
+        "~FB": Fore.BLUE,
+        "~FM": Fore.MAGENTA,
+        "~FC": Fore.CYAN,
+        "~FW": Fore.WHITE,
+        "~FT": Fore.RESET,
+        "~BK": Back.BLACK,
+        "~BR": Back.RED,
+        "~BG": Back.GREEN,
+        "~BY": Back.YELLOW,
+        "~BB": Back.BLUE,
+        "~BM": Back.MAGENTA,
+        "~BC": Back.CYAN,
+        "~BW": Back.WHITE,
+        "~BT": Back.RESET,
     }
     for k, v in list(params.items()):
         msg = re.sub(k, v, msg)
-    msg = msg + '~ST~FW~BT'
+    msg = msg + "~ST~FW~BT"
     # msg = re.sub(r'(~[A-Z]{2})', r'%(\1)s', msg)
     for k, v in list(colors.items()):
         msg = msg.replace(k, v)
     return msg
-    
-'''
+
+
+"""
 This module generates ANSI character codes to printing colors to terminals.
 See: http://en.wikipedia.org/wiki/ANSI_escape_code
-'''
+"""
 
-COLOR_ESC = '\033['
+COLOR_ESC = "\033["
+
 
 class AnsiCodes(object):
     def __init__(self, codes):
         for name in dir(codes):
-            if not name.startswith('_'):
+            if not name.startswith("_"):
                 value = getattr(codes, name)
-                setattr(self, name, COLOR_ESC + str(value) + 'm')
+                setattr(self, name, COLOR_ESC + str(value) + "m")
+
 
 class AnsiFore:
-    BLACK   = 30
-    RED     = 31
-    GREEN   = 32
-    YELLOW  = 33
-    BLUE    = 34
+    BLACK = 30
+    RED = 31
+    GREEN = 32
+    YELLOW = 33
+    BLUE = 34
     MAGENTA = 35
-    CYAN    = 36
-    WHITE   = 37
-    RESET   = 39
+    CYAN = 36
+    WHITE = 37
+    RESET = 39
+
 
 class AnsiBack:
-    BLACK   = 40
-    RED     = 41
-    GREEN   = 42
-    YELLOW  = 43
-    BLUE    = 44
+    BLACK = 40
+    RED = 41
+    GREEN = 42
+    YELLOW = 43
+    BLUE = 44
     MAGENTA = 45
-    CYAN    = 46
-    WHITE   = 47
-    RESET   = 49
+    CYAN = 46
+    WHITE = 47
+    RESET = 49
+
 
 class AnsiStyle:
-    BRIGHT    = 1
-    DIM       = 2
+    BRIGHT = 1
+    DIM = 2
     UNDERLINE = 4
-    BLINK     = 5
-    NORMAL    = 22
+    BLINK = 5
+    NORMAL = 22
     RESET_ALL = 0
+
 
 Fore = AnsiCodes(AnsiFore)
 Back = AnsiCodes(AnsiBack)

@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('profile', '0004_auto_20220110_2106'),
+        ("profile", "0004_auto_20220110_2106"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='is_archive',
+            model_name="profile",
+            name="is_archive",
             field=models.BooleanField(blank=True, default=False, null=True),
         ),
     ]

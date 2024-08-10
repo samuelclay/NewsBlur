@@ -1,6 +1,10 @@
 #!/srv/newsblur/venv/newsblur3/bin/python 
+import os
+
+import redis
+
 from utils.munin.base import MuninGraph
-import os, redis
+
 
 class NBMuninGraph(MuninGraph):
 

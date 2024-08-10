@@ -2,9 +2,10 @@
 
 ## GENERATED FILE - DO NOT EDIT
 
-import urllib2
-import sys
 import os
+import sys
+
+import urllib2
 
 try:
     import json

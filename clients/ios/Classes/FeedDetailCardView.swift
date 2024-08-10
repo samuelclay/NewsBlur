@@ -75,6 +75,7 @@ struct CardView: View {
             }
             
             Button {
+                cache.appDelegate.activeStory = story.dictionary
                 cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: false)
                 cache.appDelegate.feedDetailViewController.reload()
             } label: {
@@ -82,11 +83,14 @@ struct CardView: View {
             }
             
             Button {
+                cache.appDelegate.activeStory = story.dictionary
                 cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: true)
                 cache.appDelegate.feedDetailViewController.reload()
             } label: {
                 Label("Mark older stories read", image: "mark-read")
             }
+            
+            Divider()
             
             Button {
                 cache.appDelegate.storiesCollection.toggleStorySaved(story.dictionary)
@@ -96,13 +100,15 @@ struct CardView: View {
             }
             
             Button {
+                cache.appDelegate.activeStory = story.dictionary
                 cache.appDelegate.showSend(to: cache.appDelegate.feedDetailViewController, sender: cache.appDelegate.feedDetailViewController.view)
             } label: {
                 Label("Send this story to…", image: "email")
             }
             
             Button {
-                cache.appDelegate.openTrainStory(nil)
+                cache.appDelegate.activeStory = story.dictionary
+                cache.appDelegate.openTrainStory(cache.appDelegate.feedDetailViewController.view)
             } label: {
                 Label("Train this story", image: "train")
             }
@@ -168,14 +174,14 @@ struct CardContentView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            if story.isRiverOrSocial, let feedImage {
+            if let feed = story.feed, feed.isRiverOrSocial, let feedImage = feed.image {
                 HStack {
                     Image(uiImage: feedImage)
                         .resizable()
                         .frame(width: 16, height: 16)
                         .padding(.leading, cache.settings.spacing == .compact ? 20 : 24)
                     
-                    Text(story.feedName)
+                    Text(feed.name)
                         .font(font(named: "WhitneySSm-Medium", size: 12))
                         .lineLimit(1)
                         .foregroundColor(feedColor)
@@ -239,14 +245,6 @@ struct CardContentView: View {
         }
     }
     
-    var feedImage: UIImage? {
-        if let image = cache.appDelegate.getFavicon(story.feedID) {
-            return Utilities.roundCorneredImage(image, radius: 4, convertTo: CGSizeMake(16, 16))
-        } else {
-            return nil
-        }
-    }
-    
     var unreadImage: UIImage? {
         guard story.isReadAvailable else {
             return nil
@@ -304,7 +302,7 @@ struct CardFeedBarView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            if let color = story.feedColorBarLeft {
+            if let feed = story.feed, let color = feed.colorBarLeft {
                 Path { path in
                     path.move(to: CGPoint(x: 0, y: 0))
                     path.addLine(to: CGPoint(x: 0, y: geometry.size.height))
@@ -312,7 +310,7 @@ struct CardFeedBarView: View {
                 .stroke(Color(color), lineWidth: 4)
             }
             
-            if let color = story.feedColorBarRight {
+            if let feed = story.feed, let color = feed.colorBarRight {
                 Path { path in
                     path.move(to: CGPoint(x: 4, y: 0))
                     path.addLine(to: CGPoint(x: 4, y: geometry.size.height))

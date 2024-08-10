@@ -10,6 +10,7 @@ import urllib.request
 from io import BytesIO
 from socket import error as SocketError
 
+import numpy as np
 import boto3
 import lxml.html
 import numpy
@@ -33,7 +34,6 @@ from utils.feed_functions import TimeoutError, timelimit
 
 
 class IconImporter(object):
-
     def __init__(self, feed, page_data=None, force=False):
         self.feed = feed
         self.force = force
@@ -45,27 +45,27 @@ class IconImporter(object):
             # print 'Not found, skipping...'
             return
         if (
-                not self.force
-                and not self.feed.favicon_not_found
-                and self.feed_icon.icon_url
-                and self.feed.s3_icon
+            not self.force
+            and not self.feed.favicon_not_found
+            and self.feed_icon.icon_url
+            and self.feed.s3_icon
         ):
             # print 'Found, but skipping...'
             return
-        if 'facebook.com' in self.feed.feed_address:
+        if "facebook.com" in self.feed.feed_address:
             image, image_file, icon_url = self.fetch_facebook_image()
         else:
             image, image_file, icon_url = self.fetch_image_from_page_data()
         if not image:
             image, image_file, icon_url = self.fetch_image_from_path(force=self.force)
-        
+
         if not image:
             self.feed_icon.not_found = True
             self.feed_icon.save()
             self.feed.favicon_not_found = True
             self.feed.save()
             return False
-        
+
         image = self.normalize_image(image)
         try:
             color = self.determine_dominant_color_in_image(image)
@@ -79,49 +79,53 @@ class IconImporter(object):
 
         if len(image_str) > 500000:
             image = None
-        if (image and
-            (self.force or
-                self.feed_icon.data != image_str or
-                self.feed_icon.icon_url != icon_url or
-                self.feed_icon.not_found or
-                (settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon))):
-            logging.debug("   ---> [%-30s] ~SN~FBIcon difference:~FY color:%s (%s/%s) data:%s url:%s notfound:%s no-s3:%s" % (
-                self.feed.log_title[:30],
-                self.feed_icon.color != color, self.feed_icon.color, color,
-                self.feed_icon.data != image_str,
-                self.feed_icon.icon_url != icon_url,
-                self.feed_icon.not_found,
-                settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon))
+        if image and (
+            self.force
+            or self.feed_icon.data != image_str
+            or self.feed_icon.icon_url != icon_url
+            or self.feed_icon.not_found
+            or (settings.BACKED_BY_AWS.get("icons_on_s3") and not self.feed.s3_icon)
+        ):
+            logging.debug(
+                "   ---> [%-30s] ~SN~FBIcon difference:~FY color:%s (%s/%s) data:%s url:%s notfound:%s no-s3:%s"
+                % (
+                    self.feed.log_title[:30],
+                    self.feed_icon.color != color,
+                    self.feed_icon.color,
+                    color,
+                    self.feed_icon.data != image_str,
+                    self.feed_icon.icon_url != icon_url,
+                    self.feed_icon.not_found,
+                    settings.BACKED_BY_AWS.get("icons_on_s3") and not self.feed.s3_icon,
+                )
+            )
             self.feed_icon.data = image_str
             self.feed_icon.icon_url = icon_url
             self.feed_icon.color = color
             self.feed_icon.not_found = False
             self.feed_icon.save()
-            if settings.BACKED_BY_AWS.get('icons_on_s3'):
+            if settings.BACKED_BY_AWS.get("icons_on_s3"):
                 self.save_to_s3(image_str)
         if self.feed.favicon_color != color:
             self.feed.favicon_color = color
             self.feed.favicon_not_found = False
-            self.feed.save(update_fields=['favicon_color', 'favicon_not_found'])
-            
+            self.feed.save(update_fields=["favicon_color", "favicon_not_found"])
+
         return not self.feed.favicon_not_found
 
     def save_to_s3(self, image_str):
         expires = datetime.datetime.now() + datetime.timedelta(days=60)
         expires = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
         base64.b64decode(image_str)
-        settings.S3_CONN.Object(settings.S3_ICONS_BUCKET_NAME, 
-                                self.feed.s3_icons_key).put(Body=base64.b64decode(image_str), 
-                                                            ContentType='image/png',
-                                                            Expires=expires,
-                                                            ACL='public-read'
-                                                            )
+        settings.S3_CONN.Object(settings.S3_ICONS_BUCKET_NAME, self.feed.s3_icons_key).put(
+            Body=base64.b64decode(image_str), ContentType="image/png", Expires=expires, ACL="public-read"
+        )
 
         self.feed.s3_icon = True
         self.feed.save()
 
     def load_icon(self, image_file, index=None):
-        '''
+        """
         DEPRECATED
 
         Load Windows ICO image.
@@ -130,10 +134,10 @@ class IconImporter(object):
         description.
 
         Cribbed and modified from http://djangosnippets.org/snippets/1287/
-        '''
+        """
         try:
             image_file.seek(0)
-            header = struct.unpack('<3H', image_file.read(6))
+            header = struct.unpack("<3H", image_file.read(6))
         except Exception:
             return
 
@@ -144,7 +148,7 @@ class IconImporter(object):
         # Collect icon directories
         directories = []
         for i in range(header[2]):
-            directory = list(struct.unpack('<4B2H2I', image_file.read(16)))
+            directory = list(struct.unpack("<4B2H2I", image_file.read(16)))
             for j in range(3):
                 if not directory[j]:
                     directory[j] = 256
@@ -175,7 +179,7 @@ class IconImporter(object):
                 image = BmpImagePlugin.DibImageFile(image_file)
             except IOError:
                 return
-            if image.mode == 'RGBA':
+            if image.mode == "RGBA":
                 # Windows XP 32-bit color depth icon without AND bitmap
                 pass
             else:
@@ -194,10 +198,9 @@ class IconImporter(object):
                 # Load AND bitmap
                 image_file.seek(offset)
                 string = image_file.read(size)
-                mask = Image.frombytes('1', image.size, string, 'raw',
-                                       ('1;I', stride, -1))
+                mask = Image.frombytes("1", image.size, string, "raw", ("1;I", stride, -1))
 
-                image = image.convert('RGBA')
+                image = image.convert("RGBA")
                 image.putalpha(mask)
 
         return image
@@ -208,7 +211,7 @@ class IconImporter(object):
         content = None
         if self.page_data:
             content = self.page_data
-        elif settings.BACKED_BY_AWS.get('pages_on_node'):
+        elif settings.BACKED_BY_AWS.get("pages_on_node"):
             domain = "node-page.service.consul:8008"
             if settings.DOCKERBUILD:
                 domain = "node:8008"
@@ -222,7 +225,7 @@ class IconImporter(object):
                     content = page_response.content
             except requests.ConnectionError:
                 pass
-        elif settings.BACKED_BY_AWS.get('pages_on_s3') and self.feed.s3_page:
+        elif settings.BACKED_BY_AWS.get("pages_on_s3") and self.feed.s3_page:
             key = settings.S3_CONN.Bucket(settings.S3_PAGES_BUCKET_NAME).Object(key=self.feed.s3_pages_key)
             compressed_content = key.get()["Body"].read()
             stream = BytesIO(compressed_content)
@@ -238,28 +241,35 @@ class IconImporter(object):
             try:
                 content = requests.get(self.cleaned_feed_link, timeout=10).content
                 url = self._url_from_html(content)
-            except (AttributeError, SocketError, requests.ConnectionError,
-                    requests.models.MissingSchema, requests.sessions.InvalidSchema,
-                    requests.sessions.TooManyRedirects,
-                    requests.models.InvalidURL,
-                    requests.models.ChunkedEncodingError,
-                    requests.models.ContentDecodingError,
-                    http.client.IncompleteRead,
-                    requests.adapters.ReadTimeout,
-                    LocationParseError, OpenSSLError, PyAsn1Error,
-                    ValueError) as e:
+            except (
+                AttributeError,
+                SocketError,
+                requests.ConnectionError,
+                requests.models.MissingSchema,
+                requests.sessions.InvalidSchema,
+                requests.sessions.TooManyRedirects,
+                requests.models.InvalidURL,
+                requests.models.ChunkedEncodingError,
+                requests.models.ContentDecodingError,
+                http.client.IncompleteRead,
+                requests.adapters.ReadTimeout,
+                LocationParseError,
+                OpenSSLError,
+                PyAsn1Error,
+                ValueError,
+            ) as e:
                 logging.debug(" ---> ~SN~FRFailed~FY to fetch ~FGfeed icon~FY: %s" % e)
         if url:
             image, image_file = self.get_image_from_url(url)
         return image, image_file, url
-    
+
     @property
     def cleaned_feed_link(self):
-        if self.feed.feed_link.startswith('http'):
+        if self.feed.feed_link.startswith("http"):
             return self.feed.feed_link
-        return 'http://' + self.feed.feed_link
-    
-    def fetch_image_from_path(self, path='favicon.ico', force=False):
+        return "http://" + self.feed.feed_link
+
+    def fetch_image_from_path(self, path="favicon.ico", force=False):
         image = None
         url = None
 
@@ -267,7 +277,7 @@ class IconImporter(object):
             url = self.feed_icon.icon_url
         if not url and self.feed.feed_link and len(self.feed.feed_link) > 6:
             try:
-                url = urllib.parse.urljoin(self.feed.feed_link, 'favicon.ico')
+                url = urllib.parse.urljoin(self.feed.feed_link, "favicon.ico")
             except ValueError:
                 url = None
         if not url:
@@ -275,21 +285,21 @@ class IconImporter(object):
 
         image, image_file = self.get_image_from_url(url)
         if not image:
-            url = urllib.parse.urljoin(self.feed.feed_link, '/favicon.ico')
+            url = urllib.parse.urljoin(self.feed.feed_link, "/favicon.ico")
             image, image_file = self.get_image_from_url(url)
         # print 'Found: %s - %s' % (url, image)
         return image, image_file, url
-    
+
     def fetch_facebook_image(self):
         facebook_fetcher = FacebookFetcher(self.feed)
         url = facebook_fetcher.favicon_url()
         image, image_file = self.get_image_from_url(url)
         if not image:
-            url = urllib.parse.urljoin(self.feed.feed_link, '/favicon.ico')
+            url = urllib.parse.urljoin(self.feed.feed_link, "/favicon.ico")
             image, image_file = self.get_image_from_url(url)
         # print 'Found: %s - %s' % (url, image)
         return image, image_file, url
-        
+
     def get_image_from_url(self, url):
         # print 'Requesting: %s' % url
         if not url:
@@ -298,15 +308,15 @@ class IconImporter(object):
         @timelimit(30)
         def _1(url):
             headers = {
-                'User-Agent': 'NewsBlur Favicon Fetcher - %s subscriber%s - %s %s' %
-                              (
-                                  self.feed.num_subscribers,
-                                  's' if self.feed.num_subscribers != 1 else '',
-                                  self.feed.permalink,
-                                  self.feed.fake_user_agent,
-                              ),
-                'Connection': 'close',
-                'Accept': 'image/png,image/x-icon,image/*;q=0.9,*/*;q=0.8'
+                "User-Agent": "NewsBlur Favicon Fetcher - %s subscriber%s - %s %s"
+                % (
+                    self.feed.num_subscribers,
+                    "s" if self.feed.num_subscribers != 1 else "",
+                    self.feed.permalink,
+                    self.feed.fake_user_agent,
+                ),
+                "Connection": "close",
+                "Accept": "image/png,image/x-icon,image/*;q=0.9,*/*;q=0.8",
             }
             try:
                 request = urllib.request.Request(url, headers=headers)
@@ -314,6 +324,7 @@ class IconImporter(object):
             except Exception:
                 return None
             return icon
+
         try:
             icon = _1(url)
         except TimeoutError:
@@ -333,7 +344,7 @@ class IconImporter(object):
             return url
         try:
             if isinstance(content, str):
-                content = content.encode('utf-8')
+                content = content.encode("utf-8")
             icon_path = lxml.html.fromstring(content).xpath(
                 '//link[@rel="icon" or @rel="shortcut icon"]/@href'
             )
@@ -341,7 +352,7 @@ class IconImporter(object):
             return url
 
         if icon_path:
-            if str(icon_path[0]).startswith('http'):
+            if str(icon_path[0]).startswith("http"):
                 url = icon_path[0]
             else:
                 url = urllib.parse.urljoin(self.feed.feed_link, icon_path[0])
@@ -350,9 +361,9 @@ class IconImporter(object):
     def normalize_image(self, image):
         # if image.size != (16, 16):
         #     image = image.resize((16, 16), Image.BICUBIC)
-        if image.mode != 'RGBA':
+        if image.mode != "RGBA":
             try:
-                image = image.convert('RGBA')
+                image = image.convert("RGBA")
             except IOError:
                 pass
 
@@ -362,26 +373,33 @@ class IconImporter(object):
         NUM_CLUSTERS = 5
 
         # Convert image into array of values for each point.
-        if image.mode == '1':
-            image.convert('L')
+        if image.mode == "1":
+            image.convert("L")
         ar = numpy.array(image)
         # ar = scipy.misc.fromimage(image)
         shape = ar.shape
 
         # Reshape array of values to merge color bands. [[R], [G], [B], [A]] => [R, G, B, A]
         if len(shape) > 2:
-            ar = ar.reshape(scipy.product(shape[:2]), shape[2])
-            
+            ar = ar.reshape(np.product(shape[:2]), shape[2])
+
         # Get NUM_CLUSTERS worth of centroids.
-        ar = ar.astype(numpy.float)
+        ar = ar.astype(float)
         codes, _ = scipy.cluster.vq.kmeans(ar, NUM_CLUSTERS)
 
         # Pare centroids, removing blacks and whites and shades of really dark and really light.
         original_codes = codes
         for low, hi in [(60, 200), (35, 230), (10, 250)]:
-            codes = scipy.array([code for code in codes
-                                 if not ((code[0] < low and code[1] < low and code[2] < low) or
-                                         (code[0] > hi and code[1] > hi and code[2] > hi))])
+            codes = np.array(
+                [
+                    code
+                    for code in codes
+                    if not (
+                        (code[0] < low and code[1] < low and code[2] < low)
+                        or (code[0] > hi and code[1] > hi and code[2] > hi)
+                    )
+                ]
+            )
             if not len(codes):
                 codes = original_codes
             else:
@@ -392,7 +410,7 @@ class IconImporter(object):
         vecs, _ = scipy.cluster.vq.vq(ar, codes)
 
         # Count occurences of each clustered vector.
-        counts, bins = scipy.histogram(vecs, len(codes))
+        counts, bins = np.histogram(vecs, len(codes))
 
         # Show colors for each code in its hex value.
         # colors = [''.join(chr(c) for c in code).encode('hex') for code in codes]
@@ -400,7 +418,7 @@ class IconImporter(object):
         # print dict(zip(colors, [count/float(total) for count in counts]))
 
         # Find the most frequent color, based on the counts.
-        index_max = scipy.argmax(counts)
+        index_max = np.argmax(counts)
         peak = codes.astype(int)[index_max]
         color = "{:02x}{:02x}{:02x}".format(peak[0], peak[1], peak[2])
         color = self.feed.adjust_color(color[:6], 21)
@@ -409,7 +427,7 @@ class IconImporter(object):
 
     def string_from_image(self, image):
         output = BytesIO()
-        image.save(output, 'png', quality=95)
+        image.save(output, "png", quality=95)
         contents = output.getvalue()
         output.close()
         return base64.b64encode(contents).decode()

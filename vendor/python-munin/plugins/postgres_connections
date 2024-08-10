@@ -2,6 +2,7 @@
 
 from vendor.munin.postgres import MuninPostgresPlugin
 
+
 class MuninPostgresConnectionsPlugin(MuninPostgresPlugin):
     dbname_in_args = False
     title = "Postgres active connections"

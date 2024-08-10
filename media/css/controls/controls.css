@@ -13,16 +13,17 @@ ul.segmented-control {
 }
 
 .segmented-control ::-moz-selection {
-  background: transparent;
+    background: transparent;
 }
 
 .segmented-control ::selection {
-  background: transparent;
+    background: transparent;
 }
 
 .segmented-control:hover {
     background-color: #e5e6e2;
 }
+
 .segmented-control li {
     background: none;
     margin: 0 2px 0 0;
@@ -32,19 +33,22 @@ ul.segmented-control {
     border-radius: 4px;
     color: #61635e;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
-    transition: 0.14s ease-in-out background; 
+    transition: 0.14s ease-in-out background;
     flex: 1 1 0;
     white-space: nowrap;
 }
+
 .segmented-control li:last-child {
     margin-right: 0;
 }
+
 .segmented-control li:active:not(.NB-disabled),
 .segmented-control-active li:active {
     color: #303030;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .3);
 
 }
+
 .segmented-control li.NB-active,
 .segmented-control-active li {
     color: #131313;
@@ -54,15 +58,18 @@ ul.segmented-control {
 .segmented-control:hover li.NB-active {
     background-color: #c5c6c2;
 }
+
 .segmented-control li:hover:not(.NB-disabled):not(.NB-active) {
     background-color: #d5d6d2;
 }
+
 .segmented-control li.NB-disabled {
     opacity: .9;
     color: rgba(0, 0, 0, .1);
     text-shadow: 0 1px 0 rgba(255, 255, 255, .3);
     cursor: default;
 }
+
 .segmented-control li.NB-disabled .NB-task-image {
     opacity: .3;
 }
@@ -71,7 +78,7 @@ ul.segmented-control {
 .segmented-control li:first-child,
 .segmented-control li.NB-first {
     margin-left: 0;
-    
+
     -webkit-border-top-left-radius: 3px;
     -webkit-border-bottom-left-radius: 3px;
     -moz-border-radius-topleft: 3px;
@@ -116,11 +123,13 @@ ul.segmented-control-vertical {
 
     color: #61635e;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
-    
+
 }
+
 .segmented-control-vertical li:last-child {
     margin-bottom: 0;
 }
+
 .segmented-control-vertical li:active:not(.NB-disabled),
 .segmented-control-vertical-active li:active {
     color: #303030;
@@ -140,8 +149,9 @@ ul.segmented-control-vertical {
     color: rgba(0, 0, 0, .1);
     text-shadow: 0 1px 0 rgba(255, 255, 255, .3);
     cursor: default;
-    
+
 }
+
 .segmented-control-vertical li.NB-disabled .NB-task-image {
     opacity: .3;
 }
@@ -150,7 +160,7 @@ ul.segmented-control-vertical {
 .segmented-control-vertical li:first-child,
 .segmented-control-vertical li.NB-first {
     margin-left: 0;
-    
+
     -webkit-border-top-left-radius: 3px;
     -webkit-border-top-right-radius: 3px;
     -moz-border-radius-topleft: 3px;
@@ -162,7 +172,7 @@ ul.segmented-control-vertical {
 .segmented-control-vertical li:last-child,
 .segmented-control-vertical li.NB-last {
     border-bottom: none;
-    
+
     -webkit-border-bottom-left-radius: 3px;
     -webkit-border-bottom-right-radius: 3px;
     -moz-border-radius-bottomleft: 3px;
