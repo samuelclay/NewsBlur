@@ -59,6 +59,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (nonatomic) BOOL isFadingTable;
 @property (nonatomic, strong) NSString *restoringFolder;
 @property (nonatomic, strong) NSString *restoringFeedID;
+@property (nonatomic) NSIndexPath *swipingIndexPath;
 
 @end
 
@@ -2237,7 +2238,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 
 // When the user starts swiping the cell this method is called
 - (void)swipeTableViewCellDidStartSwiping:(MCSwipeTableViewCell *)cell {
-//    NSLog(@"Did start swiping the cell!");
+    //    NSLog(@"Did start swiping the cell!");
+    NSIndexPath *indexPath = [self.storyTitlesTable indexPathForCell:cell];
+    
+    self.swipingIndexPath = indexPath;
 }
 
 // When the user is dragging, this method is called and return the dragged percentage from the border
@@ -2248,23 +2252,22 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 - (void)swipeTableViewCell:(MCSwipeTableViewCell *)cell
 didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                       mode:(MCSwipeTableViewCellMode)mode {
-    NSIndexPath *indexPath = [self.storyTitlesTable indexPathForCell:cell];
-    if (!indexPath) {
-        // This can happen if the user swipes on a cell that is being refreshed.
-        return;
+    NSIndexPath *endedOnIndexPath = [self.storyTitlesTable indexPathForCell:cell];
+    NSInteger storyIndex = [storiesCollection indexFromLocation:self.swipingIndexPath.row];
+    NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
+    
+    if (endedOnIndexPath != self.swipingIndexPath) {
+        NSLog(@"Swipe started at row %@ but ended at %@ for %@", self.swipingIndexPath, endedOnIndexPath, story[@"story_title"]);  // log
     }
     
-    NSInteger storyIndex = [storiesCollection indexFromLocation:indexPath.row];
-    NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
-
     if (state == MCSwipeTableViewCellState1) {
         // Saved
         [storiesCollection toggleStorySaved:story];
-        [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationFade];
+        [self reloadIndexPath:self.swipingIndexPath withRowAnimation:UITableViewRowAnimationFade];
     } else if (state == MCSwipeTableViewCellState3) {
         // Read
         [storiesCollection toggleStoryUnread:story];
-        [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationFade];
+        [self reloadIndexPath:self.swipingIndexPath withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
