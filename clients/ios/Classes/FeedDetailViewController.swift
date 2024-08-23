@@ -364,4 +364,20 @@ extension FeedDetailViewController: FeedDetailInteraction {
         appDelegate.activeStory = nil
         reload()
     }
+    
+    func scrolled(story: Story, offset: CGFloat?) {
+        let feedDetailHeight = view.frame.size.height
+        let storyHeight = appDelegate.storyPagesViewController.currentPage.view.frame.size.height
+        let skipHeader: CGFloat = 200
+        
+        print("🪿 Scrolled story \(story.debugTitle) to offset \(offset ?? 0), story height: \(storyHeight), feed detail height: \(feedDetailHeight)")
+        
+        if offset == nil {
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = storyHeight - feedDetailHeight
+        } else if let offset, offset - storyHeight + skipHeader < feedDetailHeight, offset > feedDetailHeight {
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = offset - feedDetailHeight
+        } else {
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = 0
+        }
+    }
 }

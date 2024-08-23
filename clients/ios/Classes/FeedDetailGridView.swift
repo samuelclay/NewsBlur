@@ -22,6 +22,7 @@ protocol FeedDetailInteraction {
     func read(story: Story)
     func unread(story: Story)
     func hid(story: Story)
+    func scrolled(story: Story, offset: CGFloat?)
 }
 
 /// A list or grid layout of story cards for the feed detail view.
@@ -95,7 +96,7 @@ struct FeedDetailGridView: View {
                                     .id(story.id)
                             }
                             
-                            Section(header: makeStoryView(), footer: makeLoadingView()) {
+                            Section(header: makeStoryView(reader: reader), footer: makeLoadingView()) {
                                 ForEach(cache.after, id: \.id) { story in
                                     makeCardView(for: story, reader: reader)
                                 }
@@ -201,9 +202,22 @@ struct FeedDetailGridView: View {
     }
     
     @ViewBuilder
-    func makeStoryView() -> some View {
+    func makeStoryView(reader: GeometryProxy) -> some View {
         if cache.isGridView, !cache.isPhone, let story = cache.selected {
             StoryView(cache: cache, story: story, interaction: feedDetailInteraction)
+                .transformAnchorPreference(key: CardKey.self, value: .bounds) {
+                    $0.append(CardFrame(id: "\(story.id)", frame: reader[$1]))
+                }
+                .onPreferenceChange(CardKey.self) {
+                    if cache.isMagazine, let value = $0.first {
+                        print("🐓 Magazine story scrolled: \(story.debugTitle): \($0), minY \(value.frame.minY), maxY: \(value.frame.maxY), height: \(value.frame.size.height)")
+                        
+                        feedDetailInteraction.scrolled(story: story, offset: value.frame.maxY)
+                    }
+                }
+                .onAppear {
+                    feedDetailInteraction.scrolled(story: story, offset: nil)
+                }
         }
     }
     
