@@ -74,46 +74,6 @@
 		</dict>
 		<dict>
 			<key>Title</key>
-			<string>Theme</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Follow system appearance</string>
-			<key>Key</key>
-			<string>theme_follow_system</string>
-			<key>DefaultValue</key>
-			<true/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Current theme</string>
-			<key>Titles</key>
-			<array>
-				<string>Light</string>
-				<string>Sepia</string>
-				<string>Medium</string>
-				<string>Dark</string>
-			</array>
-			<key>DefaultValue</key>
-			<string>light</string>
-			<key>Values</key>
-			<array>
-				<string>light</string>
-				<string>sepia</string>
-				<string>medium</string>
-				<string>dark</string>
-			</array>
-			<key>Key</key>
-			<string>theme_style</string>
-		</dict>
-		<dict>
-			<key>Title</key>
 			<string>App badge</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
