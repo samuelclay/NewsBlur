@@ -629,7 +629,12 @@
                                 </menu>
                                 <menu title="Theme" id="k0L-se-kpA">
                                     <children>
-                                        <command title="Light" propertyListString="light" menuElementState="on" id="nvf-Kg-GEz">
+                                        <command title="Auto" propertyListString="auto" menuElementState="on" id="Wu8-Xa-cev">
+                                            <connections>
+                                                <action selector="chooseTheme:" destination="J28-e1-gcC" id="F96-ll-QZq"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Light" propertyListString="light" id="nvf-Kg-GEz">
                                             <connections>
                                                 <action selector="chooseTheme:" destination="J28-e1-gcC" id="AGW-N1-hqV"/>
                                             </connections>
@@ -864,7 +869,7 @@
                                 <menu id="nKV-Y3-j73">
                                     <menuOptions key="menuOptions" displayInline="YES"/>
                                     <children>
-                                        <command title="Next Unread Story" input="n" id="ofa-dG-qfi">
+                                        <command title="Next Unread Story" input="u" id="ofa-dG-qfi">
                                             <keyModifierFlags key="modifierFlags" command="YES"/>
                                             <connections>
                                                 <action selector="nextUnreadStory:" destination="J28-e1-gcC" id="us7-1R-z9P"/>

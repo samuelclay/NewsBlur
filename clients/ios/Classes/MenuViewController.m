@@ -204,7 +204,7 @@ NSString * const MenuHandler = @"handler";
     cell.backgroundColor = UIColorFromRGB(0xffffff);
     
     NSString *theme = [ThemeManager themeManager].theme;
-    NSArray *values = @[ThemeStyleLight, ThemeStyleSepia, ThemeStyleMedium, ThemeStyleDark];
+    NSArray *values = @[ThemeStyleAuto, ThemeStyleLight, ThemeStyleSepia, ThemeStyleMedium, ThemeStyleDark];
     NSUInteger valueIndex = [values indexOfObject:theme];
     
     if (valueIndex < 0) {
@@ -215,15 +215,18 @@ NSString * const MenuHandler = @"handler";
     
     [segmentedControl addTarget:self action:@selector(changeTheme:) forControlEvents:UIControlEventValueChanged];
     
-    UIImage *lightImage = [self themeImageWithName:@"theme_color_light" selected:valueIndex == 0];
-    UIImage *sepiaImage = [self themeImageWithName:@"theme_color_sepia" selected:valueIndex == 1];
-    UIImage *mediumImage = [self themeImageWithName:@"theme_color_medium" selected:valueIndex == 2];
-    UIImage *darkImage = [self themeImageWithName:@"theme_color_dark" selected:valueIndex == 3];
+    UIImage *lightImage = [self themeImageWithName:@"theme_color_light" selected:valueIndex == 1];
+    UIImage *sepiaImage = [self themeImageWithName:@"theme_color_sepia" selected:valueIndex == 2];
+    UIImage *mediumImage = [self themeImageWithName:@"theme_color_medium" selected:valueIndex == 3];
+    UIImage *darkImage = [self themeImageWithName:@"theme_color_dark" selected:valueIndex == 4];
     
-    [segmentedControl insertSegmentWithImage:lightImage atIndex:0 animated: NO];
-    [segmentedControl insertSegmentWithImage:sepiaImage atIndex:1 animated: NO];
-    [segmentedControl insertSegmentWithImage:mediumImage atIndex:2 animated: NO];
-    [segmentedControl insertSegmentWithImage:darkImage atIndex:3 animated: NO];
+    [segmentedControl insertSegmentWithTitle:@"Auto" atIndex:0 animated:NO];
+    [segmentedControl insertSegmentWithImage:lightImage atIndex:1 animated: NO];
+    [segmentedControl insertSegmentWithImage:sepiaImage atIndex:2 animated: NO];
+    [segmentedControl insertSegmentWithImage:mediumImage atIndex:3 animated: NO];
+    [segmentedControl insertSegmentWithImage:darkImage atIndex:4 animated: NO];
+    
+    [segmentedControl setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"WhitneySSm-Medium" size:12.0]} forState:UIControlStateNormal];
     
     [[ThemeManager themeManager] updateThemeSegmentedControl:segmentedControl];
     
@@ -245,7 +248,7 @@ NSString * const MenuHandler = @"handler";
 }
 
 - (IBAction)changeTheme:(UISegmentedControl *)sender {
-    NSArray *values = @[ThemeStyleLight, ThemeStyleSepia, ThemeStyleMedium, ThemeStyleDark];
+    NSArray *values = @[ThemeStyleAuto, ThemeStyleLight, ThemeStyleSepia, ThemeStyleMedium, ThemeStyleDark];
     
     [ThemeManager themeManager].theme = [values objectAtIndex:sender.selectedSegmentIndex];
     
