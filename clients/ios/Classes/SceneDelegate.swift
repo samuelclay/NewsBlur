@@ -42,9 +42,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
         
-        if #available(macCatalyst 16.0, *) {
-            windowScene.windowingBehaviors?.isClosable = false
-        }
+//        if #available(macCatalyst 16.0, *) {
+//            windowScene.windowingBehaviors?.isClosable = false
+//        }
         
         toolbar.delegate = toolbarDelegate
         toolbar.displayMode = .iconOnly
@@ -55,6 +55,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         appDelegate.prepareViewControllers()
     }
+    
+#if targetEnvironment(macCatalyst)
+    func sceneDidDisconnect(_ scene: UIScene) {
+        appDelegate.window = nil
+        
+        exit(0)
+    }
+#endif
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let url = URLContexts.first?.url else {
