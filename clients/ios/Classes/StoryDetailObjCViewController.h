@@ -23,7 +23,6 @@ UIActionSheetDelegate, WKNavigationDelegate> {
     BOOL inTextView;
     BOOL inDoubleTap;
     BOOL hasScrolled;
-    NSURL *activeLongPressUrl;
     CGSize preRotateSize;
     CGFloat scrollPct;
     
