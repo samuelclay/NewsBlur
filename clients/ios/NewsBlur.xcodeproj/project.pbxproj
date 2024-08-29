@@ -740,6 +740,8 @@
 		17654E412B02C08700F61B2B /* WhitneySSm-Book-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E011BFBBAC600ADC01A /* WhitneySSm-Book-Bas.otf */; };
 		17654E472B02C0A700F61B2B /* NewsBlur Alpha Widget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 17654E452B02C08700F61B2B /* NewsBlur Alpha Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		176A5C7A24F8BD1B009E8DF9 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176A5C7924F8BD1B009E8DF9 /* DetailViewController.swift */; };
+		176AC9EC2C797AA1007B8CB1 /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176AC9EB2C797AA1007B8CB1 /* PreviewViewController.swift */; };
+		176AC9ED2C797AA1007B8CB1 /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176AC9EB2C797AA1007B8CB1 /* PreviewViewController.swift */; };
 		17731A9D23DFAD3D00759A7D /* ImportExportPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17731A9C23DFAD3D00759A7D /* ImportExportPreferences.swift */; };
 		177551D5238E228A00E27818 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 177551D4238E228A00E27818 /* NotificationCenter.framework */; platformFilter = ios; };
 		177551DB238E228A00E27818 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 177551D9238E228A00E27818 /* MainInterface.storyboard */; };
@@ -1540,6 +1542,7 @@
 		1763E2A223B1CEB600BA080C /* WidgetBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBarView.swift; sourceTree = "<group>"; };
 		17654E452B02C08700F61B2B /* NewsBlur Alpha Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "NewsBlur Alpha Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		176A5C7924F8BD1B009E8DF9 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
+		176AC9EB2C797AA1007B8CB1 /* PreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewViewController.swift; sourceTree = "<group>"; };
 		17731A9C23DFAD3D00759A7D /* ImportExportPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportExportPreferences.swift; sourceTree = "<group>"; };
 		177551D3238E228A00E27818 /* Old NewsBlur Latest.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Old NewsBlur Latest.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		177551D4238E228A00E27818 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
@@ -2857,6 +2860,7 @@
 				17EB505F1BE46A900021358B /* FontListViewController.m */,
 				78095EC6128F30B500230C8E /* OriginalStoryViewController.h */,
 				78095EC7128F30B500230C8E /* OriginalStoryViewController.m */,
+				176AC9EB2C797AA1007B8CB1 /* PreviewViewController.swift */,
 				175DC6AE2BBB87D200B3708F /* TrainerViewController.swift */,
 				171904B42BBC8D4E004CCC96 /* TrainerView.swift */,
 				171904B72BBCA712004CCC96 /* TrainerCapsule.swift */,
@@ -5030,6 +5034,7 @@
 				175792452930605500490924 /* NBActivityItemSource.m in Sources */,
 				175792462930605500490924 /* UISearchBar+Field.m in Sources */,
 				175792472930605500490924 /* NSNull+JSON.m in Sources */,
+				176AC9ED2C797AA1007B8CB1 /* PreviewViewController.swift in Sources */,
 				175792482930605500490924 /* IASKSlider.m in Sources */,
 				175792492930605500490924 /* AddSiteViewController.m in Sources */,
 				1757924A2930605500490924 /* UIImage+Resize.m in Sources */,
@@ -5239,6 +5244,7 @@
 				FF1C4E171A3FB1F4000995E3 /* NBActivityItemSource.m in Sources */,
 				17C4954B1C129863004805A7 /* UISearchBar+Field.m in Sources */,
 				FF3A3E171BFC3F1300ADC01A /* NSNull+JSON.m in Sources */,
+				176AC9EC2C797AA1007B8CB1 /* PreviewViewController.swift in Sources */,
 				FF34FD6C1E9D93CB0062F8ED /* IASKSlider.m in Sources */,
 				FF5EA47F143B691000B7563D /* AddSiteViewController.m in Sources */,
 				FF1F13D818AAC97900FDA816 /* UIImage+Resize.m in Sources */,
