@@ -117,12 +117,14 @@
     }
     
     NSString *theme = [ThemeManager themeManager].theme;
-    if ([theme isEqualToString:@"sepia"]) {
+    if ([theme isEqualToString:@"light"]) {
         self.themeSegment.selectedSegmentIndex = 1;
-    } else if ([theme isEqualToString:@"medium"]) {
+    } else if ([theme isEqualToString:@"sepia"]) {
         self.themeSegment.selectedSegmentIndex = 2;
-    } else if ([theme isEqualToString:@"dark"]) {
+    } else if ([theme isEqualToString:@"medium"]) {
         self.themeSegment.selectedSegmentIndex = 3;
+    } else if ([theme isEqualToString:@"dark"]) {
+        self.themeSegment.selectedSegmentIndex = 4;
     } else {
         self.themeSegment.selectedSegmentIndex = 0;
     }
@@ -241,15 +243,18 @@
 
 - (IBAction)changeTheme:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    NSString *theme = ThemeStyleLight;
+    NSString *theme = ThemeStyleAuto;
     switch ([sender selectedSegmentIndex]) {
         case 1:
-            theme = ThemeStyleSepia;
+            theme = ThemeStyleLight;
             break;
         case 2:
-            theme = ThemeStyleMedium;
+            theme = ThemeStyleSepia;
             break;
         case 3:
+            theme = ThemeStyleMedium;
+            break;
+        case 4:
             theme = ThemeStyleDark;
             break;
             
@@ -559,16 +564,17 @@
     cell.separatorInset = UIEdgeInsetsZero;
     cell.backgroundColor = UIColorFromRGB(0xffffff);
     
-    UIImage *lightImage = [self themeImageWithName:@"theme_color_light" selected:self.themeSegment.selectedSegmentIndex == 0];
-    UIImage *sepiaImage = [self themeImageWithName:@"theme_color_sepia" selected:self.themeSegment.selectedSegmentIndex == 1];
-    UIImage *mediumImage = [self themeImageWithName:@"theme_color_medium" selected:self.themeSegment.selectedSegmentIndex == 2];
-    UIImage *darkImage = [self themeImageWithName:@"theme_color_dark" selected:self.themeSegment.selectedSegmentIndex == 3];
+    UIImage *lightImage = [self themeImageWithName:@"theme_color_light" selected:self.themeSegment.selectedSegmentIndex == 1];
+    UIImage *sepiaImage = [self themeImageWithName:@"theme_color_sepia" selected:self.themeSegment.selectedSegmentIndex == 2];
+    UIImage *mediumImage = [self themeImageWithName:@"theme_color_medium" selected:self.themeSegment.selectedSegmentIndex == 3];
+    UIImage *darkImage = [self themeImageWithName:@"theme_color_dark" selected:self.themeSegment.selectedSegmentIndex == 4];
     
     self.themeSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
-    [self.themeSegment setImage:lightImage forSegmentAtIndex:0];
-    [self.themeSegment setImage:sepiaImage forSegmentAtIndex:1];
-    [self.themeSegment setImage:mediumImage forSegmentAtIndex:2];
-    [self.themeSegment setImage:darkImage forSegmentAtIndex:3];
+    [self.themeSegment setTitle:@"Auto" forSegmentAtIndex:0];
+    [self.themeSegment setImage:lightImage forSegmentAtIndex:1];
+    [self.themeSegment setImage:sepiaImage forSegmentAtIndex:2];
+    [self.themeSegment setImage:mediumImage forSegmentAtIndex:3];
+    [self.themeSegment setImage:darkImage forSegmentAtIndex:4];
     
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(1, self.themeSegment.frame.size.height), NO, 0.0);
     UIImage *blankImage = UIGraphicsGetImageFromCurrentImageContext();
