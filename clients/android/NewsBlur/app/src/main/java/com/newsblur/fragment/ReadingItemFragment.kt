@@ -434,8 +434,10 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         }
         R.id.menu_go_to_feed -> {
             val feed = dbHelper.getFeed(story!!.feedId)
-            val fs = FeedSet.singleFeed(feed.feedId)
-            FeedItemsList.startActivity(requireContext(), fs, feed, null, null)
+            feed?.let {
+                val fs = FeedSet.singleFeed(it.feedId)
+                FeedItemsList.startActivity(requireContext(), fs, it, null, null)
+            }
             true
         }
         else -> {
