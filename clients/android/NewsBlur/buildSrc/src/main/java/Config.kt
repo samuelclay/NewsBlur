@@ -5,8 +5,8 @@ object Config {
     const val compileSdk = 34
     const val minSdk = 24
     const val targetSdk = 34
-    const val versionCode = 228
-    const val versionName = "13.3.0"
+    const val versionCode = 229
+    const val versionName = "13.3.1"
 
     const val androidTestInstrumentation = "androidx.test.runner.AndroidJUnitRunner"
 
