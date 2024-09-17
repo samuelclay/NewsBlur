@@ -661,6 +661,11 @@ class ProcessFeed:
                 hub_url = link["href"]
             elif link["rel"] == "self":
                 self_url = link["href"]
+        if not hub_url and "youtube.com" in self_url:
+            hub_url = "https://pubsubhubbub.appspot.com/subscribe"
+            channel_id = self_url.split("channel_id=")
+            if len(channel_id) > 1:
+                self_url = f"https://www.youtube.com/feeds/videos.xml?channel_id={channel_id[1]}"
         push_expired = False
         if self.feed.is_push:
             try:
