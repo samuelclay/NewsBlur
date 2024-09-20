@@ -4749,7 +4749,7 @@
         feedIds = @[[storiesCollection.activeFeed objectForKey:@"id"]];
     }
     NSString *sql = [NSString stringWithFormat:@"SELECT c.image_url, c.story_hash FROM cached_images c "
-                     "WHERE c.image_cached = 1 AND c.failed is null AND c.story_feed_id in (\"%@\")",
+                     "WHERE c.image_cached = 1 AND c.story_feed_id in (\"%@\")",
                      [feedIds componentsJoinedByString:@"\",\""]];
     FMResultSet *cursor = [db executeQuery:sql];
     

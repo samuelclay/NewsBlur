@@ -93,6 +93,32 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
     return destImage;
 }
 
+// These methods were an experiment in replacing the offline image filenames while tracing the images not appearing; an improvement, but skip for now; keep for future consideration.
+
+//+ (NSString *)removeIllegalCharactersForFilename:(NSString *)filename {
+//    NSCharacterSet *illegalCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"\\/:"];
+//    NSString *cleanedFilename = [[filename componentsSeparatedByCharactersInSet:illegalCharacterSet] componentsJoinedByString:@"-"];
+//    
+//    return cleanedFilename;
+//}
+//
+//+ (NSUInteger)checksum:(NSString *)string {
+//    NSUInteger base = string.length;
+//    NSUInteger result = base * base;
+//    
+//    for (NSUInteger i = 0; i < string.length; i++) {
+//        result = (result + ([string characterAtIndex:i] * (i + 34)) + (732 * i) + (base * (i + 83))) % 999999999;
+//    }
+//    
+//    return result;
+//}
+//
+//+ (NSString *)md5:(NSString *)string storyHash:(NSString *)storyHash {
+//    NSUInteger checksum = [self checksum:string];
+//    NSString *cleanedStoryHash = [self removeIllegalCharactersForFilename:storyHash];
+//    return [NSString stringWithFormat:@"%@-%@-%@", cleanedStoryHash, @(checksum), [self md5:string]];
+//}
+
 + (NSString *)md5:(NSString *)string {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"

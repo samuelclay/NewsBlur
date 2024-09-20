@@ -16,7 +16,7 @@
     NSString *storyImagesDirectory = [[paths objectAtIndex:0]
                                       stringByAppendingPathComponent:@"story_images"];
     NSString *cachedImage = [[storyImagesDirectory
-                             stringByAppendingPathComponent:[Utilities md5:pathString]] stringByAppendingPathExtension:[pathString pathExtension]];
+                             stringByAppendingPathComponent:[Utilities md5:pathString]] stringByAppendingPathExtension:@"jpeg"];
     return cachedImage;
 }
 
