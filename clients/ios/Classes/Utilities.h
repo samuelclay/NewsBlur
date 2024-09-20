@@ -21,6 +21,7 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
 + (UIImage *)templateImageNamed:(NSString *)imageName sized:(CGFloat)size;
 + (UIImage *)imageNamed:(NSString *)imageName sized:(CGFloat)size;
 + (UIImage *)imageWithImage:(UIImage *)image convertToSize:(CGSize)size;
+//+ (NSString *)md5:(NSString *)string storyHash:(NSString *)storyHash;
 + (NSString *)md5:(NSString *)string;
 + (NSString *)formatLongDateFromTimestamp:(NSInteger)timestamp;
 + (NSString *)formatShortDateFromTimestamp:(NSInteger)timestamp;
