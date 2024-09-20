@@ -58,34 +58,36 @@
         });
         return NO;
     }
-
     
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
-    [manager.requestSerializer setTimeoutInterval:5];
+    [manager.requestSerializer setTimeoutInterval:10];
     manager.responseSerializer = [AFImageResponseSerializer serializer];
     manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
 
     dispatch_group_t group = dispatch_group_create();
     
     for (NSArray *urlArray in urls) {
-        NSString *urlString = [[urlArray objectAtIndex:0] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+        NSString *urlString = [urlArray objectAtIndex:0];
         NSString *storyHash = [urlArray objectAtIndex:1];
         NSInteger storyTimestamp = [[urlArray objectAtIndex:2] integerValue];
         dispatch_group_enter(group);
-//        NSLog(@" ---> Fetching offline image: %@", urlString);
+        if (![NSURL URLWithString:urlString]) {
+            urlString = [urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+        }
+        NSLog(@"📚 Fetching offline %@ image: %@", storyHash, urlString);
         [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//            NSLog(@" ---> Fetched %@: %@", storyHash, urlString);
+            NSLog(@"📚 Fetched %@: %@", storyHash, urlString);
             UIImage *image = (UIImage *)responseObject;
             [self storeCachedImage:urlString withImage:image storyHash:storyHash storyTimestamp:storyTimestamp];
             dispatch_group_leave(group);
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//            NSLog(@" ---> Failed to fetch image %@: %@", storyHash, urlString);
+            NSLog(@"📚 Failed to fetch image %@: %@ %@", storyHash, urlString, error);
             [self storeFailedImage:storyHash];
             dispatch_group_leave(group);
         }];
     }
-
+    
 //    dispatch_sync(dispatch_get_main_queue(), ^{
 //        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 //    });
@@ -167,15 +169,18 @@
                                              (unsigned long)NULL), ^{
         
         NSData *responseData = UIImageJPEGRepresentation(image, 0.6);
+//        NSString *md5Url = [Utilities md5:imageUrl storyHash:storyHash];
         NSString *md5Url = [Utilities md5:imageUrl];
 //            NSLog(@"Storing image: %@ (%d bytes - %d in queue)", storyHash, [responseData length], [imageDownloadOperationQueue requestsCount]);
         
         NSFileManager *fileManager = [NSFileManager defaultManager];
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
-        NSString *fullPath = [cacheDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@", md5Url, [imageUrl pathExtension]]];
+        NSString *fullPath = [[cacheDirectory stringByAppendingPathComponent:md5Url] stringByAppendingPathExtension:@"jpeg"];
         
         [fileManager createFileAtPath:fullPath contents:responseData attributes:nil];
+        
+        NSLog(@"📚 stored storyHash: %@ imageURL: %@ cachedURL: %@", storyHash, imageUrl, fullPath);
         
         [self.appDelegate.database inDatabase:^(FMDatabase *db) {
             [db executeUpdate:@"UPDATE cached_images SET "
