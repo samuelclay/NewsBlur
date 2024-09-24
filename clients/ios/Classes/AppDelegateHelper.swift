@@ -11,7 +11,7 @@ import UIKit
 /// Singleton class to provide Swift functions to the app delegate. Can't make `NewsBlurAppDelegate` Swift code, or inherit from Swift code, due to circular references.
 class AppDelegateHelper: NSObject {
     /// Singleton shared instance.
-    @objc static let shared = AppDelegateHelper()
+    @MainActor @objc static let shared = AppDelegateHelper()
     
     /// Private init to prevent others constructing a new instance.
     private override init() {

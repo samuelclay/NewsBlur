@@ -9,7 +9,7 @@
 import SwiftUI
 
 /// A protocol of interaction between a card in the grid, and the enclosing feed detail view controller.
-protocol FeedDetailInteraction {
+@MainActor protocol FeedDetailInteraction {
     var storyHeight: CGFloat { get }
     var hasNoMoreStories: Bool { get }
     var isPremiumRestriction: Bool { get }
@@ -237,10 +237,10 @@ struct CardFrame : Equatable {
     }
 }
 
-struct CardKey : PreferenceKey {
+struct CardKey : @preconcurrency PreferenceKey {
     typealias Value = [CardFrame]
     
-    static var defaultValue: [CardFrame] = []
+    @MainActor static var defaultValue: [CardFrame] = []
     
     static func reduce(value: inout [CardFrame], nextValue: () -> [CardFrame]) {
         value.append(contentsOf: nextValue())
