@@ -1,0 +1,11 @@
+- name: restart discourse
+  become: yes
+  docker_container:
+    name: discourse
+    state: restarted
+
+- name: reload ufw
+  become: yes
+  service:
+    name: ufw
+    state: reloaded
