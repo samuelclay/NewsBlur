@@ -2,7 +2,6 @@ plugin: constructed
 strict: False
 
 groups:
-  
   haproxy: inventory_hostname.startswith('www')
 
   web: inventory_hostname.startswith('app')
@@ -12,6 +11,7 @@ groups:
   counts: inventory_hostname.startswith('app-counts')
   push: inventory_hostname.startswith('app-push')
   blogs: inventory_hostname.startswith('blog')
+  forum: inventory_hostname.startswith('forum')
 
   node: inventory_hostname.startswith('node')
   node_socket: inventory_hostname.startswith('node-socket')
@@ -25,9 +25,9 @@ groups:
   task: inventory_hostname.startswith('task')
   celery: inventory_hostname.startswith('task-celery')
   work: inventory_hostname.startswith('task-work')
-  
+
   staging: inventory_hostname.startswith('staging')
-  
+
   db: inventory_hostname.startswith('db')
   search: inventory_hostname.startswith('db-elasticsearch')
   elasticsearch: inventory_hostname.startswith('db-elasticsearch')
