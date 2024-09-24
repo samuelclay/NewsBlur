@@ -2,9 +2,8 @@ plugin: constructed
 strict: False
 
 groups:
-
   hall: inventory_hostname.startswith('h')
-  
+
   haproxy: inventory_hostname.startswith('hwww')
 
   app: inventory_hostname.startswith('happ')
@@ -20,6 +19,7 @@ groups:
   push: inventory_hostname.startswith('happ-push')
   hpush: inventory_hostname.startswith('happ-push')
   blogs: inventory_hostname.startswith('blog')
+  forum: inventory_hostname.startswith('hforum')
 
   node: inventory_hostname.startswith('hnode')
   hnode: inventory_hostname.startswith('hnode')
@@ -40,9 +40,9 @@ groups:
   task: inventory_hostname.startswith('htask')
   celery: inventory_hostname.startswith('htask-celery')
   work: inventory_hostname.startswith('htask-work')
-  
+
   staging: inventory_hostname.startswith('hstaging')
-  
+
   hdb: inventory_hostname.startswith('hdb')
   db: inventory_hostname.startswith('hdb')
   search: inventory_hostname.startswith('hdb-elasticsearch')
