@@ -8,7 +8,7 @@
 
 import Foundation
 
-class StorySettings {
+@MainActor class StorySettings {
     let defaults = UserDefaults.standard
     
     enum Content: String, RawRepresentable {

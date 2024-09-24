@@ -11,7 +11,7 @@ import Foundation
 // The Feed, Story, and StoryCache classes could be quite useful going forward; Rather than calling getStory() to get the dictionary, could have a variation that returns a Story instance. Could fetch from the cache if available, or make and cache one from the dictionary. Would need to remove it from the cache when changing anything about a story. Could perhaps make the cache part of StoriesCollection.
 
 /// A cache of stories for the feed detail grid-based view.
-class StoryCache: ObservableObject {
+@MainActor class StoryCache: ObservableObject {
     let appDelegate = NewsBlurAppDelegate.shared!
     
     let settings = StorySettings()

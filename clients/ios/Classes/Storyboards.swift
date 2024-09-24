@@ -9,7 +9,7 @@
 import UIKit
 
 /// Singleton to manage the storyboards of the app.
-class Storyboards {
+@MainActor class Storyboards {
     /// Singleton shared instance.
     static let shared = Storyboards()
     

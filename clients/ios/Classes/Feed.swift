@@ -14,7 +14,7 @@ import Foundation
 typealias AnyDictionary = [AnyHashable : Any]
 
 /// A feed, wrapping the dictionary representation.
-class Feed: Identifiable {
+@MainActor class Feed: Identifiable {
     let id: String
     var name = "<deleted>"
     var subscribers = 0
@@ -184,12 +184,12 @@ class Feed: Identifiable {
 }
 
 extension Feed: Equatable {
-    static func == (lhs: Feed, rhs: Feed) -> Bool {
+    nonisolated static func == (lhs: Feed, rhs: Feed) -> Bool {
         return lhs.id == rhs.id
     }
 }
 
-extension Feed: CustomDebugStringConvertible {
+extension Feed: @preconcurrency CustomDebugStringConvertible {
     var debugDescription: String {
         return "Feed \"\(name)\" (\(id))"
     }
