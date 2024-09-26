@@ -1927,25 +1927,38 @@
 
 - (void)confirmLogout {
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Positive?" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    
     [alertController addAction:[UIAlertAction actionWithTitle: @"Logout" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
         [alertController dismissViewControllerAnimated:YES completion:nil];
-        NSLog(@"Logging out...");
-        NSString *urlString = [NSString stringWithFormat:@"%@/reader/logout?api=1",
-                               self.url];
-        [self GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            [self showLogin];
-        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-        }];
-        
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        HUD.labelText = @"Logging out...";
+        [self actuallyLogout];
     }]];
+#if TARGET_OS_MACCATALYST
+    [alertController addAction:[UIAlertAction actionWithTitle: @"Delete Account" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+        [alertController dismissViewControllerAnimated:YES completion:nil];
+        [self actuallyLogout];
+        NSURL *url = [NSURL URLWithString:@"https://www.newsblur.com/profile/delete_account"];
+        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+    }]];
+#endif
     [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                                         style:UIAlertActionStyleCancel handler:nil]];
     [self.feedsViewController presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)actuallyLogout {
+    NSLog(@"Logging out...");
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/logout?api=1",
+                           self.url];
+    [self GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        [self showLogin];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }];
+    
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Logging out...";
 }
 
 - (void)showConnectToService:(NSString *)serviceName {
