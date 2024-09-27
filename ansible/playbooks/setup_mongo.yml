@@ -8,13 +8,13 @@
     - ../env_vars/base.yml
 
   roles:
-    - { role: "base", tags: "base" }
-    - { role: "ufw", tags: "ufw" }
-    - { role: "docker", tags: "docker" }
-    - { role: "repo", tags: ["repo", "pull"] }
-    - { role: "dnsmasq", tags: "dnsmasq" }
-    - { role: "consul", tags: "consul" }
-    - { role: "consul-client", tags: "consul" }
+    # - { role: "base", tags: "base" }
+    # - { role: "ufw", tags: "ufw" }
+    # - { role: "docker", tags: "docker" }
+    # - { role: "repo", tags: ["repo", "pull"] }
+    # - { role: "dnsmasq", tags: "dnsmasq" }
+    # - { role: "consul", tags: "consul" }
+    # - { role: "consul-client", tags: "consul" }
     - { role: "mongo", tags: "mongo" }
     - { role: "node-exporter", tags: ["node-exporter", "metrics"] }
     - { role: "mongo-exporter", tags: ["mongo-exporter", "metrics"] }

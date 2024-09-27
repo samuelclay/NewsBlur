@@ -45,7 +45,9 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                             <%= NEWSBLUR.assets.view_setting("starred", "order") %>\
                         </span>\
                     </div>\
-                    <img class="feed_favicon" src="<%= $.favicon("starred") %>">\
+                    <div class="NB-folder-icon">\
+                        <img class="feed_favicon" src="<%= $.favicon("starred") %>">\
+                    </div>\
                     <div class="NB-feedlist-manage-icon" role="button"></div>\
                     <span class="folder_title_text"><%= folder_title %></span>\
                 </div>\
@@ -66,7 +68,9 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                             <%= NEWSBLUR.assets.view_setting("read", "order") %>\
                         </span>\
                     </div>\
-                    <img class="feed_favicon" src="<%= $.favicon("read") %>">\
+                    <div class="NB-folder-icon">\
+                        <img class="feed_favicon" src="<%= $.favicon("read") %>">\
+                    </div>\
                     <div class="NB-feedlist-manage-icon" role="button"></div>\
                     <div class="folder_title_text"><%= folder_title %></div>\
                 </div>\

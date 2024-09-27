@@ -40,6 +40,20 @@
     - staging
   when: item in inventory_hostname
 
+- name: Setup crontab to restart imageproxy daily
+  become: yes
+  cron:
+    name: restart_imageproxy
+    user: root
+    cron_file: /etc/cron.daily/restart_imageproxy
+    job: >-
+      docker restart imageproxy
+  with_items:
+    - node-images
+    - staging
+  when: item in inventory_hostname
+  tags: restart_imageproxy
+
 - name: Get the volume name
   shell: ls /dev/disk/by-id/ | grep -v part
   register: volume_name_raw
@@ -55,7 +69,7 @@
 
 - name: Create the mount point
   become: yes
-  file: 
+  file:
     path: "/mnt/{{ inventory_hostname | regex_replace('-', '') }}"
     state: directory
   when: '"node-page" in inventory_hostname and not inventory_hostname.startswith("hnode")'
@@ -75,7 +89,7 @@
   file:
     dest: /srv/originals
     src: "/mnt/{{ inventory_hostname | regex_replace('-', '') }}"
-    state: link  
+    state: link
   when: '"node-page" in inventory_hostname and not inventory_hostname.startswith("hnode")'
 
 - name: Start node docker containers
@@ -91,7 +105,7 @@
     hostname: "{{ inventory_hostname }}"
     log_driver: json-file
     log_options:
-      max-size: 100m    
+      max-size: 100m
     networks:
       - name: newsblurnet
     ports:
@@ -119,7 +133,7 @@
     container_default_behavior: no_defaults
     hostname: "{{ inventory_hostname }}"
     pull: true
-    ports: 
+    ports:
       - "{{ item.ports }}"
     env:
       NODE_ENV: "production"

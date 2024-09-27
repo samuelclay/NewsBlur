@@ -1,9 +1,12 @@
 import base64
+import csv
 import datetime
 import difflib
 import hashlib
 import html
 import math
+import os
+import pickle
 import random
 import re
 import time
@@ -14,6 +17,7 @@ from operator import itemgetter
 
 import bson
 import mongoengine as mongo
+import numpy as np
 import pymongo
 import redis
 import requests
@@ -22,8 +26,7 @@ from bson.objectid import ObjectId
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-
-# from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
+from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError, models
 from django.db.models.query import QuerySet
 from django.db.utils import DatabaseError
@@ -106,6 +109,9 @@ class Feed(models.Model):
     search_indexed = models.BooleanField(default=None, null=True, blank=True)
     fs_size_bytes = models.IntegerField(null=True, blank=True)
     archive_count = models.IntegerField(null=True, blank=True)
+    similar_feeds = models.ManyToManyField(
+        "self", related_name="feeds_by_similarity", symmetrical=False, blank=True
+    )
 
     class Meta:
         db_table = "feeds"
@@ -241,6 +247,7 @@ class Feed(models.Model):
             "s3_page": self.s3_page,
             "s3_icon": self.s3_icon,
             "disabled_page": not self.has_page,
+            "similar_feeds": [f["pk"] for f in self.similar_feeds.values("pk")],
         }
 
         if include_favicon:
@@ -332,14 +339,14 @@ class Feed(models.Model):
             SearchFeed.create_elasticsearch_mapping(delete=True)
 
         last_pk = cls.objects.latest("pk").pk
-        for f in range(offset, last_pk, 1000):
+        for f in range(offset, last_pk, 10):
             print(
                 " ---> {f} / {last_pk} ({pct}%)".format(
                     f=f, last_pk=last_pk, pct=str(float(f) / last_pk * 100)[:2]
                 )
             )
             feeds = Feed.objects.filter(
-                pk__in=range(f, f + 1000), active=True, active_subscribers__gte=subscribers
+                pk__in=range(f, f + 10), active=True, active_subscribers__gte=subscribers
             ).values_list("pk")
             for (feed_id,) in feeds:
                 Feed.objects.get(pk=feed_id).index_feed_for_search()
@@ -355,6 +362,7 @@ class Feed(models.Model):
                 address=self.feed_address,
                 link=self.feed_link,
                 num_subscribers=self.num_subscribers,
+                content_vector=SearchFeed.generate_feed_content_vector(self.pk),
             )
 
     def index_stories_for_search(self):
@@ -668,6 +676,9 @@ class Feed(models.Model):
         self.count_subscribers(recount=recount)
         self.calculate_last_story_date()
 
+        if force or count_extra:
+            self.count_similar_feeds()
+
         if force or has_new_stories or count_extra:
             self.save_feed_stories_last_month()
 
@@ -712,6 +723,7 @@ class Feed(models.Model):
 
     def setup_feed_for_premium_subscribers(self, allow_skip_resync=False):
         self.count_subscribers()
+        self.count_similar_feeds()
         self.set_next_scheduled_update(verbose=settings.DEBUG)
         self.sync_redis(allow_skip_resync=allow_skip_resync)
 
@@ -1044,6 +1056,39 @@ class Feed(models.Model):
                     end=" ",
                 )
 
+    def count_similar_feeds(self, feed_ids=None, force=False):
+        if not force and self.similar_feeds.count():
+            logging.debug(f"Found {self.similar_feeds.count()} cached similar feeds for {self}")
+            return self.similar_feeds.all()
+
+        if not feed_ids:
+            feed_ids = [self.pk]
+        if self.pk not in feed_ids:
+            feed_ids.append(self.pk)
+
+        results = self.find_similar_feeds(feed_ids=feed_ids)
+
+        self.similar_feeds.clear()
+        for result in results:
+            feed_id = result['_source']['feed_id']
+            try:
+                self.similar_feeds.add(feed_id)
+            except IntegrityError:
+                logging.debug(f" ---> ~FRIntegrity error adding similar feed: {feed_id}")
+                pass
+
+        return self.similar_feeds.all()
+
+    @classmethod
+    def find_similar_feeds(cls, feed_ids=None):
+        combined_content_vector = SearchFeed.generate_combined_feed_content_vector(feed_ids)
+        results = SearchFeed.vector_query(combined_content_vector, feed_ids_to_exclude=feed_ids)
+        logging.debug(
+            f"Found {len(results)} recommendations for feeds {feed_ids}: {r['_source']['title'] for r in results}"
+        )
+
+        return results
+    
     def _split_favicon_color(self, color=None):
         if not color:
             color = self.favicon_color
@@ -1851,7 +1896,7 @@ class Feed(models.Model):
     #     for f, u in urls:
     #         print "db.stories.remove({\"story_feed_id\": %s, \"_id\": \"%s\"})" % (f, u)
 
-    def get_stories(self, offset=0, limit=25, order="neweat", force=False):
+    def get_stories(self, offset=0, limit=25, order="newest", force=False):
         if order == "newest":
             stories_db = MStory.objects(story_feed_id=self.pk)[offset : offset + limit]
         elif order == "oldest":
@@ -1973,7 +2018,7 @@ class Feed(models.Model):
         # pprint(sorted_popularity)
         return sorted_popularity
 
-    def well_read_score(self):
+    def well_read_score(self, user_id=None):
         """Average percentage of stories read vs published across recently active subscribers"""
         from apps.reader.models import UserSubscription
         from apps.social.models import MSharedStory
@@ -1986,7 +2031,9 @@ class Feed(models.Model):
         subscribing_users = UserSubscription.objects.filter(feed_id=self.pk).values("user_id")
         subscribing_user_ids = [sub["user_id"] for sub in subscribing_users]
 
-        for user_id in subscribing_user_ids:
+        for sub_user_id in subscribing_user_ids:
+            if user_id and sub_user_id != user_id:
+                continue
             user_rs = "RS:%s:%s" % (user_id, self.pk)
             p.scard(user_rs)
 
@@ -2002,7 +2049,7 @@ class Feed(models.Model):
         else:
             average_pct = 0
 
-        reach_score = average_pct * reader_count * story_count
+        reach_score = round(average_pct * reader_count * story_count)
 
         return {
             "read_pct": average_pct,

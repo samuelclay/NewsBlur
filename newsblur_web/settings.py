@@ -110,6 +110,13 @@ MAX_EMAILS_SENT_PER_DAY_PER_USER = 20  # Most are story notifications
 # = Django-specific Modules =
 # ===========================
 
+SHELL_PLUS_IMPORTS = [
+    "from apps.search.models import SearchFeed, SearchStory",
+    "import redis",
+    "import datetime",
+    "from pprint import pprint",
+]
+# SHELL_PLUS_PRINT_SQL = True
 
 MIDDLEWARE = (
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
@@ -602,6 +609,8 @@ AWS_SECRET_ACCESS_KEY = S3_SECRET
 os.environ["AWS_ACCESS_KEY_ID"] = AWS_ACCESS_KEY_ID
 os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
 
+os.environ["HF_HOME"] = "/srv/newsblur/docker/volumes/discover"
+
 
 def clear_prometheus_aggregation_stats():
     prom_folder = "/srv/newsblur/.prom_cache"
@@ -798,6 +807,12 @@ REDIS_PUBSUB_POOL = redis.ConnectionPool(
 
 # celeryapp.autodiscover_tasks(INSTALLED_APPS)
 accept_content = ["pickle", "json", "msgpack", "yaml"]
+
+DISCOVER_DATA_FOLDER = os.getenv("DISCOVER_DATA_FOLDER", "/srv/newsblur/docker/volumes/discover")
+# Create the folder if it doesn't exist
+os.makedirs(DISCOVER_DATA_FOLDER, exist_ok=True)
+# Set it as an env var (in case it wasn't set before) so python-surprise sees it
+os.environ["DISCOVER_DATA_FOLDER"] = DISCOVER_DATA_FOLDER
 
 # ==========
 # = Assets =
