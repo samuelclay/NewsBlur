@@ -72,6 +72,9 @@ frontend public
     use_backend node_page if { path_beg /original_page/ }
     use_backend blog if { hdr_end(host) -i blog.newsblur.com }
     use_backend sentry if { hdr_end(host) -i sentry.newsblur.com }
+    use_backend forum if { hdr_end(host) -i forum.newsblur.com }
+    use_backend forum if { hdr_end(host) -i forum2.newsblur.com }
+    use_backend forum if { hdr_end(host) -i forum3.newsblur.com }
     use_backend nginx if { path_beg /media/ }
     use_backend nginx if { path_beg /static/ }
     use_backend nginx if { path_beg /favicon }
@@ -198,6 +201,13 @@ backend sentry
         server {{host}} {{host}}.node.nyc1.consul:9000
     {% endfor %}
 
+backend forum
+    balance roundrobin
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    {% for host in groups.forum %}
+        server {{host}} {{host}}.node.nyc1.consul:80
+    {% endfor %}
+
 backend db_metrics
     balance roundrobin
     # option httpchk GET /_haproxychk
@@ -215,7 +225,7 @@ backend postgres
     {% for host in groups.postgres %}
         server {{host}} {{host}}.node.nyc1.consul:5579
     {% endfor %}
-    # server hdb-postgres-secondary hdb-redis-secondary.node.nyc1.consul:5579
+    server hdb-postgres-secondary2 hdb-redis-secondary.node.nyc1.consul:5579
 
 backend mongo
     option httpchk GET /db_check/mongo
