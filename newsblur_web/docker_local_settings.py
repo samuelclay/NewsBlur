@@ -139,6 +139,7 @@ BACKED_BY_AWS = {
     "icons_on_s3": False,
 }
 
+OPENAI_API_KEY = "sk-svcacct-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
 # ===========
 # = Logging =

@@ -24,6 +24,13 @@ RUN       set -ex \
                             ' \
             && apt-get update \
             && apt-get install -y $rundDeps $buildDeps --no-install-recommends \
-            && pip install -r requirements.txt \
+            && pip install uv \
+            && uv clean || true \
+            && rm -rf /venv \
+            && uv venv /venv \
+            && PATH="/venv/bin:$PATH" \
+            && VIRTUAL_ENV="/venv" \
+            && rm -rf /root/.cache/uv \
+            && uv pip install -r requirements.txt \
             && apt-get purge -y --auto-remove ${buildDeps} \
             && rm -rf /var/lib/apt/lists/*

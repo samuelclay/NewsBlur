@@ -1070,7 +1070,7 @@ class Feed(models.Model):
 
         self.similar_feeds.clear()
         for result in results:
-            feed_id = result['_source']['feed_id']
+            feed_id = result["_source"]["feed_id"]
             try:
                 self.similar_feeds.add(feed_id)
             except IntegrityError:
@@ -1084,11 +1084,11 @@ class Feed(models.Model):
         combined_content_vector = SearchFeed.generate_combined_feed_content_vector(feed_ids)
         results = SearchFeed.vector_query(combined_content_vector, feed_ids_to_exclude=feed_ids)
         logging.debug(
-            f"Found {len(results)} recommendations for feeds {feed_ids}: {r['_source']['title'] for r in results}"
+            f"Found {len(results)} recommendations for feeds {feed_ids}: {[r['_source']['title'] for r in results]}"
         )
 
         return results
-    
+
     def _split_favicon_color(self, color=None):
         if not color:
             color = self.favicon_color

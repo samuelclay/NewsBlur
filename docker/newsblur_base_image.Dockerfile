@@ -25,8 +25,25 @@ RUN       set -ex \
             && apt-get update \
             && apt-get install -y $rundDeps $buildDeps --no-install-recommends
 COPY      config/requirements.txt /srv/newsblur/
-RUN       pip install -U pip==24
-RUN       pip install --no-cache-dir -r requirements.txt
-RUN       pip cache purge
+
+# Install Rust (required for tiktoken)
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Install uv
+RUN pip install uv
+
+# Clean uv cache and any virtual environment from previous builds
+RUN uv clean || true && rm -rf /venv
+
+# Create and activate virtual environment in /venv
+RUN uv venv /venv
+ENV PATH="/venv/bin:$PATH"
+ENV VIRTUAL_ENV="/venv"
+
+# Install dependencies
+RUN rm -rf /root/.cache/uv && \
+    uv pip install -r requirements.txt
+
 RUN       apt-get purge -y --auto-remove ${buildDeps}
 RUN       rm -rf /var/lib/apt/lists/*
