@@ -12,6 +12,7 @@ import redis
 import urllib3
 from django.conf import settings
 from django.contrib.auth.models import User
+from openai import OpenAI
 
 from apps.search.tasks import (
     FinishIndexSubscriptionsForSearch,
@@ -20,6 +21,7 @@ from apps.search.tasks import (
     IndexSubscriptionsForSearch,
 )
 from utils import log as logging
+from utils.ai_functions import setup_openai_model
 from utils.feed_functions import chunks
 
 
@@ -491,7 +493,7 @@ class SearchStory:
 
 class SearchFeed:
     _es_client = None
-    name = "discover-feeds"
+    name = "discover-feeds-openai"
     model = None
 
     @classmethod
@@ -578,7 +580,7 @@ class SearchFeed:
             },
             "content_vector": {
                 "type": "dense_vector",
-                "dims": 384,  # Numbers of dims from all-MiniLM-L6-v2
+                "dims": 1536,  # Numbers of dims from text-embedding-3-small
             },
         }
         cls.ES().indices.put_mapping(
@@ -774,27 +776,11 @@ class SearchFeed:
     def generate_feed_content_vector(cls, feed_id):
         from apps.rss_feeds.models import Feed
 
-        if cls.model is None:
-            logging.debug(" ---> ~BG~FBLoading SentenceTransformer model")
-            start_time = time.time()
-            from sentence_transformers import SentenceTransformer
-
-            logging.debug(" ---> ~BG~FGDownloading SentenceTransformer model")
-
-            cls.model = SentenceTransformer("all-MiniLM-L6-v2")
-            logging.debug(
-                f" ---> ~FG~SNModel loaded, took ~SB{round(time.time() - start_time, 2)}~SN seconds"
-            )
-
         feed = Feed.objects.get(id=feed_id)
-
-        # cross_encoder = CrossEncoder("BAAI/bge-large-zh-v2", device="cpu")
-        # cross_encoder.encode([feed.feed_title, feed.feed_content], convert_to_tensors="all")
 
         stories = feed.get_stories()
         stories_text = ""
         for story in stories:
-            # stories_text += f"{story['story_title']} {story['story_authors']} {story['story_content']}"
             stories_text += f"{story['story_title']} {' '.join([tag for tag in story['story_tags']])}"
         text = f"{feed.feed_title} {feed.data.feed_tagline} {stories_text}"
 
@@ -810,12 +796,24 @@ class SearchFeed:
         # Remove extra whitespace
         text = " ".join(text.split())
 
-        encoded_text = cls.model.encode(text)
-        normalized_embedding = encoded_text / np.linalg.norm(encoded_text)
+        # Send to OpenAI
+        model_name = "text-embedding-3-small"
+        encoding = setup_openai_model(model_name)
 
-        # logging.debug(f" ---> ~FGNormalized embedding for feed {feed_id}: {normalized_embedding}")
+        # Truncate the text to the maximum number of tokens
+        max_tokens = 8191  # Maximum for text-embedding-3-small
+        encoded_text = encoding.encode(text)
+        truncated_tokens = encoded_text[:max_tokens]
+        truncated_text = encoding.decode(truncated_tokens)
 
-        return normalized_embedding
+        client = OpenAI(api_key=settings.OPENAI_API_KEY)
+
+        response = client.embeddings.create(model=model_name, input=truncated_text)
+
+        embedding = response.data[0].embedding
+        # normalized_embedding = np.array(embedding) / np.linalg.norm(embedding)
+
+        return embedding
 
     @classmethod
     def export_csv(cls):
