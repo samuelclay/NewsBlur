@@ -1,5 +1,4 @@
 ---
-
 - name: Template file for prometheus
   vars:
     monitor_server: "{{ 'staging.newsblur.com' if disable_consul_services_ie_staging is defined else 'newsblur.com' }}"
@@ -27,12 +26,12 @@
     user: root
     networks_cli_compatible: yes
     network_mode: default
-    command: --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --storage.tsdb.retention.time=10y
+    command: --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --storage.tsdb.retention.time=10y --storage.tsdb.retention.size=500GB
     networks:
       - name: newsblurnet
     state: started
     ports:
-    - 9090:9090
+      - 9090:9090
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
     volumes:

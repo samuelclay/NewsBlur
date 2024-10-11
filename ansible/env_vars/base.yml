@@ -1,5 +1,4 @@
 ---
-
 github_directory: github.com/samuelclay/newsblur
 git_web_repo: ssh://git@{{ github_directory }}
 git_secrets_repo: ssh://git@github.com/samuelclay/newsblur-secrets
@@ -17,16 +16,16 @@ sentry_task_release_webhook: "{{ lookup('ini', 'task_release_webhook section=sen
 sentry_monitor_release_webhook: "{{ lookup('ini', 'monitor_release_webhook section=sentry file=/srv/secrets-newsblur/configs/sentry.ini') }}"
 sentry_node_release_webhook: "{{ lookup('ini', 'node_release_webhook section=sentry file=/srv/secrets-newsblur/configs/sentry.ini') }}"
 
-sys_packages: [ 
-  'git', 
-  'python3', 
-  'python3-dev', 
-  'zsh', 
-  'openssl', 
-  'libssl-dev', 
-  'libssl-doc', 
-  'build-essential', 
-  'ntp', 
-  'htop'
-]
+sys_packages:
+  [
+    "git",
+    "python3",
+    "python3-dev",
+    "zsh",
+    "openssl",
+    "libssl-dev",
+    "libssl-doc",
+    "build-essential",
+    "htop",
+  ]
 grafana_password: "{{ lookup('ini', 'grafana_password section=grafana file=/srv/secrets-newsblur/configs/grafana.ini') }}"
