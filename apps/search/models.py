@@ -691,7 +691,7 @@ class SearchFeed:
         return results["hits"]["hits"]
 
     @classmethod
-    def vector_query(cls, query_vector, max_results=10, feed_ids_to_exclude=None):
+    def vector_query(cls, query_vector, offset=0, max_results=10, feed_ids_to_exclude=None):
         try:
             cls.ES().indices.flush(index=cls.index_name())
         except elasticsearch.exceptions.NotFoundError as e:
@@ -718,6 +718,7 @@ class SearchFeed:
                 }
             },
             "size": max_results,
+            "from": offset,
         }
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
@@ -726,7 +727,7 @@ class SearchFeed:
             return []
 
         logging.info(
-            f"~FGVector search ~FCfeeds~FG: ~SB{max_results}~SN requested, ~SB{len(results['hits']['hits'])}~SN results"
+            f"~FGVector search ~FCfeeds~FG: ~SB{max_results}~SN requested{f'~SB offset {offset}~SN' if offset else ''}, ~SB{len(results['hits']['hits'])}~SN results"
         )
 
         return results["hits"]["hits"]

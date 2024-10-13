@@ -1056,33 +1056,38 @@ class Feed(models.Model):
                     end=" ",
                 )
 
-    def count_similar_feeds(self, feed_ids=None, force=False):
-        if not force and self.similar_feeds.count():
+    def count_similar_feeds(self, feed_ids=None, force=False, offset=0, limit=5):
+        if not force and self.similar_feeds.count() and offset == 0:
             logging.debug(f"Found {self.similar_feeds.count()} cached similar feeds for {self}")
-            return self.similar_feeds.all()
+            return self.similar_feeds.all()[:limit]
 
         if not feed_ids:
             feed_ids = [self.pk]
         if self.pk not in feed_ids:
             feed_ids.append(self.pk)
 
-        results = self.find_similar_feeds(feed_ids=feed_ids)
+        results = self.find_similar_feeds(feed_ids=feed_ids, offset=offset, limit=limit)
 
-        self.similar_feeds.clear()
-        for result in results:
-            feed_id = result["_source"]["feed_id"]
+        similar_feeds = []
+        if offset == 0:
+            feed_ids = [result["_source"]["feed_id"] for result in results]
+            similar_feeds = Feed.objects.filter(pk__in=feed_ids)
             try:
-                self.similar_feeds.add(feed_id)
+                self.similar_feeds.set(feed_ids)
             except IntegrityError:
-                logging.debug(f" ---> ~FRIntegrity error adding similar feed: {feed_id}")
+                logging.debug(f" ---> ~FRIntegrity error adding similar feed: {feed_ids}")
                 pass
-
-        return self.similar_feeds.all()
+        else:
+            feed_ids = [result["_source"]["feed_id"] for result in results]
+            similar_feeds = Feed.objects.filter(pk__in=feed_ids)
+        return similar_feeds
 
     @classmethod
-    def find_similar_feeds(cls, feed_ids=None):
+    def find_similar_feeds(cls, feed_ids=None, offset=0, limit=5):
         combined_content_vector = SearchFeed.generate_combined_feed_content_vector(feed_ids)
-        results = SearchFeed.vector_query(combined_content_vector, feed_ids_to_exclude=feed_ids)
+        results = SearchFeed.vector_query(
+            combined_content_vector, feed_ids_to_exclude=feed_ids, offset=offset, max_results=limit
+        )
         logging.debug(
             f"Found {len(results)} recommendations for feeds {feed_ids}: {[r['_source']['title'] for r in results]}"
         )
