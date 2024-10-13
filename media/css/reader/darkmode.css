@@ -1920,3 +1920,7 @@ a.mention, a.mention-group {
 .NB-dark .NB-history-fetch.NB-errorcode {
     color: #953524;
 }
+
+.NB-dark .NB-subscribed {
+    color: #3c7922;
+}
