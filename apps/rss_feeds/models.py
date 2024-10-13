@@ -1073,13 +1073,15 @@ class Feed(models.Model):
             feed_ids = [result["_source"]["feed_id"] for result in results]
             similar_feeds = Feed.objects.filter(pk__in=feed_ids).distinct("feed_title")
             try:
-                self.similar_feeds.set(feed_ids)
+                self.similar_feeds.set(similar_feeds)
             except IntegrityError:
                 logging.debug(f" ---> ~FRIntegrity error adding similar feed: {feed_ids}")
                 pass
         else:
             feed_ids = [result["_source"]["feed_id"] for result in results]
             similar_feeds = Feed.objects.filter(pk__in=feed_ids).distinct("feed_title")
+            if self.similar_feeds.count() < 5:
+                self.similar_feeds.add(*similar_feeds[: 5 - self.similar_feeds.count()])
         return similar_feeds
 
     @classmethod
