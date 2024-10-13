@@ -36,6 +36,8 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
         this.has_more_results = true;
         this.is_loading = false;
 
+        this.shown_feed_titles = new Set();
+
         this.fetchData();
     },
 
@@ -137,6 +139,11 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
         this.throttled_check_scroll = _.throttle(this.check_scroll, 100);
         this.$el.closest(".popover-content").scroll(_.bind(this.throttled_check_scroll, this));
 
+        this.shown_feed_titles.clear();
+        this.discover_feeds_model.each(function (discover_feed) {
+            this.shown_feed_titles.add(discover_feed.get("feed").feed_title);
+        }, this);
+
         return this;
     },
 
@@ -191,6 +198,14 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
         var $feed_badges = this.$('.NB-discover-feed-badges');
 
         _.each(new_sites, function (discover_feed, feed_id) {
+            var feed_title = discover_feed.feed.feed_title;
+
+            if (self.shown_feed_titles.has(feed_title)) {
+                console.log("Already shown feed: ", feed_title);
+                return;
+            }
+            self.shown_feed_titles.add(feed_title);
+
             var $story_titles = $.make('div', { className: 'NB-story-titles' });
             var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
                 el: $story_titles,

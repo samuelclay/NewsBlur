@@ -1071,7 +1071,7 @@ class Feed(models.Model):
         similar_feeds = []
         if offset == 0:
             feed_ids = [result["_source"]["feed_id"] for result in results]
-            similar_feeds = Feed.objects.filter(pk__in=feed_ids)
+            similar_feeds = Feed.objects.filter(pk__in=feed_ids).distinct("feed_title")
             try:
                 self.similar_feeds.set(feed_ids)
             except IntegrityError:
@@ -1079,7 +1079,7 @@ class Feed(models.Model):
                 pass
         else:
             feed_ids = [result["_source"]["feed_id"] for result in results]
-            similar_feeds = Feed.objects.filter(pk__in=feed_ids)
+            similar_feeds = Feed.objects.filter(pk__in=feed_ids).distinct("feed_title")
         return similar_feeds
 
     @classmethod
