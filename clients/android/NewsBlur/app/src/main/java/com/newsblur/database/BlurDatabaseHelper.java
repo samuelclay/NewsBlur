@@ -576,7 +576,6 @@ public class BlurDatabaseHelper {
         }
     }
 
-    @NonNull
     public Folder getFolder(@NonNull String folderName) {
         String[] selArgs = new String[] {folderName};
         String selection = DatabaseConstants.FOLDER_NAME + " = ?";
