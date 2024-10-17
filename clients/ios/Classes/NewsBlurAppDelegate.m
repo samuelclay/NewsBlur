@@ -1932,14 +1932,14 @@
         [alertController dismissViewControllerAnimated:YES completion:nil];
         [self actuallyLogout];
     }]];
-#if TARGET_OS_MACCATALYST
-    [alertController addAction:[UIAlertAction actionWithTitle: @"Delete Account" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
-        [alertController dismissViewControllerAnimated:YES completion:nil];
-        [self actuallyLogout];
-        NSURL *url = [NSURL URLWithString:@"https://www.newsblur.com/profile/delete_account"];
-        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
-    }]];
-#endif
+//#if TARGET_OS_MACCATALYST
+//    [alertController addAction:[UIAlertAction actionWithTitle: @"Delete Account" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+//        [alertController dismissViewControllerAnimated:YES completion:nil];
+//        [self actuallyLogout];
+//        NSURL *url = [NSURL URLWithString:@"https://www.newsblur.com/profile/delete_account"];
+//        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+//    }]];
+//#endif
     [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                                         style:UIAlertActionStyleCancel handler:nil]];
     [self.feedsViewController presentViewController:alertController animated:YES completion:nil];

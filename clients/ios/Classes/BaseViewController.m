@@ -394,6 +394,11 @@
     [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
 }
 
+- (IBAction)showManageAccount:(id)sender {
+    NSURL *url = [NSURL URLWithString:@"https://www.newsblur.com/?next=account"];
+    [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+}
+
 - (IBAction)showLogout:(id)sender {
     [self.appDelegate confirmLogout];
 }
