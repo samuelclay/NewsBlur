@@ -910,11 +910,21 @@
                         </menu>
                         <menu isSystemItem="YES" title="Help" identifier="com.apple.menu.help" id="2fJ-ya-vwD">
                             <children>
-                                <command title="Support Forum" anchorAction="showHelp:" id="eDw-yh-3PE">
+                                <command title="Support Forum" anchorAction="showHelp:" id="z9V-y5-juo">
                                     <connections>
-                                        <action selector="showSupportForum:" destination="J28-e1-gcC" id="sW1-ne-jja"/>
+                                        <action selector="showSupportForum:" destination="J28-e1-gcC" id="c7i-Ra-th4"/>
                                     </connections>
                                 </command>
+                                <menu anchorAction="showHelp:" id="xDs-Be-CXW">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Manage Account on the Web" id="eDw-yh-3PE">
+                                            <connections>
+                                                <action selector="showManageAccount:" destination="J28-e1-gcC" id="Z1d-d2-hRw"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
                             </children>
                         </menu>
                     </children>

@@ -50,6 +50,7 @@
 - (IBAction)showFindFriends:(id)sender;
 - (IBAction)showPremium:(id)sender;
 - (IBAction)showSupportForum:(id)sender;
+- (IBAction)showManageAccount:(id)sender;
 - (IBAction)showLogout:(id)sender;
 
 - (IBAction)findInFeeds:(id)sender;
