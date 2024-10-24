@@ -591,6 +591,13 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             // console.log(['clicked story', this.model]);
             this.options.on_dashboard.open_story(this.model);
             return;
+        } else if (this.options.on_discover) {
+            console.log(['clicked story', this.model, this.options.on_discover, this.options.in_popover]);
+            NEWSBLUR.reader.load_feed_in_tryfeed_view(this.model.get('story_feed_id'), {
+                'feed': this.options.on_discover.feed,
+                'select_story_in_feed': this.model.get('story_hash')
+            });
+            this.options.in_popover.close();
         }
 
         if (_.contains(['list', 'grid', 'magazine'], this.options.override_layout ||
@@ -630,7 +637,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     show_manage_menu: function (e) {
         e.preventDefault();
         e.stopPropagation();
-        if (this.options.on_dashboard) {
+        if (this.options.on_dashboard || this.options.on_discover) {
             return this.select_story(e);
         }
 
@@ -658,7 +665,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     open_story_in_story_view: function (e) {
         e.preventDefault();
         e.stopPropagation();
-        if (this.options.on_dashboard) {
+        if (this.options.on_dashboard || this.options.on_discover) {
             return this.select_story(e);
         }
 

@@ -1,5 +1,7 @@
 import base64
 import datetime
+import time
+from collections import defaultdict
 from urllib.parse import urlparse
 
 import redis
@@ -644,3 +646,33 @@ def story_changes(request):
         return {"code": -1, "message": "Story not found.", "original_page": None, "failed": True}
 
     return {"story": Feed.format_story(story, show_changes=show_changes)}
+
+
+@ajax_login_required
+@json.json_view
+def discover_feeds(request, feed_id=None):
+    page = int(request.GET.get("page", 1))
+    limit = 5
+    offset = (page - 1) * limit
+
+    if request.method == "GET" and feed_id:
+        similar_feed_ids = list(
+            Feed.get_by_id(feed_id)
+            .count_similar_feeds(force=True, offset=offset, limit=limit)
+            .values_list("pk", flat=True)
+        )
+    elif request.method == "POST":
+        feed_ids = request.POST.getlist("feed_ids")
+        similar_feeds = Feed.find_similar_feeds(feed_ids=feed_ids, offset=offset, limit=limit)
+        similar_feed_ids = [result["_source"]["feed_id"] for result in similar_feeds]
+    else:
+        return {"code": -1, "message": "Missing feed_ids.", "discover_feeds": None, "failed": True}
+
+    feeds = Feed.objects.filter(pk__in=similar_feed_ids)
+    discover_feeds = defaultdict(dict)
+    for feed in feeds:
+        discover_feeds[feed.pk]["feed"] = feed.canonical(include_favicon=False)
+        discover_feeds[feed.pk]["stories"] = feed.get_stories(limit=5)
+
+    logging.user(request, "~FCDiscovering similar feeds: ~SB%s" % similar_feed_ids)
+    return {"discover_feeds": discover_feeds}

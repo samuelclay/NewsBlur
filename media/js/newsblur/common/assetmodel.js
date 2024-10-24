@@ -1,5 +1,32 @@
 NEWSBLUR.AssetModel = Backbone.Router.extend({
 
+    third_party_sharing_services: {
+        "copyurl": "Copy URL",
+        "copytext": "Copy Text",
+        "print": "Print",
+        "facebook": "Facebook",
+        "twitter": "X / Twitter",
+        "reddit": "Reddit",
+        "readitlater": "Pocket",
+        "tumblr": "Tumblr",
+        "delicious": "Delicious",
+        "blogger": "Blogger",
+        "pinboard": "Pinboard",
+        "raindrop": "Raindrop",
+        "whatsapp": "WhatsApp",
+        "pinterest": "Pinterest",
+        "buffer": "Buffer",
+        "diigo": "Diigo",
+        "evernote": "Evernote",
+        "instapaper": "Instapaper",
+        "livejournal": "LiveJournal",
+        "flipboard": "Flipboard",
+        "lineme": "Line.me",
+        "hackernews": "Hacker News",
+        "telegram": "Telegram",
+        "linkedin": "LinkedIn"
+    },
+
     initialize: function () {
         this.defaults = {
             classifiers: {
