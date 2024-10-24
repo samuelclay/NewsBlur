@@ -1973,6 +1973,11 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             
             [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"tap selected row"];
             
+            if (!appDelegate.isPhone) {
+                [appDelegate.storyPagesViewController viewWillAppear:NO];
+                [appDelegate.storyPagesViewController viewDidAppear:NO];
+            }
+            
             if (!isGrid) {
                 return;
             }
@@ -2499,11 +2504,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     if (storiesCollection.inSearch) {
         if (storiesCollection.savedSearchQuery == nil) {
-            [viewController addTitle:@"Save search" iconName:@"search" selectionShouldDismiss:YES handler:^{
+            [viewController addTitle:@"Save search" iconName:@"g_icn_search.png" selectionShouldDismiss:YES handler:^{
                 [self saveSearch];
             }];
         } else {
-            [viewController addTitle:@"Delete saved search" iconName:@"search" selectionShouldDismiss:YES handler:^{
+            [viewController addTitle:@"Delete saved search" iconName:@"g_icn_search.png" selectionShouldDismiss:YES handler:^{
                 [self deleteSavedSearch];
             }];
         }

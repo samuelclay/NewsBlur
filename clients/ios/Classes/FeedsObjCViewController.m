@@ -1722,6 +1722,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         appDelegate.storiesCollection.searchQuery = searchQuery;
         appDelegate.storiesCollection.savedSearchQuery = searchQuery;
     }
+    
+    if (!appDelegate.isPhone) {
+        [appDelegate.feedDetailViewController viewWillAppear:NO];
+        [appDelegate.feedDetailViewController viewDidAppear:NO];
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView
@@ -1996,6 +2001,11 @@ heightForHeaderInSection:(NSInteger)section {
     }
     
     [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
+    
+    if (!appDelegate.isPhone) {
+        [appDelegate.feedDetailViewController viewWillAppear:NO];
+        [appDelegate.feedDetailViewController viewDidAppear:NO];
+    }
 }
 
 - (NSArray *)allIndexPaths {
