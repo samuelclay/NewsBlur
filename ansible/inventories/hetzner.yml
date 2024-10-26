@@ -18,7 +18,7 @@ groups:
   hcount: inventory_hostname.startswith('happ-count')
   push: inventory_hostname.startswith('happ-push')
   hpush: inventory_hostname.startswith('happ-push')
-  blogs: inventory_hostname.startswith('blog')
+  blogs: inventory_hostname.startswith('hblog')
   forum: inventory_hostname.startswith('hforum')
 
   node: inventory_hostname.startswith('hnode')
