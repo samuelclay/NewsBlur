@@ -523,6 +523,7 @@ def load_feeds_flat(request):
         categories = MCategory.serialize()
 
     saved_searches = MSavedSearch.user_searches(user.pk)
+    dashboard_rivers = MDashboardRiver.get_user_rivers(user.pk)
 
     logging.user(
         request,
@@ -555,6 +556,7 @@ def load_feeds_flat(request):
         "starred_count": starred_count,
         "starred_counts": starred_counts,
         "saved_searches": saved_searches,
+        "dashboard_rivers": dashboard_rivers,
         "share_ext_token": user.profile.secret_token,
     }
     return data
