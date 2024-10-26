@@ -75,6 +75,9 @@ lint:
 	docker exec -it newsblur_web black --line-length 110 .
 	docker exec -it newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv
 
+jekyll_build:
+	cd blog && bundle exec jekyll build
+	
 # runs tests
 test:
 	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} TEST=True docker compose -f docker-compose.yml up -d newsblur_web
