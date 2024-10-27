@@ -359,7 +359,11 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var $story_titles = this.$story_titles;
         var scroll_y = $story_titles.scrollTop();
 
-        if (!this.options.on_dashboard && !this.options.on_discover) {
+        if (this.options.on_discover) {
+            return;
+        }
+
+        if (!this.options.on_dashboard) {
             if (NEWSBLUR.reader.flags['opening_feed']) return;
             // if (NEWSBLUR.reader.flags['opening_story']) return;
             if (NEWSBLUR.assets.preference('mark_read_on_scroll_titles')) {

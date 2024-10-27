@@ -182,7 +182,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
 
         this.page += 1;
         var self = this;
-
+        console.log("Loading more sites on page: ", this.page);
         this.discover_feeds_model.fetch({
             type: this.discover_feeds_model.similar_to_feed_ids ? 'POST' : 'GET',
             data: {
@@ -190,7 +190,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                 page: this.page
             },
             success: function (model, response) {
-                console.log("Successfully loaded more sites: ", response);
+                console.log("Successfully loaded more sites on page: ", self.page, response);
                 self.render_additional_sites(response.discover_feeds);
                 if (self.page > 10) {
                     self.has_more_results = false;
