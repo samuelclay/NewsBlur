@@ -1883,7 +1883,13 @@ img.feed_favicon {
     width: 32px;
     height: 32px;
     background-size: 32px;
-    margin: 24px auto;
+    margin: 0 0 0 18px;
+    float: left;
+}
+
+.NB-discover-popover .NB-discover-loading .NB-loading.NB-active {
+    margin: 36px auto 24px;
+    float: none;
 }
 
 .NB-discover-popover .NB-popover-section-title .NB-icon {
@@ -16408,6 +16414,14 @@ form.opml_import_form input {
 .NB-feed-badge .NB-feed-badge-stats .NB-icon {
     vertical-align: middle;
     display: inline;
+}
+
+.NB-feed-badge .NB-badge-folders {
+    float: left;
+}
+
+.NB-feed-badge .NB-feed-badge-actions {
+    width: 100%;
 }
 
 .NB-feed-badge .NB-icon-stats {

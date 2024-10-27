@@ -576,7 +576,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     open_discover_popover: function () {
         NEWSBLUR.DiscoverFeedsPopover.create({
             anchor: this.$(".NB-feedbar-discover-container"),
-            feed_ids: this.model.feed_ids_in_folder()
+            feed_ids: this.model.feed_ids_in_folder(),
+            selected_folder_title: this.options.folder_title
         });
     }
 
