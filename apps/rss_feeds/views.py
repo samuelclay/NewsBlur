@@ -651,7 +651,7 @@ def story_changes(request):
 @ajax_login_required
 @json.json_view
 def discover_feeds(request, feed_id=None):
-    page = int(request.GET.get("page", 1))
+    page = int(request.GET.get("page") or request.POST.get("page") or 1)
     limit = 5
     offset = (page - 1) * limit
 
@@ -674,5 +674,5 @@ def discover_feeds(request, feed_id=None):
         discover_feeds[feed.pk]["feed"] = feed.canonical(include_favicon=False)
         discover_feeds[feed.pk]["stories"] = feed.get_stories(limit=5)
 
-    logging.user(request, "~FCDiscovering similar feeds: ~SB%s" % similar_feed_ids)
+    logging.user(request, "~FCDiscovering similar feeds, page %s: ~SB%s" % (page, similar_feed_ids))
     return {"discover_feeds": discover_feeds}
