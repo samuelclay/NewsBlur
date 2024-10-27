@@ -8,6 +8,10 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
         "click .NB-icon-stats": "open_stats"
     },
 
+    options: {
+        load_feed_after_add: true
+    },
+
     constructor: function (options) {
         Backbone.View.call(this, options);
 
@@ -40,7 +44,7 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
                 ' per month'
             ]),
             (subscribed && $.make('div', { className: 'NB-subscribed' }, "Subscribed")),
-            (!subscribed && $.make('div', [
+            (!subscribed && $.make('div', { className: 'NB-feed-badge-actions' }, [
                 (!this.options.hide_try_button && $.make('div', {
                     className: 'NB-badge-action-try NB-modal-submit-button NB-modal-submit-green'
                 }, [
@@ -50,7 +54,7 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
                     className: 'NB-badge-action-add NB-modal-submit-button NB-modal-submit-grey '
                 }, 'Add'),
                 (this.options.show_folders && $.make('div', { className: 'NB-badge-folders' }, [
-                    NEWSBLUR.utils.make_folders()
+                    NEWSBLUR.utils.make_folders(this.options.selected_folder_title)
                 ])),
                 $.make("div", { className: "NB-loading" }),
                 $.make('div', { className: 'NB-error' })
@@ -91,8 +95,9 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
         NEWSBLUR.assets.save_add_url(url, folder, _.bind(this.post_save_add_url, this), _.bind(this.error, this));
     },
 
-    post_save_add_url: function (e, data) {
-        NEWSBLUR.log(['Data', data]);
+    post_save_add_url: function (data) {
+        NEWSBLUR.log(['Post save data', data]);
+        var self = this;
         var $submit = this.$('.NB-badge-action-add');
         var $loading = this.$('.NB-loading');
         $loading.removeClass('NB-active');
@@ -100,11 +105,14 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
 
         if (data && data.code > 0) {
             NEWSBLUR.assets.load_feeds(function () {
-                if (data.feed) {
-                    NEWSBLUR.reader.open_feed(data.feed.id);
+                if (self.options.load_feed_after_add) {
+                    if (data.feed) {
+                        NEWSBLUR.reader.open_feed(data.feed.id);
+                    }
                 }
             });
             NEWSBLUR.reader.handle_mouse_indicator_hover();
+
             $submit.text('Subscribed!');
         } else {
             this.error(data);

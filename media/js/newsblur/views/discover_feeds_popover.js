@@ -38,6 +38,18 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
 
         this.shown_feed_titles = new Set();
 
+        if (!this.options.selected_folder_title) {
+            var feed = NEWSBLUR.assets.get_feed(this.options.feed_id);
+            if (feed) {
+                var folders = feed.in_folders();
+                if (folders.length > 0) {
+                    this.options.selected_folder_title = folders[0];
+                }
+            } else {
+                console.log("No feed found for discover popover", this.options.feed_id);
+            }
+        }
+
         this.fetchData();
     },
 
@@ -125,7 +137,9 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                         new NEWSBLUR.Views.FeedBadge({
                             model: discover_feed.get("feed"),
                             show_folders: true,
-                            in_popover: self
+                            selected_folder_title: self.options.selected_folder_title,
+                            in_popover: self,
+                            load_feed_after_add: false
                         }),
                         story_titles_view.render().el
                     ]);
@@ -223,7 +237,9 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                 new NEWSBLUR.Views.FeedBadge({
                     model: new NEWSBLUR.Models.Feed(discover_feed.feed),
                     show_folders: true,
-                    in_popover: self
+                    selected_folder_title: self.options.selected_folder_title,
+                    in_popover: self,
+                    load_feed_after_add: false
                 }),
                 story_titles_view.render().el
             ]);

@@ -139,7 +139,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         } else {
             this.view = new NEWSBLUR.Views.FeedTitleView({
                 model: NEWSBLUR.assets.get_feed(this.options.feed_id),
-                type: 'story'
+                type: 'story',
             }).render();
             $view = this.view.$el;
             this.search_view = this.view.search_view;
