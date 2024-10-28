@@ -69,7 +69,9 @@ jekyll:
 	cd blog && bundle exec jekyll serve
 jekyll_drafts:
 	cd blog && bundle exec jekyll serve --drafts
-
+jekyll_build:
+	cd blog && bundle exec jekyll build
+	
 # runs tests
 test:
 	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} TEST=True docker compose -f docker-compose.yml up -d newsblur_web
