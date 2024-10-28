@@ -1872,7 +1872,7 @@ img.feed_favicon {
     height: 14px;
     background: transparent url('/media/embed/icons/nouns/discover.svg') no-repeat 1px 1px;
     background-size: 12px;
-    margin: 0;
+    margin: 0 8px;
 }
 
 .NB-discover-popover .NB-discover-loading {
@@ -5318,6 +5318,11 @@ body {
     background-size: 16px;
 }
 
+.NB-sideoption.NB-feed-story-discover .NB-sideoption-icon {
+    background-image: url('/media/embed/icons/nouns/discover.svg');
+    background-size: 12px;
+}
+
 .NB-sideoption-thirdparty {
     width: 24px;
     height: 24px;
@@ -5577,6 +5582,11 @@ body {
 /* ====================== */
 
 .NB-sideoption-share-wrapper {
+    display: none;
+}
+
+.NB-sideoption-share-wrapper.NB-active {
+    display: block;
     height: 0;
     width: 100%;
     overflow: hidden;
@@ -5584,7 +5594,7 @@ body {
 
 .NB-menu-manage .NB-sideoption-share-wrapper {}
 
-.NB-narrow-content .NB-sideoption-share-wrapper {
+.NB-narrow-content .NB-sideoption-share-wrapper.NB-active {
     clear: both;
     width: 100%;
     margin: 0;
@@ -5704,6 +5714,37 @@ body {
     padding: 4px 0 0;
     line-height: 14px;
     font-weight: bold;
+}
+
+/* ========================= */
+/* = Sideoption - Discover = */
+/* ========================= */
+
+.NB-sideoption-discover-wrapper {
+    height: 0;
+    width: 100%;
+    overflow: hidden;
+}
+
+.NB-menu-manage .NB-sideoption-discover-wrapper {}
+
+.NB-narrow-content .NB-sideoption-discover-wrapper {
+    clear: both;
+    width: 100%;
+    margin: 0;
+}
+
+.NB-sideoption-discover {
+    padding: 9px 12px;
+    border: 1px solid #DBE6EA;
+}
+
+.NB-sideoption-discover .NB-sideoption-discover-title {
+    font-size: 12px;
+    margin: 2px 0 8px;
+    text-align: left;
+    text-shadow: 0 1px 0 #F6F6F6;
+    color: #202020;
 }
 
 /* ====================== */
