@@ -50,10 +50,10 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
             }
         }
 
-        this.fetchData();
+        this.fetch_data();
     },
 
-    fetchData: function () {
+    fetch_data: function () {
         var self = this;
 
         if (this.options.feed_id) {
@@ -72,16 +72,16 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                 type: this.discover_feeds_model.similar_to_feed_ids ? 'POST' : 'GET',
                 data: { feed_ids: this.discover_feeds_model.similar_to_feed_ids },
                 success: function () {
-                    self.hideLoading();
+                    self.hide_loading();
                     self.render();
                 },
                 error: function () {
-                    self.hideLoading();
+                    self.hide_loading();
                 }
             });
         } catch (e) {
             console.log(["Error fetching discover feeds", e]);
-            this.onDataLoadError();
+            this.on_data_load_error();
         }
     },
 
@@ -100,17 +100,12 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
         ]));
     },
 
-    hideLoading: function () {
+    hide_loading: function () {
         this.$el.find(".NB-loading").html('');
     },
 
-    onDataLoaded: function () {
-        this.hideLoading();
-        this.render();
-    },
-
-    onDataLoadError: function () {
-        this.hideLoading();
+    on_data_load_error: function () {
+        this.hide_loading();
         this.$el.find(".NB-discover-loading").html('<div class="error-message">Failed to load related sites</div>');
     },
 
