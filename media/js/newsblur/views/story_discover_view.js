@@ -1,6 +1,7 @@
 NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
 
     events: {
+        "click .NB-feed-story-discover": "toggle_feed_story_discover_dialog",
     },
 
     initialize: function () {
@@ -16,7 +17,7 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
     },
 
     template: _.template('\
-    <div class="NB-sideoption-discover">\
+    <div class="NB-sideoption-discover-wrapper">\
         <div class="NB-sideoption-discover-title">\
             Discover stories\
         </div>\
@@ -51,72 +52,26 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
     </div>\
     '),
 
-    populate_story_tags: function () {
-        var $populate = this.$('.NB-sideoption-save-populate');
-        var $tag_input = this.$('.NB-sideoption-save-tag');
-        var tags = this.model.get('story_tags');
-
-        $populate.fadeOut(500);
-        _.each(tags, function (tag) {
-            $tag_input.tagit('createTag', tag, null, true);
-        });
-
-        this.toggle_feed_story_save_dialog({ resize_open: true });
-        this.save_tags();
-    },
-
-    toggle_feed_story_save_dialog: function (options) {
+    toggle_feed_story_discover_dialog: function (options) {
         options = options || {};
-        var self = this;
         var feed_id = this.model.get('story_feed_id');
-        var $sideoption = this.$('.NB-sideoption.NB-feed-story-save');
-        var $save_wrapper = this.$('.NB-sideoption-save-wrapper');
-        var $tag_input = this.$('.NB-sideoption-save-tag');
+        var $sideoption = this.$('.NB-sideoption.NB-feed-story-discover');
+        var $sideoption_container = this.$('.NB-feed-story-sideoptions-container');
+        var $discover = this.$('.NB-sideoption-discover-wrapper');
 
-        if (options.close || !this.model.get('starred')) {
+        if (options.close ||
+            ($sideoption.hasClass('NB-active') && !options.resize_open)) {
             // Close
             this.is_open = false;
             this.resize({ close: true });
+            NEWSBLUR.reader.blur_to_page();
         } else {
             // Open/resize
             this.is_open = true;
             if (!options.resize_open) {
                 this.$('.NB-error').remove();
             }
-            $tag_input.tagit({
-                fieldName: "tags",
-                availableTags: this.model.all_tags(),
-                autocomplete: { delay: 0, minLength: 0 },
-                showAutocompleteOnFocus: true,
-                createTagOnBlur: false,
-                removeConfirmation: true,
-                caseSensitive: false,
-                allowDuplicates: false,
-                allowSpaces: true,
-                readOnly: false,
-                tagLimit: null,
-                singleField: false,
-                singleFieldDelimiter: ',',
-                singleFieldNode: null,
-                tabIndex: null,
-
-                afterTagAdded: function (event, options) {
-                    options = options || {};
-                    if (!options.duringInitialization) {
-                        self.resize({ change_tag: true });
-                        self.save_tags();
-                    }
-                },
-                afterTagRemoved: function (event, duringInitialization) {
-                    options = options || {};
-                    if (!options.duringInitialization) {
-                        self.resize({ change_tag: true });
-                        self.save_tags();
-                    }
-                }
-            });
-            $tag_input.tagit('addClassAutocomplete', 'NB-tagging-autocomplete');
-            this.$('textarea').autosize();
+            $sideoption.addClass('NB-active');
 
             if (options.animate_scroll) {
                 var $scroll_container = NEWSBLUR.reader.$s.$story_titles;
@@ -143,34 +98,33 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
     resize: function (options) {
         options = options || {};
         var $sideoption_container = this.$('.NB-feed-story-sideoptions-container');
-        var $save_wrapper = this.$('.NB-sideoption-save-wrapper');
-        var $save_content = this.$('.NB-sideoption-save');
-        var $user_notes = this.$('.NB-sideoption-save-notes');
+        var $discover_wrapper = this.$('.NB-sideoption-discover-wrapper');
+        var $discover_content = this.$('.NB-sideoption-discover');
+        var $user_notes = this.$('.NB-sideoption-discover-notes');
         var $story_content = this.$('.NB-feed-story-content,.NB-story-content');
         var $story_comments = this.$('.NB-feed-story-comments');
-        var $sideoption = this.$('.NB-feed-story-save');
-        var $tag_input = this.$('.NB-sideoption-save-tag');
+        var $sideoption = this.$('.NB-feed-story-discover');
+        var $tag_input = this.$('.NB-sideoption-discover-tag');
 
-        var $save_clone = $save_wrapper.clone();
-        $save_wrapper.after($save_clone.css({
+        var $discover_clone = $discover_wrapper.clone();
+        $discover_wrapper.after($discover_clone.css({
             'height': options.close ? 0 : 'auto',
             'position': 'absolute',
             'visibility': 'hidden',
             'display': 'block'
         }));
-        var sideoption_content_height = $save_clone.height();
-        $save_clone.remove();
-        var new_sideoptions_height = $sideoption_container.height() - $save_wrapper.height() + sideoption_content_height;
-        // console.log(['Save options height', new_sideoptions_height, $sideoption_container.height(), $save_wrapper.height(), sideoption_content_height])
+        var sideoption_content_height = $discover_clone.height();
+        $discover_clone.remove();
+        var new_sideoptions_height = $sideoption_container.height() - $discover_wrapper.height() + sideoption_content_height;
         if (!options.close) {
             $sideoption.addClass('NB-active');
-            $save_wrapper.addClass('NB-active');
+            $discover_wrapper.addClass('NB-active');
         }
 
         if (!options.resize_open && !options.close && !options.change_tag) {
-            $save_wrapper.css('height', '0px');
+            $discover_wrapper.css('height', '0px');
         }
-        $save_wrapper.animate({
+        $discover_wrapper.animate({
             'height': sideoption_content_height
         }, {
             'duration': options.immediate ? 0 : options.duration || 350,
@@ -185,7 +139,7 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
                 }
                 if (options.close) {
                     $sideoption.removeClass('NB-active');
-                    $save_wrapper.removeClass('NB-active');
+                    $discover_wrapper.removeClass('NB-active');
                 }
             }, this)
         });
@@ -216,7 +170,7 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
             }
         } else if (!NEWSBLUR.reader.flags.narrow_content) {
             // Content is bigger, move content back to normal
-            if ($story_content.data('original_height') && !this.sideoptions_view.share_view.is_open) {
+            if ($story_content.data('original_height') && !this.sideoptions_view.discover_view.is_open) {
                 $story_content.stop(true, true).animate({
                     'height': $story_content.data('original_height')
                 }, {
@@ -229,8 +183,8 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
                         }
                     }
                 });
-            } else if (this.sideoptions_view.share_view.is_open && !options.from_share_view) {
-                this.sideoptions_view.share_view.resize({ from_save_view: true });
+            } else if (this.sideoptions_view.discover_view.is_open && !options.from_discover_view) {
+                this.sideoptions_view.discover_view.resize({ from_discover_view: true });
             }
         }
 
@@ -247,38 +201,6 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
         $story_content.removeData('original_height');
 
         this.resize({ change_tag: true });
-    },
-
-    save_tags: function () {
-        var $tag_input = this.$('.NB-sideoption-save-tag');
-
-        var user_tags = $tag_input.tagit('assignedTags');
-        this.model.set('user_tags', user_tags);
-    },
-
-    save_user_notes: function (options) {
-        var $notes = this.$('.NB-sideoption-save-notes');
-        var $message = this.$('.NB-sideoption-save-message');
-        var user_notes = $notes.val();
-
-        if (this.model.get('user_notes') == user_notes) return;
-        console.log('save_user_notes', user_notes);
-        this.model.set('user_notes', user_notes, { silent: true });
-        $message.removeClass('NB-active');
-        if (this.saved_defer) {
-            clearTimeout(this.saved_defer);
-        }
-        NEWSBLUR.assets.mark_story_as_starred(this.model.id, _.bind(function () {
-            $message.addClass('NB-active');
-            if (this.saved_defer) {
-                clearTimeout(this.saved_defer);
-            }
-            this.saved_defer = _.delay(_.bind(function () {
-                $message.removeClass('NB-active');
-                this.saved_defer = null;
-            }, this), 3000);
-        }, this));
-
     }
 
 });

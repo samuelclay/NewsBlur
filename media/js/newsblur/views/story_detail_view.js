@@ -79,12 +79,16 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         });
         this.save_view = this.sideoptions_view.save_view;
         this.share_view = this.sideoptions_view.share_view;
+        this.discover_view = this.sideoptions_view.discover_view;
 
         params['story_save_view'] = this.sideoptions_view.save_view.render();
         params['story_share_view'] = this.sideoptions_view.share_view.template({
             story: this.model,
             social_services: NEWSBLUR.assets.social_services,
             profile: NEWSBLUR.assets.user_profile
+        });
+        params['story_discover_view'] = this.sideoptions_view.discover_view.template({
+            story: this.model
         });
         this.$el.html(this.template(params));
         if (this.feed) {
@@ -336,6 +340,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-sideoption-icon">&nbsp;</div>\
                 </div>\
                 <%= story_share_view %>\
+                <div class="NB-sideoption NB-feed-story-discover" role="button">\
+                    <div class="NB-sideoption-title">Related</div>\
+                    <div class="NB-sideoption-icon">&nbsp;</div>\
+                </div>\
+                <%= story_discover_view %>\
             </div>\
         </div>\
         <% if (inline_story_title) { %>\
@@ -1056,6 +1065,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     toggle_starred: function () {
         this.model.toggle_starred();
+    },
+
+    toggle_discover: function () {
+        this.model.toggle_discover();
     },
 
     scroll_to_comments: function () {

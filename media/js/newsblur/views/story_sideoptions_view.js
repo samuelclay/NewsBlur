@@ -11,6 +11,11 @@ NEWSBLUR.Views.StorySideoptionsView = Backbone.View.extend({
             el: this.el,
             sideoptions_view: this
         });
+        this.discover_view = new NEWSBLUR.Views.StoryDiscoverView({
+            model: this.model,
+            el: this.el,
+            sideoptions_view: this
+        });
     }
 
 });
