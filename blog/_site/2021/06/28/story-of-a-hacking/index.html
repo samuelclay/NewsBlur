@@ -10,7 +10,7 @@
   title="The NewsBlur Blog RSS feed" 
   href="/feed.xml" /><!-- Begin Jekyll SEO tag v2.8.0 -->
 <title>How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database | The NewsBlur Blog</title>
-<meta name="generator" content="Jekyll v4.2.2" />
+<meta name="generator" content="Jekyll v4.3.4" />
 <meta property="og:title" content="How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="tl;dr: A vandal deleted NewsBlur’s MongoDB database during a migration. No data was stolen or lost." />
@@ -91,9 +91,9 @@
 <span class="nx">nbset</span><span class="p">:</span><span class="nx">PRIMARY</span><span class="o">&gt;</span> <span class="nx">use</span> <span class="nx">READ__ME_TO_RECOVER_YOUR_DATA</span>
 <span class="nx">switched</span> <span class="nx">to</span> <span class="nx">db</span> <span class="nx">READ__ME_TO_RECOVER_YOUR_DATA</span>
     
-<span class="nx">nbset</span><span class="p">:</span><span class="nx">PRIMARY</span><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">README</span><span class="p">.</span><span class="nx">find</span><span class="p">()</span>
+<span class="nx">nbset</span><span class="p">:</span><span class="nx">PRIMARY</span><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">README</span><span class="p">.</span><span class="nf">find</span><span class="p">()</span>
 <span class="p">{</span> 
-    <span class="dl">"</span><span class="s2">_id</span><span class="dl">"</span> <span class="p">:</span> <span class="nx">ObjectId</span><span class="p">(</span><span class="dl">"</span><span class="s2">60d3e112ac48d82047aab95d</span><span class="dl">"</span><span class="p">),</span> 
+    <span class="dl">"</span><span class="s2">_id</span><span class="dl">"</span> <span class="p">:</span> <span class="nc">ObjectId</span><span class="p">(</span><span class="dl">"</span><span class="s2">60d3e112ac48d82047aab95d</span><span class="dl">"</span><span class="p">),</span> 
     <span class="dl">"</span><span class="s2">content</span><span class="dl">"</span> <span class="p">:</span> <span class="dl">"</span><span class="s2">All your data is a backed up. You must pay 0.03 BTC to XXXXXXFTHISGUYXXXXXXX 48 hours for recover it. After 48 hours expiration we will leaked and exposed all your data. In case of refusal to pay, we will contact the General Data Protection Regulation, GDPR and notify them that you store user data in an open form and is not safe. Under the rules of the law, you face a heavy fine or arrest and your base dump will be dropped from our server! You can buy bitcoin here, does not take much time to buy https://localbitcoins.com or https://buy.moonpay.io/ After paying write to me in the mail with your DB IP: FTHISGUY@recoverme.one and you will receive a link to download your database dump.</span><span class="dl">"</span> 
 <span class="p">}</span></code></pre></figure>
 

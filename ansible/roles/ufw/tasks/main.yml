@@ -124,6 +124,9 @@
       :DOCKER-USER - [0:0]
       -A DOCKER-USER -j ufw-user-forward
 
+      # Allow traffic on port 80 to Docker containers
+      -A DOCKER-USER -p tcp --dport 80 -j ACCEPT
+
       -A DOCKER-USER -j RETURN -s 10.0.0.0/8
       -A DOCKER-USER -j RETURN -s 172.16.0.0/12
       -A DOCKER-USER -j RETURN -s 192.168.0.0/16
