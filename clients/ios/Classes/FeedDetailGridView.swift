@@ -10,7 +10,6 @@ import SwiftUI
 
 /// A protocol of interaction between a card in the grid, and the enclosing feed detail view controller.
 @MainActor protocol FeedDetailInteraction {
-    var storyHeight: CGFloat { get }
     var hasNoMoreStories: Bool { get }
     var isPremiumRestriction: Bool { get }
     var isMarkReadOnScroll: Bool { get }
@@ -43,22 +42,8 @@ struct FeedDetailGridView: View {
         }
     }
     
-    var isOS15OrLater: Bool {
-        if #available(iOS 15.0, *) {
-            return true
-        } else {
-            return false
-        }
-    }
-    
     var cardHeight: CGFloat {
         return cache.settings.gridHeight
-    }
-    
-    var storyHeight: CGFloat {
-        print("🐓 Story height: \(feedDetailInteraction.storyHeight + 20)")
-        
-        return feedDetailInteraction.storyHeight + 20
     }
     
     var body: some View {

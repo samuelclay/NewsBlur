@@ -147,4 +147,12 @@ import Foundation
                 return 400
         }
     }
+    
+    var dashboardColumns: Int {
+        guard let pref = UserDefaults.standard.string(forKey: "dashboard_columns"), let columns = Int(pref) else {
+            return 2
+        }
+        
+        return columns
+    }
 }
