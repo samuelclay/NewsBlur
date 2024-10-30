@@ -113,7 +113,7 @@ class DetailViewController: BaseViewController {
     
     /// Whether or not using the list layout; see also the previous properties.
     @objc var storyTitlesInList: Bool {
-        return layout == .list
+        return layout == .list || storyTitlesInDashboard
     }
     
     /// Whether or not using the magazine layout; see also the previous properties.
@@ -128,13 +128,16 @@ class DetailViewController: BaseViewController {
     
     /// Whether or not using the list, magazine, or grid layout; see also the previous properties.
     @objc var storyTitlesInGridView: Bool {
-        return [.list, .magazine, .grid].contains(layout)
+        return [.list, .magazine, .grid].contains(layout) || storyTitlesInDashboard
     }
     
     /// Whether or not using the legacy list for non-grid layout.
     @objc var storyTitlesInLegacyTable: Bool {
         return !storyTitlesInGridView && style != .experimental
     }
+    
+    /// Whether or not showing the dashboard.
+    @objc var storyTitlesInDashboard = false
     
     /// Preference values.
     enum StyleValue {

@@ -17,8 +17,9 @@
 // indices in appDelegate.dictFoldersArray and button tags
 // keep in sync with NewsBlurTopSectionNames
 static enum {
-    NewsBlurTopSectionInfrequentSiteStories = 0,
-    NewsBlurTopSectionAllStories = 1
+    NewsBlurTopSectionDashboard = 0,
+    NewsBlurTopSectionInfrequentSiteStories = 1,
+    NewsBlurTopSectionAllStories = 2
 } NewsBlurTopSection;
 
 @interface FeedsObjCViewController : BaseViewController

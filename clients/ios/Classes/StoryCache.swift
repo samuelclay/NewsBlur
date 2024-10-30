@@ -22,7 +22,7 @@ import Foundation
     
     /// Using a list-style grid view layout for the story titles and story pages.
     var isList: Bool {
-        return appDelegate.detailViewController.layout == .list
+        return appDelegate.detailViewController.layout == .list || isDashboard
     }
     
     /// Using a magazine-style grid view layout for the story titles and story pages.
@@ -40,6 +40,11 @@ import Foundation
         return appDelegate.detailViewController.storyTitlesInGridView
     }
     
+    /// Using the dashboard layout based on the grid view.
+    var isDashboard: Bool {
+        return appDelegate.detailViewController.storyTitlesInDashboard
+    }
+    
     var isPhone: Bool {
         return appDelegate.detailViewController.isPhone
     }
@@ -51,6 +56,8 @@ import Foundation
     @Published var before = [Story]()
     @Published var selected: Story?
     @Published var after = [Story]()
+    
+    @Published var dashboard = [[Story]]()
     
     var all: [Story] {
         if let selected {
@@ -126,5 +133,15 @@ import Foundation
         } else if let index = after.firstIndex(of: story) {
             after[index] = Story(index: story.index)
         }
+    }
+    
+    func reloadDashboard(for index: Int) {
+        if index == 0 {
+            dashboard.removeAll()
+        }
+        
+        reload()
+        
+        dashboard[index] = before
     }
 }

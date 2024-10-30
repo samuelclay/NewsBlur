@@ -1919,7 +1919,7 @@
 }
 
 - (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle {
-    if ([folderTitle isEqualToString:@"everything"] || [folderTitle isEqualToString:@"infrequent"]) {
+    if ([folderTitle isEqualToString:@"dashboard"] || [folderTitle isEqualToString:@"everything"] || [folderTitle isEqualToString:@"infrequent"]) {
         return @[folderTitle];
     } else if ([folderTitle isEqualToString:@"widget_stories"]) {
         NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
@@ -2016,6 +2016,11 @@
     NSMutableArray *feeds = [NSMutableArray array];
     
     if (self.loginViewController.view.window != nil) {
+        return;
+    }
+    
+    if ([folder isEqualToString:@"dashboard"]) {
+        NSLog(@"⚠️ Called loadRiverFeedDetailView with dashboard; this should never occur");  // log
         return;
     }
     
@@ -2572,6 +2577,8 @@
         activity.title = @"Read All Shared Stories";
     } else if ([folder isEqualToString:@"river_global"]) {
         activity.title = @"Read Global Shared Stories";
+    } else if ([folder isEqualToString:@"dashboard"]) {
+        activity.title = @"NewsBlur Dashboard";
     } else if ([folder isEqualToString:@"everything"]) {
         activity.title = @"Read All the Stories";
     } else if ([folder isEqualToString:@"infrequent"]) {
@@ -2761,9 +2768,11 @@
     } else if ([folderName isEqual:@"river_global"] ||
                (!folderName && [storiesCollection.activeFolder isEqual:@"river_global"])) {
         total = 0;
-    } else if ([folderName isEqual:@"everything"] ||
+    } else if ([folderName isEqual:@"dashboard"] ||
+               [folderName isEqual:@"everything"] ||
                [folderName isEqual:@"infrequent"] ||
-               (!folderName && ([storiesCollection.activeFolder isEqual:@"everything"] ||
+               (!folderName && ([storiesCollection.activeFolder isEqual:@"dashboard"] ||
+                                [storiesCollection.activeFolder isEqual:@"everything"] ||
                                 [storiesCollection.activeFolder isEqual:@"infrequent"]))) {
         // TODO: Fix race condition where self.dictUnreadCounts can be changed while being updated.
         for (id feedId in self.dictUnreadCounts) {
@@ -2828,9 +2837,11 @@
     } else if ([folderName isEqual:@"river_global"] ||
                (!folderName && [storiesCollection.activeFolder isEqual:@"river_global"])) {
         // Nothing for global
-    } else if ([folderName isEqual:@"everything"] ||
+    } else if ([folderName isEqual:@"dashboard"] ||
+               [folderName isEqual:@"everything"] ||
                [folderName isEqual:@"infrequent"] ||
-               (!folderName && ([storiesCollection.activeFolder isEqual:@"everything"] ||
+               (!folderName && ([storiesCollection.activeFolder isEqual:@"dashboard"] ||
+                                [storiesCollection.activeFolder isEqual:@"everything"] ||
                                 [storiesCollection.activeFolder isEqual:@"infrequent"]))) {
         NSMutableSet *uniqueFeeds = [NSMutableSet new];
         for (NSArray *folder in [self.dictFolders allValues]) {
@@ -2921,7 +2932,7 @@
 #pragma mark Mark as read
 
 - (void)markActiveFolderAllRead {
-    if ([storiesCollection.activeFolder isEqual:@"everything"] || [storiesCollection.activeFolder isEqual:@"infrequent"]) {
+    if ([storiesCollection.activeFolder isEqual:@"dashboard"] || [storiesCollection.activeFolder isEqual:@"everything"] || [storiesCollection.activeFolder isEqual:@"infrequent"]) {
         for (NSString *folderName in self.dictFoldersArray) {
             for (id feedId in [self.dictFolders objectForKey:folderName]) {
                 [self markFeedAllRead:feedId];
@@ -3473,6 +3484,7 @@
 
 - (NSString *)extractParentFolderName:(NSString *)folderName {
     if ([folderName containsString:@"Top Level"] ||
+        [folderName isEqual:@"dashboard"] ||
         [folderName isEqual:@"everything"] ||
         [folderName isEqual:@"infrequent"]) {
         folderName = @"";
@@ -3491,6 +3503,7 @@
 
 - (NSString *)extractFolderName:(NSString *)folderName {
     if ([folderName containsString:@"Top Level"] ||
+        [folderName isEqual:@"dashboard"] ||
         [folderName isEqual:@"everything"] ||
         [folderName isEqual:@"infrequent"]) {
         folderName = @"";
@@ -3740,6 +3753,9 @@
                [storiesCollection.activeFolder isEqualToString:@"river_global"]) {
             titleLabel.text = [NSString stringWithFormat:@"     Global Shared Stories"];
     } else if (storiesCollection.isRiverView &&
+               [storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
+        titleLabel.text = [NSString stringWithFormat:@"     NewsBlur Dashboard"];
+    } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"everything"]) {
         titleLabel.text = [NSString stringWithFormat:@"     All Site Stories"];
     } else if (storiesCollection.isRiverView &&
@@ -3787,6 +3803,9 @@
                    [storiesCollection.activeFolder isEqualToString:@"everything"]) {
             titleImage = [UIImage imageNamed:@"all-stories"];
         } else if (storiesCollection.isRiverView &&
+                   [storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
+            titleImage = [UIImage imageNamed:@"saved-stories"];
+        } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
         } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
@@ -3816,6 +3835,8 @@
         return @"All Shared Stories";
     } else if ([folder isEqualToString:@"river_global"]) {
         return @"Global Shared Stories";
+    } else if ([folder isEqualToString:@"dashboard"]) {
+        return @"NewsBlur Dashboard";
     } else if ([folder isEqualToString:@"everything"]) {
         return @"All Site Stories";
     } else if ([folder isEqualToString:@"infrequent"]) {
@@ -3838,6 +3859,8 @@
         return [UIImage imageNamed:@"global-shares"];
     } else if ([folder isEqualToString:@"river_blurblogs"]) {
         return [UIImage imageNamed:@"all-shares"];
+    } else if ([folder isEqualToString:@"dashboard"]) {
+        return [UIImage imageNamed:@"saved-stories"];
     } else if ([folder isEqualToString:@"everything"]) {
         return [UIImage imageNamed:@"all-stories"];
     } else if ([folder isEqualToString:@"infrequent"]) {

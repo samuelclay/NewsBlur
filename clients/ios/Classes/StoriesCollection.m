@@ -87,6 +87,10 @@
     self.savedSearchQuery = fromCollection.savedSearchQuery;
 }
 
+- (BOOL)isDashboard {
+    return [activeFolder isEqualToString:@"dashboard"];
+}
+
 - (BOOL)isEverything {
     return [activeFolder isEqualToString:@"everything"];
 }
@@ -361,6 +365,8 @@
             return @"Global Shared Stories";
         } else if ([activeFolder isEqualToString:@"everything"]) {
             return @"All Site Stories";
+        } else if ([activeFolder isEqualToString:@"dashboard"]) {
+            return @"NewsBlur Dashboard";
         } else if ([activeFolder isEqualToString:@"infrequent"]) {
             return @"Infrequent Site Stories";
         } else if (isSavedView && activeSavedStoryTag) {

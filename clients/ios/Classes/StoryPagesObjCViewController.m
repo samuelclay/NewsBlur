@@ -287,6 +287,9 @@
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"]) {
                 titleImage = [UIImage imageNamed:@"all-stories"];
             } else if (appDelegate.storiesCollection.isRiverView &&
+                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
+                titleImage = [UIImage imageNamed:@"saved-stories"];
+            } else if (appDelegate.storiesCollection.isRiverView &&
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
             } else if (appDelegate.storiesCollection.isSavedView &&
