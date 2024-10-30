@@ -241,6 +241,10 @@
     return self.appDelegate.detailViewController.storyTitlesInGridView;
 }
 
+- (BOOL)isDashboard {
+    return self.appDelegate.detailViewController.storyTitlesInDashboard;
+}
+
 - (BOOL)isFeedShown {
     return appDelegate.storiesCollection.activeFeed != nil || appDelegate.storiesCollection.activeFolder != nil;
 }

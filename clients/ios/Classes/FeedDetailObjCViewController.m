@@ -100,6 +100,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishedLoadingFeedsNotification:) name:@"FinishedLoadingFeedsNotification" object:nil];
     
+    self.dashboardIndex = -1;
+    
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
     if (@available(iOS 15.0, *)) {
@@ -1098,12 +1100,12 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     if (self.pageFetching || self.pageFinished) return;
     //    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
     
+    [self loadingFeed];
+    
     if ([storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
         NSLog(@"⚠️ Called fetchRiverPage with dashboard; this should never occur");  // log
         return;
     }
-    
-    [self loadingFeed];
     
     storiesCollection.feedPage = page;
     self.pageFetching = YES;
