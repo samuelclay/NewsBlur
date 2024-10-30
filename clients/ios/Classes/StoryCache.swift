@@ -57,7 +57,7 @@ import Foundation
     @Published var selected: Story?
     @Published var after = [Story]()
     
-    @Published var dashboard = [[Story]]()
+    @Published var dashboard = [DashList]()
     
     var all: [Story] {
         if let selected {
@@ -142,6 +142,12 @@ import Foundation
         
         reload()
         
-        dashboard[index] = before
+        guard let currentFeed, index >= 0, index <= dashboard.count else {
+            return
+        }
+        
+        let dash = DashList(index: index, feed: currentFeed, stories: before)
+        
+        dashboard.append(dash)
     }
 }
