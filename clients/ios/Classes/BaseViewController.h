@@ -16,6 +16,7 @@
 @property (nonatomic, readonly) BOOL isCompactWidth;
 @property (nonatomic, readonly) BOOL isGrid;
 @property (nonatomic, readonly) BOOL isGridView;
+@property (nonatomic, readonly) BOOL isDashboard;
 @property (nonatomic, readonly) BOOL isFeedShown;
 @property (nonatomic, readonly) BOOL isStoryShown;
 

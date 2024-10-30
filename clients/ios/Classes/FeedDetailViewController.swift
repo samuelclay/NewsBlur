@@ -13,6 +13,8 @@ import SwiftUI
 class FeedDetailViewController: FeedDetailObjCViewController {
     lazy var gridViewController = makeGridViewController()
     
+    lazy var dashboardViewController = makeDashboardViewController()
+    
     lazy var storyCache = StoryCache()
     
     enum SectionLayoutKind: Int, CaseIterable {
@@ -34,7 +36,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     }
     
     var isExperimental: Bool {
-        return appDelegate.detailViewController.style == .experimental
+        return appDelegate.detailViewController.style == .experimental || isDashboard
     }
     
     var isSwiftUI: Bool {
@@ -76,6 +78,14 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         return gridViewController
     }
     
+    private func makeDashboardViewController() -> UIHostingController<FeedDetailDashboardView> {
+        let dashboardView = FeedDetailDashboardView(feedDetailInteraction: self, cache: storyCache)
+        let dashboardViewController = UIHostingController(rootView: dashboardView)
+        dashboardViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        return dashboardViewController
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -88,6 +98,17 @@ class FeedDetailViewController: FeedDetailObjCViewController {
             gridViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             gridViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             gridViewController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+        
+        addChild(dashboardViewController)
+        view.addSubview(dashboardViewController.view)
+        dashboardViewController.didMove(toParent: self)
+        
+        NSLayoutConstraint.activate([
+            dashboardViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            dashboardViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            dashboardViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            dashboardViewController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
         
         changedLayout()
@@ -120,8 +141,9 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         // Make sure the view has loaded.
         _ = view
         
-        storyTitlesTable.isHidden = !isLegacyTable
-        gridViewController.view.isHidden = isLegacyTable
+        storyTitlesTable.isHidden = !isLegacyTable || isDashboard
+        gridViewController.view.isHidden = isLegacyTable || isDashboard
+        dashboardViewController.view.isHidden = !isDashboard
         
         print("🪿 changedLayout for \(isLegacyTable ? "legacy table" : "SwiftUI grid layout")")
         

@@ -71,6 +71,7 @@
 @property (nonatomic, readwrite) BOOL showImagePreview;
 @property (nonatomic, readwrite) BOOL invalidateFontCache;
 @property (nonatomic, readwrite) BOOL cameFromFeedsList;
+@property (nonatomic, readwrite) NSInteger dashboardIndex;
 
 //- (void)changedStoryHeight:(CGFloat)storyHeight;
 - (void)loadingFeed;
