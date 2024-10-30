@@ -48,7 +48,7 @@
 - (NSString *)title {
     NSString *title = self.info[@"feed_title"];
     
-    if ([title isEqualToString:@" "] || [title isEqualToString:@"everything"] || [title isEqualToString:@"infrequent"]) {
+    if ([title isEqualToString:@" "] || [title isEqualToString:@"dashboard"] || [title isEqualToString:@"everything"] || [title isEqualToString:@"infrequent"]) {
         return @"";
     } else {
         return title;

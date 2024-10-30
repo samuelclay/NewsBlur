@@ -100,8 +100,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 + (void)initialize {
     // keep in sync with NewsBlurTopSection
-    NewsBlurTopSectionNames = @[/* 0 */ @"infrequent",
-                                /* 1 */ @"everything"];
+    NewsBlurTopSectionNames = @[/* 0 */ @"dashboard",
+                                        /* 1 */ @"infrequent",
+                                        /* 2 */ @"everything"];
 }
 
 - (void)viewDidLoad {
@@ -1390,7 +1391,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [values addObject:@"everything"];
     
     for (NSString *folder in self.appDelegate.dictFoldersArray) {
-        if ([folder hasPrefix:@"river_"] || [folder isEqualToString:@"everything"] || [folder isEqualToString:@"infrequent"] || [folder isEqualToString:@"widget"] || [folder isEqualToString:@"read_stories"] || [folder hasPrefix:@"saved_"]) {
+        if ([folder hasPrefix:@"river_"] ||
+            [folder isEqualToString:@"dashboard"] ||
+            [folder isEqualToString:@"everything"] ||
+            [folder isEqualToString:@"infrequent"] ||
+            [folder isEqualToString:@"widget"] ||
+            [folder isEqualToString:@"read_stories"] ||
+            [folder hasPrefix:@"saved_"]) {
             continue;
         }
         
@@ -1912,7 +1919,9 @@ heightForHeaderInSection:(NSInteger)section {
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
     
     BOOL visibleFeeds = [[self.visibleFolders objectForKey:folderName] boolValue];
-    if (!visibleFeeds && section != NewsBlurTopSectionInfrequentSiteStories && section != NewsBlurTopSectionAllStories &&
+    if (!visibleFeeds && section != NewsBlurTopSectionDashboard &&
+        section != NewsBlurTopSectionInfrequentSiteStories &&
+        section != NewsBlurTopSectionAllStories &&
         ![folderName isEqualToString:@"river_global"] &&
         ![folderName isEqualToString:@"river_blurblogs"] &&
         ![folderName isEqualToString:@"saved_searches"] &&
@@ -2223,7 +2232,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days {
-    if (feedIds.count == 1 && ([feedIds.firstObject isEqual:@"everything"] || [feedIds.firstObject isEqual:@"infrequent"])) {
+    if (feedIds.count == 1 && ([feedIds.firstObject isEqual:@"dashboard"] || [feedIds.firstObject isEqual:@"everything"] || [feedIds.firstObject isEqual:@"infrequent"])) {
         [self markEverythingReadWithDays:days infrequent:[feedIds.firstObject isEqual:@"infrequent"]];
         return;
     }

@@ -99,7 +99,7 @@ class ShareViewController: UIViewController {
         if let foldersArray = prefs.object(forKey: "share:folders") as? [String] {
             folders = foldersArray
             
-            folders.removeAll { ["river_global", "river_blurblogs", "infrequent", "widget_stories", "read_stories", "saved_searches", "saved_stories"].contains($0) }
+            folders.removeAll { ["river_global", "river_blurblogs", "dashboard", "infrequent", "widget_stories", "read_stories", "saved_searches", "saved_stories"].contains($0) }
         }
         
         updateSaveButtonState()

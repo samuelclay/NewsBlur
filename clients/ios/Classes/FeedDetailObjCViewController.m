@@ -1098,6 +1098,11 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     if (self.pageFetching || self.pageFinished) return;
     //    NSLog(@"Fetching River in storiesCollection (pg. %ld): %@", (long)page, storiesCollection);
     
+    if ([storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
+        NSLog(@"⚠️ Called fetchRiverPage with dashboard; this should never occur");  // log
+        return;
+    }
+    
     [self loadingFeed];
     
     storiesCollection.feedPage = page;
@@ -1861,6 +1866,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                 feedTitle = @"All Shared Stories";
             } else if ([storiesCollection.activeFolder isEqualToString:@"river_global"]) {
                 feedTitle = @"Global Shared Stories";
+            } else if ([storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
+                feedTitle = @"NewsBlur Dashboard";
             } else if ([storiesCollection.activeFolder isEqualToString:@"everything"]) {
                 feedTitle = @"All Stories";
             } else if ([storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
@@ -2413,7 +2420,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     
     if (storiesCollection.isRiverView) {
-        if ([storiesCollection.activeFolder isEqual:@"everything"] || [storiesCollection.activeFolder isEqual:@"infrequent"]) {
+        if ([storiesCollection.activeFolder isEqual:@"dashboard"] || [storiesCollection.activeFolder isEqual:@"everything"] || [storiesCollection.activeFolder isEqual:@"infrequent"]) {
             for (NSString *folderName in appDelegate.dictFoldersArray) {
                 for (id feedId in [appDelegate.dictFolders objectForKey:folderName]) {
                     if (![feedId isKindOfClass:[NSString class]] || ![feedId startsWith:@"saved:"]) {
@@ -2551,6 +2558,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     MenuViewController *viewController = [MenuViewController new];
     __weak MenuViewController *weakViewController = viewController;
     
+    BOOL dashboard = appDelegate.storiesCollection.isDashboard;
     BOOL everything = appDelegate.storiesCollection.isEverything;
     BOOL infrequent = appDelegate.storiesCollection.isInfrequent;
     BOOL river = [self isRiver];
@@ -2571,7 +2579,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
     }
     
-    if ((!everything || !appDelegate.storiesCollection.isRiverView) && !infrequent && !saved && !read && !social && !widget) {
+    if ((!dashboard || !everything || !appDelegate.storiesCollection.isRiverView) && !infrequent && !saved && !read && !social && !widget) {
         NSString *manageText = [NSString stringWithFormat:@"Manage this %@…", appDelegate.storiesCollection.isRiverView ? @"folder" : @"site"];
         
         [viewController addTitle:manageText iconName:@"menu_icn_move.png" selectionShouldDismiss:NO handler:^{
@@ -2579,7 +2587,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
     
-    if (!appDelegate.storiesCollection.isRiverView && !infrequent && !saved && !read && !social && !widget) {
+    if (!appDelegate.storiesCollection.isRiverView && !dashboard && !infrequent && !saved && !read && !social && !widget) {
         [viewController addTitle:@"Train this site" iconName:@"menu_icn_train.png" selectionShouldDismiss:YES handler:^{
             [self openTrainSite];
         }];
@@ -2592,19 +2600,21 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             }];
         }
         
-        [viewController addTitle:@"Notifications" iconName:@"dialog-notifications" iconColor:UIColorFromRGB(0xD58B4F) selectionShouldDismiss:YES handler:^{
-            [self
-             openNotificationsWithFeed:[NSString stringWithFormat:@"%@", [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
-        }];
-        
-        [viewController addTitle:@"Statistics" iconName:@"menu_icn_statistics.png" selectionShouldDismiss:YES handler:^{
-            [self
-             openStatisticsWithFeed:[NSString stringWithFormat:@"%@", [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
-        }];
-        
-        [viewController addTitle:@"Insta-fetch stories" iconName:@"menu_icn_fetch.png" selectionShouldDismiss:YES handler:^{
-            [self instafetchFeed];
-        }];
+        if (!dashboard) {
+            [viewController addTitle:@"Notifications" iconName:@"dialog-notifications" iconColor:UIColorFromRGB(0xD58B4F) selectionShouldDismiss:YES handler:^{
+                [self
+                 openNotificationsWithFeed:[NSString stringWithFormat:@"%@", [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
+            }];
+            
+            [viewController addTitle:@"Statistics" iconName:@"menu_icn_statistics.png" selectionShouldDismiss:YES handler:^{
+                [self
+                 openStatisticsWithFeed:[NSString stringWithFormat:@"%@", [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
+            }];
+            
+            [viewController addTitle:@"Insta-fetch stories" iconName:@"menu_icn_fetch.png" selectionShouldDismiss:YES handler:^{
+                [self instafetchFeed];
+            }];
+        }
     }
     
     NSString *preferenceKey = self.appDelegate.storiesCollection.markReadFilterKey;
@@ -2625,7 +2635,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [self reloadStories];
     }];
     
-    if (infrequent || !river) {
+    if (!dashboard || infrequent || !river) {
         [viewController addSegmentedControlWithTitles:@[@"All stories", @"Unread only"] selectIndex:[appDelegate.storiesCollection.activeReadFilter isEqualToString:@"all"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
             if (selectedIndex == 0) {
                 [userPreferences setObject:@"all" forKey:self.appDelegate.storiesCollection.readFilterKey];
@@ -3080,7 +3090,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             if ([title isEqualToString:@"everything"]) {
                 title = @"Top Level";
                 iconName = @"menu_icn_all.png";
-            } else if ([title isEqualToString:@"infrequent"]) {
+            } else if ([title isEqualToString:@"dashboard"] || [title isEqualToString:@"infrequent"]) {
                 continue;
             } else {
                 NSArray *components = [title componentsSeparatedByString:@" ▸ "];
