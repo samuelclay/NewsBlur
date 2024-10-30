@@ -6,7 +6,7 @@
 //
 
 #import "NewsBlurAppDelegate.h"
-#import "DashboardViewController.h"
+#import "ActivitiesViewController.h"
 #import "MarkReadMenuViewController.h"
 #import "FirstTimeUserViewController.h"
 #import "FriendsListViewController.h"
@@ -93,7 +93,7 @@
 @synthesize userProfileNavigationController;
 //@synthesize masterContainerViewController;
 @synthesize detailViewController;
-@synthesize dashboardViewController;
+@synthesize activitiesViewController;
 @synthesize feedsViewController;
 @synthesize feedDetailViewController;
 @synthesize friendsListViewController;
@@ -1226,7 +1226,7 @@
     self.detailNavigationController = (UINavigationController *)splitChildren[2];
     self.detailViewController = self.detailNavigationController.viewControllers.firstObject;
     
-    self.dashboardViewController = [DashboardViewController new];
+    self.activitiesViewController = [ActivitiesViewController new];
     self.friendsListViewController = [FriendsListViewController new];
     self.storyDetailViewController = [StoryDetailViewController new];
     self.loginViewController = [LoginViewController new];
@@ -1279,8 +1279,8 @@
         [self.feedsViewController.feedTitlesTable reloadData];
         [self.feedsViewController resetToolbar];
         
-        [self.dashboardViewController.interactionsModule.interactionsTable reloadData];
-        [self.dashboardViewController.activitiesModule.activitiesTable reloadData];
+        [self.activitiesViewController.interactionsModule.interactionsTable reloadData];
+        [self.activitiesViewController.activitiesModule.activitiesTable reloadData];
         
         NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
         [userPreferences setInteger:-1 forKey:@"selectedIntelligence"];
@@ -2145,35 +2145,6 @@
             });
         }];
     }];
-}
-
-- (void)openDashboardRiverForStory:(NSString *)contentId
-                  showFindingStory:(BOOL)showHUD {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-        //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
-        [self showFeedsListAnimated:NO];
-        [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
-        [self hidePopoverAnimated:NO];
-    }
-    
-    self.inFindingStoryMode = YES;
-    [storiesCollection reset];
-    storiesCollection.isRiverView = YES;
-    
-    self.tryFeedStoryId = contentId;
-    storiesCollection.activeFolder = @"everything";
-    
-    [self loadRiverFeedDetailView:feedDetailViewController withFolder:@"river_dashboard"];
-    
-    if (showHUD) {
-        if (!self.isPhone) {
-            [self.storyPagesViewController showShareHUD:@"Finding story..."];
-        } else {
-            MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.feedDetailViewController.view animated:YES];
-            HUD.labelText = @"Finding story...";
-        }
-    }
 }
 
 - (void)adjustStoryDetailWebView {

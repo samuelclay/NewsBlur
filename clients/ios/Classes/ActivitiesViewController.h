@@ -1,5 +1,5 @@
 //
-//  DashboardViewController.h
+//  ActivitiesViewController.h
 //  NewsBlur
 //
 //  Created by Roy Yang on 7/10/12.
@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "NBDashboardNavigationBar.h"
+#import "ActivitiesNavigationBar.h"
 
 @class NewsBlurAppDelegate;
 @class InteractionsModule;
@@ -15,12 +15,12 @@
 @class FeedbackModule;
 @class FeedDetailViewController;
 
-@interface DashboardViewController : UIViewController <UIPopoverControllerDelegate> {
+@interface ActivitiesViewController : UIViewController <UIPopoverControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     InteractionsModule *interactionsModule;
     ActivityModule *activitiesModule;
     UIToolbar *toolbar;
-    NBDashboardNavigationBar *topToolbar;
+    ActivitiesNavigationBar *topToolbar;
     UISegmentedControl *segmentedButton;
 }
 
@@ -28,7 +28,7 @@
 @property (nonatomic) IBOutlet InteractionsModule *interactionsModule;
 @property (nonatomic) IBOutlet ActivityModule *activitiesModule;
 
-@property (nonatomic) IBOutlet NBDashboardNavigationBar *topToolbar;
+@property (nonatomic) IBOutlet ActivitiesNavigationBar *topToolbar;
 @property (nonatomic) IBOutlet UIToolbar *toolbar;
 @property (nonatomic) IBOutlet UISegmentedControl *segmentedButton;
 @property (nonatomic) IBOutlet UIImageView *logoImageView;

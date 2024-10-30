@@ -1,12 +1,12 @@
 //
-//  DashboardViewController.m
+//  ActivitiesViewController.m
 //  NewsBlur
 //
 //  Created by Roy Yang on 7/10/12.
 //  Copyright (c) 2012 NewsBlur. All rights reserved.
 //
 
-#import "DashboardViewController.h"
+#import "ActivitiesViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "ActivityModule.h"
 #import "InteractionsModule.h"
@@ -16,7 +16,7 @@
 #import "UISearchBar+Field.h"
 #import "NewsBlur-Swift.h"
 
-@implementation DashboardViewController
+@implementation ActivitiesViewController
 
 @synthesize appDelegate;
 @synthesize interactionsModule;

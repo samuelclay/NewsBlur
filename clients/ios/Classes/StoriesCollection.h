@@ -27,7 +27,6 @@
     BOOL isRiverView;
     BOOL isSocialView;
     BOOL isSocialRiverView;
-    BOOL transferredFromDashboard;
     BOOL inSearch;
     NSString *searchQuery;
 }
@@ -56,7 +55,6 @@
 @property (nonatomic, readwrite) BOOL isSavedView;
 @property (nonatomic, readwrite) BOOL isReadView;
 @property (nonatomic, readwrite) BOOL isWidgetView;
-@property (nonatomic, readwrite) BOOL transferredFromDashboard;
 @property (nonatomic, readwrite) BOOL showHiddenStories;
 @property (nonatomic, readwrite) BOOL inSearch;
 @property (nonatomic, readonly) BOOL isEverything;
@@ -78,7 +76,6 @@
 @property (nonatomic, readonly) NSString *storyTitlesPositionKey;
 @property (nonatomic, readonly) NSString *storyViewKey;
 
-- (id)initForDashboard;
 - (void)reset;
 - (void)transferStoriesFromCollection:(StoriesCollection *)fromCollection;
 
