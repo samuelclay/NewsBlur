@@ -1,5 +1,5 @@
 //
-//  NBDashboardNavigationBar.h
+//  ActivitiesNavigationBar.h
 //  NewsBlur
 //
 //  Created by Samuel Clay on 10/3/17.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface NBDashboardNavigationBar : UINavigationBar
+@interface ActivitiesNavigationBar : UINavigationBar
 
 @end

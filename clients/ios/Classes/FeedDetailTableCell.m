@@ -8,7 +8,7 @@
 
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailTableCell.h"
-#import "DashboardViewController.h"
+#import "ActivitiesViewController.h"
 #import "ABTableViewCell.h"
 #import "UIView+TKCategory.h"
 #import "UIImageView+AFNetworking.h"

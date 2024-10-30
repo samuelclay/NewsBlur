@@ -15,15 +15,13 @@
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
 #define FEED_TITLE_GRADIENT_TAG 100003
-#define FEED_DASHBOARD_VIEW_TAG 100004
 #define SHARE_MODAL_HEIGHT 120
 #define STORY_TITLES_HEIGHT 240
-#define DASHBOARD_TITLE @"NewsBlur"
 
 @class AppDelegateHelper;
 @class SplitViewController;
 @class FeedsViewController;
-@class DashboardViewController;
+@class ActivitiesViewController;
 @class FeedDetailViewController;
 @class MarkReadMenuViewController;
 @class FirstTimeUserViewController;
@@ -73,7 +71,7 @@ SFSafariViewControllerDelegate>  {
     FirstTimeUserAddFriendsViewController *firstTimeUserAddFriendsViewController;
     FirstTimeUserAddNewsBlurViewController *firstTimeUserAddNewsBlurViewController;
     
-    DashboardViewController *dashboardViewController;
+    ActivitiesViewController *activitiesViewController;
     FeedsViewController *feedsViewController;
     FeedDetailViewController *feedDetailViewController;
     FriendsListViewController *friendsListViewController;
@@ -175,7 +173,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) UINavigationController *userProfileNavigationController;
 @property (nonatomic) UINavigationController *originalStoryViewNavController;
 @property (nonatomic) IBOutlet DetailViewController *detailViewController;
-@property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;
+@property (nonatomic) IBOutlet ActivitiesViewController *activitiesViewController;
 @property (nonatomic) IBOutlet FeedsViewController *feedsViewController;
 @property (nonatomic) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, strong) UINavigationController *feedDetailMenuNavigationController;
@@ -255,7 +253,6 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) NSMutableDictionary *collapsedFolders;
 @property (nonatomic) UIFontDescriptor *fontDescriptorTitleSize;
 
-
 @property (nonatomic) NSDictionary *dictFolders;
 @property (nonatomic, strong) NSMutableDictionary *dictFeeds;
 @property (nonatomic, strong) NSMutableDictionary *dictInactiveFeeds;
@@ -276,6 +273,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) NSArray *userActivitiesArray;
 @property (nonatomic) NSMutableArray *dictFoldersArray;
 @property (nonatomic) NSArray *notificationFeedIds;
+@property (nonatomic) NSArray *dashboardArray;
 
 @property (nonatomic, readonly) NSString *widgetFolder;
 @property (nonatomic, strong) NSString *pendingFolder;
@@ -352,8 +350,6 @@ SFSafariViewControllerDelegate>  {
 - (void)backgroundLoadNotificationStory;
 - (void)loadStarredDetailViewWithStory:(NSString *)contentId showFindingStory:(BOOL)showHUD;
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder;
-- (void)openDashboardRiverForStory:(NSString *)contentId
-                  showFindingStory:(BOOL)showHUD;
 
 - (void)loadStoryDetailView;
 - (void)adjustStoryDetailWebView;

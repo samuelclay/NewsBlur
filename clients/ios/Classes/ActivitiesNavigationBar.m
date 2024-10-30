@@ -1,14 +1,14 @@
 //
-//  NBDashboardNavigationBar.m
+//  ActivitiesNavigationBar.m
 //  NewsBlur
 //
 //  Created by Samuel Clay on 10/3/17.
 //  Copyright © 2017 NewsBlur. All rights reserved.
 //
 
-#import "NBDashboardNavigationBar.h"
+#import "ActivitiesNavigationBar.h"
 
-@implementation NBDashboardNavigationBar
+@implementation ActivitiesNavigationBar
 
 - (void)layoutSubviews
 {

@@ -8,11 +8,11 @@
 
 #import "FeedsObjCViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "DashboardViewController.h"
+#import "ActivitiesViewController.h"
 #import "InteractionsModule.h"
 #import "ActivityModule.h"
 #import "FeedTableCell.h"
-#import "DashboardViewController.h"
+#import "ActivitiesViewController.h"
 #import "UserProfileViewController.h"
 #import "MBProgressHUD.h"
 #import "SBJson4.h"
@@ -343,37 +343,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
     [self becomeFirstResponder];
 }
-
-//- (void)handleGesture:(UIScreenEdgePanGestureRecognizer *)gesture {
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad) return;
-//
-//    self.interactiveFeedDetailTransition = YES;
-//
-//    CGPoint point = [gesture locationInView:self.view];
-//    CGFloat viewWidth = CGRectGetWidth(self.view.frame);
-//    CGFloat percentage = MIN(point.x, viewWidth) / viewWidth;
-////    NSLog(@"back gesture: %d, %f - %f/%f", (int)gesture.state, percentage, point.x, viewWidth);
-//
-//    if (gesture.state == UIGestureRecognizerStateBegan) {
-////        if (appDelegate.storiesCollection.transferredFromDashboard) {
-////            [appDelegate.dashboardViewController.storiesModule.storiesCollection
-////             transferStoriesFromCollection:appDelegate.storiesCollection];
-////            [appDelegate.dashboardViewController.storiesModule fadeSelectedCell:NO];
-////        }
-//    } else if (gesture.state == UIGestureRecognizerStateChanged) {
-//        [appDelegate.masterContainerViewController interactiveTransitionFromFeedDetail:percentage];
-//    } else if (gesture.state == UIGestureRecognizerStateEnded) {
-//        CGPoint velocity = [gesture velocityInView:self.view];
-//        if (velocity.x > 0) {
-//            [appDelegate.masterContainerViewController transitionFromFeedDetail];
-//        } else {
-////            // Returning back to view, cancelling pop animation.
-////            [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
-//        }
-//
-//        self.interactiveFeedDetailTransition = NO;
-//    }
-//}
 
 - (void)fadeSelectedCell {
     [self fadeCellWithIndexPath:[self.feedTitlesTable indexPathForSelectedRow]];
@@ -750,6 +719,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     appDelegate.dictUserProfile = [results objectForKey:@"user_profile"];
     appDelegate.dictSocialServices = [results objectForKey:@"social_services"];
     appDelegate.userActivitiesArray = [results objectForKey:@"activities"];
+    
+    appDelegate.dashboardArray = [results objectForKey:@"dashboard_rivers"];
     
     appDelegate.isPremium = [[appDelegate.dictUserProfile objectForKey:@"is_premium"] integerValue] == 1;
     appDelegate.isPremiumArchive = [[appDelegate.dictUserProfile objectForKey:@"is_archive"] integerValue] == 1;
@@ -1221,10 +1192,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     CGSize size = CGSizeMake(self.view.frame.size.width - 36,
                              self.view.frame.size.height - 60);
     
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.dashboardViewController contentSize:size barButtonItem:self.activitiesButton];
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.activitiesViewController contentSize:size barButtonItem:self.activitiesButton];
     
-    [appDelegate.dashboardViewController refreshInteractions];
-    [appDelegate.dashboardViewController refreshActivity];
+    [appDelegate.activitiesViewController refreshInteractions];
+    [appDelegate.activitiesViewController refreshActivity];
 }
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
@@ -2532,7 +2503,7 @@ heightForHeaderInSection:(NSInteger)section {
     [self showExplainerOnEmptyFeedlist];
     
 //    if (!self.isPhone) {
-//        FeedDetailViewController *storiesModule = self.appDelegate.dashboardViewController.storiesModule;
+//        FeedDetailViewController *storiesModule = self.appDelegate.activitiesViewController.storiesModule;
 //
 //        storiesModule.storiesCollection.feedPage = 0;
 //        storiesModule.storiesCollection.storyCount = 0;

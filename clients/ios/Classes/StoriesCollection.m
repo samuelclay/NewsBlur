@@ -43,7 +43,6 @@
 @synthesize isSocialRiverView;
 @synthesize isSavedView;
 @synthesize isReadView;
-@synthesize transferredFromDashboard;
 @synthesize inSearch;
 @synthesize searchQuery;
 
@@ -58,14 +57,6 @@
     return self;
 }
 
-- (id)initForDashboard {
-    if (self = [self init]) {
-        
-    }
-    
-    return self;
-}
-
 - (void)reset {
     [self setStories:nil];
     [self setFeedUserProfiles:nil];
@@ -77,7 +68,6 @@
     self.activeFolderFeeds = nil;
     self.activeClassifiers = [NSMutableDictionary dictionary];
     
-    self.transferredFromDashboard = NO;
     self.isRiverView = NO;
     self.isSocialView = NO;
     self.isSocialRiverView = NO;

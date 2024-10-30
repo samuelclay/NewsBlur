@@ -593,7 +593,7 @@
 		1757925E2930605500490924 /* JNWThrottledBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = FF8D1EDA1BAA3CCD00725D8A /* JNWThrottledBlock.m */; };
 		1757925F2930605500490924 /* FeedDetailObjCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF4D9073265BE13500792DB3 /* FeedDetailObjCViewController.m */; };
 		175792602930605500490924 /* ProfileBadge.m in Sources */ = {isa = PBXBuildFile; fileRef = 431B858015A23C6B00DCE497 /* ProfileBadge.m */; };
-		175792612930605500490924 /* DashboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F974A15ACA0ED0007136B /* DashboardViewController.m */; };
+		175792612930605500490924 /* ActivitiesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F974A15ACA0ED0007136B /* ActivitiesViewController.m */; };
 		175792622930605500490924 /* FeedsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170E3CCC24F8A3A2009CE819 /* FeedsViewController.swift */; };
 		175792632930605500490924 /* ActivityModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F976E15AE21280007136B /* ActivityModule.m */; };
 		175792642930605500490924 /* InteractionsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F977115AE70E30007136B /* InteractionsModule.m */; };
@@ -648,7 +648,7 @@
 		175792952930605500490924 /* MenuTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF4130A2162E10CF00DDB6A7 /* MenuTableViewCell.m */; };
 		175792962930605500490924 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176A5C7924F8BD1B009E8DF9 /* DetailViewController.swift */; };
 		175792972930605500490924 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17432C7E1C533FBC003F8FD6 /* MenuViewController.m */; };
-		175792982930605500490924 /* NBDashboardNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF8B3AE1F847505001AB95E /* NBDashboardNavigationBar.m */; };
+		175792982930605500490924 /* ActivitiesNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF8B3AE1F847505001AB95E /* ActivitiesNavigationBar.m */; };
 		175792992930605500490924 /* FeedChooserItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 17E635AE1C548C580075338E /* FeedChooserItem.m */; };
 		1757929A2930605500490924 /* StoryPagesObjCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6A233116448E0700E15989 /* StoryPagesObjCViewController.m */; };
 		1757929C2930605500490924 /* SmallInteractionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF1660CC16D6FD8A00AF8541 /* SmallInteractionCell.m */; };
@@ -932,7 +932,7 @@
 		43763AD2158F90B100B3DBE2 /* FontSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */; };
 		437AA8CA159394E2005463F5 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437AA8C8159394E2005463F5 /* ShareViewController.m */; };
 		437AA8CB159394E2005463F5 /* ShareViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8C9159394E2005463F5 /* ShareViewController~ipad.xib */; };
-		437F974C15ACA0ED0007136B /* DashboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F974A15ACA0ED0007136B /* DashboardViewController.m */; };
+		437F974C15ACA0ED0007136B /* ActivitiesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F974A15ACA0ED0007136B /* ActivitiesViewController.m */; };
 		437F976F15AE21290007136B /* ActivityModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F976E15AE21280007136B /* ActivityModule.m */; };
 		437F977215AE70E30007136B /* InteractionsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F977115AE70E30007136B /* InteractionsModule.m */; };
 		43821AD315D8703F0034A4EF /* 258-checkmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 43821AD115D8703F0034A4EF /* 258-checkmark.png */; };
@@ -1369,7 +1369,7 @@
 		FFF1E4C817750BDD00BF59D3 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4C717750BDD00BF59D3 /* Settings.bundle */; platformFilter = ios; };
 		FFF1E4CB17750D2C00BF59D3 /* menu_icn_preferences.png in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4C917750D2C00BF59D3 /* menu_icn_preferences.png */; };
 		FFF1E4CC17750D2C00BF59D3 /* menu_icn_preferences@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFF1E4CA17750D2C00BF59D3 /* menu_icn_preferences@2x.png */; };
-		FFF8B3AF1F847505001AB95E /* NBDashboardNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF8B3AE1F847505001AB95E /* NBDashboardNavigationBar.m */; };
+		FFF8B3AF1F847505001AB95E /* ActivitiesNavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF8B3AE1F847505001AB95E /* ActivitiesNavigationBar.m */; };
 		FFFF683D19D628000081904A /* NBURLCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FFFF683C19D628000081904A /* NBURLCache.m */; };
 /* End PBXBuildFile section */
 
@@ -1732,8 +1732,8 @@
 		437AA8C7159394E2005463F5 /* ShareViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
 		437AA8C8159394E2005463F5 /* ShareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
 		437AA8C9159394E2005463F5 /* ShareViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "ShareViewController~ipad.xib"; path = "Classes/ShareViewController~ipad.xib"; sourceTree = "<group>"; };
-		437F974915ACA0ED0007136B /* DashboardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DashboardViewController.h; sourceTree = "<group>"; };
-		437F974A15ACA0ED0007136B /* DashboardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DashboardViewController.m; sourceTree = "<group>"; };
+		437F974915ACA0ED0007136B /* ActivitiesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActivitiesViewController.h; sourceTree = "<group>"; };
+		437F974A15ACA0ED0007136B /* ActivitiesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActivitiesViewController.m; sourceTree = "<group>"; };
 		437F976D15AE21280007136B /* ActivityModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActivityModule.h; sourceTree = "<group>"; };
 		437F976E15AE21280007136B /* ActivityModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ActivityModule.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		437F977015AE70E30007136B /* InteractionsModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InteractionsModule.h; sourceTree = "<group>"; };
@@ -2338,8 +2338,8 @@
 		FFF1E4C717750BDD00BF59D3 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		FFF1E4C917750D2C00BF59D3 /* menu_icn_preferences.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_icn_preferences.png; sourceTree = "<group>"; };
 		FFF1E4CA17750D2C00BF59D3 /* menu_icn_preferences@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_icn_preferences@2x.png"; sourceTree = "<group>"; };
-		FFF8B3AD1F847505001AB95E /* NBDashboardNavigationBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NBDashboardNavigationBar.h; sourceTree = "<group>"; };
-		FFF8B3AE1F847505001AB95E /* NBDashboardNavigationBar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NBDashboardNavigationBar.m; sourceTree = "<group>"; };
+		FFF8B3AD1F847505001AB95E /* ActivitiesNavigationBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActivitiesNavigationBar.h; sourceTree = "<group>"; };
+		FFF8B3AE1F847505001AB95E /* ActivitiesNavigationBar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ActivitiesNavigationBar.m; sourceTree = "<group>"; };
 		FFFF683B19D628000081904A /* NBURLCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NBURLCache.h; path = "Other Sources/NBURLCache.h"; sourceTree = "<group>"; };
 		FFFF683C19D628000081904A /* NBURLCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NBURLCache.m; path = "Other Sources/NBURLCache.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -2468,7 +2468,7 @@
 				FF22FE5216E52BAD0046165A /* Foundation */,
 				FF855B581794B03A0098D48A /* Offline */,
 				43D8189F15B9404D00733444 /* Models */,
-				437F974715ACA0C50007136B /* Dashboard */,
+				437F974715ACA0C50007136B /* Activities */,
 				17432C801C53425C003F8FD6 /* FeedChooser */,
 				431B857315A131C300DCE497 /* Feeds */,
 				431B857215A131B200DCE497 /* Feed-Detail */,
@@ -3268,13 +3268,13 @@
 			path = "Resources-iPad/Images";
 			sourceTree = "<group>";
 		};
-		437F974715ACA0C50007136B /* Dashboard */ = {
+		437F974715ACA0C50007136B /* Activities */ = {
 			isa = PBXGroup;
 			children = (
-				437F974915ACA0ED0007136B /* DashboardViewController.h */,
-				437F974A15ACA0ED0007136B /* DashboardViewController.m */,
-				FFF8B3AD1F847505001AB95E /* NBDashboardNavigationBar.h */,
-				FFF8B3AE1F847505001AB95E /* NBDashboardNavigationBar.m */,
+				437F974915ACA0ED0007136B /* ActivitiesViewController.h */,
+				437F974A15ACA0ED0007136B /* ActivitiesViewController.m */,
+				FFF8B3AD1F847505001AB95E /* ActivitiesNavigationBar.h */,
+				FFF8B3AE1F847505001AB95E /* ActivitiesNavigationBar.m */,
 				437F977015AE70E30007136B /* InteractionsModule.h */,
 				437F977115AE70E30007136B /* InteractionsModule.m */,
 				437F976D15AE21280007136B /* ActivityModule.h */,
@@ -3288,7 +3288,7 @@
 				4383DCD415BB8B87007E6611 /* SmallActivityCell.h */,
 				4383DCD515BB8B88007E6611 /* SmallActivityCell.m */,
 			);
-			name = Dashboard;
+			name = Activities;
 			sourceTree = "<group>";
 		};
 		43B8F017156603170008733D /* Resources-iPhone */ = {
@@ -5070,7 +5070,7 @@
 				1757925E2930605500490924 /* JNWThrottledBlock.m in Sources */,
 				1757925F2930605500490924 /* FeedDetailObjCViewController.m in Sources */,
 				175792602930605500490924 /* ProfileBadge.m in Sources */,
-				175792612930605500490924 /* DashboardViewController.m in Sources */,
+				175792612930605500490924 /* ActivitiesViewController.m in Sources */,
 				175792622930605500490924 /* FeedsViewController.swift in Sources */,
 				175792632930605500490924 /* ActivityModule.m in Sources */,
 				175792642930605500490924 /* InteractionsModule.m in Sources */,
@@ -5133,7 +5133,7 @@
 				175792952930605500490924 /* MenuTableViewCell.m in Sources */,
 				175792962930605500490924 /* DetailViewController.swift in Sources */,
 				175792972930605500490924 /* MenuViewController.m in Sources */,
-				175792982930605500490924 /* NBDashboardNavigationBar.m in Sources */,
+				175792982930605500490924 /* ActivitiesNavigationBar.m in Sources */,
 				172ECBFE298B14B1006371BC /* FeedDetailStoryView.swift in Sources */,
 				175792992930605500490924 /* FeedChooserItem.m in Sources */,
 				1757929A2930605500490924 /* StoryPagesObjCViewController.m in Sources */,
@@ -5280,7 +5280,7 @@
 				FF8D1EDB1BAA3CCD00725D8A /* JNWThrottledBlock.m in Sources */,
 				FF4D9075265BE13500792DB3 /* FeedDetailObjCViewController.m in Sources */,
 				431B858115A23C6B00DCE497 /* ProfileBadge.m in Sources */,
-				437F974C15ACA0ED0007136B /* DashboardViewController.m in Sources */,
+				437F974C15ACA0ED0007136B /* ActivitiesViewController.m in Sources */,
 				170E3CCD24F8A3A2009CE819 /* FeedsViewController.swift in Sources */,
 				437F976F15AE21290007136B /* ActivityModule.m in Sources */,
 				437F977215AE70E30007136B /* InteractionsModule.m in Sources */,
@@ -5343,7 +5343,7 @@
 				FF4130A3162E10CF00DDB6A7 /* MenuTableViewCell.m in Sources */,
 				176A5C7A24F8BD1B009E8DF9 /* DetailViewController.swift in Sources */,
 				17432C7F1C533FBC003F8FD6 /* MenuViewController.m in Sources */,
-				FFF8B3AF1F847505001AB95E /* NBDashboardNavigationBar.m in Sources */,
+				FFF8B3AF1F847505001AB95E /* ActivitiesNavigationBar.m in Sources */,
 				172ECBFD298B14B1006371BC /* FeedDetailStoryView.swift in Sources */,
 				17E635AF1C548C580075338E /* FeedChooserItem.m in Sources */,
 				FF6A233216448E0700E15989 /* StoryPagesObjCViewController.m in Sources */,
