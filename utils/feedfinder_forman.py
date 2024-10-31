@@ -133,8 +133,9 @@ def find_feeds(url, check_all=False, user_agent=None):
         return sort_urls(urls)
 
     # Guessing potential URLs.
-    fns = ["atom.xml", "index.atom", "index.rdf", "rss.xml", "index.xml", "index.rss", "index.json"]
-    urls += list(filter(finder.is_feed, [urlparse.urljoin(url, f) for f in fns]))
+    if not any(ignored_domain in url for ignored_domain in ["openrss", "feedburner"]):
+        fns = ["atom.xml", "index.atom", "index.rdf", "rss.xml", "index.xml", "index.rss", "index.json"]
+        urls += list(filter(finder.is_feed, [urlparse.urljoin(url, f) for f in fns]))
     return sort_urls(urls)
 
 
