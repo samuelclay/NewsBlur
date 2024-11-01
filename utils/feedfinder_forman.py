@@ -44,7 +44,7 @@ class FeedFinder(object):
             logging.warn("Error while getting '{0}'".format(url))
             logging.warn("{0}".format(e))
             return None
-        if not skip_user_agent and r.status_code == 403:
+        if not skip_user_agent and r.status_code in [403, 204]:
             return self.get_feed(url, skip_user_agent=True)
         return r.text
 
