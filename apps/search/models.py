@@ -2,6 +2,7 @@ import datetime
 import html
 import re
 import time
+import zlib
 
 import celery
 import elasticsearch
@@ -205,7 +206,7 @@ class MUserSearch(mongo.Document):
 
 class SearchStory:
     _es_client = None
-    name = "stories"
+    name = "discover-stories-openai"
 
     @classmethod
     def ES(cls):
@@ -278,6 +279,10 @@ class SearchStory:
                 "store": False,
                 "type": "date",
             },
+            "content_vector": {
+                "type": "dense_vector",
+                "dims": 1536,  # Numbers of dims from text-embedding-3-small
+            },
         }
         cls.ES().indices.put_mapping(
             body={
@@ -289,7 +294,15 @@ class SearchStory:
 
     @classmethod
     def index(
-        cls, story_hash, story_title, story_content, story_tags, story_author, story_feed_id, story_date
+        cls,
+        story_hash,
+        story_title,
+        story_content,
+        story_tags,
+        story_author,
+        story_feed_id,
+        story_date,
+        story_content_vector,
     ):
         cls.create_elasticsearch_mapping()
 
@@ -300,6 +313,7 @@ class SearchStory:
             "author": story_author,
             "feed_id": story_feed_id,
             "date": story_date,
+            "content_vector": story_content_vector,
         }
         try:
             cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
@@ -489,6 +503,51 @@ class SearchStory:
             return []
 
         return result_ids
+
+    @classmethod
+    def generate_story_content_vector(cls, story_hash):
+        from apps.rss_feeds.models import MStory
+
+        story = MStory.objects.get(story_hash=story_hash)
+        story_title = story.story_title
+        story_tags = ", ".join(story.story_tags)
+        story_content = ""
+        if story.story_original_content_z:
+            story_content = zlib.decompress(story.story_original_content_z)
+        elif story.story_content_z:
+            story_content = zlib.decompress(story.story_content_z)
+        else:
+            story_content = story.story_content
+        story_text = f"{story_title} {story_tags} {story_content}"
+
+        # Remove URLs
+        story_text = re.sub(r"http\S+", "", story_text)
+
+        # Remove special characters
+        story_text = re.sub(r"[^\w\s]", "", story_text)
+
+        # Convert to lowercase
+        story_text = story_text.lower()
+
+        # Remove extra whitespace
+        story_text = " ".join(story_text.split())
+
+        # Send to OpenAI
+        model_name = "text-embedding-3-small"
+        encoding = setup_openai_model(model_name)
+
+        # Truncate the text to the maximum number of tokens
+        max_tokens = 8191  # Maximum for text-embedding-3-small
+        encoded_text = encoding.encode(story_text)
+        truncated_tokens = encoded_text[:max_tokens]
+        truncated_text = encoding.decode(truncated_tokens)
+
+        client = OpenAI(api_key=settings.OPENAI_API_KEY)
+
+        response = client.embeddings.create(model=model_name, input=truncated_text)
+        story_embedding = response.data[0].embedding
+
+        return story_embedding
 
 
 class SearchFeed:
