@@ -3084,6 +3084,7 @@ class MStory(mongo.Document):
             story_author=self.story_author_name,
             story_feed_id=self.story_feed_id,
             story_date=self.story_date,
+            story_content_vector=SearchStory.generate_story_content_vector(self.story_hash),
         )
 
     def remove_from_search_index(self):
