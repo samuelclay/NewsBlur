@@ -1992,10 +1992,11 @@ heightForHeaderInSection:(NSInteger)section {
         folder = [NSString stringWithFormat:@"%ld", (long)tag];
     }
     
+    [self clearDashboard];
+    
     if ([folder isEqualToString:@"dashboard"]) {
         [self loadDashboard];
     } else {
-        [self clearDashboard];
         [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
     }
     

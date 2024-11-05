@@ -21,26 +21,65 @@ import Foundation
     var order: Int
     
     var feedId: String?
-    var folder: String
+    var folderId: String
     
-    var feed: Feed?
+    var folder: Folder?
+    var feeds = [Feed]()
     var stories = [Story]()
     
     var isLoaded: Bool {
-        return feed != nil
+        return folder != nil
     }
     
-    init(index: Int, side: Side, order: Int, feedId: String?, folder: String) {
+    var isFolder: Bool {
+        return feedId == nil
+    }
+    
+    var feed: Feed? {
+        return feeds.first
+    }
+    
+    var name: String {
+        if isFolder {
+            return folder?.name ?? "Loading..."
+        } else {
+            return feed?.name ?? "Loading..."
+        }
+    }
+    
+    var image: UIImage? {
+        if isFolder {
+            return folder?.image ?? UIImage(named: "folder-open")
+        } else {
+            return feed?.image
+        }
+    }
+    
+    init(index: Int, side: Side, order: Int, feedId: String?, folderId: String) {
         self.index = index
         self.side = side
         self.order = order
         self.feedId = feedId
-        self.folder = folder
+        self.folderId = folderId
     }
 }
 
 extension DashList: @preconcurrency CustomStringConvertible {
     var description: String {
-        return "DashList index: \(index), side: \(side), order: \(order), folder: \(folder), feed: \(feedId ?? "none"); \(feed != nil ? "\(feed?.name ?? "?"), stories: \(stories.count)" : "not loaded")"
+        let base = "DashList index: \(index), side: \(side), order: \(order)"
+        
+        if isLoaded {
+            if isFolder {
+                return "\(base), folder: `\(folder?.name ?? "none")` (\(folderId)) contains \(feeds.count) feeds with \(stories.count) stories"
+            } else {
+                return "\(base), feed: `\(feed?.name ?? "none")` (\(feedId ?? "none")) in folder: `\(folder?.name ?? "none")` (\(folderId)) contains \(stories.count) stories"
+            }
+        } else {
+            if isFolder {
+                return "\(base), folder ID: \(folderId); not loaded"
+            } else {
+                return "\(base), feed ID: \(feedId ?? "none") in folder ID: \(folderId); not loaded"
+            }
+        }
     }
 }

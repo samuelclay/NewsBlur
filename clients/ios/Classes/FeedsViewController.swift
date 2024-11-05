@@ -124,15 +124,17 @@ class FeedsViewController: FeedsObjCViewController {
             appDelegate.feedDetailViewController.storyCache.prepareDashboard()
         } else if index >= appDelegate.dashboardArray.count {
             // Done.
+            
+            print("Finished loading dashboard: \(appDelegate.feedDetailViewController.storyCache.dashboard)")
             return
         }
         
         let dash = appDelegate.feedDetailViewController.storyCache.dashboard[index]
         
         if let feed = dash.feedId {
-            appDelegate.loadFolder(dash.folder, feedID: feed)
+            appDelegate.loadFolder(dash.folderId, feedID: feed)
         } else {
-            appDelegate.loadRiverFeedDetailView(appDelegate.feedDetailViewController, withFolder: dash.folder)
+            appDelegate.loadRiverFeedDetailView(appDelegate.feedDetailViewController, withFolder: dash.folderId)
         }
     }
     

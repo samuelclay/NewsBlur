@@ -8,7 +8,7 @@
 
 import Foundation
 
-// The Feed, Story, and StoryCache classes could be quite useful going forward; Rather than calling getStory() to get the dictionary, could have a variation that returns a Story instance. Could fetch from the cache if available, or make and cache one from the dictionary. Would need to remove it from the cache when changing anything about a story. Could perhaps make the cache part of StoriesCollection.
+// The Folder, Feed, Story, and StoryCache classes could be quite useful going forward; Rather than calling getStory() to get the dictionary, could have a variation that returns a Story instance. Could fetch from the cache if available, or make and cache one from the dictionary. Would need to remove it from the cache when changing anything about a story. Could perhaps make the cache part of StoriesCollection.
 
 /// A cache of stories for the feed detail grid-based view.
 @MainActor class StoryCache: ObservableObject {
@@ -71,19 +71,25 @@ import Foundation
         return all.first(where: { $0.index == index } )
     }
     
+    static var folder: Folder?
+    
     static var feeds = [String : Feed]()
     
     var currentFeed: Feed?
     
     func reload() {
+        guard let storiesCollection = appDelegate.storiesCollection else {
+            return
+        }
+        
         let debug = Date()
-        let storyCount = Int(appDelegate.storiesCollection.storyLocationsCount)
+        let storyCount = Int(storiesCollection.storyLocationsCount)
         var beforeSelection = [Int]()
         var selectedIndex = -999
         var afterSelection = [Int]()
         
         if storyCount > 0 {
-            selectedIndex = appDelegate.storiesCollection.locationOfActiveStory()
+            selectedIndex = storiesCollection.locationOfActiveStory()
             
             if selectedIndex < 0 {
                 beforeSelection = Array(0..<storyCount)
@@ -96,9 +102,15 @@ import Foundation
             }
         }
         
+        if let folderId = storiesCollection.activeFolder {
+            Self.folder = Folder(id: folderId)
+        } else {
+            Self.folder = nil
+        }
+        
         Self.feeds.removeAll()
         
-        if let dictionary = appDelegate.storiesCollection.activeFeed {
+        if let dictionary = storiesCollection.activeFeed {
             let feed = Feed(dictionary: dictionary)
             Self.feeds[feed.id] = feed
             currentFeed = feed
@@ -150,26 +162,30 @@ import Foundation
             }
             
             let feedId = dashId.hasPrefix("feed:") ? dashId.deletingPrefix("feed:") : nil
-            guard let folder = dashId == "river:" ? "everything" : dashId.hasPrefix("river:") ? dashId.deletingPrefix("river:") : appDelegate.parentFolders(forFeed: feedId).first as? String else {
+            guard let folderId = dashId == "river:" ? "everything" : dashId.hasPrefix("river:") ? dashId.deletingPrefix("river:") : appDelegate.parentFolders(forFeed: feedId).first as? String else {
                 continue
             }
             
-            let dash = DashList(index: index, side: side, order: order, feedId: feedId, folder: folder)
+            let dash = DashList(index: index, side: side, order: order, feedId: feedId, folderId: folderId)
             
             dashboard.append(dash)
         }
     }
     
     func reloadDashboard(for index: Int) {
-        reload()
-        
-        guard let currentFeed, index >= 0, index <= dashboard.count else {
+        guard index >= 0, index < dashboard.count else {
             return
         }
         
         let dash = dashboard[index]
         
-        dash.feed = currentFeed
+        dash.folder = Self.folder
+        dash.feeds = Array(Self.feeds.values)
+        
+//        if let feed = currentFeed, !dash.feeds.contains(feed) {
+//            dash.feeds.append(feed)
+//        }
+        
         dash.stories = before
     }
 }

@@ -717,6 +717,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.navigationItem.titleView = nil;
     self.pageFetching = NO;
     self.pageFinished = NO;
+    self.dashboardAwaitingFinish = YES;
     self.isOnline = YES;
     self.isShowingFetching = NO;
     self.cameFromFeedsList = YES;
@@ -749,6 +750,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     storiesCollection.activePopularTags = [NSArray array];
     self.pageFetching = NO;
     self.pageFinished = NO;
+    self.dashboardAwaitingFinish = YES;
     self.isOnline = YES;
     self.isShowingFetching = NO;
     
@@ -1331,10 +1333,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         feedMarkReadButton.hidden = NO;
     }
 #endif
-    
-    if (self.dashboardIndex >= 0) {
-        [appDelegate.feedsViewController loadDashboard];
-    }
     
     self.pageFinished = NO;
     [self renderStories:confirmedNewStories];
