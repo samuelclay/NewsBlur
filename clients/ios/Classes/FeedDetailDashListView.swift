@@ -39,14 +39,14 @@ struct DashListHeaderView: View {
             HStack {
                 Spacer()
                 
-                if let feedImage = dash.feed?.image {
-                    Image(uiImage: feedImage)
+                if let image = dash.image {
+                    Image(uiImage: image)
                         .resizable()
                         .frame(width: 16, height: 16)
                         .padding(.leading, cache.settings.spacing == .compact ? 20 : 24)
                 }
                 
-                Text(dash.feed?.name ?? "Loading…")
+                Text(dash.name)
                     .lineLimit(1)
                     .foregroundColor(Color.themed([0x404040, 0x404040, 0xC0C0C0, 0xB0B0B0]))
                 

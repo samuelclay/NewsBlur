@@ -750,6 +750,8 @@
 		176AC9ED2C797AA1007B8CB1 /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176AC9EB2C797AA1007B8CB1 /* PreviewViewController.swift */; };
 		176B59662CD9C66A003B0C48 /* SwiftUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176B59652CD9C66A003B0C48 /* SwiftUtilities.swift */; };
 		176B59672CD9C66A003B0C48 /* SwiftUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176B59652CD9C66A003B0C48 /* SwiftUtilities.swift */; };
+		176B596C2CDAB433003B0C48 /* Folder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176B596B2CDAB433003B0C48 /* Folder.swift */; };
+		176B596D2CDAB433003B0C48 /* Folder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176B596B2CDAB433003B0C48 /* Folder.swift */; };
 		17731A9D23DFAD3D00759A7D /* ImportExportPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17731A9C23DFAD3D00759A7D /* ImportExportPreferences.swift */; };
 		177551D5238E228A00E27818 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 177551D4238E228A00E27818 /* NotificationCenter.framework */; platformFilter = ios; };
 		177551DB238E228A00E27818 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 177551D9238E228A00E27818 /* MainInterface.storyboard */; };
@@ -1557,6 +1559,7 @@
 		176A5C7924F8BD1B009E8DF9 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		176AC9EB2C797AA1007B8CB1 /* PreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewViewController.swift; sourceTree = "<group>"; };
 		176B59652CD9C66A003B0C48 /* SwiftUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUtilities.swift; sourceTree = "<group>"; };
+		176B596B2CDAB433003B0C48 /* Folder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Folder.swift; sourceTree = "<group>"; };
 		17731A9C23DFAD3D00759A7D /* ImportExportPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportExportPreferences.swift; sourceTree = "<group>"; };
 		177551D3238E228A00E27818 /* Old NewsBlur Latest.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Old NewsBlur Latest.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		177551D4238E228A00E27818 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
@@ -3342,6 +3345,7 @@
 		43D8189F15B9404D00733444 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				176B596B2CDAB433003B0C48 /* Folder.swift */,
 				17BC56A92BBF6BC000A30C41 /* Feed.swift */,
 				172ECBF6298B1239006371BC /* Story.swift */,
 				1726AA632CD1E7100058A9CD /* DashList.swift */,
@@ -5022,6 +5026,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				175792262930605500490924 /* AFAutoPurgingImageCache.m in Sources */,
+				176B596C2CDAB433003B0C48 /* Folder.swift in Sources */,
 				175792272930605500490924 /* AFHTTPSessionManager.m in Sources */,
 				17867D172C58394200A99F4C /* AppDelegateHelper.swift in Sources */,
 				175792282930605500490924 /* AFImageDownloader.m in Sources */,
@@ -5236,6 +5241,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FFC0E5A81F7AC00A0023B9D9 /* AFAutoPurgingImageCache.m in Sources */,
+				176B596D2CDAB433003B0C48 /* Folder.swift in Sources */,
 				FFC0E5AA1F7AC00A0023B9D9 /* AFHTTPSessionManager.m in Sources */,
 				17867D162C58394200A99F4C /* AppDelegateHelper.swift in Sources */,
 				FFC0E5AC1F7AC00A0023B9D9 /* AFImageDownloader.m in Sources */,
