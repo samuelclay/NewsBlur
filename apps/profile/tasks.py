@@ -29,9 +29,9 @@ def FetchArchiveFeedsForUser(user_id):
 
 
 @app.task()
-def FetchArchiveFeedsChunk(user_id, feed_ids):
+def FetchArchiveFeedsChunk(feed_ids, user_id=None):
     # logging.debug(" ---> Fetching archive stories: %s for %s" % (feed_ids, user_id))
-    UserSubscription.fetch_archive_feeds_chunk(user_id, feed_ids)
+    UserSubscription.fetch_archive_feeds_chunk(feed_ids, user_id)
 
 
 @app.task()
