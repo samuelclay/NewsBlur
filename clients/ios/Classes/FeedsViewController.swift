@@ -124,7 +124,7 @@ class FeedsViewController: FeedsObjCViewController {
     
     var reloadWorkItem: DispatchWorkItem?
     
-    @objc func deferredUpdateFeedTitlesTable() {
+    @objc func deferredReloadFeedTitlesTable() {
         reloadWorkItem?.cancel()
         
         let workItem = DispatchWorkItem { [weak self] in
@@ -132,7 +132,7 @@ class FeedsViewController: FeedsObjCViewController {
                 return
             }
             
-            self.updateFeedTitlesTable()
+            self.reloadFeedTitlesTable()
             self.refreshHeaderCounts()
         }
         

@@ -3139,7 +3139,7 @@
         }
     }
     
-    [self.feedsViewController deferredUpdateFeedTitlesTable];
+    [self.feedsViewController deferredReloadFeedTitlesTable];
     
     [self.storyPagesViewController reloadWidget];
 }
@@ -3158,7 +3158,7 @@
     [self.storyPagesViewController setNextPreviousButtons];
     originalStoryCount += 1;
     
-    [self.feedsViewController updateFeedTitlesTable];
+    [self.feedsViewController reloadFeedTitlesTable];
 }
 
 - (void)failedMarkAsUnread:(NSDictionary *)params {

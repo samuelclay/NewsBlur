@@ -1825,11 +1825,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self highlightSelection];
 }
 
-- (void)updateFeedTitlesTable {
-    [self.feedTitlesTable reloadData];
-    [self highlightSelection];
-}
-
 - (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
     UIFontDescriptor *fontDescriptor = appDelegate.fontDescriptorTitleSize;
     if (fontDescriptor) return fontDescriptor;
