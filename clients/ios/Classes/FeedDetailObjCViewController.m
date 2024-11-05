@@ -1332,6 +1332,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }
 #endif
     
+    if (self.dashboardIndex >= 0) {
+        [appDelegate.feedsViewController loadDashboard];
+    }
+    
     self.pageFinished = NO;
     [self renderStories:confirmedNewStories];
     

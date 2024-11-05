@@ -1028,6 +1028,14 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     }];
 }
 
+- (void)clearDashboard {
+    @throw [NSException exceptionWithName:@"Missing clearDashboard implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
+- (void)loadDashboard {
+    @throw [NSException exceptionWithName:@"Missing loadDashboard implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
 - (void)loadNotificationStory {
     @throw [NSException exceptionWithName:@"Missing loadNotificationStory implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
@@ -1690,6 +1698,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     [[tableView cellForRowAtIndexPath:indexPath] setNeedsDisplay];
     
+    [self clearDashboard];
+    
     if (searchFolder != nil) {
         [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:searchFolder];
     } else {
@@ -1982,7 +1992,12 @@ heightForHeaderInSection:(NSInteger)section {
         folder = [NSString stringWithFormat:@"%ld", (long)tag];
     }
     
-    [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
+    if ([folder isEqualToString:@"dashboard"]) {
+        [self loadDashboard];
+    } else {
+        [self clearDashboard];
+        [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
+    }
     
     if (!appDelegate.isPhone) {
         [appDelegate.feedDetailViewController viewWillAppear:NO];

@@ -105,6 +105,37 @@ class FeedsViewController: FeedsObjCViewController {
         return parentTitles
     }
     
+    @objc func clearDashboard() {
+        appDelegate.feedDetailViewController.dashboardIndex = -1
+        appDelegate.detailViewController.storyTitlesInDashboard = false
+    }
+    
+    @objc func loadDashboard() {
+        if appDelegate.feedDetailViewController.dashboardIndex >= 0 {
+            appDelegate.feedDetailViewController.storyCache.reloadDashboard(for: appDelegate.feedDetailViewController.dashboardIndex)
+        }
+        
+        appDelegate.feedDetailViewController.dashboardIndex += 1
+        appDelegate.detailViewController.storyTitlesInDashboard = true
+        
+        let index = appDelegate.feedDetailViewController.dashboardIndex
+        
+        if index == 0 {
+            appDelegate.feedDetailViewController.storyCache.prepareDashboard()
+        } else if index >= appDelegate.dashboardArray.count {
+            // Done.
+            return
+        }
+        
+        let dash = appDelegate.feedDetailViewController.storyCache.dashboard[index]
+        
+        if let feed = dash.feedId {
+            appDelegate.loadFolder(dash.folder, feedID: feed)
+        } else {
+            appDelegate.loadRiverFeedDetailView(appDelegate.feedDetailViewController, withFolder: dash.folder)
+        }
+    }
+    
     var loadWorkItem: DispatchWorkItem?
     
     @objc func loadNotificationStory() {

@@ -748,6 +748,8 @@
 		176A5C7A24F8BD1B009E8DF9 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176A5C7924F8BD1B009E8DF9 /* DetailViewController.swift */; };
 		176AC9EC2C797AA1007B8CB1 /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176AC9EB2C797AA1007B8CB1 /* PreviewViewController.swift */; };
 		176AC9ED2C797AA1007B8CB1 /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176AC9EB2C797AA1007B8CB1 /* PreviewViewController.swift */; };
+		176B59662CD9C66A003B0C48 /* SwiftUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176B59652CD9C66A003B0C48 /* SwiftUtilities.swift */; };
+		176B59672CD9C66A003B0C48 /* SwiftUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176B59652CD9C66A003B0C48 /* SwiftUtilities.swift */; };
 		17731A9D23DFAD3D00759A7D /* ImportExportPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17731A9C23DFAD3D00759A7D /* ImportExportPreferences.swift */; };
 		177551D5238E228A00E27818 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 177551D4238E228A00E27818 /* NotificationCenter.framework */; platformFilter = ios; };
 		177551DB238E228A00E27818 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 177551D9238E228A00E27818 /* MainInterface.storyboard */; };
@@ -1554,6 +1556,7 @@
 		17654E452B02C08700F61B2B /* NewsBlur Alpha Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "NewsBlur Alpha Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		176A5C7924F8BD1B009E8DF9 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		176AC9EB2C797AA1007B8CB1 /* PreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewViewController.swift; sourceTree = "<group>"; };
+		176B59652CD9C66A003B0C48 /* SwiftUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUtilities.swift; sourceTree = "<group>"; };
 		17731A9C23DFAD3D00759A7D /* ImportExportPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportExportPreferences.swift; sourceTree = "<group>"; };
 		177551D3238E228A00E27818 /* Old NewsBlur Latest.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Old NewsBlur Latest.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		177551D4238E228A00E27818 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
@@ -3399,6 +3402,7 @@
 				FFE5322E144C8AC300ACFDE0 /* Utilities.m */,
 				43D818A115B940C200733444 /* DataUtilities.h */,
 				43D818A215B940C200733444 /* DataUtilities.m */,
+				176B59652CD9C66A003B0C48 /* SwiftUtilities.swift */,
 				172ECBFF298B156D006371BC /* SwiftUIUtilities.swift */,
 				172AD273251D9F40000BB264 /* Storyboards.swift */,
 				170E3CCE24F8A5D8009CE819 /* SplitViewController.swift */,
@@ -5175,6 +5179,7 @@
 				175792AF2930605500490924 /* FMDatabaseQueue.m in Sources */,
 				175792B02930605500490924 /* FMResultSet.m in Sources */,
 				175792B12930605500490924 /* NBNotifier.m in Sources */,
+				176B59662CD9C66A003B0C48 /* SwiftUtilities.swift in Sources */,
 				175792B22930605500490924 /* TUSafariActivity.m in Sources */,
 				17BC56AE2BBF6C0000A30C41 /* StoryCache.swift in Sources */,
 				175792B32930605500490924 /* PremiumViewController.m in Sources */,
@@ -5388,6 +5393,7 @@
 				FF753CD1175858FC00344EC9 /* FMDatabaseQueue.m in Sources */,
 				FF753CD3175858FC00344EC9 /* FMResultSet.m in Sources */,
 				FF6618C8176184560039913B /* NBNotifier.m in Sources */,
+				176B59672CD9C66A003B0C48 /* SwiftUtilities.swift in Sources */,
 				FF03AFF319F87F2E0063002A /* TUSafariActivity.m in Sources */,
 				17BC56AD2BBF6C0000A30C41 /* StoryCache.swift in Sources */,
 				FF83FF051FB52565008DAC0F /* PremiumViewController.m in Sources */,
@@ -6129,7 +6135,7 @@
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 6.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -6184,7 +6190,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 6.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
