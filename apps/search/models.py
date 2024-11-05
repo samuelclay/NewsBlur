@@ -482,7 +482,7 @@ class SearchStory:
         try:
             result_ids = [r["_id"] for r in results["hits"]["hits"]]
         except Exception as e:
-            logging.info(' ---> ~FRInvalid search query "%s": %s' % (query, e))
+            logging.info(' ---> ~FRInvalid more like this query "%s": %s' % (story_hash, e))
             return []
 
         return result_ids
