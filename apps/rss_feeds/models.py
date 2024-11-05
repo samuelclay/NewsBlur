@@ -727,6 +727,16 @@ class Feed(models.Model):
         self.set_next_scheduled_update(verbose=settings.DEBUG)
         self.sync_redis(allow_skip_resync=allow_skip_resync)
 
+    def schedule_fetch_archive_feed(self):
+        from apps.profile.tasks import FetchArchiveFeedsChunk
+
+        logging.debug(f"~FC~SBScheduling fetch of archive feed ~SB{self.log_title}")
+        FetchArchiveFeedsChunk.apply_async(
+            kwargs=dict(feed_ids=[self.pk]),
+            queue="search_indexer",
+            time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+        )
+
     def check_feed_link_for_feed_address(self):
         @timelimit(10)
         def _1():
@@ -2904,8 +2914,8 @@ class MFeedPage(mongo.Document):
                     data = zlib.decompress(page_data_z)
                 except zlib.error as e:
                     logging.debug(" ***> Zlib decompress error: %s" % e)
-                    self.page_data = None
-                    self.save()
+                    feed_page.page_data = None
+                    feed_page.save()
                     return
 
         if not data:
