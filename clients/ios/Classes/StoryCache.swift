@@ -135,19 +135,41 @@ import Foundation
         }
     }
     
-    func reloadDashboard(for index: Int) {
-        if index == 0 {
-            dashboard.removeAll()
+    func prepareDashboard() {
+        dashboard.removeAll()
+        
+        guard let dashboardArray = appDelegate.dashboardArray as? [[String : Any]] else {
+            return
         }
         
+        for (index, dashInfo) in dashboardArray.enumerated() {
+            guard let dashId = dashInfo["river_id"] as? String,
+                  let order = dashInfo["river_order"] as? Int,
+                  let sideString = dashInfo["river_side"] as? String, let side = DashList.Side(rawValue: sideString) else {
+                continue
+            }
+            
+            let feedId = dashId.hasPrefix("feed:") ? dashId.deletingPrefix("feed:") : nil
+            guard let folder = dashId == "river:" ? "everything" : dashId.hasPrefix("river:") ? dashId.deletingPrefix("river:") : appDelegate.parentFolders(forFeed: feedId).first as? String else {
+                continue
+            }
+            
+            let dash = DashList(index: index, side: side, order: order, feedId: feedId, folder: folder)
+            
+            dashboard.append(dash)
+        }
+    }
+    
+    func reloadDashboard(for index: Int) {
         reload()
         
         guard let currentFeed, index >= 0, index <= dashboard.count else {
             return
         }
         
-        let dash = DashList(index: index, feed: currentFeed, stories: before)
+        let dash = dashboard[index]
         
-        dashboard.append(dash)
+        dash.feed = currentFeed
+        dash.stories = before
     }
 }
