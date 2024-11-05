@@ -507,6 +507,9 @@ class UserSubscription(models.Model):
             feed.setup_feed_for_premium_subscribers(allow_skip_resync=allow_skip_resync)
             feed.count_subscribers()
 
+            if feed.archive_count:
+                feed.schedule_fetch_archive_feed()
+
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             r.publish(user.username, "reload:feeds")
 
@@ -654,13 +657,15 @@ class UserSubscription(models.Model):
         celery.chord(search_chunks)(callback)
 
     @classmethod
-    def fetch_archive_feeds_chunk(cls, user_id, feed_ids):
+    def fetch_archive_feeds_chunk(cls, feed_ids, user_id=None):
         from apps.rss_feeds.models import Feed
 
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-        user = User.objects.get(pk=user_id)
-
-        logging.user(user, "~FCFetching archive stories from %s feeds..." % len(feed_ids))
+        if user_id:
+            user = User.objects.get(pk=user_id)
+            logging.user(user, "~FCFetching archive stories from %s feeds..." % len(feed_ids))
+        else:
+            logging.debug("~FCFetching archive stories from %s feeds..." % len(feed_ids))
 
         for feed_id in feed_ids:
             feed = Feed.get_by_id(feed_id)
@@ -669,7 +674,8 @@ class UserSubscription(models.Model):
 
             feed.fill_out_archive_stories()
 
-        r.publish(user.username, "fetch_archive:feeds:%s" % ",".join([str(f) for f in feed_ids]))
+        if user_id:
+            r.publish(user.username, "fetch_archive:feeds:%s" % ",".join([str(f) for f in feed_ids]))
 
     @classmethod
     def finish_fetch_archive_feeds(cls, user_id, start_time, starting_story_count):
