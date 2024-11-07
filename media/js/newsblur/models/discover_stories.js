@@ -13,16 +13,11 @@ NEWSBLUR.Collections.DiscoverStories = Backbone.Collection.extend({
     model: NEWSBLUR.Models.DiscoverStory,
 
     url: function () {
-        if (this.similar_to_feed_id) {
-            var url = '/rss_feeds/discover/' + this.similar_to_feed_id + '/';
-            if (this.feed_ids && this.feed_ids.length > 0) {
-                url += '?feed_id=' + this.feed_ids.join("&feed_id=");
-            }
-        } else if (this.similar_to_feed_ids) {
-            var url = '/rss_feeds/discover/feeds/';
-        } else {
-            var url = '/stories/discover/global/';
+        var url = '/rss_feeds/discover/stories/' + this.similar_to_story_hash + '/';
+        if (this.feed_ids && this.feed_ids.length > 0) {
+            url += '?feed_id=' + this.feed_ids.join("&feed_id=");
         }
+
         return url;
     },
 

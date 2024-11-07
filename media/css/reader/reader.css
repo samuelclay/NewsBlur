@@ -5758,6 +5758,34 @@ body {
     color: #61635e;
 }
 
+.NB-sideoption-discover-content {
+    max-height: 400px;
+    overflow-y: auto;
+    margin: 16px 0;
+    text-align: left;
+}
+
+.NB-sideoption-discover-content .NB-story-titles {
+    margin: 0;
+    padding: 0;
+}
+
+.NB-sideoption-discover .NB-story-title {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.NB-discover-empty {
+    padding: 16px;
+    text-align: center;
+    color: #999;
+}
+
+.NB-discover-loading {
+    text-align: center;
+    padding: 24px 0;
+}
+
 /* ====================== */
 /* = River Progress Bar = */
 /* ====================== */
