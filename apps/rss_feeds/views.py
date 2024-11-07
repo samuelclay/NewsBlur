@@ -685,6 +685,7 @@ def discover_stories(request, story_hash):
     feed_ids = request.GET.getlist("feed_ids") or request.POST.getlist("feed_ids")
     limit = 5
     offset = (page - 1) * limit
+    print(story_hash)
     story, _ = MStory.find_story(story_hash=story_hash)
     if not story:
         return {"code": -1, "message": "Story not found.", "discover_stories": None, "failed": True}
