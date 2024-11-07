@@ -5747,6 +5747,17 @@ body {
     color: #202020;
 }
 
+.NB-sideoption-discover .segmented-control {}
+
+.NB-sideoption-discover .segmented-control-item {
+    line-height: 24px;
+}
+
+.NB-sideoption-discover .segmented-control-item a {
+    text-decoration: none;
+    color: #61635e;
+}
+
 /* ====================== */
 /* = River Progress Bar = */
 /* ====================== */
