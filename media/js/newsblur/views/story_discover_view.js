@@ -18,36 +18,35 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
 
     template: _.template('\
     <div class="NB-sideoption-discover-wrapper">\
-        <div class="NB-sideoption-discover-title">\
-            Discover stories\
-        </div>\
-        <div class="NB-sideoption-discover-controls">\
-            <ul class="segmented-control NB-sideoption-discover-control">\
-                <li class="segmented-control-item NB-sideoption-discover-control-item">\
-                    <a href="#">This site</a>\
-                </li>\
-                <li class="segmented-control-item NB-sideoption-discover-control-item">\
-                    <a href="#">All sites</a>\
-                </li>\
-                <li class="segmented-control-item NB-sideoption-discover-control-item">\
-                    <a href="#">Global</a>\
-                </li>\
-            </ul>\
-        </div>\
-        <div class="NB-sideoption-discover-content">\
-            <? if (loading) %>\
-                <div class="NB-discover-loading">\
-                    <div class="NB-loading NB-active"></div>\
-                </div >\
-            <? } else { %>\
-                <div class="NB-discover-content">\
-                    <div class="NB-discover-content-item">\
-                        <div class="NB-discover-content-item-title">\
-                            <a href="#">Title</a>\
+        <div class="NB-sideoption-discover">\
+            <div class="NB-sideoption-discover-controls">\
+                <ul class="segmented-control NB-sideoption-discover-control">\
+                    <li class="segmented-control-item NB-sideoption-discover-control-item NB-active">\
+                        <a href="#">This site</a>\
+                    </li>\
+                    <li class="segmented-control-item NB-sideoption-discover-control-item">\
+                        <a href="#">All sites</a>\
+                    </li>\
+                    <li class="segmented-control-item NB-sideoption-discover-control-item">\
+                        <a href="#">Global</a>\
+                    </li>\
+                </ul>\
+            </div>\
+            <div class="NB-sideoption-discover-content">\
+                <? if (loading) %>\
+                    <div class="NB-discover-loading">\
+                        <div class="NB-loading NB-active"></div>\
+                    </div >\
+                <? } else { %>\
+                    <div class="NB-discover-content">\
+                        <div class="NB-discover-content-item">\
+                            <div class="NB-discover-content-item-title">\
+                                <a href="#">Title</a>\
+                            </div>\
                         </div>\
                     </div>\
-                </div>\
-            <? } %>\
+                <? } %>\
+            </div>\
         </div>\
     </div>\
     '),
