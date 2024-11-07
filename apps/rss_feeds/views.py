@@ -676,3 +676,21 @@ def discover_feeds(request, feed_id=None):
 
     logging.user(request, "~FCDiscovering similar feeds, page %s: ~SB%s" % (page, similar_feed_ids))
     return {"discover_feeds": discover_feeds}
+
+
+@ajax_login_required
+@json.json_view
+def discover_stories(request, story_hash):
+    page = int(request.GET.get("page") or request.POST.get("page") or 1)
+    feed_ids = request.GET.getlist("feed_ids") or request.POST.getlist("feed_ids")
+    limit = 5
+    offset = (page - 1) * limit
+    story, _ = MStory.find_story(story_hash=story_hash)
+    if not story:
+        return {"code": -1, "message": "Story not found.", "discover_stories": None, "failed": True}
+
+    similar_stories = story.fetch_similar_stories(feed_ids=feed_ids, offset=offset, limit=limit)
+    similar_story_hashes = [result["_id"] for result in similar_stories]
+    stories = MStory.objects.filter(story_hash__in=similar_story_hashes)
+    stories = Feed.format_stories(stories)
+    return {"discover_stories": stories}
