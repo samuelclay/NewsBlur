@@ -505,6 +505,93 @@ class SearchStory:
         return result_ids
 
     @classmethod
+    def vector_query(
+        cls, query_vector, offset=0, max_results=10, feed_ids_to_include=None, feed_ids_to_exclude=None
+    ):
+        try:
+            cls.ES().indices.flush(index=cls.index_name())
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.debug(f" ***> ~FRNo search server available: {e}")
+            return []
+
+        must_clauses = [
+            {
+                "script_score": {
+                    "query": {"match_all": {}},
+                    "script": {
+                        "source": "cosineSimilarity(params.query_vector, 'content_vector') + 1.0",
+                        "params": {"query_vector": query_vector},
+                    },
+                }
+            }
+        ]
+        must_not_clauses = []
+        if feed_ids_to_include:
+            must_clauses.append({"terms": {"feed_id": feed_ids_to_include}})
+        if feed_ids_to_exclude:
+            must_not_clauses.append({"terms": {"feed_id": feed_ids_to_exclude}})
+
+        clauses = {}
+        if must_clauses:
+            clauses["must"] = must_clauses
+        if must_not_clauses:
+            clauses["must_not"] = must_not_clauses
+
+        body = {
+            "query": {
+                "bool": clauses,
+            },
+            "size": max_results,
+            "from": offset,
+        }
+        try:
+            results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
+
+        logging.info(
+            f"~FGVector search ~FCstories~FG: ~SB{max_results}~SN requested{f'~SB offset {offset}~SN' if offset else ''}, ~SB{len(results['hits']['hits'])}~SN results"
+        )
+
+        return results["hits"]["hits"]
+
+    @classmethod
+    def fetch_story_content_vector(cls, story_hash):
+        # Fetch the content vector from ES for the specified story_hash
+        try:
+            cls.ES().indices.flush(index=cls.index_name())
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.debug(f" ***> ~FRNo search server available: {e}")
+            return []
+
+        body = {"query": {"ids": {"values": [story_hash]}}}
+        try:
+            results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
+        # logging.debug(f"Results: {results}")
+        if len(results["hits"]["hits"]) == 0:
+            logging.debug(f" ---> ~FRNo content vector found for story {story_hash}")
+            return []
+        return results["hits"]["hits"][0]["_source"]["content_vector"]
+
+    @classmethod
+    def generate_combined_story_content_vector(cls, story_hashes):
+        vectors = []
+        for story_hash in story_hashes:
+            vector = cls.fetch_story_content_vector(story_hash)
+            if not vector:
+                vector = cls.generate_story_content_vector(story_hash)
+            vectors.append(vector)
+
+        combined_vector = np.mean(vectors, axis=0)
+        normalized_combined_vector = combined_vector / np.linalg.norm(combined_vector)
+
+        return normalized_combined_vector
+
+    @classmethod
     def generate_story_content_vector(cls, story_hash):
         from apps.rss_feeds.models import MStory
 

@@ -2508,11 +2508,11 @@ class Feed(models.Model):
 
             seq = difflib.SequenceMatcher(None, story_content, existing_story_content)
 
-            similiar_length_min = 1000
+            similar_length_min = 1000
             if existing_story.story_permalink == story_link and existing_story.story_title == story.get(
                 "title"
             ):
-                similiar_length_min = 20
+                similar_length_min = 20
 
             # Skip content check if already failed due to a timeout. This way we catch titles
             if lightweight:
@@ -2521,7 +2521,7 @@ class Feed(models.Model):
             if (
                 seq
                 and story_content
-                and len(story_content) > similiar_length_min
+                and len(story_content) > similar_length_min
                 and existing_story_content
                 and seq.real_quick_ratio() > 0.9
                 and seq.quick_ratio() > 0.95
@@ -3465,6 +3465,17 @@ class MStory(mongo.Document):
             original_page = zlib.decompress(self.original_page_z)
 
         return original_page
+
+    def fetch_similar_stories(self, feed_ids=None, offset=0, limit=5):
+        combined_content_vector = SearchStory.generate_combined_story_content_vector([self.story_hash])
+        results = SearchStory.vector_query(
+            combined_content_vector, feed_ids_to_include=feed_ids, offset=offset, max_results=limit
+        )
+        logging.debug(
+            f"Found {len(results)} recommendations for stories related to {self}: {[r['_source']['title'] for r in results]}"
+        )
+
+        return results
 
 
 class MStarredStory(mongo.DynamicDocument):
