@@ -1,0 +1,7 @@
+- Fixed the feeds list leaving a space after all stories read.
+- Fixed swiping to mark story as read/unread right after loading marking a different story.
+- Fixed saved searches not appearing.
+- Fixed the icon for the Delete Saved Search command.
+- Tweaked the position of the unread indicator when selecting a story title.
+- The size of the middle column can now be adjusted. [Mac]
+
