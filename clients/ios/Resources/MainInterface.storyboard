@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r" initialMenu="YWi-Ju-M3z">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6pv-7g-17r" initialMenu="YWi-Ju-M3z">
     <device id="ipad11_0rounded" orientation="landscape" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="UIMenu" message="Requires Xcode 11 or later." minToolsVersion="11.0" requiredIntegratedClassName="UICommandDiff"/>
@@ -15,7 +15,7 @@
             <objects>
                 <viewController storyboardIdentifier="DetailViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="djW-7k-haK" customClass="DetailViewController" customModule="NewsBlur" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jTZ-4O-xyT">
-                        <rect key="frame" x="0.0" y="0.0" width="514" height="834"/>
+                        <rect key="frame" x="0.0" y="0.0" width="514.5" height="834"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bPa-u1-Aml">
                                 <rect key="frame" x="0.0" y="74" width="1210" height="580"/>
@@ -831,11 +831,21 @@
                         </menu>
                         <menu isSystemItem="YES" title="Help" identifier="com.apple.menu.help" id="2fJ-ya-vwD">
                             <children>
-                                <command title="Support Forum" anchorAction="showHelp:" id="eDw-yh-3PE">
+                                <command title="Support Forum" anchorAction="showHelp:" id="z9V-y5-juo">
                                     <connections>
-                                        <action selector="showSupportForum:" destination="J28-e1-gcC" id="sW1-ne-jja"/>
+                                        <action selector="showSupportForum:" destination="J28-e1-gcC" id="c7i-Ra-th4"/>
                                     </connections>
                                 </command>
+                                <menu anchorAction="showHelp:" id="xDs-Be-CXW">
+                                    <menuOptions key="menuOptions" displayInline="YES"/>
+                                    <children>
+                                        <command title="Manage Account on the Web" id="eDw-yh-3PE">
+                                            <connections>
+                                                <action selector="showManageAccount:" destination="J28-e1-gcC" id="Z1d-d2-hRw"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
                             </children>
                         </menu>
                     </children>
@@ -900,7 +910,7 @@
             <objects>
                 <navigationController storyboardIdentifier="DetailNavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="HsP-cn-nIY" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Noh-2M-34G">
-                        <rect key="frame" x="0.0" y="24" width="514" height="50"/>
+                        <rect key="frame" x="0.0" y="24" width="514.5" height="50"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>

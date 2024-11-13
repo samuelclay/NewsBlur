@@ -59,7 +59,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (nonatomic) BOOL isFadingTable;
 @property (nonatomic, strong) NSString *restoringFolder;
 @property (nonatomic, strong) NSString *restoringFeedID;
-@property (nonatomic) NSIndexPath *swipingIndexPath;
 
 @end
 
@@ -1973,6 +1972,11 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             
             [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"tap selected row"];
             
+            if (!appDelegate.isPhone) {
+                [appDelegate.storyPagesViewController viewWillAppear:NO];
+                [appDelegate.storyPagesViewController viewDidAppear:NO];
+            }
+            
             if (!isGrid) {
                 return;
             }
@@ -2240,8 +2244,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 - (void)swipeTableViewCellDidStartSwiping:(MCSwipeTableViewCell *)cell {
     //    NSLog(@"Did start swiping the cell!");
     NSIndexPath *indexPath = [self.storyTitlesTable indexPathForCell:cell];
+    FeedDetailTableCell *feedCell = (FeedDetailTableCell *)cell;
     
     self.swipingIndexPath = indexPath;
+    self.swipingStoryHash = feedCell.storyHash;
 }
 
 // When the user is dragging, this method is called and return the dragged percentage from the border
@@ -2256,18 +2262,26 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSInteger storyIndex = [storiesCollection indexFromLocation:self.swipingIndexPath.row];
     NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
     
-    if (endedOnIndexPath != self.swipingIndexPath) {
-        NSLog(@"Swipe started at row %@ but ended at %@ for %@", self.swipingIndexPath, endedOnIndexPath, story[@"story_title"]);  // log
+    if (endedOnIndexPath != self.swipingIndexPath || story[@"story_hash"] != self.swipingStoryHash) {
+        NSLog(@"Swipe started at row %@ (%@) but ended at %@ (%@) for %@", @(self.swipingIndexPath.row), self.swipingStoryHash, @(endedOnIndexPath.row), story[@"story_hash"], story[@"story_title"]);  // log
+        
+        self.swipingIndexPath = nil;
+        self.swipingStoryHash = nil;
+        
+        return;
     }
+    
+    self.swipingIndexPath = nil;
+    self.swipingStoryHash = nil;
     
     if (state == MCSwipeTableViewCellState1) {
         // Saved
         [storiesCollection toggleStorySaved:story];
-        [self reloadIndexPath:self.swipingIndexPath withRowAnimation:UITableViewRowAnimationFade];
+        [self reloadIndexPath:endedOnIndexPath withRowAnimation:UITableViewRowAnimationFade];
     } else if (state == MCSwipeTableViewCellState3) {
         // Read
         [storiesCollection toggleStoryUnread:story];
-        [self reloadIndexPath:self.swipingIndexPath withRowAnimation:UITableViewRowAnimationFade];
+        [self reloadIndexPath:endedOnIndexPath withRowAnimation:UITableViewRowAnimationFade];
     }
 }
 
@@ -2499,11 +2513,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     if (storiesCollection.inSearch) {
         if (storiesCollection.savedSearchQuery == nil) {
-            [viewController addTitle:@"Save search" iconName:@"search" selectionShouldDismiss:YES handler:^{
+            [viewController addTitle:@"Save search" iconName:@"g_icn_search.png" selectionShouldDismiss:YES handler:^{
                 [self saveSearch];
             }];
         } else {
-            [viewController addTitle:@"Delete saved search" iconName:@"search" selectionShouldDismiss:YES handler:^{
+            [viewController addTitle:@"Delete saved search" iconName:@"g_icn_search.png" selectionShouldDismiss:YES handler:^{
                 [self deleteSavedSearch];
             }];
         }

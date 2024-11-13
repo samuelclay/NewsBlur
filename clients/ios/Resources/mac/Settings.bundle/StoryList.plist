@@ -162,7 +162,7 @@
 			<key>Title</key>
 			<string>Show Infrequent Site Stories</string>
 			<key>DefaultValue</key>
-			<string>YES</string>
+			<true/>
 			<key>Key</key>
 			<string>show_infrequent_site_stories</string>
 		</dict>
@@ -172,7 +172,7 @@
 			<key>Title</key>
 			<string>Show Global Shared Stories</string>
 			<key>DefaultValue</key>
-			<string>YES</string>
+			<true/>
 			<key>Key</key>
 			<string>show_global_shared_stories</string>
 		</dict>
@@ -182,7 +182,7 @@
 			<key>Title</key>
 			<string>Mark stories read on scroll</string>
 			<key>DefaultValue</key>
-			<string>YES</string>
+			<true/>
 			<key>Key</key>
 			<string>default_scroll_read_filter</string>
 		</dict>
@@ -192,7 +192,7 @@
 			<key>Title</key>
 			<string>Show override mark read on scroll</string>
 			<key>DefaultValue</key>
-			<string>YES</string>
+			<true/>
 			<key>Key</key>
 			<string>override_scroll_read_filter</string>
 		</dict>

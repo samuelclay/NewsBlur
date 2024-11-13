@@ -57,10 +57,18 @@ _.extend(NEWSBLUR.ReaderGoodies.prototype, {
       $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
         $.make('a', {
           className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
-          href: '/ios/'
+          href: 'https://apps.apple.com/us/app/newsblur/id463981119'
         }, 'See the iOS App'),
         $.make('div', { className: 'NB-goodies-ios' }),
         $.make('div', { className: 'NB-goodies-title' }, 'Official NewsBlur iPhone/iPad App')
+      ]),
+      $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+        $.make('a', {
+          className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+          href: 'https://apps.apple.com/us/app/newsblur/id463981119'
+        }, 'See the macOS App'),
+        $.make('div', { className: 'NB-goodies-macos' }),
+        $.make('div', { className: 'NB-goodies-title' }, 'Official NewsBlur macOS App')
       ]),
       $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
         $.make('a', {
