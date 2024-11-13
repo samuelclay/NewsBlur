@@ -515,19 +515,37 @@
                          contentWidthClass, (int)floorf(CGRectGetWidth(self.view.frame))];
     
     // if (appDelegate.feedsViewController.isOffline) {
+        NSFileManager *manager = [NSFileManager defaultManager];
         NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
         NSArray *imageUrls = [appDelegate.activeCachedImages objectForKey:storyHash];
-        // NSLog(@"📚 imageUrls: %@", imageUrls);
+        NSLog(@"📚 %@ %@ imageUrls: %@", activeStory[@"story_title"], storyHash, imageUrls);
         if (imageUrls) {
             NSString *storyImagesDirectory = [appDelegate.documentsURL.path
                                               stringByAppendingPathComponent:@"story_images"];
             for (NSString *imageUrl in imageUrls) {
                 NSURL *cachedUrl = [NSURL fileURLWithPath:storyImagesDirectory];
+//                cachedUrl = [cachedUrl URLByAppendingPathComponent:[Utilities md5:imageUrl storyHash:storyHash]];
                 cachedUrl = [cachedUrl URLByAppendingPathComponent:[Utilities md5:imageUrl]];
-                cachedUrl = [cachedUrl URLByAppendingPathExtension:imageUrl.pathExtension];
+                cachedUrl = [cachedUrl URLByAppendingPathExtension:@"jpeg"];
+                
+                if (![manager fileExistsAtPath:cachedUrl.path]) {
+                    if (appDelegate.feedsViewController.isOffline) {
+                        cachedUrl = [[NSBundle mainBundle] URLForResource:@"blank" withExtension:@"png"];
+                    } else {
+                        continue;
+                    }
+                }
+                
+                NSLog(@"📚 %@ %@ imageURL: %@ cachedURL: %@", activeStory[@"story_title"], storyHash, imageUrl, cachedUrl);
                 
                 storyContent = [storyContent
                                 stringByReplacingOccurrencesOfString:imageUrl
+                                withString:cachedUrl.absoluteString];
+                
+                NSString *escapedURL = [imageUrl stringByEncodingHTMLEntities];
+                
+                storyContent = [storyContent
+                                stringByReplacingOccurrencesOfString:escapedURL
                                 withString:cachedUrl.absoluteString];
             }
         }

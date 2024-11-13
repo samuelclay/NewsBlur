@@ -137,7 +137,7 @@ class Feed: Identifiable {
         
         var feed: [String : Any]? = appDelegate.dictActiveFeeds[id] as? [String : Any]
         
-        if feed == nil {
+        if feed == nil, appDelegate.dictFeeds != nil {
             feed = appDelegate.dictFeeds[id] as? [String : Any]
         }
         

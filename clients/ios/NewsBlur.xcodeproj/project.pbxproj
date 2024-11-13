@@ -747,6 +747,8 @@
 		177551DF238E228A00E27818 /* Old NewsBlur Latest.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 177551D3238E228A00E27818 /* Old NewsBlur Latest.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		177D017D28B05D9500F2F2DB /* StoryPagesCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 177D017C28B05D9500F2F2DB /* StoryPagesCollectionCell.swift */; };
 		17813FB723AC6E450057FB16 /* WidgetErrorTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17CE3F0523AC529B003152EF /* WidgetErrorTableViewCell.xib */; };
+		1781B97F2C9D332B00C8F344 /* blank.png in Resources */ = {isa = PBXBuildFile; fileRef = 1781B97E2C9D332B00C8F344 /* blank.png */; };
+		1781B9802C9D332B00C8F344 /* blank.png in Resources */ = {isa = PBXBuildFile; fileRef = 1781B97E2C9D332B00C8F344 /* blank.png */; };
 		178552492A1F115800A8CD92 /* FeedDetailTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 178552472A1F115800A8CD92 /* FeedDetailTableCell.m */; };
 		1785524A2A1F115800A8CD92 /* FeedDetailTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 178552472A1F115800A8CD92 /* FeedDetailTableCell.m */; };
 		1785524C2A21693300A8CD92 /* FeedDetailLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1785524B2A21693300A8CD92 /* FeedDetailLoadingView.swift */; };
@@ -1547,6 +1549,7 @@
 		177551DC238E228A00E27818 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		177551E3238E26BF00E27818 /* Widget Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Widget Extension.entitlements"; sourceTree = "<group>"; };
 		177D017C28B05D9500F2F2DB /* StoryPagesCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPagesCollectionCell.swift; sourceTree = "<group>"; };
+		1781B97E2C9D332B00C8F344 /* blank.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blank.png; sourceTree = "<group>"; };
 		178552472A1F115800A8CD92 /* FeedDetailTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailTableCell.m; sourceTree = "<group>"; };
 		178552482A1F115800A8CD92 /* FeedDetailTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailTableCell.h; sourceTree = "<group>"; };
 		1785524B2A21693300A8CD92 /* FeedDetailLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailLoadingView.swift; sourceTree = "<group>"; };
@@ -2878,6 +2881,7 @@
 				FFB1F69C1FBD1B2D001DA171 /* white_fade.png */,
 				FF9D59331FBC08DB00823C10 /* Shiloh.jpg */,
 				17E2AEB22863FECF000FAB5B /* Lyric.jpg */,
+				1781B97E2C9D332B00C8F344 /* blank.png */,
 				FF3FA8941BB26B6A001F7C32 /* copy_link@2x.png */,
 				FF83FF121FB54692008DAC0F /* g_icn_buffer.png */,
 				FF83FF0E1FB54691008DAC0F /* g_icn_eating.png */,
@@ -3893,7 +3897,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1120;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 1600;
 				ORGANIZATIONNAME = NewsBlur;
 				TargetAttributes = {
 					173CB30C26BCE94700BA872A = {
@@ -4441,6 +4445,7 @@
 				175792042930605500490924 /* theme_color_dark-sel.png in Resources */,
 				175792052930605500490924 /* traverse_background_left@2x.png in Resources */,
 				175792062930605500490924 /* g_icn_offline.png in Resources */,
+				1781B9802C9D332B00C8F344 /* blank.png in Resources */,
 				175792072930605500490924 /* triangle.png in Resources */,
 				175792082930605500490924 /* g_icn_offline@2x.png in Resources */,
 				175792092930605500490924 /* columns_double@2x.png in Resources */,
@@ -4867,6 +4872,7 @@
 				FF83FF1A1FB54693008DAC0F /* g_icn_buffer.png in Resources */,
 				17E2AEDD286556CC000FAB5B /* icons8-security-wi-fi-100.png in Resources */,
 				17432C7A1C533DCC003F8FD6 /* FeedChooserViewController.xib in Resources */,
+				1781B97F2C9D332B00C8F344 /* blank.png in Resources */,
 				FFDD847F16E887D3000AA0A2 /* g_icn_folder@2x.png in Resources */,
 				1740C6881C10FD75005EA453 /* theme_color_dark.png in Resources */,
 				FFDD848016E887D3000AA0A2 /* g_icn_hidden.png in Resources */,
@@ -5960,7 +5966,6 @@
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -5968,7 +5973,6 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 256;
 				DEVELOPMENT_TEAM = HR7P97SD72;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6010,7 +6014,6 @@
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -6018,7 +6021,6 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 256;
 				DEVELOPMENT_TEAM = HR7P97SD72;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6058,7 +6060,6 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = NO;
 				CLANG_ENABLE_MODULES = YES;
@@ -6082,7 +6083,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 155;
+				CURRENT_PROJECT_VERSION = 287;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -6099,7 +6100,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LAUNCH_SCREEN_NAME = LaunchScreen;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 13.1.2;
+				MARKETING_VERSION = 13.1.3;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PROVISIONING_PROFILE = "";
@@ -6114,7 +6115,6 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = NO;
 				CLANG_ENABLE_MODULES = YES;
@@ -6138,7 +6138,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 155;
+				CURRENT_PROJECT_VERSION = 287;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -6154,7 +6154,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LAUNCH_SCREEN_NAME = LaunchScreen;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 13.1.2;
+				MARKETING_VERSION = 13.1.3;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "-ObjC";
