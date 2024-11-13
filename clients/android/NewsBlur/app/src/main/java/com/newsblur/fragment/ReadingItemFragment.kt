@@ -1,6 +1,8 @@
 package com.newsblur.fragment
 
-import android.content.*
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Typeface
@@ -9,8 +11,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
-import android.view.*
+import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebView.HitTestResult
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
@@ -38,8 +44,20 @@ import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
 import com.newsblur.service.NbSyncManager.UPDATE_TEXT
 import com.newsblur.service.OriginalTextService
-import com.newsblur.util.*
+import com.newsblur.util.DefaultFeedView
+import com.newsblur.util.FeedSet
+import com.newsblur.util.FeedUtils
+import com.newsblur.util.FileCache
+import com.newsblur.util.Font
+import com.newsblur.util.ImageLoader
+import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.PrefConstants.ThemeValue
+import com.newsblur.util.PrefsUtils
+import com.newsblur.util.ReadingTextSize
+import com.newsblur.util.StoryChangesState
+import com.newsblur.util.StoryUtils
+import com.newsblur.util.UIUtils
+import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.regex.Pattern
 import javax.inject.Inject
@@ -107,6 +125,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     private lateinit var binding: FragmentReadingitemBinding
     private lateinit var readingItemActionsBinding: ReadingItemActionsBinding
 
+
     private lateinit var markStoryReadBehavior: MarkStoryReadBehavior
     private var sampledQueue: SampledQueue? = null
 
@@ -148,13 +167,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         super.onDestroyView()
     }
 
-    override fun onDestroy() {
-        binding.readingWebview.setOnTouchListener(null)
-        binding.root.setOnTouchListener(null)
-        requireActivity().window.decorView.setOnSystemUiVisibilityChangeListener(null)
-        super.onDestroy()
-    }
-
     // WebViews don't automatically pause content like audio and video when they lose focus.  Chain our own
     // state into the webview so it behaves.
     override fun onPause() {
@@ -169,8 +181,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_readingitem, container, false)
-        binding = FragmentReadingitemBinding.bind(view)
+        binding = FragmentReadingitemBinding.inflate(inflater, container, false)
         readingItemActionsBinding = ReadingItemActionsBinding.bind(binding.root)
 
         val readingActivity = requireActivity() as Reading
@@ -194,7 +205,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
         binding.readingScrollview.registerScrollChangeListener(readingActivity)
 
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -423,8 +434,10 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         }
         R.id.menu_go_to_feed -> {
             val feed = dbHelper.getFeed(story!!.feedId)
-            val fs = FeedSet.singleFeed(feed.feedId)
-            FeedItemsList.startActivity(requireContext(), fs, feed, null, null)
+            feed?.let {
+                val fs = FeedSet.singleFeed(it.feedId)
+                FeedItemsList.startActivity(requireContext(), fs, it, null, null)
+            }
             true
         }
         else -> {

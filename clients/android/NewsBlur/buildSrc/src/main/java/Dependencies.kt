@@ -6,7 +6,6 @@ object Dependencies {
     const val okHttp = "com.squareup.okhttp3:okhttp:${Version.okHttp}"
     const val gson = "com.google.code.gson:gson:${Version.gson}"
     const val billing = "com.android.billingclient:billing:${Version.billing}"
-    const val playCore = "com.google.android.play:core:${Version.playCore}"
     const val material = "com.google.android.material:material:${Version.material}"
     const val preference = "androidx.preference:preference-ktx:${Version.preference}"
     const val browser = "androidx.browser:browser:${Version.browser}"
@@ -16,6 +15,7 @@ object Dependencies {
     const val hiltAndroid = "com.google.dagger:hilt-android:${Version.hilt}"
     const val hiltCompiler = "com.google.dagger:hilt-compiler:${Version.hilt}"
     const val profileInstaller = "androidx.profileinstaller:profileinstaller:${Version.profileInstaller}"
+    const val playReview = "com.google.android.play:review:${Version.playReview}"
 
     // test
     const val junit = "junit:junit:${Version.junit}"

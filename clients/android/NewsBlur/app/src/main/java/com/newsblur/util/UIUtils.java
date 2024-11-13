@@ -232,10 +232,10 @@ public class UIUtils {
             public void run() {
                 Intent intent = activity.getIntent();
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                activity.overridePendingTransition(0, 0);
+                PendingTransitionUtils.overrideNoExitTransition(activity);
                 activity.finish();
 
-                activity.overridePendingTransition(0, 0);
+                PendingTransitionUtils.overrideNoEnterTransition(activity);
                 activity.startActivity(intent);
             }
         });

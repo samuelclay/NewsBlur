@@ -388,7 +388,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         get() {
             // saved stories and global shared stories don't have unreads
             if (fs!!.isAllSaved || fs!!.isGlobalShared) return 0
-            val result = dbHelper.getUnreadCount(fs, intelState)
+            val result = dbHelper.getUnreadCount(fs!!, intelState)
             return if (result < 0) 0 else result
         }
 
