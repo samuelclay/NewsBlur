@@ -1,6 +1,7 @@
 package com.newsblur.benchmark
 
-import androidx.benchmark.macro.ExperimentalBaselineProfilesApi
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
@@ -10,7 +11,7 @@ import org.junit.runner.RunWith
 /**
  * Runs in its own process
  */
-@OptIn(ExperimentalBaselineProfilesApi::class)
+@RequiresApi(Build.VERSION_CODES.P)
 @RunWith(AndroidJUnit4::class)
 class BaselineProfileGenerator {
 
@@ -19,7 +20,7 @@ class BaselineProfileGenerator {
 
     @Test
     fun generateSimpleStartupProfile() {
-        rule.collectBaselineProfile(packageName = "com.newsblur") {
+        rule.collect(packageName = "com.newsblur") {
             pressHome()
             startActivityAndWait()
         }
@@ -28,7 +29,7 @@ class BaselineProfileGenerator {
     @Test
     fun generateUserJourneyProfile() {
         var needsLogin = true
-        rule.collectBaselineProfile(packageName = "com.newsblur") {
+        rule.collect(packageName = "com.newsblur") {
             pressHome()
             startActivityAndWait()
 
