@@ -745,7 +745,9 @@
 
     <string name="notification_permissions_context">Permissions is required for posting notifications</string>
     <string name="notification_permissions_rationale">Notifications permission must be added manually in the app\'s settings before trying again to enable notifications</string>
-    
+
+    <string name="write_storage_permission_opml">Write storage permission is required for OPML export</string>
+
     <string name="story_saved">Story marked as saved</string>
     <string name="story_unsaved">Story marked as unsaved</string>
     <string name="story_read">Story marked as read</string>

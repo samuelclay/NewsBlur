@@ -7,6 +7,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.CancellationSignal;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import android.text.TextUtils;
@@ -46,13 +48,13 @@ import java.util.concurrent.Executors;
 
 /**
  * Utility class for executing DB operations on the local, private NB database.
- *
  * It is the intent of this class to be the single location of SQL executed on
  * our DB, replacing the deprecated ContentProvider access pattern.
  */
 public class BlurDatabaseHelper {
 
-    // manual synchro isn't needed if you only use one DBHelper, but at present the app uses several
+    // Removing the manual synchro will cause ANRs
+    // because the db transactions are made on the main thread
     public final static Object RW_MUTEX = new Object();
 
     private final BlurDatabase dbWrapper;
@@ -85,6 +87,7 @@ public class BlurDatabaseHelper {
         com.newsblur.util.Log.i(this.getClass().getName(), ". . . tables recreated.");
     }
 
+    @Nullable
     public String getEngineVersion() {
         String engineVersion = "";
         try {
@@ -99,10 +102,12 @@ public class BlurDatabaseHelper {
         return engineVersion;
     }
 
+    @NonNull
     public Set<String> getAllFeeds() {
         return getAllFeeds(false);
     }
 
+    @NonNull
     private Set<String> getAllFeeds(boolean activeOnly) {
         String q1 = "SELECT " + DatabaseConstants.FEED_ID +
                     " FROM " + DatabaseConstants.FEED_TABLE;
@@ -118,10 +123,12 @@ public class BlurDatabaseHelper {
         return feedIds;
     }
 
+    @NonNull
     public Set<String> getAllActiveFeeds() {
         return getAllFeeds(true);
     }
 
+    @NonNull
     private List<String> getAllSocialFeeds() {
         String q1 = "SELECT " + DatabaseConstants.SOCIAL_FEED_ID +
                     " FROM " + DatabaseConstants.SOCIALFEED_TABLE;
@@ -181,20 +188,20 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.execSQL("VACUUM");}
     }
 
-    public void deleteFeed(String feedId) {
+    public void deleteFeed(@Nullable String feedId) {
         String[] selArgs = new String[] {feedId};
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_TABLE, DatabaseConstants.FEED_ID + " = ?", selArgs);}
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_FEED_ID + " = ?", selArgs);}
     }
 
-    public void deleteSocialFeed(String userId) {
+    public void deleteSocialFeed(@Nullable String userId) {
         String[] selArgs = new String[] {userId};
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.SOCIALFEED_TABLE, DatabaseConstants.SOCIAL_FEED_ID + " = ?", selArgs);}
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_FEED_ID + " = ?", selArgs);}
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ?", selArgs);}
     }
 
-    public void deleteSavedSearch(String feedId, String query) {
+    public void deleteSavedSearch(@Nullable String feedId, @Nullable String query) {
         String q = "DELETE FROM " + DatabaseConstants.SAVED_SEARCH_TABLE +
                 " WHERE " + DatabaseConstants.SAVED_SEARCH_FEED_ID + " = '" + feedId + "'" +
                 " AND " + DatabaseConstants.SAVED_SEARCH_QUERY + " = '" + query + "'";
@@ -207,7 +214,8 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.STORY_TEXT_TABLE, null, null);}
     }
 
-    public Feed getFeed(String feedId) {
+    @Nullable
+    public Feed getFeed(@Nullable String feedId) {
         Cursor c = dbRO.query(DatabaseConstants.FEED_TABLE, null,  DatabaseConstants.FEED_ID + " = ?", new String[] {feedId}, null, null, null);
         Feed result = null;
         while (c.moveToNext()) {
@@ -217,13 +225,13 @@ public class BlurDatabaseHelper {
         return result;
     }
 
-    public void updateFeed(Feed feed) {
+    public void updateFeed(@NonNull Feed feed) {
         synchronized (RW_MUTEX) {
             dbRW.insertWithOnConflict(DatabaseConstants.FEED_TABLE, null, feed.getValues(), SQLiteDatabase.CONFLICT_REPLACE);
         }
     }
 
-    private void bulkInsertValues(String table, List<ContentValues> valuesList) {
+    private void bulkInsertValues(@NonNull String table, @NonNull List<ContentValues> valuesList) {
         if (valuesList.size() < 1) return;
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
@@ -239,18 +247,18 @@ public class BlurDatabaseHelper {
     }
 
     // just like bulkInsertValues, but leaves sync/transactioning to the caller
-    private void bulkInsertValuesExtSync(String table, List<ContentValues> valuesList) {
+    private void bulkInsertValuesExtSync(@NonNull String table, @NonNull List<ContentValues> valuesList) {
         if (valuesList.size() < 1) return;
         for (ContentValues values : valuesList) {
             dbRW.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         }
     }
 
-    public void setFeedsFolders(List<ContentValues> folderValues,
-                                List<ContentValues> feedValues,
-                                List<ContentValues> socialFeedValues,
-                                List<ContentValues> starredCountValues,
-                                List<ContentValues> savedSearchValues) {
+    public void setFeedsFolders(@NonNull List<ContentValues> folderValues,
+                                @NonNull List<ContentValues> feedValues,
+                                @NonNull List<ContentValues> socialFeedValues,
+                                @NonNull List<ContentValues> starredCountValues,
+                                @NonNull List<ContentValues> savedSearchValues) {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
             try {
@@ -276,6 +284,7 @@ public class BlurDatabaseHelper {
 
     // note method name: this gets a set rather than a list, in case the caller wants to
     // spend the up-front cost of hashing for better lookup speed rather than iteration!
+    @NonNull
     public Set<String> getUnreadStoryHashesAsSet() {
         String q = "SELECT " + DatabaseConstants.STORY_HASH + 
                    " FROM " + DatabaseConstants.STORY_TABLE +
@@ -289,6 +298,7 @@ public class BlurDatabaseHelper {
         return hashes;
     }
 
+    @NonNull
     public Set<String> getStarredStoryHashes() {
         String q = "SELECT " + DatabaseConstants.STORY_HASH +
                 " FROM " + DatabaseConstants.STORY_TABLE +
@@ -302,6 +312,7 @@ public class BlurDatabaseHelper {
         return hashes;
     }
 
+    @NonNull
     public Set<String> getAllStoryImages() {
         Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, new String[]{DatabaseConstants.STORY_IMAGE_URLS}, null, null, null, null, null);
         Set<String> urls = new HashSet<String>(c.getCount());
@@ -312,6 +323,7 @@ public class BlurDatabaseHelper {
         return urls;
     }
 
+    @NonNull
     public Set<String> getAllStoryThumbnails() {
         Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, new String[]{DatabaseConstants.STORY_THUMBNAIL_URL}, null, null, null, null, null);
         Set<String> urls = new HashSet<String>(c.getCount());
@@ -325,7 +337,7 @@ public class BlurDatabaseHelper {
         return urls;
     }
 
-    public void insertStories(StoriesResponse apiResponse, StateFilter stateFilter, boolean forImmediateReading) {
+    public void insertStories(@NonNull StoriesResponse apiResponse, @NonNull StateFilter stateFilter, boolean forImmediateReading) {
         synchronized (RW_MUTEX) {
             // do not attempt to use beginTransactionNonExclusive() to reduce lock time for this very heavy set
             // of calls. most versions of Android incorrectly implement the underlying SQLite calls and will
@@ -428,7 +440,7 @@ public class BlurDatabaseHelper {
         }
     }
 
-    private void insertSingleStoryExtSync(Story story) {
+    private void insertSingleStoryExtSync(@NonNull Story story) {
         // pick a thumbnail for the story
         story.thumbnailUrl = Story.guessStoryThumbnailURL(story);
         // insert the story data
@@ -459,7 +471,7 @@ public class BlurDatabaseHelper {
         }
     }
 
-    private void insertSingleCommentExtSync(Comment comment) {
+    private void insertSingleCommentExtSync(@NonNull Comment comment) {
         // real comments replace placeholders
         int count = dbRW.delete(DatabaseConstants.COMMENT_TABLE, DatabaseConstants.COMMENT_ISPLACEHOLDER + " = ?", new String[]{"true"});
         // comments always come with an updated set of replies, so remove old ones first
@@ -477,7 +489,7 @@ public class BlurDatabaseHelper {
      * to reflect a social action, but that the new copy is missing some fields.  Attempt to merge the
      * new story with the old one.
      */
-    public void updateStory(StoriesResponse apiResponse, StateFilter stateFilter, boolean forImmediateReading) {
+    public void updateStory(@NonNull StoriesResponse apiResponse, @NonNull StateFilter stateFilter, boolean forImmediateReading) {
         if (apiResponse.story == null) {
             com.newsblur.util.Log.e(this, "updateStory called on response with missing single story");
             return;
@@ -503,7 +515,7 @@ public class BlurDatabaseHelper {
      * Update an existing comment and associated replies based upon a new copy received from a social
      * API.  Most social APIs vend an updated view that replaces any old or placeholder records.
      */
-    public void updateComment(CommentResponse apiResponse, String storyId) {
+    public void updateComment(@NonNull CommentResponse apiResponse, @Nullable String storyId) {
         synchronized (RW_MUTEX) {
             // comments often contain enclosed replies, so batch them.
             dbRW.beginTransaction();
@@ -528,7 +540,7 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void fixMissingStoryFeeds(Story[] stories) {
+    public void fixMissingStoryFeeds(@Nullable Story[] stories) {
         // start off with feeds mentioned by the set of stories
         Set<String> feedIds = new HashSet<String>();
         for (Story story : stories) {
@@ -564,7 +576,7 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public Folder getFolder(String folderName) {
+    public Folder getFolder(@NonNull String folderName) {
         String[] selArgs = new String[] {folderName};
         String selection = DatabaseConstants.FOLDER_NAME + " = ?";
         Cursor c = dbRO.query(DatabaseConstants.FOLDER_TABLE, null, selection, selArgs, null, null, null);
@@ -577,13 +589,13 @@ public class BlurDatabaseHelper {
         return folder;
     }
 
-    public void touchStory(String hash) {
+    public void touchStory(@Nullable String hash) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_LAST_READ_DATE, (new Date()).getTime());
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_LAST_READ_DATE + " < 1 AND " + DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
     }
 
-    public void markStoryHashesRead(Collection<String> hashes) {
+    public void markStoryHashesRead(@NonNull Collection<String> hashes) {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
             try {
@@ -599,7 +611,7 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void markStoryHashesStarred(Collection<String> hashes, boolean isStarred) {
+    public void markStoryHashesStarred(@NonNull Collection<String> hashes, boolean isStarred) {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
             try {
@@ -615,7 +627,7 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void setFeedsActive(Set<String> feedIds, boolean active) {
+    public void setFeedsActive(@NonNull Set<String> feedIds, boolean active) {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
             try {
@@ -631,13 +643,13 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void setFeedFetchPending(String feedId) {
+    public void setFeedFetchPending(@NonNull String feedId) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.FEED_FETCH_PENDING, true);
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});}
     }
 
-    public boolean isFeedSetFetchPending(FeedSet fs) {
+    public boolean isFeedSetFetchPending(@NonNull FeedSet fs) {
         if (fs.getSingleFeed() != null) {
             String feedId = fs.getSingleFeed();
             Cursor c = dbRO.query(DatabaseConstants.FEED_TABLE, 
@@ -657,7 +669,7 @@ public class BlurDatabaseHelper {
     /**
      * Marks a story (un)read but does not adjust counts. Must stay idempotent an time-insensitive.
      */
-    public void setStoryReadState(String hash, boolean read) {
+    public void setStoryReadState(@Nullable String hash, boolean read) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_READ, read);
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
@@ -668,7 +680,8 @@ public class BlurDatabaseHelper {
      *
      * @return the set of feed IDs that potentially have counts impacted by the mark.
      */
-    public Set<FeedSet> setStoryReadState(Story story, boolean read) {
+    @NonNull
+    public Set<FeedSet> setStoryReadState(@NonNull Story story, boolean read) {
         // calculate the impact surface so the caller can re-check counts if needed
         Set<FeedSet> impactedFeeds = new HashSet<FeedSet>();
         impactedFeeds.add(FeedSet.singleFeed(story.feedId));
@@ -746,7 +759,7 @@ public class BlurDatabaseHelper {
      * Marks a range of stories in a subset of feeds as read. Does not update unread counts;
      * the caller must use updateLocalFeedCounts() or the /reader/feed_unread_count API.
      */
-    public void markStoriesRead(FeedSet fs, Long olderThan, Long newerThan) {
+    public void markStoriesRead(@NonNull FeedSet fs, @Nullable Long olderThan, @Nullable Long newerThan) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_READ, true);
         String rangeSelection = null;
@@ -774,7 +787,7 @@ public class BlurDatabaseHelper {
     /**
      * Get the unread count for the given feedset based on the totals in the feeds table.
      */
-    public int getUnreadCount(FeedSet fs, StateFilter stateFilter) {
+    public int getUnreadCount(@NonNull FeedSet fs, @NonNull StateFilter stateFilter) {
         // if reading in starred-only mode, there are no unreads, since stories vended as starred are never unread
         if (fs.isFilterSaved()) return 0;
         if (fs.isAllNormal()) {
@@ -802,7 +815,7 @@ public class BlurDatabaseHelper {
         }
     }
 
-    private int getFeedsUnreadCount(StateFilter stateFilter, String selection, String[] selArgs) {
+    private int getFeedsUnreadCount(@NonNull StateFilter stateFilter, @Nullable String selection, @Nullable String[] selArgs) {
         int result = 0;
         Cursor c = dbRO.query(DatabaseConstants.FEED_TABLE, null, selection, selArgs, null, null, null);
         while (c.moveToNext()) {
@@ -816,7 +829,7 @@ public class BlurDatabaseHelper {
         return result;
     }
 
-    private int getSocialFeedsUnreadCount(StateFilter stateFilter, String selection, String[] selArgs) {
+    private int getSocialFeedsUnreadCount(@NonNull StateFilter stateFilter, @NonNull String selection, @Nullable String[] selArgs) {
         int result = 0;
         Cursor c = dbRO.query(DatabaseConstants.SOCIALFEED_TABLE, null, selection, selArgs, null, null, null);
         while (c.moveToNext()) {
@@ -829,18 +842,18 @@ public class BlurDatabaseHelper {
         return result;
     }
 
-    public void updateFeedCounts(String feedId, ContentValues values) {
+    public void updateFeedCounts(@Nullable String feedId, @Nullable ContentValues values) {
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});}
     }
 
-    public void updateSocialFeedCounts(String feedId, ContentValues values) {
+    public void updateSocialFeedCounts(@Nullable String feedId, @Nullable ContentValues values) {
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.SOCIALFEED_TABLE, values, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[]{feedId});}
     }
 
     /**
      * Refreshes the counts in the feeds/socialfeeds tables by counting stories in the story table.
      */
-    public void updateLocalFeedCounts(FeedSet fs) {
+    public void updateLocalFeedCounts(@NonNull FeedSet fs) {
         // decompose the FeedSet into a list of single feeds that need to be recounted
         List<String> feedIds = new ArrayList<String>();
         List<String> socialFeedIds = new ArrayList<String>();
@@ -883,7 +896,7 @@ public class BlurDatabaseHelper {
     /**
      * Get the unread count for the given feedset based on local story state.
      */
-    public int getLocalUnreadCount(FeedSet fs, StateFilter stateFilter) {
+    public int getLocalUnreadCount(@NonNull FeedSet fs, @NonNull StateFilter stateFilter) {
         StringBuilder sel = new StringBuilder();
         ArrayList<String> selArgs = new ArrayList<String>();
         getLocalStorySelectionAndArgs(sel, selArgs, fs, stateFilter, ReadFilter.UNREAD);
@@ -900,16 +913,17 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, null, null);}
     }
 
-    public void enqueueAction(ReadingAction ra) {
+    public void enqueueAction(@NonNull ReadingAction ra) {
         synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, ra.toContentValues());}
     }
 
+    @NonNull
     public Cursor getActions() {
         String q = "SELECT * FROM " + DatabaseConstants.ACTION_TABLE;
         return dbRO.rawQuery(q, null);
     }
 
-    public void incrementActionTried(String actionId) {
+    public void incrementActionTried(@Nullable String actionId) {
         synchronized (RW_MUTEX) {
             String q = "UPDATE " + DatabaseConstants.ACTION_TABLE +
                        " SET " + DatabaseConstants.ACTION_TRIED + " = " + DatabaseConstants.ACTION_TRIED + " + 1" +
@@ -926,7 +940,7 @@ public class BlurDatabaseHelper {
         return result;
     }
 
-    public void clearAction(String actionId) {
+    public void clearAction(@Nullable String actionId) {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.ACTION_TABLE, DatabaseConstants.ACTION_ID + " = ?", new String[]{actionId});}
     }
 
@@ -978,7 +992,7 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void setStoryShared(String hash, @Nullable String currentUserId, boolean shared) {
+    public void setStoryShared(@Nullable String hash, @Nullable String currentUserId, boolean shared) {
         // get a fresh copy of the story from the DB so we can append to the shared ID set
         Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE, 
                               new String[]{DatabaseConstants.STORY_SHARED_USER_IDS}, 
@@ -1007,7 +1021,8 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});}
     }
 
-    public String getStoryText(String hash) {
+    @Nullable
+    public String getStoryText(@Nullable String hash) {
         String q = "SELECT " + DatabaseConstants.STORY_TEXT_STORY_TEXT +
                    " FROM " + DatabaseConstants.STORY_TEXT_TABLE +
                    " WHERE " + DatabaseConstants.STORY_TEXT_STORY_HASH + " = ?";
@@ -1023,7 +1038,8 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public String getStoryContent(String hash) {
+    @Nullable
+    public String getStoryContent(@Nullable String hash) {
         String q = "SELECT " + DatabaseConstants.STORY_CONTENT +
                    " FROM " + DatabaseConstants.STORY_TABLE +
                    " WHERE " + DatabaseConstants.STORY_HASH + " = ?";
@@ -1040,18 +1056,20 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void putStoryText(String hash, String text) {
+    public void putStoryText(@Nullable String hash, @NonNull String text) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_TEXT_STORY_HASH, hash);
         values.put(DatabaseConstants.STORY_TEXT_STORY_TEXT, text);
         synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.STORY_TEXT_TABLE, null, values);}
     }
 
-    public Cursor getSocialFeedsCursor(CancellationSignal cancellationSignal) {
+    @NonNull
+    public Cursor getSocialFeedsCursor(@NonNull CancellationSignal cancellationSignal) {
         return query(false, DatabaseConstants.SOCIALFEED_TABLE, null, null, null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC", null, cancellationSignal);
     }
 
-    public SocialFeed getSocialFeed(String feedId) {
+    @Nullable
+    public SocialFeed getSocialFeed(@Nullable String feedId) {
         Cursor c = dbRO.query(DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[] {feedId}, null, null, null);
         SocialFeed result = null;
         while (c.moveToNext()) {
@@ -1062,7 +1080,7 @@ public class BlurDatabaseHelper {
     }
 
     @Nullable
-    public StarredCount getStarredFeedByTag(String tag) {
+    public StarredCount getStarredFeedByTag(@NonNull String tag) {
         Cursor c = dbRO.query(DatabaseConstants.STARREDCOUNTS_TABLE, null, DatabaseConstants.STARREDCOUNTS_TAG + " = ?", new String[] {tag}, null, null, null);
         StarredCount result = null;
         while (c.moveToNext()) {
@@ -1082,30 +1100,37 @@ public class BlurDatabaseHelper {
         return folders;
     }
 
-    public Cursor getFoldersCursor(CancellationSignal cancellationSignal) {
+    @NonNull
+    public Cursor getFoldersCursor(@Nullable CancellationSignal cancellationSignal) {
         return query(false, DatabaseConstants.FOLDER_TABLE, null, null, null, null, null, null, null, cancellationSignal);
     }
 
-    public Cursor getFeedsCursor(CancellationSignal cancellationSignal) {
+    @NonNull
+    public Cursor getFeedsCursor(@NonNull CancellationSignal cancellationSignal) {
         return query(false, DatabaseConstants.FEED_TABLE, null, null, null, null, null, "UPPER(" + DatabaseConstants.FEED_TITLE + ") ASC", null, cancellationSignal);
     }
 
-    public Cursor getSavedStoryCountsCursor(CancellationSignal cancellationSignal) {
+    @NonNull
+    public Cursor getSavedStoryCountsCursor(@NonNull CancellationSignal cancellationSignal) {
         return query(false, DatabaseConstants.STARREDCOUNTS_TABLE, null, null, null, null, null, null, null, cancellationSignal);
     }
 
-    public Cursor getSavedSearchCursor(CancellationSignal cancellationSignal) {
+    @NonNull
+    public Cursor getSavedSearchCursor(@NonNull CancellationSignal cancellationSignal) {
         return query(false, DatabaseConstants.SAVED_SEARCH_TABLE, null, null, null, null,  null, null, null, cancellationSignal);
     }
 
+    @Nullable
     public Cursor getNotifyFocusStoriesCursor() {
         return rawQuery(DatabaseConstants.NOTIFY_FOCUS_STORY_QUERY, null, null);
     }
 
+    @Nullable
     public Cursor getNotifyUnreadStoriesCursor() {
         return rawQuery(DatabaseConstants.NOTIFY_UNREAD_STORY_QUERY, null, null);
     }
 
+    @NonNull
     public Set<String> getNotifyFeeds() {
         String q = "SELECT " + DatabaseConstants.FEED_ID + " FROM " + DatabaseConstants.FEED_TABLE +
                    " WHERE " + DatabaseConstants.FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_FOCUS + "'" +
@@ -1122,25 +1147,8 @@ public class BlurDatabaseHelper {
         return feedIds;
     }
 
-    private Cursor getStoriesCursor(@Nullable FeedSet fs, CancellationSignal cancellationSignal) {
-        StringBuilder q = new StringBuilder(DatabaseConstants.STORY_QUERY_BASE_0);
-
-        if (fs != null && !TextUtils.isEmpty(fs.getSingleFeed())) {
-            q.append(DatabaseConstants.STORY_FEED_ID);
-            q.append(" = ");
-            q.append(fs.getSingleFeed());
-        } else {
-            q.append(DatabaseConstants.FEED_ACTIVE);
-            q.append(" = 1");
-        }
-
-        q.append(" ORDER BY ");
-        q.append(DatabaseConstants.STORY_TIMESTAMP);
-        q.append(" DESC LIMIT 20");
-        return rawQuery(q.toString(), null, cancellationSignal);
-    }
-
-    public Cursor getActiveStoriesCursor(FeedSet fs, CursorFilters cursorFilters, CancellationSignal cancellationSignal) {
+    @NonNull
+    public Cursor getActiveStoriesCursor(@NonNull FeedSet fs, @NonNull CursorFilters cursorFilters, @NonNull CancellationSignal cancellationSignal) {
         // get the stories for this FS
         Cursor result = getActiveStoriesCursorNoPrep(fs, cursorFilters.getStoryOrder(), cancellationSignal);
         // if the result is blank, try to prime the session table with existing stories, in case we
@@ -1153,8 +1161,9 @@ public class BlurDatabaseHelper {
         }
         return result;
     }
-    
-    private Cursor getActiveStoriesCursorNoPrep(FeedSet fs, StoryOrder order, CancellationSignal cancellationSignal) {
+
+    @NonNull
+    private Cursor getActiveStoriesCursorNoPrep(@NonNull FeedSet fs, @NonNull StoryOrder order, @NonNull CancellationSignal cancellationSignal) {
         // stories aren't actually queried directly via the FeedSet and filters set in the UI. rather,
         // those filters are use to push live or cached story hashes into the reading session table, and
         // those hashes are used to pull story data from the story table
@@ -1182,7 +1191,7 @@ public class BlurDatabaseHelper {
      * criteria for the given FeedSet and filters; these hashes will be supplemented by hashes
      * fetched via the API and used to actually select story data when rendering story lists.
      */
-    public void prepareReadingSession(FeedSet fs, StateFilter stateFilter, ReadFilter readFilter) {
+    public void prepareReadingSession(@NonNull FeedSet fs, @NonNull StateFilter stateFilter, @NonNull ReadFilter readFilter) {
         // a selection filter that will be used to pull active story hashes from the stories table into the reading session table
         StringBuilder sel = new StringBuilder();
         // any selection args that need to be used within the inner select statement
@@ -1202,7 +1211,7 @@ public class BlurDatabaseHelper {
      * Gets hashes of already-fetched stories that satisfy the given FeedSet and filters. Can be used
      * both to populate a reading session or to count local unreads.
      */
-    private void getLocalStorySelectionAndArgs(StringBuilder sel, List<String> selArgs, FeedSet fs, StateFilter stateFilter, ReadFilter readFilter) {
+    private void getLocalStorySelectionAndArgs(@NonNull StringBuilder sel, @NonNull List<String> selArgs, @NonNull FeedSet fs, @NonNull StateFilter stateFilter, @NonNull ReadFilter readFilter) {
         // if the user has requested saved stories, ignore the unreads filter, as saveds do not have this state
         if (fs.isFilterSaved()) {
             readFilter = ReadFilter.ALL;
@@ -1283,7 +1292,7 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void setSessionFeedSet(FeedSet fs) {
+    public void setSessionFeedSet(@Nullable FeedSet fs) {
         if (fs == null) {
             synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.SYNC_METADATA_TABLE, DatabaseConstants.SYNC_METADATA_KEY + " = ?", new String[] {DatabaseConstants.SYNC_METADATA_KEY_SESSION_FEED_SET});}
         } else {
@@ -1293,9 +1302,10 @@ public class BlurDatabaseHelper {
             synchronized (RW_MUTEX) {dbRW.insertWithOnConflict(DatabaseConstants.SYNC_METADATA_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);}
         }
     }
-        
+
+    @Nullable
     public FeedSet getSessionFeedSet() {
-        FeedSet fs = null;
+        FeedSet fs;
         Cursor c = dbRO.query(DatabaseConstants.SYNC_METADATA_TABLE, null, DatabaseConstants.SYNC_METADATA_KEY + " = ?", new String[] {DatabaseConstants.SYNC_METADATA_KEY_SESSION_FEED_SET}, null, null, null, null);
         if (c.getCount() < 1) return null;
         c.moveToFirst();
@@ -1304,20 +1314,21 @@ public class BlurDatabaseHelper {
         return fs;
     }
 
-    public boolean isFeedSetReady(FeedSet fs) {
+    public boolean isFeedSetReady(@Nullable FeedSet fs) {
         return fs.equals(getSessionFeedSet());
     }
 
-    public void clearClassifiersForFeed(String feedId) {
+    public void clearClassifiersForFeed(@Nullable String feedId) {
         String[] selArgs = new String[] {feedId};
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", selArgs);}
     }
 
-    public void insertClassifier(Classifier classifier) {
+    public void insertClassifier(@NonNull Classifier classifier) {
         bulkInsertValues(DatabaseConstants.CLASSIFIER_TABLE, classifier.getContentValues());
     }
 
-    public Classifier getClassifierForFeed(String feedId) {
+    @NonNull
+    public Classifier getClassifierForFeed(@Nullable String feedId) {
         String[] selArgs = new String[] {feedId};
         Cursor c = dbRO.query(DatabaseConstants.CLASSIFIER_TABLE, null, DatabaseConstants.CLASSIFIER_ID + " = ?", selArgs, null, null, null);
         Classifier classifier = Classifier.fromCursor(c);
@@ -1326,7 +1337,8 @@ public class BlurDatabaseHelper {
         return classifier;
     }
 
-    public List<Comment> getComments(String storyId) {
+    @NonNull
+    public List<Comment> getComments(@NonNull String storyId) {
         String[] selArgs = new String[] {storyId};
         String selection = DatabaseConstants.COMMENT_STORYID + " = ?"; 
         Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, null, selection, selArgs, null, null, null);
@@ -1338,7 +1350,8 @@ public class BlurDatabaseHelper {
         return comments;
     }
 
-    public Comment getComment(String storyId, String userId) {
+    @Nullable
+    public Comment getComment(@Nullable String storyId, @Nullable String userId) {
         String selection = DatabaseConstants.COMMENT_STORYID + " = ? AND " + DatabaseConstants.COMMENT_USERID + " = ?";
         String[] selArgs = new String[] {storyId, userId};
         Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, null, selection, selArgs, null, null, null);
@@ -1354,7 +1367,7 @@ public class BlurDatabaseHelper {
      * will show up in the UI with reduced functionality until the server gets back to us with
      * an ID at which time the placeholder will be removed.
      */
-    public void insertCommentPlaceholder(String storyId, @Nullable String userId, String commentText) {
+    public void insertCommentPlaceholder(@Nullable String storyId, @Nullable String userId, @Nullable String commentText) {
         Comment comment = new Comment();
         comment.isPlaceholder = true;
         comment.id = Comment.PLACEHOLDER_COMMENT_ID + storyId + userId;
@@ -1376,23 +1389,23 @@ public class BlurDatabaseHelper {
         }
     }
 
-    public void editReply(String replyId, String replyText) {
+    public void editReply(@Nullable String replyId, @Nullable String replyText) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.REPLY_TEXT, replyText);
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.REPLY_TABLE, values, DatabaseConstants.REPLY_ID + " = ?", new String[]{replyId});}
     }
 
-    public void deleteReply(String replyId) {   
+    public void deleteReply(@Nullable String replyId) {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.REPLY_TABLE, DatabaseConstants.REPLY_ID + " = ?", new String[]{replyId});}
     }
 
-    public void clearSelfComments(String storyId, @Nullable String userId) {
+    public void clearSelfComments(@Nullable String storyId, @Nullable String userId) {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.COMMENT_TABLE,
                                              DatabaseConstants.COMMENT_STORYID + " = ? AND " + DatabaseConstants.COMMENT_USERID + " = ?", 
                                              new String[]{storyId, userId});}
     }
 
-    public void setCommentLiked(String storyId, String commentUserId, @Nullable String currentUserId, boolean liked) {
+    public void setCommentLiked(@Nullable String storyId, @Nullable String commentUserId, @Nullable String currentUserId, boolean liked) {
         // get a fresh copy of the story from the DB so we can append to the shared ID set
         Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, 
                               null, 
@@ -1421,7 +1434,8 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.COMMENT_TABLE, values, DatabaseConstants.COMMENT_ID + " = ?", new String[]{comment.id});}
     }
 
-    public UserProfile getUserProfile(String userId) {
+    @Nullable
+    public UserProfile getUserProfile(@Nullable String userId) {
         String[] selArgs = new String[] {userId};
         String selection = DatabaseConstants.USER_USERID + " = ?";
         Cursor c = dbRO.query(DatabaseConstants.USER_TABLE, null, selection, selArgs, null, null, null);
@@ -1430,7 +1444,8 @@ public class BlurDatabaseHelper {
         return profile;
     }
 
-    public List<Reply> getCommentReplies(String commentId) {
+    @NonNull
+    public List<Reply> getCommentReplies(@Nullable String commentId) {
         String[] selArgs = new String[] {commentId};
         String selection = DatabaseConstants.REPLY_COMMENTID+ " = ?";
         Cursor c = dbRO.query(DatabaseConstants.REPLY_TABLE, null, selection, selArgs, null, null, DatabaseConstants.REPLY_DATE + " ASC");
@@ -1442,7 +1457,7 @@ public class BlurDatabaseHelper {
         return replies;
     }
 
-    public void insertReplyPlaceholder(String storyId, @Nullable String userId, String commentUserId, String replyText) {
+    public void insertReplyPlaceholder(@Nullable String storyId, @Nullable String userId, @Nullable String commentUserId, @Nullable String replyText) {
         // get a fresh copy of the comment so we can discover the ID
         Cursor c = dbRO.query(DatabaseConstants.COMMENT_TABLE, 
                               null, 
@@ -1467,14 +1482,14 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.insertWithOnConflict(DatabaseConstants.REPLY_TABLE, null, reply.getValues(), SQLiteDatabase.CONFLICT_REPLACE);}
     }
 
-    public void putStoryDismissed(String storyHash) {
+    public void putStoryDismissed(@Nullable String storyHash) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.NOTIFY_DISMISS_STORY_HASH, storyHash);
         values.put(DatabaseConstants.NOTIFY_DISMISS_TIME, Calendar.getInstance().getTime().getTime());
         synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.NOTIFY_DISMISS_TABLE, null, values);}
     }
 
-    public boolean isStoryDismissed(String storyHash) {
+    public boolean isStoryDismissed(@Nullable String storyHash) {
         String[] selArgs = new String[] {storyHash};
         String selection = DatabaseConstants.NOTIFY_DISMISS_STORY_HASH + " = ?";
         Cursor c = dbRO.query(DatabaseConstants.NOTIFY_DISMISS_TABLE, null, selection, selArgs, null, null, null);
@@ -1494,7 +1509,7 @@ public class BlurDatabaseHelper {
         }
     }
 
-    private void putFeedTagsExtSync(String feedId, Collection<String> tags) {
+    private void putFeedTagsExtSync(@Nullable String feedId, @NonNull Collection<String> tags) {
         dbRW.delete(DatabaseConstants.FEED_TAGS_TABLE,
                     DatabaseConstants.FEED_TAGS_FEEDID + " = ?",
                     new String[]{feedId}
@@ -1509,7 +1524,8 @@ public class BlurDatabaseHelper {
         bulkInsertValuesExtSync(DatabaseConstants.FEED_TAGS_TABLE, valuesList);
     }
 
-    public List<String> getTagsForFeed(String feedId) {
+    @NonNull
+    public List<String> getTagsForFeed(@Nullable String feedId) {
         Cursor c = dbRO.query(DatabaseConstants.FEED_TAGS_TABLE, 
                               new String[]{DatabaseConstants.FEED_TAGS_TAG}, 
                               DatabaseConstants.FEED_TAGS_FEEDID + " = ?", 
@@ -1526,7 +1542,7 @@ public class BlurDatabaseHelper {
         return result;
     }
         
-    private void putFeedAuthorsExtSync(String feedId, Collection<String> authors) {
+    private void putFeedAuthorsExtSync(@Nullable String feedId, @NonNull Collection<String> authors) {
         dbRW.delete(DatabaseConstants.FEED_AUTHORS_TABLE,
                     DatabaseConstants.FEED_AUTHORS_FEEDID + " = ?",
                     new String[]{feedId}
@@ -1541,7 +1557,8 @@ public class BlurDatabaseHelper {
         bulkInsertValuesExtSync(DatabaseConstants.FEED_AUTHORS_TABLE, valuesList);
     }
 
-    public List<String> getAuthorsForFeed(String feedId) {
+    @NonNull
+    public List<String> getAuthorsForFeed(@Nullable String feedId) {
         Cursor c = dbRO.query(DatabaseConstants.FEED_AUTHORS_TABLE, 
                               new String[]{DatabaseConstants.FEED_AUTHORS_AUTHOR}, 
                               DatabaseConstants.FEED_AUTHORS_FEEDID + " = ?", 
@@ -1558,18 +1575,19 @@ public class BlurDatabaseHelper {
         return result;
     }
 
-    public void renameFeed(String feedId, String newFeedName) {
+    public void renameFeed(@Nullable String feedId, @Nullable String newFeedName) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.FEED_TITLE, newFeedName);
         synchronized (RW_MUTEX) {dbRW.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId});}
     }
 
-    public static void closeQuietly(Cursor c) {
+    public static void closeQuietly(@Nullable Cursor c) {
         if (c == null) return;
         try {c.close();} catch (Exception e) {
         }
     }
 
+    @Nullable
     private static String conjoinSelections(CharSequence... args) {
         StringBuilder s = null;
         for (CharSequence c : args) {
@@ -1589,7 +1607,8 @@ public class BlurDatabaseHelper {
      * Invoke the rawQuery() method on our read-only SQLiteDatabase memeber using the provided CancellationSignal
      * only if the device's platform provides support.
      */
-    private Cursor rawQuery(String sql, String[] selectionArgs, CancellationSignal cancellationSignal) {
+    @Nullable
+    private Cursor rawQuery(@NonNull String sql, @Nullable String[] selectionArgs, @Nullable CancellationSignal cancellationSignal) {
         if (AppConstants.VERBOSE_LOG_DB) {
             Log.d(this.getClass().getName(), String.format("DB rawQuery: '%s' with args: %s", sql, java.util.Arrays.toString(selectionArgs)));
         }
@@ -1600,15 +1619,18 @@ public class BlurDatabaseHelper {
      * Invoke the query() method on our read-only SQLiteDatabase memeber using the provided CancellationSignal
      * only if the device's platform provides support.
      */
-    private Cursor query(boolean distinct, String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit, CancellationSignal cancellationSignal) {
+    @NonNull
+    private Cursor query(boolean distinct, @NonNull String table, @Nullable String[] columns, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String groupBy, @Nullable String having, @Nullable String orderBy, @Nullable String limit, @NonNull CancellationSignal cancellationSignal) {
         return dbRO.query(distinct, table, columns, selection, selectionArgs, groupBy, having, orderBy, limit, cancellationSignal);
     }
 
-    public FeedSet feedSetFromFolderName(String folderName) {
+    @NonNull
+    public FeedSet feedSetFromFolderName(@NonNull String folderName) {
         return FeedSet.folder(folderName, getFeedIdsRecursive(folderName));
     }
 
-    private Set<String> getFeedIdsRecursive(String folderName) {
+    @NonNull
+    private Set<String> getFeedIdsRecursive(@NonNull String folderName) {
         Folder folder = getFolder(folderName);
         if (folder == null) return emptySet();
         Set<String> feedIds = new HashSet<>(folder.feedIds);

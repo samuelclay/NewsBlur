@@ -144,7 +144,7 @@ public class NotificationUtils {
         NotificationCompat.Builder nb = new NotificationCompat.Builder(context, context.getString(R.string.story_notification_channel_id))
                 .setContentTitle(title.toString())
                 .setContentText(story.shortContent)
-                .setSmallIcon(R.drawable.logo_monochrome)
+                .setSmallIcon(R.drawable.ic_logo_monochrome)
                 .setContentIntent(pendingIntent)
                 .setDeleteIntent(dismissPendingIntent)
                 .setAutoCancel(true)
