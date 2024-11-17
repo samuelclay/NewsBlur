@@ -4,9 +4,9 @@
   "description": "Servers used in running NewsBlur",
   "main": "favicons.js",
   "dependencies": {
-    "@postlight/mercury-parser": "^2.2.3",
-    "@sentry/browser": "^6.12.0",
-    "@sentry/node": "^6.12.0",
+    "@postlight/parser": "^2.2.3",
+    "@sentry/browser": "^8.38.0",
+    "@sentry/node": "^8.38.0",
     "@sentry/tracing": "^6.12.0",
     "bufferutil": "^4.0.3",
     "cjs": "0.0.11",
@@ -21,8 +21,8 @@
     "psl": "^1.8.0",
     "qs": "^6.9.4",
     "redis": "^3.1.2",
-    "socket.io": "^3.1.1",
-    "socket.io-client": "^3.1.1",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "supervisor": "^0.12.0",
     "utf-8-validate": "^5.0.4",
     "ws": "^7.4.2"
