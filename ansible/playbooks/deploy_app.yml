@@ -38,29 +38,29 @@
         - never
         - static
 
-    - name: Compressing JS/CSS assets 
+    - name: Compressing JS/CSS assets
       run_once: yes
       connection: local
       command: chdir=/srv/newsblur docker run --rm -v /srv/newsblur:/srv/newsblur newsblur/newsblur_deploy
       tags:
         - never
         - static
-    
+
     - name: Archive JS/CSS assets for uploading
       run_once: yes
       connection: local
-      archive: 
+      archive:
         path: /srv/newsblur/static/
         dest: /srv/newsblur/static.tgz
       tags:
         - never
         - static
-      
+
     - name: Ensure AWS dependencies installed
       run_once: yes
       connection: local
       pip:
-        name: 
+        name:
           - boto3
           - botocore
       tags:
@@ -82,10 +82,10 @@
       tags:
         - never
         - static
-    
+
     - name: Downloading JS/CSS assets from S3
       vars:
-        ansible_python_interpreter: /usr/bin/python3  
+        ansible_python_interpreter: /usr/bin/python3
       amazon.aws.aws_s3:
         bucket: newsblur-backups
         object: /static_py3.tgz
@@ -117,7 +117,7 @@
       register: pulled
       tags:
         - static
-    
+
     - name: Reload gunicorn due to no git upstream changes
       become: yes
       block:
@@ -126,13 +126,14 @@
           register: psaux
         - name: Reload gunicorn
           command: "kill -HUP {{ psaux.stdout }}"
-      when: not pulled.changed
+      # Only restart if there were no changes to the git repo or the static tag was applied
+      when: not pulled.changed or ansible_tags is search('static')
       rescue:
         - name: Restart Docker Container
           command: "docker restart newsblur_web"
       tags:
         - static
-    
+
     - name: Start Consul
       become: yes
       service:
