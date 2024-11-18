@@ -1,12 +1,16 @@
 package com.newsblur.activity
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.newsblur.R
 import com.newsblur.databinding.ActivityImportExportBinding
@@ -40,6 +44,16 @@ class ImportExportActivity : NbActivity() {
         }
     }
 
+    // used for Android 9 and below
+    private val requestWriteStoragePermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            exportOpmlFile()
+        } else {
+            Toast.makeText(this, R.string.write_storage_permission_opml, Toast.LENGTH_LONG).show()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityImportExportBinding.inflate(layoutInflater)
@@ -55,7 +69,13 @@ class ImportExportActivity : NbActivity() {
 
     private fun setupListeners() {
         binding.btnUpload.setOnClickListener { pickOpmlFile() }
-        binding.btnDownload.setOnClickListener { exportOpmlFile() }
+        binding.btnDownload.setOnClickListener {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+                checkAndRequestWriteStoragePermission()
+            } else {
+                exportOpmlFile()
+            }
+        }
     }
 
     private fun pickOpmlFile() {
@@ -130,5 +150,17 @@ class ImportExportActivity : NbActivity() {
 
     override fun handleUpdate(updateType: Int) {
         // ignore
+    }
+
+    // Android 9 and below
+    private fun checkAndRequestWriteStoragePermission() {
+        if (ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED) {
+            exportOpmlFile()
+        } else {
+            requestWriteStoragePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
     }
 }

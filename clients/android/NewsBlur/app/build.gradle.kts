@@ -57,7 +57,7 @@ dependencies {
     implementation(Dependencies.okHttp)
     implementation(Dependencies.gson)
     implementation(Dependencies.billing)
-    implementation(Dependencies.playCore)
+    implementation(Dependencies.playReview)
     implementation(Dependencies.material)
     implementation(Dependencies.preference)
     implementation(Dependencies.browser)

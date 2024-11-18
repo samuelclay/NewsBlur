@@ -116,7 +116,6 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (BOOL)isFeedVisible:(id)feedId;
 - (void)changeToAllMode;
 - (void)calculateFeedLocations;
-- (void)updateFeedTitlesTable;
 - (IBAction)sectionTapped:(UIButton *)button;
 - (IBAction)sectionUntapped:(UIButton *)button;
 - (IBAction)sectionUntappedOutside:(UIButton *)button;

@@ -127,7 +127,8 @@
           register: psaux
         - name: Reload gunicorn
           command: "kill -HUP {{ psaux.stdout }}"
-      when: not pulled.changed
+      # Only restart if there were no changes to the git repo or the static tag was applied
+      when: not pulled.changed or ansible_tags is search('static')
       rescue:
         - name: Restart Docker Container
           command: "docker restart newsblur_web"
