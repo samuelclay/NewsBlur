@@ -87,10 +87,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             social_services: NEWSBLUR.assets.social_services,
             profile: NEWSBLUR.assets.user_profile
         });
-        params['story_discover_view'] = this.sideoptions_view.discover_view.template({
-            story: this.model
-        });
+        params['story_discover_view'] = this.sideoptions_view.discover_view.render();
         this.$el.html(this.template(params));
+
+        this.sideoptions_view.move_discover_view();
         if (this.feed) {
             this.$el.toggleClass('NB-inverse', this.feed.is_light());
         }
