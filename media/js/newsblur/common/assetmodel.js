@@ -14,6 +14,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         "pinboard": "Pinboard",
         "raindrop": "Raindrop",
         "whatsapp": "WhatsApp",
+        "bluesky": "Bluesky",
+        "mastodon": "Mastodon",
         "pinterest": "Pinterest",
         "buffer": "Buffer",
         "diigo": "Diigo",

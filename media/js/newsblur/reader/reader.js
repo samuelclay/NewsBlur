@@ -2766,6 +2766,30 @@
             NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
         },
 
+        send_story_to_bluesky: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = [
+                'https://bsky.app/intent/compose?text=',
+                encodeURIComponent(story.get('story_title')),
+                "%20",
+                encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
+        send_story_to_mastodon: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = [
+                'https://mastodon.social/share?text=',
+                encodeURIComponent(story.get('story_title')),
+                "%20",
+                encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
         send_story_to_livejournal: function (story_id) {
             var story = this.model.get_story(story_id);
             var url = [
