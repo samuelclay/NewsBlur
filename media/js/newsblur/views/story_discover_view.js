@@ -14,10 +14,6 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
         this.is_loading = false;
         this.current_section = 'site'; // Default to 'site' view
 
-        // Setup infinite scroll
-        _.bindAll(this, 'check_scroll');
-        this.throttled_check_scroll = _.throttle(this.check_scroll, 100);
-
         // Initialize discover stories collection
         this.discover_stories = new NEWSBLUR.Collections.DiscoverStories();
     },
@@ -132,7 +128,8 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
 
     render: function () {
         return this.template({
-            story: this.model
+            story: this.model,
+            folders: NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')).in_folders()
         });
     },
 
@@ -144,6 +141,13 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
                     <li class="segmented-control-item NB-sideoption-discover-control-item NB-active">\
                         <a href="#">This site</a>\
                     </li>\
+                    <% for (var i = 0; i < folders.length; i++) { %>\
+                        <% if (folders[i] && folders[i].length) { %>\
+                            <li class="segmented-control-item NB-sideoption-discover-control-item">\
+                                <a href="#"><%- folders[i] %></a>\
+                            </li>\
+                        <% } %>\
+                    <% } %>\
                     <li class="segmented-control-item NB-sideoption-discover-control-item">\
                         <a href="#">All sites</a>\
                     </li>\
@@ -197,14 +201,6 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
 
             this.resize(options);
         }
-
-        if (!options.close) {
-            // Bind scroll handler when opening
-            this.$('.NB-sideoption-discover-content').scroll(_.bind(this.throttled_check_scroll, this));
-        } else {
-            // Unbind scroll handler when closing
-            this.$('.NB-sideoption-discover-content').off('scroll');
-        }
     },
 
     autosize: function () {
@@ -237,12 +233,12 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
             $discover_wrapper.addClass('NB-active');
         }
 
-        if (!options.resize_open && !options.close && !options.change_tag) {
-            $discover_wrapper.css('height', '0px');
+        if (!options.resize_open && !options.close) {
+            $discover_wrapper.css('height', 'auto');
         }
 
         $discover_wrapper.animate({
-            'height': options.close ? 0 : sideoption_content_height
+            'height': options.close ? 0 : 'auto'
         }, {
             'duration': options.immediate ? 0 : options.duration || 350,
             'easing': 'easeInOutQuint',
@@ -261,75 +257,8 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
             }, this)
         });
 
-        var sideoptions_height = $sideoption_container.height();
-        var content_height = $story_content.height();
-        var comments_height = $story_comments.height();
-        var left_height = content_height + comments_height;
-        var original_height = $story_content.data('original_height') || content_height;
-        if (!NEWSBLUR.reader.flags.narrow_content &&
-            !options.close && !options.force && new_sideoptions_height >= original_height) {
-            // Sideoptions too big, embiggen left side
-            console.log(["Sideoption too big, embiggening", content_height, sideoptions_height, new_sideoptions_height]);
-            $story_content.stop(true, true).animate({
-                'min-height': new_sideoptions_height
-            }, {
-                'duration': 350,
-                'easing': 'easeInOutQuint',
-                'queue': false,
-                'complete': function () {
-                    if (NEWSBLUR.app.story_list) {
-                        NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
-                    }
-                }
-            });
-            if (!$story_content.data('original_height')) {
-                $story_content.data('original_height', content_height);
-            }
-        } else if (!NEWSBLUR.reader.flags.narrow_content) {
-            // Content is bigger, move content back to normal
-            if ($story_content.data('original_height') && !this.sideoptions_view.discover_view.is_open) {
-                $story_content.stop(true, true).animate({
-                    'height': $story_content.data('original_height')
-                }, {
-                    'duration': 300,
-                    'easing': 'easeInOutQuint',
-                    'queue': false,
-                    'complete': function () {
-                        if (NEWSBLUR.app.story_list) {
-                            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
-                        }
-                    }
-                });
-            } else if (this.sideoptions_view.discover_view.is_open && !options.from_discover_view) {
-                this.sideoptions_view.discover_view.resize({ from_discover_view: true });
-            }
-        }
-
         if (NEWSBLUR.app.story_list) {
             NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
-        }
-    },
-
-    reset_height: function () {
-        var $story_content = this.$('.NB-feed-story-content,.NB-story-content');
-
-        // Reset story content height to get an accurate height measurement.
-        $story_content.stop(true, true).css('height', 'auto');
-        $story_content.removeData('original_height');
-
-        this.resize({ change_tag: true });
-    },
-
-    check_scroll: function () {
-        if (this.is_loading || !this.has_more_results) return;
-
-        var $content = this.$('.NB-sideoption-discover-content');
-        var containerHeight = $content.height();
-        var scrollTop = $content.scrollTop();
-        var scrollHeight = $content[0].scrollHeight;
-
-        if (scrollHeight - (scrollTop + containerHeight) < 200) {
-            this.load_discover_stories();
         }
     }
 

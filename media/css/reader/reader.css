@@ -4449,7 +4449,8 @@ body {
     max-width: 700px;
 }
 
-.NB-feed-story .NB-feed-story-content {
+.NB-feed-story .NB-feed-story-content,
+.NB-feed-story .NB-sideoption-discover-wrapper {
     padding: 24px 0 0;
     max-width: 700px;
     min-height: 12px;
@@ -4463,7 +4464,9 @@ body {
     margin: 0 0 0 auto;
 }
 
-.NB-pref-story-position-stretch .NB-feed-story .NB-feed-story-content {
+.NB-pref-story-position-stretch .NB-feed-story .NB-feed-story-content,
+.NB-pref-story-position-stretch .NB-feed-story .NB-feed-story-sideoptions-container,
+.NB-pref-story-position-stretch .NB-feed-story .NB-sideoption-discover-wrapper {
     max-width: none;
 }
 
@@ -4540,11 +4543,13 @@ body {
     max-height: none;
 }
 
-.NB-feed-story .NB-story-content-wrapper {
+.NB-feed-story .NB-story-content-wrapper,
+.NB-feed-story .NB-sideoption-discover-wrapper {
     padding: 0 236px 42px 28px;
 }
 
-.NB-narrow-content .NB-feed-story .NB-story-content-wrapper {
+.NB-narrow-content .NB-feed-story .NB-story-content-wrapper,
+.NB-narrow-content .NB-feed-story .NB-sideoption-discover-wrapper {
     padding-right: 28px;
 }
 
@@ -5186,6 +5191,9 @@ body {
     margin: 18px 28px 42px 28px;
     clear: both;
     overflow: hidden;
+
+    padding: 24px 0 0;
+    max-width: 700px;
 }
 
 .NB-pref-story-position-center .NB-feed-story-sideoptions-container {
@@ -5195,10 +5203,21 @@ body {
     padding: 0 28px;
 }
 
+.NB-pref-story-position-center .NB-sideoption-discover-wrapper {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 700px;
+}
+
 .NB-pref-story-position-right .NB-feed-story-sideoptions-container {
     margin-left: auto;
     max-width: 700px;
     padding: 0 0 0 28px;
+}
+
+.NB-pref-story-position-right .NB-sideoption-discover-wrapper {
+    margin-left: auto;
+    max-width: 700px;
 }
 
 .NB-sideoption {
@@ -5732,16 +5751,20 @@ body {
 
 .NB-sideoption-discover-wrapper {
     height: 0;
-    width: 100%;
     overflow: hidden;
+    display: none;
+}
+
+.NB-sideoption-discover-wrapper.NB-active {
+    display: block;
+    height: auto;
 }
 
 .NB-menu-manage .NB-sideoption-discover-wrapper {}
 
 .NB-narrow-content .NB-sideoption-discover-wrapper {
     clear: both;
-    width: 100%;
-    margin: 0;
+    margin-bottom: 24px;
 }
 
 .NB-sideoption-discover {
@@ -5769,7 +5792,6 @@ body {
 }
 
 .NB-sideoption-discover-content {
-    max-height: 400px;
     overflow-y: auto;
     margin: 16px 0;
     text-align: left;
@@ -5781,7 +5803,6 @@ body {
 }
 
 .NB-sideoption-discover .NB-story-title {
-    padding: 8px;
     border-bottom: 1px solid #eee;
 }
 
