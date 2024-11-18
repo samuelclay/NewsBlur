@@ -525,7 +525,8 @@ static UIFont *indicatorFont = nil;
     }
     
     // story indicator
-    CGFloat storyIndicatorX = isLeft ? rect.origin.x + 2 : 15;
+    CGFloat storyIndicatorBase = isLeft ? rect.origin.x + 2 : 15;
+    CGFloat storyIndicatorX = storyIndicatorBase + (isHighlighted ? 2 : 0);
     CGFloat storyIndicatorY = storyTitleFrame.origin.y + (fontDescriptor.pointSize / 2);
     
     UIImage *unreadIcon;

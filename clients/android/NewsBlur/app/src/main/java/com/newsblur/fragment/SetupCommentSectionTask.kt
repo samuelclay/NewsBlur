@@ -56,7 +56,7 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
 
     private fun doInBackground() {
         if (context == null || story == null || story.id.isNullOrEmpty()) return
-        comments.addAll(fragment.dbHelper.getComments(story.id))
+        comments.addAll(fragment.dbHelper.getComments(story.id!!))
 
         // users by whom we saw non-pseudo comments
         val commentingUserIds: MutableSet<String> = HashSet()
