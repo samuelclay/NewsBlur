@@ -2954,7 +2954,7 @@ img.feed_favicon {
     background-color: #F7F8F5;
 }
 
-.NB-layout-grid .NB-story-titles {
+.NB-layout-grid#story_titles>.NB-story-titles {
     display: grid;
     grid-gap: 2rem;
     padding: 2rem;
@@ -3018,28 +3018,28 @@ img.feed_favicon {
     padding-right: 242px;
 }
 
-.NB-layout-grid .NB-story-titles,
-.NB-layout-grid.NB-grid-columns-3 .NB-story-titles,
-.NB-wide-content .NB-story-titles {
+.NB-layout-grid#story_titles>.NB-story-titles,
+.NB-layout-grid.NB-grid-columns-3#story_titles>.NB-story-titles,
+.NB-wide-content#story_titles>.NB-story-titles {
     grid-template-columns: none;
     grid-template-columns: repeat(3, 1fr);
 }
 
-.NB-layout-grid.NB-grid-columns-1 .NB-story-titles,
-.NB-layout-grid.NB-extra-narrow-content .NB-story-titles,
-.NB-extra-narrow-content.NB-narrow-content .NB-story-titles {
+.NB-layout-grid.NB-grid-columns-1#story_titles>.NB-story-titles,
+.NB-layout-grid.NB-extra-narrow-content#story_titles>.NB-story-titles,
+.NB-extra-narrow-content.NB-narrow-content#story_titles>.NB-story-titles {
     grid-template-columns: none;
     grid-template-columns: repeat(1, 1fr);
 }
 
-.NB-layout-grid.NB-grid-columns-2 .NB-story-titles,
-.NB-narrow-content .NB-story-titles {
+.NB-layout-grid.NB-grid-columns-2#story_titles>.NB-story-titles,
+.NB-narrow-content#story_titles>.NB-story-titles {
     grid-template-columns: none;
     grid-template-columns: repeat(2, 1fr);
 }
 
-.NB-layout-grid.NB-grid-columns-4 .NB-story-titles,
-.NB-extra-wide-content .NB-story-titles {
+.NB-layout-grid.NB-grid-columns-4#story_titles>.NB-story-titles,
+.NB-extra-wide-content#story_titles>.NB-story-titles {
     grid-template-columns: none;
     grid-template-columns: repeat(4, 1fr);
 }

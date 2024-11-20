@@ -89,7 +89,7 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
         this.$('.NB-end-line').remove();
         var $endline = $.make('div', { className: "NB-end-line NB-load-line NB-short" });
         $endline.css({ 'background': '#FFF' });
-        this.$el.append($endline);
+        this.$(".NB-sideoption-discover-content").html($endline);
     },
 
     hide_loading: function () {
@@ -164,7 +164,8 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
                     </li>\
                 </ul>\
             </div>\
-            <div class="NB-sideoption-discover-content">\
+            <div class="NB-sideoption-discover-content NB-story-pane-west">\
+                <div class="NB-end-line NB-load-line NB-short"></div>\
             </div>\
         </div>\
     </div>\
