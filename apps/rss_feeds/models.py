@@ -38,7 +38,7 @@ from mongoengine.queryset import NotUniqueError, OperationError, Q
 
 from apps.rss_feeds.tasks import PushFeeds, ScheduleCountTagsForUser, UpdateFeeds
 from apps.rss_feeds.text_importer import TextImporter
-from apps.search.models import SearchFeed, SearchStory
+from apps.search.models import DiscoverStory, SearchFeed, SearchStory
 from apps.statistics.rstats import RStats
 from utils import feedfinder_forman, feedfinder_pilgrim
 from utils import json_functions as json
@@ -3067,6 +3067,7 @@ class MStory(mongo.Document):
     def index_all_for_search(cls, offset=0):
         if not offset:
             SearchStory.create_elasticsearch_mapping(delete=True)
+            DiscoverStory.create_elasticsearch_mapping(delete=True)
 
         last_pk = Feed.objects.latest("pk").pk
         for f in range(offset, last_pk, 1000):
@@ -3094,12 +3095,18 @@ class MStory(mongo.Document):
             story_author=self.story_author_name,
             story_feed_id=self.story_feed_id,
             story_date=self.story_date,
-            story_content_vector=SearchStory.generate_story_content_vector(self.story_hash),
+        )
+        DiscoverStory.index(
+            story_hash=self.story_hash,
+            story_feed_id=self.story_feed_id,
+            story_date=self.story_date,
+            story_content_vector=DiscoverStory.generate_story_content_vector(self.story_hash),
         )
 
     def remove_from_search_index(self):
         try:
             SearchStory.remove(self.story_hash)
+            DiscoverStory.remove(self.story_hash)
         except Exception:
             pass
 
@@ -3467,8 +3474,8 @@ class MStory(mongo.Document):
         return original_page
 
     def fetch_similar_stories(self, feed_ids=None, offset=0, limit=5):
-        combined_content_vector = SearchStory.generate_combined_story_content_vector([self.story_hash])
-        results = SearchStory.vector_query(
+        combined_content_vector = DiscoverStory.generate_combined_story_content_vector([self.story_hash])
+        results = DiscoverStory.vector_query(
             combined_content_vector, feed_ids_to_include=feed_ids, offset=offset, max_results=limit
         )
         logging.debug(
