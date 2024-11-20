@@ -206,7 +206,7 @@ class MUserSearch(mongo.Document):
 
 class SearchStory:
     _es_client = None
-    name = "discover-stories-openai"
+    name = "stories"
 
     @classmethod
     def ES(cls):
@@ -279,10 +279,6 @@ class SearchStory:
                 "store": False,
                 "type": "date",
             },
-            "content_vector": {
-                "type": "dense_vector",
-                "dims": 1536,  # Numbers of dims from text-embedding-3-small
-            },
         }
         cls.ES().indices.put_mapping(
             body={
@@ -302,7 +298,6 @@ class SearchStory:
         story_author,
         story_feed_id,
         story_date,
-        story_content_vector,
     ):
         cls.create_elasticsearch_mapping()
 
@@ -313,7 +308,6 @@ class SearchStory:
             "author": story_author,
             "feed_id": story_feed_id,
             "date": story_date,
-            "content_vector": story_content_vector,
         }
         try:
             cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
@@ -503,6 +497,138 @@ class SearchStory:
             return []
 
         return result_ids
+
+
+class DiscoverStory:
+    _es_client = None
+    name = "discover-stories-openai"
+
+    @classmethod
+    def ES(cls):
+        if cls._es_client is None:
+            cls._es_client = elasticsearch.Elasticsearch(settings.ELASTICSEARCH_STORY_HOST)
+            cls.create_elasticsearch_mapping()
+        return cls._es_client
+
+    @classmethod
+    def index_name(cls):
+        return "%s-index" % cls.name
+
+    @classmethod
+    def doc_type(cls):
+        if settings.DOCKERBUILD or getattr(settings, "ES_IGNORE_TYPE", True):
+            return None
+        return "%s-type" % cls.name
+
+    @classmethod
+    def create_elasticsearch_mapping(cls, delete=False):
+        if delete:
+            logging.debug(" ---> ~FRDeleting search index for ~FM%s" % cls.index_name())
+            try:
+                cls.ES().indices.delete(cls.index_name())
+            except elasticsearch.exceptions.NotFoundError:
+                logging.debug(f" ---> ~FBCan't delete {cls.index_name()} index, doesn't exist...")
+
+        if cls.ES().indices.exists(cls.index_name()):
+            return
+
+        try:
+            cls.ES().indices.create(cls.index_name())
+            logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRCould not create search index for ~FM%s: %s" % (cls.index_name(), e))
+            return
+        except (
+            elasticsearch.exceptions.ConnectionError,
+            urllib3.exceptions.NewConnectionError,
+            urllib3.exceptions.ConnectTimeoutError,
+        ) as e:
+            logging.debug(f" ***> ~FRNo search server available for creating story mapping: {e}")
+            return
+
+        mapping = {
+            "title": {
+                "store": False,
+                "type": "text",
+                "analyzer": "snowball",
+                "term_vector": "yes",
+            },
+            "content": {
+                "store": False,
+                "type": "text",
+                "analyzer": "snowball",
+                "term_vector": "yes",
+            },
+            "tags": {
+                "store": False,
+                "type": "text",
+                "fields": {"raw": {"type": "text", "analyzer": "keyword", "term_vector": "yes"}},
+            },
+            "author": {
+                "store": False,
+                "type": "text",
+                "analyzer": "default",
+            },
+            "feed_id": {"store": False, "type": "integer"},
+            "date": {
+                "store": False,
+                "type": "date",
+            },
+            "content_vector": {
+                "type": "dense_vector",
+                "dims": 1536,  # Numbers of dims from text-embedding-3-small
+            },
+        }
+        cls.ES().indices.put_mapping(
+            body={
+                "properties": mapping,
+            },
+            index=cls.index_name(),
+        )
+        cls.ES().indices.flush(cls.index_name())
+
+    @classmethod
+    def index(
+        cls,
+        story_hash,
+        story_feed_id,
+        story_date,
+        story_content_vector,
+    ):
+        cls.create_elasticsearch_mapping()
+
+        doc = {
+            "feed_id": story_feed_id,
+            "date": story_date,
+            "content_vector": story_content_vector,
+        }
+        try:
+            cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
+        except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
+            logging.debug(f" ***> ~FRNo search server available for discover story indexing: {e}")
+        except elasticsearch.exceptions.ConflictError as e:
+            logging.debug(f" ***> ~FBAlready indexed discover story: {e}")
+        # if settings.DEBUG:
+        #     logging.debug(f" ***> ~FBIndexed {story_hash}")
+
+    @classmethod
+    def remove(cls, story_hash):
+        if not cls.ES().exists(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type()):
+            return
+
+        try:
+            cls.ES().delete(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type())
+        except elasticsearch.exceptions.NotFoundError:
+            cls.ES().delete(index=cls.index_name(), id=story_hash, doc_type="story-type")
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.debug(f" ***> ~FRNo search server available for story deletion: {e}")
+
+    @classmethod
+    def drop(cls):
+        try:
+            cls.ES().indices.delete(cls.index_name())
+        except elasticsearch.exceptions.NotFoundError:
+            logging.debug(" ***> ~FBNo index found, nothing to drop.")
 
     @classmethod
     def vector_query(
