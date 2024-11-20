@@ -1474,7 +1474,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             view_settings = { 'view': view_settings };
         }
         var params = { 'feed_id': feed_id + '' };
-        _.each(['view', 'order', 'read_filter', 'layout', 'dashboard_count'], function (facet) {
+        _.each(['view', 'order', 'read_filter', 'layout', 'dashboard_count', 'stories_discover'], function (facet) {
             if (setting[facet]) {
                 view_settings[facet.substr(0, 1)] = setting[facet];
                 params['feed_' + facet + '_setting'] = setting[facet];

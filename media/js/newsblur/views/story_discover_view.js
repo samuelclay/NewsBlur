@@ -12,7 +12,6 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
         this.page = 1;
         this.has_more_results = true;
         this.is_loading = false;
-        this.current_section = 'site'; // Default to 'site' view
 
         // Initialize discover stories collection
         this.discover_stories = new NEWSBLUR.Collections.DiscoverStories();
@@ -26,15 +25,9 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
         this.$('.NB-sideoption-discover-control-item').removeClass('NB-active');
         $section.addClass('NB-active');
 
-        // Get section type
-        var section = 'site';
-        if ($section.find('a').text().toLowerCase().indexOf('all') >= 0) {
-            section = 'all';
-        } else if ($section.find('a').text().toLowerCase().indexOf('global') >= 0) {
-            section = 'global';
-        }
-
-        this.current_section = section;
+        var section = $section.data('selected-feed');
+        NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, { 'stories_discover': section });
+        console.log(["Setting discover stories section", NEWSBLUR.reader.active_feed, section]);
         this.page = 1;
         this.has_more_results = true;
         this.load_discover_stories();
@@ -45,13 +38,26 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
 
         this.is_loading = true;
         this.show_loading();
+        this.$(".NB-sideoption-discover-control-item").removeClass('NB-active');
 
         var feed_ids = [];
-        if (this.current_section === 'all') {
+        var section = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'stories_discover');
+        if (section === 'all') {
             feed_ids = NEWSBLUR.assets.feeds.pluck('id');
-        } else if (this.current_section === 'site') {
+            this.$(".NB-sideoption-discover-control-item[data-selected-feed='all']").addClass('NB-active');
+        } else if (_.string.startsWith(section, 'feed')) {
             feed_ids = [this.model.get('story_feed_id')];
+            this.$(".NB-sideoption-discover-control-item[data-selected-feed='feed:" + this.model.get('story_feed_id') + "']").addClass('NB-active');
+        } else if (section === 'global') {
+            feed_ids = [];
+            this.$(".NB-sideoption-discover-control-item[data-selected-feed='global']").addClass('NB-active');
+        } else {
+            // Use the selected folder feed ids
+            var folder_title = section.split(':')[1];
+            feed_ids = NEWSBLUR.assets.get_folder(folder_title).feed_ids_in_folder();
+            this.$(".NB-sideoption-discover-control-item[data-selected-feed='river:" + folder_title + "']").addClass('NB-active');
         }
+        console.log(["Discover stories section", NEWSBLUR.reader.active_feed, section, feed_ids]);
 
         // Configure collection for current view
         this.discover_stories.similar_to_story_hash = this.model.get('story_hash');
@@ -77,16 +83,17 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
         });
     },
 
-    show_loading: function () {
-        this.$('.NB-sideoption-discover-content').html(
-            '<div class="NB-discover-loading">' +
-            '<div class="NB-loading NB-active"></div>' +
-            '</div>'
-        );
+    show_loading: function (options) {
+        options = options || {};
+
+        this.$('.NB-end-line').remove();
+        var $endline = $.make('div', { className: "NB-end-line NB-load-line NB-short" });
+        $endline.css({ 'background': '#FFF' });
+        this.$el.append($endline);
     },
 
     hide_loading: function () {
-        this.$('.NB-discover-loading').remove();
+        this.$('.NB-load-line').remove();
     },
 
     render_stories: function (response) {
@@ -110,7 +117,7 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
         });
 
         // Create container for story titles
-        var $story_titles = $('<div class="NB-story-titles">');
+        var $story_titles = $('<div class="NB-story-titles NB-discover-story-titles">');
 
         var stories_collection = new NEWSBLUR.Collections.Stories(stories);
         var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
@@ -129,7 +136,8 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
     render: function () {
         return this.template({
             story: this.model,
-            folders: NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')).in_folders()
+            folders: NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')).in_folders(),
+            section: NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'stories_discover')
         });
     },
 
@@ -138,20 +146,20 @@ NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
         <div class="NB-sideoption-discover">\
             <div class="NB-sideoption-discover-controls">\
                 <ul class="segmented-control NB-sideoption-discover-control">\
-                    <li class="segmented-control-item NB-sideoption-discover-control-item NB-active">\
+                    <li class="segmented-control-item NB-sideoption-discover-control-item" data-selected-feed="feed:<%- story.get("story_feed_id") %>">\
                         <a href="#">This site</a>\
                     </li>\
                     <% for (var i = 0; i < folders.length; i++) { %>\
                         <% if (folders[i] && folders[i].length) { %>\
-                            <li class="segmented-control-item NB-sideoption-discover-control-item">\
+                            <li class="segmented-control-item NB-sideoption-discover-control-item" data-selected-feed="river:<%- folders[i] %>">\
                                 <a href="#"><%- folders[i] %></a>\
                             </li>\
                         <% } %>\
                     <% } %>\
-                    <li class="segmented-control-item NB-sideoption-discover-control-item">\
+                    <li class="segmented-control-item NB-sideoption-discover-control-item" data-selected-feed="all">\
                         <a href="#">All sites</a>\
                     </li>\
-                    <li class="segmented-control-item NB-sideoption-discover-control-item">\
+                    <li class="segmented-control-item NB-sideoption-discover-control-item" data-selected-feed="global">\
                         <a href="#">Global</a>\
                     </li>\
                 </ul>\
