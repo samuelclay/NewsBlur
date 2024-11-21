@@ -237,20 +237,6 @@ class SearchStory:
         if cls.ES().indices.exists(cls.index_name()):
             return
 
-        try:
-            cls.ES().indices.create(cls.index_name())
-            logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
-        except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRCould not create search index for ~FM%s: %s" % (cls.index_name(), e))
-            return
-        except (
-            elasticsearch.exceptions.ConnectionError,
-            urllib3.exceptions.NewConnectionError,
-            urllib3.exceptions.ConnectTimeoutError,
-        ) as e:
-            logging.debug(f" ***> ~FRNo search server available for creating story mapping: {e}")
-            return
-
         mapping = {
             "title": {
                 "store": False,
@@ -280,12 +266,23 @@ class SearchStory:
                 "type": "date",
             },
         }
-        cls.ES().indices.put_mapping(
-            body={
-                "properties": mapping,
-            },
-            index=cls.index_name(),
-        )
+
+        try:
+            cls.ES().indices.create(
+                cls.index_name(), body={"mappings": {"_source": {"enabled": False}, "properties": mapping}}
+            )
+            logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRCould not create search index for ~FM%s: %s" % (cls.index_name(), e))
+            return
+        except (
+            elasticsearch.exceptions.ConnectionError,
+            urllib3.exceptions.NewConnectionError,
+            urllib3.exceptions.ConnectTimeoutError,
+        ) as e:
+            logging.debug(f" ***> ~FRNo search server available for creating story mapping: {e}")
+            return
+
         cls.ES().indices.flush(cls.index_name())
 
     @classmethod
@@ -532,20 +529,6 @@ class DiscoverStory:
         if cls.ES().indices.exists(cls.index_name()):
             return
 
-        try:
-            cls.ES().indices.create(cls.index_name())
-            logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
-        except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRCould not create search index for ~FM%s: %s" % (cls.index_name(), e))
-            return
-        except (
-            elasticsearch.exceptions.ConnectionError,
-            urllib3.exceptions.NewConnectionError,
-            urllib3.exceptions.ConnectTimeoutError,
-        ) as e:
-            logging.debug(f" ***> ~FRNo search server available for creating story mapping: {e}")
-            return
-
         mapping = {
             "title": {
                 "store": False,
@@ -577,14 +560,26 @@ class DiscoverStory:
             "content_vector": {
                 "type": "dense_vector",
                 "dims": 1536,  # Numbers of dims from text-embedding-3-small
+                # "store": True,  # Keep stored since we need to retrieve it # No need to be explicit
             },
         }
-        cls.ES().indices.put_mapping(
-            body={
-                "properties": mapping,
-            },
-            index=cls.index_name(),
-        )
+
+        try:
+            cls.ES().indices.create(
+                cls.index_name(), body={"mappings": {"_source": {"enabled": False}, "properties": mapping}}
+            )
+            logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRCould not create search index for ~FM%s: %s" % (cls.index_name(), e))
+            return
+        except (
+            elasticsearch.exceptions.ConnectionError,
+            urllib3.exceptions.NewConnectionError,
+            urllib3.exceptions.ConnectTimeoutError,
+        ) as e:
+            logging.debug(f" ***> ~FRNo search server available for creating story mapping: {e}")
+            return
+
         cls.ES().indices.flush(cls.index_name())
 
     @classmethod
@@ -1013,22 +1008,19 @@ class SearchFeed:
             logging.debug(f" ***> ~FRNo search server available: {e}")
             return []
 
-        body = {
-            "query": {
-                "term": {
-                    "feed_id": feed_id,
-                }
-            }
-        }
+        body = {"query": {"term": {"feed_id": feed_id}}}
+
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
         except elasticsearch.exceptions.RequestError as e:
             logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
             return []
+
         # logging.debug(f"Results: {results}")
         if len(results["hits"]["hits"]) == 0:
             logging.debug(f" ---> ~FRNo content vector found for feed {feed_id}")
             return []
+
         return results["hits"]["hits"][0]["_source"]["content_vector"]
 
     @classmethod

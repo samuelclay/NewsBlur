@@ -372,6 +372,7 @@ class Feed(models.Model):
         stories = MStory.objects(story_feed_id=self.pk)
         for story in stories:
             story.index_story_for_search()
+            story.index_story_for_discover()
 
         self.search_indexed = True
         self.save()
@@ -1101,7 +1102,7 @@ class Feed(models.Model):
             combined_content_vector, feed_ids_to_exclude=feed_ids, offset=offset, max_results=limit
         )
         logging.debug(
-            f"Found {len(results)} recommendations for feeds {feed_ids}: {[r['_source']['title'] for r in results]}"
+            f"Found {len(results)} recommendations for feeds {feed_ids}: {[r['_id'] for r in results]}"
         )
 
         return results
@@ -1560,6 +1561,7 @@ class Feed(models.Model):
                         )
                 if self.search_indexed:
                     s.index_story_for_search()
+                    s.index_story_for_discover()
             elif existing_story and story_has_changed and not updates_off and ret_values["updated"] < 3:
                 # update story
                 original_content = None
@@ -1644,6 +1646,7 @@ class Feed(models.Model):
                         )
                 if self.search_indexed:
                     existing_story.index_story_for_search()
+                    existing_story.index_story_for_discover()
             else:
                 ret_values["same"] += 1
                 if verbose:
@@ -3064,14 +3067,18 @@ class MStory(mongo.Document):
         stories.delete()
 
     @classmethod
-    def index_all_for_search(cls, offset=0):
+    def index_all_for_search(cls, offset=0, search=False, discover=False):
         if not offset:
-            SearchStory.create_elasticsearch_mapping(delete=True)
-            DiscoverStory.create_elasticsearch_mapping(delete=True)
+            if search:
+                logging.debug("Re-creating search index")
+                SearchStory.create_elasticsearch_mapping(delete=True)
+            if discover:
+                logging.debug("Re-creating discover index")
+                DiscoverStory.create_elasticsearch_mapping(delete=True)
 
         last_pk = Feed.objects.latest("pk").pk
         for f in range(offset, last_pk, 1000):
-            print(" ---> %s / %s (%.2s%%)" % (f, last_pk, float(f) / last_pk * 100))
+            logging.debug(" ---> %s / %s (%.2s%%)" % (f, last_pk, float(f) / last_pk * 100))
             feeds = Feed.objects.filter(
                 pk__in=list(range(f, f + 1000)), active=True, active_subscribers__gte=1
             ).values_list("pk")
@@ -3079,9 +3086,16 @@ class MStory(mongo.Document):
                 stories = cls.objects.filter(story_feed_id=f)
                 if not len(stories):
                     continue
-                print(f"Indexing {len(stories)} stories in feed {f}")
-                for story in stories:
-                    story.index_story_for_search()
+                logging.debug(
+                    f"Indexing {len(stories)} stories in feed {f} for {'search' if search else 'discover' if discover else 'both search and discover'}"
+                )
+                for s, story in enumerate(stories):
+                    if s % 50 == 0:
+                        logging.debug(f" ---> Indexing story {s} of {len(stories)} in feed {f}")
+                    if search:
+                        story.index_story_for_search()
+                    if discover:
+                        story.index_story_for_discover()
 
     def index_story_for_search(self):
         story_content = self.story_content or ""
@@ -3096,6 +3110,8 @@ class MStory(mongo.Document):
             story_feed_id=self.story_feed_id,
             story_date=self.story_date,
         )
+
+    def index_story_for_discover(self):
         DiscoverStory.index(
             story_hash=self.story_hash,
             story_feed_id=self.story_feed_id,
@@ -3479,7 +3495,7 @@ class MStory(mongo.Document):
             combined_content_vector, feed_ids_to_include=feed_ids, offset=offset, max_results=limit
         )
         logging.debug(
-            f"Found {len(results)} recommendations for stories related to {self}: {[r['_source']['title'] for r in results]}"
+            f"Found {len(results)} recommendations for stories related to {self}: {[r['_id'] for r in results]}"
         )
 
         return results

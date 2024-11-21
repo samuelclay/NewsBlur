@@ -1,3 +1,4 @@
+import logging
 import re
 
 from django.contrib.auth.models import User
@@ -13,10 +14,19 @@ class Command(BaseCommand):
         parser.add_argument(
             "-R", "--reindex", dest="reindex", action="store_true", help="Drop index and reindex all stories."
         )
+        parser.add_argument(
+            "-D", "--discover", dest="discover", action="store_true", help="Index discover stories."
+        )
+        parser.add_argument(
+            "-S", "--search", dest="search", action="store_true", help="Index search stories."
+        )
 
     def handle(self, *args, **options):
+        print(
+            f"Indexing stories for user {options['user']} with search={options['search']} and discover={options['discover']}"
+        )
         if options["reindex"]:
-            MStory.index_all_for_search()
+            MStory.index_all_for_search(search=options["search"], discover=options["discover"])
             return
 
         if not options["user"]:
