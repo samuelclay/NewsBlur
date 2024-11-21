@@ -107,6 +107,7 @@ class Feed(models.Model):
     s3_page = models.BooleanField(default=False, blank=True, null=True)
     s3_icon = models.BooleanField(default=False, blank=True, null=True)
     search_indexed = models.BooleanField(default=None, null=True, blank=True)
+    discover_indexed = models.BooleanField(default=None, null=True, blank=True)
     fs_size_bytes = models.IntegerField(null=True, blank=True)
     archive_count = models.IntegerField(null=True, blank=True)
     similar_feeds = models.ManyToManyField(
@@ -237,6 +238,7 @@ class Feed(models.Model):
             "is_newsletter": self.is_newsletter,
             "fetched_once": self.fetched_once,
             "search_indexed": self.search_indexed,
+            "discover_indexed": self.discover_indexed,
             "not_yet_fetched": not self.fetched_once,  # Legacy. Doh.
             "favicon_color": self.favicon_color,
             "favicon_fade": self.favicon_fade(),
@@ -365,17 +367,24 @@ class Feed(models.Model):
                 content_vector=SearchFeed.generate_feed_content_vector(self.pk),
             )
 
-    def index_stories_for_search(self):
-        if self.search_indexed:
+    def index_stories_for_search(self, force=False):
+        if self.search_indexed and self.discover_indexed and not force:
             return
 
         stories = MStory.objects(story_feed_id=self.pk)
-        for story in stories:
-            story.index_story_for_search()
-            story.index_story_for_discover()
+        if not self.search_indexed:
+            for story in stories:
+                story.index_story_for_search()
 
-        self.search_indexed = True
-        self.save()
+            self.search_indexed = True
+            self.save()
+
+        if not self.discover_indexed:
+            for story in stories:
+                story.index_story_for_discover()
+
+            self.discover_indexed = True
+            self.save()
 
     def sync_redis(self, allow_skip_resync=False):
         return MStory.sync_feed_redis(self.pk, allow_skip_resync=allow_skip_resync)
@@ -3090,7 +3099,7 @@ class MStory(mongo.Document):
                     f"Indexing {len(stories)} stories in feed {f} for {'search' if search else 'discover' if discover else 'both search and discover'}"
                 )
                 for s, story in enumerate(stories):
-                    if s % 50 == 0:
+                    if s % 100 == 0:
                         logging.debug(f" ---> Indexing story {s} of {len(stories)} in feed {f}")
                     if search:
                         story.index_story_for_search()
