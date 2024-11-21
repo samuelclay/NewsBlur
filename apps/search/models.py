@@ -530,28 +530,6 @@ class DiscoverStory:
             return
 
         mapping = {
-            "title": {
-                "store": False,
-                "type": "text",
-                "analyzer": "snowball",
-                "term_vector": "yes",
-            },
-            "content": {
-                "store": False,
-                "type": "text",
-                "analyzer": "snowball",
-                "term_vector": "yes",
-            },
-            "tags": {
-                "store": False,
-                "type": "text",
-                "fields": {"raw": {"type": "text", "analyzer": "keyword", "term_vector": "yes"}},
-            },
-            "author": {
-                "store": False,
-                "type": "text",
-                "analyzer": "default",
-            },
             "feed_id": {"store": False, "type": "integer"},
             "date": {
                 "store": False,
@@ -566,7 +544,7 @@ class DiscoverStory:
 
         try:
             cls.ES().indices.create(
-                cls.index_name(), body={"mappings": {"_source": {"enabled": False}, "properties": mapping}}
+                cls.index_name(), body={"mappings": {"_source": {"enabled": True}, "properties": mapping}}
             )
             logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
         except elasticsearch.exceptions.RequestError as e:
