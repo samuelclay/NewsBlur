@@ -495,6 +495,59 @@ class SearchStory:
 
         return result_ids
 
+    @classmethod
+    def debug_index(cls, show_data=True, show_source=False):
+        """Debug method to inspect index fields and entries.
+
+        Args:
+            show_data: If True, will show sample documents. Defaults to False to avoid large outputs.
+        """
+        try:
+            # Check if index exists
+            if not cls.ES().indices.exists(cls.index_name()):
+                logging.info(f"~FR Index {cls.index_name()} does not exist")
+                return
+
+            # Get index mapping
+            mapping = cls.ES().indices.get_mapping(index=cls.index_name())
+            logging.info(f"~FB Index mapping for {cls.index_name()}:")
+            logging.info(
+                f"Properties: {list(mapping[cls.index_name()]['mappings'].get('properties', {}).keys())}"
+            )
+            logging.info(f"Full mapping: {mapping}")
+
+            # Get index settings
+            settings = cls.ES().indices.get_settings(index=cls.index_name())
+            logging.info(f"~FB Index settings:")
+            logging.info(settings)
+
+            # Get index stats
+            stats = cls.ES().indices.stats(index=cls.index_name())
+            total_docs = stats["indices"][cls.index_name()]["total"]["docs"]["count"]
+            logging.info(f"~FG Total documents in index: {total_docs}")
+
+            if show_data:
+                # Sample some documents
+                body = {
+                    "query": {"match_all": {}},
+                    "size": 3,  # Limit to 3 documents for sample
+                    "sort": [{"date": {"order": "desc"}}],
+                }
+                results = cls.ES().search(body=body, index=cls.index_name())
+
+                logging.info("~FB Sample documents:")
+                for hit in results["hits"]["hits"]:
+                    logging.info(f"Document ID: {hit['_id']}")
+                    logging.info(f"Fields: {list(hit.get('_source', {}).keys())}")
+                    if show_source:
+                        logging.info(f"Content: {hit.get('_source', {})}")
+                    logging.info("---")
+
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.info(f"~FR Error accessing index: {e}")
+        except Exception as e:
+            logging.info(f"~FR Unexpected error: {e}")
+
 
 class DiscoverStory:
     _es_client = None
@@ -566,9 +619,12 @@ class DiscoverStory:
         story_hash,
         story_feed_id,
         story_date,
-        story_content_vector,
+        story_content_vector=None,
     ):
         cls.create_elasticsearch_mapping()
+
+        if not story_content_vector:
+            story_content_vector = cls.generate_story_content_vector(story_hash)
 
         doc = {
             "feed_id": story_feed_id,
@@ -619,7 +675,13 @@ class DiscoverStory:
 
     @classmethod
     def vector_query(
-        cls, query_vector, offset=0, max_results=10, feed_ids_to_include=None, feed_ids_to_exclude=None
+        cls,
+        query_vector,
+        offset=0,
+        max_results=10,
+        feed_ids_to_include=None,
+        feed_ids_to_exclude=None,
+        story_hashes_to_exclude=None,
     ):
         try:
             cls.ES().indices.flush(index=cls.index_name())
@@ -639,10 +701,13 @@ class DiscoverStory:
             }
         ]
         must_not_clauses = []
+
         if feed_ids_to_include:
             must_clauses.append({"terms": {"feed_id": feed_ids_to_include}})
         if feed_ids_to_exclude:
             must_not_clauses.append({"terms": {"feed_id": feed_ids_to_exclude}})
+        if story_hashes_to_exclude:
+            must_not_clauses.append({"ids": {"values": story_hashes_to_exclude}})
 
         clauses = {}
         if must_clauses:
@@ -657,8 +722,10 @@ class DiscoverStory:
             "size": max_results,
             "from": offset,
         }
+
+        logging.debug(f"~FBVector query: {body}")
         try:
-            results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+            results = cls.ES().search(body=body, index=cls.index_name())
         except elasticsearch.exceptions.RequestError as e:
             logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
             return []
@@ -750,7 +817,7 @@ class DiscoverStory:
         return story_embedding
 
     @classmethod
-    def debug_index(cls, show_data=True):
+    def debug_index(cls, show_data=True, show_source=False):
         """Debug method to inspect index fields and entries.
 
         Args:
@@ -793,6 +860,8 @@ class DiscoverStory:
                 for hit in results["hits"]["hits"]:
                     logging.info(f"Document ID: {hit['_id']}")
                     logging.info(f"Fields: {list(hit.get('_source', {}).keys())}")
+                    if show_source:
+                        logging.info(f"Content: {hit.get('_source', {})}")
                     logging.info("---")
 
         except elasticsearch.exceptions.NotFoundError as e:
@@ -1136,3 +1205,56 @@ class SearchFeed:
         f = open("feeds.csv", "w+")
         f.write(csv)
         f.close()
+
+    @classmethod
+    def debug_index(cls, show_data=True, show_source=False):
+        """Debug method to inspect index fields and entries.
+
+        Args:
+            show_data: If True, will show sample documents. Defaults to False to avoid large outputs.
+        """
+        try:
+            # Check if index exists
+            if not cls.ES().indices.exists(cls.index_name()):
+                logging.info(f"~FR Index {cls.index_name()} does not exist")
+                return
+
+            # Get index mapping
+            mapping = cls.ES().indices.get_mapping(index=cls.index_name())
+            logging.info(f"~FB Index mapping for {cls.index_name()}:")
+            logging.info(
+                f"Properties: {list(mapping[cls.index_name()]['mappings'].get('properties', {}).keys())}"
+            )
+            logging.info(f"Full mapping: {mapping}")
+
+            # Get index settings
+            settings = cls.ES().indices.get_settings(index=cls.index_name())
+            logging.info(f"~FB Index settings:")
+            logging.info(settings)
+
+            # Get index stats
+            stats = cls.ES().indices.stats(index=cls.index_name())
+            total_docs = stats["indices"][cls.index_name()]["total"]["docs"]["count"]
+            logging.info(f"~FG Total documents in index: {total_docs}")
+
+            if show_data:
+                # Sample some documents
+                body = {
+                    "query": {"match_all": {}},
+                    "size": 3,  # Limit to 3 documents for sample
+                    "sort": [{"num_subscribers": {"order": "desc"}}],
+                }
+                results = cls.ES().search(body=body, index=cls.index_name())
+
+                logging.info("~FB Sample documents:")
+                for hit in results["hits"]["hits"]:
+                    logging.info(f"Document ID: {hit['_id']}")
+                    logging.info(f"Fields: {list(hit.get('_source', {}).keys())}")
+                    if show_source:
+                        logging.info(f"Content: {hit.get('_source')}")
+                    logging.info("---")
+
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.info(f"~FR Error accessing index: {e}")
+        except Exception as e:
+            logging.info(f"~FR Unexpected error: {e}")

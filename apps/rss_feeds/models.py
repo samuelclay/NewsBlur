@@ -3505,7 +3505,11 @@ class MStory(mongo.Document):
     def fetch_similar_stories(self, feed_ids=None, offset=0, limit=5):
         combined_content_vector = DiscoverStory.generate_combined_story_content_vector([self.story_hash])
         results = DiscoverStory.vector_query(
-            combined_content_vector, feed_ids_to_include=feed_ids, offset=offset, max_results=limit
+            combined_content_vector,
+            feed_ids_to_include=feed_ids,
+            story_hashes_to_exclude=[self.story_hash],
+            offset=offset,
+            max_results=limit,
         )
         logging.debug(
             f"Found {len(results)} recommendations for stories related to {self}: {[r['_id'] for r in results]}"
