@@ -5786,6 +5786,7 @@ body {
     line-height: 24px;
     padding-left: 12px;
     padding-right: 12px;
+    white-space: normal;
 }
 
 .NB-sideoption-discover .segmented-control-item a {

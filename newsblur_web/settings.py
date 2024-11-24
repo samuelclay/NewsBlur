@@ -111,10 +111,12 @@ MAX_EMAILS_SENT_PER_DAY_PER_USER = 20  # Most are story notifications
 # ===========================
 
 SHELL_PLUS_IMPORTS = [
-    "from apps.search.models import SearchFeed, SearchStory",
+    "from apps.search.models import SearchFeed, SearchStory, DiscoverStory",
     "import redis",
     "import datetime",
     "from pprint import pprint",
+    "import requests",
+    "import feedparser",
 ]
 # SHELL_PLUS_PRINT_SQL = True
 
