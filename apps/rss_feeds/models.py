@@ -533,27 +533,32 @@ class Feed(models.Model):
                 .filter(**criteria("feed_address", address))
                 .order_by("-num_subscribers")
             )
+            logging.debug(f" ---> Feeds found by address: {feed}")
             if not feed:
                 duplicate_feed = DuplicateFeed.objects.filter(**criteria("duplicate_address", address))
                 if duplicate_feed and len(duplicate_feed) > offset:
                     feed = [duplicate_feed[offset].feed]
+                logging.debug(f" ---> Feeds found by duplicate address: {duplicate_feed} {feed} (offset: {offset})")
             if not feed and aggressive:
                 feed = (
                     cls.objects.filter(branch_from_feed=None)
                     .filter(**criteria("feed_link", address))
                     .order_by("-num_subscribers")
                 )
-
+                logging.debug(f" ---> Feeds found by link: {feed}")
+                
             return feed
 
         @timelimit(10)
         def _feedfinder_forman(url):
             found_feed_urls = feedfinder_forman.find_feeds(url)
+            logging.debug(f" ---> Feeds found by forman: {found_feed_urls}")
             return found_feed_urls
 
         @timelimit(10)
         def _feedfinder_pilgrim(url):
             found_feed_urls = feedfinder_pilgrim.feeds(url)
+            logging.debug(f" ---> Feeds found by pilgrim: {found_feed_urls}")
             return found_feed_urls
 
         # Normalize and check for feed_address, dupes, and feed_link
@@ -3125,7 +3130,6 @@ class MStory(mongo.Document):
             story_hash=self.story_hash,
             story_feed_id=self.story_feed_id,
             story_date=self.story_date,
-            story_content_vector=DiscoverStory.generate_story_content_vector(self.story_hash),
         )
 
     def remove_from_search_index(self):
