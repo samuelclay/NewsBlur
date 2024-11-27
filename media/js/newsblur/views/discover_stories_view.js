@@ -1,4 +1,4 @@
-NEWSBLUR.Views.StoryDiscoverView = Backbone.View.extend({
+NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
 
     events: {
         "click .NB-feed-story-discover": "toggle_feed_story_discover_dialog",
