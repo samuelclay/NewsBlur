@@ -4544,7 +4544,7 @@ body {
 .NB-story-content-container {
     overflow: hidden;
     position: relative;
-    min-height: 192px;
+    min-height: 258px;
     background-color: white;
 }
 
