@@ -4546,8 +4546,7 @@ body {
     padding: 0 236px 42px 28px;
 }
 
-.NB-narrow-content .NB-feed-story .NB-story-content-wrapper,
-.NB-narrow-content .NB-feed-story .NB-story-content-discover-wrapper {
+.NB-narrow-content .NB-feed-story .NB-story-content-wrapper {
     padding-right: 28px;
 }
 

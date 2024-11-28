@@ -105,7 +105,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         }
 
         var $el = $.make('div', [
-            $.make('div', { className: 'NB-story-content-discover-wrapper ' + (this.is_open ? 'NB-active' : '') }, [
+            $.make('div', { className: 'NB-story-content-discover ' + (this.is_open ? 'NB-active' : '') }, [
                 $.make('div', { className: 'NB-sideoption-discover' }, [
                     // Controls section
                     $.make('div', { className: 'NB-sideoption-discover-controls' }, [
@@ -199,6 +199,13 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
             this.resize({ close: true });
             NEWSBLUR.reader.blur_to_page();
         } else {
+            if (NEWSBLUR.reader.flags.narrow_content) {
+                // Move to below the sideoptions
+                this.$('.NB-feed-story-sideoptions-container').append($discover);
+            } else {
+                // Move to below the story content
+                this.$('.NB-feed-story-content').append($discover);
+            }
             // Open/resize
             this.is_open = true;
             if (!options.resize_open) {
