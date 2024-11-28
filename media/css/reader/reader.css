@@ -4449,8 +4449,7 @@ body {
     max-width: 700px;
 }
 
-.NB-feed-story .NB-feed-story-content,
-.NB-feed-story .NB-sideoption-discover-wrapper {
+.NB-feed-story .NB-feed-story-content {
     padding: 24px 0 0;
     max-width: 700px;
     min-height: 12px;
@@ -4466,7 +4465,7 @@ body {
 
 .NB-pref-story-position-stretch .NB-feed-story .NB-feed-story-content,
 .NB-pref-story-position-stretch .NB-feed-story .NB-feed-story-sideoptions-container,
-.NB-pref-story-position-stretch .NB-feed-story .NB-sideoption-discover-wrapper {
+.NB-pref-story-position-stretch .NB-feed-story .NB-story-content-discover-wrapper {
     max-width: none;
 }
 
@@ -4543,13 +4542,12 @@ body {
     max-height: none;
 }
 
-.NB-feed-story .NB-story-content-wrapper,
-.NB-feed-story .NB-sideoption-discover-wrapper {
+.NB-feed-story .NB-story-content-wrapper {
     padding: 0 236px 42px 28px;
 }
 
 .NB-narrow-content .NB-feed-story .NB-story-content-wrapper,
-.NB-narrow-content .NB-feed-story .NB-sideoption-discover-wrapper {
+.NB-narrow-content .NB-feed-story .NB-story-content-discover-wrapper {
     padding-right: 28px;
 }
 
@@ -5203,7 +5201,7 @@ body {
     padding: 0 28px;
 }
 
-.NB-pref-story-position-center .NB-sideoption-discover-wrapper {
+.NB-pref-story-position-center .NB-story-content-discover-wrapper {
     margin-left: auto;
     margin-right: auto;
     max-width: 700px;
@@ -5215,7 +5213,7 @@ body {
     padding: 0 0 0 28px;
 }
 
-.NB-pref-story-position-right .NB-sideoption-discover-wrapper {
+.NB-pref-story-position-right .NB-story-content-discover-wrapper {
     margin-left: auto;
     max-width: 700px;
 }
@@ -5749,20 +5747,20 @@ body {
 /* = Sideoption - Discover = */
 /* ========================= */
 
-.NB-sideoption-discover-wrapper {
+.NB-story-content-discover-wrapper {
     height: 0;
     overflow: hidden;
     display: none;
 }
 
-.NB-sideoption-discover-wrapper.NB-active {
+.NB-story-content-discover-wrapper.NB-active {
     display: block;
     height: auto;
 }
 
-.NB-menu-manage .NB-sideoption-discover-wrapper {}
+.NB-menu-manage .NB-story-content-discover-wrapper {}
 
-.NB-narrow-content .NB-sideoption-discover-wrapper {
+.NB-narrow-content .NB-story-content-discover-wrapper {
     clear: both;
     margin-bottom: 24px;
 }

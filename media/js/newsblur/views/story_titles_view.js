@@ -34,7 +34,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var story_layout = this.options.override_layout ||
             NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
         var on_dashboard = this.options.on_dashboard;
-        var on_discover = this.options.on_discover;
+        var on_discover_feed = this.options.on_discover_feed;
+        var on_discover_story = this.options.on_discover_story;
         var in_popover = this.options.in_popover;
         var override_layout = this.options.override_layout;
         var stories = this.collection.map(function (story) {
@@ -46,7 +47,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 is_magazine: story_layout == 'magazine',
                 override_layout: override_layout,
                 on_dashboard: on_dashboard,
-                on_discover: on_discover,
+                on_discover_feed: on_discover_feed,
+                on_discover_story: on_discover_story,
                 in_popover: in_popover
             }).render();
         });
@@ -70,7 +72,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var collection = this.collection;
         if (options.added) {
             var on_dashboard = this.options.on_dashboard;
-            var on_discover = this.options.on_discover;
+            var on_discover_feed = this.options.on_discover_feed;
+            var on_discover_story = this.options.on_discover_story;
             var in_popover = this.options.in_popover;
             var override_layout = this.options.override_layout;
             var story_layout = this.options.override_layout ||
@@ -85,7 +88,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                     is_magazine: story_layout == 'magazine',
                     override_layout: override_layout,
                     on_dashboard: on_dashboard,
-                    on_discover: on_discover,
+                    on_discover_feed: on_discover_feed,
+                    on_discover_story: on_discover_story,
                     in_popover: in_popover
                 }).render();
             }));
@@ -94,7 +98,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 return story.el;
             });
             this.$el.append($stories);
-            if (this.options.on_dashboard || this.options.on_discover) {
+            if (this.options.on_dashboard || this.options.on_discover_feed || this.options.on_discover_story) {
                 var $extras = this.$el.find('.NB-story-title-container .NB-story-title:not(.NB-hidden)').slice(5);
                 $extras.addClass('NB-hidden');
             }
@@ -238,7 +242,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     check_premium_river: function () {
         if (!NEWSBLUR.Globals.is_premium &&
             NEWSBLUR.Globals.is_authenticated &&
-            (this.options.on_dashboard || this.options.on_discover || NEWSBLUR.reader.flags['river_view'])) {
+            (this.options.on_dashboard || this.options.on_discover_feed || this.options.on_discover_story || NEWSBLUR.reader.flags['river_view'])) {
             this.show_no_more_stories();
             this.append_river_premium_only_notification();
         } else if (this.collection.no_more_stories) {
@@ -359,7 +363,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var $story_titles = this.$story_titles;
         var scroll_y = $story_titles.scrollTop();
 
-        if (this.options.on_discover) {
+        if (this.options.on_discover_feed || this.options.on_discover_story) {
             return;
         }
 

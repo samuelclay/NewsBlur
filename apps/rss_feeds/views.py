@@ -693,4 +693,14 @@ def discover_stories(request, story_hash):
     similar_story_hashes = [result["_id"] for result in similar_stories]
     stories = MStory.objects.filter(story_hash__in=similar_story_hashes)
     stories = Feed.format_stories(stories)
-    return {"discover_stories": stories}
+
+    # Find unsubscribed feeds
+    subscribed_feed_ids = UserSubscription.objects.filter(
+        user=request.user, feed_id__in=set(story["story_feed_id"] for story in stories)
+    ).values_list("feed_id", flat=True)
+    feeds = Feed.objects.filter(
+        pk__in=set(story["story_feed_id"] for story in stories) - set(subscribed_feed_ids)
+    )
+    feeds = {feed.pk: feed.canonical(include_favicon=False) for feed in feeds}
+
+    return {"discover_stories": stories, "feeds": feeds}

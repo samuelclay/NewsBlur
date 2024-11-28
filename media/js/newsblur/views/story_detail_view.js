@@ -31,7 +31,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-story-comments-label": "scroll_to_comments",
         "click .NB-story-content-expander": "expand_story",
         "click .NB-highlight-selection": "highlight_selected_text",
-        "click .NB-unhighlight-selection": "unhighlight_selected_text"
+        "click .NB-unhighlight-selection": "unhighlight_selected_text",
+        "click .NB-feed-story-discover": "toggle_feed_story_discover_dialog"
     },
 
     initialize: function () {
@@ -79,7 +80,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         });
         this.save_view = this.sideoptions_view.save_view;
         this.share_view = this.sideoptions_view.share_view;
-        this.discover_view = this.sideoptions_view.discover_view;
 
         params['story_save_view'] = this.sideoptions_view.save_view.render();
         params['story_share_view'] = this.sideoptions_view.share_view.template({
@@ -87,10 +87,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             social_services: NEWSBLUR.assets.social_services,
             profile: NEWSBLUR.assets.user_profile
         });
-        params['story_discover_view'] = this.sideoptions_view.discover_view.render();
         this.$el.html(this.template(params));
 
-        this.sideoptions_view.move_discover_view();
         if (this.feed) {
             this.$el.toggleClass('NB-inverse', this.feed.is_light());
         }
@@ -308,6 +306,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                         <div class="NB-story-content-expander-pages"></div>\
                     </div>\
                 </div>\
+                <div class="NB-story-content-discover-wrapper"></div>\
             </div>\
             <div class="NB-feed-story-comments-container"></div>\
             <div class="NB-feed-story-sideoptions-container">\
@@ -344,7 +343,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-sideoption-title">Related</div>\
                     <div class="NB-sideoption-icon">&nbsp;</div>\
                 </div>\
-                <%= story_discover_view %>\
             </div>\
         </div>\
         <% if (inline_story_title) { %>\
@@ -1067,10 +1065,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.toggle_starred();
     },
 
-    toggle_discover: function () {
-        this.model.toggle_discover();
-    },
-
     scroll_to_comments: function () {
         if (_.contains(['list', 'grid', 'magazine'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
             NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model, {
@@ -1083,6 +1077,18 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 scroll_offset: -50
             });
         }
+    },
+
+    toggle_feed_story_discover_dialog: function (options) {
+        if (!this.discover_view) {
+            this.discover_view = new NEWSBLUR.Views.DiscoverStoriesView({
+                model: this.model,
+                el: this.$('.NB-story-content-container'),
+                sideoptions_view: this.sideoptions_view
+            }).render();
+        }
+
+        this.discover_view.toggle_feed_story_discover_dialog(options);
     }
 
 
