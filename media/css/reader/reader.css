@@ -5816,7 +5816,7 @@ body {
 
 .NB-sideoption-discover-content {
     overflow-y: auto;
-    margin: 16px 0;
+    margin: 16px 0 0;
     text-align: left;
 }
 
@@ -5838,6 +5838,10 @@ body {
 .NB-discover-loading {
     text-align: center;
     padding: 24px 0;
+}
+
+.NB-discover-load-more.NB-modal-submit-button {
+    margin: 12px 0 0;
 }
 
 /* ====================== */
