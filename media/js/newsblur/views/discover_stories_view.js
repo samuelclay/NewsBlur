@@ -13,6 +13,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         this.page = 1;
         this.has_more_results = true;
         this.is_loading = false;
+        this.current_request = null;
         NEWSBLUR.reader.current_discover_stories_view = this;
 
         // Initialize discover stories collection
@@ -21,6 +22,15 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
 
     switch_discover_section: function (e) {
         e.preventDefault();
+
+        // Abort any pending request
+        if (this.current_request) {
+            this.current_request.abort();
+            this.current_request = null;
+            this.is_loading = false;
+            this.hide_loading();
+        }
+
         var $section = $(e.currentTarget);
 
         // Update active state
@@ -38,6 +48,12 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
 
     load_discover_stories: function () {
         if (this.is_loading || !this.has_more_results) return;
+
+        // Abort any pending request
+        if (this.current_request) {
+            this.current_request.abort();
+            this.current_request = null;
+        }
 
         this.is_loading = true;
         this.show_loading();
@@ -66,27 +82,33 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         this.discover_stories.similar_to_story_hash = this.model.get('story_hash');
 
         var self = this;
-        this.discover_stories.fetch({
+        this.current_request = this.discover_stories.fetch({
             remove: this.page == 1,
             data: {
                 feed_ids: feed_ids,
                 page: this.page
             },
             success: function (collection, response) {
+                self.current_request = null;
                 self.is_loading = false;
                 if (!collection.length || !response.discover_stories.length) {
                     self.has_more_results = false;
                 }
                 self.hide_loading();
                 self.render();
+                self.resize();
                 self.page += 1;
                 if (self.page > 20) {
                     self.has_more_results = false;
                 }
             },
-            error: function () {
-                self.is_loading = false;
-                self.hide_loading();
+            error: function (collection, response) {
+                // Only handle the error if it's not an abort
+                if (!response.statusText || response.statusText !== "abort") {
+                    self.is_loading = false;
+                    self.hide_loading();
+                }
+                self.current_request = null;
             }
         });
     },
