@@ -3,7 +3,8 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
     is_open: false,
 
     events: {
-        "click .NB-sideoption-discover-control-item": "switch_discover_section"
+        "click .NB-sideoption-discover-control-item": "switch_discover_section",
+        "click .NB-discover-load-more": "load_more_stories"
     },
 
     initialize: function () {
@@ -12,6 +13,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         this.page = 1;
         this.has_more_results = true;
         this.is_loading = false;
+        NEWSBLUR.reader.current_discover_stories_view = this;
 
         // Initialize discover stories collection
         this.discover_stories = new NEWSBLUR.Collections.DiscoverStories();
@@ -30,6 +32,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         console.log(["Setting discover stories section", NEWSBLUR.reader.active_feed, section]);
         this.page = 1;
         this.has_more_results = true;
+        this.discover_stories.reset();
         this.load_discover_stories();
     },
 
@@ -64,22 +67,23 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
 
         var self = this;
         this.discover_stories.fetch({
+            remove: this.page == 1,
             data: {
                 feed_ids: feed_ids,
                 page: this.page
             },
             success: function (collection, response) {
+                self.is_loading = false;
                 self.hide_loading();
                 self.render();
-                self.is_loading = false;
                 if (!collection.length) {
                     self.has_more_results = false;
                 }
                 self.page += 1;
             },
             error: function () {
-                self.hide_loading();
                 self.is_loading = false;
+                self.hide_loading();
             }
         });
     },
@@ -90,7 +94,9 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         this.$('.NB-end-line').remove();
         var $endline = $.make('div', { className: "NB-end-line NB-load-line NB-short" });
         $endline.css({ 'background': '#FFF' });
-        this.$(".NB-sideoption-discover-content").html($endline);
+        this.$(".NB-sideoption-discover-content").append($endline);
+        this.$(".NB-discover-load-more-container").hide();
+        this.$(".NB-discover-empty").hide();
     },
 
     hide_loading: function () {
@@ -161,7 +167,14 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                                 story_titles_view.render();
                                 return $story_titles;
                             })()
-                    ])
+                    ]),
+                    (this.discover_stories.length && !this.is_loading && this.has_more_results && $.make('div', { className: 'NB-discover-load-more-container' }, [
+                        this.has_more_results ?
+                            $.make('div', { className: 'NB-discover-load-more NB-modal-submit-button NB-modal-submit-green' }, [
+                                $.make('div', { className: 'NB-discover-load-more-text' }, 'Show more related stories')
+                            ]) :
+                            (this.page > 1 ? $.make('div', { className: 'NB-end-line NB-short' }) : '')
+                    ]))
                 ])
             ])
         ]);
@@ -293,6 +306,15 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         if (NEWSBLUR.app.story_list) {
             NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
         }
+    },
+
+    load_more_stories: function (e) {
+        if (e) {
+            e.preventDefault();
+        }
+        if (this.is_loading || !this.has_more_results) return;
+
+        this.load_discover_stories();
     }
 
 });
