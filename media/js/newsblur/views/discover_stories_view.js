@@ -199,13 +199,9 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
             this.resize({ close: true });
             NEWSBLUR.reader.blur_to_page();
         } else {
-            if (NEWSBLUR.reader.flags.narrow_content) {
-                // Move to below the sideoptions
-                this.$('.NB-feed-story-sideoptions-container').append($discover);
-            } else {
-                // Move to below the story content
-                this.$('.NB-feed-story-content').append($discover);
-            }
+            // Move discover view based on narrow_content flag
+            this.position_discover_view();
+
             // Open/resize
             this.is_open = true;
             if (!options.resize_open) {
@@ -237,7 +233,19 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         }
     },
 
+    position_discover_view: function () {
+        var $discover = this.$('.NB-story-content-discover-wrapper');
+        if (NEWSBLUR.reader.flags.narrow_content) {
+            // Move to below the sideoptions
+            this.$('.NB-feed-story-sideoptions-container').append($discover);
+        } else {
+            // Move to below the story content 
+            this.$el.append($discover);
+        }
+    },
+
     autosize: function () {
+        this.position_discover_view();
         this.resize({ duration: 100, resize_open: true });
     },
 
@@ -261,7 +269,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         if (!options.resize_open && !options.close) {
             $discover_wrapper.css('height', 'auto');
         }
-        console.log(["Discover stories resize", $discover_wrapper, options.close ? 0 : 'auto']);
+
         $discover_wrapper.animate({
             'height': options.close ? 0 : 'auto'
         }, {
