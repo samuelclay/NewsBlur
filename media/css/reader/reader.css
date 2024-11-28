@@ -2115,6 +2115,7 @@ img.feed_favicon {
 
 .NB-view-river .NB-story-title {
     padding-left: 178px;
+    padding-right: 10px;
 }
 
 .NB-view-river .NB-story-pane-west .NB-story-title {
@@ -2709,6 +2710,21 @@ img.feed_favicon {
 
 .NB-story-pane-west .NB-story-title .NB-story-feed .feed_title {
     display: none;
+}
+
+.NB-discover-story-titles .NB-story-title .NB-story-feed {
+    display: flex;
+    gap: 8px;
+    position: static;
+    margin: 2px 0 14px;
+    width: auto;
+}
+
+.NB-discover-story-titles .NB-story-title .NB-story-feed img,
+.NB-discover-story-titles .NB-story-title .NB-story-feed .feed_title {
+    position: static;
+    display: block;
+    width: auto;
 }
 
 .NB-story-title .NB-story-manage-icon {
