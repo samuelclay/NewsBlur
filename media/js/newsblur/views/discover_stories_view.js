@@ -4,7 +4,8 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
 
     events: {
         "click .NB-sideoption-discover-control-item": "switch_discover_section",
-        "click .NB-discover-load-more": "load_more_stories"
+        "click .NB-discover-load-more": "load_more_stories",
+        "click .NB-discover-retry": "retry_load_stories"
     },
 
     initialize: function () {
@@ -28,7 +29,6 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
             this.current_request.abort();
             this.current_request = null;
             this.is_loading = false;
-            this.hide_loading();
         }
 
         var $section = $(e.currentTarget);
@@ -104,9 +104,11 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
             },
             error: function (collection, response) {
                 // Only handle the error if it's not an abort
+                console.log(["Discover stories error", collection, response]);
                 if (!response.statusText || response.statusText !== "abort") {
                     self.is_loading = false;
                     self.hide_loading();
+                    self.show_error();
                 }
                 self.current_request = null;
             }
@@ -117,6 +119,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         options = options || {};
 
         this.$('.NB-end-line').remove();
+        this.$('.NB-discover-error').remove();
         var $endline = $.make('div', { className: "NB-end-line NB-load-line NB-short" });
         $endline.css({ 'background': '#FFF' });
         this.$(".NB-sideoption-discover-content").append($endline);
@@ -342,6 +345,29 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         if (this.is_loading || !this.has_more_results) return;
 
         this.load_discover_stories();
+    },
+
+    retry_load_stories: function (e) {
+        if (e) e.preventDefault();
+        this.page = 1;
+        this.has_more_results = true;
+        this.discover_stories.reset();
+        this.$('.NB-discover-error').remove();
+        this.load_discover_stories();
+    },
+
+    show_error: function () {
+        this.$('.NB-discover-empty').remove();
+        this.$('.NB-discover-error').remove();
+
+        var $error = $.make('div', { className: 'NB-discover-error NB-discover-empty' }, [
+            $.make('div', 'Failed to load stories'),
+            $.make('div', { className: 'NB-discover-retry NB-modal-submit-button NB-modal-submit-green' }, [
+                'Try again'
+            ])
+        ]);
+
+        this.$(".NB-sideoption-discover-content").append($error);
     }
 
 });
