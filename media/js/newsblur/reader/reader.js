@@ -251,6 +251,11 @@
                 $windows.toggleClass('NB-extra-wide-content', extrawide);
                 this.flags.narrow_content = !!narrow;
                 content_width = center_width + (west ? west.width() : 0);
+
+                // Reposition discover view if it's open
+                if (this.active_story && this.active_story.story_discover_view) {
+                    this.active_story.story_discover_view.autosize();
+                }
             }
 
             if ((north && north.width() < 640) ||
@@ -2713,7 +2718,7 @@
 
         send_story_to_pinboard: function (story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'https://pinboard.in/add/?';
+            var url = 'https://pinboard.in/add?';
             var pinboard_url = [
                 url,
                 'url=',
@@ -4183,7 +4188,7 @@
             var $manage_menu = this.make_manage_menu(type, feed_id, story_id, inverse, $item);
             $manage_menu_container.empty().append($manage_menu);
             $manage_menu_container.data('item', $item && $item[0]);
-            $('.NB-task-manage').parents('.NB-taskbar').css('z-index', 2);
+            $('.NB-taskbar').css('z-index', 2);
             if (type == 'site') {
                 if (inverse) {
                     $('li', $manage_menu_container).each(function () {
@@ -4429,7 +4434,7 @@
             var self = this;
             feed_id = feed_id || this.active_feed;
             var feed = this.model.get_feed(feed_id);
-            var feed_view = feed.get_view($feed);
+            var feed_view = feed.get_view($feed, true);
             feed.delete_feed({ view: feed_view });
         },
 
