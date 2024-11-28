@@ -5818,6 +5818,11 @@ body {
     overflow-y: auto;
     margin: 16px 0 0;
     text-align: left;
+    min-height: 40px;
+}
+
+.NB-sideoption-discover-content .NB-end-line {
+    margin: 0;
 }
 
 .NB-sideoption-discover-content .NB-story-titles {
@@ -5842,6 +5847,10 @@ body {
 
 .NB-discover-load-more.NB-modal-submit-button {
     margin: 12px 0 0;
+}
+
+.NB-discover-retry.NB-modal-submit-button {
+    margin: 24px 0 0;
 }
 
 /* ====================== */
