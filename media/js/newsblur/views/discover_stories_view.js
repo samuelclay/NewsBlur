@@ -74,12 +74,15 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
             },
             success: function (collection, response) {
                 self.is_loading = false;
-                self.hide_loading();
-                self.render();
-                if (!collection.length) {
+                if (!collection.length || !response.discover_stories.length) {
                     self.has_more_results = false;
                 }
+                self.hide_loading();
+                self.render();
                 self.page += 1;
+                if (self.page > 20) {
+                    self.has_more_results = false;
+                }
             },
             error: function () {
                 self.is_loading = false;
@@ -168,12 +171,14 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                                 return $story_titles;
                             })()
                     ]),
-                    (this.discover_stories.length && !this.is_loading && this.has_more_results && $.make('div', { className: 'NB-discover-load-more-container' }, [
+                    (this.discover_stories.length && !this.is_loading && $.make('div', { className: 'NB-discover-load-more-container' }, [
                         this.has_more_results ?
                             $.make('div', { className: 'NB-discover-load-more NB-modal-submit-button NB-modal-submit-green' }, [
                                 $.make('div', { className: 'NB-discover-load-more-text' }, 'Show more related stories')
                             ]) :
-                            (this.page > 1 ? $.make('div', { className: 'NB-end-line NB-short' }) : '')
+                            (this.page > 1 ? $.make('div', { className: 'NB-end-line' }, [
+                                $.make('div', { className: 'NB-fleuron' })
+                            ]) : '')
                     ]))
                 ])
             ])
