@@ -125,7 +125,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                         collection: discover_feed.get("stories"),
                         $story_titles: $story_titles,
                         override_layout: 'split',
-                        on_discover: discover_feed,
+                        on_discover_feed: discover_feed,
                         in_popover: self
                     });
                     return $.make('div', { className: 'NB-discover-feed-badge' }, [
@@ -221,7 +221,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                 collection: new NEWSBLUR.Collections.Stories(discover_feed.stories),
                 $story_titles: $story_titles,
                 override_layout: 'split',
-                on_discover: new NEWSBLUR.Models.DiscoverFeed({
+                on_discover_feed: new NEWSBLUR.Models.DiscoverFeed({
                     feed: discover_feed.feed,
                     stories: discover_feed.stories
                 }),
