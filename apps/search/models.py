@@ -623,6 +623,17 @@ class DiscoverStory:
     ):
         cls.create_elasticsearch_mapping()
 
+        try:
+            record = cls.ES().get(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type())
+            # logging.debug(f" ---> ~FBStory already indexed: {story_hash}")
+            return
+        except elasticsearch.exceptions.NotFoundError:
+            record = None
+        except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
+            logging.debug(f" ***> ~FRNo search server available for discover story indexing: {e}")
+        except elasticsearch.exceptions.ConflictError as e:
+            logging.debug(f" ***> ~FBAlready indexed discover story: {e}")
+
         if not story_content_vector:
             story_content_vector = cls.generate_story_content_vector(story_hash)
 
@@ -632,18 +643,9 @@ class DiscoverStory:
             "content_vector": story_content_vector,
         }
         try:
-            record = cls.ES().get(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type())
-            # Check if the content vector has changed
-            if record and record["_source"]["content_vector"] != story_content_vector:
-                cls.ES().update(
-                    index=cls.index_name(),
-                    id=story_hash,
-                    body={"doc": doc},  # Wrap the document in a "doc" field for updates
-                    doc_type=cls.doc_type(),
-                )
-                logging.debug(f" ---> ~FBStory already indexed, new content vector: {story_hash}")
-            else:
-                logging.debug(f" ---> ~FBStory already indexed, no change: {story_hash}")
+            if not record:
+                logging.debug(f" ---> ~FCIndexing discover story: {story_hash}")
+                cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
         except elasticsearch.exceptions.NotFoundError:
             cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
             logging.debug(f" ---> ~FCIndexing discover story: {story_hash}")
