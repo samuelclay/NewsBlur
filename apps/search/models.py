@@ -13,7 +13,7 @@ import redis
 import urllib3
 from django.conf import settings
 from django.contrib.auth.models import User
-from openai import OpenAI
+from openai import APITimeoutError, OpenAI
 
 from apps.search.tasks import (
     FinishIndexSubscriptionsForSearch,
@@ -637,6 +637,10 @@ class DiscoverStory:
         if not story_content_vector:
             story_content_vector = cls.generate_story_content_vector(story_hash)
 
+        if not story_content_vector:
+            logging.debug(f" ***> ~FRNo content vector found for story {story_hash}")
+            return
+
         doc = {
             "feed_id": story_feed_id,
             "date": story_date,
@@ -777,7 +781,12 @@ class DiscoverStory:
     def generate_story_content_vector(cls, story_hash):
         from apps.rss_feeds.models import MStory
 
-        story = MStory.objects.get(story_hash=story_hash)
+        try:
+            story = MStory.objects.get(story_hash=story_hash)
+        except MStory.DoesNotExist:
+            logging.debug(f" ***> ~FRNo story found for {story_hash}")
+            return []
+
         story_title = story.story_title
         story_tags = ", ".join(story.story_tags)
         story_content = ""
@@ -813,7 +822,11 @@ class DiscoverStory:
 
         client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
-        response = client.embeddings.create(model=model_name, input=truncated_text)
+        try:
+            response = client.embeddings.create(model=model_name, input=truncated_text)
+        except APITimeoutError as e:
+            logging.debug(f" ***> ~FROpenAI API timeout: {e}")
+            return []
         story_embedding = response.data[0].embedding
 
         return story_embedding
