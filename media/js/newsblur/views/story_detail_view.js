@@ -227,7 +227,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             tags_score: this.classifiers && this.classifiers.tags,
             options: this.options,
             truncatable: this.is_truncatable(),
-            inline_story_title: this.options.inline_story_title
+            inline_story_title: this.options.inline_story_title,
+            show_sideoption_email: NEWSBLUR.assets.preference("show_sideoption_email"),
+            show_sideoption_train: NEWSBLUR.assets.preference("show_sideoption_train"),
+            show_sideoption_save: NEWSBLUR.assets.preference("show_sideoption_save"),
+            show_sideoption_share: NEWSBLUR.assets.preference("show_sideoption_share"),
+            show_sideoption_related: NEWSBLUR.assets.preference("show_sideoption_related"),
         };
     },
 
@@ -310,39 +315,49 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             </div>\
             <div class="NB-feed-story-comments-container"></div>\
             <div class="NB-feed-story-sideoptions-container">\
-                <div class="NB-sideoption NB-feed-story-email" role="button">\
-                    <div class="NB-sideoption-title">Email</div>\
-                    <div class="NB-sideoption-thirdparty NB-sideoption-icon NB-sideoption-icon-email">&nbsp;</div>\
-                    <div class="NB-flex-break"></div>\
-                    <div class="NB-sideoption-thirdparty-services">\
-                        <div class="NB-sideoption-icons">\
-                            <% _.each(NEWSBLUR.assets.third_party_sharing_services, function(label, key) { %>\
-                                <% if (NEWSBLUR.Preferences["story_share_"+key]) { %>\
-                                    <div class="NB-sideoption-thirdparty NB-sideoption-thirdparty-<%= key %>" data-service-name="<%= key %>" data-service-label="<%= label %>" role="button">\
-                                    </div>\
-                                <% } %>\
-                            <% }) %>\
+                <% if (show_sideoption_email) { %>\
+                    <div class="NB-sideoption NB-feed-story-email" role="button">\
+                        <div class="NB-sideoption-title">Email</div>\
+                        <div class="NB-sideoption-thirdparty NB-sideoption-icon NB-sideoption-icon-email">&nbsp;</div>\
+                        <div class="NB-flex-break"></div>\
+                        <div class="NB-sideoption-thirdparty-services">\
+                            <div class="NB-sideoption-icons">\
+                                <% _.each(NEWSBLUR.assets.third_party_sharing_services, function(label, key) { %>\
+                                    <% if (NEWSBLUR.Preferences["story_share_"+key]) { %>\
+                                        <div class="NB-sideoption-thirdparty NB-sideoption-thirdparty-<%= key %>" data-service-name="<%= key %>" data-service-label="<%= label %>" role="button">\
+                                        </div>\
+                                    <% } %>\
+                                <% }) %>\
+                            </div>\
                         </div>\
                     </div>\
-                </div>\
-                <div class="NB-sideoption NB-feed-story-train" role="button">\
-                    <div class="NB-sideoption-title">Train</div>\
-                    <div class="NB-sideoption-icon">&nbsp;</div>\
-                </div>\
-                <div class="NB-sideoption NB-feed-story-save" role="button">\
-                    <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save" %></div>\
-                    <div class="NB-sideoption-icon">&nbsp;</div>\
-                </div>\
-                <%= story_save_view %>\
-                <div class="NB-sideoption NB-feed-story-share" role="button">\
-                    <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share" %></div>\
-                    <div class="NB-sideoption-icon">&nbsp;</div>\
-                </div>\
-                <%= story_share_view %>\
-                <div class="NB-sideoption NB-feed-story-discover" role="button">\
-                    <div class="NB-sideoption-title">Related</div>\
-                    <div class="NB-sideoption-icon">&nbsp;</div>\
-                </div>\
+                <% } %>\
+                <% if (show_sideoption_train) { %>\
+                    <div class="NB-sideoption NB-feed-story-train" role="button">\
+                        <div class="NB-sideoption-title">Train</div>\
+                        <div class="NB-sideoption-icon">&nbsp;</div>\
+                    </div>\
+                <% } %>\
+                <% if (show_sideoption_save) { %>\
+                    <div class="NB-sideoption NB-feed-story-save" role="button">\
+                        <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save" %></div>\
+                        <div class="NB-sideoption-icon">&nbsp;</div>\
+                    </div>\
+                    <%= story_save_view %>\
+                    <% } %>\
+                <% if (show_sideoption_share) { %>\
+                    <div class="NB-sideoption NB-feed-story-share" role="button">\
+                        <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share" %></div>\
+                        <div class="NB-sideoption-icon">&nbsp;</div>\
+                    </div>\
+                    <%= story_share_view %>\
+                <% } %>\
+                <% if (show_sideoption_related) { %>\
+                    <div class="NB-sideoption NB-feed-story-discover" role="button">\
+                        <div class="NB-sideoption-title">Related</div>\
+                        <div class="NB-sideoption-icon">&nbsp;</div>\
+                    </div>\
+                <% } %>\
             </div>\
         </div>\
         <% if (inline_story_title) { %>\

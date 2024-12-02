@@ -794,7 +794,17 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Story button placement'
+                            'Story side options placement'
+                        ]),
+                        $.make('div', { className: 'NB-preference-options' }, _.map(["email", "save", "train", "share", "related"], function (label) {
+                            var label_title = label.charAt(0).toUpperCase() + label.slice(1);
+                            return $.make('div', { className: 'NB-preference-option NB-preference-story-sideoption', title: label_title }, [
+                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-sideoption-' + label, name: 'show_sideoption_' + label }),
+                                $.make('label', { 'for': 'NB-preference-story-sideoption-' + label }, label_title)
+                            ])
+                        })),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Story side options buttons'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-highlights' }, [
@@ -1154,6 +1164,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 $(this).prop('checked', true);
                 return false;
             }
+        });
+        _.each(["email", "save", "train", "share", "related"], function (sideoption) {
+            var sideoption_name = "show_sideoption_" + sideoption;
+            $('input#NB-preference-story-sideoption-' + sideoption, $modal).prop('checked', NEWSBLUR.Preferences[sideoption_name]);
         });
         $('input[name=highlights]', $modal).each(function () {
             if ($(this).val() == "" + NEWSBLUR.Preferences.highlights) {

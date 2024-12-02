@@ -1870,7 +1870,7 @@ img.feed_favicon {
     float: left;
     width: 16px;
     height: 14px;
-    background: transparent url('/media/embed/icons/nouns/discover.svg') no-repeat 1px 1px;
+    background: transparent url('/media/embed/icons/nouns/direction.svg') no-repeat 1px 1px;
     background-size: 12px;
     margin: 0 8px;
 }
@@ -1896,7 +1896,7 @@ img.feed_favicon {
     float: left;
     width: 24px;
     height: 24px;
-    background: transparent url(/media/embed/icons/nouns/discover.svg) no-repeat 0 0;
+    background: transparent url(/media/embed/icons/nouns/direction.svg) no-repeat 0 0;
     background-size: 24px;
     margin: -1px 8px 0 0;
 }
@@ -5353,7 +5353,7 @@ body {
 }
 
 .NB-sideoption.NB-feed-story-discover .NB-sideoption-icon {
-    background-image: url('/media/embed/icons/nouns/discover.svg');
+    background-image: url('/media/embed/icons/nouns/direction.svg');
     background-size: 12px;
 }
 
@@ -13510,6 +13510,41 @@ form.opml_import_form input {
 
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-instapaper] {
     background: transparent url('/media/embed/reader/instapaper.png') no-repeat 0 0;
+}
+
+.NB-modal-preferences .NB-preference .NB-preference-story-sideoption label {
+    margin-left: 2px;
+    padding-left: 24px;
+}
+
+.NB-modal-preferences label[for=NB-preference-story-sideoption-email] {
+    background: transparent url("/media/embed/icons/nouns/email.svg") no-repeat center left;
+    background-size: 18px;
+    filter: hue-rotate(134deg) saturate(16);
+}
+
+.NB-modal-preferences label[for=NB-preference-story-sideoption-save] {
+    background: transparent url("/media/embed/icons/nouns/saved-stories.svg") no-repeat center left;
+    background-size: 18px;
+    filter: hue-rotate(134deg) saturate(16);
+}
+
+.NB-modal-preferences label[for=NB-preference-story-sideoption-train] {
+    background: transparent url("/media/embed/icons/nouns/train.svg") no-repeat center left;
+    background-size: 18px;
+    filter: hue-rotate(134deg) saturate(16);
+}
+
+.NB-modal-preferences label[for=NB-preference-story-sideoption-share] {
+    background: transparent url("/media/embed/icons/nouns/share.svg") no-repeat center left;
+    background-size: 18px;
+    filter: hue-rotate(134deg) saturate(16);
+}
+
+.NB-modal-preferences label[for=NB-preference-story-sideoption-related] {
+    background: transparent url("/media/embed/icons/nouns/direction.svg") no-repeat center left;
+    background-size: 18px;
+    filter: hue-rotate(134deg) saturate(16);
 }
 
 .NB-modal-preferences .NB-preference-keyboard-spacebar .NB-preference-keyboard-spacebaraction {
