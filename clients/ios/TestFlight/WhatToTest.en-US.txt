@@ -1,2 +1,2 @@
-- Fixed the top of the first story being scrolled off the top of the feed list on iPhone.
+- Fixed cached images not rendering on iOS 18 and macOS Sequoia.
 
