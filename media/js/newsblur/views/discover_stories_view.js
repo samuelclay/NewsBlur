@@ -215,16 +215,24 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         // Update active section indicator
         var section = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'stories_discover');
         this.$(".NB-sideoption-discover-control-item").removeClass('NB-active');
+
+        var $active_section = null;
         if (section === 'all') {
-            this.$(".NB-sideoption-discover-control-item[data-selected-feed='all']").addClass('NB-active');
+            $active_section = this.$(".NB-sideoption-discover-control-item[data-selected-feed='all']");
         } else if (_.string.startsWith(section, 'feed')) {
-            this.$(".NB-sideoption-discover-control-item[data-selected-feed='feed:" + this.model.get('story_feed_id') + "']").addClass('NB-active');
+            $active_section = this.$(".NB-sideoption-discover-control-item[data-selected-feed='feed:" + this.model.get('story_feed_id') + "']");
         } else if (section === 'global') {
-            this.$(".NB-sideoption-discover-control-item[data-selected-feed='global']").addClass('NB-active');
+            $active_section = this.$(".NB-sideoption-discover-control-item[data-selected-feed='global']");
         } else {
             var folder_title = section.split(':')[1];
-            this.$(".NB-sideoption-discover-control-item[data-selected-feed='river:" + folder_title + "']").addClass('NB-active');
+            $active_section = this.$(".NB-sideoption-discover-control-item[data-selected-feed='river:" + folder_title + "']");
         }
+
+        if (!$active_section || !$active_section.length) {
+            $active_section = this.$(".NB-sideoption-discover-control-item[data-selected-feed='all']");
+        }
+
+        $active_section.addClass('NB-active');
 
         return this;
     },
