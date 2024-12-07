@@ -5,7 +5,8 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
     events: {
         "click .NB-sideoption-discover-control-item": "switch_discover_section",
         "click .NB-discover-load-more": "load_more_stories",
-        "click .NB-discover-retry": "retry_load_stories"
+        "click .NB-discover-retry": "retry_load_stories",
+        "click .NB-discover-retry.NB-modal-submit-button": "show_premium_upgrade_modal"
     },
 
     initialize: function () {
@@ -47,6 +48,8 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
     },
 
     load_discover_stories: function () {
+        if (!NEWSBLUR.Globals.is_premium) return;
+
         if (this.is_loading || !this.has_more_results) return;
 
         // Abort any pending request
@@ -177,24 +180,33 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                     ]),
                     // Content section
                     $.make('div', { className: 'NB-sideoption-discover-content NB-story-pane-west' }, [
-                        !this.discover_stories.length ?
-                            $.make('div', { className: 'NB-discover-empty' }, 'No similar stories found') :
-                            (function () {
-                                var $story_titles = $.make('div', {
-                                    className: 'NB-story-titles NB-discover-story-titles'
-                                });
+                        !NEWSBLUR.Globals.is_premium ?
+                            $.make('div', { className: 'NB-discover-empty' }, [
+                                'Related stories are only available for premium subscribers.',
+                                $.make('div', {
+                                    className: 'NB-discover-retry NB-modal-submit-button NB-modal-submit-green',
+                                }, [
+                                    'Upgrade to Premium'
+                                ])
+                            ]) :
+                            !this.discover_stories.length ?
+                                $.make('div', { className: 'NB-discover-empty' }, 'No similar stories found') :
+                                (function () {
+                                    var $story_titles = $.make('div', {
+                                        className: 'NB-story-titles NB-discover-story-titles'
+                                    });
 
-                                var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
-                                    el: $story_titles,
-                                    collection: self.discover_stories,
-                                    $story_titles: $story_titles,
-                                    override_layout: 'split',
-                                    on_discover_story: self.discover_stories
-                                });
+                                    var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
+                                        el: $story_titles,
+                                        collection: self.discover_stories,
+                                        $story_titles: $story_titles,
+                                        override_layout: 'split',
+                                        on_discover_story: self.discover_stories
+                                    });
 
-                                story_titles_view.render();
-                                return $story_titles;
-                            })()
+                                    story_titles_view.render();
+                                    return $story_titles;
+                                })()
                     ]),
                     (this.discover_stories.length && !this.is_loading && $.make('div', { className: 'NB-discover-load-more-container' }, [
                         this.has_more_results ?
@@ -362,6 +374,11 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         this.discover_stories.reset();
         this.$('.NB-discover-error').remove();
         this.load_discover_stories();
+    },
+
+    show_premium_upgrade_modal: function (e) {
+        e.preventDefault();
+        NEWSBLUR.reader.open_feedchooser_modal({ premium_only: true });
     },
 
     show_error: function () {
