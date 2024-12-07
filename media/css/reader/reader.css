@@ -8888,6 +8888,11 @@ form.opml_import_form input {
 }
 
 .NB-module-premium-icon.NB-9 {
+    background: transparent url('/media/embed/icons/nouns/direction_black.svg') no-repeat 0 0;
+    background-size: 36px;
+}
+
+.NB-module-premium-icon.NB-10 {
     background: transparent url('/media/embed/icons/icons8/icons8-knife-and-spatchula-100.png') no-repeat 0 0;
     background-size: 36px;
 }
@@ -12680,6 +12685,12 @@ form.opml_import_form input {
 
 .NB-feedchooser-premium-bullets li.NB-9 .NB-feedchooser-premium-bullet-image,
 .NB-welcome-premium-bullet.NB-9 {
+    background: transparent url('/media/embed/icons/nouns/direction_black.svg') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-feedchooser-premium-bullets li.NB-10 .NB-feedchooser-premium-bullet-image,
+.NB-welcome-premium-bullet.NB-10 {
     background: transparent url('/media/embed/icons/icons8/icons8-knife-and-spatchula-100.png') no-repeat 0 0;
     background-size: 16px;
 }
