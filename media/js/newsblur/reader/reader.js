@@ -89,6 +89,7 @@
             this.constants = {
                 FEED_REFRESH_INTERVAL: (1000 * 60) * 1, // 1 minute
                 FILL_OUT_PAGES: 100,
+                FILL_OUT_PAGES_SEARCH_STORY_TITLE: 10,
                 FIND_NEXT_UNREAD_STORY_TRIES: 100,
                 RIVER_STORIES_FOR_STANDARD_ACCOUNT: 3,
                 MIN_FEED_LIST_SIZE: 225,
@@ -779,6 +780,16 @@
                 _.delay(_.bind(function () {
                     story.set('selected', true, { scroll_to_comments: options.scroll_to_comments });
                 }, this), 100);
+            } else if ((this.counts['select_story_in_feed'] == this.constants.FILL_OUT_PAGES_SEARCH_STORY_TITLE || NEWSBLUR.assets.stories.no_more_stories) &&
+                this.flags['select_story_title_in_feed']) {
+                // Still not found but because we have a story title, we can search for it.
+                NEWSBLUR.reader.flags.searching = true;
+                NEWSBLUR.reader.flags.search = this.flags['select_story_title_in_feed'];
+                this.open_feed(this.active_feed, {
+                    story_id: this.flags['select_story_in_feed'],
+                    search: this.flags['select_story_title_in_feed']
+                });
+                this.flags['select_story_title_in_feed'] = null;
             } else if (this.counts['select_story_in_feed'] < this.constants.FILL_OUT_PAGES &&
                 !NEWSBLUR.assets.stories.no_more_stories) {
                 // Nothing up, nothing down, but still not found. Load 1 page then find it.
