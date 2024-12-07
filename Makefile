@@ -31,6 +31,7 @@ coffee:
 migrations:
 	docker exec -it newsblur_web ./manage.py makemigrations
 makemigration: migrations
+makemigrations: migrations
 datamigration: 
 	docker exec -it newsblur_web ./manage.py makemigrations --empty $(app)
 migration: migrations
@@ -69,6 +70,11 @@ jekyll:
 	cd blog && bundle exec jekyll serve
 jekyll_drafts:
 	cd blog && bundle exec jekyll serve --drafts
+lint:
+	docker exec -it newsblur_web isort --profile black .
+	docker exec -it newsblur_web black --line-length 110 .
+	docker exec -it newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv
+
 jekyll_build:
 	cd blog && bundle exec jekyll build
 	
@@ -176,6 +182,9 @@ monitor: deploy_monitor
 deploy_staging:
 	ansible-playbook ansible/deploy.yml -l staging
 staging: deploy_staging
+deploy_staging_static: staging_static
+staging_static:
+	ansible-playbook ansible/deploy.yml -l staging --tags static
 celery_stop:
 	ansible-playbook ansible/deploy.yml -l task --tags stop
 sentry:
@@ -200,6 +209,11 @@ mongodump:
 mongorestore:
 	cp -fr docker/volumes/mongodump docker/volumes/db_mongo/
 	docker exec -it db_mongo mongorestore --port 29019 -d newsblur /data/db/mongodump/newsblur
+pgrestore:
+	docker exec -it db_postgres bash -c "psql -U newsblur -c 'CREATE DATABASE newsblur_prod;'; pg_restore -U newsblur --role=newsblur --dbname=newsblur_prod /var/lib/postgresql/data/backup_postgresql_2023-10-10-04-00.sql.sql"
+redisrestore:
+	docker exec -it db_redis bash -c "redis-cli -p 6579 --pipe < /data/backup_db_redis_user_2023-10-21-04-00.rdb.gz"
+	docker exec -it db_redis bash -c "redis-cli -p 6579 --pipe < /data/backup_db_redis_story2_2023-10-21-04-00.rdb.gz"
 index_feeds:
 	docker exec -it newsblur_web ./manage.py index_feeds
 index_stories:

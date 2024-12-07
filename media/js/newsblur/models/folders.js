@@ -383,8 +383,8 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         var feedA = modelA.feed;
         var feedB = modelB.feed;
 
-        if (!feedA || !feedB) {
-            return !feedA ? 1 : -1;
+        if (!feedA || !feedB || !feedA.get('feed_title') || !feedB.get('feed_title')) {
+            return !feedA || !feedA.get('feed_title') ? 1 : -1;
         }
 
         var remove_articles = function (str) {

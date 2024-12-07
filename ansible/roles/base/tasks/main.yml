@@ -1,5 +1,10 @@
 ---
-
+- name: Add the HashiCorp GPG key
+  become: yes
+  apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+    state: present
+  
 - name: Ensure git, zsh, ssl are the latest versions
   apt: name={{ sys_packages }} update_cache={{ update_apt_cache }} state=latest
   become: yes
