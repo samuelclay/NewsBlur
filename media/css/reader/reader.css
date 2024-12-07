@@ -8432,6 +8432,7 @@ form.opml_import_form input {
     display: flex;
     order: 2;
     flex: 0 1 0;
+    margin-left: auto;
 }
 
 .NB-module .NB-module-header-text {
@@ -8677,6 +8678,7 @@ form.opml_import_form input {
     padding: 12px;
     overflow: hidden;
     border-radius: 4px;
+    margin: 24px 0;
 }
 
 .NB-module-gettingstarted .NB-intro-avatar {
@@ -8739,7 +8741,7 @@ form.opml_import_form input {
 }
 
 .NB-module-gettingstarted .NB-intro-progress-goal.NB-done {
-    background: transparent url('/media/embed/icons/nouns/accept.svg') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/accept.svg') no-repeat center center;
     background-size: 16px;
     filter: hue-rotate(20deg) saturate(18);
 }

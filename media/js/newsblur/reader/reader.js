@@ -3114,7 +3114,7 @@
             NEWSBLUR.assets.preference('has_found_friends', true);
             NEWSBLUR.reader.check_hide_getting_started();
 
-            NEWSBLUR.reader_friends = new NEWSBLUR.ReaderFriends();
+            NEWSBLUR.intro = new NEWSBLUR.ReaderIntro({ 'page': 3 });
         },
 
         open_profile_editor_modal: function () {
