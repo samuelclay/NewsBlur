@@ -52,7 +52,11 @@ from sentry_sdk import capture_exception, flush
 from utils import json_functions as json
 from utils import log as logging
 from utils.facebook_fetcher import FacebookFetcher
-from utils.feed_functions import TimeoutError, strip_underscore_from_feed_address, timelimit
+from utils.feed_functions import (
+    TimeoutError,
+    strip_underscore_from_feed_address,
+    timelimit,
+)
 from utils.json_fetcher import JSONFetcher
 from utils.story_functions import linkify, pre_process_story, strip_tags
 from utils.twitter_fetcher import TwitterFetcher

@@ -1,10 +1,11 @@
-import openai
-import tiktoken
 import logging
 import re
 from html import unescape
 
+import openai
+import tiktoken
 from django.conf import settings
+
 
 def setup_openai_model(openai_model):
     openai.api_key = settings.OPENAI_API_KEY
