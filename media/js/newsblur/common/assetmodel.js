@@ -1,5 +1,34 @@
 NEWSBLUR.AssetModel = Backbone.Router.extend({
 
+    third_party_sharing_services: {
+        "copyurl": "Copy URL",
+        "copytext": "Copy Text",
+        "print": "Print",
+        "facebook": "Facebook",
+        "twitter": "X / Twitter",
+        "reddit": "Reddit",
+        "readitlater": "Pocket",
+        "tumblr": "Tumblr",
+        "delicious": "Delicious",
+        "blogger": "Blogger",
+        "pinboard": "Pinboard",
+        "raindrop": "Raindrop",
+        "whatsapp": "WhatsApp",
+        "bluesky": "Bluesky",
+        "mastodon": "Mastodon",
+        "pinterest": "Pinterest",
+        "buffer": "Buffer",
+        "diigo": "Diigo",
+        "evernote": "Evernote",
+        "instapaper": "Instapaper",
+        "livejournal": "LiveJournal",
+        "flipboard": "Flipboard",
+        "lineme": "Line.me",
+        "hackernews": "Hacker News",
+        "telegram": "Telegram",
+        "linkedin": "LinkedIn"
+    },
+
     initialize: function () {
         this.defaults = {
             classifiers: {
@@ -1445,7 +1474,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             view_settings = { 'view': view_settings };
         }
         var params = { 'feed_id': feed_id + '' };
-        _.each(['view', 'order', 'read_filter', 'layout', 'dashboard_count'], function (facet) {
+        _.each(['view', 'order', 'read_filter', 'layout', 'dashboard_count', 'stories_discover'], function (facet) {
             if (setting[facet]) {
                 view_settings[facet.substr(0, 1)] = setting[facet];
                 params['feed_' + facet + '_setting'] = setting[facet];

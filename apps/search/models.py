@@ -2,15 +2,18 @@ import datetime
 import html
 import re
 import time
+import zlib
 
 import celery
 import elasticsearch
 import mongoengine as mongo
+import numpy as np
 import pymongo
 import redis
 import urllib3
 from django.conf import settings
 from django.contrib.auth.models import User
+from openai import APITimeoutError, OpenAI
 
 from apps.search.tasks import (
     FinishIndexSubscriptionsForSearch,
@@ -19,6 +22,7 @@ from apps.search.tasks import (
     IndexSubscriptionsForSearch,
 )
 from utils import log as logging
+from utils.ai_functions import setup_openai_model
 from utils.feed_functions import chunks
 
 
@@ -233,20 +237,6 @@ class SearchStory:
         if cls.ES().indices.exists(cls.index_name()):
             return
 
-        try:
-            cls.ES().indices.create(cls.index_name())
-            logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
-        except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRCould not create search index for ~FM%s: %s" % (cls.index_name(), e))
-            return
-        except (
-            elasticsearch.exceptions.ConnectionError,
-            urllib3.exceptions.NewConnectionError,
-            urllib3.exceptions.ConnectTimeoutError,
-        ) as e:
-            logging.debug(f" ***> ~FRNo search server available for creating story mapping: {e}")
-            return
-
         mapping = {
             "title": {
                 "store": False,
@@ -276,17 +266,35 @@ class SearchStory:
                 "type": "date",
             },
         }
-        cls.ES().indices.put_mapping(
-            body={
-                "properties": mapping,
-            },
-            index=cls.index_name(),
-        )
+
+        try:
+            cls.ES().indices.create(
+                cls.index_name(), body={"mappings": {"_source": {"enabled": False}, "properties": mapping}}
+            )
+            logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRCould not create search index for ~FM%s: %s" % (cls.index_name(), e))
+            return
+        except (
+            elasticsearch.exceptions.ConnectionError,
+            urllib3.exceptions.NewConnectionError,
+            urllib3.exceptions.ConnectTimeoutError,
+        ) as e:
+            logging.debug(f" ***> ~FRNo search server available for creating story mapping: {e}")
+            return
+
         cls.ES().indices.flush(cls.index_name())
 
     @classmethod
     def index(
-        cls, story_hash, story_title, story_content, story_tags, story_author, story_feed_id, story_date
+        cls,
+        story_hash,
+        story_title,
+        story_content,
+        story_tags,
+        story_author,
+        story_feed_id,
+        story_date,
     ):
         cls.create_elasticsearch_mapping()
 
@@ -487,10 +495,400 @@ class SearchStory:
 
         return result_ids
 
+    @classmethod
+    def debug_index(cls, show_data=True, show_source=False):
+        """Debug method to inspect index fields and entries.
+
+        Args:
+            show_data: If True, will show sample documents. Defaults to False to avoid large outputs.
+        """
+        try:
+            # Check if index exists
+            if not cls.ES().indices.exists(cls.index_name()):
+                logging.info(f"~FR Index {cls.index_name()} does not exist")
+                return
+
+            # Get index mapping
+            mapping = cls.ES().indices.get_mapping(index=cls.index_name())
+            logging.info(f"~FB Index mapping for {cls.index_name()}:")
+            logging.info(
+                f"Properties: {list(mapping[cls.index_name()]['mappings'].get('properties', {}).keys())}"
+            )
+            logging.info(f"Full mapping: {mapping}")
+
+            # Get index settings
+            settings = cls.ES().indices.get_settings(index=cls.index_name())
+            logging.info(f"~FB Index settings:")
+            logging.info(settings)
+
+            # Get index stats
+            stats = cls.ES().indices.stats(index=cls.index_name())
+            total_docs = stats["indices"][cls.index_name()]["total"]["docs"]["count"]
+            logging.info(f"~FG Total documents in index: {total_docs}")
+
+            if show_data:
+                # Sample some documents
+                body = {
+                    "query": {"match_all": {}},
+                    "size": 3,  # Limit to 3 documents for sample
+                    "sort": [{"date": {"order": "desc"}}],
+                }
+                results = cls.ES().search(body=body, index=cls.index_name())
+
+                logging.info("~FB Sample documents:")
+                for hit in results["hits"]["hits"]:
+                    logging.info(f"Document ID: {hit['_id']}")
+                    logging.info(f"Fields: {list(hit.get('_source', {}).keys())}")
+                    if show_source:
+                        logging.info(f"Content: {hit.get('_source', {})}")
+                    logging.info("---")
+
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.info(f"~FR Error accessing index: {e}")
+        except Exception as e:
+            logging.info(f"~FR Unexpected error: {e}")
+
+
+class DiscoverStory:
+    _es_client = None
+    name = "discover-stories-openai"
+
+    @classmethod
+    def ES(cls):
+        if cls._es_client is None:
+            cls._es_client = elasticsearch.Elasticsearch(settings.ELASTICSEARCH_STORY_HOST)
+            cls.create_elasticsearch_mapping()
+        return cls._es_client
+
+    @classmethod
+    def index_name(cls):
+        return "%s-index" % cls.name
+
+    @classmethod
+    def doc_type(cls):
+        if settings.DOCKERBUILD or getattr(settings, "ES_IGNORE_TYPE", True):
+            return None
+        return "%s-type" % cls.name
+
+    @classmethod
+    def create_elasticsearch_mapping(cls, delete=False):
+        if delete:
+            logging.debug(" ---> ~FRDeleting search index for ~FM%s" % cls.index_name())
+            try:
+                cls.ES().indices.delete(cls.index_name())
+            except elasticsearch.exceptions.NotFoundError:
+                logging.debug(f" ---> ~FBCan't delete {cls.index_name()} index, doesn't exist...")
+
+        if cls.ES().indices.exists(cls.index_name()):
+            return
+
+        mapping = {
+            "feed_id": {"store": False, "type": "integer"},
+            "date": {
+                "store": False,
+                "type": "date",
+            },
+            "content_vector": {
+                "type": "dense_vector",
+                "dims": 1536,  # Numbers of dims from text-embedding-3-small
+                # "store": True,  # Keep stored since we need to retrieve it # No need to be explicit
+            },
+        }
+
+        try:
+            cls.ES().indices.create(
+                cls.index_name(), body={"mappings": {"_source": {"enabled": True}, "properties": mapping}}
+            )
+            logging.debug(" ---> ~FCCreating search index for ~FM%s" % cls.index_name())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRCould not create search index for ~FM%s: %s" % (cls.index_name(), e))
+            return
+        except (
+            elasticsearch.exceptions.ConnectionError,
+            urllib3.exceptions.NewConnectionError,
+            urllib3.exceptions.ConnectTimeoutError,
+        ) as e:
+            logging.debug(f" ***> ~FRNo search server available for creating story mapping: {e}")
+            return
+
+        cls.ES().indices.flush(cls.index_name())
+
+    @classmethod
+    def index(
+        cls,
+        story_hash,
+        story_feed_id,
+        story_date,
+        story_content_vector=None,
+    ):
+        cls.create_elasticsearch_mapping()
+
+        try:
+            record = cls.ES().get(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type())
+            # logging.debug(f" ---> ~FBStory already indexed: {story_hash}")
+            return
+        except elasticsearch.exceptions.NotFoundError:
+            record = None
+        except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
+            logging.debug(f" ***> ~FRNo search server available for discover story indexing: {e}")
+        except elasticsearch.exceptions.ConflictError as e:
+            logging.debug(f" ***> ~FBAlready indexed discover story: {e}")
+
+        if not story_content_vector:
+            story_content_vector = cls.generate_story_content_vector(story_hash)
+
+        if not story_content_vector:
+            logging.debug(f" ***> ~FRNo content vector found for story {story_hash}")
+            return
+
+        doc = {
+            "feed_id": story_feed_id,
+            "date": story_date,
+            "content_vector": story_content_vector,
+        }
+        try:
+            if not record:
+                logging.debug(f" ---> ~FCIndexing discover story: {story_hash}")
+                cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
+        except elasticsearch.exceptions.NotFoundError:
+            cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
+            logging.debug(f" ---> ~FCIndexing discover story: {story_hash}")
+        except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
+            logging.debug(f" ***> ~FRNo search server available for discover story indexing: {e}")
+        except elasticsearch.exceptions.ConflictError as e:
+            logging.debug(f" ***> ~FBAlready indexed discover story: {e}")
+        # if settings.DEBUG:
+        #     logging.debug(f" ***> ~FBIndexed {story_hash}")
+
+    @classmethod
+    def remove(cls, story_hash):
+        if not cls.ES().exists(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type()):
+            return
+
+        try:
+            cls.ES().delete(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type())
+        except elasticsearch.exceptions.NotFoundError:
+            cls.ES().delete(index=cls.index_name(), id=story_hash, doc_type="story-type")
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.debug(f" ***> ~FRNo search server available for story deletion: {e}")
+
+    @classmethod
+    def drop(cls):
+        try:
+            cls.ES().indices.delete(cls.index_name())
+        except elasticsearch.exceptions.NotFoundError:
+            logging.debug(" ***> ~FBNo index found, nothing to drop.")
+
+    @classmethod
+    def vector_query(
+        cls,
+        query_vector,
+        offset=0,
+        max_results=10,
+        feed_ids_to_include=None,
+        feed_ids_to_exclude=None,
+        story_hashes_to_exclude=None,
+    ):
+        try:
+            cls.ES().indices.flush(index=cls.index_name())
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.debug(f" ***> ~FRNo search server available: {e}")
+            return []
+
+        must_clauses = [
+            {
+                "script_score": {
+                    "query": {"match_all": {}},
+                    "script": {
+                        "source": "cosineSimilarity(params.query_vector, 'content_vector') + 1.0",
+                        "params": {"query_vector": query_vector},
+                    },
+                }
+            }
+        ]
+        must_not_clauses = []
+
+        if feed_ids_to_include:
+            must_clauses.append({"terms": {"feed_id": feed_ids_to_include}})
+        if feed_ids_to_exclude:
+            must_not_clauses.append({"terms": {"feed_id": feed_ids_to_exclude}})
+        if story_hashes_to_exclude:
+            must_not_clauses.append({"ids": {"values": story_hashes_to_exclude}})
+
+        clauses = {}
+        if must_clauses:
+            clauses["must"] = must_clauses
+        if must_not_clauses:
+            clauses["must_not"] = must_not_clauses
+
+        body = {
+            "query": {
+                "bool": clauses,
+            },
+            "size": max_results,
+            "from": offset,
+        }
+
+        logging.debug(f"~FBVector query: {body}")
+        try:
+            results = cls.ES().search(body=body, index=cls.index_name())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
+
+        logging.info(
+            f"~FGVector search ~FCstories~FG: ~SB{max_results}~SN requested{f'~SB offset {offset}~SN' if offset else ''}, ~SB{len(results['hits']['hits'])}~SN results"
+        )
+
+        return results["hits"]["hits"]
+
+    @classmethod
+    def fetch_story_content_vector(cls, story_hash):
+        # Fetch the content vector from ES for the specified story_hash
+        try:
+            cls.ES().indices.flush(index=cls.index_name())
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.debug(f" ***> ~FRNo search server available: {e}")
+            return []
+
+        body = {"query": {"ids": {"values": [story_hash]}}}
+        try:
+            results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
+        # logging.debug(f"Results: {results}")
+        if len(results["hits"]["hits"]) == 0:
+            logging.debug(f" ---> ~FRNo content vector found for story {story_hash}")
+            return []
+        return results["hits"]["hits"][0]["_source"]["content_vector"]
+
+    @classmethod
+    def generate_combined_story_content_vector(cls, story_hashes):
+        vectors = []
+        for story_hash in story_hashes:
+            vector = cls.fetch_story_content_vector(story_hash)
+            if not vector:
+                vector = cls.generate_story_content_vector(story_hash)
+            vectors.append(vector)
+
+        combined_vector = np.mean(vectors, axis=0)
+        normalized_combined_vector = combined_vector / np.linalg.norm(combined_vector)
+
+        return normalized_combined_vector
+
+    @classmethod
+    def generate_story_content_vector(cls, story_hash):
+        from apps.rss_feeds.models import MStory
+
+        try:
+            story = MStory.objects.get(story_hash=story_hash)
+        except MStory.DoesNotExist:
+            logging.debug(f" ***> ~FRNo story found for {story_hash}")
+            return []
+
+        story_title = story.story_title
+        story_tags = ", ".join(story.story_tags)
+        story_content = ""
+        if story.story_original_content_z:
+            story_content = zlib.decompress(story.story_original_content_z)
+        elif story.story_content_z:
+            story_content = zlib.decompress(story.story_content_z)
+        else:
+            story_content = story.story_content
+        story_text = f"{story_title} {story_tags} {story_content}"
+
+        # Remove URLs
+        story_text = re.sub(r"http\S+", "", story_text)
+
+        # Remove special characters
+        story_text = re.sub(r"[^\w\s]", "", story_text)
+
+        # Convert to lowercase
+        story_text = story_text.lower()
+
+        # Remove extra whitespace
+        story_text = " ".join(story_text.split())
+
+        # Send to OpenAI
+        model_name = "text-embedding-3-small"
+        encoding = setup_openai_model(model_name)
+
+        # Truncate the text to the maximum number of tokens
+        max_tokens = 8191  # Maximum for text-embedding-3-small
+        encoded_text = encoding.encode(story_text)
+        truncated_tokens = encoded_text[:max_tokens]
+        truncated_text = encoding.decode(truncated_tokens)
+
+        client = OpenAI(api_key=settings.OPENAI_API_KEY)
+
+        try:
+            response = client.embeddings.create(model=model_name, input=truncated_text)
+        except APITimeoutError as e:
+            logging.debug(f" ***> ~FROpenAI API timeout: {e}")
+            return []
+        story_embedding = response.data[0].embedding
+
+        return story_embedding
+
+    @classmethod
+    def debug_index(cls, show_data=True, show_source=False):
+        """Debug method to inspect index fields and entries.
+
+        Args:
+            show_data: If True, will show sample documents. Defaults to False to avoid large outputs.
+        """
+        try:
+            # Check if index exists
+            if not cls.ES().indices.exists(cls.index_name()):
+                logging.info(f"~FR Index {cls.index_name()} does not exist")
+                return
+
+            # Get index mapping
+            mapping = cls.ES().indices.get_mapping(index=cls.index_name())
+            logging.info(f"~FB Index mapping for {cls.index_name()}:")
+            logging.info(
+                f"Properties: {list(mapping[cls.index_name()]['mappings'].get('properties', {}).keys())}"
+            )
+            logging.info(f"Full mapping: {mapping}")
+
+            # Get index settings
+            settings = cls.ES().indices.get_settings(index=cls.index_name())
+            logging.info(f"~FB Index settings:")
+            logging.info(settings)
+
+            # Get index stats
+            stats = cls.ES().indices.stats(index=cls.index_name())
+            total_docs = stats["indices"][cls.index_name()]["total"]["docs"]["count"]
+            logging.info(f"~FG Total documents in index: {total_docs}")
+
+            if show_data:
+                # Sample some documents
+                body = {
+                    "query": {"match_all": {}},
+                    "size": 3,  # Limit to 3 documents for sample
+                    "sort": [{"date": {"order": "desc"}}],
+                }
+                results = cls.ES().search(body=body, index=cls.index_name())
+
+                logging.info("~FB Sample documents:")
+                for hit in results["hits"]["hits"]:
+                    logging.info(f"Document ID: {hit['_id']}")
+                    logging.info(f"Fields: {list(hit.get('_source', {}).keys())}")
+                    if show_source:
+                        logging.info(f"Content: {hit.get('_source', {})}")
+                    logging.info("---")
+
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.info(f"~FR Error accessing index: {e}")
+        except Exception as e:
+            logging.info(f"~FR Unexpected error: {e}")
+
 
 class SearchFeed:
     _es_client = None
-    name = "feeds"
+    name = "discover-feeds-openai"
+    model = None
 
     @classmethod
     def ES(cls):
@@ -574,6 +972,10 @@ class SearchFeed:
                 "term_vector": "with_positions_offsets",
                 "type": "text",
             },
+            "content_vector": {
+                "type": "dense_vector",
+                "dims": 1536,  # Numbers of dims from text-embedding-3-small
+            },
         }
         cls.ES().indices.put_mapping(
             body={
@@ -584,13 +986,14 @@ class SearchFeed:
         cls.ES().indices.flush(cls.index_name())
 
     @classmethod
-    def index(cls, feed_id, title, address, link, num_subscribers):
+    def index(cls, feed_id, title, address, link, num_subscribers, content_vector):
         doc = {
             "feed_id": feed_id,
             "title": title,
             "feed_address": address,
             "link": link,
             "num_subscribers": num_subscribers,
+            "content_vector": content_vector,
         }
         try:
             cls.ES().create(index=cls.index_name(), id=feed_id, body=doc, doc_type=cls.doc_type())
@@ -682,6 +1085,129 @@ class SearchFeed:
         return results["hits"]["hits"]
 
     @classmethod
+    def vector_query(cls, query_vector, offset=0, max_results=10, feed_ids_to_exclude=None):
+        try:
+            cls.ES().indices.flush(index=cls.index_name())
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.debug(f" ***> ~FRNo search server available: {e}")
+            return []
+
+        must_not_clauses = []
+        if feed_ids_to_exclude:
+            must_not_clauses.append({"terms": {"feed_id": feed_ids_to_exclude}})
+
+        body = {
+            "query": {
+                "bool": {
+                    "must": {
+                        "script_score": {
+                            "query": {"match_all": {}},
+                            "script": {
+                                "source": "cosineSimilarity(params.query_vector, 'content_vector') + 1.0",
+                                "params": {"query_vector": query_vector},
+                            },
+                        }
+                    },
+                    "must_not": must_not_clauses,
+                }
+            },
+            "size": max_results,
+            "from": offset,
+        }
+        try:
+            results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
+
+        logging.info(
+            f"~FGVector search ~FCfeeds~FG: ~SB{max_results}~SN requested{f'~SB offset {offset}~SN' if offset else ''}, ~SB{len(results['hits']['hits'])}~SN results"
+        )
+
+        return results["hits"]["hits"]
+
+    @classmethod
+    def fetch_feed_content_vector(cls, feed_id):
+        # Fetch the content vector from ES for the specified feed_id
+        try:
+            cls.ES().indices.flush(index=cls.index_name())
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.debug(f" ***> ~FRNo search server available: {e}")
+            return []
+
+        body = {"query": {"term": {"feed_id": feed_id}}}
+
+        try:
+            results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
+
+        # logging.debug(f"Results: {results}")
+        if len(results["hits"]["hits"]) == 0:
+            logging.debug(f" ---> ~FRNo content vector found for feed {feed_id}")
+            return []
+
+        return results["hits"]["hits"][0]["_source"]["content_vector"]
+
+    @classmethod
+    def generate_combined_feed_content_vector(cls, feed_ids):
+        vectors = []
+        for feed_id in feed_ids:
+            vector = cls.fetch_feed_content_vector(feed_id)
+            if not vector:
+                vector = cls.generate_feed_content_vector(feed_id)
+            vectors.append(vector)
+
+        combined_vector = np.mean(vectors, axis=0)
+        normalized_combined_vector = combined_vector / np.linalg.norm(combined_vector)
+
+        return normalized_combined_vector
+
+    @classmethod
+    def generate_feed_content_vector(cls, feed_id):
+        from apps.rss_feeds.models import Feed
+
+        feed = Feed.objects.get(id=feed_id)
+
+        stories = feed.get_stories()
+        stories_text = ""
+        for story in stories:
+            stories_text += f"{story['story_title']} {' '.join([tag for tag in story['story_tags']])}"
+        text = f"{feed.feed_title} {feed.data.feed_tagline} {stories_text}"
+
+        # Remove URLs
+        text = re.sub(r"http\S+", "", text)
+
+        # Remove special characters
+        text = re.sub(r"[^\w\s]", "", text)
+
+        # Convert to lowercase
+        text = text.lower()
+
+        # Remove extra whitespace
+        text = " ".join(text.split())
+
+        # Send to OpenAI
+        model_name = "text-embedding-3-small"
+        encoding = setup_openai_model(model_name)
+
+        # Truncate the text to the maximum number of tokens
+        max_tokens = 8191  # Maximum for text-embedding-3-small
+        encoded_text = encoding.encode(text)
+        truncated_tokens = encoded_text[:max_tokens]
+        truncated_text = encoding.decode(truncated_tokens)
+
+        client = OpenAI(api_key=settings.OPENAI_API_KEY)
+
+        response = client.embeddings.create(model=model_name, input=truncated_text)
+
+        embedding = response.data[0].embedding
+        # normalized_embedding = np.array(embedding) / np.linalg.norm(embedding)
+
+        return embedding
+
+    @classmethod
     def export_csv(cls):
         import djqscsv
 
@@ -694,3 +1220,56 @@ class SearchFeed:
         f = open("feeds.csv", "w+")
         f.write(csv)
         f.close()
+
+    @classmethod
+    def debug_index(cls, show_data=True, show_source=False):
+        """Debug method to inspect index fields and entries.
+
+        Args:
+            show_data: If True, will show sample documents. Defaults to False to avoid large outputs.
+        """
+        try:
+            # Check if index exists
+            if not cls.ES().indices.exists(cls.index_name()):
+                logging.info(f"~FR Index {cls.index_name()} does not exist")
+                return
+
+            # Get index mapping
+            mapping = cls.ES().indices.get_mapping(index=cls.index_name())
+            logging.info(f"~FB Index mapping for {cls.index_name()}:")
+            logging.info(
+                f"Properties: {list(mapping[cls.index_name()]['mappings'].get('properties', {}).keys())}"
+            )
+            logging.info(f"Full mapping: {mapping}")
+
+            # Get index settings
+            settings = cls.ES().indices.get_settings(index=cls.index_name())
+            logging.info(f"~FB Index settings:")
+            logging.info(settings)
+
+            # Get index stats
+            stats = cls.ES().indices.stats(index=cls.index_name())
+            total_docs = stats["indices"][cls.index_name()]["total"]["docs"]["count"]
+            logging.info(f"~FG Total documents in index: {total_docs}")
+
+            if show_data:
+                # Sample some documents
+                body = {
+                    "query": {"match_all": {}},
+                    "size": 3,  # Limit to 3 documents for sample
+                    "sort": [{"num_subscribers": {"order": "desc"}}],
+                }
+                results = cls.ES().search(body=body, index=cls.index_name())
+
+                logging.info("~FB Sample documents:")
+                for hit in results["hits"]["hits"]:
+                    logging.info(f"Document ID: {hit['_id']}")
+                    logging.info(f"Fields: {list(hit.get('_source', {}).keys())}")
+                    if show_source:
+                        logging.info(f"Content: {hit.get('_source')}")
+                    logging.info("---")
+
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.info(f"~FR Error accessing index: {e}")
+        except Exception as e:
+            logging.info(f"~FR Unexpected error: {e}")

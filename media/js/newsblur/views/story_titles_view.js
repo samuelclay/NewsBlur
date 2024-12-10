@@ -34,6 +34,9 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var story_layout = this.options.override_layout ||
             NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
         var on_dashboard = this.options.on_dashboard;
+        var on_discover_feed = this.options.on_discover_feed;
+        var on_discover_story = this.options.on_discover_story;
+        var in_popover = this.options.in_popover;
         var override_layout = this.options.override_layout;
         var stories = this.collection.map(function (story) {
             return new NEWSBLUR.Views.StoryTitleView({
@@ -43,7 +46,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 is_grid: story_layout == 'grid',
                 is_magazine: story_layout == 'magazine',
                 override_layout: override_layout,
-                on_dashboard: on_dashboard
+                on_dashboard: on_dashboard,
+                on_discover_feed: on_discover_feed,
+                on_discover_story: on_discover_story,
+                in_popover: in_popover
             }).render();
         });
         this.stories = stories;
@@ -57,6 +63,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.override_grid();
 
         this.scroll_to_selected_story(null, options);
+
+        return this;
     },
 
     add: function (options) {
@@ -64,6 +72,9 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var collection = this.collection;
         if (options.added) {
             var on_dashboard = this.options.on_dashboard;
+            var on_discover_feed = this.options.on_discover_feed;
+            var on_discover_story = this.options.on_discover_story;
+            var in_popover = this.options.in_popover;
             var override_layout = this.options.override_layout;
             var story_layout = this.options.override_layout ||
                 NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
@@ -76,7 +87,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                     is_grid: story_layout == 'grid',
                     is_magazine: story_layout == 'magazine',
                     override_layout: override_layout,
-                    on_dashboard: on_dashboard
+                    on_dashboard: on_dashboard,
+                    on_discover_feed: on_discover_feed,
+                    on_discover_story: on_discover_story,
+                    in_popover: in_popover
                 }).render();
             }));
             this.stories = this.stories.concat(stories);
@@ -84,7 +98,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 return story.el;
             });
             this.$el.append($stories);
-            if (this.options.on_dashboard) {
+            if (this.options.on_dashboard || this.options.on_discover_feed || this.options.on_discover_story) {
                 var $extras = this.$el.find('.NB-story-title-container .NB-story-title:not(.NB-hidden)').slice(5);
                 $extras.addClass('NB-hidden');
             }
@@ -228,7 +242,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     check_premium_river: function () {
         if (!NEWSBLUR.Globals.is_premium &&
             NEWSBLUR.Globals.is_authenticated &&
-            (this.options.on_dashboard || NEWSBLUR.reader.flags['river_view'])) {
+            (this.options.on_dashboard || this.options.on_discover_feed || this.options.on_discover_story || NEWSBLUR.reader.flags['river_view'])) {
             this.show_no_more_stories();
             this.append_river_premium_only_notification();
         } else if (this.collection.no_more_stories) {
@@ -348,6 +362,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     scroll: function () {
         var $story_titles = this.$story_titles;
         var scroll_y = $story_titles.scrollTop();
+
+        if (this.options.on_discover_feed || this.options.on_discover_story) {
+            return;
+        }
 
         if (!this.options.on_dashboard) {
             if (NEWSBLUR.reader.flags['opening_feed']) return;

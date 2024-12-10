@@ -8,6 +8,8 @@ If you're like me and like to have NewsBlur sitting open all day, then you'll lo
 
 Introducing the <a href="https://apps.apple.com/us/app/newsblur/id463981119">NewsBlur macOS app</a>, available for free on the Mac App Store.
 
+Introducing the <a href="https://apps.apple.com/us/app/newsblur/id463981119">NewsBlur macOS app</a>, available for free on the Mac App Store.
+
 <img src="/assets/macos-1.png"  style="width: 100%;border: none;margin: 24px auto;display: block;">
 
 The macOS app also supports all of the themes, so it can turn itself into dark mode automatically.

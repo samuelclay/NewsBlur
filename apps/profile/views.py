@@ -241,6 +241,7 @@ def set_view_setting(request):
     feed_read_filter_setting = request.POST.get("feed_read_filter_setting")
     feed_layout_setting = request.POST.get("feed_layout_setting")
     feed_dashboard_count_setting = request.POST.get("feed_dashboard_count_setting")
+    feed_stories_discover_setting = request.POST.get("feed_stories_discover_setting")
     view_settings = json.decode(request.user.profile.view_settings)
 
     setting = view_settings.get(feed_id, {})
@@ -256,6 +257,8 @@ def set_view_setting(request):
         setting["d"] = feed_dashboard_count_setting
     if feed_layout_setting:
         setting["l"] = feed_layout_setting
+    if feed_stories_discover_setting:
+        setting["s"] = feed_stories_discover_setting
 
     view_settings[feed_id] = setting
     request.user.profile.view_settings = json.encode(view_settings)

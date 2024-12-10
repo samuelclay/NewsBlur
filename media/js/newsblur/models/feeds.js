@@ -110,7 +110,7 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
     },
 
     in_folders: function () {
-        var in_folders = _.pluck(_.pluck(this.folders, 'options'), 'title');
+        var in_folders = _.uniq(_.pluck(_.pluck(this.folders, 'options'), 'title'));
 
         return in_folders;
     },
