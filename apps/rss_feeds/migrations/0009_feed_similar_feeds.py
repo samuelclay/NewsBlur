@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rss_feeds', '0008_feed_archive_count'),
+        ("rss_feeds", "0008_feed_archive_count"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='feed',
-            name='similar_feeds',
-            field=models.ManyToManyField(blank=True, related_name='feeds_by_similarity', to='rss_feeds.Feed'),
+            model_name="feed",
+            name="similar_feeds",
+            field=models.ManyToManyField(blank=True, related_name="feeds_by_similarity", to="rss_feeds.Feed"),
         ),
     ]

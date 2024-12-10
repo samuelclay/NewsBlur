@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rss_feeds', '0009_feed_similar_feeds'),
+        ("rss_feeds", "0009_feed_similar_feeds"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='feed',
-            name='discover_indexed',
+            model_name="feed",
+            name="discover_indexed",
             field=models.BooleanField(blank=True, default=None, null=True),
         ),
     ]
