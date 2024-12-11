@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '21'
 
       - name: Unit Test
         run: ./gradlew -Pci --console=plain :app:testDebugUnitTest
