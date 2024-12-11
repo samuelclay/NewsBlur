@@ -104,7 +104,7 @@ class FeedSearchActivity : NbActivity(), OnFeedSearchResultClickListener, AddFee
                     buildList {
                         val feedResults = apiManager.searchForFeed(query.toString()) ?: emptyArray()
                         if (matchesUrl(query.toString())) {
-                            add(FeedResult.createFeedResultForUrl(query.toString().lowercase()))
+                            add(FeedResult.createFeedResultForUrl(query.toString()))
                         }
                         addAll(feedResults)
                     }
