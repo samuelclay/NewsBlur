@@ -374,6 +374,7 @@ CELERY_TASK_ROUTES = {
     "update-feeds": {"queue": "update_feeds", "binding_key": "update_feeds"},
     "beat-tasks": {"queue": "cron_queue", "binding_key": "cron_queue"},
     "search-indexer": {"queue": "search_indexer", "binding_key": "search_indexer"},
+    "discover-indexer": {"queue": "discover_indexer", "binding_key": "discover_indexer"},
 }
 CELERY_TASK_QUEUES = {
     "work_queue": {
@@ -394,6 +395,11 @@ CELERY_TASK_QUEUES = {
         "exchange": "search_indexer",
         "exchange_type": "direct",
         "binding_key": "search_indexer",
+    },
+    "discover_indexer": {
+        "exchange": "discover_indexer",
+        "exchange_type": "direct",
+        "binding_key": "discover_indexer",
     },
 }
 CELERY_TASK_DEFAULT_QUEUE = "work_queue"
@@ -418,7 +424,7 @@ SECONDS_TO_DELAY_CELERY_EMAILS = 60
 CELERY_BEAT_SCHEDULE = {
     "task-feeds": {
         "task": "task-feeds",
-        "schedule": datetime.timedelta(minutes=1),
+        "schedule": datetime.timedelta(minutes=10 if DEBUG else 1),
         "options": {"queue": "beat_feeds_task"},
     },
     "task-broken-feeds": {
