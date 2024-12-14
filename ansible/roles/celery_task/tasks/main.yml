@@ -11,7 +11,7 @@
         src: /srv/secrets-newsblur/settings/task_env.py
         dest: /srv/newsblur/newsblur_web/task_env.py
   rescue:
-    - debug: 
+    - debug:
         msg: Missing task_env.py, ignoring...
 
 - name: Add SERVER_NAME to task env
@@ -41,7 +41,7 @@
     log_driver: json-file
     log_options:
       max-size: 100m
-    healthcheck: 
+    healthcheck:
       # test: celery inspect ping -A newsblur_web -d celery@$HOSTNAME
       test: bash -c "(($(date +%s) - $(stat /srv/newsblur/logs/newsblur.log -c %Y) < 600)) && exit 0 || exit 1"
       interval: 60s
@@ -55,7 +55,7 @@
   when: "item.container_name in inventory_hostname"
   with_items:
     - container_name: task-celery
-      command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds,search_indexer" 
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds,search_indexer,discover_indexer"
     - container_name: task-work
       command: "celery worker -A newsblur_web --loglevel=INFO -B -s /srv/newsblur/logs/celerybeat-schedule.db -Q beat_feeds_task,work_queue,cron_queue"
   tags:
@@ -93,7 +93,7 @@
   copy: src=logrotate.conf dest=/etc/logrotate.d/newsblur mode=0755
 
 - name: Reload celery
-  debug: 
+  debug:
     msg: Reloading celery
   notify: "reload {{ item.container_name }}"
   when: app_changed.changed and item.container_name in inventory_hostname
@@ -113,7 +113,7 @@
   become: yes
   copy:
     owner: "{{ ansible_effective_user_id|int }}"
-    group: "{{ ansible_effective_group_id|int }}"  
+    group: "{{ ansible_effective_group_id|int }}"
     src: /srv/secrets-newsblur/spam/spam.py
     dest: /srv/newsblur/apps/social/spam.py
   when: "'task-work' in inventory_hostname"
@@ -151,7 +151,7 @@
   when: "'task-work' in inventory_hostname"
   tags:
     - sanity-checker
-  
+
 - name: Add sanity checkers cronjob for work queue
   become: yes
   copy:

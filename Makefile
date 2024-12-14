@@ -46,7 +46,8 @@ debug:
 	docker attach ${newsblur}
 log:
 	RUNWITHMAKEBUILD=True docker compose logs -f --tail 20 newsblur_web newsblur_node
-logweb: log
+logweb:
+	RUNWITHMAKEBUILD=True docker compose logs -f --tail 20 newsblur_web newsblur_node task_celery
 logcelery:
 	RUNWITHMAKEBUILD=True docker compose logs -f --tail 20 task_celery
 logtask: logcelery

@@ -108,7 +108,6 @@ class Feed(models.Model):
     s3_icon = models.BooleanField(default=False, blank=True, null=True)
     search_indexed = models.BooleanField(default=None, null=True, blank=True)
     discover_indexed = models.BooleanField(default=None, null=True, blank=True)
-    discover_archive_indexed = models.BooleanField(default=None, null=True, blank=True)
     fs_size_bytes = models.IntegerField(null=True, blank=True)
     archive_count = models.IntegerField(null=True, blank=True)
     similar_feeds = models.ManyToManyField(
@@ -369,25 +368,28 @@ class Feed(models.Model):
             )
 
     def index_stories_for_search(self, force=False):
-        if self.search_indexed and self.discover_indexed and not force:
+        if self.search_indexed and not force:
             return
 
         stories = MStory.objects(story_feed_id=self.pk)
-        if not self.search_indexed:
-            for story in stories:
-                story.index_story_for_search()
+        for story in stories:
+            story.index_story_for_search()
 
-            self.search_indexed = True
-            self.save()
+        self.search_indexed = True
+        self.save()
 
-        if not self.discover_indexed:
-            for index, story in enumerate(stories):
-                if index % 100 == 0:
-                    logging.debug(f" ---> ~FBIndexing discover story {index} of {len(stories)} in {self}")
-                story.index_story_for_discover()
+    def index_stories_for_discover(self, force=False):
+        if self.discover_indexed and not force:
+            return
 
-            self.discover_indexed = True
-            self.save()
+        stories = MStory.objects(story_feed_id=self.pk)
+        for index, story in enumerate(stories):
+            if index % 100 == 0:
+                logging.debug(f" ---> ~FBIndexing discover story {index} of {len(stories)} in {self}")
+            story.index_story_for_discover()
+
+        self.discover_indexed = True
+        self.save()
 
     def sync_redis(self, allow_skip_resync=False):
         return MStory.sync_feed_redis(self.pk, allow_skip_resync=allow_skip_resync)
@@ -1580,7 +1582,7 @@ class Feed(models.Model):
                         )
                 if self.search_indexed:
                     s.index_story_for_search()
-                    s.index_story_for_discover()
+                    s.index_story_for_discover(verbose=True)
             elif existing_story and story_has_changed and not updates_off and ret_values["updated"] < 3:
                 # update story
                 original_content = None
@@ -3130,11 +3132,12 @@ class MStory(mongo.Document):
             story_date=self.story_date,
         )
 
-    def index_story_for_discover(self):
+    def index_story_for_discover(self, verbose=False):
         DiscoverStory.index(
             story_hash=self.story_hash,
             story_feed_id=self.story_feed_id,
             story_date=self.story_date,
+            verbose=verbose,
         )
 
     def remove_from_search_index(self):

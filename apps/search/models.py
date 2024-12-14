@@ -16,8 +16,10 @@ from django.contrib.auth.models import User
 from openai import APITimeoutError, OpenAI
 
 from apps.search.tasks import (
+    FinishIndexSubscriptionsForDiscover,
     FinishIndexSubscriptionsForSearch,
     IndexFeedsForSearch,
+    IndexSubscriptionsChunkForDiscover,
     IndexSubscriptionsChunkForSearch,
     IndexSubscriptionsForSearch,
 )
@@ -31,14 +33,20 @@ class MUserSearch(mongo.Document):
 
     user_id = mongo.IntField(unique=True)
     last_search_date = mongo.DateTimeField()
-    subscriptions_indexed = mongo.BooleanField()
-    subscriptions_indexing = mongo.BooleanField()
+    subscriptions_indexed = mongo.BooleanField(default=False)
+    subscriptions_indexing = mongo.BooleanField(default=False)
+    discover_indexed = mongo.BooleanField(default=False)
+    discover_indexing = mongo.BooleanField(default=False)
 
     meta = {
         "collection": "user_search",
         "indexes": ["user_id"],
         "allow_inheritance": False,
     }
+
+    def __str__(self):
+        user = User.objects.get(pk=self.user_id)
+        return f"{user.username} ({self.user_id}), {'' if self.subscriptions_indexed else 'not '}indexed, {'' if self.subscriptions_indexing else 'not '}indexing, {'' if self.discover_indexed else 'not '}discover indexed, {'' if self.discover_indexing else 'not '}discover indexing"
 
     @classmethod
     def get_user(cls, user_id, create=True):
@@ -88,16 +96,34 @@ class MUserSearch(mongo.Document):
         feed_id_chunks = [c for c in chunks(feed_ids, 6)]
         logging.user(user, "~FCIndexing ~SB%s feeds~SN in %s chunks..." % (total, len(feed_id_chunks)))
 
+        # Create search indexing tasks
         search_chunks = [
             IndexSubscriptionsChunkForSearch.s(feed_ids=feed_id_chunk, user_id=self.user_id).set(
                 queue="search_indexer"
             )
             for feed_id_chunk in feed_id_chunks
         ]
-        callback = FinishIndexSubscriptionsForSearch.s(user_id=self.user_id, start=start).set(
+
+        # Create discover indexing tasks
+        discover_chunks = [
+            IndexSubscriptionsChunkForDiscover.s(feed_ids=feed_id_chunk, user_id=self.user_id).set(
+                queue="discover_indexer"
+            )
+            for feed_id_chunk in feed_id_chunks
+        ]
+
+        # Create the finish callbacks
+        finish_search = FinishIndexSubscriptionsForSearch.s(user_id=self.user_id, start=start).set(
             queue="search_indexer"
         )
-        celery.chord(search_chunks)(callback)
+        finish_discover = FinishIndexSubscriptionsForDiscover.s(
+            user_id=self.user_id, start=start, total=total
+        ).set(queue="discover_indexer")
+
+        # Chain: search_chunks -> finish_search -> discover_chunks -> finish_discover
+        search_chord = celery.chord(search_chunks)(finish_search)
+        discover_chord = celery.chord(discover_chunks)(finish_discover)
+        search_chord.then(discover_chord)
 
     def finish_index_subscriptions_for_search(self, start):
         from apps.reader.models import UserSubscription
@@ -113,6 +139,23 @@ class MUserSearch(mongo.Document):
 
         self.subscriptions_indexed = True
         self.subscriptions_indexing = False
+        self.save()
+
+    def finish_index_subscriptions_for_discover(self, start, total):
+        from apps.rss_feeds.models import Feed
+
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        user = User.objects.get(pk=self.user_id)
+        r.publish(user.username, "search_index_complete:discover:done")
+
+        duration = time.time() - start
+        logging.user(
+            user,
+            "~FCIndexed ~SB%s feeds~SN for discover in ~FM~SB%s~FC~SN sec." % (total, round(duration, 2)),
+        )
+
+        self.discover_indexed = True
+        self.discover_indexing = False
         self.save()
 
     def index_subscriptions_chunk_for_search(self, feed_ids):
@@ -131,6 +174,20 @@ class MUserSearch(mongo.Document):
             feed.index_stories_for_search()
 
         r.publish(user.username, "search_index_complete:feeds:%s" % ",".join([str(f) for f in feed_ids]))
+
+    def index_subscriptions_chunk_for_discover(self, feed_ids):
+        from apps.rss_feeds.models import Feed
+
+        user = User.objects.get(pk=self.user_id)
+
+        logging.user(user, "~FCIndexing %s feeds for discover..." % len(feed_ids))
+
+        for feed_id in feed_ids:
+            feed = Feed.get_by_id(feed_id)
+            if not feed:
+                continue
+
+            feed.index_stories_for_discover()
 
     @classmethod
     def schedule_index_feeds_for_search(cls, feed_ids, user_id):
@@ -620,6 +677,7 @@ class DiscoverStory:
         story_feed_id,
         story_date,
         story_content_vector=None,
+        verbose=False,
     ):
         cls.create_elasticsearch_mapping()
 
@@ -648,7 +706,8 @@ class DiscoverStory:
         }
         try:
             if not record:
-                logging.debug(f" ---> ~FCIndexing discover story: {story_hash}")
+                if verbose:
+                    logging.debug(f" ---> ~FCIndexing discover story: {story_hash}")
                 cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
         except elasticsearch.exceptions.NotFoundError:
             cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
@@ -1266,7 +1325,7 @@ class SearchFeed:
                     logging.info(f"Document ID: {hit['_id']}")
                     logging.info(f"Fields: {list(hit.get('_source', {}).keys())}")
                     if show_source:
-                        logging.info(f"Content: {hit.get('_source')}")
+                        logging.info(f"Content: {hit.get('_source', {})}")
                     logging.info("---")
 
         except elasticsearch.exceptions.NotFoundError as e:

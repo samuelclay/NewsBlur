@@ -181,14 +181,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                     // Content section
                     $.make('div', { className: 'NB-sideoption-discover-content NB-story-pane-west' }, [
                         !NEWSBLUR.Globals.is_premium ?
-                            $.make('div', { className: 'NB-discover-empty' }, [
-                                'Related stories are only available for premium subscribers.',
-                                $.make('div', {
-                                    className: 'NB-discover-retry NB-modal-submit-button NB-modal-submit-green',
-                                }, [
-                                    'Upgrade to Premium'
-                                ])
-                            ]) :
+                            this.render_premium_only_message() :
                             !this.discover_stories.length ?
                                 $.make('div', { className: 'NB-discover-empty' }, 'No similar stories found') :
                                 (function () {
@@ -216,7 +209,19 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                             (this.page > 1 ? $.make('div', { className: 'NB-end-line' }, [
                                 $.make('div', { className: 'NB-fleuron' })
                             ]) : '')
-                    ]))
+                    ])),
+                    (NEWSBLUR.Globals.is_premium && !NEWSBLUR.Globals.is_archive &&
+                        $.make('div', { className: 'NB-discover-empty' }, [
+                            'Only recent stories shown.',
+                            $.make('br'),
+                            'All related stories are available to Premium Archive subscribers.',
+                            $.make('div', {
+                                className: 'NB-discover-retry NB-modal-submit-button NB-modal-submit-green',
+                            }, [
+                                'Upgrade to Premium Archive'
+                            ])
+                        ])
+                    )
                 ])
             ])
         ]);
@@ -247,6 +252,17 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         $active_section.addClass('NB-active');
 
         return this;
+    },
+
+    render_premium_only_message: function () {
+        return $.make('div', { className: 'NB-discover-empty' }, [
+            'Related stories are only available for premium subscribers.',
+            $.make('div', {
+                className: 'NB-discover-retry NB-modal-submit-button NB-modal-submit-green',
+            }, [
+                'Upgrade to Premium'
+            ])
+        ]);
     },
 
     toggle_feed_story_discover_dialog: function (options) {
