@@ -136,6 +136,10 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
 
     render: function () {
         var self = this;
+        var discover_indexed_count = NEWSBLUR.assets.feeds.reduce(function (sum, feed) {
+            return sum + (feed.get('discover_indexed') ? 1 : 0);
+        }, 0);
+        var feed_count = NEWSBLUR.assets.feeds.length;
 
         if (this.page === 1) {
             this.$('.NB-sideoption-discover-content').empty();
@@ -212,7 +216,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                     ])),
                     (NEWSBLUR.Globals.is_premium && !NEWSBLUR.Globals.is_archive &&
                         $.make('div', { className: 'NB-discover-empty' }, [
-                            'Only recent stories shown.',
+                            'Only recent stories shown from ' + discover_indexed_count + ' of ' + feed_count + ' sites.',
                             $.make('br'),
                             'All related stories are available to Premium Archive subscribers.',
                             $.make('div', {

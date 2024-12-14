@@ -382,6 +382,11 @@ class Feed(models.Model):
         if self.discover_indexed and not force:
             return
 
+        # If there are no premium archive subscribers, don't index stories for discover.
+        if not self.archive_subscribers or self.archive_subscribers <= 0:
+            logging.debug(f" ---> ~FBNo premium archive subscribers, skipping discover index for {self}")
+            return
+
         stories = MStory.objects(story_feed_id=self.pk)
         for index, story in enumerate(stories):
             if index % 100 == 0:

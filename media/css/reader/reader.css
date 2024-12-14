@@ -5838,6 +5838,7 @@ body {
     padding: 16px;
     text-align: center;
     color: #999;
+    line-height: 1.25;
 }
 
 .NB-discover-loading {
