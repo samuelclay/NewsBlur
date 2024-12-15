@@ -769,10 +769,11 @@
 
         select_story_in_feed: function (options) {
             options = _.extend({}, options);
-            var story_id = this.flags['select_story_in_feed'];
+            var story_id = this.flags['select_story_in_feed'] || options['story_id'];
+            var story_title = this.flags['select_story_title_in_feed'] || options['story_title'];
             var story = NEWSBLUR.assets.stories.get(story_id);
             if (!story) story = NEWSBLUR.assets.stories.get_by_story_hash(story_id);
-            // NEWSBLUR.log(['select_story_in_feed', story_id, story, this.story_view, this.counts['select_story_in_feed'], this.flags['no_more_stories']]);
+            NEWSBLUR.log(['select_story_in_feed', story_id, story, this.story_view, this.counts['select_story_in_feed'], this.flags['no_more_stories']]);
 
             if (story) {
                 this.counts['select_story_in_feed'] = 0;
@@ -781,15 +782,17 @@
                     story.set('selected', true, { scroll_to_comments: options.scroll_to_comments });
                 }, this), 100);
             } else if ((this.counts['select_story_in_feed'] == this.constants.FILL_OUT_PAGES_SEARCH_STORY_TITLE || NEWSBLUR.assets.stories.no_more_stories) &&
-                this.flags['select_story_title_in_feed']) {
+                story_title) {
                 // Still not found but because we have a story title, we can search for it.
                 NEWSBLUR.reader.flags.searching = true;
-                NEWSBLUR.reader.flags.search = this.flags['select_story_title_in_feed'];
-                this.open_feed(this.active_feed, {
-                    story_id: this.flags['select_story_in_feed'],
-                    search: this.flags['select_story_title_in_feed']
-                });
+                NEWSBLUR.reader.flags.search = story_title;
+                this.counts['select_story_in_feed'] = 0;
+                this.flags['select_story_in_feed'] = null;
                 this.flags['select_story_title_in_feed'] = null;
+                this.open_feed(this.active_feed, {
+                    story_id: story_id,
+                    search: story_title
+                });
             } else if (this.counts['select_story_in_feed'] < this.constants.FILL_OUT_PAGES &&
                 !NEWSBLUR.assets.stories.no_more_stories) {
                 // Nothing up, nothing down, but still not found. Load 1 page then find it.
@@ -1465,6 +1468,9 @@
                 this.hide_splash_page();
                 if (options.story_id) {
                     this.flags['select_story_in_feed'] = options.story_id;
+                }
+                if (options.story_title) {
+                    this.flags['select_story_title_in_feed'] = options.story_title;
                 }
 
                 this.active_feed = feed.id;
