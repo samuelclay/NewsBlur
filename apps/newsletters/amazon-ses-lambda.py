@@ -1,7 +1,8 @@
-import json
-import requests
-import boto3
 import email
+import json
+
+import boto3
+import requests
 
 
 def lambda_handler(event, context):

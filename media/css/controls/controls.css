@@ -34,7 +34,7 @@ ul.segmented-control {
     color: #61635e;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
     transition: 0.14s ease-in-out background;
-    flex: 1 1 0;
+    flex: 1 1 auto;
     white-space: nowrap;
 }
 
@@ -113,7 +113,6 @@ ul.segmented-control-vertical {
 }
 
 .segmented-control-vertical li {
-    float: left;
     cursor: pointer;
     margin-bottom: 2px;
     width: 100%;

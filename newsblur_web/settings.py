@@ -110,6 +110,15 @@ MAX_EMAILS_SENT_PER_DAY_PER_USER = 20  # Most are story notifications
 # = Django-specific Modules =
 # ===========================
 
+SHELL_PLUS_IMPORTS = [
+    "from apps.search.models import SearchFeed, SearchStory, DiscoverStory",
+    "import redis",
+    "import datetime",
+    "from pprint import pprint",
+    "import requests",
+    "import feedparser",
+]
+# SHELL_PLUS_PRINT_SQL = True
 
 MIDDLEWARE = (
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
@@ -365,6 +374,7 @@ CELERY_TASK_ROUTES = {
     "update-feeds": {"queue": "update_feeds", "binding_key": "update_feeds"},
     "beat-tasks": {"queue": "cron_queue", "binding_key": "cron_queue"},
     "search-indexer": {"queue": "search_indexer", "binding_key": "search_indexer"},
+    "discover-indexer": {"queue": "discover_indexer", "binding_key": "discover_indexer"},
 }
 CELERY_TASK_QUEUES = {
     "work_queue": {
@@ -385,6 +395,11 @@ CELERY_TASK_QUEUES = {
         "exchange": "search_indexer",
         "exchange_type": "direct",
         "binding_key": "search_indexer",
+    },
+    "discover_indexer": {
+        "exchange": "discover_indexer",
+        "exchange_type": "direct",
+        "binding_key": "discover_indexer",
     },
 }
 CELERY_TASK_DEFAULT_QUEUE = "work_queue"
@@ -409,7 +424,7 @@ SECONDS_TO_DELAY_CELERY_EMAILS = 60
 CELERY_BEAT_SCHEDULE = {
     "task-feeds": {
         "task": "task-feeds",
-        "schedule": datetime.timedelta(minutes=1),
+        "schedule": datetime.timedelta(minutes=10 if DEBUG else 1),
         "options": {"queue": "beat_feeds_task"},
     },
     "task-broken-feeds": {
@@ -601,6 +616,8 @@ AWS_SECRET_ACCESS_KEY = S3_SECRET
 
 os.environ["AWS_ACCESS_KEY_ID"] = AWS_ACCESS_KEY_ID
 os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
+
+os.environ["HF_HOME"] = "/srv/newsblur/docker/volumes/discover"
 
 
 def clear_prometheus_aggregation_stats():
@@ -798,6 +815,12 @@ REDIS_PUBSUB_POOL = redis.ConnectionPool(
 
 # celeryapp.autodiscover_tasks(INSTALLED_APPS)
 accept_content = ["pickle", "json", "msgpack", "yaml"]
+
+DISCOVER_DATA_FOLDER = os.getenv("DISCOVER_DATA_FOLDER", "/srv/newsblur/docker/volumes/discover")
+# Create the folder if it doesn't exist
+os.makedirs(DISCOVER_DATA_FOLDER, exist_ok=True)
+# Set it as an env var (in case it wasn't set before) so python-surprise sees it
+os.environ["DISCOVER_DATA_FOLDER"] = DISCOVER_DATA_FOLDER
 
 # ==========
 # = Assets =

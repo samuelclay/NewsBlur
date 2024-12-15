@@ -1486,7 +1486,8 @@ color: #fff;
 }
 
 .NB-dark .NB-sideoption-save,
-.NB-dark .NB-sideoption-share {
+.NB-dark .NB-sideoption-share,
+.NB-dark .NB-sideoption-discover {
     border: 1px solid #303739;
 }
 
@@ -1494,6 +1495,10 @@ color: #fff;
 .NB-dark .NB-sideoption-save .NB-sideoption-save-title,
 .NB-dark .NB-sideoption-share .NB-sideoption-share-title {
     text-shadow: none;
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-sideoption-discover .segmented-control-item a {
     color: #c0c0c0;
 }
 
@@ -1919,4 +1924,8 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-history-fetch.NB-errorcode {
     color: #953524;
+}
+
+.NB-dark .NB-subscribed {
+    color: #3c7922;
 }
