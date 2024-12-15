@@ -1145,6 +1145,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             feed = feed_id;
             feed_id = feed.id;
         }
+        feed.temp = true;
         if (!this.temp_feeds.get(feed)) {
             this.temp_feeds.add(feed);
         } else {
