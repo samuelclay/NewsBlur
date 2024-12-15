@@ -23,6 +23,7 @@ from apps.reader.models import UserSubscription
 
 # from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, MFeedIcon, MFetchHistory, MStory, merge_feeds
+from apps.search.models import MUserSearch
 from utils import feedfinder_forman as feedfinder
 from utils import json_functions as json
 from utils import log as logging
@@ -688,6 +689,9 @@ def discover_stories(request, story_hash):
     story, _ = MStory.find_story(story_hash=story_hash)
     if not story:
         return {"code": -1, "message": "Story not found.", "discover_stories": None, "failed": True}
+
+    user_search = MUserSearch.get_user(request.user.pk)
+    user_search.touch_discover_date()
 
     similar_stories = story.fetch_similar_stories(feed_ids=feed_ids, offset=offset, limit=limit)
     similar_story_hashes = [result["_id"] for result in similar_stories]
