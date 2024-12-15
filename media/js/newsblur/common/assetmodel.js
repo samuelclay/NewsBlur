@@ -39,6 +39,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
         };
         this.feeds = new NEWSBLUR.Collections.Feeds();
+        this.temp_feeds = new NEWSBLUR.Collections.Feeds();
         this.social_feeds = new NEWSBLUR.Collections.SocialSubscriptions();
         this.folders = new NEWSBLUR.Collections.Folders([]);
         this.favicons = {};
@@ -1139,6 +1140,20 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         return this.feeds.get(feed_id);
     },
 
+    set_temp_feed: function (feed_id, feed) {
+        if (!feed) {
+            feed = feed_id;
+            feed_id = feed.id;
+        }
+        if (!this.temp_feeds.get(feed)) {
+            this.temp_feeds.add(feed);
+        } else {
+            this.temp_feeds.get(feed_id).set(feed);
+        }
+
+        return this.temp_feeds.get(feed_id);
+    },
+
     add_social_feed: function (feed) {
         var social_feed = this.social_feeds.get(feed);
         if (!social_feed) {
@@ -1164,7 +1179,11 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         } else if (_.string.startsWith(feed_id, 'feed:')) {
             return this.feeds.get(parseInt(feed_id.replace('feed:', ''), 10));
         } else {
-            return this.feeds.get(feed_id);
+            var feed = this.feeds.get(feed_id);
+            if (!feed) {
+                feed = this.temp_feeds.get(feed_id);
+            }
+            return feed;
         }
     },
 
