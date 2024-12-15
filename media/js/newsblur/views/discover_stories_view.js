@@ -136,10 +136,6 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
 
     render: function () {
         var self = this;
-        var discover_indexed_count = NEWSBLUR.assets.feeds.reduce(function (sum, feed) {
-            return sum + (feed.get('discover_indexed') ? 1 : 0);
-        }, 0);
-        var feed_count = NEWSBLUR.assets.feeds.length;
 
         if (this.page === 1) {
             this.$('.NB-sideoption-discover-content').empty();
@@ -216,7 +212,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                     ])),
                     (NEWSBLUR.Globals.is_premium && !NEWSBLUR.Globals.is_archive &&
                         $.make('div', { className: 'NB-discover-empty' }, [
-                            'Only recent stories shown from ' + discover_indexed_count + ' of ' + feed_count + ' sites.',
+                            this.render_discover_indexed_non_premium_message(),
                             $.make('br'),
                             'All related stories are available to Premium Archive subscribers.',
                             $.make('div', {
@@ -256,6 +252,55 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         $active_section.addClass('NB-active');
 
         return this;
+    },
+
+    render_discover_indexed_non_premium_message: function () {
+        var discover_indexed_count = NEWSBLUR.assets.feeds.reduce(function (sum, feed) {
+            return sum + (feed.get('discover_indexed') ? 1 : 0);
+        }, 0);
+        var feed_count = NEWSBLUR.assets.feeds.length;
+        var feed_discover_indexed = NEWSBLUR.assets.feeds.get(this.model.get('story_feed_id')).get('discover_indexed');
+        var view_setting = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'stories_discover');
+        var is_this_site = _.string.startsWith(view_setting, 'feed');
+        var is_global = view_setting === 'global';
+        var is_folder = _.string.startsWith(view_setting, 'river:');
+        var is_all = view_setting === 'all';
+
+        if (is_this_site) {
+            if (!feed_discover_indexed) {
+                return 'This site has not yet been indexed for related stories.';
+            } else {
+                return 'Only recent stories shown from this site are available.';
+            }
+        } else if (is_folder) {
+            var folder_title = view_setting.split(':')[1];
+            var feed_ids = NEWSBLUR.assets.get_folder(folder_title).feed_ids_in_folder();
+            feed_count = feed_ids.length;
+            discover_indexed_count = NEWSBLUR.assets.feeds.filter(function (feed) {
+                return _.contains(feed_ids, feed.get('id'));
+            }).reduce(function (sum, feed) {
+                return sum + (feed.get('discover_indexed') ? 1 : 0);
+            }, 0);
+            if (discover_indexed_count == 0) {
+                return 'No stories from ' + folder_title + ' have yet been indexed for related stories.';
+            } else if (discover_indexed_count < feed_count) {
+                return 'Only recent stories shown from ' + discover_indexed_count + ' of ' + feed_count + ' sites.';
+            } else {
+                return 'Only recent stories shown from ' + discover_indexed_count + '/' + feed_count + ' sites.';
+            }
+        } else if (is_all) {
+            if (discover_indexed_count == 0) {
+                return 'No stories from your ' + feed_count + ' sites have yet been indexed for related stories.';
+            } else if (discover_indexed_count < feed_count) {
+                return 'Only recent stories shown from ' + discover_indexed_count + ' of ' + feed_count + ' sites.';
+            } else {
+                return 'Only recent stories shown from ' + feed_count + ' sites.';
+            }
+        } else if (is_global) {
+            return 'Only ' + discover_indexed_count + ' of ' + feed_count + ' of your sites have been indexed for related stories.';
+        }
+
+        return 'Only recent stories shown from ' + feed_count + ' sites.';
     },
 
     render_premium_only_message: function () {
