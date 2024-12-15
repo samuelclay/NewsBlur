@@ -114,7 +114,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         ]),
                         $.make('li', { className: 'NB-9' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                            'Discover related stories and sites'
+                            'Peek into related stories and sites'
                         ]),
                         $.make('li', { className: 'NB-10' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
@@ -208,6 +208,10 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         $.make('li', { className: 'NB-4' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
                             'Feeds that support paging are back-filled in for a complete archive'
+                        ]),
+                        $.make('li', { className: 'NB-4' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'Discover related stories and sites across every story in your archive'
                         ]),
                         $.make('li', { className: 'NB-5' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
