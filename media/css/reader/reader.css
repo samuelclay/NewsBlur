@@ -5850,7 +5850,8 @@ body {
     margin: 12px 0 0;
 }
 
-.NB-discover-retry.NB-modal-submit-button {
+.NB-discover-retry.NB-modal-submit-button,
+.NB-discover-upgrade.NB-modal-submit-button {
     margin: 24px 0 0;
 }
 

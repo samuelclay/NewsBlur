@@ -5404,6 +5404,9 @@
                     if (NEWSBLUR.app.active_search) {
                         NEWSBLUR.app.active_search.update_indexing_progress(message);
                     }
+                } else if (_.string.startsWith(message, "discover_index_complete:")) {
+                    message = message.replace('discover_index_complete:', '');
+                    this.update_discover_indexing_progress(message);
                 } else if (_.string.startsWith(message, "refresh:")) {
                     var feeds = message.replace('refresh:', '').split(",");
                     this.force_feeds_refresh(null, false, feeds);
@@ -5414,6 +5417,65 @@
                     }
                 }
             }
+        },
+
+        update_discover_indexing_progress: function (message) {
+            var $related_stories_buttons = $('.NB-sideoption.NB-feed-story-discover');
+
+            if (message == "start") {
+                this.show_discover_indexing_tooltip(true);
+            } else if (message == "done") {
+                var tipsy = $related_stories_buttons.data('tipsy');
+                _.defer(function () {
+                    if (!tipsy) return;
+                    tipsy.disable();
+                    tipsy.hide();
+                });
+                this.retry();
+            } else if (_.string.startsWith(message, 'feeds:')) {
+                var feed_ids = message.replace('feeds:', '').split(',');
+                _.each(feed_ids, function (feed_id) {
+                    var feed = NEWSBLUR.assets.get_feed(parseInt(feed_id, 10));
+                    if (feed) {
+                        feed.set('discover_indexed', true);
+                    }
+                });
+                this.show_discover_indexing_tooltip(false);
+                var indexed = NEWSBLUR.assets.feeds.discover_indexed();
+                var total = NEWSBLUR.assets.feeds.length;
+                progress = Math.ceil(indexed / total * 100);
+                NEWSBLUR.utils.attach_loading_gradient($related_stories_buttons, progress);
+            }
+        },
+
+        show_discover_indexing_tooltip: function (show) {
+            var $related_stories_buttons = $('.NB-sideoption.NB-feed-story-discover');
+
+            $related_stories_buttons.each(function () {
+                var $button = $(this);
+                var tipsy = $button.data('tipsy');
+                console.log(["tipsy", $button, tipsy]);
+                if (tipsy) return;
+
+                $button.tipsy({
+                    title: function () { return "Hang tight, indexing..."; },
+                    gravity: 'se',
+                    fade: true,
+                    trigger: 'hover',
+                    position: 'top-right',
+                    offset: 4
+                });
+                var tipsy = $button.data('tipsy');
+                _.defer(function () {
+                    tipsy.enable();
+                    if (show) tipsy.show();
+                });
+                _.delay(function () {
+                    tipsy.hide();
+                }, 3 * 1000);
+            });
+
+            return $related_stories_buttons;
         },
 
         watch_navigator_online: function () {

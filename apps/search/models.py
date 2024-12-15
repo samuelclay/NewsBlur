@@ -146,7 +146,7 @@ class MUserSearch(mongo.Document):
 
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
         user = User.objects.get(pk=self.user_id)
-        r.publish(user.username, "search_index_complete:discover:done")
+        r.publish(user.username, "discover_index_complete:done")
 
         duration = time.time() - start
         logging.user(
@@ -178,6 +178,7 @@ class MUserSearch(mongo.Document):
     def index_subscriptions_chunk_for_discover(self, feed_ids):
         from apps.rss_feeds.models import Feed
 
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
         user = User.objects.get(pk=self.user_id)
 
         logging.user(user, "~FCIndexing %s feeds for discover..." % len(feed_ids))
@@ -188,6 +189,8 @@ class MUserSearch(mongo.Document):
                 continue
 
             feed.index_stories_for_discover()
+
+        r.publish(user.username, "discover_index_complete:feeds:%s" % ",".join([str(f) for f in feed_ids]))
 
     @classmethod
     def schedule_index_feeds_for_search(cls, feed_ids, user_id):

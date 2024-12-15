@@ -354,6 +354,14 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
         return indexed;
     },
 
+    discover_indexed: function () {
+        var indexed = this.select(function (feed) {
+            return feed.get('discover_indexed');
+        }).length;
+
+        return indexed;
+    },
+
     // ==========
     // = Events =
     // ==========

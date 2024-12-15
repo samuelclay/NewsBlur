@@ -6,7 +6,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         "click .NB-sideoption-discover-control-item": "switch_discover_section",
         "click .NB-discover-load-more": "load_more_stories",
         "click .NB-discover-retry": "retry_load_stories",
-        "click .NB-discover-retry.NB-modal-submit-button": "show_premium_upgrade_modal"
+        "click .NB-discover-upgrade.NB-modal-submit-button": "show_premium_upgrade_modal"
     },
 
     initialize: function () {
@@ -216,7 +216,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                             $.make('br'),
                             'All related stories are available to Premium Archive subscribers.',
                             $.make('div', {
-                                className: 'NB-discover-retry NB-modal-submit-button NB-modal-submit-green',
+                                className: 'NB-discover-upgrade NB-modal-submit-button NB-modal-submit-green',
                             }, [
                                 'Upgrade to Premium Archive'
                             ])
@@ -286,7 +286,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
             } else if (discover_indexed_count < feed_count) {
                 return 'Only recent stories shown from ' + discover_indexed_count + ' of ' + feed_count + ' sites.';
             } else {
-                return 'Only recent stories shown from ' + discover_indexed_count + '/' + feed_count + ' sites.';
+                return 'Only recent stories shown from ' + feed_count + ' sites.';
             }
         } else if (is_all) {
             if (discover_indexed_count == 0) {
@@ -307,7 +307,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         return $.make('div', { className: 'NB-discover-empty' }, [
             'Related stories are only available for premium subscribers.',
             $.make('div', {
-                className: 'NB-discover-retry NB-modal-submit-button NB-modal-submit-green',
+                className: 'NB-discover-upgrade NB-modal-submit-button NB-modal-submit-green',
             }, [
                 'Upgrade to Premium'
             ])
