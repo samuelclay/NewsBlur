@@ -11,6 +11,14 @@ def IndexSubscriptionsForSearch(user_id):
 
 
 @app.task()
+def IndexSubscriptionsForDiscover(user_id):
+    from apps.search.models import MUserSearch
+
+    user_search = MUserSearch.get_user(user_id)
+    user_search.index_subscriptions_for_discover()
+
+
+@app.task()
 def IndexSubscriptionsChunkForSearch(feed_ids, user_id):
     logging.debug(" ---> Indexing: %s for %s" % (feed_ids, user_id))
     from apps.search.models import MUserSearch

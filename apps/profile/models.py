@@ -330,6 +330,14 @@ class Profile(models.Model):
                 except (IntegrityError, Feed.DoesNotExist):
                     pass
 
+        # When upgrading to archive, reset MUserSearch discovery indexes
+        if not was_archive:
+            from apps.search.models import MUserSearch
+
+            MUserSearch.objects.filter(user_id=self.user.pk).update(
+                discover_indexed=False, discover_indexing=False
+            )
+
         # Count subscribers to turn on archive_subscribers counts, then show that count to users
         # on the paypal_archive_return page.
         try:
@@ -517,9 +525,9 @@ class Profile(models.Model):
             if settings.DEBUG:
                 application_context["return_url"] = f"https://a6d3-161-77-224-226.ngrok.io{paypal_return}"
             else:
-                application_context[
-                    "return_url"
-                ] = f"https://{Site.objects.get_current().domain}{paypal_return}"
+                application_context["return_url"] = (
+                    f"https://{Site.objects.get_current().domain}{paypal_return}"
+                )
             paypal_subscription = paypal_api.post(
                 f"/v1/billing/subscriptions",
                 {

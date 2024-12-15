@@ -21,6 +21,7 @@ from apps.search.tasks import (
     IndexFeedsForSearch,
     IndexSubscriptionsChunkForDiscover,
     IndexSubscriptionsChunkForSearch,
+    IndexSubscriptionsForDiscover,
     IndexSubscriptionsForSearch,
 )
 from utils import log as logging
@@ -33,6 +34,7 @@ class MUserSearch(mongo.Document):
 
     user_id = mongo.IntField(unique=True)
     last_search_date = mongo.DateTimeField()
+    last_discover_date = mongo.DateTimeField(null=True, blank=True)
     subscriptions_indexed = mongo.BooleanField(default=False)
     subscriptions_indexing = mongo.BooleanField(default=False)
     discover_indexed = mongo.BooleanField(default=False)
@@ -68,20 +70,41 @@ class MUserSearch(mongo.Document):
         self.last_search_date = datetime.datetime.now()
         self.save()
 
+    def touch_discover_date(self):
+        if not self.discover_indexed and not self.discover_indexing:
+            self.schedule_index_subscriptions_for_discover()
+            self.discover_indexing = True
+
+        self.last_discover_date = datetime.datetime.now()
+        self.save()
+
     def schedule_index_subscriptions_for_search(self):
         IndexSubscriptionsForSearch.apply_async(kwargs=dict(user_id=self.user_id), queue="search_indexer")
 
+    def schedule_index_subscriptions_for_discover(self):
+        IndexSubscriptionsForDiscover.apply_async(kwargs=dict(user_id=self.user_id), queue="discover_indexer")
+
     # Should be run as a background task
     def index_subscriptions_for_search(self):
+        self.index_subscriptions_for("search")
+
+    # Should be run as a background task
+    def index_subscriptions_for_discover(self):
+        self.index_subscriptions_for("discover")
+
+    def index_subscriptions_for(self, search_type):
         from apps.reader.models import UserSubscription
         from apps.rss_feeds.models import Feed
 
-        SearchStory.create_elasticsearch_mapping()
+        if search_type == "search":
+            SearchStory.create_elasticsearch_mapping()
+        elif search_type == "discover":
+            DiscoverStory.create_elasticsearch_mapping()
 
         start = time.time()
         user = User.objects.get(pk=self.user_id)
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-        r.publish(user.username, "search_index_complete:start")
+        r.publish(user.username, f"{search_type}_index_complete:start")
 
         subscriptions = UserSubscription.objects.filter(user=user).only("feed")
         total = subscriptions.count()
@@ -94,36 +117,35 @@ class MUserSearch(mongo.Document):
                 continue
 
         feed_id_chunks = [c for c in chunks(feed_ids, 6)]
-        logging.user(user, "~FCIndexing ~SB%s feeds~SN in %s chunks..." % (total, len(feed_id_chunks)))
+        logging.user(
+            user, f"~FCIndexing ~SB{total} feeds~SN for {search_type} in {len(feed_id_chunks)} chunks..."
+        )
 
-        # Create search indexing tasks
-        search_chunks = [
-            IndexSubscriptionsChunkForSearch.s(feed_ids=feed_id_chunk, user_id=self.user_id).set(
+        if search_type == "search":
+            # Create search indexing tasks
+            search_chunks = [
+                IndexSubscriptionsChunkForSearch.s(feed_ids=feed_id_chunk, user_id=self.user_id).set(
+                    queue="search_indexer"
+                )
+                for feed_id_chunk in feed_id_chunks
+            ]
+            # Create the finish callbacks
+            finish_search = FinishIndexSubscriptionsForSearch.s(user_id=self.user_id, start=start).set(
                 queue="search_indexer"
             )
-            for feed_id_chunk in feed_id_chunks
-        ]
-
-        # Create discover indexing tasks
-        discover_chunks = [
-            IndexSubscriptionsChunkForDiscover.s(feed_ids=feed_id_chunk, user_id=self.user_id).set(
-                queue="discover_indexer"
-            )
-            for feed_id_chunk in feed_id_chunks
-        ]
-
-        # Create the finish callbacks
-        finish_search = FinishIndexSubscriptionsForSearch.s(user_id=self.user_id, start=start).set(
-            queue="search_indexer"
-        )
-        finish_discover = FinishIndexSubscriptionsForDiscover.s(
-            user_id=self.user_id, start=start, total=total
-        ).set(queue="discover_indexer")
-
-        # Chain: search_chunks -> finish_search -> discover_chunks -> finish_discover
-        search_chord = celery.chord(search_chunks)(finish_search)
-        discover_chord = celery.chord(discover_chunks)(finish_discover)
-        search_chord.then(discover_chord)
+            celery.chord(search_chunks)(finish_search)
+        elif search_type == "discover":
+            # Create discover indexing tasks
+            discover_chunks = [
+                IndexSubscriptionsChunkForDiscover.s(feed_ids=feed_id_chunk, user_id=self.user_id).set(
+                    queue="discover_indexer"
+                )
+                for feed_id_chunk in feed_id_chunks
+            ]
+            finish_discover = FinishIndexSubscriptionsForDiscover.s(
+                user_id=self.user_id, start=start, total=total
+            ).set(queue="discover_indexer")
+            celery.chord(discover_chunks)(finish_discover)
 
     def finish_index_subscriptions_for_search(self, start):
         from apps.reader.models import UserSubscription
