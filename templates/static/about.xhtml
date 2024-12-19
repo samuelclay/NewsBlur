@@ -1,6 +1,10 @@
-{% extends 'base.html' %} {% load utils_tags %} {% block bodyclass %}NB-static
-NB-static-about{% endblock %} {% block title %}About NewsBlur{% endblock %} {%
-block head %} {% endblock %} {% block content %}
+{% extends 'base.html' %} 
+{% load utils_tags %} 
+{% block bodyclass %}NB-static NB-static-about{% endblock %} 
+{% block title %}About NewsBlur{% endblock %}
+{% block head %} {% endblock %} 
+
+{% block content %}
 
 <div class="NB-static-title">About NewsBlur</div>
 
@@ -269,5 +273,5 @@ block head %} {% endblock %} {% block content %}
   </div>
 </div>
 
-{% endblock content %} {% block footer %} {% render_footer "about" %} {%
-endblock footer %}
+{% endblock content %} {% block footer %} {% render_footer "about" %} 
+{% endblock footer %}
