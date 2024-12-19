@@ -79,10 +79,18 @@ class MUserSearch(mongo.Document):
         self.save()
 
     def schedule_index_subscriptions_for_search(self):
-        IndexSubscriptionsForSearch.apply_async(kwargs=dict(user_id=self.user_id), queue="search_indexer")
+        IndexSubscriptionsForSearch.apply_async(
+            kwargs=dict(user_id=self.user_id),
+            queue="search_indexer",
+            time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH,
+        )
 
     def schedule_index_subscriptions_for_discover(self):
-        IndexSubscriptionsForDiscover.apply_async(kwargs=dict(user_id=self.user_id), queue="discover_indexer")
+        IndexSubscriptionsForDiscover.apply_async(
+            kwargs=dict(user_id=self.user_id),
+            queue="discover_indexer",
+            time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH,
+        )
 
     # Should be run as a background task
     def index_subscriptions_for_search(self):
@@ -138,7 +146,8 @@ class MUserSearch(mongo.Document):
             # Create discover indexing tasks
             discover_chunks = [
                 IndexSubscriptionsChunkForDiscover.s(feed_ids=feed_id_chunk, user_id=self.user_id).set(
-                    queue="discover_indexer"
+                    queue="discover_indexer",
+                    time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH,
                 )
                 for feed_id_chunk in feed_id_chunks
             ]

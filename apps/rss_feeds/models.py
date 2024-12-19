@@ -1693,7 +1693,9 @@ class Feed(models.Model):
         if discover_story_ids:
             if self.archive_subscribers and self.archive_subscribers > 0:
                 IndexDiscoverStories.apply_async(
-                    kwargs=dict(story_ids=discover_story_ids), queue="discover_indexer"
+                    kwargs=dict(story_ids=discover_story_ids),
+                    queue="discover_indexer",
+                    time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
                 )
             else:
                 logging.debug(
