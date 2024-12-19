@@ -87,6 +87,7 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
         var self = this;
         this.current_request = this.discover_stories.fetch({
             remove: this.page == 1,
+            type: 'POST',
             data: {
                 feed_ids: feed_ids,
                 page: this.page
