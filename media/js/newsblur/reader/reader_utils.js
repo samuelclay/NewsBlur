@@ -129,11 +129,21 @@ NEWSBLUR.utils = {
     }),
 
     attach_loading_gradient: function ($elem, percentage) {
-        $elem.css('background', '-moz-linear-gradient(left,  #b1d2f9 0%, #b1d2f9 ' + percentage + '%, #fcfcfc ' + percentage + '%, #fcfcfc 100%)'); // FF3.6+
-        $elem.css('background', '-webkit-gradient(linear, left top, right top, color-stop(0%,#b1d2f9), color-stop(' + percentage + '%,#b1d2f9), color-stop(' + percentage + '%,#fcfcfc), color-stop(100%,#fcfcfc))'); // Chrome,Safari4+
-        $elem.css('background', '-webkit-linear-gradient(left,  #b1d2f9 0%,#b1d2f9 ' + percentage + '%,#fcfcfc ' + percentage + '%,#fcfcfc 100%)'); // Chrome10+,Safari5.1+
-        $elem.css('background', 'linear-gradient(to right,  #b1d2f9 0%,#b1d2f9 ' + percentage + '%,#fcfcfc ' + percentage + '%,#fcfcfc 100%)');
-        $elem.css("filter", "progid:DXImageTransform.Microsoft.gradient( startColorstr='#b1d2f9', endColorstr='#fcfcfc',GradientType=1 )");
+        var theme = NEWSBLUR.assets.theme();;
+
+        if (theme == 'dark') {
+            var color1 = '#315681';
+            var color2 = '#214a7b';
+        } else {
+            var color1 = '#fcfcfc';
+            var color2 = '#b1d2f9';
+        }
+
+        $elem.css('background', '-moz-linear-gradient(left, ' + color1 + ' 0%, ' + color1 + ' ' + percentage + '%, ' + color2 + ' ' + percentage + '%, ' + color2 + ' 100%)'); // FF3.6+
+        $elem.css('background', '-webkit-gradient(linear, left top, right top, color-stop(0%,' + color1 + '), color-stop(' + percentage + '%,' + color1 + '), color-stop(' + percentage + '%,' + color2 + '), color-stop(100%,' + color2 + '))'); // Chrome,Safari4+
+        $elem.css('background', '-webkit-linear-gradient(left, ' + color1 + ' 0%, ' + color1 + ' ' + percentage + '%, ' + color2 + ' ' + percentage + '%, ' + color2 + ' 100%)'); // Chrome10+,Safari5.1+
+        $elem.css('background', 'linear-gradient(to right, ' + color1 + ' 0%, ' + color1 + ' ' + percentage + '%, ' + color2 + ' ' + percentage + '%, ' + color2 + ' 100%)');
+        $elem.css("filter", "progid:DXImageTransform.Microsoft.gradient( startColorstr='" + color1 + "', endColorstr='" + color2 + "',GradientType=1 )");
     },
 
     is_feed_social: function (feed_id) {

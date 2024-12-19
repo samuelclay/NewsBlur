@@ -8,6 +8,7 @@ from celery.exceptions import SoftTimeLimitExceeded
 from django.conf import settings
 
 from apps.profile.middleware import DBProfilerMiddleware
+from apps.search.models import DiscoverStory
 from newsblur_web.celeryapp import app
 from utils import log as logging
 from utils.redis_raw_log_middleware import RedisDumpMiddleware
@@ -238,3 +239,10 @@ def ScheduleCountTagsForUser(user_id):
     from apps.rss_feeds.models import MStarredStoryCounts
 
     MStarredStoryCounts.count_for_user(user_id)
+
+
+@app.task()
+def IndexDiscoverStories(story_ids):
+    from apps.rss_feeds.models import MStory
+
+    MStory.index_stories_for_discover(story_ids)

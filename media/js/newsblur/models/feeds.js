@@ -110,7 +110,7 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
     },
 
     in_folders: function () {
-        var in_folders = _.pluck(_.pluck(this.folders, 'options'), 'title');
+        var in_folders = _.uniq(_.pluck(_.pluck(this.folders, 'options'), 'title'));
 
         return in_folders;
     },
@@ -349,6 +349,14 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
     search_indexed: function () {
         var indexed = this.select(function (feed) {
             return feed.get('search_indexed');
+        }).length;
+
+        return indexed;
+    },
+
+    discover_indexed: function () {
+        var indexed = this.select(function (feed) {
+            return feed.get('discover_indexed');
         }).length;
 
         return indexed;
