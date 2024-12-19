@@ -708,7 +708,8 @@ class DiscoverStory:
 
         try:
             record = cls.ES().get(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type())
-            # logging.debug(f" ---> ~FBStory already indexed: {story_hash}")
+            if verbose:
+                logging.debug(f" ---> ~FBStory already indexed: {story_hash}")
             return
         except elasticsearch.exceptions.NotFoundError:
             record = None
@@ -732,7 +733,7 @@ class DiscoverStory:
         try:
             if not record:
                 if verbose:
-                    logging.debug(f" ---> ~FCIndexing discover story: {story_hash}")
+                    logging.debug(f" ---> ~SN~FCIndexing discover story: ~SB~FC{story_hash}")
                 cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
         except elasticsearch.exceptions.NotFoundError:
             cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())

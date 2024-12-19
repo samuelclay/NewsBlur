@@ -36,7 +36,12 @@ from django.utils.encoding import DjangoUnicodeDecodeError, smart_bytes, smart_s
 from mongoengine.errors import ValidationError
 from mongoengine.queryset import NotUniqueError, OperationError, Q
 
-from apps.rss_feeds.tasks import PushFeeds, ScheduleCountTagsForUser, UpdateFeeds
+from apps.rss_feeds.tasks import (
+    IndexDiscoverStories,
+    PushFeeds,
+    ScheduleCountTagsForUser,
+    UpdateFeeds,
+)
 from apps.rss_feeds.text_importer import TextImporter
 from apps.search.models import DiscoverStory, SearchFeed, SearchStory
 from apps.statistics.rstats import RStats
@@ -743,7 +748,7 @@ class Feed(models.Model):
     @classmethod
     def setup_feeds_for_premium_subscribers(cls, feed_ids):
         logging.info(f" ---> ~SN~FMScheduling immediate premium setup of ~SB{len(feed_ids)}~SN feeds...")
-        
+
         feeds = Feed.objects.filter(pk__in=feed_ids)
         for feed in feeds:
             feed.setup_feed_for_premium_subscribers()
@@ -1516,6 +1521,7 @@ class Feed(models.Model):
         ret_values = dict(new=0, updated=0, same=0, error=0)
         error_count = self.error_count
         new_story_hashes = [s.get("story_hash") for s in stories]
+        discover_story_ids = []
 
         if settings.DEBUG or verbose:
             logging.debug(
@@ -1558,7 +1564,7 @@ class Feed(models.Model):
                 story_has_changed = False
 
             if existing_story is None:
-                if settings.DEBUG and False:
+                if settings.DEBUG and verbose:
                     logging.debug(
                         "   ---> New story in feed (%s - %s): %s"
                         % (self.feed_title, story.get("title"), len(story_content))
@@ -1585,9 +1591,10 @@ class Feed(models.Model):
                             "   ---> [%-30s] ~SN~FRIntegrityError on new story: %s - %s"
                             % (self.feed_title[:30], story.get("guid"), e)
                         )
-                if self.search_indexed:
+                if self.search_indexed and s:
                     s.index_story_for_search()
-                    s.index_story_for_discover(verbose=True)
+                if s and s.story_hash:
+                    discover_story_ids.append(s.story_hash)
             elif existing_story and story_has_changed and not updates_off and ret_values["updated"] < 3:
                 # update story
                 original_content = None
@@ -1672,7 +1679,8 @@ class Feed(models.Model):
                         )
                 if self.search_indexed:
                     existing_story.index_story_for_search()
-                    existing_story.index_story_for_discover()
+                if existing_story.story_hash:
+                    discover_story_ids.append(existing_story.story_hash)
             else:
                 ret_values["same"] += 1
                 if verbose:
@@ -1680,6 +1688,17 @@ class Feed(models.Model):
                         "Unchanged story (%s): %s / %s "
                         % (story.get("story_hash"), story.get("guid"), story.get("title"))
                     )
+
+        # If there are no premium archive subscribers, don't index stories for discover.
+        if discover_story_ids:
+            if self.archive_subscribers and self.archive_subscribers > 0:
+                IndexDiscoverStories.apply_async(
+                    kwargs=dict(story_ids=discover_story_ids), queue="discover_indexer"
+                )
+            else:
+                logging.debug(
+                    f" ---> ~FBNo premium archive subscribers, skipping discover indexing for {discover_story_ids} for {self}"
+                )
 
         return ret_values
 
@@ -3136,6 +3155,16 @@ class MStory(mongo.Document):
             story_feed_id=self.story_feed_id,
             story_date=self.story_date,
         )
+
+    @classmethod
+    def index_stories_for_discover(cls, story_hashes, verbose=False):
+        logging.debug(f" ---> ~FBIndexing {len(story_hashes)} stories for ~FC~SBdiscover")
+        for story_hash in story_hashes:
+            try:
+                story = cls.objects.get(story_hash=story_hash)
+                story.index_story_for_discover(verbose=verbose)
+            except cls.DoesNotExist:
+                logging.debug(f" ---> ~FBStory not found for discover indexing: {story_hash}")
 
     def index_story_for_discover(self, verbose=False):
         DiscoverStory.index(
