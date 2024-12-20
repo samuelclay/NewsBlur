@@ -119,9 +119,13 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
               <% if (show_discover) { %>\
                 <div class="NB-feedbar-discover-container">\
                     <div class="NB-feedbar-discover-icon"></div>\
-                    <% _.map(feed.get("similar_feeds"), (feed_id) => { %>\
-                        <img class="feed_favicon" src="<%= $.favicon(feed_id) %>">\
-                    <% }); %>\
+                    <% if (feed.get("similar_feeds") && feed.get("similar_feeds").length) { %>\
+                        <% _.map(feed.get("similar_feeds"), (feed_id) => { %>\
+                            <img class="feed_favicon" src="<%= $.favicon(feed_id) %>">\
+                        <% }); %>\
+                    <% } else { %>\
+                        <span class="NB-feedbar-discover-text">Related</span>\
+                    <% } %>\
                     <div class="NB-icon"></div>\
                 </div>\
               <% } %>\
