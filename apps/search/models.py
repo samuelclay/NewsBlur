@@ -39,6 +39,7 @@ class MUserSearch(mongo.Document):
     subscriptions_indexing = mongo.BooleanField(default=False)
     discover_indexed = mongo.BooleanField(default=False)
     discover_indexing = mongo.BooleanField(default=False)
+    discover_indexing_date = mongo.DateTimeField(null=True, blank=True)
 
     meta = {
         "collection": "user_search",
@@ -73,7 +74,22 @@ class MUserSearch(mongo.Document):
     def touch_discover_date(self):
         if not self.discover_indexed and not self.discover_indexing:
             self.schedule_index_subscriptions_for_discover()
+            self.discover_indexing_date = datetime.datetime.now()
             self.discover_indexing = True
+        one_day = 60 * 60 * 24
+        indexing_expired = (
+            self.discover_indexing_date is None
+            or (datetime.datetime.now() - self.discover_indexing_date).total_seconds() > one_day
+        )
+        if not self.discover_indexed and self.discover_indexing and indexing_expired:
+            logging.user(
+                user,
+                f"~FCScheduling indexing ~SBdiscover~SN for ~SB%s~SN because it's been more than one day ({(datetime.datetime.now() - self.discover_indexing_date).total_seconds()})..."
+                % self.user_id,
+            )
+            self.schedule_index_subscriptions_for_discover()
+            self.discover_indexing = True
+            self.discover_indexing_date = datetime.datetime.now()
 
         self.last_discover_date = datetime.datetime.now()
         self.save()
