@@ -83,11 +83,18 @@ class MUserSearch(mongo.Document):
         )
         if not self.discover_indexed and self.discover_indexing and indexing_expired:
             user = User.objects.get(pk=self.user_id)
-            logging.user(
-                user,
-                f"~FCScheduling indexing ~SBdiscover~SN for ~SB%s~SN because it's been more than one day ({(datetime.datetime.now() - self.discover_indexing_date).total_seconds()})..."
-                % self.user_id,
-            )
+            if self.discover_indexing_date:
+                logging.user(
+                    user,
+                    f"~FCScheduling indexing ~SBdiscover~SN for ~SB%s~SN because it's been more than one day ({(datetime.datetime.now() - self.discover_indexing_date).total_seconds()})..."
+                    % self.user_id,
+                )
+            else:
+                logging.user(
+                    user,
+                    f"~FCScheduling indexing ~SBdiscover~SN for ~SB%s~SN, because it's never been indexed..."
+                    % self.user_id,
+                )
             self.schedule_index_subscriptions_for_discover()
             self.discover_indexing = True
             self.discover_indexing_date = datetime.datetime.now()
