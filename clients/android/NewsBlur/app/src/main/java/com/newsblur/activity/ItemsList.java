@@ -35,6 +35,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Log;
+import com.newsblur.util.PendingTransitionUtils;
 import com.newsblur.util.ReadingActionListener;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.Session;
@@ -82,7 +83,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         Trace.beginSection("ItemsListOnCreate");
 		super.onCreate(bundle);
 
-        overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
+        PendingTransitionUtils.overrideEnterTransition(this);
 
         contextMenuDelegate = new ItemListContextMenuDelegateImpl(this, feedUtils);
         viewModel = new ViewModelProvider(this).get(ItemListViewModel.class);
@@ -313,13 +314,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Override
     public void finish() {
         super.finish();
-        /*
-         * Animate out the list by sliding it to the right and the Main activity in from
-         * the left.  Do this when going back to Main as a subtle hint to the swipe gesture,
-         * to make the gesture feel more natural, and to override the really ugly transition
-         * used in some of the newer platforms.
-         */
-        overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
+        PendingTransitionUtils.overrideExitTransition(this);
     }
 
     abstract String getSaveSearchFeedId();

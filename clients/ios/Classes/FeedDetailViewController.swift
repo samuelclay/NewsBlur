@@ -114,6 +114,20 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         changedLayout()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if view.frame.origin.y == 0, let navigationController, navigationController.navigationBar.frame.origin.y < 0 {
+            print("FeedDetailViewController: viewWillAppear in the wrong place: frame: \(view.frame), nav frame: \(navigationController.navigationBar.frame); this is a bug that started with iOS 18; working around it")
+            
+            view.frame.origin.y = -navigationController.navigationBar.frame.origin.y
+            
+            view.setNeedsUpdateConstraints()
+            view.setNeedsLayout()
+            view.setNeedsDisplay()
+        }
+    }
+    
     @objc override func loadingFeed() {
         // Make sure the view has loaded.
         _ = view
