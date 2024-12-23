@@ -6919,12 +6919,12 @@ form.opml_import_form input {
 }
 
 .NB-splash-info .NB-splash-links .NB-splash-link-twitter a:hover {
-    background: transparent url('/media/embed/reader/twitter_bird.png') no-repeat 0 10px;
+    background: transparent url('/media/embed/welcome/x_favicon.png') no-repeat 0 10px;
     background-size: 16px;
 }
 
 .NB-splash-info .NB-splash-links .NB-splash-link-facebook a:hover {
-    background: transparent url('/media/embed/reader/facebook.png') no-repeat 0 9px;
+    background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat 0 9px;
     background-size: 16px;
 }
 
@@ -12784,7 +12784,8 @@ form.opml_import_form input {
 }
 
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-facebook] {
-    background: transparent url('/media/embed/reader/facebook.gif') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat 0 0;
+    background-size: 16px;
 }
 
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readitlater] {

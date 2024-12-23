@@ -2659,7 +2659,7 @@
 
         send_story_to_twitter: function (story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'https://twitter.com/intent/tweet';
+            var url = 'https://x.com/intent/post';
             var twitter_url = [
                 url,
                 '?text=',

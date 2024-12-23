@@ -9,6 +9,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.io.Serializable;
 
 import com.newsblur.database.BlurDatabaseHelper;
@@ -88,21 +91,21 @@ public class ReadingAction implements Serializable {
         return tried;
     }
 
-    public static ReadingAction markStoryRead(String hash) {
+    public static ReadingAction markStoryRead(@Nullable String hash) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.MARK_READ;
         ra.storyHash = hash;
         return ra;
     }
 
-    public static ReadingAction markStoryUnread(String hash) {
+    public static ReadingAction markStoryUnread(@Nullable String hash) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.MARK_UNREAD;
         ra.storyHash = hash;
         return ra;
     }
 
-    public static ReadingAction saveStory(String hash, List<String> userTags) {
+    public static ReadingAction saveStory(@Nullable String hash, @Nullable List<String> userTags) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.SAVE;
         ra.storyHash = hash;
@@ -114,14 +117,14 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
-    public static ReadingAction unsaveStory(String hash) {
+    public static ReadingAction unsaveStory(@Nullable String hash) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.UNSAVE;
         ra.storyHash = hash;
         return ra;
     }
 
-    public static ReadingAction markFeedRead(FeedSet fs, Long olderThan, Long newerThan) {
+    public static ReadingAction markFeedRead(@NonNull FeedSet fs, @Nullable Long olderThan, @Nullable Long newerThan) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.MARK_READ;
         ra.feedSet = fs;
@@ -130,7 +133,7 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
-    public static ReadingAction shareStory(String hash, String storyId, String feedId, String sourceUserId, String commentReplyText) {
+    public static ReadingAction shareStory(@Nullable String hash, @Nullable String storyId, @Nullable String feedId, @Nullable String sourceUserId, @Nullable String commentReplyText) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.SHARE;
         ra.storyHash = hash;
@@ -141,7 +144,7 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
-    public static ReadingAction unshareStory(String hash, String storyId, String feedId) {
+    public static ReadingAction unshareStory(@Nullable String hash, @Nullable String storyId, @Nullable String feedId) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.UNSHARE;
         ra.storyHash = hash;
@@ -150,7 +153,7 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
-    public static ReadingAction likeComment(String storyId, String commentUserId, String feedId) {
+    public static ReadingAction likeComment(@Nullable String storyId, @Nullable String commentUserId, @Nullable String feedId) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.LIKE_COMMENT;
         ra.storyId = storyId;
@@ -159,7 +162,7 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
-    public static ReadingAction unlikeComment(String storyId, String commentUserId, String feedId) {
+    public static ReadingAction unlikeComment(@Nullable String storyId, @Nullable String commentUserId, @Nullable String feedId) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.UNLIKE_COMMENT;
         ra.storyId = storyId;
@@ -168,7 +171,7 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
-    public static ReadingAction replyToComment(String storyId, String feedId, String commentUserId, String commentReplyText) {
+    public static ReadingAction replyToComment(@Nullable String storyId, @Nullable String feedId, @Nullable String commentUserId, @Nullable String commentReplyText) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.REPLY;
         ra.storyId = storyId;
@@ -178,7 +181,7 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
-    public static ReadingAction updateReply(String storyId, String feedId, String commentUserId, String replyId, String commentReplyText) {
+    public static ReadingAction updateReply(@Nullable String storyId, @Nullable String feedId, @Nullable String commentUserId, @Nullable String replyId, @Nullable String commentReplyText) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.EDIT_REPLY;
         ra.storyId = storyId;
@@ -189,7 +192,7 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
-    public static ReadingAction deleteReply(String storyId, String feedId, String commentUserId, String replyId) {
+    public static ReadingAction deleteReply(@Nullable String storyId, @Nullable String feedId, @Nullable String commentUserId, @Nullable String replyId) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.DELETE_REPLY;
         ra.storyId = storyId;
@@ -199,7 +202,7 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
-    public static ReadingAction muteFeeds(Set<String> activeFeedIds, Set<String> modifiedFeedIds) {
+    public static ReadingAction muteFeeds(@NonNull Set<String> activeFeedIds, @NonNull Set<String> modifiedFeedIds) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.MUTE_FEEDS;
         ra.activeFeedIds = activeFeedIds;
@@ -207,7 +210,7 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
-    public static ReadingAction unmuteFeeds(Set<String> activeFeedIds, Set<String> modifiedFeedIds) {
+    public static ReadingAction unmuteFeeds(@NonNull Set<String> activeFeedIds, @NonNull Set<String> modifiedFeedIds) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.UNMUTE_FEEDS;
         ra.activeFeedIds = activeFeedIds;
@@ -215,7 +218,7 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
-    public static ReadingAction setNotify(String feedId, List<String> notifyTypes, String notifyFilter) {
+    public static ReadingAction setNotify(@Nullable String feedId, @Nullable List<String> notifyTypes, @Nullable String notifyFilter) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.SET_NOTIFY;
         ra.feedId = feedId;
@@ -228,14 +231,14 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
-    public static ReadingAction instaFetch(String feedId) {
+    public static ReadingAction instaFetch(@Nullable String feedId) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.INSTA_FETCH;
         ra.feedId = feedId;
         return ra;
     }
 
-    public static ReadingAction updateIntel(String feedId, Classifier classifier, FeedSet fs) {
+    public static ReadingAction updateIntel(@Nullable String feedId, @Nullable Classifier classifier, @Nullable FeedSet fs) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.UPDATE_INTEL;
         ra.feedId = feedId;
@@ -244,7 +247,7 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
-    public static ReadingAction renameFeed(String feedId, String newFeedName) {
+    public static ReadingAction renameFeed(@Nullable String feedId, @Nullable String newFeedName) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.RENAME_FEED;
         ra.feedId = feedId;
@@ -265,7 +268,7 @@ public class ReadingAction implements Serializable {
 		return values;
 	}
 
-	public static ReadingAction fromCursor(Cursor c) {
+	public static ReadingAction fromCursor(@NonNull Cursor c) {
         long time = c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_TIME));
         int tried = c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_TRIED));
         String params = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_PARAMS));
@@ -278,7 +281,7 @@ public class ReadingAction implements Serializable {
     /**
      * Execute this action remotely via the API.
      */
-    public NewsBlurResponse doRemote(APIManager apiManager, BlurDatabaseHelper dbHelper, StateFilter stateFilter) {
+    public NewsBlurResponse doRemote(@NonNull APIManager apiManager, @NonNull BlurDatabaseHelper dbHelper, @NonNull StateFilter stateFilter) {
         // generic response to return
         NewsBlurResponse result = null;
         // optional specific responses that are locally actionable
@@ -392,7 +395,7 @@ public class ReadingAction implements Serializable {
         return result;
     }
 
-    public int doLocal(Context context, BlurDatabaseHelper dbHelper) {
+    public int doLocal(@NonNull Context context, @NonNull BlurDatabaseHelper dbHelper) {
         return doLocal(context, dbHelper, false);
     }
 
@@ -403,7 +406,7 @@ public class ReadingAction implements Serializable {
      *
      * @return the union of update impact flags that resulted from this action.
      */
-    public int doLocal(Context context, BlurDatabaseHelper dbHelper, boolean isFollowup) {
+    public int doLocal(@NonNull Context context, @NonNull BlurDatabaseHelper dbHelper, boolean isFollowup) {
         String userId = PrefsUtils.getUserId(context);
         int impact = 0;
         switch (type) {

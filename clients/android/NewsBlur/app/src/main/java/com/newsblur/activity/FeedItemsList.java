@@ -10,10 +10,10 @@ import androidx.fragment.app.DialogFragment;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.tasks.Task;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
-import com.google.android.play.core.tasks.Task;
 import com.newsblur.R;
 import com.newsblur.di.IconLoader;
 import com.newsblur.domain.Feed;
