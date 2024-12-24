@@ -10,6 +10,7 @@ import Foundation
 
 /// A list in the Dashboard.
 @MainActor class DashList: Identifiable {
+    var id = UUID()
     var index: Int
     
     enum Side: String {
