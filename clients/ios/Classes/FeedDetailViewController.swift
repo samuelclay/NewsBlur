@@ -252,10 +252,10 @@ extension FeedDetailViewController {
             reloadTable()
         }
         
-        if pageFinished, dashboardAwaitingFinish, dashboardIndex >= 0 {
-            dashboardAwaitingFinish = false
-            appDelegate.feedsViewController.loadDashboard()
-        }
+//        if pageFinished, dashboardAwaitingFinish, dashboardIndex >= 0 {
+//            dashboardAwaitingFinish = false
+//            appDelegate.feedsViewController.loadDashboard()
+//        }
     }
     
 #if targetEnvironment(macCatalyst)

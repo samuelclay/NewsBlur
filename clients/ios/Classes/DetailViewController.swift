@@ -559,7 +559,30 @@ private extension DetailViewController {
             _ = storyPagesViewController?.view
         }
         
-        if layout == .left || isPhone {
+        if storyTitlesInGridView && !isPhone {
+            if feedDetailViewController == nil || !wasGridView {
+                remove(viewController: feedDetailViewController)
+                
+                feedDetailViewController = Storyboards.shared.controller(withIdentifier: .feedDetail) as? FeedDetailViewController
+                feedDetailViewController?.storiesCollection = appDelegate.storiesCollection
+                
+                add(viewController: feedDetailViewController, top: true)
+                
+                if appDelegate.feedDetailNavigationController != nil {
+                    supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
+                }
+                
+                supplementaryFeedDetailViewController = appDelegate.feedDetailViewController
+                appDelegate.feedDetailNavigationController = nil
+                appDelegate.feedDetailViewController = feedDetailViewController
+                appDelegate.splitViewController.setViewController(nil, for: .supplementary)
+            } else {
+                add(viewController: feedDetailViewController, top: true)
+            }
+            
+            dividerViewBottomConstraint.constant = -13
+            wasGridView = true
+        } else if layout == .left || isPhone {
             if feedDetailViewController != nil {
                 remove(viewController: feedDetailViewController)
                 
@@ -584,29 +607,6 @@ private extension DetailViewController {
             
             dividerViewBottomConstraint.constant = -13
             wasGridView = false
-        } else if storyTitlesInGridView {
-            if feedDetailViewController == nil || !wasGridView {
-                remove(viewController: feedDetailViewController)
-                
-                feedDetailViewController = Storyboards.shared.controller(withIdentifier: .feedDetail) as? FeedDetailViewController
-                feedDetailViewController?.storiesCollection = appDelegate.storiesCollection
-                
-                add(viewController: feedDetailViewController, top: true)
-                
-                if appDelegate.feedDetailNavigationController != nil {
-                    supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
-                }
-                
-                supplementaryFeedDetailViewController = appDelegate.feedDetailViewController
-                appDelegate.feedDetailNavigationController = nil
-                appDelegate.feedDetailViewController = feedDetailViewController
-                appDelegate.splitViewController.setViewController(nil, for: .supplementary)
-            } else {
-                add(viewController: feedDetailViewController, top: true)
-            }
-            
-            dividerViewBottomConstraint.constant = -13
-            wasGridView = true
         } else {
             if feedDetailViewController == nil || wasGridView {
                 remove(viewController: feedDetailViewController)

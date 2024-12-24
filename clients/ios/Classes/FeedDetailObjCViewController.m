@@ -59,6 +59,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (nonatomic) BOOL isFadingTable;
 @property (nonatomic, strong) NSString *restoringFolder;
 @property (nonatomic, strong) NSString *restoringFeedID;
+@property (nonatomic, strong) NSTimer *markStoryReadTimer;
 
 @end
 
@@ -1336,6 +1337,12 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [self renderStories:confirmedNewStories];
     
     NSLog(@"...rendered");  // log
+    
+    if (self.dashboardIndex >= 0) {
+        self.pageFinished = YES;
+        [appDelegate.feedsViewController loadDashboard];
+        return;
+    }
     
     if (!self.isPhoneOrCompact) {
         [appDelegate.storyPagesViewController resizeScrollView];
