@@ -12,11 +12,11 @@ except NameError:
 if not __FEEDFINDER2_SETUP__:
     __all__ = ["find_feeds"]
 
-    import logging
-
     import requests
     from bs4 import BeautifulSoup
     from six.moves.urllib import parse as urlparse
+
+    from utils import log as logging
 
 
 def coerce_url(url):

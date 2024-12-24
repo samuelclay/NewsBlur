@@ -83,7 +83,6 @@ psycopg2==2.9.2
 py==1.10.0
 pyasn1==0.4.8
 pycparser==2.20
-pyflakes==2.2.0
 PyJWT==1.7.1
 pymongo>=3,<4
 PyMySQL==0.10.1
