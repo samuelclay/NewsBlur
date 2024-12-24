@@ -72,10 +72,9 @@ struct DashListStoriesView: View {
     
     var body: some View {
         VStack(alignment: .center) {
-            Text("🚧")
-                .font(.system(size: 64))
-            Text("Coming Soon")
-                .padding()
+            ForEach(dash.stories) { story in
+                CardView(feedDetailInteraction: interaction, cache: cache, story: story)
+            }
         }
         .font(.custom("WhitneySSm-Medium", size: 14, relativeTo: .body))
         .clipShape(RoundedRectangle(cornerRadius: 10))

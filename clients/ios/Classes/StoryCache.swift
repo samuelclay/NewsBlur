@@ -179,6 +179,7 @@ import Foundation
         
         let dash = dashboard[index]
         
+        dash.id = UUID()
         dash.folder = Self.folder
         dash.feeds = Array(Self.feeds.values)
         
@@ -186,6 +187,8 @@ import Foundation
 //            dash.feeds.append(feed)
 //        }
         
-        dash.stories = before
+        dash.stories = Array(before.prefix(5))
+        
+        print("Reloaded dashboard for \(index); folder: \(dash.folder?.name ?? "?"); feeds: \(dash.feeds); stories: \(dash.stories)")
     }
 }
