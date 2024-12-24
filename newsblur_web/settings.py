@@ -424,7 +424,7 @@ SECONDS_TO_DELAY_CELERY_EMAILS = 60
 CELERY_BEAT_SCHEDULE = {
     "task-feeds": {
         "task": "task-feeds",
-        "schedule": datetime.timedelta(minutes=10 if DEBUG else 1),
+        "schedule": datetime.timedelta(minutes=60 if DEBUG else 1),
         "options": {"queue": "beat_feeds_task"},
     },
     "task-broken-feeds": {
