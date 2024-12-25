@@ -1106,7 +1106,7 @@
         [self applyNewIndex:pageIndex pageController:currentPage];
         [self setStoryFromScroll];
     } else {
-        [self.scrollView scrollRectToVisible:frame animated:animated];
+        [self.scrollView scrollRectToVisible:frame animated:animated && self.currentPage.pageIndex > -2];
         if (!animated) {
             [self setStoryFromScroll];
         }
