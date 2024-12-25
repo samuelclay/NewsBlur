@@ -759,7 +759,7 @@ class DiscoverStory:
         except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
             logging.debug(f" ***> ~FRNo search server available for discover story indexing: {e}")
         except elasticsearch.exceptions.ConflictError as e:
-            logging.debug(f" ***> ~FBAlready indexed discover story: {e}")
+            logging.debug(f" ***> ~FBAlready indexed discover story when getting: {e}")
 
         if not story_content_vector:
             story_content_vector = cls.generate_story_content_vector(story_hash)
@@ -784,7 +784,7 @@ class DiscoverStory:
         except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
             logging.debug(f" ***> ~FRNo search server available for discover story indexing: {e}")
         except elasticsearch.exceptions.ConflictError as e:
-            logging.debug(f" ***> ~FBAlready indexed discover story: {e}")
+            logging.debug(f" ***> ~FBAlready indexed discover story when creating: {e}")
         # if settings.DEBUG:
         #     logging.debug(f" ***> ~FBIndexed {story_hash}")
 
