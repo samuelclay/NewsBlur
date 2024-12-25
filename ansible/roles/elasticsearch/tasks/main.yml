@@ -67,7 +67,6 @@
     src: consul_service.json.j2
     dest: /etc/consul.d/elasticsearch.json
   vars:
-    consul_service_name: elasticsearch
     consul_service_port: 9200
     elasticsearch_version: 7
   notify:
@@ -75,7 +74,7 @@
 
 - name: Start Elasticsearch v8 Docker container
   docker_container:
-    name: elasticsearch
+    name: elasticsearch8
     image: elasticsearch:8.17.0
     state: started
     hostname: "{{ inventory_hostname }}"
@@ -97,14 +96,13 @@
       - /var/log/elasticsearch8/:/var/log/elasticsearch/
       - /srv/newsblur/config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
 
-- name: Register elasticsearch in consul
+- name: Register elasticsearch8 in consul
   tags: consul
   become: yes
   template:
     src: consul_service.json.j2
-    dest: /etc/consul.d/elasticsearch.json
+    dest: /etc/consul.d/elasticsearch8.json
   vars:
-    consul_service_name: elasticsearch
     consul_service_port: 9208
     elasticsearch_version: 8
   notify:
