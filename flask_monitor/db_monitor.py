@@ -263,7 +263,7 @@ def db_check_elasticsearch():
     if request.args.get("consul") == "1":
         return str(1)
 
-    if conn.indices.exists("feeds-index"):
+    if conn.indices.exists(index="feeds-index"):
         return str("Index exists, but didn't try search")
         # query = pyes.query.TermQuery("title", "daring fireball")
         # results = conn.search(query=query, size=1, doc_types=['feeds-type'], sort="num_subscribers:desc")
