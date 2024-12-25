@@ -15,6 +15,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from openai import APITimeoutError, OpenAI
 
+from apps.search.projection_matrix import project_vector
 from apps.search.tasks import (
     FinishIndexSubscriptionsForDiscover,
     FinishIndexSubscriptionsForSearch,
@@ -276,7 +277,7 @@ class MUserSearch(mongo.Document):
             feed.index_stories_for_search()
 
     @classmethod
-    def remove_all(cls, drop_index=False):
+    def remove_all(cls, drop_index=False, search=True, discover=True):
         # You only need to drop the index if there is data you want to clear.
         # A new search server won't need this, as there isn't anything to drop.
         if drop_index:
@@ -287,11 +288,11 @@ class MUserSearch(mongo.Document):
         logging.info(" ---> ~SN~FRRemoving ~SB%s~SN user searches..." % user_searches.count())
         for user_search in user_searches:
             try:
-                user_search.remove()
+                user_search.remove(search=search, discover=discover)
             except Exception as e:
                 print(" ****> Error on search removal: %s" % e)
 
-    def remove(self):
+    def remove(self, search=True, discover=True):
         from apps.reader.models import UserSubscription
         from apps.rss_feeds.models import Feed
 
@@ -305,16 +306,24 @@ class MUserSearch(mongo.Document):
                 feed = sub.feed
             except Feed.DoesNotExist:
                 continue
-            if not feed.search_indexed:
+            if search and not discover and not feed.search_indexed:
                 continue
-            feed.search_indexed = False
+            if discover and not search and not feed.discover_indexed:
+                continue
+            if search and discover and not feed.search_indexed and not feed.discover_indexed:
+                continue
+            if search:
+                feed.search_indexed = False
+                feed.search_indexing = False
+            if discover:
+                feed.discover_indexed = False
+                feed.discover_indexing = False
             feed.save()
             removed += 1
 
         logging.user(
             user,
-            "~FCRemoved ~SB%s/%s feed's search indexes~SN for ~SB~FB%s~FC~SN."
-            % (removed, total, user.username),
+            f"~FCRemoved ~SB{removed}/{total} feed's {'search' if search and not discover else 'discover' if discover and not search else 'search+discover' if search and discover else 'neither'} indexes~SN for ~SB~FB{user.username}~FC~SN.",
         )
         self.delete()
 
@@ -705,8 +714,9 @@ class DiscoverStory:
             },
             "content_vector": {
                 "type": "dense_vector",
-                "dims": 1536,  # Numbers of dims from text-embedding-3-small
-                # "store": True,  # Keep stored since we need to retrieve it # No need to be explicit
+                "dims": 256,  # Reduced from openai embedding size of 1536 to 256
+                "index": True,
+                "index_options": {"type": "bbq_hnsw"},  # Use bbq_hnsw index options for faster search
             },
         }
 
@@ -947,7 +957,10 @@ class DiscoverStory:
             return []
         story_embedding = response.data[0].embedding
 
-        return story_embedding
+        # Project the embedding down to 256 dimensions
+        projected_embedding = project_vector(story_embedding)
+
+        return projected_embedding.tolist()
 
     @classmethod
     def debug_index(cls, show_data=True, show_source=False):

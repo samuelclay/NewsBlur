@@ -8,7 +8,6 @@ from celery.exceptions import SoftTimeLimitExceeded
 from django.conf import settings
 
 from apps.profile.middleware import DBProfilerMiddleware
-from apps.search.models import DiscoverStory
 from newsblur_web.celeryapp import app
 from utils import log as logging
 from utils.redis_raw_log_middleware import RedisDumpMiddleware
