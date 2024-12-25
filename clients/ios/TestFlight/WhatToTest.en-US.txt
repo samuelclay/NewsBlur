@@ -1,2 +1,2 @@
-- Fixed cached images not rendering on iOS 18 and macOS Sequoia.
+- Fixed the wrong story sometimes being selected when first opening the app.
 
