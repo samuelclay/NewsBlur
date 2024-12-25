@@ -1926,7 +1926,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         NSInteger location = storiesCollection.locationOfActiveStory;
         NSIndexPath *oldIndexPath = [NSIndexPath indexPathForRow:location inSection:0];
         
-        if (![oldIndexPath isEqual:indexPath]) {
+        if (location >= 0 && ![oldIndexPath isEqual:indexPath]) {
             [self tableView:tableView deselectRowAtIndexPath:oldIndexPath animated:YES];
         }
         
