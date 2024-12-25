@@ -680,7 +680,7 @@ class DiscoverStory:
     @classmethod
     def ES(cls):
         if cls._es_client is None:
-            cls._es_client = elasticsearch.Elasticsearch(settings.ELASTICSEARCH_STORY_HOST)
+            cls._es_client = elasticsearch.Elasticsearch(settings.ELASTICSEARCH_DISCOVER_HOST)
             cls.create_elasticsearch_mapping()
         return cls._es_client
 
