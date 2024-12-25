@@ -487,6 +487,7 @@ CELERY_BEAT_SCHEDULE = {
 # =========
 # = Mongo =
 # =========
+
 if DOCKERBUILD:
     MONGO_PORT = 29019
 else:
@@ -499,6 +500,14 @@ MONGO_ANALYTICS_DB = {
     "host": f"db_mongo_analytics:{MONGO_PORT}",
     "name": "nbanalytics",
 }
+
+# =================
+# = Elasticsearch =
+# =================
+
+ELASTICSEARCH_FEED_HOST = "http://db-elasticsearch.service.nyc1.consul:9200"
+ELASTICSEARCH_STORY_HOST = "http://db-elasticsearch.service.nyc1.consul:9200"
+ELASTICSEARCH_DISCOVER_HOST = "http://db-elasticsearch-v8.service.nyc1.consul:9208"
 
 # ====================
 # = Database Routers =
