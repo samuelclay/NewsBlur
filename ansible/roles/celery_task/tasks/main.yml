@@ -19,7 +19,7 @@
     path: /srv/newsblur/newsblur_web/task_env.py
     line: 'SERVER_NAME = "{{ inventory_hostname }}"'
 
-- name: "Start task-celery docker containers"
+- name: "Start task-celery/task-work docker containers"
   become: yes
   docker_container:
     name: "{{ item.container_name }}"
@@ -48,16 +48,21 @@
       timeout: 10s
       retries: 3
       start_period: 30s
-    user: 1000:1001
+    user: "1000:1001"
     volumes:
       - /srv/newsblur:/srv/newsblur
       - /etc/hosts:/etc/hosts
-  when: "item.container_name in inventory_hostname"
   with_items:
-    - container_name: task-celery
-      command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds,search_indexer,discover_indexer"
-    - container_name: task-work
+    - container_name: "task-celery"
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer,discover_indexer"
+      when: "{{ inventory_hostname == 'htask-celery10' }}"
+    - container_name: "task-celery"
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds"
+      when: "{{ 'htask-celery' in inventory_hostname and inventory_hostname != 'htask-celery10' }}"
+    - container_name: "task-work"
       command: "celery worker -A newsblur_web --loglevel=INFO -B -s /srv/newsblur/logs/celerybeat-schedule.db -Q beat_feeds_task,work_queue,cron_queue"
+      when: "{{ 'htask-work' in inventory_hostname }}"
+  when: item.when|default(true)
   tags:
     - start
 
