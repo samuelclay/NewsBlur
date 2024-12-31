@@ -112,8 +112,31 @@ class FeedsViewController: FeedsObjCViewController {
     
     @objc func loadDashboard() {
         if appDelegate.feedDetailViewController.dashboardIndex >= 0 {
-            appDelegate.feedDetailViewController.storyCache.reloadDashboard(for: appDelegate.feedDetailViewController.dashboardIndex)
+            deferredLoadNextDash()
+        } else {
+            immediatelyLoadNextDash()
         }
+    }
+    
+    var dashWorkItem: DispatchWorkItem?
+    
+    private func deferredLoadNextDash() {
+        dashWorkItem?.cancel()
+        
+        let workItem = DispatchWorkItem { [weak self] in
+            guard let self else {
+                return
+            }
+            
+            immediatelyLoadNextDash()
+        }
+        
+        dashWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5), execute: workItem)
+    }
+    
+    private func immediatelyLoadNextDash() {
+        appDelegate.feedDetailViewController.storyCache.reloadDashboard(for: appDelegate.feedDetailViewController.dashboardIndex)
         
         appDelegate.feedDetailViewController.dashboardIndex += 1
         appDelegate.detailViewController.storyTitlesInDashboard = true

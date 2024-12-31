@@ -27,12 +27,12 @@ import Foundation
     
     /// Using a magazine-style grid view layout for the story titles and story pages.
     var isMagazine: Bool {
-        return appDelegate.detailViewController.layout == .magazine
+        return appDelegate.detailViewController.layout == .magazine && !isDashboard
     }
     
     /// Using a grid-style grid view layout for the story titles and story pages.
     var isGrid: Bool {
-        return appDelegate.detailViewController.layout == .grid
+        return appDelegate.detailViewController.layout == .grid && !isDashboard
     }
     
     /// Using the list, magazine, or grid layout based on the grid view.
