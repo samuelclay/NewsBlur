@@ -12,6 +12,17 @@ class NbApplication : Application(), DefaultLifecycleObserver {
     override fun onCreate() {
         super<Application>.onCreate()
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+
+//        if (BuildConfig.DEBUG) {
+//            StrictMode.setVmPolicy(
+//                    StrictMode.VmPolicy.Builder()
+//                            .detectLeakedSqlLiteObjects()
+//                            .detectLeakedClosableObjects()
+//                            .penaltyLog()
+//                            .penaltyDeath()
+//                            .build()
+//            )
+//        }
     }
 
     override fun onStart(owner: LifecycleOwner) {

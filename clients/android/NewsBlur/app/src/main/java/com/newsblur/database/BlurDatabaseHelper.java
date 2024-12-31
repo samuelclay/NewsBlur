@@ -1307,7 +1307,10 @@ public class BlurDatabaseHelper {
     public FeedSet getSessionFeedSet() {
         FeedSet fs;
         Cursor c = dbRO.query(DatabaseConstants.SYNC_METADATA_TABLE, null, DatabaseConstants.SYNC_METADATA_KEY + " = ?", new String[] {DatabaseConstants.SYNC_METADATA_KEY_SESSION_FEED_SET}, null, null, null, null);
-        if (c.getCount() < 1) return null;
+        if (c.getCount() < 1) {
+            closeQuietly(c);
+            return null;
+        }
         c.moveToFirst();
         fs = FeedSet.fromCompactSerial(c.getString(c.getColumnIndexOrThrow(DatabaseConstants.SYNC_METADATA_VALUE)));
         closeQuietly(c);

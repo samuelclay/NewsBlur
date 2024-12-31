@@ -128,25 +128,25 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     }
 
     private void setupObservers() {
-        allFoldersViewModel.getSocialFeeds().observe(getViewLifecycleOwner(), cursor -> {
-            adapter.setSocialFeedCursor(cursor);
+        allFoldersViewModel.getSocialFeeds().observe(getViewLifecycleOwner(), socialFeeds -> {
+            adapter.setSocialFeeds(socialFeeds);
             pushUnreadCounts();
         });
-        allFoldersViewModel.getFolders().observe(getViewLifecycleOwner(), cursor -> {
-            adapter.setFoldersCursor(cursor);
+        allFoldersViewModel.getFolders().observe(getViewLifecycleOwner(), foldersResult -> {
+            adapter.setFolders(foldersResult);
             pushUnreadCounts();
         });
-        allFoldersViewModel.getFeeds().observe(getViewLifecycleOwner(), cursor -> {
-            adapter.setFeedCursor(cursor);
+        allFoldersViewModel.getFeeds().observe(getViewLifecycleOwner(), feedQueryResult -> {
+            adapter.setFeeds(feedQueryResult);
             checkOpenFolderPreferences();
             firstCursorSeenYet = true;
             pushUnreadCounts();
             checkAccountFeedsLimit();
         });
-        allFoldersViewModel.getSavedStoryCounts().observe(getViewLifecycleOwner(), cursor ->
-                adapter.setStarredCountCursor(cursor));
-        allFoldersViewModel.getSavedSearch().observe(getViewLifecycleOwner(), cursor ->
-                adapter.setSavedSearchesCursor(cursor));
+        allFoldersViewModel.getSavedStoryCounts().observe(getViewLifecycleOwner(), savedStoryCountsResult ->
+                adapter.setStarredCount(savedStoryCountsResult));
+        allFoldersViewModel.getSavedSearch().observe(getViewLifecycleOwner(), savedSearches ->
+                adapter.setSavedSearches(savedSearches));
     }
 
 	public void hasUpdated() {

@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,8 +37,11 @@ import androidx.annotation.Nullable;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
+import com.newsblur.domain.FeedQueryResult;
 import com.newsblur.domain.Folder;
+import com.newsblur.domain.FolderQueryResult;
 import com.newsblur.domain.SavedSearch;
+import com.newsblur.domain.SavedStoryCountsQueryResult;
 import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.Session;
@@ -70,9 +71,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     private final static float ZERO_UNREADS_ALPHA = 0.70f;
 
     /** Social feed in display order. */
-    private List<SocialFeed> socialFeedsOrdered = Collections.emptyList();
+    private List<SocialFeed> socialFeedsOrdered = new ArrayList<>();
     /** Active social feed in display order. */
-    private List<SocialFeed> socialFeedsActive = Collections.emptyList();
+    private List<SocialFeed> socialFeedsActive = new ArrayList<>();
     /** Total neutral unreads for all social feeds. */
     public int totalSocialNeutCount = 0;
     /** Total positive unreads for all social feeds. */
@@ -81,22 +82,22 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     public int totalActiveFeedCount = 0;
 
     /** Feeds, indexed by feed ID. */
-    private Map<String,Feed> feeds = Collections.emptyMap();
+    private final Map<String,Feed> feeds = new LinkedHashMap<>();
     /** Neutral counts for active feeds, indexed by feed ID. */
-    private Map<String,Integer> feedNeutCounts = Collections.emptyMap();
+    private final Map<String,Integer> feedNeutCounts = new LinkedHashMap<>();
     /** Positive counts for active feeds, indexed by feed ID. */
-    private Map<String,Integer> feedPosCounts = Collections.emptyMap();
+    private final Map<String,Integer> feedPosCounts = new LinkedHashMap<>();
     /** Total neutral unreads for all feeds. */
     public int totalNeutCount = 0;
     /** Total positive unreads for all feeds. */
     public int totalPosCount = 0;
     /** Saved counts for active feeds, indexed by feed ID. */
-    private Map<String,Integer> feedSavedCounts = Collections.emptyMap();
+    private final Map<String,Integer> feedSavedCounts = new LinkedHashMap<>();
 
     /** Folders, indexed by canonical name. */
-    private Map<String,Folder> folders = Collections.emptyMap();
+    private final Map<String,Folder> folders = new LinkedHashMap<>();
     /** Folders, indexed by flat name. */
-    private Map<String,Folder> flatFolders = Collections.emptyMap();
+    private final Map<String,Folder> flatFolders = new LinkedHashMap<>();
     /** Flat names of currently displayed folders in display order. */
     private List<String> activeFolderNames;
     /** List of currently displayed feeds for a folder, ordered the same as activeFolderNames. */
@@ -107,9 +108,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     private List<Integer> folderPosCounts;
 
     /** Starred story sets in display order. */
-    private List<StarredCount> starredCountsByTag = Collections.emptyList();
+    private final List<StarredCount> starredCountsByTag = new ArrayList<>();
     /** Saved Searches */
-    private List<SavedSearch> savedSearches = Collections.emptyList();
+    private final List<SavedSearch> savedSearches = new ArrayList<>();
 
     private int savedStoriesTotalCount;
 
@@ -531,13 +532,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         return activeFolderNames.indexOf(ALL_STORIES_GROUP_KEY);
     }
 
-	public synchronized void setSocialFeedCursor(Cursor cursor) {
-        if (!cursor.isBeforeFirst()) return;
-        socialFeedsOrdered = new ArrayList<SocialFeed>(cursor.getCount());
-        while (cursor.moveToNext()) {
-            SocialFeed f = SocialFeed.fromCursor(cursor);
-            socialFeedsOrdered.add(f);
-        }
+	public synchronized void setSocialFeeds(@NonNull List<SocialFeed> socialFeeds) {
+        socialFeedsOrdered.clear();
+        socialFeedsOrdered.addAll(socialFeeds);
         recountSocialFeeds();
     }
 
@@ -561,75 +558,47 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         notifyDataSetChanged();
 	}
 
-    public synchronized void setFoldersCursor(Cursor cursor) {
-        if ((cursor.getCount() < 1) || (!cursor.isBeforeFirst())) return;
-        folders = new LinkedHashMap<String,Folder>(cursor.getCount());
-        flatFolders = new LinkedHashMap<String,Folder>(cursor.getCount());
-        while (cursor.moveToNext()) {
-            Folder folder = Folder.fromCursor(cursor);
-            folders.put(folder.name, folder);
-            flatFolders.put(folder.flatName(), folder);
-        }
+    public synchronized void setFolders(FolderQueryResult foldersResult) {
+        folders.clear();
+        flatFolders.clear();
+        folders.putAll(foldersResult.getFolders());
+        flatFolders.putAll(foldersResult.getFlatFolders());
+
         recountFeeds();
         notifyDataSetChanged();
     }
 
-	public synchronized void setFeedCursor(Cursor cursor) {
-        if (!cursor.isBeforeFirst()) return;
-        feeds = new LinkedHashMap<String,Feed>(cursor.getCount());
-        feedNeutCounts = new HashMap<String,Integer>();
-        feedPosCounts = new HashMap<String,Integer>();
-        totalNeutCount = 0;
-        totalPosCount = 0;
-        totalActiveFeedCount = 0;
-        while (cursor.moveToNext()) {
-            Feed f = Feed.fromCursor(cursor);
-            feeds.put(f.feedId, f);
-            if (f.active && f.positiveCount > 0) {
-                int pos = checkNegativeUnreads(f.positiveCount);
-                feedPosCounts.put(f.feedId, pos);
-                totalPosCount += pos;
-            }
-            if (f.active && f.neutralCount > 0) {
-                int neut = checkNegativeUnreads(f.neutralCount);
-                feedNeutCounts.put(f.feedId, neut);
-                totalNeutCount += neut;
-            }
-            if (f.active) {
-                totalActiveFeedCount++;
-            }
-        }
+	public synchronized void setFeeds(FeedQueryResult feedQueryResult) {
+        feeds.clear();
+        feeds.putAll(feedQueryResult.getFeeds());
+        feedNeutCounts.clear();
+        feedNeutCounts.putAll(feedQueryResult.getFeedNeutCounts());
+        feedPosCounts.clear();
+        feedPosCounts.putAll(feedQueryResult.getFeedPosCounts());
+        totalNeutCount = feedQueryResult.getTotalNeutCount();
+        totalPosCount = feedQueryResult.getTotalPosCount();
+        totalActiveFeedCount = feedQueryResult.getTotalActiveFeedCount();
+
         recountFeeds();
         notifyDataSetChanged();
 	}
 
-	public synchronized void setStarredCountCursor(Cursor cursor) {
-        if (!cursor.isBeforeFirst()) return;
-        starredCountsByTag = new ArrayList<StarredCount>();
-        feedSavedCounts = new HashMap<String,Integer>();
-        while (cursor.moveToNext()) {
-            StarredCount sc = StarredCount.fromCursor(cursor);
-            if (sc.isTotalCount()) {
-                savedStoriesTotalCount = sc.count;
-            } else if (sc.tag != null) {
-                starredCountsByTag.add(sc);
-            } else if (sc.feedId != null) {
-                feedSavedCounts.put(sc.feedId, sc.count);
-            }
+	public synchronized void setStarredCount(SavedStoryCountsQueryResult result) {
+        starredCountsByTag.clear();
+        feedSavedCounts.clear();
+        starredCountsByTag.addAll(result.getStarredCountsByTag());
+        feedSavedCounts.putAll(result.getFeedSavedCounts());
+        if (result.getSavedStoriesTotalCount() != null) {
+            savedStoriesTotalCount = result.getSavedStoriesTotalCount();
         }
-        Collections.sort(starredCountsByTag, StarredCount.StarredCountComparatorByTag);
+
         recountFeeds();
         notifyDataSetChanged();
 	}
 
-	public synchronized void setSavedSearchesCursor(Cursor cursor) {
-        if (!cursor.isBeforeFirst()) return;
-        savedSearches = new ArrayList<>();
-        while (cursor.moveToNext()) {
-            SavedSearch savedSearch = SavedSearch.fromCursor(cursor);
-            savedSearches.add(savedSearch);
-        }
-        Collections.sort(savedSearches, SavedSearch.SavedSearchComparatorByTitle);
+	public synchronized void setSavedSearches(List<SavedSearch> savedSearches) {
+        this.savedSearches.clear();
+        this.savedSearches.addAll(savedSearches);
         notifyDataSetChanged();
     }
 
@@ -790,14 +759,14 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             totalSocialNeutCount = 0;
             totalSocialPosiCount = 0;
 
-            folders = Collections.emptyMap();
-            flatFolders = Collections.emptyMap();
+            folders.clear();
+            flatFolders.clear();
             safeClear(activeFolderNames);
             safeClear(activeFolderChildren);
             safeClear(folderNeutCounts);
             safeClear(folderPosCounts);
 
-            feeds = Collections.emptyMap();
+            feeds.clear();
             safeClear(feedNeutCounts);
             safeClear(feedPosCounts);
             totalNeutCount = 0;
