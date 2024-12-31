@@ -24,11 +24,11 @@ class StoriesResponseTypeAdapter : JsonDeserializer<StoriesResponse> {
             if (feedsElement != null && feedsElement.isJsonObject) {
                 val feedsArray = JsonArray()
                 val feedsJsonObj = feedsElement.asJsonObject
-                feedsJsonObj.entrySet().forEach {
-                    feedsArray.add(it.value)
-                    feedsJsonObj.remove(it.key)
+                feedsJsonObj.entrySet().forEach { entry ->
+                    feedsArray.add(entry.value)
                 }
 
+                // replace original
                 jsonObject.add("feeds", feedsArray)
             }
         }
