@@ -9,7 +9,7 @@
 import Foundation
 
 /// A list in the Dashboard.
-@MainActor class DashList: Identifiable {
+@MainActor class DashList: @preconcurrency Identifiable {
     var id = UUID()
     var index: Int
     

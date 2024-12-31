@@ -1,2 +1,2 @@
-- Fixed the wrong story sometimes being selected when first opening the app.
+- Work on the Dashboard continues; it is mostly functional now, but still a bunch of things to do.
 

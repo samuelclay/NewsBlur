@@ -135,6 +135,30 @@
 			<string>feed_opening</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Dashboard</string>
+			<key>Titles</key>
+			<array>
+				<string>Hidden</string>
+				<string>Single column</string>
+				<string>Two columns</string>
+				<string>Two rows</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>vertical</string>
+			<key>Values</key>
+			<array>
+				<string>none</string>
+				<string>single</string>
+				<string>vertical</string>
+				<string>horizontal</string>
+			</array>
+			<key>Key</key>
+			<string>dashboard_layout</string>
+		</dict>
+		<dict>
 			<key>FooterText</key>
 			<string>You can change this setting in the Infrequent Site Stories view.</string>
 			<key>Type</key>

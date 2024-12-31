@@ -148,11 +148,18 @@ import Foundation
         }
     }
     
-    var dashboardColumns: Int {
-        guard let pref = UserDefaults.standard.string(forKey: "dashboard_columns"), let columns = Int(pref) else {
-            return 2
+    enum DashboardLayout: String, RawRepresentable {
+        case none
+        case single
+        case vertical
+        case horizontal
+    }
+    
+    var dashboardLayout: DashboardLayout {
+        guard let pref = UserDefaults.standard.string(forKey: "dashboard_layout"), let layout = DashboardLayout(rawValue: pref) else {
+            return .vertical
         }
         
-        return columns
+        return layout
     }
 }

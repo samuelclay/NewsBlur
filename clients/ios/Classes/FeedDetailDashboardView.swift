@@ -14,26 +14,53 @@ struct FeedDetailDashboardView: View {
     
     @ObservedObject var cache: StoryCache
     
-    var columns: [GridItem] {
-        return Array(repeating: GridItem(.flexible(), spacing: 20), count: cache.settings.dashboardColumns)
-    }
-    
     var body: some View {
         GeometryReader { reader in
             ScrollView {
                 ScrollViewReader { scroller in
-                    LazyVGrid(columns: columns, spacing: 20) {
-                        Section {
-                            ForEach(cache.dashboard, id: \.id) { dash in
-                                makeDashListView(for: dash)
+                    switch cache.settings.dashboardLayout {
+                        case .none:
+                            EmptyView()
+                        case .single:
+                            VStack(alignment: .leading, spacing: 10) {
+                                makeDashSection(for: cache.dashboardLeft)
+                                makeDashSection(for: cache.dashboardRight)
                             }
-                        }
+                        case .vertical:
+                            HStack(alignment: .top, spacing: 10) {
+                                VStack(alignment: .leading, spacing: 10) {
+                                    makeDashSection(for: cache.dashboardLeft)
+                                }
+                                
+                                VStack(alignment: .leading, spacing: 10) {
+                                    makeDashSection(for: cache.dashboardRight)
+                                }
+                            }
+                        case .horizontal:
+                            VStack(alignment: .leading, spacing: 10) {
+                                HStack(alignment: .top, spacing: 10) {
+                                    makeDashSection(for: cache.dashboardLeft)
+                                }
+                                
+                                HStack(alignment: .top, spacing: 10) {
+                                    makeDashSection(for: cache.dashboardRight)
+                                }
+                            }
                     }
-                    .padding()
                 }
             }
         }
         .background(Color.themed([0xE0E0E0, 0xFFF8CA, 0x363636, 0x101010]))
+        .padding(10)
+    }
+    
+    @ViewBuilder
+    func makeDashSection(for dashes: [DashList]) -> some View {
+        Section {
+            ForEach(dashes, id: \.id) { dash in
+                makeDashListView(for: dash)
+            }
+        }
     }
     
     @ViewBuilder
