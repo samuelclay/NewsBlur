@@ -1936,6 +1936,11 @@ heightForHeaderInSection:(NSInteger)section {
         return 0;
     }
     
+    if (section == NewsBlurTopSectionDashboard &&
+        [[prefs stringForKey:@"dashboard_layout"] isEqualToString:@"none"]) {
+        return 0;
+    }
+    
     if (section == NewsBlurTopSectionInfrequentSiteStories &&
         ![prefs boolForKey:@"show_infrequent_site_stories"]) {
         return 0;

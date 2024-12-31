@@ -59,6 +59,9 @@ import Foundation
     
     @Published var dashboard = [DashList]()
     
+    @Published var dashboardLeft = [DashList]()
+    @Published var dashboardRight = [DashList]()
+    
     var all: [Story] {
         if let selected {
             return before + [selected] + after
@@ -149,6 +152,8 @@ import Foundation
     
     func prepareDashboard() {
         dashboard.removeAll()
+        dashboardLeft.removeAll()
+        dashboardRight.removeAll()
         
         guard let dashboardArray = appDelegate.dashboardArray as? [[String : Any]] else {
             return
@@ -169,7 +174,16 @@ import Foundation
             let dash = DashList(index: index, side: side, order: order, feedId: feedId, folderId: folderId)
             
             dashboard.append(dash)
+            
+            if side == .left {
+                dashboardLeft.append(dash)
+            } else {
+                dashboardRight.append(dash)
+            }
         }
+        
+        dashboardLeft.sort { $0.order < $1.order }
+        dashboardRight.sort { $0.order < $1.order }
     }
     
     func reloadDashboard(for index: Int) {

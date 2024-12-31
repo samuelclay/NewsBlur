@@ -72,8 +72,13 @@ struct DashListStoriesView: View {
     
     var body: some View {
         VStack(alignment: .center) {
-            ForEach(dash.stories) { story in
-                CardView(feedDetailInteraction: interaction, cache: cache, story: story)
+            if dash.isLoaded {
+                ForEach(dash.stories) { story in
+                    CardView(feedDetailInteraction: interaction, cache: cache, story: story)
+                }
+            } else {
+                ProgressView()
+                    .padding([.top, .bottom], 200)
             }
         }
         .font(.custom("WhitneySSm-Medium", size: 14, relativeTo: .body))
