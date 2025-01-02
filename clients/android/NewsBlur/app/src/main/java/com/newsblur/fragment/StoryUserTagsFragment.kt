@@ -76,7 +76,7 @@ class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
         fs = requireArguments().getSerializable("feed_set") as FeedSet
 
         storyUserTagsViewModel.savedStoryCountsLiveData.observe(this) {
-            setCursor(it)
+            setStarredCount(it)
         }
 
         binding.textAddNewTag.setOnClickListener {
@@ -127,17 +127,8 @@ class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
         return builder.create()
     }
 
-    private fun setCursor(cursor: Cursor) {
-        if (!cursor.isBeforeFirst) return
-        val starredTags = ArrayList<StarredCount>()
-        while (cursor.moveToNext()) {
-            val sc = StarredCount.fromCursor(cursor)
-            if (sc.tag != null && !sc.isTotalCount) {
-                starredTags.add(sc)
-            }
-        }
-        Collections.sort(starredTags, StarredCount.StarredCountComparatorByTag)
-        setTags(starredTags)
+    private fun setStarredCount(starredCount: List<StarredCount>) {
+        setTags(starredCount)
     }
 
     private fun processNewTag(newTag: StarredCount) {
@@ -168,7 +159,7 @@ class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
         binding.inputTagName.text.clear()
     }
 
-    private fun setTags(starredTags: ArrayList<StarredCount>) {
+    private fun setTags(starredTags: List<StarredCount>) {
         otherTags.clear()
         starredTags.forEach { otherTags[it.tag] = it }
 

@@ -29,6 +29,7 @@ import com.newsblur.util.UIUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -84,11 +85,8 @@ public class MuteConfig extends FeedChooser implements MuteConfigAdapter.FeedSta
     }
 
     @Override
-    void processFeeds(Cursor cursor) {
-        ArrayList<Feed> feeds = new ArrayList<>();
-        while (cursor != null && cursor.moveToNext()) {
-            Feed feed = Feed.fromCursor(cursor);
-            feeds.add(feed);
+    void processFeeds(List<Feed> feeds) {
+        for (Feed feed : feeds) {
             feedMap.put(feed.feedId, feed);
         }
         this.feeds = feeds;

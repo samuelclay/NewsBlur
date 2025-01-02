@@ -186,11 +186,12 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
     private fun processStories(stories: Array<Story>) = storiesLock.withLock {
         Log.d(this.javaClass.name, "processStories")
         val feedMap = mutableMapOf<String, Feed>()
-        val cursor = dbHelper.getFeedsCursor(cancellationSignal)
-        while (cursor != null && cursor.moveToNext()) {
-            val feed = Feed.fromCursor(cursor)
-            if (feed.active) {
-                feedMap[feed.feedId] = feed
+        dbHelper.getFeedsCursor(cancellationSignal).use { cursor ->
+            while (cursor.moveToNext()) {
+                val feed = Feed.fromCursor(cursor)
+                if (feed.active) {
+                    feedMap[feed.feedId] = feed
+                }
             }
         }
 

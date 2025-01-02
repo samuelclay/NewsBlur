@@ -20,6 +20,7 @@ import com.newsblur.widget.WidgetUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -87,16 +88,15 @@ public class WidgetConfig extends FeedChooser {
     }
 
     @Override
-    void processFeeds(Cursor cursor) {
-        ArrayList<Feed> feeds = new ArrayList<>();
-        while (cursor != null && cursor.moveToNext()) {
-            Feed feed = Feed.fromCursor(cursor);
+    void processFeeds(List<Feed> feeds) {
+        List<Feed> activeFeeds = new ArrayList<>();
+        for (Feed feed : feeds) {
             if (feed.active) {
-                feeds.add(feed);
+                activeFeeds.add(feed);
                 feedMap.put(feed.feedId, feed);
             }
         }
-        this.feeds = feeds;
+        this.feeds = activeFeeds;
         processData();
     }
 

@@ -1,6 +1,5 @@
 package com.newsblur.activity;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,15 +20,15 @@ import com.newsblur.viewModel.FeedFolderViewModel;
 import com.newsblur.widget.WidgetUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 abstract public class FeedChooser extends NbActivity {
 
     protected FeedChooserAdapter adapter;
-    protected ArrayList<Feed> feeds;
-    protected ArrayList<Folder> folders;
+    protected List<Feed> feeds;
+    protected List<Folder> folders;
     protected Map<String, Feed> feedMap = new HashMap<>();
     protected ArrayList<String> folderNames = new ArrayList<>();
     protected ArrayList<ArrayList<Feed>> folderChildren = new ArrayList<>();
@@ -39,7 +38,7 @@ abstract public class FeedChooser extends NbActivity {
 
     abstract void setupList();
 
-    abstract void processFeeds(Cursor cursor);
+    abstract void processFeeds(List<Feed> feeds);
 
     abstract void processData();
 
@@ -147,7 +146,7 @@ abstract public class FeedChooser extends NbActivity {
     }
 
     private void setupObservers() {
-        feedFolderViewModel.getFoldersLiveData().observe(this, this::processFolders);
+        feedFolderViewModel.getFolders().observe(this, this::processFolders);
         feedFolderViewModel.getFeedsLiveData().observe(this, this::processFeeds);
     }
 
@@ -176,16 +175,9 @@ abstract public class FeedChooser extends NbActivity {
         feedFolderViewModel.getData();
     }
 
-    private void processFolders(Cursor cursor) {
-        ArrayList<Folder> folders = new ArrayList<>();
-        while (cursor != null && cursor.moveToNext()) {
-            Folder folder = Folder.fromCursor(cursor);
-            if (!folder.feedIds.isEmpty()) {
-                folders.add(folder);
-            }
-        }
+    private void processFolders(List<Folder> folders) {
         this.folders = folders;
-        Collections.sort(this.folders, (o1, o2) -> Folder.compareFolderNames(o1.flatName(), o2.flatName()));
+        this.folders.sort((o1, o2) -> Folder.compareFolderNames(o1.flatName(), o2.flatName()));
         processData();
     }
 }
