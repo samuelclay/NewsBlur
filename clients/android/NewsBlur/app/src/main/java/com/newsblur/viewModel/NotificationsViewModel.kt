@@ -40,9 +40,10 @@ class NotificationsViewModel
 
     private fun loadFeeds() {
         viewModelScope.launch(Dispatchers.IO) {
-            val cursor = dbHelper.getFeedsCursor(cancellationSignal)
-            val feeds = extractFeeds(cursor).filterValues(notificationFeedFilter)
-            _feeds.emit(feeds)
+            dbHelper.getFeedsCursor(cancellationSignal).use { cursor ->
+                val feeds = extractFeeds(cursor).filterValues(notificationFeedFilter)
+                _feeds.emit(feeds)
+            }
         }
     }
 

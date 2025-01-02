@@ -27,6 +27,7 @@ class StoriesViewModel
     fun getActiveStories(fs: FeedSet, cursorFilters: CursorFilters) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                // TODO cursor management
                 dbHelper.getActiveStoriesCursor(fs, cursorFilters, cancellationSignal).let {
                     _activeStoriesLiveData.postValue(it)
                 }
