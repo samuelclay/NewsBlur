@@ -89,7 +89,8 @@ public class MuteConfig extends FeedChooser implements MuteConfigAdapter.FeedSta
         for (Feed feed : feeds) {
             feedMap.put(feed.feedId, feed);
         }
-        this.feeds = feeds;
+        this.feeds.clear();
+        this.feeds.addAll(feeds);
         processData();
     }
 
