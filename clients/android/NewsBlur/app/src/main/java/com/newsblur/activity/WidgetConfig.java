@@ -96,7 +96,8 @@ public class WidgetConfig extends FeedChooser {
                 feedMap.put(feed.feedId, feed);
             }
         }
-        this.feeds = activeFeeds;
+        this.feeds.clear();
+        this.feeds.addAll(activeFeeds);
         processData();
     }
 

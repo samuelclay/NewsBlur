@@ -27,7 +27,7 @@ import java.util.Map;
 abstract public class FeedChooser extends NbActivity {
 
     protected FeedChooserAdapter adapter;
-    protected List<Feed> feeds;
+    protected ArrayList<Feed> feeds;
     protected List<Folder> folders;
     protected Map<String, Feed> feedMap = new HashMap<>();
     protected ArrayList<String> folderNames = new ArrayList<>();

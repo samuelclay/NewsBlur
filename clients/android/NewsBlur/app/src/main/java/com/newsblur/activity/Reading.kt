@@ -72,7 +72,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
     @JvmField
     var fs: FeedSet? = null
 
-    private var stories: Cursor? = null
+    private var storyCounts: Int? = null
 
     // Activities navigate to a particular story by hash.
     // We can find it once we have the cursor.
@@ -271,7 +271,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
             // data, don't show the old stories
             pager!!.visibility = View.INVISIBLE
             binding.readingEmptyViewText.visibility = View.VISIBLE
-            stories = null
+            storyCounts = null
             triggerRefresh(AppConstants.READING_STORY_PRELOAD)
             return
         }
@@ -280,11 +280,13 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         // update child fragments, and then call pagerUpdated()
         readingAdapter?.swapCursor(cursor)
 
-        stories = cursor
+        storyCounts = cursor.count
 
-        com.newsblur.util.Log.d(this.javaClass.name, "loaded cursor with count: " + cursor.count)
-        if (cursor.count < 1) {
-            triggerRefresh(AppConstants.READING_STORY_PRELOAD)
+        com.newsblur.util.Log.d(this.javaClass.name, "loaded cursor with count: $storyCounts")
+        storyCounts?.let { count ->
+            if (count < 1) {
+                triggerRefresh(AppConstants.READING_STORY_PRELOAD)
+            }
         }
     }
 
@@ -568,17 +570,15 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
      * load is not needed and all latches are tripped.
      */
     private fun checkStoryCount(position: Int) {
-        if (stories == null) {
-            triggerRefresh(position + AppConstants.READING_STORY_PRELOAD)
-        } else {
+        storyCounts?.let { count ->
             if (AppConstants.VERBOSE_LOG) {
-                Log.d(this.javaClass.name, String.format("story %d of %d selected, stopLoad: %b", position, stories!!.count, stopLoading))
+                Log.d(this.javaClass.name, String.format("story %d of %d selected, stopLoad: %b", position, count, stopLoading))
             }
             // if the pager is at or near the number of stories loaded, check for more unless we know we are at the end of the list
-            if (position + AppConstants.READING_STORY_PRELOAD >= stories!!.count) {
+            if (position + AppConstants.READING_STORY_PRELOAD >= count) {
                 triggerRefresh(position + AppConstants.READING_STORY_PRELOAD)
             }
-        }
+        } ?: triggerRefresh(position + AppConstants.READING_STORY_PRELOAD)
     }
 
     private fun enableMainProgress(enabled: Boolean) {
@@ -603,9 +603,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
     private fun triggerRefresh(desiredStoryCount: Int) {
         if (!stopLoading) {
-            var currentCount: Int? = null
-            if (stories != null) currentCount = stories!!.count
-            val gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, currentCount)
+            val gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, storyCounts)
             if (gotSome) triggerSync()
         }
     }
