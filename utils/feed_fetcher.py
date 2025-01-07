@@ -58,7 +58,12 @@ from utils.feed_functions import (
     timelimit,
 )
 from utils.json_fetcher import JSONFetcher
-from utils.story_functions import linkify, pre_process_story, strip_tags
+from utils.story_functions import (
+    extract_story_date,
+    linkify,
+    pre_process_story,
+    strip_tags,
+)
 from utils.twitter_fetcher import TwitterFetcher
 from utils.youtube_fetcher import YoutubeFetcher
 
@@ -67,6 +72,8 @@ from utils.youtube_fetcher import YoutubeFetcher
 
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
+
+MAX_ENTRIES_TO_PROCESS = 100
 
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = list(range(5))
 
@@ -352,7 +359,12 @@ class ProcessFeed:
             if feed_status and ret_values:
                 return feed_status, ret_values
 
-        self.fpf.entries = self.fpf.entries[:100]
+        self.feed_entries = self.fpf.entries
+        # If there are more than 100 entries, we should sort the entries in date descending order and cut them off
+        if len(self.feed_entries) > MAX_ENTRIES_TO_PROCESS:
+            self.feed_entries = sorted(self.feed_entries, key=lambda x: extract_story_date(x), reverse=True)[
+                :MAX_ENTRIES_TO_PROCESS
+            ]
 
         if not self.options.get("archive_page", None):
             self.compare_feed_attribute_changes()
@@ -360,13 +372,13 @@ class ProcessFeed:
         # Determine if stories aren't valid and replace broken guids
         guids_seen = set()
         permalinks_seen = set()
-        for entry in self.fpf.entries:
+        for entry in self.feed_entries:
             guids_seen.add(entry.get("guid"))
             permalinks_seen.add(Feed.get_permalink(entry))
-        guid_difference = len(guids_seen) != len(self.fpf.entries)
+        guid_difference = len(guids_seen) != len(self.feed_entries)
         single_guid = len(guids_seen) == 1
         replace_guids = single_guid and guid_difference
-        permalink_difference = len(permalinks_seen) != len(self.fpf.entries)
+        permalink_difference = len(permalinks_seen) != len(self.feed_entries)
         single_permalink = len(permalinks_seen) == 1
         replace_permalinks = single_permalink and permalink_difference
 
@@ -375,7 +387,7 @@ class ProcessFeed:
         day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
         story_hashes = []
         stories = []
-        for entry in self.fpf.entries:
+        for entry in self.feed_entries:
             story = pre_process_story(entry, self.fpf.encoding)
             if not story["title"] and not story["story_content"]:
                 continue
@@ -466,7 +478,7 @@ class ProcessFeed:
                 ret_values["same"],
                 "~FR~SB" if ret_values["error"] else "",
                 ret_values["error"],
-                len(self.fpf.entries),
+                len(self.feed_entries),
             )
         )
         self.feed.update_all_statistics(has_new_stories=bool(ret_values["new"]), force=self.options["force"])
@@ -507,7 +519,7 @@ class ProcessFeed:
                 if self.fpf.bozo and self.fpf.status != 304:
                     logging.debug(
                         "   ---> [%-30s] ~FRBOZO exception: %s ~SB(%s entries)"
-                        % (self.feed.log_title[:30], self.fpf.bozo_exception, len(self.fpf.entries))
+                        % (self.feed.log_title[:30], self.fpf.bozo_exception, len(self.feed_entries))
                     )
 
             if self.fpf.status == 304:
@@ -536,7 +548,7 @@ class ProcessFeed:
                         % (self.feed.log_title[:30], self.fpf.status)
                     )
                     self.feed = self.feed.schedule_feed_fetch_immediately()
-                if not self.fpf.entries:
+                if not self.feed_entries:
                     self.feed = self.feed.save()
                     self.feed.save_feed_history(self.fpf.status, "HTTP Redirect")
                     return FEED_ERRHTTP, ret_values
