@@ -184,6 +184,10 @@ color: #a85b40;
     box-shadow: none;
 }
 
+.NB-dark .NB-modal-feedchooser .NB-premium-prorate-message {
+    color: rgba(216, 216, 216, 0.5);
+}
+
 .NB-dark .NB-feed-badge {
     background-color: #303739;
 }
