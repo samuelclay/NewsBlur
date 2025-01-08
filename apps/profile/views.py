@@ -438,6 +438,17 @@ def paypal_archive_return(request):
 
 
 @login_required
+def paypal_pro_return(request):
+    return render(
+        request,
+        "reader/paypal_pro_return.xhtml",
+        {
+            "user_profile": request.user.profile,
+        },
+    )
+
+
+@login_required
 def activate_premium(request):
     return HttpResponseRedirect(reverse("index"))
 

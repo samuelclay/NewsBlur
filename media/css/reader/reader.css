@@ -8924,11 +8924,16 @@ form.opml_import_form input {
 }
 
 .NB-module-premium-archive-icon.NB-5 {
-    background: transparent url('/media/embed/icons/icons8/icons8-rss-100.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/direction_black.svg') no-repeat 0 0;
     background-size: 36px;
 }
 
 .NB-module-premium-archive-icon.NB-6 {
+    background: transparent url('/media/embed/icons/icons8/icons8-rss-100.png') no-repeat 0 0;
+    background-size: 36px;
+}
+
+.NB-module-premium-archive-icon.NB-7 {
     background: transparent url('/media/embed/icons/icons8/icons8-relax-with-book-100.png') no-repeat 0 0;
     background-size: 36px;
 }
@@ -12735,12 +12740,18 @@ form.opml_import_form input {
 
 .NB-feedchooser-premium-archive-bullets li.NB-5 .NB-feedchooser-premium-bullet-image,
 .NB-welcome-premium-archive-bullet.NB-5 {
-    background: transparent url('/media/embed/icons/icons8/icons8-rss-100.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/nouns/direction_black.svg') no-repeat 0 0;
     background-size: 16px;
 }
 
 .NB-feedchooser-premium-archive-bullets li.NB-6 .NB-feedchooser-premium-bullet-image,
 .NB-welcome-premium-archive-bullet.NB-6 {
+    background: transparent url('/media/embed/icons/icons8/icons8-rss-100.png') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-feedchooser-premium-archive-bullets li.NB-7 .NB-feedchooser-premium-bullet-image,
+.NB-welcome-premium-archive-bullet.NB-7 {
     background: transparent url('/media/embed/icons/icons8/icons8-calendar-100.png') no-repeat 0 0;
     background-size: 16px;
 }
