@@ -90,7 +90,7 @@ class Profile(models.Model):
             if settings.DEBUG:
                 price = "price_0KK5tVwdsmP8XBlaXW1vYUn9"
         elif plan == "pro":
-            price = "price_0KK5cvwdsmP8XBlaZDq068bA"
+            price = "price_0KK5cvwdsmP8XBla2tFdDhpy"
             if settings.DEBUG:
                 price = "price_0KK5twwdsmP8XBlasifbX56Z"
         return price
@@ -107,7 +107,7 @@ class Profile(models.Model):
             if settings.DEBUG:
                 price = "P-2EG40290653242115MHZROQQ"
         elif plan == "pro":
-            price = "price_0KK5cvwdsmP8XBlaZDq068bA"
+            price = "price_0KK5cvwdsmP8XBla2tFdDhpy"
             if settings.DEBUG:
                 price = "price_0KK5twwdsmP8XBlasifbX56Z"
         return price
@@ -525,9 +525,9 @@ class Profile(models.Model):
             if settings.DEBUG:
                 application_context["return_url"] = f"https://a6d3-161-77-224-226.ngrok.io{paypal_return}"
             else:
-                application_context[
-                    "return_url"
-                ] = f"https://{Site.objects.get_current().domain}{paypal_return}"
+                application_context["return_url"] = (
+                    f"https://{Site.objects.get_current().domain}{paypal_return}"
+                )
             paypal_subscription = paypal_api.post(
                 f"/v1/billing/subscriptions",
                 {
