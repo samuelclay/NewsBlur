@@ -2,22 +2,29 @@
 {% load static %}
 {% load pipeline %}
 {% autoescape off %}
-<!DOCTYPE html>
-<html>
-<head>
-  <title>{% block title %}NewsBlur{% endblock %}</title>
-  <link rel="shortcut icon" href="{{ MEDIA_URL }}img/favicon.ico" type="image/png" />
-  <link rel="icon" href="{{ MEDIA_URL }}img/favicon_32.png" sizes="32x32"/>
-  <link rel="icon" href="{{ MEDIA_URL }}img/favicon_64.png" sizes="64x64"/>
-  <link rel="apple-touch-icon" href="/media/img/mobile/apple-touch-icon-precomposed.png" />
-  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-  <meta name="msapplication-TileImage" content="{{ MEDIA_URL }}img/logo_144.png" />
-  <meta name="msapplication-TileColor" content="#F7E5A8"/>
-  <meta name="apple-itunes-app" content="app-id=463981119">
-  <link rel="manifest" href="/manifest.webmanifest">
-  <!-- <link rel="mask-icon" href="{{ MEDIA_URL }}img/favicon_monochrome.svg" color="orange"> -->
-  
-  <script type="text/javascript" charset="utf-8">
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>
+        {% block title %}NewsBlur{% endblock %}
+      </title>
+      <link rel="shortcut icon"
+            href="{{ MEDIA_URL }}img/favicon.ico"
+            type="image/png" />
+      <link rel="icon" href="{{ MEDIA_URL }}img/favicon_32.png" sizes="32x32" />
+      <link rel="icon" href="{{ MEDIA_URL }}img/favicon_64.png" sizes="64x64" />
+      <link rel="apple-touch-icon"
+            href="/media/img/mobile/apple-touch-icon-precomposed.png" />
+      <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+      <meta name="msapplication-TileImage"
+            content="{{ MEDIA_URL }}img/logo_144.png" />
+      <meta name="msapplication-TileColor" content="#F7E5A8" />
+      <meta name="apple-itunes-app" content="app-id=463981119">
+      <link rel="manifest" href="/manifest.webmanifest">
+      <!-- <link rel="mask-icon"
+       href="{{ MEDIA_URL }}img/favicon_monochrome.svg"
+       color="orange"> -->
+      <script type="text/javascript" charset="utf-8">
     window.NEWSBLUR = {};
     NEWSBLUR.Globals = {
       'is_authenticated'        : {{ user.is_authenticated|yesno:"true,false" }},
@@ -54,6 +61,7 @@
       'default_view'            : 'feed',
       'default_order'           : 'newest',
       'default_read_filter'     : 'all',
+      'default_stories_discover': 'feed',
       'default_dashboard_count' : 5,
       'grid_columns'            : 0,
       'grid_height'             : 'm',
@@ -72,6 +80,7 @@
       'open_feed_action'        : 'newest',
       'read_story_delay'        : 0,
       'feed_view_single_story'  : 0,
+      'show_discover'           : true,
       'animations'              : true,
       'dateformat'              : "12",
       'folder_counts'           : false,
@@ -106,9 +115,15 @@
       'markread_nextfeed'       : 'nextfeed',
       'story_share_twitter'     : true,
       'story_share_facebook'    : true,
-      'story_share_readitlater' : false,
-      'story_share_instapaper'  : true,
+      'story_share_copyurl'     : true,
+      'story_share_copytext'    : true,
+      'story_share_print'       : true,
       'story_share_email'       : true,
+      'show_sideoption_email'   : true,
+      'show_sideoption_save'    : true,
+      'show_sideoption_train'   : true,
+      'show_sideoption_share'   : true,
+      'show_sideoption_related' : true,
       'theme'                   : 'auto',
       'highlights'              : true,
       'dashboard_columns'       : 2
@@ -123,55 +138,49 @@
       'folder_rss'              : "/reader/folder_rss/{user_id}/{secret_token}/{unread_filter}/{folder_title}",
       'paypal_checkout_js'      : 'https://www.paypal.com/sdk/js?vault=true&intent=subscription&client-id={% settings_value "PAYPAL_API_CLIENTID" %}',
       'paypal_return'           : "https://{% current_domain %}{% url "paypal-return" %}",
-      'paypal_archive_return'   : "https://{% current_domain %}{% url "paypal-archive-return" %}"
+      'paypal_archive_return'   : "https://{% current_domain %}{% url "paypal-archive-return" %}",
+      'paypal_pro_return'        : "https://{% current_domain %}{% url "paypal-pro-return" %}"
     };
     NEWSBLUR.Models = {};
     NEWSBLUR.Collections = {};
     NEWSBLUR.Views = {};
     NEWSBLUR.app = {};
-  </script>
-  
-  {% include_stylesheets "common" %}
-  
-  {% if debug_assets %}
-      <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/731824/css/fonts.css" />
-  {% else %}
-      <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
-  {% endif %}
-  
-</head>
-
-<body class="{% block bodyclass %}{% endblock %} {% if user.is_staff %}NB-staff{% endif %} {% if user_profile.is_premium %}NB-premium{% endif %}">
-
-  {% block header %}{% endblock %}
-
-  <div class="NB-body-inner">
-      <div class="NB-splash-info NB-splash-top">
-        <a href="{% url "index" %}"><div class="NB-splash-title NB-splash-blurred-logo"></div></a>
+      </script>
+      {% include_stylesheets "common" %}
+      {% if debug_assets %}
+        <link rel="stylesheet"
+              type="text/css"
+              href="https://cloud.typography.com/6565292/731824/css/fonts.css" />
+      {% else %}
+        <link rel="stylesheet"
+              type="text/css"
+              href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+      {% endif %}
+    </head>
+    <body class="{% block bodyclass %}{% endblock %} {% if user.is_staff %}NB-staff{% endif %} {% if user_profile.is_premium %}NB-premium{% endif %}">
+      {% block header %}{% endblock %}
+      <div class="NB-body-inner">
+        <div class="NB-splash-info NB-splash-top">
+          <a href="{% url "index" %}">
+            <div class="NB-splash-title NB-splash-blurred-logo"></div>
+          </a>
+        </div>
+        {% block content %}{% endblock %}
+        {% block footer %}
+          {% render_footer "welcome" %}
+        {% endblock footer %}
       </div>
-  
-      {% block content %}{% endblock %}
-      
-      {% block footer %}
-        {% render_footer "welcome" %}
-      {% endblock footer %}
-      
-  </div>
-  
-  {% block head_js %}
-    {% include_javascripts "common" %}
-  {% endblock head_js %}
-
-  <script type="text/javascript" charset="utf-8">
+      {% block head_js %}
+        {% include_javascripts "common" %}
+      {% endblock head_js %}
+      <script type="text/javascript" charset="utf-8">
     _.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}{{ user_profile.preferences|safe }}{% else %}{}{% endif %});
     _.extend(NEWSBLUR.Preferences['view_settings'], {% if user_profile.view_settings %}{{ user_profile.view_settings|safe }}{% else %}{}{% endif %});
     _.extend(NEWSBLUR.Preferences['collapsed_folders'], {% if user_profile.collapsed_folders %}{{ user_profile.collapsed_folders|safe }}{% else %}[]{% endif %});
     
-  </script>
-
-  {% block extra_head_js %}
-  {% endblock extra_head_js %}
-  
-</body>
-</html>
+      </script>
+      {% block extra_head_js %}
+      {% endblock extra_head_js %}
+    </body>
+  </html>
 {% endautoescape %}

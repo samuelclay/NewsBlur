@@ -127,6 +127,7 @@ def render_account_module(context):
         "Privacy options for your blurblog",
         "Custom RSS feeds for saved stories",
         "Text view conveniently recreates the full story",
+        "Discover related stories and sites",
         f"You feed Lyric, NewsBlur's hungry hound, for 6 days<img class='NB-feedchooser-premium-poor-hungry-dog' src='{settings.MEDIA_URL}img/reader/lyric.jpg'>",
     ]
     rand_int = (datetime.datetime.now().timetuple().tm_yday) % len(reasons)

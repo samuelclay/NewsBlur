@@ -63,6 +63,7 @@
         name:
           - boto3
           - botocore
+        virtualenv: ~/.virtualenvs/newsblur
       tags:
         - never
         - static
@@ -127,7 +128,7 @@
         - name: Reload gunicorn
           command: "kill -HUP {{ psaux.stdout }}"
       # Only restart if there were no changes to the git repo or the static tag was applied
-      when: not pulled.changed or ansible_tags is search('static')
+      when: not pulled.changed or "'static' in ansible_playbook_tag"
       rescue:
         - name: Restart Docker Container
           command: "docker restart newsblur_web"

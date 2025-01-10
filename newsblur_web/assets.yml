@@ -8,14 +8,14 @@ compressor_options:
 # YUI for CSS (not cssmin)
 css_compressor: yui
 
-# Compile JavaScript templates (JSTs) and wrap with this Underscore.js 
+# Compile JavaScript templates (JSTs) and wrap with this Underscore.js
 # micro-templating string function.
 template_function: _.template
 
 # Location of static assets relative to CWD.
 public_root: /srv/newsblur/
 
-# Package data-uri and mhtml variants of stylesheets, with whitelisted 
+# Package data-uri and mhtml variants of stylesheets, with whitelisted
 # images embedded inline.
 embed_assets: datauri
 
@@ -24,143 +24,143 @@ embed_assets: datauri
 # for testing.
 compress_assets: on
 
-
 javascripts:
-    common:
-        - js/vendor/jquery-3.6.0.min.js
-        # - js/vendor/jquery.migrate-*.js
-        - js/vendor/jquery.browser.js
-        - js/vendor/jquery.json.js
-        - js/vendor/jquery.easing.js
-        - js/vendor/jquery.newsblur.js
-        - js/vendor/jquery.scrollTo.js
-        - js/vendor/jquery.corners.js
-        - js/vendor/jquery.hotkeys.js
-        - js/vendor/jquery.ajaxupload.js
-        - js/vendor/jquery.ajaxmanager.3.js
-        - js/vendor/jquery.simplemodal-1.4.js
-        - js/vendor/jquery.color.js
-        - js/vendor/jquery.wakeup.js
-        - js/vendor/jquery-ui-1.13.1.js
-        - js/vendor/jquery.cookie.js
-        - js/vendor/jquery.layout.js
-        - js/vendor/jquery.tinysort.js
-        - js/vendor/jquery.fieldselection.js
-        - js/vendor/jquery.tipsy.js
-        - js/vendor/tippy-*.js
-        - js/vendor/jquery.autosize.js
-        - js/vendor/jquery.chosen.js
-        - js/vendor/jquery.effects.core.js
-        - js/vendor/jquery.effects.slideOffscreen.js
-        - js/vendor/date.format.js
-        - js/vendor/tag-it.js
-        - js/vendor/chart.js
-        - js/vendor/push.js
-        - js/vendor/socket.io-client.*.js
-        - js/vendor/inflector.js
-        - js/vendor/underscore-*.js
-        - js/vendor/underscore.string.js
-        - js/vendor/backbone-*.js
-        - js/vendor/bootstrap-transition.js
-        - js/vendor/highlight.js
-        - js/vendor/fitvid.js
-        - js/vendor/il.js
-        - js/vendor/mark.js
-        - js/newsblur/reader/reader_utils.js
-        - js/newsblur/reader/reader.js
-        - js/newsblur/reader/reader_popover.js
-        - js/newsblur/common/*.js
-        - js/newsblur/models/*.js
-        - js/newsblur/views/*.js
-        - js/newsblur/reader/*.js
-        - js/newsblur/welcome/*.js
-    # mobile:
-    #     - js/vendor/jquery-3.5.1.js
-    #     - js/mobile/jquery.mobile-1.0b1.js
-    #     - js/vendor/jquery.ajaxmanager.3.js
-    #     - js/vendor/underscore-*.js
-    #     - js/vendor/underscore.string.js
-    #     - js/vendor/inflector.js
-    #     - js/vendor/jquery.json.js
-    #     - js/vendor/jquery.easing.js
-    #     - js/vendor/jquery.newsblur.js
-    #     - js/vendor/backbone-*.js
-    #     - js/newsblur/reader/reader_utils.js
-    #     - js/newsblur/models/*.js
-    #     - js/newsblur/common/assetmodel.js
-    #     - js/mobile/newsblur/mobile_workspace.js
-    statistics:
-        - js/vendor/jquery-3.6.0.min.js
-        - js/vendor/jquery.newsblur.js
-        - js/vendor/jquery.simplemodal-1.3.js
-        - js/vendor/inflector.js
-        - js/vendor/underscore-*.js
-        - js/vendor/backbone-*.js
-        - js/vendor/chart.js
-        - js/newsblur/common/modal.js
-        - js/newsblur/reader/reader_statistics.js
-        - js/newsblur/reader/reader_utils.js
-        - js/newsblur/models/feeds.js
-    payments:
-        - js/newsblur/payments/paypal_return.js
-        - js/newsblur/payments/stripe_form.js
-    bookmarklet:
-        - js/vendor/jquery-3.6.0.min.js
-        - js/vendor/jquery.noConflict.js
-        - js/vendor/jquery.browser.js
-        - js/vendor/jquery.newsblur.js
-        - js/vendor/jquery.tinysort.js
-        - js/vendor/jquery.simplemodal-1.4.js
-        - js/vendor/jquery.corners.js
-        - js/vendor/jquery.hotkeys.js
-        - js/vendor/jquery.easing.js
-        - js/vendor/jquery.url.js
-        - js/vendor/underscore-*.js
-        - js/vendor/underscore.noconflict.js
-        - js/vendor/readability-*.js
-    blurblog:
-        - js/vendor/jquery-3.6.0.js
-        - js/vendor/jquery.browser.js
-        - js/vendor/jquery.color.js
-        - js/vendor/underscore-*.js
-        - js/vendor/underscore.string.js
-        - js/vendor/backbone-*.js
-        - js/vendor/jquery.tipsy.js
-        - js/vendor/inflector.js
-        - js/vendor/bootstrap-tooltip.js
-        - js/vendor/bootstrap-*.js
-        - js/vendor/bootstrapx-*.js
-        - js/newsblur/social_page/*.js
-        - js/newsblur/models/comments.js
-        - js/newsblur/views/story_share_view.js
-        - js/newsblur/views/story_comment_view.js
-        - js/vendor/jquery.easing.js
-        - js/vendor/jquery.newsblur.js
-        - js/vendor/jquery.scrollTo.js
-        - js/vendor/jquery.hotkeys.js
+  common:
+    - js/vendor/jquery-3.6.0.min.js
+    # - js/vendor/jquery.migrate-*.js
+    - js/vendor/jquery.browser.js
+    - js/vendor/jquery.json.js
+    - js/vendor/jquery.easing.js
+    - js/vendor/jquery.newsblur.js
+    - js/vendor/jquery.scrollTo.js
+    - js/vendor/jquery.corners.js
+    - js/vendor/jquery.hotkeys.js
+    - js/vendor/jquery.ajaxupload.js
+    - js/vendor/jquery.ajaxmanager.3.js
+    - js/vendor/jquery.simplemodal-1.4.js
+    - js/vendor/jquery.color.js
+    - js/vendor/jquery.wakeup.js
+    - js/vendor/jquery-ui-1.13.1.js
+    - js/vendor/jquery.cookie.js
+    - js/vendor/jquery.layout.js
+    - js/vendor/jquery.tinysort.js
+    - js/vendor/jquery.fieldselection.js
+    - js/vendor/jquery.tipsy.js
+    - js/vendor/tippy-*.js
+    - js/vendor/jquery.autosize.js
+    - js/vendor/jquery.chosen.js
+    - js/vendor/jquery.effects.core.js
+    - js/vendor/jquery.effects.slideOffscreen.js
+    - js/vendor/date.format.js
+    - js/vendor/tag-it.js
+    - js/vendor/chart.js
+    - js/vendor/push.js
+    - js/vendor/socket.io-client.*.js
+    - js/vendor/inflector.js
+    - js/vendor/underscore-*.js
+    - js/vendor/underscore.string.js
+    - js/vendor/backbone-*.js
+    - js/vendor/bootstrap-transition.js
+    - js/vendor/highlight.js
+    - js/vendor/fitvid.js
+    - js/vendor/il.js
+    - js/vendor/mark.js
+    - js/newsblur/reader/reader_utils.js
+    - js/newsblur/reader/reader.js
+    - js/newsblur/reader/reader_popover.js
+    - js/newsblur/common/*.js
+    - js/newsblur/models/stories.js
+    - js/newsblur/models/*.js
+    - js/newsblur/views/*.js
+    - js/newsblur/reader/*.js
+    - js/newsblur/welcome/*.js
+  # mobile:
+  #     - js/vendor/jquery-3.5.1.js
+  #     - js/mobile/jquery.mobile-1.0b1.js
+  #     - js/vendor/jquery.ajaxmanager.3.js
+  #     - js/vendor/underscore-*.js
+  #     - js/vendor/underscore.string.js
+  #     - js/vendor/inflector.js
+  #     - js/vendor/jquery.json.js
+  #     - js/vendor/jquery.easing.js
+  #     - js/vendor/jquery.newsblur.js
+  #     - js/vendor/backbone-*.js
+  #     - js/newsblur/reader/reader_utils.js
+  #     - js/newsblur/models/*.js
+  #     - js/newsblur/common/assetmodel.js
+  #     - js/mobile/newsblur/mobile_workspace.js
+  statistics:
+    - js/vendor/jquery-3.6.0.min.js
+    - js/vendor/jquery.newsblur.js
+    - js/vendor/jquery.simplemodal-1.3.js
+    - js/vendor/inflector.js
+    - js/vendor/underscore-*.js
+    - js/vendor/backbone-*.js
+    - js/vendor/chart.js
+    - js/newsblur/common/modal.js
+    - js/newsblur/reader/reader_statistics.js
+    - js/newsblur/reader/reader_utils.js
+    - js/newsblur/models/feeds.js
+  payments:
+    - js/newsblur/payments/paypal_return.js
+    - js/newsblur/payments/stripe_form.js
+  bookmarklet:
+    - js/vendor/jquery-3.6.0.min.js
+    - js/vendor/jquery.noConflict.js
+    - js/vendor/jquery.browser.js
+    - js/vendor/jquery.newsblur.js
+    - js/vendor/jquery.tinysort.js
+    - js/vendor/jquery.simplemodal-1.4.js
+    - js/vendor/jquery.corners.js
+    - js/vendor/jquery.hotkeys.js
+    - js/vendor/jquery.easing.js
+    - js/vendor/jquery.url.js
+    - js/vendor/underscore-*.js
+    - js/vendor/underscore.noconflict.js
+    - js/vendor/readability-*.js
+  blurblog:
+    - js/vendor/jquery-3.6.0.js
+    - js/vendor/jquery.browser.js
+    - js/vendor/jquery.color.js
+    - js/vendor/underscore-*.js
+    - js/vendor/underscore.string.js
+    - js/vendor/backbone-*.js
+    - js/vendor/jquery.tipsy.js
+    - js/vendor/inflector.js
+    - js/vendor/bootstrap-tooltip.js
+    - js/vendor/bootstrap-*.js
+    - js/vendor/bootstrapx-*.js
+    - js/newsblur/social_page/*.js
+    - js/newsblur/models/comments.js
+    - js/newsblur/views/story_share_view.js
+    - js/newsblur/views/story_comment_view.js
+    - js/vendor/jquery.easing.js
+    - js/vendor/jquery.newsblur.js
+    - js/vendor/jquery.scrollTo.js
+    - js/vendor/jquery.hotkeys.js
 
 stylesheets:
-    common:
-        - css/reader/reader.css
-        - css/controls/*.css
-        - css/pages/*.css
-        - css/reader/modals.css
-        - css/reader/status.css
-        - css/reader/darkmode.css
-        - css/jquery-ui/jquery-ui.theme.css
-        - css/jquery-ui/jquery-ui.structure.css
-        - css/jquery.tipsy.css
-        - css/vendor/bootstrap-progressbar.css
-        - css/vendor/jquery.tagit.css
-        - css/vendor/highlight.css
-    # mobile:
-    #     - css/mobile/jquery.mobile-1.0b1.css
-    #     - css/mobile/mobile.css
-    bookmarklet:
-        - css/bookmarklet/reset.css
-        - css/reader/modals.css
-        - css/bookmarklet/bookmarklet.css
-    blurblog:
-        - css/controls/jquery.tipsy.css
-        - css/vendor/bootstrap-*.css
-        - css/circular/css/social_page.css
+  common:
+    - css/reader/reader.css
+    - css/controls/*.css
+    - css/pages/*.css
+    - css/reader/modals.css
+    - css/reader/status.css
+    - css/reader/darkmode.css
+    - css/jquery-ui/jquery-ui.theme.css
+    - css/jquery-ui/jquery-ui.structure.css
+    - css/jquery.tipsy.css
+    - css/vendor/bootstrap-progressbar.css
+    - css/vendor/jquery.tagit.css
+    - css/vendor/highlight.css
+  # mobile:
+  #     - css/mobile/jquery.mobile-1.0b1.css
+  #     - css/mobile/mobile.css
+  bookmarklet:
+    - css/bookmarklet/reset.css
+    - css/reader/modals.css
+    - css/bookmarklet/bookmarklet.css
+  blurblog:
+    - css/controls/jquery.tipsy.css
+    - css/vendor/bootstrap-*.css
+    - css/circular/css/social_page.css
