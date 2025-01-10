@@ -1628,7 +1628,8 @@ img.feed_favicon {
 }
 
 .NB-intelligence-starred .NB-feedbar .NB-feedbar-mark-feed-read-container,
-.NB-searching .NB-feedbar-options-container {
+.NB-searching .NB-feedbar-options-container,
+.NB-searching .NB-feedbar-discover-container {
     display: none;
 }
 
