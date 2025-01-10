@@ -1,0 +1,37 @@
+<html>
+<head>
+    <title>{{ story.story_title }}</title>
+    <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+
+    <style>
+        body {
+            font-family: 'Whitney SSm A', 'Whitney SSm B', "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+<h1>{{ story.story_title }}</h1>
+<h4>{{ story.story_permalink }}</h4>
+<h5>{{ story.story_authors }} {% if story.story_authors %} &middot; {% endif %} {{ local_datetime }}</h5>
+<p>{{ story.story_content|safe }}</p>
+
+<button onclick="print_document()">Print</button>
+
+<script>
+    {% comment %} Hide the print button until after printing {% endcomment %}
+    var print_document = function() {
+    document.querySelector('button').style.display = 'none';
+    setTimeout(function() {
+        window.print();
+        setTimeout(function() {
+            document.querySelector('button').style.display = 'block';
+        }, 100);
+    }, 100);
+    }
+
+    print_document();
+</script>
+
+</body>
+</html>

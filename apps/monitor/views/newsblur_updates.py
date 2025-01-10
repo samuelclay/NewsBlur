@@ -18,6 +18,7 @@ class Updates(View):
             "celery_push_feeds": r.llen("push_feeds"),
             "celery_work_queue": r.llen("work_queue"),
             "celery_search_queue": r.llen("search_indexer"),
+            "celery_discover_queue": r.llen("discover_indexer"),
         }
         chart_name = "updates"
         chart_type = "counter"

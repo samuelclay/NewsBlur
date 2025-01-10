@@ -3,6 +3,11 @@ import os
 
 import psutil
 
+try:
+    from newsblur_web import app_env
+except ImportError:
+    app_env = None
+
 GIGS_OF_MEMORY = psutil.virtual_memory().total / 1024 / 1024 / 1024.0
 NUM_CPUS = psutil.cpu_count()
 
@@ -28,6 +33,10 @@ if workers > 16:
     workers = 16
 
 if os.environ.get("DOCKERBUILD", False):
+    workers = 2
+
+# If hostname has staging in it, only 2 workers
+if app_env and "staging" in getattr(app_env, "SERVER_NAME", ""):
     workers = 2
 
 prom_folder = "/srv/newsblur/.prom_cache"

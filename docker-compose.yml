@@ -1,16 +1,15 @@
-version: '2'
 services:
-
   newsblur_web:
     hostname: nb.com
     container_name: newsblur_web
     image: newsblur/newsblur_${NEWSBLUR_BASE:-python3}:latest
-    # build: 
-    #   context: /srv/newsblur
-    #   dockerfile: docker/newsblur_base_image.Dockerfile
-    user: "${CURRENT_UID}:${CURRENT_GID}"
-    environment: 
+    build:
+      context: /srv/newsblur
+      dockerfile: docker/newsblur_base_image.Dockerfile
+    # user: "${CURRENT_UID}:${CURRENT_GID}"
+    environment:
       - DOCKERBUILD=True
+      - DISCOVER_DATA_FOLDER=/srv/newsblur/docker/volumes/discover
       - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD?Use the `make` command instead of docker CLI}
     stdin_open: true
     tty: true
@@ -29,7 +28,7 @@ services:
       - 8000:8000
     # only use gunicorn if the TEST env variable is not "True"
     entrypoint: /bin/sh -c newsblur_web/entrypoint.sh
-    volumes: 
+    volumes:
       - ${PWD}:/srv/newsblur
 
   newsblur_node:
@@ -42,20 +41,20 @@ services:
     command: node newsblur.js
     restart: unless-stopped
     stop_signal: HUP
-    depends_on: 
+    depends_on:
       - db_mongo
       - db_postgres
       - db_redis
     ports:
       - 8008:8008
-    volumes: 
+    volumes:
       - ${PWD}/node:/srv
       - ${PWD}/node/originals:/srv/originals
-  
+
   imageproxy:
     container_name: imageproxy
     # image: ghcr.io/willnorris/imageproxy:latest # Enable if you don't need arm64 and want the original imageproxy
-    image: yusukeito/imageproxy:v0.11.2 # Enable if you want arm64 
+    image: yusukeito/imageproxy:v0.11.2 # Enable if you want arm64
     user: "${CURRENT_UID}:${CURRENT_GID}"
     entrypoint: /app/imageproxy -addr 0.0.0.0:8088 -cache /tmp/imageproxy -verbose
     restart: unless-stopped
@@ -63,7 +62,7 @@ services:
       - 8088:8088
     volumes:
       - /tmp:/tmp/imageproxy
-  
+
   nginx:
     container_name: nginx
     image: nginx:1.19.6
@@ -77,7 +76,7 @@ services:
       - db_redis
       - db_mongo
       - db_elasticsearch
-    environment: 
+    environment:
       - DOCKERBUILD=True
     volumes:
       - ./docker/nginx/nginx.local.conf:/etc/nginx/conf.d/nginx.conf
@@ -112,6 +111,19 @@ services:
       - ./docker/volumes/redis:/data
     command: redis-server /etc/redis/redis.conf --port 6579
 
+  # Prod Redis
+  # db_redis:
+  #   container_name: db_redis
+  #   image: redis:latest
+  #   ports:
+  #     - 6579:6579
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./docker/redis/redis.conf:/etc/redis/redis.conf
+  #     - ./docker/redis/redis_server.conf:/usr/local/etc/redis/redis_replica.conf
+  #     - ./docker/volumes/redis_prod:/data
+  #   command: redis-server /etc/redis/redis.conf --port 6579
+
   db_elasticsearch:
     container_name: db_elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
@@ -133,7 +145,6 @@ services:
     ports:
       - 1358:1358
 
-
   db_mongo:
     container_name: db_mongo
     image: mongo:4.0
@@ -153,14 +164,15 @@ services:
     restart: unless-stopped
     volumes:
       - ${PWD}:/srv/newsblur
-    environment: 
+    environment:
       - DOCKERBUILD=True
+      - DISCOVER_DATA_FOLDER=/srv/newsblur/docker/volumes/discover
 
   haproxy:
     container_name: haproxy
     image: haproxy:latest
     restart: unless-stopped
-    depends_on: 
+    depends_on:
       - nginx
       - newsblur_web
       - newsblur_node

@@ -69,7 +69,9 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
             var feed_ids = message.replace('feeds:', '').split(',');
             _.each(feed_ids, function (feed_id) {
                 var feed = NEWSBLUR.assets.get_feed(parseInt(feed_id, 10));
-                feed.set('search_indexed', true);
+                if (feed) {
+                    feed.set('search_indexed', true);
+                }
             });
             this.show_indexing_tooltip(false);
             var indexed = NEWSBLUR.assets.feeds.search_indexed();
