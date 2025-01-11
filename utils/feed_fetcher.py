@@ -341,6 +341,7 @@ class ProcessFeed:
         self.options = options
         self.fpf = fpf
         self.raw_feed = raw_feed
+        self.feed_entries = []
         self.archive_seen_story_hashes = set()
 
     def refresh_feed(self):
