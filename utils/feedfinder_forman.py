@@ -30,6 +30,8 @@ def coerce_url(url):
 
 
 class FeedFinder(object):
+    text = None
+
     def __init__(self, user_agent=None):
         if user_agent is None:
             user_agent = "NewsBlur Feed Finder"
@@ -46,7 +48,8 @@ class FeedFinder(object):
             return None
         if not skip_user_agent and r.status_code in [403, 204]:
             return self.get_feed(url, skip_user_agent=True)
-        return r.text
+        self.text = r.text
+        return self.text
 
     def is_feed_data(self, text):
         data = text.lower()
