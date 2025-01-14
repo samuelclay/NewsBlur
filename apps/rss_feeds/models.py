@@ -2768,6 +2768,9 @@ class Feed(models.Model):
                 )
 
         random_factor = random.randint(0, int(total)) / 4
+        if total == 5:
+            # 5 min fetches should be between 5 and 10 minutes
+            random_factor = random.randint(0, int(total))
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(minutes=total + random_factor)
         original_min_to_decay = self.min_to_decay
         self.min_to_decay = total
