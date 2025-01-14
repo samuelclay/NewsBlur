@@ -1692,7 +1692,9 @@ class Feed(models.Model):
         # If there are no premium archive subscribers, don't index stories for discover.
         if discover_story_ids:
             if self.archive_subscribers and self.archive_subscribers > 0:
-                IndexDiscoverStories.apply_async(
+                # IndexDiscoverStories.apply_async(
+                # Run immediately
+                IndexDiscoverStories.apply(
                     kwargs=dict(story_ids=discover_story_ids),
                     queue="discover_indexer",
                     time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
