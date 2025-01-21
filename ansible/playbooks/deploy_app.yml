@@ -119,21 +119,68 @@
       tags:
         - static
 
-    - name: Reload gunicorn due to no git upstream changes
-      become: yes
-      block:
-        - name: Find gunicorn process
-          shell: "ps -C gunicorn fch -o pid | head -n 1"
-          register: psaux
-        - name: Reload gunicorn
-          command: "kill -HUP {{ psaux.stdout }}"
-      # Only restart if there were no changes to the git repo or the static tag was applied
-      when: not pulled.changed or "'static' in ansible_playbook_tag"
-      rescue:
-        - name: Restart Docker Container
-          command: "docker restart newsblur_web"
-      tags:
-        - static
+    - name: Run new Docker container with temporary name
+      docker_container:
+        name: "newsblur_web_new"
+        image: "newsblur/newsblur_web:latest"
+        pull: true
+        state: started
+        restart_policy: always
+        command: "gunicorn newsblur.wsgi:application --bind :8000 --workers 4"
+        hostname: "newsblur_web_new"
+        networks:
+          - name: newsblur-network
+        ports:
+          - "8001:8000" # Use different port for new instance
+        volumes:
+          - /srv/newsblur:/srv/newsblur
+          - /etc/nginx/sites-enabled:/etc/nginx/sites-enabled
+          - /etc/nginx/sites-available:/etc/nginx/sites-available
+          - /srv/secrets-newsblur:/srv/secrets-newsblur
+
+    - name: Wait for new temp container to be healthy
+      uri:
+        url: "http://localhost:8001/api/health-check" # Add health check endpoint
+        status_code: 200
+        validate_certs: no
+      register: result
+      retries: 10
+      delay: 5
+      until: result.status == 200
+
+    - name: Run new Docker container with original name
+      docker_container:
+        name: "newsblur_web"
+        image: "newsblur/newsblur_web:latest"
+        pull: true
+        state: started
+        restart_policy: always
+        command: "gunicorn newsblur.wsgi:application --bind :8000 --workers 4"
+        hostname: "newsblur_web"
+        networks:
+          - name: newsblur-network
+        ports:
+          - "8000:8000"
+        volumes:
+          - /srv/newsblur:/srv/newsblur
+          - /etc/nginx/sites-enabled:/etc/nginx/sites-enabled
+          - /etc/nginx/sites-available:/etc/nginx/sites-available
+          - /srv/secrets-newsblur:/srv/secrets-newsblur
+
+    - name: Wait for new original container to be healthy
+      uri:
+        url: "http://localhost:8000/api/health-check"
+        status_code: 200
+        validate_certs: no
+      register: result
+      retries: 10
+      delay: 5
+      until: result.status == 200
+
+    - name: Stop and remove temp Docker container
+      docker_container:
+        name: "newsblur_web_new"
+        state: absent
 
     - name: Start Consul
       become: yes
