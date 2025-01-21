@@ -25,7 +25,6 @@ forwarded_allow_ips = "*"
 limit_request_line = 16000
 limit_request_fields = 1000
 worker_tmp_dir = "/dev/shm"
-reload = True
 
 workers = max(int(math.floor(GIGS_OF_MEMORY * 2)), 3)
 

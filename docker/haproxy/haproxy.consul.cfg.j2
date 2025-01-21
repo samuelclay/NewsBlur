@@ -183,6 +183,7 @@ backend staging
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     {% for host in groups.staging %}
         server {{host}} {{host}}.node.nyc1.consul:8000
+        server {{host}} {{host}}.node.nyc1.consul:8001 backup
     {% endfor %}
 
 backend blog
