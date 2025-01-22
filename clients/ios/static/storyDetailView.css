@@ -589,11 +589,18 @@ div + p {
 }
 .NB-story figure {
     margin: 0;
+    max-width: 100% !important;
+    
+    /* experiment */
+/*    border: 6px dotted yellow;*/
 }
+
 .NB-story img,
 .NB-story video {
     margin: 20px auto;
     display: none;
+    max-width: 100% !important;
+    height: auto;
     -webkit-touch-callout: none;
     -webkit-user-select: none; /* Disable selection/copy in the web view */
 }
@@ -625,8 +632,22 @@ div + p {
 
 .NB-story .NB-large-image {
     margin-left: -12px !important;
+    max-width: calc(100% + 60px) !important;
     width: calc(100% + 24px) !important;
     height: auto !important;
+    
+    /* experiment */
+/*    border: 4px dotted red;*/
+}
+
+.NB-story .NB-medium-image {
+    margin-left: -12px !important;
+    max-width: calc(100% + 24px) !important;
+    width: calc(100% + 24px) !important;
+    height: auto !important;
+    
+    /* experiment */
+/*    border: 4px dotted green;*/
 }
 
 .NB-width-375 .NB-story .NB-large-image {
