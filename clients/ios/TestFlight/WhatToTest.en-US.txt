@@ -1,2 +1,1 @@
-- Fixed the wrong story sometimes being selected when first opening the app.
-
+- Fixed images in stories sometimes appearing too large.
