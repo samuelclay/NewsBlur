@@ -80,6 +80,12 @@ def error(msg):
     logger.error(msg)
 
 
+def warning(msg):
+    msg = smart_str(msg)
+    logger = getlogger()
+    logger.warning(msg)
+
+
 def colorize(msg):
     params = {
         r"\-\-\->": "~FB~SB--->~FW",

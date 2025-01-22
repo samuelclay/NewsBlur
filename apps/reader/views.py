@@ -1,7 +1,7 @@
-import http.client
 import base64
 import concurrent
 import datetime
+import http.client
 import random
 import re
 import socket
@@ -1035,6 +1035,7 @@ def load_feed_page(request, feed_id):
     return HttpResponse(data, content_type="text/html; charset=utf-8")
 
 
+@ratelimit(minutes=5, requests=50)
 @json.json_view
 def load_starred_stories(request):
     user = get_user(request)
@@ -3198,3 +3199,27 @@ def remove_dashboard_river(request):
     return {
         "dashboard_rivers": dashboard_rivers,
     }
+
+
+def print_story(request):
+    story_hash = request.GET["story_hash"]
+    text_view = request.GET.get("text", False)
+    timezone = request.user.profile.timezone
+    try:
+        story = MStory.objects.get(story_hash=story_hash)
+    except MStory.DoesNotExist:
+        raise Http404
+
+    story_date = story.story_date
+
+    if text_view:
+        original_text = story.fetch_original_text(request=request)
+        story = Feed.format_story(story, story.story_feed_id, text=text_view)
+        story["story_content"] = original_text.decode("utf-8")
+    else:
+        story = Feed.format_story(story, story.story_feed_id)
+    return render(
+        request,
+        "reader/print.xhtml",
+        {"story": story, "local_datetime": localtime_for_timezone(story_date, timezone)},
+    )
