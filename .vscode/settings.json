@@ -1,7 +1,21 @@
 {
+    "black-formatter.args": [
+        "--line-length 110"
+    ],
     "isort.args": [
         "--profile",
         "black"
+    ],
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": false,
+    "python.linting.pylamaEnabled": false,
+    "python.linting.flake8Args": [
+        "--ignore=E501,W293,W503,W504,E302,E722,E226,E221,E402,E401"
     ],
     // "python.linting.enabled": true,
     // "python.linting.pylintEnabled": false,
@@ -39,4 +53,16 @@
         "*.yml": "ansible"
     },
     "ansible.python.interpreterPath": "/opt/homebrew/bin/python3",
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "black-formatter.args": [
+        "--line-length=110"
+    ],
+    "python.analysis.typeCheckingMode": "basic",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "python.formatting.provider": "none",
+    "cSpell.words": [
+        "NEWSBLUR"
+    ],
 }
