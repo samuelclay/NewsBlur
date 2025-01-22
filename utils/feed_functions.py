@@ -9,9 +9,9 @@ import urllib.parse
 import urllib.request
 import warnings
 
-from qurl import qurl
 from django.utils.encoding import smart_str
 from django.utils.translation import ungettext
+from qurl import qurl
 
 from utils import log as logging
 

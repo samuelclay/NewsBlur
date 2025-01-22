@@ -13,6 +13,7 @@ urlpatterns = [
     url(r"^paypal_form/?", views.paypal_form),
     url(r"^paypal_return/?", views.paypal_return, name="paypal-return"),
     url(r"^paypal_archive_return/?", views.paypal_archive_return, name="paypal-archive-return"),
+    url(r"^paypal_pro_return/?", views.paypal_pro_return, name="paypal-pro-return"),
     url(r"^stripe_return/?", views.paypal_return, name="stripe-return"),
     url(
         r"^switch_stripe_subscription/?", views.switch_stripe_subscription, name="switch-stripe-subscription"

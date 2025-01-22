@@ -23,7 +23,22 @@ RUN       set -ex \
                     zlib1g-dev \
                             ' \
             && apt-get update \
-            && apt-get install -y $rundDeps $buildDeps --no-install-recommends \
-            && pip install -r requirements.txt \
-            && apt-get purge -y --auto-remove ${buildDeps} \
-            && rm -rf /var/lib/apt/lists/*
+            && apt-get install -y $rundDeps $buildDeps --no-install-recommends
+
+# Install uv
+RUN pip install uv
+
+# Clean uv cache and any virtual environment from previous builds
+RUN uv clean || true && rm -rf /venv
+
+# Create and activate virtual environment in /venv
+RUN uv venv /venv
+ENV PATH="/venv/bin:$PATH"
+ENV VIRTUAL_ENV="/venv"
+
+# Install dependencies
+RUN rm -rf /root/.cache/uv && \
+    uv pip install -r requirements.txt
+
+RUN       apt-get purge -y --auto-remove ${buildDeps}
+RUN       rm -rf /var/lib/apt/lists/*

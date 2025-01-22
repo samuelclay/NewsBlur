@@ -35,16 +35,16 @@
     name: vm.max_map_count
     value: "262144"
     state: present
-    
-- name: Start Elasticsearch Docker container
+
+- name: Start Elasticsearch v7 Docker container
   docker_container:
     name: elasticsearch
     image: elasticsearch:7.14.0
     state: started
     hostname: "{{ inventory_hostname }}"
     ports:
-      - '9200:9200'
-      - '9300:9300'
+      - "9200:9200"
+      - "9300:9300"
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
     networks_cli_compatible: yes
@@ -52,7 +52,7 @@
     network_mode: default
     networks:
       - name: newsblurnet
-        aliases: 
+        aliases:
           - elasticsearch
     user: "{{ ansible_effective_user_id|int }}:{{ ansible_effective_group_id|int }}"
     volumes:
@@ -64,8 +64,47 @@
   tags: consul
   become: yes
   template:
-    src: consul_service.json
+    src: consul_service.json.j2
     dest: /etc/consul.d/elasticsearch.json
+  vars:
+    consul_service_port: 9200
+    elasticsearch_version: 7
+  notify:
+    - reload consul
+
+- name: Start Elasticsearch v8 Docker container
+  docker_container:
+    name: elasticsearch8
+    image: elasticsearch:8.17.0
+    state: started
+    hostname: "{{ inventory_hostname }}"
+    ports:
+      - "9208:9200"
+      - "9308:9300"
+    restart_policy: unless-stopped
+    container_default_behavior: no_defaults
+    networks_cli_compatible: yes
+    # network_mode: host
+    network_mode: default
+    networks:
+      - name: newsblurnet
+        aliases:
+          - elasticsearch
+    user: "{{ ansible_effective_user_id|int }}:{{ ansible_effective_group_id|int }}"
+    volumes:
+      - /srv/newsblur/docker/volumes/elasticsearch8:/usr/share/elasticsearch/data
+      - /var/log/elasticsearch8/:/var/log/elasticsearch/
+      - /srv/newsblur/config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+
+- name: Register elasticsearch8 in consul
+  tags: consul
+  become: yes
+  template:
+    src: consul_service.json.j2
+    dest: /etc/consul.d/elasticsearch8.json
+  vars:
+    consul_service_port: 9208
+    elasticsearch_version: 8
   notify:
     - reload consul
 

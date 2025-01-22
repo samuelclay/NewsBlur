@@ -51,6 +51,12 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
         }
 
         // Need time to let animation begin so height registers as non-zero
+        this.check_height();
+
+        return this;
+    },
+
+    check_height: function () {
         _.defer(_.bind(function () {
             if ($(window).height() < (this.$popover.height() + 100)) {
                 this.$popover.addClass('NB-popover-scroll');
@@ -58,8 +64,6 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
                 this.$popover.width(this.options.width + 18);
             }
         }, this));
-
-        return this;
     },
 
     close: function (e, hide_callback) {
