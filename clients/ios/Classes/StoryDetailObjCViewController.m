@@ -514,6 +514,8 @@
     contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
                          contentWidthClass, (int)floorf(CGRectGetWidth(self.view.frame))];
     
+    NSLog(@"📚 drawStory: content width class: %@", contentWidthClass);  // log
+    
     // if (appDelegate.feedsViewController.isOffline) {
         NSFileManager *manager = [NSFileManager defaultManager];
         NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
@@ -2489,6 +2491,8 @@
             alternateViewClass = @"NB-titles-left";
         }
     }
+    
+    NSLog(@"📚 changeWebViewWidth: content width class: %@", contentWidthClass);  // log
     
     NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
                             appDelegate.storiesCollection.isSocialView ||
