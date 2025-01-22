@@ -1,0 +1,23 @@
+{
+    "service": {
+        {% if elasticsearch_version == 7 %}
+            {% if not elasticsearch_secondary %}
+            "name": "db-elasticsearch",
+            {% else %}
+            "name": "db-elasticsearch-staging",
+            {% endif %}
+        {% elif elasticsearch_version == 8 %}
+            "name": "db-elasticsearch-v8",
+        {% endif %}
+        "tags": [
+            "db"
+        ],
+        "port": {{ consul_service_port }},
+        "checks": [{
+            "id": "es-ping",
+            "http": "http://{{ ansible_host }}:5579/db_check/elasticsearch?consul=1",
+            "interval": "15s",
+            "failures_before_critical": 4
+        }]
+    }
+}  

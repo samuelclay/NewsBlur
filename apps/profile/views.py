@@ -241,6 +241,7 @@ def set_view_setting(request):
     feed_read_filter_setting = request.POST.get("feed_read_filter_setting")
     feed_layout_setting = request.POST.get("feed_layout_setting")
     feed_dashboard_count_setting = request.POST.get("feed_dashboard_count_setting")
+    feed_stories_discover_setting = request.POST.get("feed_stories_discover_setting")
     view_settings = json.decode(request.user.profile.view_settings)
 
     setting = view_settings.get(feed_id, {})
@@ -256,6 +257,8 @@ def set_view_setting(request):
         setting["d"] = feed_dashboard_count_setting
     if feed_layout_setting:
         setting["l"] = feed_layout_setting
+    if feed_stories_discover_setting:
+        setting["s"] = feed_stories_discover_setting
 
     view_settings[feed_id] = setting
     request.user.profile.view_settings = json.encode(view_settings)
@@ -428,6 +431,17 @@ def paypal_archive_return(request):
     return render(
         request,
         "reader/paypal_archive_return.xhtml",
+        {
+            "user_profile": request.user.profile,
+        },
+    )
+
+
+@login_required
+def paypal_pro_return(request):
+    return render(
+        request,
+        "reader/paypal_pro_return.xhtml",
         {
             "user_profile": request.user.profile,
         },
@@ -743,7 +757,7 @@ def stripe_checkout(request):
     if plan == "change_stripe":
         checkout_session = stripe.billing_portal.Session.create(
             customer=request.user.profile.stripe_id,
-            return_url="https://%s%s?next=payments" % (domain, reverse('index')),
+            return_url="https://%s%s?next=payments" % (domain, reverse("index")),
         )
         return HttpResponseRedirect(checkout_session.url, status=303)
 
@@ -758,8 +772,8 @@ def stripe_checkout(request):
         ],
         "mode": "subscription",
         "metadata": {"newsblur_user_id": request.user.pk},
-        "success_url": "https://%s%s" % (domain, reverse('stripe-return')),
-        "cancel_url": "https://%s%s" % (domain, reverse('index')),
+        "success_url": "https://%s%s" % (domain, reverse("stripe-return")),
+        "cancel_url": "https://%s%s" % (domain, reverse("index")),
     }
     if request.user.profile.stripe_id:
         session_dict["customer"] = request.user.profile.stripe_id

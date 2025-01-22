@@ -1,9 +1,12 @@
 import base64
+import csv
 import datetime
 import difflib
 import hashlib
 import html
 import math
+import os
+import pickle
 import random
 import re
 import time
@@ -14,6 +17,7 @@ from operator import itemgetter
 
 import bson
 import mongoengine as mongo
+import numpy as np
 import pymongo
 import redis
 import requests
@@ -22,8 +26,7 @@ from bson.objectid import ObjectId
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-
-# from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
+from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError, models
 from django.db.models.query import QuerySet
 from django.db.utils import DatabaseError
@@ -33,9 +36,14 @@ from django.utils.encoding import DjangoUnicodeDecodeError, smart_bytes, smart_s
 from mongoengine.errors import ValidationError
 from mongoengine.queryset import NotUniqueError, OperationError, Q
 
-from apps.rss_feeds.tasks import PushFeeds, ScheduleCountTagsForUser, UpdateFeeds
+from apps.rss_feeds.tasks import (
+    IndexDiscoverStories,
+    PushFeeds,
+    ScheduleCountTagsForUser,
+    UpdateFeeds,
+)
 from apps.rss_feeds.text_importer import TextImporter
-from apps.search.models import SearchFeed, SearchStory
+from apps.search.models import DiscoverStory, SearchFeed, SearchStory
 from apps.statistics.rstats import RStats
 from utils import feedfinder_forman, feedfinder_pilgrim
 from utils import json_functions as json
@@ -104,8 +112,12 @@ class Feed(models.Model):
     s3_page = models.BooleanField(default=False, blank=True, null=True)
     s3_icon = models.BooleanField(default=False, blank=True, null=True)
     search_indexed = models.BooleanField(default=None, null=True, blank=True)
+    discover_indexed = models.BooleanField(default=None, null=True, blank=True)
     fs_size_bytes = models.IntegerField(null=True, blank=True)
     archive_count = models.IntegerField(null=True, blank=True)
+    similar_feeds = models.ManyToManyField(
+        "self", related_name="feeds_by_similarity", symmetrical=False, blank=True
+    )
 
     class Meta:
         db_table = "feeds"
@@ -231,6 +243,7 @@ class Feed(models.Model):
             "is_newsletter": self.is_newsletter,
             "fetched_once": self.fetched_once,
             "search_indexed": self.search_indexed,
+            "discover_indexed": self.discover_indexed,
             "not_yet_fetched": not self.fetched_once,  # Legacy. Doh.
             "favicon_color": self.favicon_color,
             "favicon_fade": self.favicon_fade(),
@@ -241,6 +254,7 @@ class Feed(models.Model):
             "s3_page": self.s3_page,
             "s3_icon": self.s3_icon,
             "disabled_page": not self.has_page,
+            "similar_feeds": [f["pk"] for f in self.similar_feeds.values("pk")],
         }
 
         if include_favicon:
@@ -332,14 +346,14 @@ class Feed(models.Model):
             SearchFeed.create_elasticsearch_mapping(delete=True)
 
         last_pk = cls.objects.latest("pk").pk
-        for f in range(offset, last_pk, 1000):
+        for f in range(offset, last_pk, 10):
             print(
                 " ---> {f} / {last_pk} ({pct}%)".format(
                     f=f, last_pk=last_pk, pct=str(float(f) / last_pk * 100)[:2]
                 )
             )
             feeds = Feed.objects.filter(
-                pk__in=range(f, f + 1000), active=True, active_subscribers__gte=subscribers
+                pk__in=range(f, f + 10), active=True, active_subscribers__gte=subscribers
             ).values_list("pk")
             for (feed_id,) in feeds:
                 Feed.objects.get(pk=feed_id).index_feed_for_search()
@@ -355,10 +369,11 @@ class Feed(models.Model):
                 address=self.feed_address,
                 link=self.feed_link,
                 num_subscribers=self.num_subscribers,
+                content_vector=SearchFeed.generate_feed_content_vector(self.pk),
             )
 
-    def index_stories_for_search(self):
-        if self.search_indexed:
+    def index_stories_for_search(self, force=False):
+        if self.search_indexed and not force:
             return
 
         stories = MStory.objects(story_feed_id=self.pk)
@@ -366,6 +381,24 @@ class Feed(models.Model):
             story.index_story_for_search()
 
         self.search_indexed = True
+        self.save()
+
+    def index_stories_for_discover(self, force=False):
+        if self.discover_indexed and not force:
+            return
+
+        # If there are no premium archive subscribers, don't index stories for discover.
+        if not self.archive_subscribers or self.archive_subscribers <= 0:
+            logging.debug(f" ---> ~FBNo premium archive subscribers, skipping discover index for {self}")
+            return
+
+        stories = MStory.objects(story_feed_id=self.pk)
+        for index, story in enumerate(stories):
+            if index % 100 == 0:
+                logging.debug(f" ---> ~FBIndexing discover story {index} of {len(stories)} in {self}")
+            story.index_story_for_discover()
+
+        self.discover_indexed = True
         self.save()
 
     def sync_redis(self, allow_skip_resync=False):
@@ -515,27 +548,34 @@ class Feed(models.Model):
                 .filter(**criteria("feed_address", address))
                 .order_by("-num_subscribers")
             )
+            logging.debug(f" ---> Feeds found by address: {feed}")
             if not feed:
                 duplicate_feed = DuplicateFeed.objects.filter(**criteria("duplicate_address", address))
                 if duplicate_feed and len(duplicate_feed) > offset:
                     feed = [duplicate_feed[offset].feed]
+                logging.debug(
+                    f" ---> Feeds found by duplicate address: {duplicate_feed} {feed} (offset: {offset})"
+                )
             if not feed and aggressive:
                 feed = (
                     cls.objects.filter(branch_from_feed=None)
                     .filter(**criteria("feed_link", address))
                     .order_by("-num_subscribers")
                 )
+                logging.debug(f" ---> Feeds found by link: {feed}")
 
             return feed
 
         @timelimit(10)
         def _feedfinder_forman(url):
             found_feed_urls = feedfinder_forman.find_feeds(url)
+            logging.debug(f" ---> Feeds found by forman: {found_feed_urls}")
             return found_feed_urls
 
         @timelimit(10)
         def _feedfinder_pilgrim(url):
             found_feed_urls = feedfinder_pilgrim.feeds(url)
+            logging.debug(f" ---> Feeds found by pilgrim: {found_feed_urls}")
             return found_feed_urls
 
         # Normalize and check for feed_address, dupes, and feed_link
@@ -668,6 +708,9 @@ class Feed(models.Model):
         self.count_subscribers(recount=recount)
         self.calculate_last_story_date()
 
+        # if force or count_extra:
+        #     self.count_similar_feeds()
+
         if force or has_new_stories or count_extra:
             self.save_feed_stories_last_month()
 
@@ -712,6 +755,7 @@ class Feed(models.Model):
 
     def setup_feed_for_premium_subscribers(self, allow_skip_resync=False):
         self.count_subscribers()
+        self.count_similar_feeds()
         self.set_next_scheduled_update(verbose=settings.DEBUG)
         self.sync_redis(allow_skip_resync=allow_skip_resync)
 
@@ -1053,6 +1097,46 @@ class Feed(models.Model):
                     ),
                     end=" ",
                 )
+
+    def count_similar_feeds(self, feed_ids=None, force=False, offset=0, limit=5):
+        if not force and self.similar_feeds.count() and offset == 0:
+            logging.debug(f"Found {self.similar_feeds.count()} cached similar feeds for {self}")
+            return self.similar_feeds.all()[:limit]
+
+        if not feed_ids:
+            feed_ids = [self.pk]
+        if self.pk not in feed_ids:
+            feed_ids.append(self.pk)
+
+        results = self.find_similar_feeds(feed_ids=feed_ids, offset=offset, limit=limit)
+
+        similar_feeds = []
+        if offset == 0:
+            feed_ids = [result["_source"]["feed_id"] for result in results]
+            similar_feeds = Feed.objects.filter(pk__in=feed_ids).distinct("feed_title")
+            try:
+                self.similar_feeds.set(similar_feeds)
+            except IntegrityError:
+                logging.debug(f" ---> ~FRIntegrity error adding similar feed: {feed_ids}")
+                pass
+        else:
+            feed_ids = [result["_source"]["feed_id"] for result in results]
+            similar_feeds = Feed.objects.filter(pk__in=feed_ids).distinct("feed_title")
+            if self.similar_feeds.count() < 5:
+                self.similar_feeds.add(*similar_feeds[: 5 - self.similar_feeds.count()])
+        return similar_feeds
+
+    @classmethod
+    def find_similar_feeds(cls, feed_ids=None, offset=0, limit=5):
+        combined_content_vector = SearchFeed.generate_combined_feed_content_vector(feed_ids)
+        results = SearchFeed.vector_query(
+            combined_content_vector, feed_ids_to_exclude=feed_ids, offset=offset, max_results=limit
+        )
+        logging.debug(
+            f"Found {len(results)} recommendations for feeds {feed_ids}: {[r['_id'] for r in results]}"
+        )
+
+        return results
 
     def _split_favicon_color(self, color=None):
         if not color:
@@ -1437,6 +1521,7 @@ class Feed(models.Model):
         ret_values = dict(new=0, updated=0, same=0, error=0)
         error_count = self.error_count
         new_story_hashes = [s.get("story_hash") for s in stories]
+        discover_story_ids = []
 
         if settings.DEBUG or verbose:
             logging.debug(
@@ -1479,7 +1564,7 @@ class Feed(models.Model):
                 story_has_changed = False
 
             if existing_story is None:
-                if settings.DEBUG and False:
+                if settings.DEBUG and verbose:
                     logging.debug(
                         "   ---> New story in feed (%s - %s): %s"
                         % (self.feed_title, story.get("title"), len(story_content))
@@ -1506,8 +1591,10 @@ class Feed(models.Model):
                             "   ---> [%-30s] ~SN~FRIntegrityError on new story: %s - %s"
                             % (self.feed_title[:30], story.get("guid"), e)
                         )
-                if self.search_indexed:
+                if self.search_indexed and s:
                     s.index_story_for_search()
+                if s and s.story_hash:
+                    discover_story_ids.append(s.story_hash)
             elif existing_story and story_has_changed and not updates_off and ret_values["updated"] < 3:
                 # update story
                 original_content = None
@@ -1592,6 +1679,8 @@ class Feed(models.Model):
                         )
                 if self.search_indexed:
                     existing_story.index_story_for_search()
+                if existing_story.story_hash:
+                    discover_story_ids.append(existing_story.story_hash)
             else:
                 ret_values["same"] += 1
                 if verbose:
@@ -1599,6 +1688,21 @@ class Feed(models.Model):
                         "Unchanged story (%s): %s / %s "
                         % (story.get("story_hash"), story.get("guid"), story.get("title"))
                     )
+
+        # If there are no premium archive subscribers, don't index stories for discover.
+        if discover_story_ids:
+            if self.archive_subscribers and self.archive_subscribers > 0:
+                # IndexDiscoverStories.apply_async(
+                # Run immediately
+                IndexDiscoverStories.apply(
+                    kwargs=dict(story_ids=discover_story_ids),
+                    queue="discover_indexer",
+                    time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+                )
+            else:
+                logging.debug(
+                    f" ---> ~FBNo premium archive subscribers, skipping discover indexing for {discover_story_ids} for {self}"
+                )
 
         return ret_values
 
@@ -1861,7 +1965,7 @@ class Feed(models.Model):
     #     for f, u in urls:
     #         print "db.stories.remove({\"story_feed_id\": %s, \"_id\": \"%s\"})" % (f, u)
 
-    def get_stories(self, offset=0, limit=25, order="neweat", force=False):
+    def get_stories(self, offset=0, limit=25, order="newest", force=False):
         if order == "newest":
             stories_db = MStory.objects(story_feed_id=self.pk)[offset : offset + limit]
         elif order == "oldest":
@@ -1983,7 +2087,7 @@ class Feed(models.Model):
         # pprint(sorted_popularity)
         return sorted_popularity
 
-    def well_read_score(self):
+    def well_read_score(self, user_id=None):
         """Average percentage of stories read vs published across recently active subscribers"""
         from apps.reader.models import UserSubscription
         from apps.social.models import MSharedStory
@@ -1996,7 +2100,9 @@ class Feed(models.Model):
         subscribing_users = UserSubscription.objects.filter(feed_id=self.pk).values("user_id")
         subscribing_user_ids = [sub["user_id"] for sub in subscribing_users]
 
-        for user_id in subscribing_user_ids:
+        for sub_user_id in subscribing_user_ids:
+            if user_id and sub_user_id != user_id:
+                continue
             user_rs = "RS:%s:%s" % (user_id, self.pk)
             p.scard(user_rs)
 
@@ -2012,7 +2118,7 @@ class Feed(models.Model):
         else:
             average_pct = 0
 
-        reach_score = average_pct * reader_count * story_count
+        reach_score = round(average_pct * reader_count * story_count)
 
         return {
             "read_pct": average_pct,
@@ -2454,11 +2560,11 @@ class Feed(models.Model):
 
             seq = difflib.SequenceMatcher(None, story_content, existing_story_content)
 
-            similiar_length_min = 1000
+            similar_length_min = 1000
             if existing_story.story_permalink == story_link and existing_story.story_title == story.get(
                 "title"
             ):
-                similiar_length_min = 20
+                similar_length_min = 20
 
             # Skip content check if already failed due to a timeout. This way we catch titles
             if lightweight:
@@ -2467,7 +2573,7 @@ class Feed(models.Model):
             if (
                 seq
                 and story_content
-                and len(story_content) > similiar_length_min
+                and len(story_content) > similar_length_min
                 and existing_story_content
                 and seq.real_quick_ratio() > 0.9
                 and seq.quick_ratio() > 0.95
@@ -2664,6 +2770,9 @@ class Feed(models.Model):
                 )
 
         random_factor = random.randint(0, int(total)) / 4
+        if total == 5:
+            # 5 min fetches should be between 5 and 10 minutes
+            random_factor = random.randint(0, int(total))
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(minutes=total + random_factor)
         original_min_to_decay = self.min_to_decay
         self.min_to_decay = total
@@ -3010,13 +3119,18 @@ class MStory(mongo.Document):
         stories.delete()
 
     @classmethod
-    def index_all_for_search(cls, offset=0):
+    def index_all_for_search(cls, offset=0, search=False, discover=False):
         if not offset:
-            SearchStory.create_elasticsearch_mapping(delete=True)
+            if search:
+                logging.debug("Re-creating search index")
+                SearchStory.create_elasticsearch_mapping(delete=True)
+            if discover:
+                logging.debug("Re-creating discover index")
+                DiscoverStory.create_elasticsearch_mapping(delete=True)
 
         last_pk = Feed.objects.latest("pk").pk
         for f in range(offset, last_pk, 1000):
-            print(" ---> %s / %s (%.2s%%)" % (f, last_pk, float(f) / last_pk * 100))
+            logging.debug(" ---> %s / %s (%.2s%%)" % (f, last_pk, float(f) / last_pk * 100))
             feeds = Feed.objects.filter(
                 pk__in=list(range(f, f + 1000)), active=True, active_subscribers__gte=1
             ).values_list("pk")
@@ -3024,9 +3138,16 @@ class MStory(mongo.Document):
                 stories = cls.objects.filter(story_feed_id=f)
                 if not len(stories):
                     continue
-                print(f"Indexing {len(stories)} stories in feed {f}")
-                for story in stories:
-                    story.index_story_for_search()
+                logging.debug(
+                    f"Indexing {len(stories)} stories in feed {f} for {'search' if search else 'discover' if discover else 'both search and discover'}"
+                )
+                for s, story in enumerate(stories):
+                    if s % 100 == 0:
+                        logging.debug(f" ---> Indexing story {s} of {len(stories)} in feed {f}")
+                    if search:
+                        story.index_story_for_search()
+                    if discover:
+                        story.index_story_for_discover()
 
     def index_story_for_search(self):
         story_content = self.story_content or ""
@@ -3042,9 +3163,28 @@ class MStory(mongo.Document):
             story_date=self.story_date,
         )
 
+    @classmethod
+    def index_stories_for_discover(cls, story_hashes, verbose=False):
+        logging.debug(f" ---> ~FBIndexing {len(story_hashes)} stories for ~FC~SBdiscover")
+        for story_hash in story_hashes:
+            try:
+                story = cls.objects.get(story_hash=story_hash)
+                story.index_story_for_discover(verbose=verbose)
+            except cls.DoesNotExist:
+                logging.debug(f" ---> ~FBStory not found for discover indexing: {story_hash}")
+
+    def index_story_for_discover(self, verbose=False):
+        DiscoverStory.index(
+            story_hash=self.story_hash,
+            story_feed_id=self.story_feed_id,
+            story_date=self.story_date,
+            verbose=verbose,
+        )
+
     def remove_from_search_index(self):
         try:
             SearchStory.remove(self.story_hash)
+            DiscoverStory.remove(self.story_hash)
         except Exception:
             pass
 
@@ -3410,6 +3550,21 @@ class MStory(mongo.Document):
             original_page = zlib.decompress(self.original_page_z)
 
         return original_page
+
+    def fetch_similar_stories(self, feed_ids=None, offset=0, limit=5):
+        combined_content_vector = DiscoverStory.generate_combined_story_content_vector([self.story_hash])
+        results = DiscoverStory.vector_query(
+            combined_content_vector,
+            feed_ids_to_include=feed_ids,
+            story_hashes_to_exclude=[self.story_hash],
+            offset=offset,
+            max_results=limit,
+        )
+        logging.debug(
+            f"Found {len(results)} recommendations for stories related to {self}: {[r['_id'] for r in results]}"
+        )
+
+        return results
 
 
 class MStarredStory(mongo.DynamicDocument):

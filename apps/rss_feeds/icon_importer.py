@@ -10,10 +10,10 @@ import urllib.request
 from io import BytesIO
 from socket import error as SocketError
 
-import numpy as np
 import boto3
 import lxml.html
 import numpy
+import numpy as np
 import requests
 import scipy
 import scipy.cluster
