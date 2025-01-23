@@ -59,6 +59,7 @@
 
 - (IBAction)chooseColumns:(id)sender;
 - (IBAction)chooseLayout:(id)sender;
+- (IBAction)chooseDashboard:(id)sender;
 - (IBAction)chooseTitle:(id)sender;
 - (IBAction)choosePreview:(id)sender;
 - (IBAction)chooseGridColumns:(id)sender;

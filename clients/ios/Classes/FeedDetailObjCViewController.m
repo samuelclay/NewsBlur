@@ -2671,6 +2671,16 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     [appDelegate addSplitControlToMenuController:viewController];
     
+    if (dashboard) {
+        NSString *preferenceKey = @"dashboard_layout";
+        NSArray *titles = @[@"Single", @"Columns", @"Rows"];
+        NSArray *values = @[@"single", @"vertical", @"horizontal"];
+        
+        [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+            [self reload];
+        }];
+    }
+    
     if (!dashboard) {
         NSString *preferenceKey = self.appDelegate.storiesCollection.storyTitlesPositionKey;
         NSArray *titles;

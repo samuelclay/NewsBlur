@@ -111,7 +111,9 @@ class FeedsViewController: FeedsObjCViewController {
     }
     
     @objc func loadDashboard() {
-        if appDelegate.feedDetailViewController.dashboardIndex >= 0 {
+        if !appDelegate.detailViewController.storyTitlesInDashboard {
+            return
+        } else if appDelegate.feedDetailViewController.dashboardIndex >= 0 {
             deferredLoadNextDash()
         } else {
             immediatelyLoadNextDash()
@@ -139,7 +141,6 @@ class FeedsViewController: FeedsObjCViewController {
         appDelegate.feedDetailViewController.storyCache.reloadDashboard(for: appDelegate.feedDetailViewController.dashboardIndex)
         
         appDelegate.feedDetailViewController.dashboardIndex += 1
-        appDelegate.detailViewController.storyTitlesInDashboard = true
         
         let index = appDelegate.feedDetailViewController.dashboardIndex
         

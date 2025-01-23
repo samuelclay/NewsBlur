@@ -458,6 +458,30 @@
                                         </command>
                                     </children>
                                 </menu>
+                                <menu title="Dashboard" id="8co-hk-Dk5">
+                                    <children>
+                                        <command title="Hidden" propertyListString="none" id="cZq-e0-5jU">
+                                            <connections>
+                                                <action selector="chooseDashboard:" destination="J28-e1-gcC" id="n6S-Pe-GVj"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Single Column" propertyListString="single" menuElementState="on" id="oUq-vq-hyH">
+                                            <connections>
+                                                <action selector="chooseDashboard:" destination="J28-e1-gcC" id="8uf-f8-uyG"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Two Columns" propertyListString="vertical" id="22a-WG-b93">
+                                            <connections>
+                                                <action selector="chooseDashboard:" destination="J28-e1-gcC" id="05a-r7-cKj"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Two Rows" propertyListString="horizontal" id="nZC-hY-TPg">
+                                            <connections>
+                                                <action selector="chooseDashboard:" destination="J28-e1-gcC" id="rWA-fz-1cQ"/>
+                                            </connections>
+                                        </command>
+                                    </children>
+                                </menu>
                                 <menu title="Inline Menu" id="rEb-O5-WxE">
                                     <menuOptions key="menuOptions" displayInline="YES"/>
                                 </menu>
