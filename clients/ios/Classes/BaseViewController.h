@@ -83,6 +83,7 @@
 - (IBAction)previousSite:(id)sender;
 - (IBAction)nextFolder:(id)sender;
 - (IBAction)previousFolder:(id)sender;
+- (IBAction)openDashboard:(id)sender;
 - (IBAction)openAllStories:(id)sender;
 
 - (IBAction)showSendTo:(id)sender;

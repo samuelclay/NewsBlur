@@ -827,10 +827,16 @@
                                 <menu id="IGD-cP-sh8">
                                     <menuOptions key="menuOptions" displayInline="YES"/>
                                     <children>
-                                        <command title="Open All Stories" input="E" id="sW2-Jm-pRP">
+                                        <command title="Open Dashboard" input="D" id="sW2-Jm-pRP">
                                             <keyModifierFlags key="modifierFlags" command="YES"/>
                                             <connections>
-                                                <action selector="openAllStories:" destination="J28-e1-gcC" id="m4I-zj-Kta"/>
+                                                <action selector="openDashboard:" destination="J28-e1-gcC" id="lHl-rc-NCb"/>
+                                            </connections>
+                                        </command>
+                                        <command title="Open All Stories" input="E" id="tIP-ef-Ua2">
+                                            <keyModifierFlags key="modifierFlags" command="YES"/>
+                                            <connections>
+                                                <action selector="openAllStories:" destination="J28-e1-gcC" id="nqq-Mc-MLW"/>
                                             </connections>
                                         </command>
                                     </children>

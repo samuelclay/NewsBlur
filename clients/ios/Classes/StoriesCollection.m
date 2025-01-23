@@ -88,7 +88,7 @@
 }
 
 - (BOOL)isDashboard {
-    return [activeFolder isEqualToString:@"dashboard"];
+    return appDelegate.isDashboard;
 }
 
 - (BOOL)isEverything {
@@ -247,6 +247,10 @@
 }
 
 - (NSString *)activeOrder {
+    if (self.isDashboard) {
+        return @"newest";
+    }
+    
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSString *orderPrefDefault = [userPreferences stringForKey:@"default_order"];
     NSString *orderPref = [userPreferences stringForKey:[self orderKey]];
@@ -261,6 +265,10 @@
 }
 
 - (NSString *)activeReadFilter {
+    if (self.isDashboard) {
+        return @"unread";
+    }
+    
     if (self.appDelegate.isSavedStoriesIntelligenceMode) {
         return @"starred";
     }
@@ -342,7 +350,9 @@
 }
 
 - (NSString *)storyTitlesPositionKey {
-    if (self.isRiverView) {
+    if (self.isDashboard) {
+        return [NSString stringWithFormat:@"dashboard:story_titles_position"];
+    } else if (self.isRiverView) {
         return [NSString stringWithFormat:@"folder:%@:story_titles_position", self.activeFolder];
     } else {
         return [NSString stringWithFormat:@"%@:story_titles_position", [self.activeFeed objectForKey:@"id"]];

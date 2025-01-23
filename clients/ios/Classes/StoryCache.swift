@@ -167,6 +167,7 @@ import Foundation
             }
             
             let feedId = dashId.hasPrefix("feed:") ? dashId.deletingPrefix("feed:") : nil
+            
             guard let folderId = dashId == "river:" ? "everything" : dashId.hasPrefix("river:") ? dashId.deletingPrefix("river:") : appDelegate.parentFolders(forFeed: feedId).first as? String else {
                 continue
             }
@@ -204,5 +205,11 @@ import Foundation
         dash.stories = Array(before.prefix(5))
         
         print("Reloaded dashboard for \(index); folder: \(dash.folder?.name ?? "?"); feeds: \(dash.feeds); stories: \(dash.stories)")
+    }
+    
+    func redrawDashboard() {
+        for dash in dashboard {
+            dash.id = UUID()
+        }
     }
 }

@@ -242,6 +242,14 @@ class FeedDetailViewController: FeedDetailObjCViewController {
 
 extension FeedDetailViewController {
     func configureDataSource(story: Story? = nil) {
+        if isDashboard {
+            storyCache.redrawDashboard()
+            
+            if dashboardIndex < 0 {
+                return
+            }
+        }
+        
         if let story {
             storyCache.reload(story: story)
         } else {
