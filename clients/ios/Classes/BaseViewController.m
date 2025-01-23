@@ -300,6 +300,12 @@
         NSInteger intelligence = [[NSUserDefaults standardUserDefaults] integerForKey:@"selectedIntelligence"];
         NSString *value = [NSString stringWithFormat:@"%@", @(intelligence + 1)];
         command.state = [command.propertyList isEqualToString:value];
+    } else if (command.action == @selector(chooseDashboard:)) {
+        NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"dashboard_layout"];
+        if (value == nil) {
+            value = @"vertical";
+        }
+        command.state = [command.propertyList isEqualToString:value];
     } else if (command.action == @selector(toggleSidebar:)) {
         UISplitViewController *splitViewController = self.appDelegate.splitViewController;
         if (splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeTwoBesideSecondary) {
@@ -467,6 +473,25 @@
     [self.appDelegate.feedsViewController.intelligenceControl setSelectedSegmentIndex:index];
     [self.appDelegate.feedsViewController selectIntelligence];
 }
+
+- (IBAction)chooseDashboard:(id)sender {
+    UICommand *command = sender;
+    NSString *string = command.propertyList;
+    NSString *key = @"dashboard_layout";
+    
+    [[NSUserDefaults standardUserDefaults] setObject:string forKey:key];
+    
+    if ([string isEqualToString:@"none"]) {
+        [self.appDelegate.feedsViewController reloadFeeds:nil];
+        [self.appDelegate.feedsViewController selectEverything:nil];
+    } else if (self.isDashboard) {
+        [self.appDelegate.feedDetailViewController reload];
+    } else {
+        [self.appDelegate.feedsViewController reloadFeeds:nil];
+        [self.appDelegate.feedsViewController selectDashboard:nil];
+    }
+}
+
 
 - (IBAction)chooseTitle:(id)sender {
     UICommand *command = sender;

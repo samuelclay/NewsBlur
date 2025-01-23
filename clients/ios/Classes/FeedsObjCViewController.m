@@ -1996,6 +1996,7 @@ heightForHeaderInSection:(NSInteger)section {
     [self clearDashboard];
     
     if ([folder isEqualToString:@"dashboard"]) {
+        appDelegate.detailViewController.storyTitlesInDashboard = YES;
         [self loadDashboard];
     } else {
         [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
