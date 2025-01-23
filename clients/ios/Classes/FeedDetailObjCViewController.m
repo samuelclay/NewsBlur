@@ -495,7 +495,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         settingsBarButton.enabled = YES;
     }
     
-    if (storiesCollection.isSocialRiverView ||
+    if (self.isDashboard ||
+        storiesCollection.isSocialRiverView ||
         storiesCollection.isSavedView ||
         storiesCollection.isReadView) {
         feedMarkReadButton.enabled = NO;
@@ -2548,7 +2549,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (IBAction)doOpenMarkReadMenu:(id)sender {
-    [self markReadShowMenu:MarkReadShowMenuBasedOnPref sender:sender];
+    if (feedMarkReadButton.isEnabled) {
+        [self markReadShowMenu:MarkReadShowMenuBasedOnPref sender:sender];
+    }
 }
 
 - (IBAction)doMarkAllRead:(id)sender {
@@ -2577,7 +2580,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     MenuViewController *viewController = [MenuViewController new];
     __weak MenuViewController *weakViewController = viewController;
     
-    BOOL dashboard = appDelegate.storiesCollection.isDashboard;
+    BOOL dashboard = self.isDashboard;
     BOOL everything = appDelegate.storiesCollection.isEverything;
     BOOL infrequent = appDelegate.storiesCollection.isInfrequent;
     BOOL river = [self isRiver];
@@ -2598,7 +2601,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
     }
     
-    if ((!dashboard || !everything || !appDelegate.storiesCollection.isRiverView) && !infrequent && !saved && !read && !social && !widget) {
+    if ((!everything || !appDelegate.storiesCollection.isRiverView) && !infrequent && !saved && !read && !social && !widget && !dashboard) {
         NSString *manageText = [NSString stringWithFormat:@"Manage this %@…", appDelegate.storiesCollection.isRiverView ? @"folder" : @"site"];
         
         [viewController addTitle:manageText iconName:@"menu_icn_move.png" selectionShouldDismiss:NO handler:^{
@@ -2606,7 +2609,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
     
-    if (!appDelegate.storiesCollection.isRiverView && !dashboard && !infrequent && !saved && !read && !social && !widget) {
+    if (!appDelegate.storiesCollection.isRiverView && !infrequent && !saved && !read && !social && !widget && !dashboard) {
         [viewController addTitle:@"Train this site" iconName:@"menu_icn_train.png" selectionShouldDismiss:YES handler:^{
             [self openTrainSite];
         }];
@@ -2619,97 +2622,101 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             }];
         }
         
-        if (!dashboard) {
-            [viewController addTitle:@"Notifications" iconName:@"dialog-notifications" iconColor:UIColorFromRGB(0xD58B4F) selectionShouldDismiss:YES handler:^{
-                [self
-                 openNotificationsWithFeed:[NSString stringWithFormat:@"%@", [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
-            }];
-            
-            [viewController addTitle:@"Statistics" iconName:@"menu_icn_statistics.png" selectionShouldDismiss:YES handler:^{
-                [self
-                 openStatisticsWithFeed:[NSString stringWithFormat:@"%@", [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
-            }];
-            
-            [viewController addTitle:@"Insta-fetch stories" iconName:@"menu_icn_fetch.png" selectionShouldDismiss:YES handler:^{
-                [self instafetchFeed];
-            }];
-        }
+        [viewController addTitle:@"Notifications" iconName:@"dialog-notifications" iconColor:UIColorFromRGB(0xD58B4F) selectionShouldDismiss:YES handler:^{
+            [self
+             openNotificationsWithFeed:[NSString stringWithFormat:@"%@", [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
+        }];
+        
+        [viewController addTitle:@"Statistics" iconName:@"menu_icn_statistics.png" selectionShouldDismiss:YES handler:^{
+            [self
+             openStatisticsWithFeed:[NSString stringWithFormat:@"%@", [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"]]];
+        }];
+        
+        [viewController addTitle:@"Insta-fetch stories" iconName:@"menu_icn_fetch.png" selectionShouldDismiss:YES handler:^{
+            [self instafetchFeed];
+        }];
     }
     
-    NSString *preferenceKey = self.appDelegate.storiesCollection.markReadFilterKey;
-    NSArray *titles = @[@"On scroll or selection", @"Only on selection", @"After 1 second", @"After 2 seconds", @"After 3 seconds", @"After 4 seconds", @"After 5 seconds", @"After 10 seconds", @"After 15 seconds", @"After 30 seconds", @"After 45 seconds", @"After 60 seconds", @"Manually"];
-    NSArray *values = @[ @"scroll", @"selection", @"after1", @"after2", @"after3", @"after4", @"after5", @"after10", @"after15", @"after30", @"after45", @"after60", @"manually"];
-    
-    [viewController addTitle:@"Mark story read…" iconName:@"indicator-unread" iconColor:UIColorFromRGB(0xD58B4F) submenuTitles:titles values:values overrideSelectedValue:self.markReadValue defaultValue:@"scroll" preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(id selectedValue) {
-        // Nothing to do.
-    }];
-    
-    [viewController addSegmentedControlWithTitles:@[@"Newest first", @"Oldest"] selectIndex:[appDelegate.storiesCollection.activeOrder isEqualToString:@"newest"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
-        if (selectedIndex == 0) {
-            [userPreferences setObject:@"newest" forKey:[self.appDelegate.storiesCollection orderKey]];
-        } else {
-            [userPreferences setObject:@"oldest" forKey:[self.appDelegate.storiesCollection orderKey]];
-        }
+    if (!dashboard) {
+        NSString *preferenceKey = self.appDelegate.storiesCollection.markReadFilterKey;
+        NSArray *titles = @[@"On scroll or selection", @"Only on selection", @"After 1 second", @"After 2 seconds", @"After 3 seconds", @"After 4 seconds", @"After 5 seconds", @"After 10 seconds", @"After 15 seconds", @"After 30 seconds", @"After 45 seconds", @"After 60 seconds", @"Manually"];
+        NSArray *values = @[ @"scroll", @"selection", @"after1", @"after2", @"after3", @"after4", @"after5", @"after10", @"after15", @"after30", @"after45", @"after60", @"manually"];
         
-        [self reloadStories];
-    }];
-    
-    if (!dashboard || infrequent || !river) {
-        [viewController addSegmentedControlWithTitles:@[@"All stories", @"Unread only"] selectIndex:[appDelegate.storiesCollection.activeReadFilter isEqualToString:@"all"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+        [viewController addTitle:@"Mark story read…" iconName:@"indicator-unread" iconColor:UIColorFromRGB(0xD58B4F) submenuTitles:titles values:values overrideSelectedValue:self.markReadValue defaultValue:@"scroll" preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(id selectedValue) {
+            // Nothing to do.
+        }];
+        
+        [viewController addSegmentedControlWithTitles:@[@"Newest first", @"Oldest"] selectIndex:[appDelegate.storiesCollection.activeOrder isEqualToString:@"newest"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
             if (selectedIndex == 0) {
-                [userPreferences setObject:@"all" forKey:self.appDelegate.storiesCollection.readFilterKey];
+                [userPreferences setObject:@"newest" forKey:[self.appDelegate.storiesCollection orderKey]];
             } else {
-                [userPreferences setObject:@"unread" forKey:self.appDelegate.storiesCollection.readFilterKey];
+                [userPreferences setObject:@"oldest" forKey:[self.appDelegate.storiesCollection orderKey]];
             }
             
             [self reloadStories];
         }];
+        
+        if (!dashboard || infrequent || !river) {
+            [viewController addSegmentedControlWithTitles:@[@"All stories", @"Unread only"] selectIndex:[appDelegate.storiesCollection.activeReadFilter isEqualToString:@"all"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+                if (selectedIndex == 0) {
+                    [userPreferences setObject:@"all" forKey:self.appDelegate.storiesCollection.readFilterKey];
+                } else {
+                    [userPreferences setObject:@"unread" forKey:self.appDelegate.storiesCollection.readFilterKey];
+                }
+                
+                [self reloadStories];
+            }];
+        }
     }
     
     [appDelegate addSplitControlToMenuController:viewController];
     
-    preferenceKey = self.appDelegate.storiesCollection.storyTitlesPositionKey;
-    
-    if (appDelegate.detailViewController.isPhone) {
-        titles = @[@"List", @"Grid"];
-        values = @[@"titles_on_left", @"titles_in_grid"];
-    } else {
-        titles = @[@"layout-split.png", @"layout-top2.png", @"layout-full.png", @"layout-list.png", @"layout-magazine.png", @"layout-grid.png"];
-        values = @[@"titles_on_left", @"titles_on_top", @"titles_on_bottom", @"titles_in_list", @"titles_in_magazine", @"titles_in_grid"];
-    }
-    
-    [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"titles_on_left" selectValue:self.appDelegate.storiesCollection.activeStoryTitlesPosition preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
-        [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
-    }];
-    
-    if (self.appDelegate.detailViewController.storyTitlesInGrid) {
-        preferenceKey = @"grid_columns";
+    if (!dashboard) {
+        NSString *preferenceKey = self.appDelegate.storiesCollection.storyTitlesPositionKey;
+        NSArray *titles;
+        NSArray *values;
         
         if (appDelegate.detailViewController.isPhone) {
-            titles = @[@"Auto Cols", @"1", @"2"];
-            values = @[@"auto", @"1", @"2"];
+            titles = @[@"List", @"Grid"];
+            values = @[@"titles_on_left", @"titles_in_grid"];
         } else {
-            titles = @[@"Auto Cols", @"1", @"2", @"3", @"4"];
-            values = @[@"auto", @"1", @"2", @"3", @"4"];
+            titles = @[@"layout-split.png", @"layout-top2.png", @"layout-full.png", @"layout-list.png", @"layout-magazine.png", @"layout-grid.png"];
+            values = @[@"titles_on_left", @"titles_on_top", @"titles_on_bottom", @"titles_in_list", @"titles_in_magazine", @"titles_in_grid"];
         }
         
-        [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"auto" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+        [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"titles_on_left" selectValue:self.appDelegate.storiesCollection.activeStoryTitlesPosition preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
             [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
         }];
         
-        preferenceKey = @"grid_height";
-        titles = @[@"XS", @"Short", @"Medium", @"Tall", @"XL"];
-        values = @[@"xs", @"short", @"medium", @"tall", @"xl"];
-        
-        [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"medium" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
-            [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
-        }];
+        if (self.appDelegate.detailViewController.storyTitlesInGrid) {
+            preferenceKey = @"grid_columns";
+            
+            if (appDelegate.detailViewController.isPhone) {
+                titles = @[@"Auto Cols", @"1", @"2"];
+                values = @[@"auto", @"1", @"2"];
+            } else {
+                titles = @[@"Auto Cols", @"1", @"2", @"3", @"4"];
+                values = @[@"auto", @"1", @"2", @"3", @"4"];
+            }
+            
+            [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"auto" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+                [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
+            }];
+            
+            preferenceKey = @"grid_height";
+            titles = @[@"XS", @"Short", @"Medium", @"Tall", @"XL"];
+            values = @[@"xs", @"short", @"medium", @"tall", @"xl"];
+            
+            [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"medium" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+                [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
+            }];
+        }
     }
     
     if (!self.appDelegate.detailViewController.storyTitlesInGrid) {
-        preferenceKey = @"story_list_preview_text_size";
-        titles = @[@"Title", @"content_preview_small.png", @"content_preview_medium.png", @"content_preview_large.png"];
-        values = @[@"title", @"short", @"medium", @"long"];
+        NSString *preferenceKey = @"story_list_preview_text_size";
+        NSArray *titles = @[@"Title", @"content_preview_small.png", @"content_preview_medium.png", @"content_preview_large.png"];
+        NSArray *values = @[@"title", @"short", @"medium", @"long"];
         
         [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
             [self.appDelegate resizePreviewSize];
@@ -2733,9 +2740,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
     
-    preferenceKey = @"feed_list_font_size";
-    titles = @[@"XS", @"S", @"M", @"L", @"XL"];
-    values = @[@"xs", @"small", @"medium", @"large", @"xl"];
+    NSString *preferenceKey = @"feed_list_font_size";
+    NSArray *titles = @[@"XS", @"S", @"M", @"L", @"XL"];
+    NSArray *values = @[@"xs", @"small", @"medium", @"large", @"xl"];
     
     [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
         [self.appDelegate resizeFontSize];

@@ -244,6 +244,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierAlternate action:@selector(selectPreviousFeed:) discoverabilityTitle:@"Previous Site" wantPriority:YES];
     [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:UIKeyModifierShift action:@selector(selectNextFolder:) discoverabilityTitle:@"Next Folder" wantPriority:YES];
     [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierShift action:@selector(selectPreviousFolder:) discoverabilityTitle:@"Previous Folder" wantPriority:YES];
+    [self addKeyCommandWithInput:@"d" modifierFlags:UIKeyModifierCommand action:@selector(selectDashboard:) discoverabilityTitle:@"Open Dashboard"];
     [self addKeyCommandWithInput:@"e" modifierFlags:UIKeyModifierCommand action:@selector(selectEverything:) discoverabilityTitle:@"Open All Stories"];
     [self addKeyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(selectPreviousIntelligence:) discoverabilityTitle:@"Switch Views"];
     [self addKeyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(selectNextIntelligence:) discoverabilityTitle:@"Switch Views"];
@@ -2169,6 +2170,10 @@ heightForHeaderInSection:(NSInteger)section {
     if ([self.feedTitlesTable numberOfRowsInSection:section] > 0) {
         [self.feedTitlesTable scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
     }
+}
+
+- (void)selectDashboard:(id)sender {
+    [self didSelectSectionHeaderWithTag:NewsBlurTopSectionDashboard];
 }
 
 - (void)selectEverything:(id)sender {

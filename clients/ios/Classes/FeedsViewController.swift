@@ -149,6 +149,8 @@ class FeedsViewController: FeedsObjCViewController {
             // Done.
             
             print("Finished loading dashboard: \(appDelegate.feedDetailViewController.storyCache.dashboard)")
+            
+            appDelegate.feedDetailViewController.reload()
             return
         }
         

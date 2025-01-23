@@ -267,13 +267,13 @@
         action == @selector(moveSite:) ||
         action == @selector(openRenameSite:) ||
         action == @selector(deleteSite:)) {
-        return self.isFeedShown && appDelegate.storiesCollection.isCustomFolderOrFeed;
-    } else if (action == @selector(muteSite) || 
+        return self.isFeedShown && !self.isDashboard && appDelegate.storiesCollection.isCustomFolderOrFeed;
+    } else if (action == @selector(muteSite) ||
                action == @selector(muteSite:)) {
-        return self.isFeedShown && !appDelegate.storiesCollection.isRiverView;
+        return self.isFeedShown && !self.isDashboard && !appDelegate.storiesCollection.isRiverView;
     } else if (action == @selector(instaFetchFeed:) ||
                action == @selector(doMarkAllRead:)) {
-        return self.isFeedShown;
+        return self.isFeedShown && !self.isDashboard;
     } else if (action == @selector(showSendTo:) ||
                action == @selector(showTrain:) ||
                action == @selector(showShare:) ||
@@ -648,6 +648,10 @@
 
 - (IBAction)previousFolder:(id)sender {
     [self.appDelegate.feedsViewController selectPreviousFolder:sender];
+}
+
+- (IBAction)openDashboard:(id)sender {
+    [self.appDelegate.feedsViewController selectDashboard:sender];
 }
 
 - (IBAction)openAllStories:(id)sender {

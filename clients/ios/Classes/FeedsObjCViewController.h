@@ -103,6 +103,7 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)selectNextFolderOrFeed;
 
 - (IBAction)selectIntelligence;
+- (void)selectDashboard:(id)sender;
 - (void)selectEverything:(id)sender;
 - (void)selectNextFeed:(id)sender;
 - (void)selectPreviousFeed:(id)sender;
