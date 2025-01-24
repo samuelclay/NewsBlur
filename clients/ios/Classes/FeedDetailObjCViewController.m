@@ -1230,6 +1230,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 #pragma mark Processing Stories
 
 - (void)finishedLoadingFeed:(NSDictionary *)results feedPage:(NSInteger)feedPage feedId:(NSString *)sentFeedId {
+    if (self.dashboardIndex >= 0 && !self.isDashboard) {
+        return;
+    }
+    
     appDelegate.hasLoadedFeedDetail = YES;
     self.isOnline = YES;
     self.isShowingFetching = NO;

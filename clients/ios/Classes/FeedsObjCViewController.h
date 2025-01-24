@@ -110,6 +110,12 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)selectNextFolder:(id)sender;
 - (void)selectPreviousFolder:(id)sender;
 
+- (void)selectWidgetStories;
+
+- (void)selectFolder:(NSString *)folder;
+- (void)selectFeed:(NSString *)feedId inFolder:(NSString *)folder;
+
+
 - (void)markFeedRead:(NSString *)feedId cutoffDays:(NSInteger)days;
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days;
 - (void)markEverythingReadWithDays:(NSInteger)days;
@@ -135,8 +141,6 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)fadeSelectedCell;
 - (void)fadeFeed:(NSString *)feedId;
 - (IBAction)tapAddSite:(id)sender;
-
-- (void)selectWidgetStories;
 
 - (void)reloadFeedTitlesTable;
 - (void)resetToolbar;

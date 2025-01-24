@@ -105,9 +105,20 @@ class FeedsViewController: FeedsObjCViewController {
         return parentTitles
     }
     
+    var dashboardTimer: Timer?
+    
     @objc func clearDashboard() {
         appDelegate.feedDetailViewController.dashboardIndex = -1
         appDelegate.detailViewController.storyTitlesInDashboard = false
+        
+        dashboardTimer?.invalidate()
+        dashboardTimer = nil
+    }
+    
+    @objc func reloadDashboard() {
+        appDelegate.feedDetailViewController.dashboardIndex = -1
+        
+        immediatelyLoadNextDash(prepare: false)
     }
     
     @objc func loadDashboard() {
@@ -116,7 +127,13 @@ class FeedsViewController: FeedsObjCViewController {
         } else if appDelegate.feedDetailViewController.dashboardIndex >= 0 {
             deferredLoadNextDash()
         } else {
-            immediatelyLoadNextDash()
+            let frequency: TimeInterval = 5 * 60
+            
+            dashboardTimer?.invalidate()
+            dashboardTimer = Timer.scheduledTimer(timeInterval: frequency, target: self, selector: #selector(reloadDashboard), userInfo: nil, repeats: true
+            )
+            
+            immediatelyLoadNextDash(prepare: true)
         }
     }
     
@@ -126,18 +143,18 @@ class FeedsViewController: FeedsObjCViewController {
         dashWorkItem?.cancel()
         
         let workItem = DispatchWorkItem { [weak self] in
-            guard let self else {
+            guard let self, isDashboard else {
                 return
             }
             
-            immediatelyLoadNextDash()
+            immediatelyLoadNextDash(prepare: true)
         }
         
         dashWorkItem = workItem
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5), execute: workItem)
     }
     
-    private func immediatelyLoadNextDash() {
+    private func immediatelyLoadNextDash(prepare: Bool) {
         appDelegate.feedDetailViewController.storyCache.reloadDashboard(for: appDelegate.feedDetailViewController.dashboardIndex)
         
         appDelegate.feedDetailViewController.dashboardIndex += 1
@@ -145,7 +162,9 @@ class FeedsViewController: FeedsObjCViewController {
         let index = appDelegate.feedDetailViewController.dashboardIndex
         
         if index == 0 {
-            appDelegate.feedDetailViewController.storyCache.prepareDashboard()
+            if prepare {
+                appDelegate.feedDetailViewController.storyCache.prepareDashboard()
+            }
         } else if index >= appDelegate.dashboardArray.count {
             // Done.
             

@@ -334,6 +334,14 @@ extension FeedDetailViewController: FeedDetailInteraction {
         instafetchFeed()
     }
     
+    func tapped(dash: DashList) {
+        if dash.isFolder {
+            appDelegate.feedsViewController.selectFolder(dash.folderId)
+        } else if let feedId = dash.feedId {
+            appDelegate.feedsViewController.selectFeed(feedId, inFolder: dash.folderId)
+        }
+    }
+    
     func visible(story: Story) {
         print("🐓 Visible: \(story.debugTitle)")
         
@@ -365,6 +373,11 @@ extension FeedDetailViewController: FeedDetailInteraction {
         
         print("🪿 Tapped \(story.debugTitle)")
         
+        if isDashboard {
+            tappedDashboard(story: story)
+            return
+        }
+        
         let indexPath = IndexPath(row: story.index, section: 0)
         
         suppressMarkAsRead = true
@@ -374,6 +387,14 @@ extension FeedDetailViewController: FeedDetailInteraction {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.suppressMarkAsRead = false
         }
+    }
+    
+    func tappedDashboard(story: Story) {
+//        guard let feedId = story.feed?.id else {
+//            return
+//        }
+        
+        //TODO: 🚧
     }
     
     func reading(story: Story) {
