@@ -28,8 +28,8 @@ import Foundation
     var feeds = [Feed]()
     var stories = [Story]()
     
-    var isLoaded: Bool {
-        return folder != nil
+    var hasStories: Bool {
+        return !stories.isEmpty
     }
     
     var isFolder: Bool {
@@ -62,6 +62,16 @@ import Foundation
         self.order = order
         self.feedId = feedId
         self.folderId = folderId
+        
+        load()
+    }
+    
+    func load() {
+        if isFolder {
+            folder = Folder(id: folderId)
+        } else if let feedId {
+            feeds = [Feed(id: feedId)]
+        }
     }
 }
 
@@ -69,7 +79,7 @@ extension DashList: @preconcurrency CustomStringConvertible {
     var description: String {
         let base = "DashList index: \(index), side: \(side), order: \(order)"
         
-        if isLoaded {
+        if hasStories {
             if isFolder {
                 return "\(base), folder: `\(folder?.name ?? "none")` (\(folderId)) contains \(feeds.count) feeds with \(stories.count) stories"
             } else {

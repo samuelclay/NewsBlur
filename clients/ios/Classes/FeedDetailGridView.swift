@@ -15,6 +15,7 @@ import SwiftUI
     var isMarkReadOnScroll: Bool { get }
     
     func pullToRefresh()
+    func tapped(dash: DashList)
     func visible(story: Story)
     func tapped(story: Story)
     func reading(story: Story)

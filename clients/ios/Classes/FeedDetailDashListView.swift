@@ -58,7 +58,7 @@ struct DashListHeaderView: View {
         .frame(height: 50)
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .onTapGesture {
-//            interaction.hid(story: story)
+            interaction.tapped(dash: dash)
         }
     }
 }
@@ -72,7 +72,7 @@ struct DashListStoriesView: View {
     
     var body: some View {
         VStack(alignment: .center) {
-            if dash.isLoaded {
+            if dash.hasStories {
                 ForEach(dash.stories) { story in
                     CardView(feedDetailInteraction: interaction, cache: cache, story: story)
                 }
