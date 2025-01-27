@@ -93,6 +93,20 @@ def save_classifier(request):
                         classifier = ClassifierCls.objects.get(**classifier_dict)
                     except ClassifierCls.DoesNotExist:
                         classifier = None
+                    except ClassifierCls.MultipleObjectsReturned:
+                        classifiers = ClassifierCls.objects.filter(**classifier_dict)
+                        for classifier in classifiers:
+                            # Update the score of the first classifier, delete the others, but don't delete more than 1
+                            first_classifier = classifiers[0]
+                            first_classifier.score = score
+                            first_classifier.save()
+                            for classifier in classifiers[1:]:
+                                classifier.delete()
+                                break
+                            logging.info(
+                                f"Updated classifier {first_classifier.id} and deleted one duplicate."
+                            )
+                            continue
                     if not classifier:
                         try:
                             classifier_dict.update(dict(score=score))
