@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.urls import path
 
 from apps.monitor.views import (
     AppServers,
@@ -17,6 +18,7 @@ from apps.monitor.views import (
     TasksTimes,
     Updates,
     Users,
+    UserSearches,
 )
 
 urlpatterns = [
@@ -36,4 +38,5 @@ urlpatterns = [
     url(r"^task-times?$", TasksTimes.as_view(), name="task_times"),
     url(r"^updates?$", Updates.as_view(), name="updates"),
     url(r"^users?$", Users.as_view(), name="users"),
+    url(r"^user-searches?$", UserSearches.as_view(), name="user_searches"),
 ]
