@@ -25,9 +25,15 @@ description: > # this means to ignore newlines until "baseurl:"
   NewsBlur is a personal news reader that brings people together to talk about the world.
 
   A new sound of an old instrument.
+
+# Use environment variable to switch between production and development URLs
+url: "https://blog.newsblur.com" # Production URL
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://blog.newsblur.com" # the base hostname & protocol for your site, e.g. http://example.com
-site.url: "https://blog.newsblur.com" # the base hostname & protocol for your site, e.g. http://example.com
+
+# Add development settings override
+development:
+  url: "http://localhost:4000"
+
 permalink: pretty
 twitter_username: newsblur
 github_username: samuelclay
