@@ -35,7 +35,7 @@
 - [PostgreSQL](http://www.postgresql.com): Relational database, used to store feeds,
   subscriptions, and user accounts.
 - [Redis](http://redis.io): Programmer's database, used to assemble stories for the river, store story ids, manage feed fetching schedules, and the minuscule bit of caching that NewsBlur uses.
-- [Elasticsearch](http://elasticsearch.org): Search database, use for searching stories. Optional.
+- [Elasticsearch](http://elasticsearch.org): Search database, used for searching stories. Optional.
 
 ### Client-side and design
 
