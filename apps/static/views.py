@@ -131,3 +131,7 @@ def redis_check(request):
     if key:
         return HttpResponse(unicode(key))
     assert False, "Cannot read from redis-%s database" % pool
+
+
+def health_check(request):
+    return HttpResponse("OK")
