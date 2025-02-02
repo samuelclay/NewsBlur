@@ -114,14 +114,14 @@
       git:
         repo: https://github.com/samuelclay/NewsBlur.git
         dest: /srv/newsblur/
-        version: blue-green-deploy
+        version: master
       register: pulled
       tags:
         - static
 
-    - name: Run new Docker container with temporary name
+    - name: Start backup container on port 8001
       docker_container:
-        name: newsblur_web_new
+        name: newsblur_web_backup
         image: newsblur/newsblur_python3
         container_default_behavior: no_defaults
         pull: yes
@@ -139,22 +139,35 @@
           - name: newsblurnet
         ports:
           - "8001:8000"
-        restart_policy: unless-stopped
+        restart_policy: no
         user: 1000:1001
         volumes:
           - /srv/newsblur:/srv/newsblur
 
-    - name: Wait for new temp container to be healthy
+    - name: Wait for backup container to be healthy
       uri:
-        url: "http://localhost:8001/health-check"
+        url: "http://localhost:8001/_haproxychk"
         status_code: 200
-        validate_certs: no
-      register: result
+      register: result_8001
       retries: 10
       delay: 5
-      until: result.status == 200
+      until: result_8001.status == 200
 
-    - name: Run new Docker container with original name
+    - name: Wait 20 seconds
+      pause:
+        seconds: 20
+
+    - name: Stop primary container
+      docker_container:
+        name: newsblur_web
+        state: stopped
+        container_default_behavior: no_defaults
+
+    - name: Wait 20 seconds more for fun
+      pause:
+        seconds: 20
+
+    - name: Deploy new container
       docker_container:
         name: newsblur_web
         image: newsblur/newsblur_python3
@@ -164,8 +177,6 @@
           DOCKERBUILD: ""
         state: started
         command: gunicorn --config /srv/newsblur/config/gunicorn_conf.py newsblur_web.wsgi:application
-        env:
-          TEMP8001: "true"
         hostname: "{{ inventory_hostname }}"
         log_driver: json-file
         log_options:
@@ -180,21 +191,25 @@
         user: 1000:1001
         volumes:
           - /srv/newsblur:/srv/newsblur
-  
-    - name: Wait for new original container to be healthy
+
+    - name: Wait for new container to be healthy
       uri:
-        url: "http://localhost:8000/health-check"
+        url: "http://localhost:8000/_haproxychk"
         status_code: 200
-        validate_certs: no
-      register: result
+      register: result_8000
       retries: 10
       delay: 5
-      until: result.status == 200
+      until: result_8000.status == 200
 
-    - name: Stop and remove temp Docker container
+    - name: Wait 20 seconds one last time
+      pause:
+        seconds: 20
+
+    - name: Stop and remove backup container
       docker_container:
-        name: "newsblur_web_new"
+        name: newsblur_web_backup
         state: absent
+        container_default_behavior: no_defaults
 
     - name: Start Consul
       become: yes
