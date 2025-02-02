@@ -68,16 +68,16 @@ down:
 	RUNWITHMAKEBUILD=True docker compose -f docker-compose.yml -f docker-compose.metrics.yml down
 nbdown: down
 jekyll:
-	cd blog && bundle exec jekyll serve
+	cd blog && JEKYLL_ENV=production bundle exec jekyll serve --config _config.yml
 jekyll_drafts:
-	cd blog && bundle exec jekyll serve --drafts
+	cd blog && JEKYLL_ENV=production bundle exec jekyll serve --drafts --config _config.yml
 lint:
 	docker exec -it newsblur_web isort --profile black .
 	docker exec -it newsblur_web black --line-length 110 .
 	docker exec -it newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv
 
 jekyll_build:
-	cd blog && bundle exec jekyll build
+	cd blog && JEKYLL_ENV=production bundle exec jekyll build
 	
 # runs tests
 test:
