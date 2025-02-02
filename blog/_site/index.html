@@ -64,7 +64,35 @@
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
         <div class="home">
-    <ul class="post-list"><li><span class="post-meta">Oct 22, 2024</span>
+    <ul class="post-list"><li><span class="post-meta">Jan 28, 2025</span>
+        <h3>
+          <a class="post-link" href="/2025/01/28/discover-related-stories-and-sites/">
+            Discover related stories and sites
+          </a>
+        </h3>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>I want to introduce you to the new Discover Stories and Discover Sites features. Sometimes you’re reading a story and want to know everything there is to know about that topic. You want other stories, but depending on the topic, you might want them from the same site, from similar sites, or from all of your subscriptions. That’s the new Discover Stories feature, and it’s only for NewsBlur Premium Archive subscribers. The Premium Archive subscription is meant for this use case of being able to peer deeply into your story archive and not just what’s been published in the last month.</p>
+
+<p>Second I’m introducing Discover Sites, which is available at the top of every feed and folder to everybody, both free and premium users. Having tried all of the competing discover sites features, I built the popover dialog that has all the features I wanted. It’s an infinite scroll of related sites, showing the most recent five stories, formatted exactly as your story titles are personally styled. You can read stories from unsubscribed feeds and easily subscribe to them while scrolling through the discover stories dialog.</p>
+
+<p><img src="/assets/discover-1.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
+
+<p>Here’s a set of features I’ve been wanting to build since the very first days of NewsBlur in 2009. I built prototypes of this feature using a few of the modern text tools at the time: nltk (the natural language toolkit), support vector machines, and LDA (Latent Dirichlet Allocation) to group stories by topic. It didn’t work, or it was too slow, and even then not accurate enough. I read the tea leaves and could tell a better tool would come out eventually that was basically a drop-in classifier and topic grouper. Out came word embeddings (word2vec initially, then <a href="https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2">sentence transformers</a>). And now those transformers are available basically for free.</p>
+
+<p><img src="/assets/discover-3.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
+
+<p>As you can see, this isn’t your normal related stories feature. It shows all of the related stories, segmented by the folders that a site is a part of. This folder control allows you to filter down to an individual site and up to every feed you subscribe to when finding related stories.</p>
+
+<p><img src="/assets/discover-2.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
+
+<p>Above we see that Discover Sites is right on the money. An infinite scroll of related sites, showing story previews, and multiple interaction points that let you choose between trying out a site by reading one of the stories, adding it directly to a folder, or checking the statistics of the site. The stats dialog is great in this case because it gives you a feel for what other people like and dislike about the site.</p>
+
+<p>I’m super proud of this release; it took years to build and a decade to plan. And while the Discover Stories feature is technically only available to Premium Archive subscribers, you can see related stories if another Premium Archive subscriber is subscribed to that site. I don’t think hiding those stories from free and premium users is worthwhile.</p>
+
+<p>Please post your feedback on the <a href="https://forum.newsblur.com">NewsBlur forum</a>, ideally as an “idea,” but you know I love responding to all feedback. For every person who writes up their thoughts on the forum, there are ten people who are thinking the same thing, so it’s worthwhile to hear from you, knowing the multiplier it represents.</p>
+
+        </div>
+      </li><li><span class="post-meta">Oct 22, 2024</span>
         <h3>
           <a class="post-link" href="/2024/10/22/newsblur-macos-app/">
             NewsBlur&#39;s native macOS App offers news notifications directly on your desktop
@@ -500,41 +528,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
 </ul>
 
 <p>If you would like to request a new feature on Android, please submit an idea on the <a href="https://forum.newsblur.com">NewsBlur Forum</a>. We’re prioritizing the next big release and would love to hear your input.</p>
-
-
-        </div>
-      </li><li><span class="post-meta">Oct 28, 2020</span>
-        <h3>
-          <a class="post-link" href="/2020/10/28/customizable-grid-view-story-layout/">
-            Customizable grid view story layout
-          </a>
-        </h3>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>The grid view has quickly become one of my go-to story title views. It provides generous, clickable boxes with enlarged images and plenty of preview text. But until now, they were limited to a preset height.</p>
-
-<p>Starting today, you can now change the height of stories in the grid view. You have five options to choose from: XS, Small, Medium, Large, and XL.</p>
-
-<figure class="tmblr-full" data-orig-height="761" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_style.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="761" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_style.png" /></figure>
-
-<p>Here are a few examples of how you can customize the grid view.</p>
-
-<p>With the single column layout:</p>
-
-<figure class="tmblr-full" data-orig-height="966" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_1.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="966" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_1.png" /></figure>
-
-<p>With the 2 column layout:</p>
-
-<figure class="tmblr-full" data-orig-height="938" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_2.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="938" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_2.png" /></figure>
-
-<p>With the 3 column layout:</p>
-
-<figure class="tmblr-full" data-orig-height="715" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_3.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="715" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_3.png" /></figure>
-
-<p>With the 4 column layout:</p>
-
-<figure class="tmblr-full" data-orig-height="957" data-orig-width="1000" data-orig-src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_4.png"><img width="600" style="width:600px;margin: 24px auto; border: 1px solid #606060" data-orig-height="957" data-orig-width="1000" src="https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_4.png" /></figure>
-
-<p>Don’t forget you can also adjust the font size and even turn off image previews.</p>
 
 
         </div>
