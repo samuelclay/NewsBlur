@@ -129,8 +129,6 @@
           DOCKERBUILD: ""
         state: started
         command: gunicorn --config /srv/newsblur/config/gunicorn_conf.py newsblur_web.wsgi:application
-        env:
-          TEMP8001: "true"
         hostname: "{{ inventory_hostname }}"
         log_driver: json-file
         log_options:
