@@ -114,33 +114,41 @@
       git:
         repo: https://github.com/samuelclay/NewsBlur.git
         dest: /srv/newsblur/
-        version: master
+        version: blue-green-deploy
       register: pulled
       tags:
         - static
 
     - name: Run new Docker container with temporary name
       docker_container:
-        name: "newsblur_web_new"
-        image: "newsblur/newsblur_web:latest"
-        pull: true
+        name: newsblur_web_new
+        image: newsblur/newsblur_python3
+        container_default_behavior: no_defaults
+        pull: yes
+        env:
+          DOCKERBUILD: ""
         state: started
-        restart_policy: always
-        command: "gunicorn newsblur.wsgi:application --bind :8000 --workers 4"
-        hostname: "newsblur_web_new"
+        command: gunicorn --config /srv/newsblur/config/gunicorn_conf.py newsblur_web.wsgi:application
+        env:
+          TEMP8001: "true"
+        hostname: "{{ inventory_hostname }}"
+        log_driver: json-file
+        log_options:
+          max-size: 100m
+        networks_cli_compatible: yes
+        network_mode: default
         networks:
-          - name: newsblur-network
+          - name: newsblurnet
         ports:
-          - "8001:8000" # Use different port for new instance
+          - "8001:8000"
+        restart_policy: unless-stopped
+        user: 1000:1001
         volumes:
           - /srv/newsblur:/srv/newsblur
-          - /etc/nginx/sites-enabled:/etc/nginx/sites-enabled
-          - /etc/nginx/sites-available:/etc/nginx/sites-available
-          - /srv/secrets-newsblur:/srv/secrets-newsblur
 
     - name: Wait for new temp container to be healthy
       uri:
-        url: "http://localhost:8001/api/health-check" # Add health check endpoint
+        url: "http://localhost:8001/health-check"
         status_code: 200
         validate_certs: no
       register: result
@@ -150,26 +158,34 @@
 
     - name: Run new Docker container with original name
       docker_container:
-        name: "newsblur_web"
-        image: "newsblur/newsblur_web:latest"
-        pull: true
+        name: newsblur_web
+        image: newsblur/newsblur_python3
+        container_default_behavior: no_defaults
+        pull: yes
+        env:
+          DOCKERBUILD: ""
         state: started
-        restart_policy: always
-        command: "gunicorn newsblur.wsgi:application --bind :8000 --workers 4"
-        hostname: "newsblur_web"
+        command: gunicorn --config /srv/newsblur/config/gunicorn_conf.py newsblur_web.wsgi:application
+        env:
+          TEMP8001: "true"
+        hostname: "{{ inventory_hostname }}"
+        log_driver: json-file
+        log_options:
+          max-size: 100m
+        networks_cli_compatible: yes
+        network_mode: default
         networks:
-          - name: newsblur-network
+          - name: newsblurnet
         ports:
           - "8000:8000"
+        restart_policy: unless-stopped
+        user: 1000:1001
         volumes:
           - /srv/newsblur:/srv/newsblur
-          - /etc/nginx/sites-enabled:/etc/nginx/sites-enabled
-          - /etc/nginx/sites-available:/etc/nginx/sites-available
-          - /srv/secrets-newsblur:/srv/secrets-newsblur
-
+  
     - name: Wait for new original container to be healthy
       uri:
-        url: "http://localhost:8000/api/health-check"
+        url: "http://localhost:8000/health-check"
         status_code: 200
         validate_certs: no
       register: result
