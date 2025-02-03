@@ -5,6 +5,9 @@
   # serial: "50%"
   vars_files:
     - ../env_vars/base.yml
+    - roles/letsencrypt/defaults/main.yml
+  vars:
+    haproxy_host: "{{ 'hstaging' if 'staging' in inventory_hostname else 'hwww' }}"
 
   tasks:
     # - name: Leave consul
@@ -119,21 +122,151 @@
       tags:
         - static
 
-    - name: Reload gunicorn due to no git upstream changes
-      become: yes
+    - name: Start backup container on port 8001
+      docker_container:
+        name: newsblur_web_backup
+        image: newsblur/newsblur_python3
+        container_default_behavior: no_defaults
+        pull: yes
+        env:
+          DOCKERBUILD: ""
+        state: started
+        command: gunicorn --config /srv/newsblur/config/gunicorn_conf.py newsblur_web.wsgi:application
+        hostname: "{{ inventory_hostname }}"
+        log_driver: json-file
+        log_options:
+          max-size: 100m
+        networks_cli_compatible: yes
+        network_mode: default
+        networks:
+          - name: newsblurnet
+        ports:
+          - "8001:8000"
+        restart_policy: no
+        user: 1000:1001
+        volumes:
+          - /srv/newsblur:/srv/newsblur
+
+    - name: Wait for backup container to be healthy
+      uri:
+        url: "http://localhost:8001/_haproxychk"
+        status_code: 200
+      register: result_8001
+      retries: 10
+      delay: 5
+      until: result_8001.status == 200
+
+    - name: Update HAProxy config to use backup server
+      delegate_to: "{{ haproxy_host }}"
+      run_once: true
       block:
-        - name: Find gunicorn process
-          shell: "ps -C gunicorn fch -o pid | head -n 1"
-          register: psaux
-        - name: Reload gunicorn
-          command: "kill -HUP {{ psaux.stdout }}"
-      # Only restart if there were no changes to the git repo or the static tag was applied
-      when: not pulled.changed or "'static' in ansible_playbook_tag"
-      rescue:
-        - name: Restart Docker Container
-          command: "docker restart newsblur_web"
-      tags:
-        - static
+        - name: Generate temporary HAProxy config with backup server
+          template:
+            src: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.j2
+            dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.new
+          when: disable_consul_services_ie_staging is not defined
+          vars:
+            maintenance_mode: true
+
+        - name: Generate temporary HAProxy config with backup server
+          template:
+            src: /srv/newsblur/docker/haproxy/haproxy.staging.cfg
+            dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.new
+          when: disable_consul_services_ie_staging is defined
+          vars:
+            maintenance_mode: true
+
+        - name: Verify new HAProxy config
+          shell: docker exec haproxy haproxy -c -f /srv/newsblur/docker/haproxy/haproxy.consul.cfg.new
+          register: haproxy_verified
+          failed_when: haproxy_verified.rc != 0
+
+        - name: Replace active HAProxy config
+          command: mv /srv/newsblur/docker/haproxy/haproxy.consul.cfg.new /srv/newsblur/docker/haproxy/haproxy.consul.cfg
+
+        - name: Reload HAProxy configuration
+          shell: "docker kill -s HUP haproxy"
+
+        - name: Wait for HAProxy to start using new configuration
+          pause:
+            seconds: 2
+
+    - name: Stop primary container
+      docker_container:
+        name: newsblur_web
+        state: stopped
+        container_default_behavior: no_defaults
+
+    - name: Deploy new container
+      docker_container:
+        name: newsblur_web
+        image: newsblur/newsblur_python3
+        container_default_behavior: no_defaults
+        pull: yes
+        env:
+          DOCKERBUILD: ""
+        state: started
+        command: gunicorn --config /srv/newsblur/config/gunicorn_conf.py newsblur_web.wsgi:application
+        hostname: "{{ inventory_hostname }}"
+        log_driver: json-file
+        log_options:
+          max-size: 100m
+        networks_cli_compatible: yes
+        network_mode: default
+        networks:
+          - name: newsblurnet
+        ports:
+          - "8000:8000"
+        restart_policy: unless-stopped
+        user: 1000:1001
+        volumes:
+          - /srv/newsblur:/srv/newsblur
+
+    - name: Wait for new container to be healthy
+      uri:
+        url: "http://localhost:8000/_haproxychk"
+        status_code: 200
+      register: result_8000
+      retries: 10
+      delay: 5
+      until: result_8000.status == 200
+
+    - name: Update HAProxy config to use new server
+      delegate_to: "{{ haproxy_host }}"
+      run_once: true
+      block:
+        - name: Generate temporary HAProxy config with new server
+          template:
+            src: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.j2
+            dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.new
+          when: disable_consul_services_ie_staging is not defined
+          vars:
+            maintenance_mode: false
+
+        - name: Generate temporary HAProxy config with new server
+          template:
+            src: /srv/newsblur/docker/haproxy/haproxy.staging.cfg
+            dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.new
+          when: disable_consul_services_ie_staging is defined
+          vars:
+            maintenance_mode: false
+
+        - name: Verify new HAProxy config
+          shell: docker exec haproxy haproxy -c -f /srv/newsblur/docker/haproxy/haproxy.consul.cfg.new
+          register: haproxy_verified
+          failed_when: haproxy_verified.rc != 0
+
+        - name: Replace active HAProxy config
+          command: mv /srv/newsblur/docker/haproxy/haproxy.consul.cfg.new /srv/newsblur/docker/haproxy/haproxy.consul.cfg
+
+        - name: Reload HAProxy configuration
+          shell: "docker kill -s HUP haproxy"
+
+    - name: Stop and remove backup container
+      docker_container:
+        name: newsblur_web_backup
+        state: absent
+        container_default_behavior: no_defaults
 
     - name: Start Consul
       become: yes

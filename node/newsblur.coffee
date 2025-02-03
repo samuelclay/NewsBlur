@@ -1,5 +1,6 @@
 Sentry = require "@sentry/node"
-Tracing = require "@sentry/tracing"
+Integrations = require("@sentry/integrations")
+{ ProfilingIntegration } = require "@sentry/profiling-node"
 app = require('express')()
 server = require('http').createServer(app)
 log    = require './log.js'
@@ -24,25 +25,22 @@ if not ENV_DEV and not ENV_PROD and not ENV_DOCKER
   throw new Error("Set envvar NODE_ENV=<development,docker,production>")
 
 if ENV_PROD
-  Sentry.init
+  Sentry.init({
     dsn: process.env.SENTRY_DSN,
     debug: true,
-    tracesSampleRate: 1.0
+    tracesSampleRate: 1.0,
     serverName: process.env.SERVER_NAME
+  })
 
-  app.use Sentry.Handlers.requestHandler()
+  app.get "/debug", (req, res) ->
+    throw new Error("Debugging Sentry")
+
+  log.debug "Setting up Sentry debugging: #{process.env.SENTRY_DSN?.substr(0, 20)}..."
 
 original_page app
 original_text app
 favicons app
 unread_counts server
-
-if ENV_PROD
-  app.get "/debug", (req, res) ->
-    throw new Error("Debugging Sentry")
-
-  app.use Sentry.Handlers.errorHandler()
-  log.debug "Setting up Sentry debugging: #{process.env.SENTRY_DSN.substr(0, 20)}..."
 
 log.debug "Starting NewsBlur Node Server: #{process.env.SERVER_NAME || 'localhost'}"
 server.listen(8008)
