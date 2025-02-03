@@ -16,6 +16,8 @@ Here’s a set of features I’ve been wanting to build since the very first day
 
 As you can see, this isn’t your normal related stories feature. It shows all of the related stories, segmented by the folders that a site is a part of. This folder control allows you to filter down to an individual site and up to every feed you subscribe to when finding related stories.
 
+And it's important to note that none of the data presented in the Discover Stories or Discover Sites dialog is trained on your personal data, like feeds that other people subscribe to in relation to any particular site. All of the data is extracted and grouped by the content of the RSS feed's title, description, and the titles of the first few stories. 
+
 <img src="/assets/discover-2.png"  style="width: 100%;border: none;margin: 24px auto;display: block;">
 
 Above we see that Discover Sites is right on the money. An infinite scroll of related sites, showing story previews, and multiple interaction points that let you choose between trying out a site by reading one of the stories, adding it directly to a folder, or checking the statistics of the site. The stats dialog is great in this case because it gives you a feel for what other people like and dislike about the site.
