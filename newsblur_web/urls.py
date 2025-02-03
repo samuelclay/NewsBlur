@@ -84,6 +84,7 @@ urlpatterns = [
     url(r"^account/ifttt/v1/", include("apps.oauth.urls")),
     url(r"^account/", include("oauth2_provider.urls", namespace="oauth2_provider")),
     url(r"^monitor/", include("apps.monitor.urls"), name="monitor"),
+    url(r"^health-check/?", static_views.health_check, name="health-check"),
     url("", include("django_prometheus.urls")),
 ]
 

@@ -50,6 +50,11 @@ scrape_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/app-times
       scheme: https
+    - job_name: 'user_searches'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/user-searches
+      scheme: https
     - job_name: 'classifiers'
       static_configs:
         - targets: ['{{ monitor_server }}']
