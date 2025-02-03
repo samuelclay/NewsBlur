@@ -5,6 +5,7 @@
   # serial: "50%"
   vars_files:
     - ../env_vars/base.yml
+    - roles/letsencrypt/defaults/main.yml
   vars:
     haproxy_host: "{{ 'hstaging' if 'staging' in inventory_hostname else 'hwww' }}"
 
@@ -232,6 +233,7 @@
 
     - name: Update HAProxy config to use new server
       delegate_to: "{{ haproxy_host }}"
+      run_once: true
       block:
         - name: Generate temporary HAProxy config with new server
           template:
