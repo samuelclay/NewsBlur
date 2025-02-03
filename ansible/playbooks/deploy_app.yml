@@ -157,6 +157,7 @@
 
     - name: Update HAProxy config to use backup server
       delegate_to: "{{ haproxy_host }}"
+      run_once: true
       block:
         - name: Generate temporary HAProxy config with backup server
           template:
@@ -185,9 +186,9 @@
         - name: Reload HAProxy configuration
           shell: "docker kill -s HUP haproxy"
 
-    - name: Wait for HAProxy to start using new configuration
-      pause:
-        seconds: 2
+        - name: Wait for HAProxy to start using new configuration
+          pause:
+            seconds: 2
 
     - name: Stop primary container
       docker_container:
