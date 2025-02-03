@@ -115,4 +115,6 @@ unread_counts = (server) =>
     io.sockets.on 'error', (err) ->
         log.debug "Error (sockets): #{err}"
 
+    return io
+
 exports.unread_counts = unread_counts
