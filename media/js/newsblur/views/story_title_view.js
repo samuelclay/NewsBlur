@@ -594,7 +594,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             return;
         } else if (this.options.on_discover_feed) {
             console.log(['clicked story in discover feed', this.model, this.options.on_discover_feed, this.options.in_popover]);
-            var is_subscribed = this.options.on_discover_feed.feed.is_subscribed();
+            var is_subscribed = this.options.on_discover_feed.feed && this.options.on_discover_feed.feed.is_subscribed();
             if (is_subscribed) {
                 NEWSBLUR.reader.open_feed(this.model.get('story_feed_id'), {
                     'story_id': this.model.get('story_hash')
