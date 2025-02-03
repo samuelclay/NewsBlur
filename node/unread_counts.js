@@ -124,9 +124,10 @@
         return log.info(this.username, `Disconnect (${(ref1 = this.feeds) != null ? ref1.length : void 0} feeds, ${ip}),` + ` there are now ${io.engine.clientsCount} users. ` + ` ${SECURE ? "(SSL)" : "(non-SSL)"}`);
       });
     });
-    return io.sockets.on('error', function(err) {
+    io.sockets.on('error', function(err) {
       return log.debug(`Error (sockets): ${err}`);
     });
+    return io;
   };
 
   exports.unread_counts = unread_counts;
