@@ -33,14 +33,43 @@ unread_counts = (server) =>
     else
         log.debug "Running as production server"
         
-    io = require('socket.io')(server, path: "/v3/socket.io")
+    # Create Redis clients for Socket.IO adapter
+    pub_client = redis.createClient(REDIS_PORT, REDIS_SERVER)
+    sub_client = redis.createClient(REDIS_PORT, REDIS_SERVER)
 
-    # io.set('transports', ['websocket'])
+    io = require('socket.io')(server, {
+        path: "/v3/socket.io",
+        pingTimeout: 60000,        # Increase ping timeout to 60 seconds
+        pingInterval: 25000,       # Send ping every 25 seconds
+        connectTimeout: 45000,     # Connection timeout
+        transports: ['websocket'], # Prefer websocket transport
+        adapter: require('@socket.io/redis-adapter').createAdapter(pub_client, sub_client)
+    })
 
-    # io.set 'store', new RedisStore
-    #     redisPub    : rpub
-    #     redisSub    : rsub
-    #     redisClient : rclient
+    # Handle Redis adapter client errors
+    pub_client.on "error", (err) ->
+        log.debug "Redis Pub Error: #{err}"
+        
+    sub_client.on "error", (err) ->
+        log.debug "Redis Sub Error: #{err}"
+
+    # Setup Redis error handling and reconnection
+    setup_redis_client = (socket, username) ->
+        client = redis.createClient({
+            host: REDIS_SERVER,
+            port: REDIS_PORT,
+            retry_strategy: (options) ->
+                return Math.min(options.attempt * 100, 3000)
+        })
+        
+        client.on "error", (err) =>
+            log.info username, "Redis Error: #{err}"
+            # Don't quit on error, let retry strategy handle it
+            
+        client.on "reconnecting", (attempt) =>
+            log.info username, "Redis reconnecting... Attempt #{attempt}"
+            
+        return client
 
     io.on 'connection', (socket) ->
         ip = socket.handshake.headers['X-Forwarded-For'] || socket.handshake.address
@@ -52,14 +81,13 @@ unread_counts = (server) =>
             
             if not @username
                 return
-            
+                
             socket.on "error", (err) ->
                 log.debug "Error (socket): #{err}"
+                
             socket.subscribe?.quit()
-            socket.subscribe = redis.createClient REDIS_PORT, REDIS_SERVER
-            socket.subscribe.on "error", (err) =>
-                log.info @username, "Error: #{err} (#{@feeds.length} feeds)"
-                socket.subscribe?.quit()
+            socket.subscribe = setup_redis_client(socket, @username)
+            
             socket.subscribe.on "connect", =>
                 log.info @username, "Connected (#{@feeds.length} feeds, #{ip})," +
                         " (#{io.engine.clientsCount} connected) " +
