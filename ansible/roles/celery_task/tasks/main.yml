@@ -54,7 +54,7 @@
       - /etc/hosts:/etc/hosts
   with_items:
     - container_name: "task-celery"
-      command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds,search_indexer,discover_indexer"
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q discover_indexer,search_indexer,new_feeds,push_feeds,update_feeds"
       when: "{{ inventory_hostname == 'htask-celery-10' }}"
     - container_name: "task-celery"
       command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds,search_indexer"

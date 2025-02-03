@@ -11,5 +11,3 @@
   when: '"postgres" in group_names or "mongo" in group_names or "redis" in group_names or "elasticsearch" in group_names'
 - import_playbook: playbooks/deploy_task.yml
   when: "'task' in group_names"
-- import_playbook: playbooks/deploy_staging.yml
-  when: "'staging' in group_names"

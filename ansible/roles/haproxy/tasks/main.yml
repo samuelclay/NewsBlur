@@ -1,5 +1,4 @@
 ---
-
 - name: Allow haproxy port 80
   become: yes
   ufw: rule=allow port=80
@@ -44,7 +43,7 @@
 - name: Merge facts
   set_fact:
     updated_config: "{{ updated_config_consul.changed or updated_config_staging.changed }}"
-    
+
 - name: Verify HAProxy config
   become: yes
   shell: docker exec haproxy haproxy -c -f /srv/newsblur/docker/haproxy/haproxy.consul.cfg
@@ -87,8 +86,14 @@
       - /etc/letsencrypt:/etc/letsencrypt
 
 - name: Reload haproxy
-  debug: 
+  debug:
     msg: Gracefully reloading HAProxy
   when: updated_config and haproxy_verified.rc == 0 and not docker_container.changed
   changed_when: yes
   notify: reload haproxy
+
+- name: Install socat
+  apt:
+    name: socat
+    state: present
+  become: yes

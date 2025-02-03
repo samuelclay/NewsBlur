@@ -12,6 +12,7 @@ GIGS_OF_MEMORY = psutil.virtual_memory().total / 1024 / 1024 / 1024.0
 NUM_CPUS = psutil.cpu_count()
 
 bind = "0.0.0.0:8000"
+
 pidfile = "/srv/newsblur/logs/gunicorn.pid"
 logfile = "/srv/newsblur/logs/production.log"
 accesslog = "/srv/newsblur/logs/production.log"
@@ -25,7 +26,7 @@ forwarded_allow_ips = "*"
 limit_request_line = 16000
 limit_request_fields = 1000
 worker_tmp_dir = "/dev/shm"
-reload = True
+reload = False
 
 workers = max(int(math.floor(GIGS_OF_MEMORY * 2)), 3)
 
@@ -34,6 +35,7 @@ if workers > 16:
 
 if os.environ.get("DOCKERBUILD", False):
     workers = 2
+    reload = True
 
 # If hostname has staging in it, only 2 workers
 if app_env and "staging" in getattr(app_env, "SERVER_NAME", ""):
