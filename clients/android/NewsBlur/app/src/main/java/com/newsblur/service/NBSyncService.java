@@ -39,7 +39,6 @@ import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadCountResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.CursorFilters;
-import com.newsblur.util.DefaultFeedView;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FileCache;
 import com.newsblur.util.Log;
@@ -821,8 +820,6 @@ public class NBSyncService extends JobService {
                 finishActions();
                 sendSyncUpdate(UPDATE_STORY | UPDATE_STATUS);
 
-                prefetchOriginalText(apiResponse);
-            
                 FeedPagesSeen.put(fs, pageNumber);
                 totalStoriesSeen += apiResponse.stories.length;
                 FeedStoriesSeen.put(fs, totalStoriesSeen);
@@ -931,22 +928,6 @@ public class NBSyncService extends JobService {
     void insertStories(StoriesResponse apiResponse, StateFilter stateFilter) {
         com.newsblur.util.Log.d(NBSyncService.class.getName(), "got stories from sub sync: " + apiResponse.stories.length);
         dbHelper.insertStories(apiResponse, stateFilter, false);
-    }
-
-    void prefetchOriginalText(StoriesResponse apiResponse) {
-        storyloop: for (Story story : apiResponse.stories) {
-            // only prefetch for unreads, so we don't grind to cache when the user scrolls
-            // through old read stories
-            if (story.read) continue storyloop;
-            // if the feed is viewed in text mode by default, fetch that for offline reading
-            DefaultFeedView mode = PrefsUtils.getDefaultViewModeForFeed(this, story.feedId);
-            if (mode == DefaultFeedView.TEXT) {
-                if (dbHelper.getStoryText(story.storyHash) == null) {
-                    OriginalTextService.addHash(story.storyHash);
-                }
-            }
-        }
-        originalTextService.start();
     }
 
     void prefetchImages(StoriesResponse apiResponse) {

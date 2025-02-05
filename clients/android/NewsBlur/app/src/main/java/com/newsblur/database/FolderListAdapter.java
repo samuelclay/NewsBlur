@@ -71,9 +71,9 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     private final static float ZERO_UNREADS_ALPHA = 0.70f;
 
     /** Social feed in display order. */
-    private List<SocialFeed> socialFeedsOrdered = new ArrayList<>();
+    private final List<SocialFeed> socialFeedsOrdered = new ArrayList<>();
     /** Active social feed in display order. */
-    private List<SocialFeed> socialFeedsActive = new ArrayList<>();
+    private final List<SocialFeed> socialFeedsActive = new ArrayList<>();
     /** Total neutral unreads for all social feeds. */
     public int totalSocialNeutCount = 0;
     /** Total positive unreads for all social feeds. */
@@ -539,7 +539,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     }
 
     private void recountSocialFeeds() {
-        socialFeedsActive = new ArrayList<SocialFeed>();
+        socialFeedsActive.clear();
         totalSocialNeutCount = 0;
         totalSocialPosiCount = 0;
         for (SocialFeed f : socialFeedsOrdered) {
@@ -754,8 +754,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         notifyDataSetInvalidated();
 
         synchronized (this) {
-            socialFeedsOrdered = Collections.emptyList();
-            socialFeedsActive = Collections.emptyList();
+            socialFeedsOrdered .clear();
+            socialFeedsActive.clear();
             totalSocialNeutCount = 0;
             totalSocialPosiCount = 0;
 
