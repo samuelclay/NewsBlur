@@ -136,7 +136,6 @@ public class UnreadsService extends SubService {
 
             boolean isOfflineEnabled = PrefsUtils.isOfflineEnabled(parent);
             boolean isEnableNotifications = PrefsUtils.isEnableNotifications(parent);
-            boolean isTextPrefetchEnabled = PrefsUtils.isTextPrefetchEnabled(parent);
             if (! (isOfflineEnabled || isEnableNotifications)) return;
 
             List<String> hashBatch = new ArrayList<>(AppConstants.UNREAD_FETCH_BATCH_SIZE);
@@ -163,11 +162,8 @@ public class UnreadsService extends SubService {
             } 
             for (String hash : hashSkips) {
                 StoryHashQueue.remove(hash);
-            } 
-
-            if (isTextPrefetchEnabled) {
-                parent.prefetchOriginalText(response);
             }
+
             parent.prefetchImages(response);
         }
     }
