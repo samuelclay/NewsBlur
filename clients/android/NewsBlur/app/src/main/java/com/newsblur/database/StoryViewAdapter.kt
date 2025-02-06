@@ -410,7 +410,7 @@ class StoryViewAdapter(
             listener.onStoryClicked(fs, story?.storyHash)
         }
 
-        override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo) {
+        override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
             // clicks like to get accidentally triggered by the system right after we detect
             // a gesture. ignore if a gesture appears to be in progress.
             if (gestureDebounce) {
