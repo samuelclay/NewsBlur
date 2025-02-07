@@ -556,8 +556,10 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         if (story!!.starred && story!!.starredTimestamp != 0L) {
             val savedTimestampText = String.format(resources.getString(R.string.story_saved_timestamp),
                     StoryUtils.formatLongDate(activity, story!!.starredTimestamp))
-            binding.readingItemSavedTimestamp.visibility = View.VISIBLE
             binding.readingItemSavedTimestamp.text = savedTimestampText
+            binding.readingItemSavedTimestamp.visibility = View.VISIBLE
+        } else {
+            binding.readingItemSavedTimestamp.visibility = View.GONE
         }
 
         binding.readingItemAuthors.setOnClickListener(View.OnClickListener {
@@ -610,26 +612,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             binding.readingItemTags.addView(v)
         }
 
-        binding.readingItemUserTags.removeAllViews()
-        if (story!!.userTags.isNotEmpty()) {
-            for (i in 0..story!!.userTags.size) {
-                val v = layoutInflater.inflate(R.layout.chip_view, null)
-                val chip: Chip = v.findViewById(R.id.chip)
-                if (i < story!!.userTags.size) {
-                    chip.text = story!!.userTags[i]
-                    chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_tag)
-                } else {
-                    chip.text = getString(R.string.add_tag)
-                    chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_add)
-                }
-                v.setOnClickListener {
-                    val userTagsFragment = StoryUserTagsFragment.newInstance(story!!, fs!!)
-                    userTagsFragment.show(childFragmentManager, StoryUserTagsFragment::class.java.name)
-                }
-                binding.readingItemUserTags.addView(v)
-            }
-            binding.readingItemUserTags.visibility = View.VISIBLE
-        }
+        setupUserTags()
 
         if (!TextUtils.isEmpty(story!!.authors)) {
             binding.readingItemAuthors.text = "•   " + story!!.authors
@@ -645,6 +628,40 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         var title = story!!.title
         title = UIUtils.colourTitleFromClassifier(title, classifier)
         binding.readingItemTitle.text = UIUtils.fromHtml(title)
+    }
+
+    private fun setupUserTags() {
+        binding.readingItemUserTags.removeAllViews()
+
+        if (story?.userTags?.isNotEmpty() == true) {
+            for (tag in story!!.userTags) {
+                val chipView = createTagChip(tag, story!!, fs!!)
+                binding.readingItemUserTags.addView(chipView)
+            }
+            val addTagView = createTagChip(getString(R.string.add_tag), story!!, fs!!)
+            binding.readingItemUserTags.addView(addTagView)
+        } else if (story?.starred == true) {
+            val addTagView = createTagChip(getString(R.string.add_tag), story!!, fs!!)
+            binding.readingItemUserTags.addView(addTagView)
+        }
+
+        binding.readingItemUserTags.visibility = View.VISIBLE
+    }
+
+    private fun createTagChip(tag: String, story: Story, feedSet: FeedSet): View {
+        val v = layoutInflater.inflate(R.layout.chip_view, null)
+        val chip: Chip = v.findViewById(R.id.chip)
+        chip.text = tag
+        chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_tag)
+        v.setOnClickListener {
+            showUserTagsFragment(story, feedSet)
+        }
+        return v
+    }
+
+    private fun showUserTagsFragment(story: Story, feedSet: FeedSet) {
+        val userTagsFragment = StoryUserTagsFragment.newInstance(story, feedSet)
+        userTagsFragment.show(childFragmentManager, StoryUserTagsFragment::class.java.name)
     }
 
     fun switchSelectedViewMode() {
@@ -741,6 +758,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             updateShareButton()
             updateMarkStoryReadState()
             setupItemCommentsAndShares()
+            setupItemMetadata()
         }
         if (updateType and UPDATE_TEXT != 0) {
             reloadStoryContent()

@@ -68,8 +68,10 @@ class FeedUtils(
                 doInBackground = {
                     val ra = if (saved) ReadingAction.saveStory(storyHash, userTags) else ReadingAction.unsaveStory(storyHash)
                     ra.doLocal(context, dbHelper)
-                    syncUpdateStatus(UPDATE_STORY)
                     dbHelper.enqueueAction(ra)
+                },
+                onPostExecute = {
+                    syncUpdateStatus(UPDATE_STORY)
                     triggerSync(context)
                 }
         )
