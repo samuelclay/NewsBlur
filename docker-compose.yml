@@ -9,7 +9,6 @@ services:
     # user: "${CURRENT_UID}:${CURRENT_GID}"
     environment:
       - DOCKERBUILD=True
-      - DISCOVER_DATA_FOLDER=/srv/newsblur/docker/volumes/discover
       - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD?Use the `make` command instead of docker CLI}
     stdin_open: true
     tty: true
@@ -172,7 +171,6 @@ services:
       - ${PWD}:/srv/newsblur
     environment:
       - DOCKERBUILD=True
-      - DISCOVER_DATA_FOLDER=/srv/newsblur/docker/volumes/discover
 
   haproxy:
     container_name: haproxy

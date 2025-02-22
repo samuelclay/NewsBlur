@@ -71,3 +71,4 @@ media/safari/NewsBlur.safariextz
 .terraform*
 grafana.ini
 apps/api/ip_addresses.txt
+.ansible/
