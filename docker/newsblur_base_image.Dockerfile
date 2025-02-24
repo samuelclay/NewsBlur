@@ -23,7 +23,12 @@ RUN       set -ex \
                     zlib1g-dev \
                     ' \
             && apt-get update \
-            && apt-get install -y $rundDeps $buildDeps --no-install-recommends
+            && apt-get install -y $rundDeps $buildDeps --no-install-recommends \
+            && apt-get install -y wget \
+            && wget https://github.com/lexiforest/curl-impersonate/releases/download/v0.9.3/curl-impersonate-v0.9.3.aarch64-linux-gnu.tar.gz \
+            && tar -xzf curl-impersonate-v0.9.3.aarch64-linux-gnu.tar.gz -C /usr/local/bin/ \
+            && rm curl-impersonate-v0.9.3.aarch64-linux-gnu.tar.gz \
+            && chmod +x /usr/local/bin/curl-impersonate-chrome
 COPY      config/requirements.txt /srv/newsblur/
 
 # Install Rust (required for tiktoken)
