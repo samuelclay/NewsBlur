@@ -14,6 +14,8 @@ struct CardView: View {
     
     let cache: StoryCache
     
+    let dash: DashList?
+    
     let story: Story
     
     @State private var isPinned: Bool = false
@@ -64,7 +66,7 @@ struct CardView: View {
         }
         .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .onTapGesture {
-            feedDetailInteraction.tapped(story: story)
+            feedDetailInteraction.tapped(story: story, in: dash)
         }
         .contextMenu {
             Button {

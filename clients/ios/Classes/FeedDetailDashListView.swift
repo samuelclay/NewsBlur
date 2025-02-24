@@ -74,7 +74,7 @@ struct DashListStoriesView: View {
         VStack(alignment: .center) {
             if dash.hasStories {
                 ForEach(dash.stories) { story in
-                    CardView(feedDetailInteraction: interaction, cache: cache, story: story)
+                    CardView(feedDetailInteraction: interaction, cache: cache, dash: dash, story: story)
                 }
             } else {
                 ProgressView()

@@ -1497,7 +1497,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         return;
     }
     
-    if (!self.view.window || -appDelegate.findingStoryStartDate.timeIntervalSinceNow > 15) {
+    if (-appDelegate.findingStoryStartDate.timeIntervalSinceNow > 15) {
         NSLog(@"No longer looking for try feed.");
         if (appDelegate.inFindingStoryMode) {
             [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -1505,6 +1505,14 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         appDelegate.inFindingStoryMode = NO;
         appDelegate.findingStoryStartDate = nil;
         appDelegate.tryFeedStoryId = nil;
+        return;
+    }
+    
+    if (!self.view.window || [storiesCollection.activeFeedStories count] == 0) {
+        NSLog(@"Want to test for try feed, but no stories loaded yet; deferring");  // log
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self testForTryFeed];
+        });
         return;
     }
     

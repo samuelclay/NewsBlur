@@ -2245,10 +2245,12 @@
     //        feedsNavigationController.navigationItem.hidesBackButton = YES;
     //    }
     
-    self.inFindingStoryMode = NO;
-    self.findingStoryStartDate = nil;
-    self.tryFeedStoryId = nil;
-    self.tryFeedFeedId = nil;
+    if (-appDelegate.findingStoryStartDate.timeIntervalSinceNow > 10) {
+        self.inFindingStoryMode = NO;
+        self.findingStoryStartDate = nil;
+        self.tryFeedStoryId = nil;
+        self.tryFeedFeedId = nil;
+    }
     
     NSInteger activeStoryLocation = [storiesCollection locationOfActiveStory];
     if (activeStoryLocation >= 0) {
