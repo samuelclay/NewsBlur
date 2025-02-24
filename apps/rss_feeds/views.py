@@ -583,6 +583,7 @@ def status(request):
     return render(request, "rss_feeds/status.xhtml", {"feeds": feeds, "queues": queues})
 
 
+@ratelimit(minutes=1, requests=30)
 @json.json_view
 def original_text(request):
     # iOS sends a POST, web sends a GET
