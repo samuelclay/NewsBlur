@@ -9,7 +9,6 @@ services:
     # user: "${CURRENT_UID}:${CURRENT_GID}"
     environment:
       - DOCKERBUILD=True
-      - DISCOVER_DATA_FOLDER=/srv/newsblur/docker/volumes/discover
       - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD?Use the `make` command instead of docker CLI}
     stdin_open: true
     tty: true
@@ -126,11 +125,16 @@ services:
 
   db_elasticsearch:
     container_name: db_elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
-    mem_limit: 512mb
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0-arm64
+    mem_limit: 4g
     restart: unless-stopped
     environment:
       - discovery.type=single-node
+      - "ES_JAVA_OPTS=-XX:UseSVE=0"
+      - "CLI_JAVA_OPTS=-XX:UseSVE=0"
+      - "_JAVA_OPTIONS=-XX:UseSVE=0"
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - xpack.security.enabled=false
     ports:
       - 9200:9200
       - 9300:9300
@@ -138,6 +142,7 @@ services:
       - ./docker/volumes/elasticsearch:/usr/share/elasticsearch/data
       - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
 
+  # Dejavu is a web UI for Elasticsearch
   dejavu:
     container_name: dejavu
     image: appbaseio/dejavu:3.6.0
@@ -166,7 +171,6 @@ services:
       - ${PWD}:/srv/newsblur
     environment:
       - DOCKERBUILD=True
-      - DISCOVER_DATA_FOLDER=/srv/newsblur/docker/volumes/discover
 
   haproxy:
     container_name: haproxy
