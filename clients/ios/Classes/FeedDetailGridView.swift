@@ -17,7 +17,7 @@ import SwiftUI
     func pullToRefresh()
     func tapped(dash: DashList)
     func visible(story: Story)
-    func tapped(story: Story)
+    func tapped(story: Story, in dash: DashList?)
     func reading(story: Story)
     func read(story: Story)
     func unread(story: Story)
@@ -153,7 +153,7 @@ struct FeedDetailGridView: View {
     
     @ViewBuilder
     func makeCardView(for story: Story, reader: GeometryProxy) -> some View {
-        CardView(feedDetailInteraction: feedDetailInteraction, cache: cache, story: story)
+        CardView(feedDetailInteraction: feedDetailInteraction, cache: cache, dash: nil, story: story)
             .transformAnchorPreference(key: CardKey.self, value: .bounds) {
                 $0.append(CardFrame(id: "\(story.id)", frame: reader[$1]))
             }

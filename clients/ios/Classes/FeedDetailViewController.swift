@@ -366,7 +366,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
         scrollingDate = Date()
     }
     
-    func tapped(story: Story) {
+    func tapped(story: Story, in dash: DashList?) {
         if presentedViewController != nil {
             return
         }
@@ -374,7 +374,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
         print("🪿 Tapped \(story.debugTitle)")
         
         if isDashboard {
-            tappedDashboard(story: story)
+            tappedDashboard(story: story, in: dash)
             return
         }
         
@@ -389,12 +389,21 @@ extension FeedDetailViewController: FeedDetailInteraction {
         }
     }
     
-    func tappedDashboard(story: Story) {
-//        guard let feedId = story.feed?.id else {
-//            return
-//        }
+    func tappedDashboard(story: Story, in dash: DashList?) {
+        guard let dash/*, let feedId = story.feed?.id*/ else {
+            return
+        }
         
-        //TODO: 🚧
+        appDelegate.inFindingStoryMode = true
+        appDelegate.findingStoryStartDate = Date()
+        appDelegate.tryFeedStoryId = story.hash
+        appDelegate.tryFeedFeedId = dash.feedId
+        
+        if dash.isFolder {
+            appDelegate.feedsViewController.selectFolder(dash.folderId)
+        } else if let feedId = dash.feedId {
+            appDelegate.feedsViewController.selectFeed(feedId, inFolder: dash.folderId)
+        }
     }
     
     func reading(story: Story) {
