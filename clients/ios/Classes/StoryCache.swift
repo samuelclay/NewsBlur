@@ -204,7 +204,7 @@ import Foundation
         
         dash.stories = Array(before.prefix(5))
         
-        print("Reloaded dashboard for \(index); folder: \(dash.folder?.name ?? "?"); feeds: \(dash.feeds); stories: \(dash.stories)")
+        print("Reloaded dashboard for \(index); folder: \(dash.folder?.name ?? "?"); feeds: \(dash.feeds); stories: \(dash.stories ?? [])")
     }
     
     func redrawDashboard() {
