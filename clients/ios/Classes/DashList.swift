@@ -26,11 +26,7 @@ import Foundation
     
     var folder: Folder?
     var feeds = [Feed]()
-    var stories = [Story]()
-    
-    var hasStories: Bool {
-        return !stories.isEmpty
-    }
+    var stories: [Story]?
     
     var isFolder: Bool {
         return feedId == nil
@@ -79,7 +75,7 @@ extension DashList: @preconcurrency CustomStringConvertible {
     var description: String {
         let base = "DashList index: \(index), side: \(side), order: \(order)"
         
-        if hasStories {
+        if let stories {
             if isFolder {
                 return "\(base), folder: `\(folder?.name ?? "none")` (\(folderId)) contains \(feeds.count) feeds with \(stories.count) stories"
             } else {

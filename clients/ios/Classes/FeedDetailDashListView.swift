@@ -72,13 +72,24 @@ struct DashListStoriesView: View {
     
     var body: some View {
         VStack(alignment: .center) {
-            if dash.hasStories {
-                ForEach(dash.stories) { story in
-                    CardView(feedDetailInteraction: interaction, cache: cache, dash: dash, story: story)
+            if let stories = dash.stories {
+                if stories.isEmpty {
+                    Spacer()
+                    Text("No Stories")
+                        .foregroundColor(.secondary)
+                        .font(.custom("WhitneySSm-Medium", size: 24, relativeTo: .body))
+                        .frame(minHeight: 300)
+                    Spacer()
+                } else {
+                    ForEach(stories) { story in
+                        CardView(feedDetailInteraction: interaction, cache: cache, dash: dash, story: story)
+                    }
                 }
             } else {
+                Spacer()
                 ProgressView()
-                    .padding([.top, .bottom], 200)
+                    .frame(minHeight: 300)
+                Spacer()
             }
         }
         .font(.custom("WhitneySSm-Medium", size: 14, relativeTo: .body))
