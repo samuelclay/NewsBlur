@@ -4,7 +4,7 @@ services:
     container_name: newsblur_web
     image: newsblur/newsblur_${NEWSBLUR_BASE:-python3}:latest
     build:
-      context: /srv/newsblur
+      context: .
       dockerfile: docker/newsblur_base_image.Dockerfile
     # user: "${CURRENT_UID}:${CURRENT_GID}"
     environment:
@@ -125,7 +125,7 @@ services:
 
   db_elasticsearch:
     container_name: db_elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0-arm64
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
     mem_limit: 4g
     restart: unless-stopped
     environment:
