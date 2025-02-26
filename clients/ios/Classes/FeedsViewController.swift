@@ -157,6 +157,13 @@ class FeedsViewController: FeedsObjCViewController {
     private func immediatelyLoadNextDash(prepare: Bool) {
         appDelegate.feedDetailViewController.storyCache.reloadDashboard(for: appDelegate.feedDetailViewController.dashboardIndex)
         
+        let previousIndex = appDelegate.feedDetailViewController.dashboardIndex
+        
+        if previousIndex >= 0, previousIndex < appDelegate.dashboardArray.count {
+            let dash = StoryCache.cachedDashboard[previousIndex]
+            dash.isFetching = false
+        }
+        
         appDelegate.feedDetailViewController.dashboardIndex += 1
         
         let index = appDelegate.feedDetailViewController.dashboardIndex
@@ -168,13 +175,15 @@ class FeedsViewController: FeedsObjCViewController {
         } else if index >= appDelegate.dashboardArray.count {
             // Done.
             
-            print("Finished loading dashboard: \(appDelegate.feedDetailViewController.storyCache.dashboard)")
+            print("Finished loading dashboard: \(StoryCache.cachedDashboard)")
             
             appDelegate.feedDetailViewController.reload()
             return
         }
         
-        let dash = appDelegate.feedDetailViewController.storyCache.dashboard[index]
+        let dash = StoryCache.cachedDashboard[index]
+        
+        dash.isFetching = true
         
         if let feed = dash.feedId {
             appDelegate.loadFolder(dash.folderId, feedID: feed)

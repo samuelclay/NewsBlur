@@ -28,6 +28,8 @@ import Foundation
     var feeds = [Feed]()
     var stories: [Story]?
     
+    var isFetching = true
+    
     var isFolder: Bool {
         return feedId == nil
     }
@@ -52,14 +54,20 @@ import Foundation
         }
     }
     
-    init(index: Int, side: Side, order: Int, feedId: String?, folderId: String) {
+    init(index: Int, side: Side, order: Int, feedId: String?, folderId: String, oldDash: DashList?) {
         self.index = index
         self.side = side
         self.order = order
         self.feedId = feedId
         self.folderId = folderId
         
-        load()
+        if let oldDash, index == oldDash.index, side == oldDash.side, order == oldDash.order, feedId == oldDash.feedId, folderId == oldDash.folderId {
+            folder = oldDash.folder
+            feeds = oldDash.feeds
+            stories = oldDash.stories
+        } else {
+            load()
+        }
     }
     
     func load() {

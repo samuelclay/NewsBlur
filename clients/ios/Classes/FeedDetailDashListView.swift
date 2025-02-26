@@ -37,6 +37,11 @@ struct DashListHeaderView: View {
             Color.themed([0xFFFDEF, 0xEEECCD, 0x303A40, 0x303030])
             
             HStack {
+                if dash.isFetching {
+                    ProgressView()
+                        .padding(.leading, 10)
+                }
+                
                 Spacer()
                 
                 if let image = dash.image {
@@ -51,6 +56,13 @@ struct DashListHeaderView: View {
                     .foregroundColor(Color.themed([0x404040, 0x404040, 0xC0C0C0, 0xB0B0B0]))
                 
                 Spacer()
+                
+                Button {
+                    //TODO: 🚧
+                } label: {
+                    Image("settings")
+                }
+                .padding(.trailing, 10)
             }
         }
         .font(.custom("WhitneySSm-Medium", size: 14, relativeTo: .body))
@@ -87,7 +99,9 @@ struct DashListStoriesView: View {
                 }
             } else {
                 Spacer()
-                ProgressView()
+                Text("Loading…")
+                    .foregroundColor(.secondary)
+                    .font(.custom("WhitneySSm-Medium", size: 24, relativeTo: .body))
                     .frame(minHeight: 300)
                 Spacer()
             }
