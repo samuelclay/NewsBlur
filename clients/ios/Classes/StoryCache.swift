@@ -57,7 +57,7 @@ import Foundation
     @Published var selected: Story?
     @Published var after = [Story]()
     
-    @Published var dashboard = [DashList]()
+    static private(set) var cachedDashboard = [DashList]()
     
     @Published var dashboardLeft = [DashList]()
     @Published var dashboardRight = [DashList]()
@@ -151,7 +151,10 @@ import Foundation
     }
     
     func prepareDashboard() {
-        dashboard.removeAll()
+        let oldDashes = Self.cachedDashboard
+        
+        var localDashboard = [DashList]()
+        
         dashboardLeft.removeAll()
         dashboardRight.removeAll()
         
@@ -172,9 +175,10 @@ import Foundation
                 continue
             }
             
-            let dash = DashList(index: index, side: side, order: order, feedId: feedId, folderId: folderId)
+            let oldDash = index < oldDashes.count ? oldDashes[index] : nil
+            let dash = DashList(index: index, side: side, order: order, feedId: feedId, folderId: folderId, oldDash: oldDash)
             
-            dashboard.append(dash)
+            localDashboard.append(dash)
             
             if side == .left {
                 dashboardLeft.append(dash)
@@ -183,16 +187,22 @@ import Foundation
             }
         }
         
+        if localDashboard.count > dashboardArray.count {
+            localDashboard.removeLast(localDashboard.count - dashboardArray.count)
+        }
+        
         dashboardLeft.sort { $0.order < $1.order }
         dashboardRight.sort { $0.order < $1.order }
+        
+        Self.cachedDashboard = localDashboard
     }
     
     func reloadDashboard(for index: Int) {
-        guard index >= 0, index < dashboard.count else {
+        guard index >= 0, index < Self.cachedDashboard.count else {
             return
         }
         
-        let dash = dashboard[index]
+        let dash = Self.cachedDashboard[index]
         
         dash.id = UUID()
         dash.folder = Self.folder
@@ -208,7 +218,7 @@ import Foundation
     }
     
     func redrawDashboard() {
-        for dash in dashboard {
+        for dash in Self.cachedDashboard {
             dash.id = UUID()
         }
     }
