@@ -21,6 +21,9 @@ collectstatic:
 bounce:
 	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose down
 	[[ -d config/certificates ]] && echo "keys exist" || make keys
+	# Ensure MongoDB data directory exists with proper permissions
+	mkdir -p docker/volumes/db_mongo
+	chmod -R 777 docker/volumes/db_mongo || true
 	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose up -d --build --remove-orphans
 
 bootstrap:
