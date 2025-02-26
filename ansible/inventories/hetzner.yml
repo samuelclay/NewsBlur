@@ -6,9 +6,9 @@ groups:
 
   haproxy: inventory_hostname.startswith('hwww')
 
-  app: inventory_hostname.startswith('happ')
+  app: inventory_hostname.startswith('happ') or inventory_hostname.startswith('repo-test')
   happ: inventory_hostname.startswith('happ')
-  web: inventory_hostname.startswith('happ')
+  web: inventory_hostname.startswith('happ') or inventory_hostname.startswith('repo-test')
   hweb: inventory_hostname.startswith('happ')
   django: inventory_hostname.startswith('happ-web')
   hdjango: inventory_hostname.startswith('happ-web')

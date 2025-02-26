@@ -4,7 +4,7 @@ ENV       PYTHONPATH=/srv/newsblur
 RUN       set -ex \
           && rundDeps=' \
                   libpq5 \
-                  libjpeg62 \
+                  libjpeg62-turbo \
                   libxslt1.1 \
                             ' \
           && buildDeps=' \
@@ -15,19 +15,25 @@ RUN       set -ex \
                     libjpeg-dev \
                     libpq-dev \
                     libev-dev \
-                    libreadline6-dev \
+                    libreadline-dev \
                     liblapack-dev \
                     libxml2-dev \
                     libxslt1-dev \
-                    ncurses-dev \
+                    libncurses-dev \
                     zlib1g-dev \
                     ' \
-            && apt-get update \
-            && apt-get install -y $rundDeps $buildDeps --no-install-recommends \
-            && apt-get install -y wget \
-            && wget https://github.com/lexiforest/curl-impersonate/releases/download/v0.9.3/curl-impersonate-v0.9.3.aarch64-linux-gnu.tar.gz \
-            && tar -xzf curl-impersonate-v0.9.3.aarch64-linux-gnu.tar.gz -C /usr/local/bin/ \
-            && rm curl-impersonate-v0.9.3.aarch64-linux-gnu.tar.gz \
+            && apt-get update || (echo "Retrying apt-get update with different DNS" && echo "nameserver 8.8.8.8" > /etc/resolv.conf && apt-get update) \
+            && apt-get install -y $rundDeps $buildDeps --no-install-recommends || (echo "Retrying apt-get install with different package names" && apt-get install -y libpq5 libjpeg62-turbo libxslt1.1 patch gfortran libblas-dev libffi-dev libjpeg-dev libpq-dev libev-dev libreadline-dev liblapack-dev libxml2-dev libxslt1-dev libncurses-dev zlib1g-dev --no-install-recommends) \
+            && apt-get install -y wget curl ca-certificates \
+            && ARCH=$(uname -m) \
+            && if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then \
+                  CURL_IMPERSONATE_URL="https://github.com/lexiforest/curl-impersonate/releases/download/v0.9.3/curl-impersonate-v0.9.3.aarch64-linux-gnu.tar.gz"; \
+               else \
+                  CURL_IMPERSONATE_URL="https://github.com/lexiforest/curl-impersonate/releases/download/v0.9.3/curl-impersonate-v0.9.3.x86_64-linux-gnu.tar.gz"; \
+               fi \
+            && wget $CURL_IMPERSONATE_URL \
+            && tar -xzf curl-impersonate-*.tar.gz -C /usr/local/bin/ \
+            && rm curl-impersonate-*.tar.gz \
             && chmod +x /usr/local/bin/curl-impersonate-chrome
 COPY      config/requirements.txt /srv/newsblur/
 
