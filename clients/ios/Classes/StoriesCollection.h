@@ -58,6 +58,7 @@
 @property (nonatomic, readwrite) BOOL showHiddenStories;
 @property (nonatomic, readwrite) BOOL inSearch;
 @property (nonatomic, readonly) BOOL isDashboard;
+@property (nonatomic, readonly) BOOL isDashboardOrFromDashboardStory;
 @property (nonatomic, readonly) BOOL isEverything;
 @property (nonatomic, readonly) BOOL isInfrequent;
 @property (nonatomic, readonly) BOOL isRiverOrSocial;

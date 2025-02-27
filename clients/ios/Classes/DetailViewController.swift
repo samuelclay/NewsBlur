@@ -142,6 +142,9 @@ class DetailViewController: BaseViewController {
     /// Whether or not showing the dashboard.
     @objc var storyTitlesInDashboard = false
     
+    /// Whether or not showing the feed list when tapped a story in the dashboard.
+    @objc var storyTitlesFromDashboardStory = false
+    
     /// Preference values.
     enum StyleValue {
         static let standard = "standard"

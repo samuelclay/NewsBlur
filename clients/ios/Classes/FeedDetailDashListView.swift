@@ -13,13 +13,13 @@ import SwiftUI
 struct DashListView: View {
     let cache: StoryCache
     
-    let dash: DashList
+    @Binding var dash: DashList
     
     let interaction: FeedDetailInteraction
     
     var body: some View {
         VStack {
-            DashListHeaderView(cache: cache, dash: dash, interaction: interaction)
+            DashListHeaderView(cache: cache, dash: $dash, interaction: interaction)
             DashListStoriesView(cache: cache, dash: dash, interaction: interaction)
         }
     }
@@ -28,7 +28,7 @@ struct DashListView: View {
 struct DashListHeaderView: View {
     let cache: StoryCache
     
-    let dash: DashList
+    @Binding var dash: DashList
     
     let interaction: FeedDetailInteraction
     
@@ -57,12 +57,8 @@ struct DashListHeaderView: View {
                 
                 Spacer()
                 
-                Button {
-                    //TODO: 🚧
-                } label: {
-                    Image("settings")
-                }
-                .padding(.trailing, 10)
+                DashListActionMenu(cache: cache, dash: $dash, interaction: interaction)
+                    .padding(.trailing, 10)
             }
         }
         .font(.custom("WhitneySSm-Medium", size: 14, relativeTo: .body))
@@ -72,6 +68,80 @@ struct DashListHeaderView: View {
         .onTapGesture {
             interaction.tapped(dash: dash)
         }
+    }
+}
+
+struct DashListActionMenu: View {
+    let cache: StoryCache
+    
+    @Binding var dash: DashList
+    
+    let interaction: FeedDetailInteraction
+    
+    var body: some View {
+        Menu {
+            Menu("Change Story List to") {
+                Button {
+                    //TODO: 🚧
+                } label: {
+                    Text("Coming Soon!")
+                        .disabled(true)
+                }
+            }
+            
+            Menu("Add Story List") {
+                Button {
+                    //TODO: 🚧
+                } label: {
+                    Text("Coming Soon!")
+                        .disabled(true)
+                }
+            }
+            
+            Divider()
+            
+            Button {
+                //TODO: 🚧
+            } label: {
+                Text("Remove This List")
+                    .disabled(true)
+            }
+            
+            Divider()
+            
+            Picker("Show", selection: $dash.numberOfStories) {
+                Text("5 stories").tag(5)
+                Text("10 stories").tag(10)
+                Text("15 stories").tag(15)
+                Text("20 stories").tag(20)
+            }
+            
+            Picker("Ordered", selection: $dash.activeOrder) {
+                Text("Newest first").tag("newest")
+                Text("Oldest first").tag("oldest")
+            }
+            
+            Picker("Include", selection: $dash.activeReadFilter) {
+                Text("All stories").tag("all")
+                Text("Unread only").tag("unread")
+            }
+        } label: {
+            if #available(iOS 15.0, *) {
+                Image(systemName: "ellipsis.circle")
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(Color.themed([0x686868, 0xA0A0A0]))
+            } else {
+                Image(systemName: "ellipsis.circle")
+            }
+        }
+        .modify { view in
+            if #available(iOS 16.0, *) {
+                view.menuStyle(.button)
+                    .menuIndicator(.hidden)
+            }
+        }
+        .buttonStyle(.borderless)
+        .font(.custom("WhitneySSm-Medium", size: 14, relativeTo: .body))
     }
 }
 

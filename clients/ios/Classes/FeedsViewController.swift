@@ -185,6 +185,8 @@ class FeedsViewController: FeedsObjCViewController {
         
         dash.isFetching = true
         
+        appDelegate.storiesCollection.reset()
+        
         if let feed = dash.feedId {
             appDelegate.loadFolder(dash.folderId, feedID: feed)
         } else {

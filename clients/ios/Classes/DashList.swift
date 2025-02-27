@@ -9,7 +9,7 @@
 import Foundation
 
 /// A list in the Dashboard.
-@MainActor class DashList: @preconcurrency Identifiable {
+@MainActor class DashList: ObservableObject, @preconcurrency Identifiable {
     var id = UUID()
     var index: Int
     
@@ -23,6 +23,14 @@ import Foundation
     
     var feedId: String?
     var folderId: String
+    
+    var key: String {
+        if let feedId {
+            return feedId
+        } else {
+            return "folder:\(folderId)"
+        }
+    }
     
     var folder: Folder?
     var feeds = [Feed]()
@@ -71,10 +79,43 @@ import Foundation
     }
     
     func load() {
-        if isFolder {
-            folder = Folder(id: folderId)
-        } else if let feedId {
+        if let feedId {
             feeds = [Feed(id: feedId)]
+        } else {
+            folder = Folder(id: folderId)
+        }
+    }
+    
+    private let defaults = UserDefaults.standard
+    
+    var numberOfStories: Int {
+        get {
+            defaults.object(forKey: "dashboard:\(key):count") as? Int ?? 5
+        }
+        set {
+            defaults.set(newValue, forKey: "dashboard:\(key):count")
+        }
+    }
+    
+    var activeOrder: String {
+        get {
+            let order = defaults.object(forKey: "dashboard:\(key):order") as? String ?? "newest"
+            
+            print("🏃🏼‍♂️ DashList activeOrder dashboard:\(key):order: \(order)")  // log
+            
+            return order
+        }
+        set {
+            defaults.set(newValue, forKey: "dashboard:\(key):order")
+        }
+    }
+    
+    var activeReadFilter: String {
+        get {
+            defaults.object(forKey: "dashboard:\(key):read_filter") as? String ?? "unread"
+        }
+        set {
+            defaults.set(newValue, forKey: "dashboard:\(key):read_filter")
         }
     }
 }
@@ -84,16 +125,16 @@ extension DashList: @preconcurrency CustomStringConvertible {
         let base = "DashList index: \(index), side: \(side), order: \(order)"
         
         if let stories {
-            if isFolder {
-                return "\(base), folder: `\(folder?.name ?? "none")` (\(folderId)) contains \(feeds.count) feeds with \(stories.count) stories"
+            if let feedId {
+                return "\(base), feed: `\(feed?.name ?? "none")` (\(feedId)) in folder: `\(folder?.name ?? "none")` (\(folderId)) contains \(stories.count) stories"
             } else {
-                return "\(base), feed: `\(feed?.name ?? "none")` (\(feedId ?? "none")) in folder: `\(folder?.name ?? "none")` (\(folderId)) contains \(stories.count) stories"
+                return "\(base), folder: `\(folder?.name ?? "none")` (\(folderId)) contains \(feeds.count) feeds with \(stories.count) stories"
             }
         } else {
-            if isFolder {
-                return "\(base), folder ID: \(folderId); not loaded"
+            if let feedId {
+                return "\(base), feed ID: \(feedId) in folder ID: \(folderId); not loaded"
             } else {
-                return "\(base), feed ID: \(feedId ?? "none") in folder ID: \(folderId); not loaded"
+                return "\(base), folder ID: \(folderId); not loaded"
             }
         }
     }
