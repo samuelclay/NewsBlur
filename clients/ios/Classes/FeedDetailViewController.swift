@@ -394,6 +394,8 @@ extension FeedDetailViewController: FeedDetailInteraction {
             return
         }
         
+        appDelegate.detailViewController.storyTitlesFromDashboardStory = true
+        
         appDelegate.inFindingStoryMode = true
         appDelegate.findingStoryStartDate = Date()
         appDelegate.tryFeedStoryId = story.hash
@@ -403,6 +405,10 @@ extension FeedDetailViewController: FeedDetailInteraction {
             appDelegate.feedsViewController.selectFolder(dash.folderId)
         } else if let feedId = dash.feedId {
             appDelegate.feedsViewController.selectFeed(feedId, inFolder: dash.folderId)
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            self.appDelegate.detailViewController.storyTitlesFromDashboardStory = false
         }
     }
     

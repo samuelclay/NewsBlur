@@ -19,9 +19,7 @@ extension View {
             self
         }
     }
-}
-
-extension View {
+    
     @ViewBuilder
     func modify<Content: View>(@ViewBuilder _ transform: (Self) -> Content?) -> some View {
         if let view = transform(self), !(view is EmptyView) {
@@ -30,9 +28,7 @@ extension View {
             self
         }
     }
-}
-
-extension View {
+    
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape(RoundedCorner(radius: radius, corners: corners))
     }

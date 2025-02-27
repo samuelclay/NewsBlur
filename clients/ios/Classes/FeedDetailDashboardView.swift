@@ -23,27 +23,27 @@ struct FeedDetailDashboardView: View {
                             EmptyView()
                         case .single:
                             VStack(alignment: .leading, spacing: 10) {
-                                makeDashSection(for: cache.dashboardLeft)
-                                makeDashSection(for: cache.dashboardRight)
+                                makeDashSection(for: $cache.dashboardLeft)
+                                makeDashSection(for: $cache.dashboardRight)
                             }
                         case .vertical:
                             HStack(alignment: .top, spacing: 10) {
                                 VStack(alignment: .leading, spacing: 10) {
-                                    makeDashSection(for: cache.dashboardLeft)
+                                    makeDashSection(for: $cache.dashboardLeft)
                                 }
                                 
                                 VStack(alignment: .leading, spacing: 10) {
-                                    makeDashSection(for: cache.dashboardRight)
+                                    makeDashSection(for: $cache.dashboardRight)
                                 }
                             }
                         case .horizontal:
                             VStack(alignment: .leading, spacing: 10) {
                                 HStack(alignment: .top, spacing: 10) {
-                                    makeDashSection(for: cache.dashboardLeft)
+                                    makeDashSection(for: $cache.dashboardLeft)
                                 }
                                 
                                 HStack(alignment: .top, spacing: 10) {
-                                    makeDashSection(for: cache.dashboardRight)
+                                    makeDashSection(for: $cache.dashboardRight)
                                 }
                             }
                     }
@@ -55,7 +55,7 @@ struct FeedDetailDashboardView: View {
     }
     
     @ViewBuilder
-    func makeDashSection(for dashes: [DashList]) -> some View {
+    func makeDashSection(for dashes: Binding<[DashList]>) -> some View {
         Section {
             ForEach(dashes, id: \.id) { dash in
                 makeDashListView(for: dash)
@@ -64,7 +64,7 @@ struct FeedDetailDashboardView: View {
     }
     
     @ViewBuilder
-    func makeDashListView(for dash: DashList) -> some View {
+    func makeDashListView(for dash: Binding<DashList>) -> some View {
         DashListView(cache: cache, dash: dash, interaction: feedDetailInteraction)
     }
 }

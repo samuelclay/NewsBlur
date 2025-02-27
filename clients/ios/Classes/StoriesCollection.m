@@ -91,6 +91,10 @@
     return appDelegate.isDashboard;
 }
 
+- (BOOL)isDashboardOrFromDashboardStory {
+    return self.isDashboard || appDelegate.fromDashboardStory;
+}
+
 - (BOOL)isEverything {
     return [activeFolder isEqualToString:@"everything"];
 }
@@ -247,17 +251,15 @@
 }
 
 - (NSString *)activeOrder {
-    if (self.isDashboard) {
-        return @"newest";
-    }
-    
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSString *orderPrefDefault = [userPreferences stringForKey:@"default_order"];
     NSString *orderPref = [userPreferences stringForKey:[self orderKey]];
     
+    NSLog(@"🏃🏼‍♂️ StoriesCollection activeOrder %@: %@", [self orderKey], orderPref);  // log
+    
     if (orderPref) {
         return orderPref;
-    } else if (orderPrefDefault) {
+    } else if (!self.isDashboardOrFromDashboardStory && orderPrefDefault) {
         return orderPrefDefault;
     } else {
         return @"newest";
@@ -265,10 +267,6 @@
 }
 
 - (NSString *)activeReadFilter {
-    if (self.isDashboard) {
-        return @"unread";
-    }
-    
     if (self.appDelegate.isSavedStoriesIntelligenceMode) {
         return @"starred";
     }
@@ -281,14 +279,16 @@
     if (readFilterPref) {
         return readFilterPref;
     } else if (self.activeFolder && (self.isRiverView || self.isSocialRiverView)) {
-        if (readFilterFolderPrefDefault) {
+        if (!self.isDashboardOrFromDashboardStory && readFilterFolderPrefDefault) {
             return readFilterFolderPrefDefault;
         } else {
             return @"unread";
         }
     } else {
-        if (readFilterFeedPrefDefault) {
+        if (!self.isDashboardOrFromDashboardStory && readFilterFeedPrefDefault) {
             return readFilterFeedPrefDefault;
+        } else if (self.isDashboardOrFromDashboardStory) {
+            return @"unread";
         } else {
             return @"all";
         }
@@ -322,17 +322,17 @@
 
 - (NSString *)orderKey {
     if (self.isRiverView) {
-        return [NSString stringWithFormat:@"folder:%@:order", self.activeFolder];
+        return [NSString stringWithFormat:@"%@folder:%@:order", self.isDashboardOrFromDashboardStory ? @"dashboard:" : @"", self.activeFolder];
     } else {
-        return [NSString stringWithFormat:@"%@:order", [self.activeFeed objectForKey:@"id"]];
+        return [NSString stringWithFormat:@"%@%@:order", self.isDashboardOrFromDashboardStory ? @"dashboard:" : @"", [self.activeFeed objectForKey:@"id"]];
     }
 }
 
 - (NSString *)readFilterKey {
     if (self.isRiverView) {
-        return [NSString stringWithFormat:@"folder:%@:read_filter", self.activeFolder];
+        return [NSString stringWithFormat:@"%@folder:%@:read_filter", self.isDashboardOrFromDashboardStory ? @"dashboard:" : @"", self.activeFolder];
     } else {
-        return [NSString stringWithFormat:@"%@:read_filter", [self.activeFeed objectForKey:@"id"]];
+        return [NSString stringWithFormat:@"%@%@:read_filter", self.isDashboardOrFromDashboardStory ? @"dashboard:" : @"", [self.activeFeed objectForKey:@"id"]];
     }
 }
 

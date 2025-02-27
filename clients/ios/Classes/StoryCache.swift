@@ -212,7 +212,7 @@ import Foundation
 //            dash.feeds.append(feed)
 //        }
         
-        dash.stories = Array(before.prefix(5))
+        dash.stories = Array(before.prefix(dash.numberOfStories))
         
         print("Reloaded dashboard for \(index); folder: \(dash.folder?.name ?? "?"); feeds: \(dash.feeds); stories: \(dash.stories ?? [])")
     }
