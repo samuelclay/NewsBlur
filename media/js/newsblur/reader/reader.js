@@ -5275,11 +5275,13 @@
                     port = https ? 8889 : 8888;
                 }
                 this.socket = this.socket || io.connect(server + ":" + port, {
-                    "reconnection delay": 2000,
-                    "connect timeout": 2000,
-                    "path": "/v3/socket.io",
-                    "transports": ['websocket'],
-                    "upgrade": false
+                    path: "/v3/socket.io",
+                    reconnectionDelay: 2000,
+                    connectTimeout: 45000,
+                    pingTimeout: 60000,
+                    pingInterval: 25000,
+                    transports: ['websocket'],
+                    upgrade: false
                 });
 
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);

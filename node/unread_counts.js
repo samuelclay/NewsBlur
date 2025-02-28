@@ -9,7 +9,7 @@
   log = require('./log.js');
 
   unread_counts = (server) => {
-    var ENV_DEV, ENV_DOCKER, ENV_PROD, REDIS_PORT, REDIS_SERVER, SECURE, io, pub_client, setup_redis_client, sub_client;
+    var ENV_DEV, ENV_DOCKER, ENV_PROD, REDIS_PORT, REDIS_SERVER, SECURE, io, pub_client, redis_opts, setup_redis_client, sub_client;
     ENV_DEV = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'debug';
     ENV_PROD = process.env.NODE_ENV === 'production';
     ENV_DOCKER = process.env.NODE_ENV === 'docker';
@@ -39,9 +39,31 @@
       log.debug("Running as production server");
     }
     
-    // Create Redis clients for Socket.IO adapter
-    pub_client = redis.createClient(REDIS_PORT, REDIS_SERVER);
-    sub_client = redis.createClient(REDIS_PORT, REDIS_SERVER);
+    // Create Redis clients for Socket.IO adapter with improved configuration
+    redis_opts = {
+      host: REDIS_SERVER,
+      port: REDIS_PORT,
+      retry_strategy: function(options) {
+        // Exponential backoff with a cap
+        return Math.min(options.attempt * 100, 3000);
+      },
+      connect_timeout: 10000
+    };
+    pub_client = redis.createClient(redis_opts);
+    sub_client = redis.createClient(redis_opts);
+    // Handle Redis adapter client errors
+    pub_client.on("error", function(err) {
+      return log.debug(`Redis Pub Error: ${err}`);
+    });
+    sub_client.on("error", function(err) {
+      return log.debug(`Redis Sub Error: ${err}`);
+    });
+    pub_client.on("reconnecting", function(attempt) {
+      return log.debug(`Redis Pub reconnecting... Attempt ${attempt}`);
+    });
+    sub_client.on("reconnecting", function(attempt) {
+      return log.debug(`Redis Sub reconnecting... Attempt ${attempt}`);
+    });
     io = require('socket.io')(server, {
       path: "/v3/socket.io",
       pingTimeout: 60000, // Increase ping timeout to 60 seconds
@@ -49,13 +71,6 @@
       connectTimeout: 45000, // Connection timeout
       transports: ['websocket'], // Prefer websocket transport
       adapter: require('@socket.io/redis-adapter').createAdapter(pub_client, sub_client)
-    });
-    // Handle Redis adapter client errors
-    pub_client.on("error", function(err) {
-      return log.debug(`Redis Pub Error: ${err}`);
-    });
-    sub_client.on("error", function(err) {
-      return log.debug(`Redis Sub Error: ${err}`);
     });
     // Setup Redis error handling and reconnection
     setup_redis_client = function(socket, username) {
@@ -65,7 +80,8 @@
         port: REDIS_PORT,
         retry_strategy: function(options) {
           return Math.min(options.attempt * 100, 3000);
-        }
+        },
+        connect_timeout: 10000
       });
       client.on("error", (err) => {
         return log.info(username, `Redis Error: ${err}`);
@@ -123,6 +139,9 @@
         }
         return log.info(this.username, `Disconnect (${(ref1 = this.feeds) != null ? ref1.length : void 0} feeds, ${ip}),` + ` there are now ${io.engine.clientsCount} users. ` + ` ${SECURE ? "(SSL)" : "(non-SSL)"}`);
       });
+    });
+    io.engine.on('connection_error', function(err) {
+      return log.debug(`Connection Error: ${err.code} - ${err.message}`);
     });
     io.sockets.on('error', function(err) {
       return log.debug(`Error (sockets): ${err}`);
