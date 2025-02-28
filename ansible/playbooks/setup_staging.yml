@@ -4,24 +4,24 @@
   vars_files:
     - ../env_vars/base.yml
   vars:
-    - update_apt_cache: yes
-    - motd_role: app
+    update_apt_cache: yes
+    motd_role: app
     # - disable_consul_services_ie_staging: yes # Defined in group vars
 
   roles:
-    - {role: 'base', tags: 'base'}
-    - {role: 'ufw', tags: 'ufw'}
-    - {role: 'docker', tags: 'docker'}
-    - {role: 'repo', tags: ['repo', 'pull']}
-    - {role: 'dnsmasq', tags: 'dnsmasq'}
-    - {role: 'consul', tags: 'consul'}
-    - {role: 'consul-client', tags: 'consul'}
+    - { role: "base", tags: "base" }
+    - { role: "ufw", tags: "ufw" }
+    - { role: "docker", tags: "docker" }
+    - { role: "repo", tags: ["repo", "pull"] }
+    - { role: "dnsmasq", tags: "dnsmasq" }
+    - { role: "consul", tags: "consul" }
+    - { role: "consul-client", tags: "consul" }
 
-    - {role: 'letsencrypt', tags: 'letsencrypt'}
-    - {role: 'haproxy', tags: 'haproxy'}
-    - {role: 'web', tags: 'web'}
-    - {role: 'nginx', tags: 'nginx'}
-    - {role: 'node', tags: 'node'}
-    - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
+    - { role: "letsencrypt", tags: "letsencrypt" }
+    - { role: "haproxy", tags: "haproxy" }
+    - { role: "web", tags: "web" }
+    - { role: "nginx", tags: "nginx" }
+    - { role: "node", tags: "node" }
+    - { role: "node-exporter", tags: ["node-exporter", "metrics"] }
     # - {role: 'prometheus', tags: ['prometheus', 'metrics']}
     # - {role: 'grafana', tags: ['grafana', 'metrics']}

@@ -5,8 +5,8 @@
   vars_files:
     - ../env_vars/base.yml
   vars:
-    - update_apt_cache: yes
-    - motd_role: app
+    update_apt_cache: yes
+    motd_role: app
 
   roles:
     - { role: "base", tags: "base" }

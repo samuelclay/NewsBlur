@@ -2,19 +2,19 @@
 - name: SETUP -> elasticsearch containers
   hosts: elasticsearch
   vars:
-    - update_apt_cache: yes
-    - motd_role: db
+    update_apt_cache: yes
+    motd_role: db
   vars_files:
     - ../env_vars/base.yml
   roles:
-    - {role: 'base', tags: 'base'}
-    - {role: 'ufw', tags: 'ufw'}
-    - {role: 'docker', tags: 'docker'}
-    - {role: 'repo', tags: ['repo', 'pull']}
-    - {role: 'dnsmasq', tags: 'dnsmasq'}
-    - {role: 'consul', tags: 'consul'}
-    - {role: 'consul-client', tags: 'consul'}
-    - {role: 'elasticsearch', tags: 'elasticsearch'}
-    - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
-    - {role: 'elasticsearch-exporter', tags: ['metrics', 'elasticsearch']}
-    - {role: 'monitor', tags: 'monitor'}
+    - { role: "base", tags: "base" }
+    - { role: "ufw", tags: "ufw" }
+    - { role: "docker", tags: "docker" }
+    - { role: "repo", tags: ["repo", "pull"] }
+    - { role: "dnsmasq", tags: "dnsmasq" }
+    - { role: "consul", tags: "consul" }
+    - { role: "consul-client", tags: "consul" }
+    - { role: "elasticsearch", tags: "elasticsearch" }
+    - { role: "node-exporter", tags: ["node-exporter", "metrics"] }
+    - { role: "elasticsearch-exporter", tags: ["metrics", "elasticsearch"] }
+    - { role: "monitor", tags: "monitor" }
