@@ -33,9 +33,31 @@ unread_counts = (server) =>
     else
         log.debug "Running as production server"
         
-    # Create Redis clients for Socket.IO adapter
-    pub_client = redis.createClient(REDIS_PORT, REDIS_SERVER)
-    sub_client = redis.createClient(REDIS_PORT, REDIS_SERVER)
+    # Create Redis clients for Socket.IO adapter with improved configuration
+    redis_opts = {
+        host: REDIS_SERVER,
+        port: REDIS_PORT,
+        retry_strategy: (options) ->
+            # Exponential backoff with a cap
+            return Math.min(options.attempt * 100, 3000)
+        connect_timeout: 10000
+    }
+    
+    pub_client = redis.createClient(redis_opts)
+    sub_client = redis.createClient(redis_opts)
+
+    # Handle Redis adapter client errors
+    pub_client.on "error", (err) ->
+        log.debug "Redis Pub Error: #{err}"
+        
+    sub_client.on "error", (err) ->
+        log.debug "Redis Sub Error: #{err}"
+        
+    pub_client.on "reconnecting", (attempt) ->
+        log.debug "Redis Pub reconnecting... Attempt #{attempt}"
+        
+    sub_client.on "reconnecting", (attempt) ->
+        log.debug "Redis Sub reconnecting... Attempt #{attempt}"
 
     io = require('socket.io')(server, {
         path: "/v3/socket.io",
@@ -46,13 +68,6 @@ unread_counts = (server) =>
         adapter: require('@socket.io/redis-adapter').createAdapter(pub_client, sub_client)
     })
 
-    # Handle Redis adapter client errors
-    pub_client.on "error", (err) ->
-        log.debug "Redis Pub Error: #{err}"
-        
-    sub_client.on "error", (err) ->
-        log.debug "Redis Sub Error: #{err}"
-
     # Setup Redis error handling and reconnection
     setup_redis_client = (socket, username) ->
         client = redis.createClient({
@@ -60,6 +75,7 @@ unread_counts = (server) =>
             port: REDIS_PORT,
             retry_strategy: (options) ->
                 return Math.min(options.attempt * 100, 3000)
+            connect_timeout: 10000
         })
         
         client.on "error", (err) =>
@@ -111,6 +127,9 @@ unread_counts = (server) =>
             log.info @username, "Disconnect (#{@feeds?.length} feeds, #{ip})," +
                         " there are now #{io.engine.clientsCount} users. " +
                         " #{if SECURE then "(SSL)" else "(non-SSL)"}"
+
+    io.engine.on 'connection_error', (err) ->
+        log.debug "Connection Error: #{err.code} - #{err.message}"
 
     io.sockets.on 'error', (err) ->
         log.debug "Error (sockets): #{err}"
