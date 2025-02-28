@@ -24,11 +24,10 @@ unread_counts = require('./unread_counts.js').unread_counts
 if not ENV_DEV and not ENV_PROD and not ENV_DOCKER
   throw new Error("Set envvar NODE_ENV=<development,docker,production>")
 
-if ENV_PROD or ENV_DEV or ENV_DOCKER
+if false
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     debug: true,
-    tracesSampleRate: 1.0,
     serverName: process.env.SERVER_NAME
   })
 

@@ -45,11 +45,10 @@
     throw new Error("Set envvar NODE_ENV=<development,docker,production>");
   }
 
-  if (ENV_PROD || ENV_DEV || ENV_DOCKER) {
+  if (false) {
     Sentry.init({
       dsn: process.env.SENTRY_DSN,
       debug: true,
-      tracesSampleRate: 1.0,
       serverName: process.env.SERVER_NAME
     });
     app.get("/debug", function(req, res) {
