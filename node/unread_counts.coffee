@@ -114,7 +114,7 @@ unread_counts = (server) =>
             # Track connections by username for debugging
             active_connections[@username] = active_connections[@username] || []
             active_connections[@username].push(socket_id)
-            log.debug "#{@username} now has #{active_connections[@username].length} active connections"
+            log.debug "#{@username} now has #{active_connections[@username].length} active connections, adding #{socket_id}"
             
             if not @username
                 return
@@ -142,7 +142,7 @@ unread_counts = (server) =>
                 socket.emit event_name, channel, message
 
         socket.on 'disconnect', (reason) =>
-            log.debug "Socket #{socket_id} disconnected: #{reason}"
+            log.debug "Socket #{socket_id} disconnected #{@username}: #{reason}"
             
             # Update connection tracking
             if @username and active_connections[@username]
@@ -150,6 +150,8 @@ unread_counts = (server) =>
                 if idx > -1
                     active_connections[@username].splice(idx, 1)
                     log.debug "#{@username} now has #{active_connections[@username].length} active connections"
+                else
+                    log.debug "Socket #{socket_id} not found in active connections for #{@username}"
                 if active_connections[@username].length == 0
                     delete active_connections[@username]
             

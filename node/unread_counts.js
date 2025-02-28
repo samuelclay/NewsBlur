@@ -122,7 +122,7 @@
         // Track connections by username for debugging
         active_connections[this.username] = active_connections[this.username] || [];
         active_connections[this.username].push(socket_id);
-        log.debug(`${this.username} now has ${active_connections[this.username].length} active connections`);
+        log.debug(`${this.username} now has ${active_connections[this.username].length} active connections, adding ${socket_id}`);
         if (!this.username) {
           return;
         }
@@ -157,7 +157,7 @@
       });
       return socket.on('disconnect', (reason) => {
         var idx, ref, ref1;
-        log.debug(`Socket ${socket_id} disconnected: ${reason}`);
+        log.debug(`Socket ${socket_id} disconnected ${this.username}: ${reason}`);
         
         // Update connection tracking
         if (this.username && active_connections[this.username]) {
@@ -165,6 +165,8 @@
           if (idx > -1) {
             active_connections[this.username].splice(idx, 1);
             log.debug(`${this.username} now has ${active_connections[this.username].length} active connections`);
+          } else {
+            log.debug(`Socket ${socket_id} not found in active connections for ${this.username}`);
           }
           if (active_connections[this.username].length === 0) {
             delete active_connections[this.username];
