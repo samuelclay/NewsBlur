@@ -61,10 +61,16 @@ unread_counts = (server) =>
 
     io = require('socket.io')(server, {
         path: "/v3/socket.io",
-        pingTimeout: 60000,        # Increase ping timeout to 60 seconds
-        pingInterval: 25000,       # Send ping every 25 seconds
-        connectTimeout: 45000,     # Connection timeout
-        transports: ['websocket'], # Prefer websocket transport
+        pingTimeout: 120000,        # Increased from 60s to 120s
+        pingInterval: 30000,        # Increased from 25s to 30s
+        connectTimeout: 60000,      # Increased from 45s to 60s
+        transports: ['websocket'],  # Prefer websocket transport
+        maxHttpBufferSize: 1e8,     # Increase buffer size to 100MB
+        cors: {
+            origin: "*",
+            methods: ["GET", "POST"]
+        },
+        allowEIO3: true,            # Allow compatibility with Socket.IO v3 clients
         adapter: require('@socket.io/redis-adapter').createAdapter(pub_client, sub_client)
     })
 
@@ -105,8 +111,12 @@ unread_counts = (server) =>
         # Store socket data for tracking
         socket.data = {
             ip: ip,
-            socket_id: socket_id
+            socket_id: socket_id,
+            connected_at: Date.now()
         }
+        
+        # Set a longer ping timeout for this socket
+        socket.conn.pingTimeout = 120000
         
         socket.conn.on 'error', (err) ->
             log.debug "Socket #{socket_id} - connection error: #{err}"
@@ -118,12 +128,17 @@ unread_counts = (server) =>
             # Store user data directly on the socket for access during disconnect
             socket.data.feeds = feeds
             socket.data.username = username
+            socket.data.subscribed_at = Date.now()
             
             log.info username, "Connecting (#{feeds.length} feeds, #{ip}), (#{io.engine.clientsCount} connected) #{if SECURE then "(SSL)" else ""}"
             
             # Track connections by username for debugging
             active_connections[username] = active_connections[username] || {}
-            active_connections[username][socket_id] = true
+            active_connections[username][socket_id] = {
+                connected_at: socket.data.connected_at,
+                subscribed_at: socket.data.subscribed_at,
+                feed_count: feeds.length
+            }
             log.debug "#{username} now has #{Object.keys(active_connections[username]).length} active connections, adding #{socket_id}"
             
             if not username
@@ -157,8 +172,15 @@ unread_counts = (server) =>
             feeds = socket.data.feeds
             ip = socket.data.ip
             socket_id = socket.data.socket_id
+            connected_at = socket.data.connected_at
+            subscribed_at = socket.data.subscribed_at
             
-            log.debug "Socket #{socket_id} disconnected: #{reason}, username: #{username}"
+            # Calculate connection duration
+            now = Date.now()
+            connection_duration = now - (connected_at || now)
+            subscription_duration = if subscribed_at then (now - subscribed_at) else 0
+            
+            log.debug "Socket #{socket_id} disconnected: #{reason}, username: #{username}, connection duration: #{connection_duration}ms, subscription duration: #{subscription_duration}ms"
             
             # Update connection tracking
             if username and active_connections[username]

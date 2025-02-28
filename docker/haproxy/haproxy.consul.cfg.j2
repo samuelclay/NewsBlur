@@ -164,8 +164,14 @@ backend node_images
     {% for host in groups.hnode_images %}
         server {{host}} {{host}}.node.nyc1.consul:8088
     {% endfor %}
+
 backend node_socket
     balance roundrobin
+    option http-server-close
+    timeout client 120s
+    timeout server 120s
+    timeout connect 10s
+    timeout tunnel 3600s
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     {% for host in groups.hnode_socket %}
         server {{host}} {{host}}.node.nyc1.consul:8008
