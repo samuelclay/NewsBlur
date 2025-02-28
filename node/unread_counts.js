@@ -107,23 +107,30 @@
       ip = socket.handshake.headers['X-Forwarded-For'] || socket.handshake.address;
       socket_id = socket.id;
       log.debug(`Socket connected: ${socket_id} from ${ip}`);
+      
+      // Store socket data for tracking
+      socket.data = {
+        ip: ip,
+        socket_id: socket_id
+      };
       socket.conn.on('error', function(err) {
         return log.debug(`Socket ${socket_id} - connection error: ${err}`);
       });
       socket.conn.on('close', function(reason) {
         return log.debug(`Socket ${socket_id} - connection closed: ${reason}`);
       });
-      socket.on('subscribe:feeds', (feeds, username1) => {
+      socket.on('subscribe:feeds', (feeds, username) => {
         var ref;
-        this.feeds = feeds;
-        this.username = username1;
-        log.info(this.username, `Connecting (${this.feeds.length} feeds, ${ip}), (${io.engine.clientsCount} connected) ${SECURE ? "(SSL)" : ""}`);
+        // Store user data directly on the socket for access during disconnect
+        socket.data.feeds = feeds;
+        socket.data.username = username;
+        log.info(username, `Connecting (${feeds.length} feeds, ${ip}), (${io.engine.clientsCount} connected) ${SECURE ? "(SSL)" : ""}`);
         
         // Track connections by username for debugging
-        active_connections[this.username] = active_connections[this.username] || [];
-        active_connections[this.username].push(socket_id);
-        log.debug(`${this.username} now has ${active_connections[this.username].length} active connections, adding ${socket_id}`);
-        if (!this.username) {
+        active_connections[username] = active_connections[username] || {};
+        active_connections[username][socket_id] = true;
+        log.debug(`${username} now has ${Object.keys(active_connections[username]).length} active connections, adding ${socket_id}`);
+        if (!username) {
           return;
         }
         socket.on("error", function(err) {
@@ -132,50 +139,56 @@
         if ((ref = socket.subscribe) != null) {
           ref.quit();
         }
-        socket.subscribe = setup_redis_client(socket, this.username);
+        socket.subscribe = setup_redis_client(socket, username);
         socket.subscribe.on("connect", () => {
           var feeds_story;
-          log.info(this.username, `Connected (${this.feeds.length} feeds, ${ip}), (${io.engine.clientsCount} connected) ${SECURE ? "(SSL)" : "(non-SSL)"}`);
-          socket.subscribe.subscribe(this.feeds);
-          feeds_story = this.feeds.map(function(f) {
+          log.info(username, `Connected (${feeds.length} feeds, ${ip}), (${io.engine.clientsCount} connected) ${SECURE ? "(SSL)" : "(non-SSL)"}`);
+          socket.subscribe.subscribe(feeds);
+          feeds_story = feeds.map(function(f) {
             return `${f}:story`;
           });
           socket.subscribe.subscribe(feeds_story);
-          return socket.subscribe.subscribe(this.username);
+          return socket.subscribe.subscribe(username);
         });
         return socket.subscribe.on('message', (channel, message) => {
           var event_name;
           event_name = 'feed:update';
-          if (channel === this.username) {
+          if (channel === username) {
             event_name = 'user:update';
           } else if (channel.indexOf(':story') >= 0) {
             event_name = 'feed:story:new';
           }
-          log.info(this.username, `Update on ${channel}: ${event_name} - ${message}`);
+          log.info(username, `Update on ${channel}: ${event_name} - ${message}`);
           return socket.emit(event_name, channel, message);
         });
       });
-      return socket.on('disconnect', (reason) => {
-        var idx, ref, ref1;
-        log.debug(`Socket ${socket_id} disconnected ${this.username}: ${reason}`);
+      return socket.on('disconnect', function(reason) {
+        var feeds, ref, username;
+        // Use the data stored on the socket
+        username = socket.data.username;
+        feeds = socket.data.feeds;
+        ip = socket.data.ip;
+        socket_id = socket.data.socket_id;
+        log.debug(`Socket ${socket_id} disconnected: ${reason}, username: ${username}`);
         
         // Update connection tracking
-        if (this.username && active_connections[this.username]) {
-          idx = active_connections[this.username].indexOf(socket_id);
-          if (idx > -1) {
-            active_connections[this.username].splice(idx, 1);
-            log.debug(`${this.username} now has ${active_connections[this.username].length} active connections`);
+        if (username && active_connections[username]) {
+          if (active_connections[username][socket_id]) {
+            delete active_connections[username][socket_id];
+            log.debug(`${username} now has ${Object.keys(active_connections[username]).length} active connections after removing ${socket_id}`);
           } else {
-            log.debug(`Socket ${socket_id} not found in active connections for ${this.username}`);
+            log.debug(`Socket ${socket_id} not found in active connections for ${username}`);
           }
-          if (active_connections[this.username].length === 0) {
-            delete active_connections[this.username];
+          if (Object.keys(active_connections[username]).length === 0) {
+            delete active_connections[username];
           }
         }
         if ((ref = socket.subscribe) != null) {
           ref.quit();
         }
-        return log.info(this.username, `Disconnect (${(ref1 = this.feeds) != null ? ref1.length : void 0} feeds, ${ip}), there are now ${io.engine.clientsCount} users. ${SECURE ? "(SSL)" : "(non-SSL)"}`);
+        if (username && feeds) {
+          return log.info(username, `Disconnect (${feeds.length} feeds, ${ip}), there are now ${io.engine.clientsCount} users. ${SECURE ? "(SSL)" : "(non-SSL)"}`);
+        }
       });
     });
     io.engine.on('connection_error', function(err) {
@@ -187,10 +200,15 @@
     
     // Periodically log connection stats
     setInterval(function() {
-      var total_connections, total_users;
+      var sockets, total_connections, total_tracked, total_users, username;
       total_users = Object.keys(active_connections).length;
       total_connections = io.engine.clientsCount;
-      return log.debug(`Connection stats: ${total_users} users with ${total_connections} total connections`);
+      total_tracked = 0;
+      for (username in active_connections) {
+        sockets = active_connections[username];
+        total_tracked += Object.keys(sockets).length;
+      }
+      return log.debug(`Connection stats: ${total_users} users with ${total_connections} total connections (${total_tracked} tracked)`);
     }, 60000);
     return io;
   };
