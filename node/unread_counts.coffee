@@ -87,13 +87,34 @@ unread_counts = (server) =>
             
         return client
 
+    # Track active connections by username for debugging
+    active_connections = {}
+    
+    # Log engine events for debugging
+    io.engine.on 'connection', (socket) ->
+        log.debug "Engine connection established: #{socket.id}"
+        
+    io.engine.on 'close', (socket) ->
+        log.debug "Engine connection closed: #{socket.id}"
+
     io.on 'connection', (socket) ->
         ip = socket.handshake.headers['X-Forwarded-For'] || socket.handshake.address
+        socket_id = socket.id
+        log.debug "Socket connected: #{socket_id} from #{ip}"
+        
+        socket.conn.on 'error', (err) ->
+            log.debug "Socket #{socket_id} - connection error: #{err}"
+            
+        socket.conn.on 'close', (reason) ->
+            log.debug "Socket #{socket_id} - connection closed: #{reason}"
 
         socket.on 'subscribe:feeds', (@feeds, @username) =>
-            log.info @username, "Connecting (#{@feeds.length} feeds, #{ip})," +
-                    " (#{io.engine.clientsCount} connected) " +
-                    " #{if SECURE then "(SSL)" else ""}"
+            log.info @username, "Connecting (#{@feeds.length} feeds, #{ip}), (#{io.engine.clientsCount} connected) #{if SECURE then "(SSL)" else ""}"
+            
+            # Track connections by username for debugging
+            active_connections[@username] = active_connections[@username] || []
+            active_connections[@username].push(socket_id)
+            log.debug "#{@username} now has #{active_connections[@username].length} active connections"
             
             if not @username
                 return
@@ -105,9 +126,7 @@ unread_counts = (server) =>
             socket.subscribe = setup_redis_client(socket, @username)
             
             socket.subscribe.on "connect", =>
-                log.info @username, "Connected (#{@feeds.length} feeds, #{ip})," +
-                        " (#{io.engine.clientsCount} connected) " +
-                        " #{if SECURE then "(SSL)" else "(non-SSL)"}"
+                log.info @username, "Connected (#{@feeds.length} feeds, #{ip}), (#{io.engine.clientsCount} connected) #{if SECURE then "(SSL)" else "(non-SSL)"}"
                 socket.subscribe.subscribe @feeds
                 feeds_story = @feeds.map (f) -> "#{f}:story"
                 socket.subscribe.subscribe feeds_story
@@ -122,17 +141,33 @@ unread_counts = (server) =>
                 log.info @username, "Update on #{channel}: #{event_name} - #{message}"
                 socket.emit event_name, channel, message
 
-        socket.on 'disconnect', () =>
+        socket.on 'disconnect', (reason) =>
+            log.debug "Socket #{socket_id} disconnected: #{reason}"
+            
+            # Update connection tracking
+            if @username and active_connections[@username]
+                idx = active_connections[@username].indexOf(socket_id)
+                if idx > -1
+                    active_connections[@username].splice(idx, 1)
+                    log.debug "#{@username} now has #{active_connections[@username].length} active connections"
+                if active_connections[@username].length == 0
+                    delete active_connections[@username]
+            
             socket.subscribe?.quit()
-            log.info @username, "Disconnect (#{@feeds?.length} feeds, #{ip})," +
-                        " there are now #{io.engine.clientsCount} users. " +
-                        " #{if SECURE then "(SSL)" else "(non-SSL)"}"
+            log.info @username, "Disconnect (#{@feeds?.length} feeds, #{ip}), there are now #{io.engine.clientsCount} users. #{if SECURE then "(SSL)" else "(non-SSL)"}"
 
     io.engine.on 'connection_error', (err) ->
         log.debug "Connection Error: #{err.code} - #{err.message}"
 
     io.sockets.on 'error', (err) ->
         log.debug "Error (sockets): #{err}"
+        
+    # Periodically log connection stats
+    setInterval ->
+        total_users = Object.keys(active_connections).length
+        total_connections = io.engine.clientsCount
+        log.debug "Connection stats: #{total_users} users with #{total_connections} total connections"
+    , 60000
 
     return io
 
