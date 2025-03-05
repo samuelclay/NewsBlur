@@ -11998,7 +11998,7 @@ form.opml_import_form input {
 }
 
 .NB-modal-exception .NB-modal-submit-button {
-    float: left;
+    display: inline-block;
 }
 
 .NB-modal-exception .NB-exception-submit-wrapper {

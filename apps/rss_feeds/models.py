@@ -118,6 +118,8 @@ class Feed(models.Model):
     similar_feeds = models.ManyToManyField(
         "self", related_name="feeds_by_similarity", symmetrical=False, blank=True
     )
+    is_forbidden = models.BooleanField(blank=True, null=True)
+    date_forbidden = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = "feeds"
