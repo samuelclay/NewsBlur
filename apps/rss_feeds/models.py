@@ -2741,6 +2741,10 @@ class Feed(models.Model):
             else:
                 total = min(total, settings.PRO_MINUTES_BETWEEN_FETCHES)
 
+        # Forbidden feeds get a min of 6 hours
+        if self.is_forbidden:
+            total = max(total, 60 * 6)
+
         if verbose:
             logging.debug(
                 "   ---> [%-30s] Fetched every %s min - Subs: %s/%s/%s/%s/%s Stories/day: %s"
