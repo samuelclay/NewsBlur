@@ -1004,7 +1004,8 @@ color: #a85b40;
 .NB-dark .NB-feedbar .NB-story-title-indicator:hover,
 .NB-dark .NB-feedbar .NB-feedbar-mark-feed-read:hover,
 .NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-time:hover,
-.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-expand:hover {
+.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-expand:hover,
+.NB-dark .NB-feedbar .NB-feedbar-discover-container:hover {
     background-color: #606466;
 }
 
