@@ -820,11 +820,11 @@
                 feed_id: this.active_feed
             });
 
-            // If the user has no feeds visible and only folders, then we need to show the next folder
-            if (!$next_feed) {
-                return this.show_next_folder(direction, $current_feed);
+            // If the user has no feeds visible and only folders, then we need to show the All Site Stories folder
+            if (!$next_feed || !$next_feed.length) {
+                return this.open_river_stories('river:all');
             }
-
+            console.log(['show_next_feed', $current_feed, $next_feed]);
             if ($current_feed == $next_feed) return;
             if ($current_feed && $current_feed.data('id') == $next_feed.data('id')) return;
 
