@@ -1872,8 +1872,8 @@ img.feed_favicon {
     width: 16px;
     height: 14px;
     background: transparent url('/media/embed/icons/nouns/direction.svg') no-repeat 1px 1px;
-    background-size: 12px;
-    margin: 0 8px;
+    background-size: 10px;
+    margin: 1px 4px 0 2px;
 }
 
 .NB-discover-popover .NB-discover-loading {
