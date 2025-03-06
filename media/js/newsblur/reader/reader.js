@@ -820,7 +820,12 @@
                 feed_id: this.active_feed
             });
 
-            if (!$next_feed || $current_feed == $next_feed) return;
+            // If the user has no feeds visible and only folders, then we need to show the next folder
+            if (!$next_feed) {
+                return this.show_next_folder(direction, $current_feed);
+            }
+
+            if ($current_feed == $next_feed) return;
             if ($current_feed && $current_feed.data('id') == $next_feed.data('id')) return;
 
             var next_feed_id = $next_feed.data('id');
