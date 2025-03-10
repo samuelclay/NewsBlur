@@ -582,6 +582,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     feed_address: feed.get('feed_address'),
                     order: this.view_setting(feed_id, 'order'),
                     read_filter: this.view_setting(feed_id, 'read_filter'),
+                    date_filter: this.view_setting(feed_id, 'date_filter'),
                     query: NEWSBLUR.reader.flags.search,
                     include_hidden: true
                 }, pre_callback,
@@ -751,6 +752,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             page: page,
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter'),
+            date_filter: this.view_setting(feed_id, 'date_filter'),
             query: NEWSBLUR.reader.flags.search,
             include_hidden: true,
             infrequent: false
@@ -794,6 +796,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             page: page,
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter'),
+            date_filter: this.view_setting(feed_id, 'date_filter'),
             query: options.query,
             limit: 5,
             infrequent: false,
@@ -906,7 +909,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             page: page,
             order: this.view_setting(feed_id, 'order'),
             global_feed: options.global,
-            read_filter: this.view_setting(feed_id, 'read_filter')
+            read_filter: this.view_setting(feed_id, 'read_filter'),
+            date_filter: this.view_setting(feed_id, 'date_filter')
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
@@ -927,6 +931,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             page: page,
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter'),
+            date_filter: this.view_setting(feed_id, 'date_filter'),
             query: NEWSBLUR.reader.flags.search
         }, pre_callback, error_callback, {
             'ajax_group': (page > 1 ? 'feed_page' : 'feed'),
@@ -1494,7 +1499,15 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             view_settings = { 'view': view_settings };
         }
         var params = { 'feed_id': feed_id + '' };
-        _.each(['view', 'order', 'read_filter', 'layout', 'dashboard_count', 'stories_discover'], function (facet) {
+        _.each([
+            'view',
+            'order',
+            'read_filter',
+            'layout',
+            'dashboard_count',
+            'stories_discover',
+            'date_filter'
+        ], function (facet) {
             if (setting[facet]) {
                 view_settings[facet.substr(0, 1)] = setting[facet];
                 params['feed_' + facet + '_setting'] = setting[facet];

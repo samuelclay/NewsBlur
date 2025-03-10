@@ -729,6 +729,7 @@ def load_single_feed(request, feed_id):
     offset = limit * (page - 1)
     order = request.GET.get("order", "newest")
     read_filter = request.GET.get("read_filter", "all")
+    date_filter = request.GET.get("date_filter", "all")
     query = request.GET.get("query", "").strip()
     include_story_content = is_true(request.GET.get("include_story_content", True))
     include_hidden = is_true(request.GET.get("include_hidden", False))
@@ -778,9 +779,11 @@ def load_single_feed(request, feed_id):
         )[offset : offset + limit]
         stories = Feed.format_stories(mstories)
     elif usersub and read_filter == "unread":
-        stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
+        stories = usersub.get_stories(
+            order=order, read_filter=read_filter, offset=offset, limit=limit, date_filter=date_filter
+        )
     else:
-        stories = feed.get_stories(offset, limit, order=order)
+        stories = feed.get_stories(offset, limit, order=order, date_filter=date_filter)
 
     checkpoint1 = time.time()
 
