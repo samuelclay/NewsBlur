@@ -130,6 +130,7 @@ class UserSubscription(models.Model):
         include_timestamps=False,
         group_by_feed=False,
         cutoff_date=None,
+        date_filter=None,
         across_all_feeds=True,
         store_stories_key=None,
         offset=0,
@@ -225,6 +226,16 @@ class UserSubscription(models.Model):
                 else:
                     ranked_stories_key = sorted_stories_key
 
+                # If there's a date filter, we need to filter the stories by date
+                if date_filter:
+                    # date_filter is a YYYY-MM-DD string, convert to timestamp
+                    date_filter_timestamp = int(
+                        datetime.datetime.strptime(date_filter, "%Y-%m-%d").strftime("%s")
+                    )
+                    pipeline.zremrangebyscore(
+                        ranked_stories_key, date_filter_timestamp, 2 * date_filter_timestamp
+                    )
+
                 # If archive premium user has manually marked an older story as unread
                 if is_archive and feed_id in manual_unread_feed_oldest_date and read_filter == "unread":
                     if order == "oldest":
@@ -277,35 +288,36 @@ class UserSubscription(models.Model):
                     else:
                         story_hashes.extend(hashes)
 
-        if store_stories_key:
-            chunk_count = 0
-            chunk_size = 1000
-            if len(unread_ranked_stories_keys) < chunk_size:
-                r.zunionstore(store_stories_key, unread_ranked_stories_keys)
-            else:
-                pipeline = r.pipeline()
-                for unread_ranked_stories_keys_group in chunks(unread_ranked_stories_keys, chunk_size):
-                    pipeline.zunionstore(
-                        f"{store_stories_key}-chunk{chunk_count}",
-                        unread_ranked_stories_keys_group,
-                        aggregate="MAX",
-                    )
-                    chunk_count += 1
-                pipeline.execute()
-                r.zunionstore(
-                    store_stories_key,
-                    [f"{store_stories_key}-chunk{i}" for i in range(chunk_count)],
-                    aggregate="MAX",
-                )
-                pipeline = r.pipeline()
-                for i in range(chunk_count):
-                    pipeline.delete(f"{store_stories_key}-chunk{i}")
-                pipeline.execute()
-
         if not store_stories_key:
             return story_hashes
 
-    def get_stories(self, offset=0, limit=6, order="newest", read_filter="all", cutoff_date=None):
+        chunk_count = 0
+        chunk_size = 1000
+        if len(unread_ranked_stories_keys) < chunk_size:
+            r.zunionstore(store_stories_key, unread_ranked_stories_keys)
+        else:
+            pipeline = r.pipeline()
+            for unread_ranked_stories_keys_group in chunks(unread_ranked_stories_keys, chunk_size):
+                pipeline.zunionstore(
+                    f"{store_stories_key}-chunk{chunk_count}",
+                    unread_ranked_stories_keys_group,
+                    aggregate="MAX",
+                )
+                chunk_count += 1
+            pipeline.execute()
+            r.zunionstore(
+                store_stories_key,
+                [f"{store_stories_key}-chunk{i}" for i in range(chunk_count)],
+                aggregate="MAX",
+            )
+            pipeline = r.pipeline()
+            for i in range(chunk_count):
+                pipeline.delete(f"{store_stories_key}-chunk{i}")
+            pipeline.execute()
+
+    def get_stories(
+        self, offset=0, limit=6, order="newest", read_filter="all", cutoff_date=None, date_filter=None
+    ):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         unread_ranked_stories_key = "zU:%s:%s" % (self.user_id, self.feed_id)
 
@@ -323,6 +335,7 @@ class UserSubscription(models.Model):
                 offset=offset,
                 limit=limit,
                 cutoff_date=cutoff_date,
+                date_filter=date_filter,
             )
 
         story_date_order = "%sstory_date" % ("" if order == "oldest" else "-")

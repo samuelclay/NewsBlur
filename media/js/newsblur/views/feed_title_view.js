@@ -103,6 +103,10 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
               <div class="NB-feedbar-options-container">\
                   <span class="NB-feedbar-options" role="button">\
                       <div class="NB-icon"></div>\
+                      <% if (NEWSBLUR.assets.view_setting(feed.id, "date_filter")) { %>\
+                        Stories older than <%= NEWSBLUR.assets.view_setting(feed.id, "date_filter") %>\
+                        &middot;\
+                      <% } %>\
                       <%= NEWSBLUR.assets.view_setting(feed.id, "read_filter") %>\
                       &middot;\
                       <%= NEWSBLUR.assets.view_setting(feed.id, "order") %>\

@@ -16045,6 +16045,12 @@ form.opml_import_form input {
     align-items: center;
 }
 
+
+.NB-filter-popover .NB-date-range-label {
+    font-size: 11px;
+
+}
+
 .NB-filter-popover .NB-popover-icon-control>.NB-icon {
     width: 24px;
     height: 16px;
@@ -16066,6 +16072,12 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/nouns/order.svg') no-repeat 0 0;
     background-size: 16px;
     filter: hue-rotate(312deg) saturate(10.5);
+}
+
+.NB-filter-popover .NB-popover-icon-control-date-filter>.NB-icon {
+    background: transparent url('/media/embed/icons/nouns/past.svg') no-repeat 0 0;
+    background-size: 16px;
+    filter: hue-rotate(280deg) saturate(1.0);
 }
 
 .NB-filter-popover .NB-popover-icon-control-infrequent>.NB-icon {

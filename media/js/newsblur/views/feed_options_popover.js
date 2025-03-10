@@ -28,7 +28,9 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         "click .NB-filter-popover-dashboard-add-module-left": "add_dashboard_module_left",
         "click .NB-filter-popover-dashboard-add-module-right": "add_dashboard_module_right",
         "click .NB-filter-popover-dashboard-remove-module": "remove_dashboard_module",
-        "change .NB-modal-feed-chooser": "change_feed"
+        "change .NB-modal-feed-chooser": "change_feed",
+        "change .NB-date-input": "change_date_range",
+        "click .NB-clear-date-button": "clear_date_range"
     },
 
     initialize: function (options) {
@@ -138,6 +140,25 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-90', role: "button" }, '90')
                     ])
                 ])),
+                $.make('div', { className: 'NB-popover-section-title' }, 'Read stories older than'),
+                $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-date-filter' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-date-filter' }, [
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-date-filter-1day', role: "button" }, '1 day'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-date-filter-1week', role: "button" }, '1 week'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-date-filter-1month', role: "button" }, '1 month'),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-date-filter-1year', role: "button" }, '1 year')
+                    ])
+                ]),
+                $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-date-range' }, [
+                    $.make('div', { className: 'NB-date-range-label' }, 'Before:'),
+                    $.make('input', {
+                        type: 'date',
+                        className: 'NB-date-input NB-date-before',
+                        placeholder: 'YYYY-MM-DD'
+                    }),
+                    $.make('button', { className: 'NB-clear-date-button' }, 'Clear')
+                ])
             ]),
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, 'Story title styling'),
@@ -253,6 +274,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     show_correct_feed_view_options_in_menu: function () {
         var order = NEWSBLUR.assets.view_setting(this.options.feed_id, 'order');
         var read_filter = NEWSBLUR.assets.view_setting(this.options.feed_id, 'read_filter');
+        var date_filter = NEWSBLUR.assets.view_setting(this.options.feed_id, 'date_filter');
         var dashboard_count = parseInt(NEWSBLUR.assets.view_setting(this.options.feed_id, 'dashboard_count'), 10);
         var mark_scroll = NEWSBLUR.assets.preference('mark_read_on_scroll_titles');
         var density = NEWSBLUR.assets.preference('density');
@@ -283,6 +305,10 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var $image_preview_sr = this.$('.NB-view-setting-imagepreview-small-right');
         var $image_preview_ll = this.$('.NB-view-setting-imagepreview-large-left');
         var $image_preview_lr = this.$('.NB-view-setting-imagepreview-large-right');
+        var $date_filter_1day = this.$('.NB-view-setting-date-filter-1day');
+        var $date_filter_1week = this.$('.NB-view-setting-date-filter-1week');
+        var $date_filter_1month = this.$('.NB-view-setting-date-filter-1month');
+        var $date_filter_1year = this.$('.NB-view-setting-date-filter-1year');
 
         $oldest.toggleClass('NB-active', order == 'oldest');
         $newest.toggleClass('NB-active', order != 'oldest');
@@ -311,10 +337,22 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         $image_preview_sr.toggleClass('NB-active', image_preview == "small-right");
         $image_preview_ll.toggleClass('NB-active', image_preview == "large-left");
         $image_preview_lr.toggleClass('NB-active', image_preview == "1" || image_preview == "large-right");
+        $date_filter_1day.toggleClass('NB-active', this.is_date_filter_for_days(date_filter, 1));
+        $date_filter_1week.toggleClass('NB-active', this.is_date_filter_for_days(date_filter, 7));
+        $date_filter_1month.toggleClass('NB-active', this.is_date_filter_for_days(date_filter, 30));
+        $date_filter_1year.toggleClass('NB-active', this.is_date_filter_for_days(date_filter, 365));
         this.$('.NB-options-feed-size li').removeClass('NB-active');
         this.$('.NB-options-feed-size .NB-options-feed-size-' + feed_size).addClass('NB-active');
         this.$('.NB-options-feed-font .NB-view-setting-option').removeClass('NB-active');
         this.$('.NB-options-feed-font .NB-view-setting-feed-font-' + feed_font).addClass('NB-active');
+
+        // Set date input to the date_filter value if it exists
+        console.log(['date_filter', date_filter]);
+        if (date_filter) {
+            this.$('.NB-date-before').val(date_filter);
+        } else {
+            this.$('.NB-date-before').val('');
+        }
 
         var frequencies = [5, 15, 30, 60, 90];
         for (var f in frequencies) {
@@ -340,7 +378,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     change_view_setting: function (e) {
         var $target = $(e.currentTarget);
         var options = {};
-        // console.log(['change_view_setting', $target]);
+        console.log(['change_view_setting', $target]);
 
         if ($target.hasClass("NB-view-setting-order-newest")) {
             options = { order: 'newest' };
@@ -358,6 +396,31 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             options = { read_filter: 'all' };
         } else if ($target.hasClass("NB-view-setting-readfilter-unread")) {
             options = { read_filter: 'unread' };
+        } else if ($target.hasClass("NB-view-setting-date-filter-1day")) {
+            var one_day_ago = this.get_date_string(1);
+            console.log(['one_day_ago', one_day_ago]);
+            options = {
+                date_filter: one_day_ago
+            };
+            this.$('.NB-date-before').val(one_day_ago);
+        } else if ($target.hasClass("NB-view-setting-date-filter-1week")) {
+            var one_week_ago = this.get_date_string(7);
+            options = {
+                date_filter: one_week_ago
+            };
+            this.$('.NB-date-before').val(one_week_ago);
+        } else if ($target.hasClass("NB-view-setting-date-filter-1month")) {
+            var one_month_ago = this.get_date_string(30);
+            options = {
+                date_filter: one_month_ago
+            };
+            this.$('.NB-date-before').val(one_month_ago);
+        } else if ($target.hasClass("NB-view-setting-date-filter-1year")) {
+            var one_year_ago = this.get_date_string(365);
+            options = {
+                date_filter: one_year_ago
+            };
+            this.$('.NB-date-before').val(one_year_ago);
         } else if ($target.hasClass("NB-view-setting-markscroll-unread")) {
             NEWSBLUR.assets.preference('mark_read_on_scroll_titles', false);
         } else if ($target.hasClass("NB-view-setting-markscroll-read")) {
@@ -519,7 +582,47 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         console.log(['Changing feed', feed_id])
         this.options.on_dashboard.model.change_feed(feed_id);
         this.close();
-    }
+    },
 
+    change_date_range: function () {
+        var before_date = this.$('.NB-date-before').val();
+        var after_date = this.$('.NB-date-after').val();
+
+        if (before_date || after_date) {
+            var options = {};
+            if (before_date) options.date_filter = before_date;
+
+            this.update_feed(options);
+            this.show_correct_feed_view_options_in_menu();
+        }
+    },
+
+    clear_date_range: function () {
+        console.log(['clear_date_range']);
+        this.$('.NB-date-before').val('');
+        this.$('.NB-date-after').val('');
+
+        var options = {
+            date_filter: null
+        };
+
+        this.update_feed(options);
+        this.show_correct_feed_view_options_in_menu();
+    },
+
+    get_date_string: function (days_ago) {
+        var today = new Date();
+        var one_day = 24 * 60 * 60 * 1000; // milliseconds in one day
+        var past_date = new Date(today.getTime() - days_ago * one_day);
+        var formatted_date = past_date.toISOString().split('T')[0];
+        return formatted_date;
+    },
+
+    is_date_filter_for_days: function (date_filter, days) {
+        if (!date_filter) return false;
+
+        var target_date = this.get_date_string(days);
+        return date_filter === target_date;
+    }
 
 });
