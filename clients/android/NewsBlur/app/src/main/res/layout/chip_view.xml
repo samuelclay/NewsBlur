@@ -5,11 +5,13 @@
     style="?chip"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:gravity="center"
+    android:gravity="center_vertical|start"
     android:textSize="11sp"
     app:chipCornerRadius="4dp"
+    app:chipEndPadding="8dp"
     app:chipIconSize="14dp"
     app:chipMinHeight="18dp"
     app:chipMinTouchTargetSize="18dp"
+    app:chipStartPadding="8dp"
     app:textEndPadding="0dp"
-    app:textStartPadding="3dp" />
+    app:textStartPadding="0dp" />

@@ -578,8 +578,8 @@
     <string name="sync_status_starred">Sync saved stories actions…</string>
     <string name="sync_status_stories">Fetching fresh stories…</string>
     <string name="sync_status_unreads">Storing%sunread stories…</string>
-    <string name="sync_status_text">Storing text for %s stories…</string>
-    <string name="sync_status_images">Storing %s images…</string>
+    <string name="sync_status_text">Storing text for %d stories…</string>
+    <string name="sync_status_images">Storing %d images…</string>
     <string name="sync_status_offline">Offline</string>
     <string name="sync_status_feed_add">Adding feed</string>
 
