@@ -64,6 +64,9 @@ public class AppConstants {
     // how many images to prefetch before updating the countdown UI
     public static final int IMAGE_PREFETCH_BATCH_SIZE = 6;
 
+    // how many original texts to fetch before updating the UI
+    public static final int ORIGINAL_TEXT_BATCH_SIZE = 10;
+
     // link to app feedback page
     public static final String FEEDBACK_URL = "https://forum.newsblur.com/new-topic?title=Android%3A+&body=";
 

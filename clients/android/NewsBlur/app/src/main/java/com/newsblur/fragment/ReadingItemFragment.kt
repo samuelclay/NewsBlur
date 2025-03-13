@@ -791,7 +791,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                             reloadStoryContent()
                         } else {
                             com.newsblur.util.Log.d(this, "orig text not yet cached for story: " + story.storyHash)
-                            OriginalTextService.addPriorityHash(story.storyHash)
+                            OriginalTextService.addHash(story.storyHash)
                             triggerSync()
                         }
                     }
@@ -1063,6 +1063,13 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     fun scrollVerticallyBy(dy: Int) {
         binding.readingScrollview.smoothScrollBy(0, dy)
     }
+
+    /**
+     * Determines whether the fragment should receive an update for story original text content.
+     * This ensures that only fragments that actually need the update will process it,
+     * preventing unnecessary reprocessing.
+     */
+    fun shouldReceiveUpdateText(updateType: Int) = updateType and UPDATE_TEXT != 0 && originalText == null
 
     companion object {
         private const val BUNDLE_SCROLL_POS_REL = "scrollStateRel"

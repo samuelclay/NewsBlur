@@ -1061,7 +1061,7 @@ public class NBSyncService extends JobService {
         if (RecountsRunning) return context.getResources().getString(R.string.sync_status_recounts);
         if (StorySyncRunning) return context.getResources().getString(R.string.sync_status_stories);
         if (UnreadsService.activelyRunning) return String.format(context.getResources().getString(R.string.sync_status_unreads), UnreadsService.getPendingCount());
-        if (OriginalTextService.activelyRunning) return String.format(context.getResources().getString(R.string.sync_status_text), OriginalTextService.getPendingCount());
+        if (OriginalTextService.getActivelyRunning()) return String.format(context.getResources().getString(R.string.sync_status_text), OriginalTextService.getPendingCount());
         if (ImagePrefetchService.activelyRunning) return String.format(context.getResources().getString(R.string.sync_status_images), ImagePrefetchService.getPendingCount());
         return null;
     }

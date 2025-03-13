@@ -425,7 +425,17 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
             updateOverlayNav()
         }
 
-        readingFragment?.handleUpdate(updateType)
+        // update the current fragment
+        val currentPosition = pager?.currentItem ?: return
+        val currentFragment = readingAdapter?.getExistingItem(currentPosition)
+        currentFragment?.handleUpdate(updateType)
+
+        // send the update to the previous and next fragments because the update could
+        // be for one of them to load the on demand fetched content
+        val prevFragment = readingAdapter?.getExistingItem(currentPosition - 1)
+        val nextFragment = readingAdapter?.getExistingItem(currentPosition + 1)
+        prevFragment?.let { if (it.shouldReceiveUpdateText(updateType)) it.handleUpdate(updateType) }
+        nextFragment?.let { if (it.shouldReceiveUpdateText(updateType)) it.handleUpdate(updateType) }
     }
 
     // interface OnPageChangeListener
