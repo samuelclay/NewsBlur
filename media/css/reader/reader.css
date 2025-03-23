@@ -11994,6 +11994,9 @@ form.opml_import_form input {
 
 .NB-modal-exception .NB-exception-option-meta-recommended {
     color: #4A9937;
+    order: 5;
+    flex: auto;
+    text-align: right;
 }
 
 .NB-modal-exception .NB-modal-submit input.NB-modal-submit-green {
