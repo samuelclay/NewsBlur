@@ -605,10 +605,8 @@ class ProcessFeed:
                     "   ---> [%-30s] ~SB~FRHTTP Status code: %s. Checking address..."
                     % (self.feed.log_title[:30], self.fpf.status)
                 )
-                if self.fpf.status == 403 and not self.feed.is_forbidden:
-                    self.feed.is_forbidden = True
-                    self.feed.date_forbidden = datetime.datetime.now()
-                    self.feed = self.feed.save()
+                if self.fpf.status in 403 and not self.feed.is_forbidden:
+                    self.feed = self.feed.set_is_forbidden()
                 fixed_feed = None
                 if not self.feed.known_good:
                     fixed_feed, feed = self.feed.check_feed_link_for_feed_address()
@@ -652,6 +650,8 @@ class ProcessFeed:
                     fixed_feed, feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(553, "Not an RSS feed", self.fpf.bozo_exception)
+                    if not self.feed.is_forbidden:
+                        self.feed = self.feed.set_is_forbidden()
                 else:
                     self.feed = feed
                 self.feed = self.feed.save()

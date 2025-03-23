@@ -467,6 +467,12 @@ class Feed(models.Model):
                 user_id, alert_id = match.groups()
                 self.feed_address = "http://www.google.com/alerts/feeds/%s/%s" % (user_id, alert_id)
 
+    def set_is_forbidden(self):
+        self.is_forbidden = True
+        self.date_forbidden = datetime.datetime.now()
+
+        return self.save()
+
     @classmethod
     def schedule_feed_fetches_immediately(cls, feed_ids, user_id=None):
         if settings.DEBUG:
