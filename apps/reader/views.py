@@ -3223,3 +3223,48 @@ def print_story(request):
         "reader/print.xhtml",
         {"story": story, "local_datetime": localtime_for_timezone(story_date, timezone)},
     )
+
+
+@json.json_view
+def save_dashboard_rivers(request):
+    try:
+        data = json.decode(request.body)
+        dashboard_rivers = data["dashboard_rivers"]
+    except KeyError:
+        return {"code": -1, "message": "Invalid JSON data"}
+
+    if not isinstance(dashboard_rivers, list):
+        return {"code": -1, "message": "dashboard_rivers must be a list"}
+
+    # Validate all rivers first
+    for river_data in dashboard_rivers:
+        if not all(k in river_data for k in ["river_id", "river_side", "river_order"]):
+            return {"code": -1, "message": "Each river must have river_id, river_side, and river_order"}
+
+        try:
+            river_order = int(river_data["river_order"])
+            if river_order < 0:
+                return {"code": -1, "message": "river_order must be non-negative"}
+        except ValueError:
+            return {"code": -1, "message": "river_order must be an integer"}
+
+    logging.user(request, "~FCSaving dashboard rivers: ~SB%s~SN" % dashboard_rivers)
+
+    # Delete all existing rivers for this user
+    MDashboardRiver.objects(user_id=request.user.pk).delete()
+
+    # Save new rivers in order
+    for river_data in dashboard_rivers:
+        MDashboardRiver.objects.create(
+            user_id=request.user.pk,
+            river_id=river_data["river_id"],
+            river_side=river_data["river_side"],
+            river_order=int(river_data["river_order"]),
+        )
+
+    # Get updated rivers
+    dashboard_rivers = MDashboardRiver.get_user_rivers(request.user.pk)
+
+    return {
+        "dashboard_rivers": dashboard_rivers,
+    }
