@@ -820,7 +820,12 @@
                 feed_id: this.active_feed
             });
 
-            if (!$next_feed || $current_feed == $next_feed) return;
+            // If the user has no feeds visible and only folders, then we need to show the All Site Stories folder
+            if (!$next_feed || !$next_feed.length) {
+                return this.open_river_stories('river:all');
+            }
+            console.log(['show_next_feed', $current_feed, $next_feed]);
+            if ($current_feed == $next_feed) return;
             if ($current_feed && $current_feed.data('id') == $next_feed.data('id')) return;
 
             var next_feed_id = $next_feed.data('id');
@@ -5263,6 +5268,7 @@
             if (!force && NEWSBLUR.Globals.is_anonymous) return;
             // if (!force && !NEWSBLUR.Globals.is_premium) return;
             if (this.socket && !this.socket.connected) {
+                NEWSBLUR.log(["Reconnecting to existing socket..."]);
                 this.socket.connect();
             } else if (force || !this.socket || !this.socket.connected) {
                 var server = window.location.protocol + '//' + window.location.hostname;
@@ -5274,18 +5280,60 @@
                 if (local) {
                     port = https ? 8889 : 8888;
                 }
+
+                NEWSBLUR.log(["Creating new socket connection to", server + ":" + port]);
+
                 this.socket = this.socket || io.connect(server + ":" + port, {
-                    "reconnection delay": 2000,
-                    "connect timeout": 2000,
-                    "path": "/v3/socket.io",
-                    "transports": ['websocket'],
-                    "upgrade": false
+                    path: "/v3/socket.io",
+                    reconnectionDelay: 2000,
+                    connectTimeout: 45000,
+                    pingTimeout: 60000,
+                    pingInterval: 25000,
+                    transports: ['websocket'],
+                    upgrade: false
                 });
+
+                // Debug socket connection events
+                this.socket.on('connect_error', _.bind(function (error) {
+                    NEWSBLUR.log(["Socket connect_error:", error.message]);
+                }, this));
+
+                this.socket.on('connect_timeout', _.bind(function () {
+                    NEWSBLUR.log(["Socket connect_timeout"]);
+                }, this));
+
+                this.socket.on('reconnect', _.bind(function (attemptNumber) {
+                    NEWSBLUR.log(["Socket reconnected after", attemptNumber, "attempts"]);
+                }, this));
+
+                this.socket.on('reconnect_attempt', _.bind(function (attemptNumber) {
+                    NEWSBLUR.log(["Socket reconnect attempt #", attemptNumber]);
+                }, this));
+
+                this.socket.on('reconnect_error', _.bind(function (error) {
+                    NEWSBLUR.log(["Socket reconnect_error:", error.message]);
+                }, this));
+
+                this.socket.on('reconnect_failed', _.bind(function () {
+                    NEWSBLUR.log(["Socket reconnect_failed"]);
+                }, this));
+
+                this.socket.on('error', _.bind(function (error) {
+                    NEWSBLUR.log(["Socket error:", error]);
+                }, this));
+
+                this.socket.on('ping', _.bind(function () {
+                    NEWSBLUR.log(["Socket ping sent at", new Date().toISOString()]);
+                }, this));
+
+                this.socket.on('pong', _.bind(function (latency) {
+                    NEWSBLUR.log(["Socket pong received, latency:", latency, "ms"]);
+                }, this));
 
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
                 this.socket.on('connect', _.bind(function () {
                     var active_feeds = this.send_socket_active_feeds();
-                    NEWSBLUR.log(["Connected to real-time pubsub with " + active_feeds.length + " feeds."]);
+                    NEWSBLUR.log(["Connected to real-time pubsub with " + active_feeds.length + " feeds at", new Date().toISOString()]);
                     this.flags.feed_refreshing_in_realtime = true;
                     this.setup_feed_refresh();
                     NEWSBLUR.assets.stories.retry_failed_marked_read_stories();
@@ -5314,16 +5362,17 @@
                 this.socket.on('user:update', _.bind(this.handle_realtime_update, this));
 
 
-                this.socket.on('disconnect', _.bind(function () {
-                    NEWSBLUR.log(["Lost connection to real-time pubsub. Falling back to polling."]);
+                this.socket.on('disconnect', _.bind(function (reason) {
+                    NEWSBLUR.log(["Lost connection to real-time pubsub due to:", reason, "at", new Date().toISOString(), "Falling back to polling."]);
                     this.flags.feed_refreshing_in_realtime = false;
                     this.setup_feed_refresh();
                     // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
                     $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error').removeClass('NB-active');
                     this.apply_tipsy_titles();
                 }, this));
-                this.socket.on('error', _.bind(function () {
-                    NEWSBLUR.log(["Can't connect to real-time pubsub."]);
+
+                this.socket.on('error', _.bind(function (error) {
+                    NEWSBLUR.log(["Can't connect to real-time pubsub:", error]);
                     this.flags.feed_refreshing_in_realtime = false;
                     this.setup_feed_refresh();
                     // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
@@ -5331,15 +5380,24 @@
                     this.apply_tipsy_titles();
                     _.delay(_.bind(this.setup_socket_realtime_unread_counts, this), Math.random() * 60 * 1000);
                 }, this));
-                this.socket.on('reconnect_failed', _.bind(function () {
-                    console.log(["Socket.io reconnect failed"]);
-                }, this));
-                this.socket.on('reconnect', _.bind(function () {
-                    console.log(["Socket.io reconnected successfully!"]);
-                }, this));
-                this.socket.on('reconnecting', _.bind(function () {
-                    console.log(["Socket.io reconnecting..."]);
-                }, this));
+
+                // Add a heartbeat check to detect stalled connections
+                this.socket_heartbeat_interval = setInterval(_.bind(function () {
+                    if (this.socket && this.socket.connected) {
+                        var now = Date.now();
+                        if (!this.last_heartbeat_time) {
+                            this.last_heartbeat_time = now;
+                        } else if (now - this.last_heartbeat_time > 70000) { // 70 seconds (longer than pingInterval)
+                            NEWSBLUR.log(["Socket heartbeat missed, reconnecting...",
+                                "Last heartbeat:", new Date(this.last_heartbeat_time).toISOString(),
+                                "Current time:", new Date(now).toISOString(),
+                                "Difference:", now - this.last_heartbeat_time, "ms"]);
+                            this.socket.disconnect();
+                            this.socket.connect();
+                        }
+                        this.last_heartbeat_time = now;
+                    }
+                }, this), 30000); // Check every 30 seconds
             }
 
             // this.watch_navigator_online();

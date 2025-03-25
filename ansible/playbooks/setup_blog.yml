@@ -4,18 +4,18 @@
   vars_files:
     - ../env_vars/base.yml
   vars:
-    - update_apt_cache: yes
-    - motd_role: app
-    
+    update_apt_cache: yes
+    motd_role: app
+
   roles:
-    - {role: 'base', tags: 'base'}
-    - {role: 'ufw', tags: 'ufw'}
-    - {role: 'docker', tags: 'docker'}
-    - {role: 'repo', tags: ['repo', 'pull']}
-    - {role: 'dnsmasq', tags: 'dnsmasq'}
-    - {role: 'consul', tags: 'consul'}
-    - {role: 'consul-client', tags: 'consul'}
-    
-    - {role: 'nginx', tags: 'nginx'}
-    - {role: 'blog', tags: 'blog'}
-    - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
+    - { role: "base", tags: "base" }
+    - { role: "ufw", tags: "ufw" }
+    - { role: "docker", tags: "docker" }
+    - { role: "repo", tags: ["repo", "pull"] }
+    - { role: "dnsmasq", tags: "dnsmasq" }
+    - { role: "consul", tags: "consul" }
+    - { role: "consul-client", tags: "consul" }
+
+    - { role: "nginx", tags: "nginx" }
+    - { role: "blog", tags: "blog" }
+    - { role: "node-exporter", tags: ["node-exporter", "metrics"] }
