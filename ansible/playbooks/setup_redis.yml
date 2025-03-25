@@ -2,20 +2,23 @@
 - name: SETUP -> redis containers
   hosts: redis
   vars:
-    - update_apt_cache: yes
-    - motd_role: db
+    update_apt_cache: yes
+    motd_role: db
   vars_files:
     - ../env_vars/base.yml
   roles:
-    - {role: 'base', tags: 'base'}
-    - {role: 'ufw', tags: 'ufw'}
-    - {role: 'docker', tags: 'docker'}
-    - {role: 'repo', tags: ['repo', 'pull']}
-    - {role: 'dnsmasq', tags: 'dnsmasq'}
+    - { role: "base", tags: "base" }
+    - { role: "ufw", tags: "ufw" }
+    - { role: "docker", tags: "docker" }
+    - { role: "repo", tags: ["repo", "pull"] }
+    - { role: "dnsmasq", tags: "dnsmasq" }
     # - {role: 'consul', tags: 'consul'}
     # - {role: 'consul-client', tags: 'consul'}
-    - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
-    - {role: 'redis', tags: 'redis'}
-    - {role: 'flask_metrics', tags: ['flask-metrics', 'metrics', 'flask_metrics']}
-    - {role: 'monitor', tags: 'monitor'}
-    - {role: 'benchmark', tags: 'benchmark'}
+    - { role: "node-exporter", tags: ["node-exporter", "metrics"] }
+    - { role: "redis", tags: "redis" }
+    - {
+        role: "flask_metrics",
+        tags: ["flask-metrics", "metrics", "flask_metrics"],
+      }
+    - { role: "monitor", tags: "monitor" }
+    - { role: "benchmark", tags: "benchmark" }

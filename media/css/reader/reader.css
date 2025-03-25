@@ -1872,8 +1872,8 @@ img.feed_favicon {
     width: 16px;
     height: 14px;
     background: transparent url('/media/embed/icons/nouns/direction.svg') no-repeat 1px 1px;
-    background-size: 12px;
-    margin: 0 8px;
+    background-size: 10px;
+    margin: 1px 4px 0 2px;
 }
 
 .NB-discover-popover .NB-discover-loading {
@@ -5276,7 +5276,7 @@ body {
 
 .NB-sideoption .NB-sideoption-title {
     order: 1;
-    padding: 9px 8px 8px 16px;
+    padding: 0 0 0 16px;
     color: rgb(170, 170, 170);
     text-shadow: none;
     font-weight: normal;
@@ -5285,10 +5285,27 @@ body {
     transition: padding 0.36s ease-out,
         color 0.36s ease-out;
     min-width: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.NB-extra-narrow-content .NB-sideoption .NB-sideoption-title {
+    min-width: 40px;
 }
 
 .NB-feed-story-email {
     /* align-items: flex-start; */
+}
+
+.NB-sideoption.NB-feed-story-email {
+    display: flex;
+    justify-content: center;
+}
+
+.NB-sideoption.NB-feed-story-email .NB-sideoption-title {
+    min-width: 74px;
+    text-align: center;
 }
 
 .NB-content-narrow .NB-sideoption .NB-sideoption-title {
@@ -5332,12 +5349,14 @@ body {
 
 .NB-sideoption .NB-sideoption-icon {
     width: 24px;
-    padding: 9px 4px;
-    height: 100%;
+    padding: 0 4px;
+    height: 32px;
     background: transparent url('/media/embed/icons/nouns/saved-stories.svg') no-repeat 8px center;
     background-size: 16px;
     transition: background 0.36s ease-out, opacity 0.16s ease-in-out;
     order: 2;
+    display: flex;
+    align-items: center;
 }
 
 .NB-sideoption.NB-feed-story-train .NB-sideoption-icon {
@@ -11975,6 +11994,9 @@ form.opml_import_form input {
 
 .NB-modal-exception .NB-exception-option-meta-recommended {
     color: #4A9937;
+    order: 5;
+    flex: auto;
+    text-align: right;
 }
 
 .NB-modal-exception .NB-modal-submit input.NB-modal-submit-green {
@@ -11998,7 +12020,7 @@ form.opml_import_form input {
 }
 
 .NB-modal-exception .NB-modal-submit-button {
-    float: left;
+    display: inline-block;
 }
 
 .NB-modal-exception .NB-exception-submit-wrapper {
@@ -13714,7 +13736,7 @@ form.opml_import_form input {
 
 .NB-account-payments .NB-account-payment-date {
     float: left;
-    width: 140px;
+    width: 180px;
     font-weight: bold;
 }
 
