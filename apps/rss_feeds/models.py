@@ -118,6 +118,8 @@ class Feed(models.Model):
     similar_feeds = models.ManyToManyField(
         "self", related_name="feeds_by_similarity", symmetrical=False, blank=True
     )
+    is_forbidden = models.BooleanField(blank=True, null=True)
+    date_forbidden = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = "feeds"
@@ -464,6 +466,12 @@ class Feed(models.Model):
             if match:
                 user_id, alert_id = match.groups()
                 self.feed_address = "http://www.google.com/alerts/feeds/%s/%s" % (user_id, alert_id)
+
+    def set_is_forbidden(self):
+        self.is_forbidden = True
+        self.date_forbidden = datetime.datetime.now()
+
+        return self.save()
 
     @classmethod
     def schedule_feed_fetches_immediately(cls, feed_ids, user_id=None):
@@ -2738,6 +2746,13 @@ class Feed(models.Model):
                 total = min(total, 60)
             else:
                 total = min(total, settings.PRO_MINUTES_BETWEEN_FETCHES)
+
+        # Forbidden feeds get a min of 6 hours
+        if self.is_forbidden:
+            if self.num_subscribers > 1:
+                total = max(total, 60 * 12)
+            else:
+                total = max(total, 60 * 18)
 
         if verbose:
             logging.debug(

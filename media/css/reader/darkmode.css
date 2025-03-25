@@ -987,7 +987,8 @@ color: #a85b40;
 .NB-dark .NB-dashboard-river .NB-dashboard-river-options,
 .NB-dark #story_taskbar .NB-taskbar-options,
 .NB-dark .NB-feedbar .NB-story-title-indicator,
-.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read {
+.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read,
+.NB-dark .NB-feedbar .NB-feedbar-discover-container {
     color: #c0c0c0;
     border: 1px solid rgba(0, 0, 0, .3);
     background-color: #303739;
@@ -1003,7 +1004,8 @@ color: #a85b40;
 .NB-dark .NB-feedbar .NB-story-title-indicator:hover,
 .NB-dark .NB-feedbar .NB-feedbar-mark-feed-read:hover,
 .NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-time:hover,
-.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-expand:hover {
+.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-expand:hover,
+.NB-dark .NB-feedbar .NB-feedbar-discover-container:hover {
     background-color: #606466;
 }
 

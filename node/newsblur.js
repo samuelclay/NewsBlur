@@ -45,17 +45,16 @@
     throw new Error("Set envvar NODE_ENV=<development,docker,production>");
   }
 
-  if (ENV_PROD) {
+  if (false) {
     Sentry.init({
       dsn: process.env.SENTRY_DSN,
       debug: true,
-      tracesSampleRate: 1.0,
       serverName: process.env.SERVER_NAME
     });
     app.get("/debug", function(req, res) {
       throw new Error("Debugging Sentry");
     });
-    log.debug(`Setting up Sentry debugging: ${(ref = process.env.SENTRY_DSN) != null ? ref.substr(0, 20) : void 0}...`);
+    log.debug(`Setting up Sentry debugging: ${(ref = process.env.SENTRY_DSN) != null ? ref.substr(0, 60) : void 0}...`);
   }
 
   original_page(app);
