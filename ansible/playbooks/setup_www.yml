@@ -2,20 +2,20 @@
 - name: SETUP -> www containers
   hosts: haproxy
   vars:
-    - update_apt_cache: yes
-    - motd_role: app
+    update_apt_cache: yes
+    motd_role: app
   vars_files:
     - ../env_vars/base.yml
-    
+
   roles:
-    - {role: 'base', tags: 'base'}
-    - {role: 'ufw', tags: 'ufw'}
-    - {role: 'docker', tags: 'docker'}
-    - {role: 'repo', tags: ['repo', 'pull']}
-    - {role: 'dnsmasq', tags: 'dnsmasq'}
-    - {role: 'consul', tags: 'consul'}
-    - {role: 'consul-client', tags: 'consul'}
-    - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
-    - {role: 'letsencrypt', tags: 'letsencrypt'}
-    - {role: 'haproxy', tags: 'haproxy'}
-    - {role: 'flask_metrics', tags: ['flask-metrics', 'metrics']}
+    - { role: "base", tags: "base" }
+    - { role: "ufw", tags: "ufw" }
+    - { role: "docker", tags: "docker" }
+    - { role: "repo", tags: ["repo", "pull"] }
+    - { role: "dnsmasq", tags: "dnsmasq" }
+    - { role: "consul", tags: "consul" }
+    - { role: "consul-client", tags: "consul" }
+    - { role: "node-exporter", tags: ["node-exporter", "metrics"] }
+    - { role: "letsencrypt", tags: "letsencrypt" }
+    - { role: "haproxy", tags: "haproxy" }
+    - { role: "flask_metrics", tags: ["flask-metrics", "metrics"] }

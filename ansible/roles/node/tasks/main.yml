@@ -1,12 +1,12 @@
 ---
-- name: Ensure 'nb' user owns /srv/ recursively
-  become: yes
-  file:
-    path: /srv
-    owner: nb
-    group: nb
-    recurse: yes
-    state: directory
+# - name: Ensure 'nb' user owns /srv/ recursively
+#   become: yes
+#   file:
+#     path: /srv
+#     owner: nb
+#     group: nb
+#     recurse: yes
+#     state: directory
 
 - name: Copy node secrets
   copy:

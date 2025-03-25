@@ -169,6 +169,14 @@ class FetchFeed:
                 )
                 return FEED_ERRHTTP, None
             self.fpf = feedparser.parse(facebook_feed)
+        elif self.feed.is_forbidden:
+            forbidden_feed = self.fetch_forbidden()
+            if not forbidden_feed:
+                logging.debug(
+                    "   ***> [%-30s] ~FRForbidden feed fetch failed: %s" % (self.feed.log_title[:30], address)
+                )
+                return FEED_ERRHTTP, None
+            self.fpf = feedparser.parse(forbidden_feed)
 
         if not self.fpf and "json" in address:
             try:
@@ -333,6 +341,45 @@ class FetchFeed:
     def fetch_youtube(self):
         youtube_fetcher = YoutubeFetcher(self.feed, self.options)
         return youtube_fetcher.fetch()
+
+    def fetch_forbidden(self, js_scrape=False):
+        url = "https://scrapeninja.p.rapidapi.com/scrape"
+        if js_scrape:
+            url = "https://scrapeninja.p.rapidapi.com/scrape-js"
+
+        payload = {"url": self.feed.feed_address}
+        headers = {
+            "x-rapidapi-key": settings.SCRAPENINJA_API_KEY,
+            "x-rapidapi-host": "scrapeninja.p.rapidapi.com",
+            "Content-Type": "application/json",
+        }
+        logging.debug(
+            "   ***> [%-30s] ~FRForbidden feed fetch: %s -> %s" % (self.feed.log_title[:30], url, payload)
+        )
+        response = requests.post(url, json=payload, headers=headers)
+
+        if response.status_code != 200:
+            logging.debug(
+                "   ***> [%-30s] ~FRForbidden feed fetch failed: %s -> %s"
+                % (self.feed.log_title[:30], url, payload)
+            )
+            return None
+        body = response.json().get("body")
+        if not body:
+            logging.debug(
+                "   ***> [%-30s] ~FRForbidden feed fetch failed: %s -> %s"
+                % (self.feed.log_title[:30], url, response.json())
+            )
+            return None
+
+        if "enable JS" in body and not js_scrape:
+            return self.fetch_forbidden(js_scrape=True)
+
+        logging.debug(
+            "   ***> [%-30s] ~FRForbidden feed fetch succeeded: %s -> %s"
+            % (self.feed.log_title[:30], url, body)
+        )
+        return body
 
 
 class ProcessFeed:
@@ -558,6 +605,8 @@ class ProcessFeed:
                     "   ---> [%-30s] ~SB~FRHTTP Status code: %s. Checking address..."
                     % (self.feed.log_title[:30], self.fpf.status)
                 )
+                if self.fpf.status in 403 and not self.feed.is_forbidden:
+                    self.feed = self.feed.set_is_forbidden()
                 fixed_feed = None
                 if not self.feed.known_good:
                     fixed_feed, feed = self.feed.check_feed_link_for_feed_address()
@@ -601,6 +650,8 @@ class ProcessFeed:
                     fixed_feed, feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(553, "Not an RSS feed", self.fpf.bozo_exception)
+                    if not self.feed.is_forbidden:
+                        self.feed = self.feed.set_is_forbidden()
                 else:
                     self.feed = feed
                 self.feed = self.feed.save()

@@ -78,7 +78,7 @@
     #   - "443:443"
     #   - "1936:1936"
     hostname: "{{ inventory_hostname }}"
-    restart_policy: unless-stopped
+    restart_policy: always
     container_default_behavior: no_defaults
     command: "haproxy -f /srv/newsblur/docker/haproxy/haproxy.consul.cfg"
     volumes:

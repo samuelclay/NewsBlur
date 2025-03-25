@@ -1,7 +1,9 @@
 SHELL := /bin/bash
 CURRENT_UID := $(shell id -u)
 CURRENT_GID := $(shell id -g)
-newsblur := $(shell gtimeout 2s docker ps -qf "name=newsblur_web")
+# Use timeout on Linux and gtimeout on macOS
+TIMEOUT_CMD := $(shell command -v gtimeout || command -v timeout)
+newsblur := $(shell $(TIMEOUT_CMD) 2s docker ps -qf "name=newsblur_web")
 
 .PHONY: node
 
@@ -85,14 +87,23 @@ test:
 	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose exec newsblur_web bash -c "NOSE_EXCLUDE_DIRS=./vendor DJANGO_SETTINGS_MODULE=newsblur_web.test_settings python3 manage.py test -v 3 --failfast"
 
 keys:
-	mkdir config/certificates
+	mkdir -p config/certificates
 	openssl dhparam -out config/certificates/dhparam-2048.pem 2048
 	openssl req -x509 -nodes -new -sha256 -days 1024 -newkey rsa:2048 -keyout config/certificates/RootCA.key -out config/certificates/RootCA.pem -subj "/C=US/CN=Example-Root-CA"
 	openssl x509 -outform pem -in config/certificates/RootCA.pem -out config/certificates/RootCA.crt
 	openssl req -new -nodes -newkey rsa:2048 -keyout config/certificates/localhost.key -out config/certificates/localhost.csr -subj "/C=US/ST=YourState/L=YourCity/O=Example-Certificates/CN=localhost"
 	openssl x509 -req -sha256 -days 1024 -in config/certificates/localhost.csr -CA config/certificates/RootCA.pem -CAkey config/certificates/RootCA.key -CAcreateserial -out config/certificates/localhost.crt
 	cat config/certificates/localhost.crt config/certificates/localhost.key > config/certificates/localhost.pem
-	sudo /usr/bin/security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./config/certificates/RootCA.crt
+	@if [ "$$(uname)" = "Darwin" ]; then \
+		sudo /usr/bin/security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./config/certificates/RootCA.crt; \
+	elif [ "$$(uname)" = "Linux" ]; then \
+		echo "Installing certificate for Linux..."; \
+		sudo cp ./config/certificates/RootCA.crt /usr/local/share/ca-certificates/newsblur-rootca.crt || true; \
+		sudo update-ca-certificates || true; \
+		echo "Certificate installation attempted. If this fails, you may need to manually trust the certificate."; \
+	else \
+		echo "Unknown OS. Please manually trust the certificate at ./config/certificates/RootCA.crt"; \
+	fi
 
 # Doesn't work yet
 mkcert:

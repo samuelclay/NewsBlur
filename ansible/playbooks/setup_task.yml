@@ -4,16 +4,16 @@
   vars_files:
     - ../env_vars/base.yml
   vars:
-    - update_apt_cache: yes
-    - motd_role: task
+    update_apt_cache: yes
+    motd_role: task
   roles:
-    - {role: 'base', tags: 'base'}
-    - {role: 'docker', tags: 'docker'}
-    - {role: 'repo', tags: ['repo', 'pull']}
-    - {role: 'dnsmasq', tags: 'dnsmasq'}
-    - {role: 'consul', tags: 'consul'}
-    - {role: 'consul-client', tags: 'consul'}
-    - {role: 'apns', tags: 'apns'}
-    - {role: 'node-exporter', tags: ['node-exporter', 'metrics']}
-    - {role: 'celery_task', tags: 'celery'}
-    - {role: 'ufw', tags: 'ufw'}
+    - { role: "base", tags: "base" }
+    - { role: "docker", tags: "docker" }
+    - { role: "repo", tags: ["repo", "pull"] }
+    - { role: "dnsmasq", tags: "dnsmasq" }
+    - { role: "consul", tags: "consul" }
+    - { role: "consul-client", tags: "consul" }
+    - { role: "apns", tags: "apns" }
+    - { role: "node-exporter", tags: ["node-exporter", "metrics"] }
+    - { role: "celery_task", tags: "celery" }
+    - { role: "ufw", tags: "ufw" }
