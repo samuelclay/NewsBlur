@@ -917,7 +917,11 @@
 
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController {
     NSString *preferenceKey = @"split_behavior";
+#if TARGET_OS_MACCATALYST
+    NSArray *titles = @[@"Auto", @"columns_triple.png", @"columns_double.png", @"Full window"];
+#else
     NSArray *titles = @[@"Auto", @"columns_triple.png", @"columns_double.png", @"Full screen"];
+#endif
     NSArray *values = @[@"auto", @"tile", @"displace", @"overlay"];
     
     [menuViewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
