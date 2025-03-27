@@ -62,6 +62,24 @@ import Foundation
         }
     }
     
+    var asDictionary: [String: Any] {
+        let riverId: String
+        
+        if let feedId {
+            riverId = "feed:\(feedId)"
+        } else if folderId == "everything" {
+            riverId = "river:"
+        } else if folderId.contains(":") {
+            riverId = folderId
+        } else {
+            riverId = "river:\(folderId)"
+        }
+        
+        return ["river_id" : riverId,
+                "river_side" : side.rawValue,
+                "river_order" : order]
+    }
+    
     init(index: Int, side: Side, order: Int, feedId: String?, folderId: String, oldDash: DashList?) {
         self.index = index
         self.side = side

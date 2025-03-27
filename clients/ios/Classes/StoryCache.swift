@@ -194,7 +194,125 @@ import Foundation
         dashboardLeft.sort { $0.order < $1.order }
         dashboardRight.sort { $0.order < $1.order }
         
-        Self.cachedDashboard = localDashboard
+        updateDashOrder()
+    }
+    
+    func updateDashOrder() {
+        var index = 0
+        
+        dashboardLeft = updateIndexAndOrder(of: dashboardLeft, index: &index)
+        dashboardRight = updateIndexAndOrder(of: dashboardRight, index: &index)
+        
+        Self.cachedDashboard = dashboardLeft + dashboardRight
+    }
+    
+    private func updateIndexAndOrder(of dashSide: [DashList], index: inout Int) -> [DashList] {
+        var dashes = [DashList]()
+        
+        for (order, dash) in dashSide.enumerated() {
+            dash.index = index
+            dash.order = order
+            dashes.append(dash)
+            
+            index += 1
+        }
+        
+        return dashes
+    }
+    
+    func add(dash: DashList) {
+        if dash.side == .left {
+            dashboardLeft.insert(dash, at: dash.order)
+        } else {
+            dashboardRight.insert(dash, at: dash.order)
+        }
+        
+        updateDashOrder()
+        
+//        let index = Self.cachedDashboard.firstIndex(where: { $0.id == dash.id })
+        
+        saveDashboard(reloadingFrom: dash.index)
+    }
+    
+    private func move(dash: DashList, from dashSide: inout [DashList], to index: Int) {
+        dashSide.move(fromOffsets: IndexSet(integer: dash.order), toOffset: index)
+    }
+    
+    func moveEarlier(dash: DashList) {
+        let isFirstOnRight = dash.side == .right && dash.order == 0
+        
+        if isFirstOnRight {
+            dashboardRight.removeFirst()
+            dashboardLeft.append(dash)
+            dash.side = .left
+        } else if dash.side == .left {
+            move(dash: dash, from: &dashboardLeft, to: dash.order - 1)
+        } else {
+            move(dash: dash, from: &dashboardRight, to: dash.order - 1)
+        }
+        
+        updateDashOrder()
+        saveDashboard()
+    }
+    
+    func moveLater(dash: DashList) {
+        let isLastOnLeft = dash.side == .left && dash.order == dashboardLeft.count - 1
+        
+        if isLastOnLeft {
+            dashboardLeft.removeLast()
+            dashboardRight.insert(dash, at: 0)
+            dash.side = .right
+        } else if dash.side == .left {
+            move(dash: dash, from: &dashboardLeft, to: dash.order + 2)
+        } else {
+            move(dash: dash, from: &dashboardRight, to: dash.order + 2)
+        }
+        
+        updateDashOrder()
+        saveDashboard()
+    }
+    
+    private func remove(dash: DashList, from dashSide: inout [DashList]) {
+        dashSide.remove(atOffsets: IndexSet(integer: dash.order))
+    }
+    
+    func remove(dash: DashList) {
+        if dash.side == .left {
+            remove(dash: dash, from: &dashboardLeft)
+        } else {
+            remove(dash: dash, from: &dashboardRight)
+        }
+        
+        updateDashOrder()
+        saveDashboard()
+    }
+    
+    func saveDashboard(reloadingFrom index: Int? = nil) {
+        // Reset this so any loading underway is ignored, and it starts loading from the top. Allow immediately reloading from a specific index if not already underway; used when changing or adding a dash.
+        if appDelegate.feedDetailViewController.dashboardIndex >= Self.cachedDashboard.count {
+            appDelegate.feedDetailViewController.dashboardIndex = index ?? -1
+        } else {
+            appDelegate.feedDetailViewController.dashboardIndex = -1
+        }
+        
+        let endpoint = "reader/save_dashboard_rivers"
+        let dashes = Self.cachedDashboard.map { $0.asDictionary }
+        
+        let parameters = ["dashboard_rivers" : dashes]
+        
+        Request(method: .post, endpoint: endpoint, parameters: parameters) { result in
+            switch result {
+                case .success(let response):
+                    print("Successfully saved dashboard")
+                    
+                    if let response = response as? [String: Any], let dashboard = response["dashboard_rivers"] as? [Any] {
+                        self.appDelegate.dashboardArray = dashboard
+                        self.appDelegate.feedsViewController.loadDashboard()
+                    }
+                case .failure(let error):
+                    print("Error saving dashboard: \(error)")
+            }
+        }
     }
     
     func reloadDashboard(for index: Int) {
