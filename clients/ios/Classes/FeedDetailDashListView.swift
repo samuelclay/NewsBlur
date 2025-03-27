@@ -89,23 +89,49 @@ struct DashListActionMenu: View {
                 }
             }
             
-            Menu("Add Story List") {
+            Divider()
+            
+            Menu("Add Story List Before") {
                 Button {
                     //TODO: 🚧
                 } label: {
                     Text("Coming Soon!")
-                        .disabled(true)
+                }
+                .disabled(true)
+            }
+            
+            Menu("Add Story List After") {
+                Button {
+                    //TODO: 🚧
+                } label: {
+                    Text("Coming Soon!")
                 }
             }
             
             Divider()
             
             Button {
-                //TODO: 🚧
+                cache.moveEarlier(dash: dash)
+            } label: {
+                Text(moveEarlierTitle)
+            }
+            .disabled(dash.side == .left && dash.order <= 0)
+            
+            Button {
+                cache.moveLater(dash: dash)
+            } label: {
+                Text(moveLaterTitle)
+            }
+            .disabled(dash.side == .right && dash.order >= cache.dashboardRight.count - 1)
+            
+            Divider()
+            
+            Button {
+                cache.remove(dash: dash)
             } label: {
                 Text("Remove This List")
-                    .disabled(true)
             }
+            .disabled(cache.dashboardLeft.count + cache.dashboardRight.count <= 1)
             
             Divider()
             
@@ -142,6 +168,48 @@ struct DashListActionMenu: View {
         }
         .buttonStyle(.borderless)
         .font(.custom("WhitneySSm-Medium", size: 14, relativeTo: .body))
+    }
+    
+    var isHorizontal: Bool {
+        return cache.settings.dashboardLayout == .horizontal
+    }
+    
+    var isVertical: Bool {
+        return cache.settings.dashboardLayout == .vertical
+    }
+    
+    var isFirstOnLeftSide: Bool {
+        return dash.side == .left && dash.order == 0
+    }
+    
+    var isFirstOnRightSide: Bool {
+        return dash.side == .right && dash.order == 0
+    }
+    
+    var isLastOnLeftSide: Bool {
+        return dash.side == .left && dash.order >= cache.dashboardLeft.count - 1
+    }
+    
+    var isLastOnRightSide: Bool {
+        return dash.side == .right && dash.order >= cache.dashboardRight.count - 1
+    }
+    
+    var moveEarlierTitle: String {
+        // Using isHorizontal and isVertical as always want to use "Up" for Single layout.
+        if (isHorizontal && !isFirstOnRightSide) || (isVertical && isFirstOnRightSide) {
+            return "Move This List Left"
+        } else {
+            return "Move This List Up"
+        }
+    }
+    
+    var moveLaterTitle: String {
+        // Using isHorizontal and isVertical as always want to use "Down" for Single layout.
+        if (isHorizontal && !isLastOnLeftSide) || (isVertical && isLastOnLeftSide) {
+            return "Move This List Right"
+        } else {
+            return "Move This List Down"
+        }
     }
 }
 

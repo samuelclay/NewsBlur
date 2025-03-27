@@ -26,6 +26,8 @@
 		171904B62BBC8D4E004CCC96 /* TrainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 171904B42BBC8D4E004CCC96 /* TrainerView.swift */; };
 		171904B82BBCA712004CCC96 /* TrainerCapsule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 171904B72BBCA712004CCC96 /* TrainerCapsule.swift */; };
 		171904B92BBCA712004CCC96 /* TrainerCapsule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 171904B72BBCA712004CCC96 /* TrainerCapsule.swift */; };
+		171B3E1E2D94C8080056DA9A /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 171B3E1D2D94C8080056DA9A /* Request.swift */; };
+		171B3E1F2D94C8080056DA9A /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 171B3E1D2D94C8080056DA9A /* Request.swift */; };
 		171B6FFD25C4C7C8008638A9 /* StoryPagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 171B6FFC25C4C7C8008638A9 /* StoryPagesViewController.swift */; };
 		1721C9D12497F91A00B0EDC4 /* mute_gray.png in Resources */ = {isa = PBXBuildFile; fileRef = 1721C9D02497F91900B0EDC4 /* mute_gray.png */; };
 		1723388B26BE43EB00610784 /* WidgetLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1723388A26BE43EB00610784 /* WidgetLoader.swift */; };
@@ -1477,6 +1479,7 @@
 		17179E282BD6F86C006B18D5 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		171904B42BBC8D4E004CCC96 /* TrainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainerView.swift; sourceTree = "<group>"; };
 		171904B72BBCA712004CCC96 /* TrainerCapsule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainerCapsule.swift; sourceTree = "<group>"; };
+		171B3E1D2D94C8080056DA9A /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		171B6FFC25C4C7C8008638A9 /* StoryPagesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryPagesViewController.swift; sourceTree = "<group>"; };
 		1721C9D02497F91900B0EDC4 /* mute_gray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mute_gray.png; sourceTree = "<group>"; };
 		1723388A26BE43EB00610784 /* WidgetLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetLoader.swift; sourceTree = "<group>"; };
@@ -3366,6 +3369,7 @@
 				1726AA632CD1E7100058A9CD /* DashList.swift */,
 				17BC56AC2BBF6C0000A30C41 /* StoryCache.swift */,
 				17BC56AF2BBF6C2200A30C41 /* StorySettings.swift */,
+				171B3E1D2D94C8080056DA9A /* Request.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -5137,6 +5141,7 @@
 				175792762930605500490924 /* FeedDetailViewController.swift in Sources */,
 				172ECBF8298B1239006371BC /* Story.swift in Sources */,
 				175792772930605500490924 /* IASKSpecifierValuesViewController.m in Sources */,
+				171B3E1F2D94C8080056DA9A /* Request.swift in Sources */,
 				175792782930605500490924 /* ActivityCell.m in Sources */,
 				172ECBFB298B1481006371BC /* FeedDetailCardView.swift in Sources */,
 				175792792930605500490924 /* NBCopyLinkActivity.m in Sources */,
@@ -5352,6 +5357,7 @@
 				170E3CD724F8AB0D009CE819 /* FeedDetailViewController.swift in Sources */,
 				172ECBF7298B1239006371BC /* Story.swift in Sources */,
 				FF34FD631E9D93CB0062F8ED /* IASKSpecifierValuesViewController.m in Sources */,
+				171B3E1E2D94C8080056DA9A /* Request.swift in Sources */,
 				43F6A79D15B0CDC60092EE91 /* ActivityCell.m in Sources */,
 				172ECBFA298B1481006371BC /* FeedDetailCardView.swift in Sources */,
 				FF3FA88D1BB2677C001F7C32 /* NBCopyLinkActivity.m in Sources */,
