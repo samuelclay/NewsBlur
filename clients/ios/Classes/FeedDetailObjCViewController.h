@@ -85,6 +85,7 @@
 - (void)reloadTable;
 - (void)reloadIndexPath:(NSIndexPath *)indexPath withRowAnimation:(UITableViewRowAnimation)rowAnimation;
 - (void)reloadWithSizing;
+- (void)doneDashboardChooseSite:(NSString *)riverId;
 - (void)resetFeedDetail;
 - (void)reloadStories;
 - (void)fetchNextPage:(void(^)(void))callback;

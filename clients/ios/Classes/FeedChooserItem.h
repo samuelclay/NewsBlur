@@ -24,9 +24,10 @@ typedef NS_ENUM(NSUInteger, FeedChooserSort)
 @property (nonatomic, strong) NSDictionary *info;
 @property (nonatomic, strong) NSMutableArray *contents;
 
-+ (instancetype)makeFolderWithTitle:(NSString *)title;
++ (instancetype)makeFolderWithIdentifier:(NSString *)identifier title:(NSString *)title;
 + (instancetype)makeItemWithInfo:(NSDictionary *)info;
 
+- (void)addItem:(FeedChooserItem *)item;
 - (void)addItemWithInfo:(NSDictionary *)info;
 
 + (NSString *)keyForSort:(FeedChooserSort)sort;

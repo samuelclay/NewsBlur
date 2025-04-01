@@ -19,8 +19,8 @@
 
 @implementation FeedChooserItem
 
-+ (instancetype)makeFolderWithTitle:(NSString *)title {
-    return [self makeItemWithInfo:@{@"id" : [[NewsBlurAppDelegate sharedAppDelegate] extractFolderName:title], @"feed_title" : title}];
++ (instancetype)makeFolderWithIdentifier:(NSString *)identifier title:(NSString *)title {
+    return [self makeItemWithInfo:@{@"id" : identifier, @"feed_title" : title}];
 }
 
 + (instancetype)makeItemWithInfo:(NSDictionary *)info {
@@ -67,12 +67,16 @@
     return _icon;
 }
 
-- (void)addItemWithInfo:(NSDictionary *)info {
+- (void)addItem:(FeedChooserItem *)item {
     if (!self.contents) {
         self.contents = [NSMutableArray array];
     }
     
-    [self.contents addObject:[FeedChooserItem makeItemWithInfo:info]];
+    [self.contents addObject:item];
+}
+
+- (void)addItemWithInfo:(NSDictionary *)info {
+    [self addItem:[FeedChooserItem makeItemWithInfo:info]];
 }
 
 + (NSString *)keyForSort:(FeedChooserSort)sort {

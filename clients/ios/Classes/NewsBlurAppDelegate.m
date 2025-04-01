@@ -994,11 +994,12 @@
     [preferencesViewController setHiddenKeys:hiddenSet animated:animated];
 }
 
-- (void)showFeedChooserForOperation:(FeedChooserOperation)operation {
+- (void)showFeedChooserForOperation:(FeedChooserOperation)operation dashboardRiverId:(NSString *)dashboardRiverId {
     [self hidePopover];
     
     self.feedChooserViewController = [FeedChooserViewController new];
     self.feedChooserViewController.operation = operation;
+    self.feedChooserViewController.dashboardRiverId = dashboardRiverId;
     
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self.feedChooserViewController];
     
@@ -1009,15 +1010,19 @@
 }
 
 - (void)showMuteSites {
-    [self showFeedChooserForOperation:FeedChooserOperationMuteSites];
+    [self showFeedChooserForOperation:FeedChooserOperationMuteSites dashboardRiverId:nil];
 }
 
 - (void)showOrganizeSites {
-    [self showFeedChooserForOperation:FeedChooserOperationOrganizeSites];
+    [self showFeedChooserForOperation:FeedChooserOperationOrganizeSites dashboardRiverId:nil];
 }
 
 - (void)showWidgetSites {
-    [self showFeedChooserForOperation:FeedChooserOperationWidgetSites];
+    [self showFeedChooserForOperation:FeedChooserOperationWidgetSites dashboardRiverId:nil];
+}
+
+- (void)showDashboardSites:(NSString *)selectedRiverId {
+    [self showFeedChooserForOperation:FeedChooserOperationDashboardSites dashboardRiverId:selectedRiverId];
 }
 
 - (void)showFindFriends {
@@ -3843,7 +3848,7 @@
         return @"Global Shared Stories";
     } else if ([folder isEqualToString:@"dashboard"]) {
         return @"NewsBlur Dashboard";
-    } else if ([folder isEqualToString:@"everything"]) {
+    } else if ([folder isEqualToString:@"everything"] || [folder isEqualToString:@" "]) {
         return @"All Site Stories";
     } else if ([folder isEqualToString:@"infrequent"]) {
         return @"Infrequent Site Stories";
