@@ -359,6 +359,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     @throw [NSException exceptionWithName:@"Missing reloadIndexPath implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
 
+- (void)doneDashboardChooseSite:(NSString *)riverId {
+    @throw [NSException exceptionWithName:@"Missing doneDashboardChooseSite implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
 - (void)reloadTable {
     if (self.isFadingTable) {
         return;

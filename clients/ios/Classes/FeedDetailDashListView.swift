@@ -80,32 +80,24 @@ struct DashListActionMenu: View {
     
     var body: some View {
         Menu {
-            Menu("Change Story List to") {
-                Button {
-                    //TODO: 🚧
-                } label: {
-                    Text("Coming Soon!")
-                        .disabled(true)
-                }
+            Button {
+                interaction.changeDashboard(dash: dash)
+            } label: {
+                Text("Change Story List")
             }
             
             Divider()
             
-            Menu("Add Story List Before") {
-                Button {
-                    //TODO: 🚧
-                } label: {
-                    Text("Coming Soon!")
-                }
-                .disabled(true)
+            Button {
+                interaction.addDashboard(before: true, dash: dash)
+            } label: {
+                Text("Add Story List Before")
             }
             
-            Menu("Add Story List After") {
-                Button {
-                    //TODO: 🚧
-                } label: {
-                    Text("Coming Soon!")
-                }
+            Button {
+                interaction.addDashboard(before: false, dash: dash)
+            } label: {
+                Text("Add Story List After")
             }
             
             Divider()

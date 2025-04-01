@@ -70,6 +70,15 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         }
     }
     
+    enum DashboardOperation {
+        case none
+        case change(DashList)
+        case addBefore(DashList)
+        case addAfter(DashList)
+    }
+    
+    var dashboardOperation = DashboardOperation.none
+    
     private func makeGridViewController() -> UIHostingController<FeedDetailGridView> {
         let gridView = FeedDetailGridView(feedDetailInteraction: self, cache: storyCache)
         let gridViewController = UIHostingController(rootView: gridView)
@@ -237,6 +246,26 @@ class FeedDetailViewController: FeedDetailObjCViewController {
             // Only do this if a deferred reload isn't pending; otherwise no point in doing a partial reload, plus the table may be stale.
             storyTitlesTable.reloadRows(at: [indexPath], with: rowAnimation)
         }
+    }
+    
+    @objc override func doneDashboardChooseSite(_ riverId: String?) {
+        guard let riverId else {
+            dashboardOperation = .none
+            return
+        }
+        
+        switch dashboardOperation {
+            case .none:
+                break
+            case .change(let dashList):
+                storyCache.change(dash: dashList, to: riverId)
+            case .addBefore(let dashList):
+                storyCache.add(riverId: riverId, before: true, dash: dashList)
+            case .addAfter(let dashList):
+                storyCache.add(riverId: riverId, before: false, dash: dashList)
+        }
+        
+        dashboardOperation = .none
     }
 }
 
@@ -410,6 +439,18 @@ extension FeedDetailViewController: FeedDetailInteraction {
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
             self.appDelegate.detailViewController.storyTitlesFromDashboardStory = false
         }
+    }
+    
+    func changeDashboard(dash: DashList) {
+        self.dashboardOperation = .change(dash)
+        
+        self.appDelegate.showDashboardSites(dash.riverId)
+    }
+    
+    func addDashboard(before: Bool, dash: DashList) {
+        self.dashboardOperation = before ? .addBefore(dash) : .addAfter(dash)
+        
+        self.appDelegate.showDashboardSites(nil)
     }
     
     func reading(story: Story) {

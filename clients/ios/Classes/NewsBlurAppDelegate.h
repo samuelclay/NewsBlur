@@ -323,6 +323,7 @@ SFSafariViewControllerDelegate>  {
 - (void)showMuteSites;
 - (void)showOrganizeSites;
 - (void)showWidgetSites;
+- (void)showDashboardSites:(NSString *)selectedRiverId;
 - (void)showPremiumDialog;
 - (void)updateSplitBehavior:(BOOL)refresh;
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;

@@ -62,19 +62,19 @@ import Foundation
         }
     }
     
-    var asDictionary: [String: Any] {
-        let riverId: String
-        
+    var riverId: String {
         if let feedId {
-            riverId = "feed:\(feedId)"
+            return "feed:\(feedId)"
         } else if folderId == "everything" {
-            riverId = "river:"
+            return "river:"
         } else if folderId.contains(":") {
-            riverId = folderId
+            return folderId
         } else {
-            riverId = "river:\(folderId)"
+            return "river:\(folderId)"
         }
-        
+    }
+    
+    var asDictionary: [String: Any] {
         return ["river_id" : riverId,
                 "river_side" : side.rawValue,
                 "river_order" : order]
@@ -102,6 +102,17 @@ import Foundation
         } else {
             folder = Folder(id: folderId)
         }
+    }
+    
+    func change(feedId: String?, folderId: String) {
+        self.feedId = feedId
+        self.folderId = folderId
+        
+        folder = nil
+        feeds.removeAll()
+        stories = nil
+        
+        load()
     }
     
     private let defaults = UserDefaults.standard

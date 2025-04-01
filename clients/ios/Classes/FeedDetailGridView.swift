@@ -18,6 +18,8 @@ import SwiftUI
     func tapped(dash: DashList)
     func visible(story: Story)
     func tapped(story: Story, in dash: DashList?)
+    func changeDashboard(dash: DashList)
+    func addDashboard(before: Bool, dash: DashList)
     func reading(story: Story)
     func read(story: Story)
     func unread(story: Story)

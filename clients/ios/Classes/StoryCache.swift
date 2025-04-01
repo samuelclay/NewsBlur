@@ -163,18 +163,13 @@ import Foundation
         }
         
         for (index, dashInfo) in dashboardArray.enumerated() {
-            guard let dashId = dashInfo["river_id"] as? String,
+            guard let riverId = dashInfo["river_id"] as? String,
                   let order = dashInfo["river_order"] as? Int,
                   let sideString = dashInfo["river_side"] as? String, let side = DashList.Side(rawValue: sideString) else {
                 continue
             }
             
-            let feedId = dashId.hasPrefix("feed:") ? dashId.deletingPrefix("feed:") : nil
-            
-            guard let folderId = dashId == "river:" ? "everything" : dashId.hasPrefix("river:") ? dashId.deletingPrefix("river:") : appDelegate.parentFolders(forFeed: feedId).first as? String else {
-                continue
-            }
-            
+            let (feedId, folderId) = feedIdAndFolderId(for: riverId)
             let oldDash = index < oldDashes.count ? oldDashes[index] : nil
             let dash = DashList(index: index, side: side, order: order, feedId: feedId, folderId: folderId, oldDash: oldDash)
             
@@ -194,10 +189,10 @@ import Foundation
         dashboardLeft.sort { $0.order < $1.order }
         dashboardRight.sort { $0.order < $1.order }
         
-        updateDashOrder()
+        updateDashIndexesAndOrder()
     }
     
-    func updateDashOrder() {
+    func updateDashIndexesAndOrder() {
         var index = 0
         
         dashboardLeft = updateIndexAndOrder(of: dashboardLeft, index: &index)
@@ -220,14 +215,36 @@ import Foundation
         return dashes
     }
     
-    func add(dash: DashList) {
-        if dash.side == .left {
-            dashboardLeft.insert(dash, at: dash.order)
-        } else {
-            dashboardRight.insert(dash, at: dash.order)
+    func feedIdAndFolderId(for riverId: String) -> (feedId: String?, folderId: String) {
+        let feedId = riverId.hasPrefix("feed:") ? riverId.deletingPrefix("feed:") : nil
+        
+        guard let folderId = riverId == "river:" ? "everything" : riverId.hasPrefix("river:") ? riverId.deletingPrefix("river:") : appDelegate.parentFolders(forFeed: feedId).first as? String else {
+            return (feedId: feedId, folderId: "everything")
         }
         
-        updateDashOrder()
+        return (feedId: feedId, folderId: folderId)
+    }
+    
+    func change(dash: DashList, to riverId: String) {
+        let (feedId, folderId) = feedIdAndFolderId(for: riverId)
+        
+        dash.change(feedId: feedId, folderId: folderId)
+        
+        saveDashboard(reloadingFrom: dash.index)
+    }
+    
+    func add(riverId: String, before: Bool, dash: DashList) {
+        let (feedId, folderId) = feedIdAndFolderId(for: riverId)
+        let newOrder = before ? dash.order : dash.order + 1
+        let newDash = DashList(index: dash.index, side: dash.side, order: newOrder, feedId: feedId, folderId: folderId, oldDash: nil)
+        
+        if newDash.side == .left {
+            dashboardLeft.insert(newDash, at: newDash.order)
+        } else {
+            dashboardRight.insert(newDash, at: newDash.order)
+        }
+        
+        updateDashIndexesAndOrder()
         
 //        let index = Self.cachedDashboard.firstIndex(where: { $0.id == dash.id })
         
@@ -251,7 +268,7 @@ import Foundation
             move(dash: dash, from: &dashboardRight, to: dash.order - 1)
         }
         
-        updateDashOrder()
+        updateDashIndexesAndOrder()
         saveDashboard()
     }
     
@@ -268,7 +285,7 @@ import Foundation
             move(dash: dash, from: &dashboardRight, to: dash.order + 2)
         }
         
-        updateDashOrder()
+        updateDashIndexesAndOrder()
         saveDashboard()
     }
     
@@ -283,7 +300,7 @@ import Foundation
             remove(dash: dash, from: &dashboardRight)
         }
         
-        updateDashOrder()
+        updateDashIndexesAndOrder()
         saveDashboard()
     }
     
