@@ -71,9 +71,16 @@ from utils.youtube_fetcher import YoutubeFetcher
 
 def preprocess_feed_encoding(raw_xml):
     """
-    Check if the raw XML content contains any misencoded HTML entities that indicate
-    UTF-8 bytes were misinterpreted (e.g., sequences like &acirc;&#128;&#153; 
-    which represent a smart apostrophe).
+    Fix for The Verge RSS feed encoding issues (and other feeds with similar problems).
+    
+    The Verge and other Vox Media sites often serve RSS feeds with special characters
+    that were incorrectly encoded. This happens when UTF-8 bytes are misinterpreted
+    as Latin-1/Windows-1252 characters and then HTML-encoded, resulting in garbled text
+    like "Apple&acirc;&#128;&#153;s" instead of "Apple's" with a smart apostrophe.
+    
+    This function detects these patterns and reverses the process by:
+    1. Unescaping the HTML entities (producing characters like â€™)
+    2. Re-encoding as Latin-1 and decoding as UTF-8 to recover the original characters
     
     Args:
         raw_xml (str): The raw XML content fetched from the feed
