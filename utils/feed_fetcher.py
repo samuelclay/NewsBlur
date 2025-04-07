@@ -1,8 +1,8 @@
 import datetime
+import html
 import multiprocessing
 import time
 import traceback
-import html
 
 import django
 
@@ -72,19 +72,19 @@ from utils.youtube_fetcher import YoutubeFetcher
 def preprocess_feed_encoding(raw_xml):
     """
     Fix for The Verge RSS feed encoding issues (and other feeds with similar problems).
-    
+
     The Verge and other Vox Media sites often serve RSS feeds with special characters
     that were incorrectly encoded. This happens when UTF-8 bytes are misinterpreted
     as Latin-1/Windows-1252 characters and then HTML-encoded, resulting in garbled text
     like "Apple&acirc;&#128;&#153;s" instead of "Apple's" with a smart apostrophe.
-    
+
     This function detects these patterns and reverses the process by:
     1. Unescaping the HTML entities (producing characters like â€™)
     2. Re-encoding as Latin-1 and decoding as UTF-8 to recover the original characters
-    
+
     Args:
         raw_xml (str): The raw XML content fetched from the feed
-        
+
     Returns:
         str: The corrected XML content with proper encoding
     """
@@ -103,38 +103,38 @@ def preprocess_feed_encoding(raw_xml):
         "&acirc;&#128;&#176;",  # Bullet point (•)
         "&acirc;&#128;&#174;",  # Registered trademark (®)
         "&acirc;&#128;&#169;",  # Copyright (©)
-        
-        # Additional patterns that indicate encoding issues 
-        "&Atilde;&copy;",       # é misencoded
-        "&Atilde;&reg;",        # ® misencoded
-        "&Atilde;&para;",       # ¶ misencoded
-        "&Atilde;&sup2;",       # ² misencoded
-        "&Atilde;&deg;",        # ° misencoded
-        "&Aring;&frac12;",      # ½ misencoded
+        # Additional patterns that indicate encoding issues
+        "&Atilde;&copy;",  # é misencoded
+        "&Atilde;&reg;",  # ® misencoded
+        "&Atilde;&para;",  # ¶ misencoded
+        "&Atilde;&sup2;",  # ² misencoded
+        "&Atilde;&deg;",  # ° misencoded
+        "&Aring;&frac12;",  # ½ misencoded
     ]
-    
+
     # Check if any of the indicators are present
     needs_fixing = any(indicator in raw_xml for indicator in misencoding_indicators)
-    
+
     if needs_fixing:
         try:
             # Step 1: HTML Unescaping - convert HTML entities to their literal characters
             # This will typically produce characters like â€™ in place of the intended smart apostrophe
             unescaped = html.unescape(raw_xml)
-            
+
             # Step 2: Encoding Reinterpretation
             # Re-encode as Latin-1/Windows-1252 and decode as UTF-8
             # This "encoding shuffle" restores the original characters
-            corrected = unescaped.encode('latin1').decode('utf-8', errors='replace')
-            
+            corrected = unescaped.encode("latin1").decode("utf-8", errors="replace")
+
             return corrected
         except (UnicodeError, AttributeError) as e:
             # If there's an error in the encoding correction, log it and return the original
             logging.debug("Error fixing feed encoding: %s" % str(e))
             return raw_xml
-    
+
     # If no indicators are found, return the original XML
     return raw_xml
+
 
 # from utils.feed_functions import mail_feed_error_to_admin
 
@@ -224,7 +224,10 @@ class FetchFeed:
             # Apply encoding preprocessing to special feed content
             processed_youtube_feed = preprocess_feed_encoding(youtube_feed)
             if processed_youtube_feed != youtube_feed:
-                logging.debug("   ---> [%-30s] ~FGApplied encoding correction to YouTube feed" % (self.feed.log_title[:30]))
+                logging.debug(
+                    "   ---> [%-30s] ~FGApplied encoding correction to YouTube feed"
+                    % (self.feed.log_title[:30])
+                )
             self.fpf = feedparser.parse(processed_youtube_feed, sanitize_html=False)
         elif re.match(r"(https?)?://twitter.com/\w+/?", qurl(address, remove=["_"])):
             twitter_feed = self.fetch_twitter(address)
@@ -236,7 +239,10 @@ class FetchFeed:
             # Apply encoding preprocessing to special feed content
             processed_twitter_feed = preprocess_feed_encoding(twitter_feed)
             if processed_twitter_feed != twitter_feed:
-                logging.debug("   ---> [%-30s] ~FGApplied encoding correction to Twitter feed" % (self.feed.log_title[:30]))
+                logging.debug(
+                    "   ---> [%-30s] ~FGApplied encoding correction to Twitter feed"
+                    % (self.feed.log_title[:30])
+                )
             self.fpf = feedparser.parse(processed_twitter_feed)
         elif re.match(r"(.*?)facebook.com/\w+/?$", qurl(address, remove=["_"])):
             facebook_feed = self.fetch_facebook()
@@ -248,7 +254,10 @@ class FetchFeed:
             # Apply encoding preprocessing to special feed content
             processed_facebook_feed = preprocess_feed_encoding(facebook_feed)
             if processed_facebook_feed != facebook_feed:
-                logging.debug("   ---> [%-30s] ~FGApplied encoding correction to Facebook feed" % (self.feed.log_title[:30]))
+                logging.debug(
+                    "   ---> [%-30s] ~FGApplied encoding correction to Facebook feed"
+                    % (self.feed.log_title[:30])
+                )
             self.fpf = feedparser.parse(processed_facebook_feed)
         elif self.feed.is_forbidden:
             forbidden_feed = self.fetch_forbidden()
@@ -260,7 +269,10 @@ class FetchFeed:
             # Apply encoding preprocessing to special feed content
             processed_forbidden_feed = preprocess_feed_encoding(forbidden_feed)
             if processed_forbidden_feed != forbidden_feed:
-                logging.debug("   ---> [%-30s] ~FGApplied encoding correction to forbidden feed" % (self.feed.log_title[:30]))
+                logging.debug(
+                    "   ---> [%-30s] ~FGApplied encoding correction to forbidden feed"
+                    % (self.feed.log_title[:30])
+                )
             self.fpf = feedparser.parse(processed_forbidden_feed)
 
         if not self.fpf and "json" in address:
@@ -336,7 +348,10 @@ class FetchFeed:
                     # Apply encoding preprocessing to JSON feed content
                     processed_json_feed = preprocess_feed_encoding(json_feed)
                     if processed_json_feed != json_feed:
-                        logging.debug("   ---> [%-30s] ~FGApplied encoding correction to JSON feed" % (self.feed.log_title[:30]))
+                        logging.debug(
+                            "   ---> [%-30s] ~FGApplied encoding correction to JSON feed"
+                            % (self.feed.log_title[:30])
+                        )
                     self.fpf = feedparser.parse(processed_json_feed)
                 elif raw_feed.content and raw_feed.status_code < 400:
                     response_headers = raw_feed.headers
@@ -345,7 +360,10 @@ class FetchFeed:
                     # Preprocess feed to fix encoding issues before parsing with feedparser
                     processed_feed = preprocess_feed_encoding(self.raw_feed)
                     if processed_feed != self.raw_feed:
-                        logging.debug("   ---> [%-30s] ~FGApplied encoding correction to feed with misencoded HTML entities" % (self.feed.log_title[:30]))
+                        logging.debug(
+                            "   ---> [%-30s] ~FGApplied encoding correction to feed with misencoded HTML entities"
+                            % (self.feed.log_title[:30])
+                        )
                     self.fpf = feedparser.parse(processed_feed, response_headers=response_headers)
                     if self.options["verbose"]:
                         logging.debug(
@@ -701,7 +719,7 @@ class ProcessFeed:
                     "   ---> [%-30s] ~SB~FRHTTP Status code: %s. Checking address..."
                     % (self.feed.log_title[:30], self.fpf.status)
                 )
-                if self.fpf.status in 403 and not self.feed.is_forbidden:
+                if self.fpf.status in [403] and not self.feed.is_forbidden:
                     self.feed = self.feed.set_is_forbidden()
                 fixed_feed = None
                 if not self.feed.known_good:
