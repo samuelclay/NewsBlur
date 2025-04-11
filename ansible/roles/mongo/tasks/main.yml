@@ -218,7 +218,7 @@
     ports:
       - "27017:27017"
     command: --config /etc/mongod.conf
-    user: 1000:1001
+    user: "{{ ansible_effective_user_id|int }}:{{ ansible_effective_group_id|int }}"
     volumes:
       - /srv/newsblur/docker/volumes/mongo:/data/db
       - /srv/newsblur/ansible/roles/mongo/templates/mongo.analytics.conf:/etc/mongod.conf
