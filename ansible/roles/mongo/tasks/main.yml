@@ -1,4 +1,14 @@
 ---
+- name: Add ansible user to docker group
+  become: yes
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes
+
+- name: Reset ssh connection to allow user changes to affect current user
+  meta: reset_connection
+
 - name: Set mongo_analytics_secondary
   set_fact:
     mongo_analytics_secondary: no
