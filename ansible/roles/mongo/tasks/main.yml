@@ -154,7 +154,6 @@
         restart_policy: unless-stopped
         networks_cli_compatible: yes
         network_mode: host
-        # network_mode: default
         # networks:
         #   - name: newsblurnet
         #     aliases:
@@ -219,12 +218,12 @@
     hostname: "{{ inventory_hostname }}"
     restart_policy: unless-stopped
     networks_cli_compatible: yes
-    # network_mode: host
     network_mode: default
     networks:
       - name: newsblurnet
         aliases:
           - mongo
+          - "{{ inventory_hostname }}"
     ports:
       - "27017:27017"
     command: --config /etc/mongod.conf
