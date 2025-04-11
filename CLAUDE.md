@@ -8,7 +8,9 @@
 - `make log` - View logs
 - `make lint` - Run linting (isort, black, flake8)
 - `make test` - Run all tests
-- Run single test: `docker exec -it newsblur_web python3 manage.py test apps.path.to.test.TestClass.test_method -v 3`
+- Run single test: `docker exec -t newsblur_web python3 manage.py test apps.path.to.test.TestClass.test_method -v 3`
+
+Note: All docker commands must use `-t` instead of `-it` to avoid interactive mode issues when running through Claude.
 
 ## Code Style
 - **Python**: 
