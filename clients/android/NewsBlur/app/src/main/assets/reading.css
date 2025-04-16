@@ -58,8 +58,11 @@ p {
 }
 
 iframe {
-    /* 100% width can cause minor clipping, but iframes tend not to respect the auto/max-100 properties */
-	width: 100% !important;
+    display: block;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    border: none;
 }
 
 a {
