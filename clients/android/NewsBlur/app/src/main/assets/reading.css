@@ -75,5 +75,7 @@ pre, blockquote {
     padding: 0.6em;
     margin: 0.6em;
     word-wrap: break-word !important;
-    white-space: pre-wrap !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    text-wrap: pretty;
 }
