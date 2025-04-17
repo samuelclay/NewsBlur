@@ -260,20 +260,32 @@ class FetchFeed:
                 )
             self.fpf = feedparser.parse(processed_facebook_feed)
         elif self.feed.is_forbidden:
-            forbidden_feed = self.fetch_forbidden()
-            if not forbidden_feed:
+            # 10% chance to turn off is_forbidden flag before fetching
+            if random.random() <= 0.1:
                 logging.debug(
-                    "   ***> [%-30s] ~FRForbidden feed fetch failed: %s" % (self.feed.log_title[:30], address)
-                )
-                return FEED_ERRHTTP, None
-            # Apply encoding preprocessing to special feed content
-            processed_forbidden_feed = preprocess_feed_encoding(forbidden_feed)
-            if processed_forbidden_feed != forbidden_feed:
-                logging.debug(
-                    "   ---> [%-30s] ~FGApplied encoding correction to forbidden feed"
+                    "   ---> [%-30s] ~FG~SBTurning off forbidden flag (~FB10%%~FG chance) and fetching normally" 
                     % (self.feed.log_title[:30])
                 )
-            self.fpf = feedparser.parse(processed_forbidden_feed)
+                self.feed.is_forbidden = False
+                self.feed = self.feed.save()
+                # Skip this branch and continue with normal fetch flow
+                # We don't need to do anything else here - just let the normal fetch flow continue
+            else:
+                # Regular forbidden feed fetch
+                forbidden_feed = self.fetch_forbidden()
+                if not forbidden_feed:
+                    logging.debug(
+                        "   ***> [%-30s] ~FRForbidden feed fetch failed: %s" % (self.feed.log_title[:30], address)
+                    )
+                    return FEED_ERRHTTP, None
+                # Apply encoding preprocessing to special feed content
+                processed_forbidden_feed = preprocess_feed_encoding(forbidden_feed)
+                if processed_forbidden_feed != forbidden_feed:
+                    logging.debug(
+                        "   ---> [%-30s] ~FGApplied encoding correction to forbidden feed"
+                        % (self.feed.log_title[:30])
+                    )
+                self.fpf = feedparser.parse(processed_forbidden_feed)
 
         if not self.fpf and "json" in address:
             try:
