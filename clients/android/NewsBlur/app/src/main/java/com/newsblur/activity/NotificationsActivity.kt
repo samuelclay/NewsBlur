@@ -7,6 +7,7 @@ import com.newsblur.R
 import com.newsblur.databinding.ActivityNotificationsBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.Feed
+import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.UIUtils
 import com.newsblur.util.setViewGone
@@ -31,7 +32,7 @@ class NotificationsActivity : NbActivity(), NotificationsAdapter.Listener {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[NotificationsViewModel::class.java]
         binding = ActivityNotificationsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        applyView(binding)
 
         setupUI()
         setupListeners()

@@ -17,6 +17,7 @@ import com.newsblur.databinding.ActivityImportExportBinding
 import com.newsblur.network.APIManager
 import com.newsblur.service.NBSyncService
 import com.newsblur.util.DownloadCompleteReceiver
+import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.FileDownloader
 import com.newsblur.util.NBScope
@@ -57,7 +58,7 @@ class ImportExportActivity : NbActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityImportExportBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        applyView(binding)
 
         setupUI()
         setupListeners()
