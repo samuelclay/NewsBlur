@@ -1,8 +1,6 @@
 package com.newsblur.viewModel
 
 import android.os.CancellationSignal
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.newsblur.database.BlurDatabaseHelper
@@ -10,6 +8,8 @@ import com.newsblur.domain.Feed
 import com.newsblur.domain.Folder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,40 +19,24 @@ class FeedFolderViewModel
 
     private val cancellationSignal = CancellationSignal()
 
-    private val _folders = MutableLiveData<List<Folder>>()
-    val folders: LiveData<List<Folder>> = _folders
-    private val _feeds = MutableLiveData<List<Feed>>()
-    val feedsLiveData: LiveData<List<Feed>> = _feeds
+    private val _feedFolderData = MutableStateFlow(FeedFolderData(emptyList(), emptyList()))
+    val feedFolderData = _feedFolderData.asStateFlow()
 
     fun getData() {
         viewModelScope.launch(Dispatchers.IO) {
-            launch {
-                dbHelper.getFoldersCursor(cancellationSignal).use { cursor ->
-                    val folders = mutableListOf<Folder>()
-                    while (cursor.moveToNext()) {
-                        val folder = Folder.fromCursor(cursor)
-                        if (folder.feedIds.isNotEmpty()) {
-                            folders.add(folder)
-                        }
-                    }
-                    _folders.postValue(folders)
-                }
+            val folders = dbHelper.getFoldersCursor(cancellationSignal).use { cursor ->
+                generateSequence { if (cursor.moveToNext()) Folder.fromCursor(cursor) else null }
+                        .filter { it.feedIds.isNotEmpty() }
+                        .sortedWith { o1, o2 -> Folder.compareFolderNames(o1.flatName(), o2.flatName()) }
+                        .toList()
             }
 
-            getFeeds()
-        }
-    }
-
-    fun getFeeds() {
-        viewModelScope.launch(Dispatchers.IO) {
-            dbHelper.getFeedsCursor(cancellationSignal).use { cursor ->
-                val feeds = mutableListOf<Feed>()
-                while (cursor.moveToNext()) {
-                    val feed = Feed.fromCursor(cursor)
-                    feeds.add(feed)
-                }
-                _feeds.postValue(feeds)
+            val feeds = dbHelper.getFeedsCursor(cancellationSignal).use { cursor ->
+                generateSequence { if (cursor.moveToNext()) Feed.fromCursor(cursor) else null }
+                        .toList()
             }
+
+            _feedFolderData.emit(FeedFolderData(folders, feeds))
         }
     }
 
@@ -61,3 +45,8 @@ class FeedFolderViewModel
         super.onCleared()
     }
 }
+
+data class FeedFolderData(
+        val folders: List<Folder>,
+        val feeds: List<Feed>,
+)

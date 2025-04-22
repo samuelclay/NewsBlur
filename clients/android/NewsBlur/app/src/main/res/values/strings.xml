@@ -346,7 +346,7 @@
     <string name="mute_config_reset_button">Reset to popular sites</string>
     <string name="mute_config_upgrade_to_premium">Upgrade to NewsBlur Premium</string>
     <string name="mute_config_upgrade">Upgrade</string>
-    <string name="mute_config_sites">%1$s/%2$s</string>
+    <string name="mute_config_sites">%1$d/%2$d</string>
 
     <string name="menu_network_select">Download using…</string>
     <string name="menu_network_select_sum">Restrict background data to chosen networks</string>
