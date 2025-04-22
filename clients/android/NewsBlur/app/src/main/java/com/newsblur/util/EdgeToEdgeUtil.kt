@@ -89,7 +89,6 @@ object EdgeToEdgeUtil {
                 findViewById<View>(R.id.fragment_feedintelligenceselector)?.updateBottomPadding(navBar.bottom)
                 findViewById<View>(R.id.main_menu_button)?.addBottomMargin(navBar.bottom)
                 findViewById<View>(R.id.main_add_button)?.addBottomMargin(navBar.bottom)
-                findViewById<View>(R.id.main_sync_status)?.addBottomMargin(navBar.bottom)
 
                 WindowInsetsCompat.CONSUMED
             }
