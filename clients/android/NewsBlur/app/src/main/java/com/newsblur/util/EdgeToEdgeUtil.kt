@@ -6,11 +6,11 @@ import android.content.res.Configuration
 import android.os.Build
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.viewbinding.ViewBinding
-import com.google.android.material.appbar.MaterialToolbar
 import com.newsblur.R
 import com.newsblur.util.PrefConstants.ThemeValue
 
@@ -60,28 +60,53 @@ object EdgeToEdgeUtil {
     @JvmStatic
     fun Activity.applyView(binding: ViewBinding) {
         setContentView(binding.root)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
                 val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
                 val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
 
-                findViewById<View>(R.id.toolbar)?.let { toolbar ->
-                    toolbar.setPadding(
-                            toolbar.paddingLeft,
-                            statusBar.top,
-                            toolbar.paddingRight,
-                            toolbar.paddingBottom
-                    )
-                }
+                findViewById<View>(R.id.toolbar)?.updateTopPadding(statusBar.top)
+                findViewById<View>(R.id.container)?.updateBottomPadding(navBar.bottom)
 
-                findViewById<View>(R.id.container)?.let {
-                    it.setPadding(
-                            it.paddingLeft,
-                            it.paddingTop,
-                            it.paddingRight,
-                            navBar.bottom,
-                    )
-                }
+                WindowInsetsCompat.CONSUMED
+            }
+        }
+    }
+
+    @JvmStatic
+    fun Activity.applyViewMain(binding: ViewBinding) {
+        setContentView(binding.root)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+                val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+                val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+                findViewById<View>(R.id.toolbar)?.updateTopPadding(statusBar.top)
+
+                // Raise bottom section
+                findViewById<View>(R.id.fragment_feedintelligenceselector)?.updateBottomPadding(navBar.bottom)
+                findViewById<View>(R.id.main_menu_button)?.addBottomMargin(navBar.bottom)
+                findViewById<View>(R.id.main_add_button)?.addBottomMargin(navBar.bottom)
+                findViewById<View>(R.id.main_sync_status)?.addBottomMargin(navBar.bottom)
+
+                WindowInsetsCompat.CONSUMED
+            }
+        }
+    }
+
+    @JvmStatic
+    fun Activity.applyViewReading(binding: ViewBinding) {
+        setContentView(binding.root)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+                val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+                val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+                findViewById<View>(R.id.toolbar)?.updateTopPadding(statusBar.top)
+                findViewById<View>(R.id.overlay_container)?.updateBottomPadding(navBar.bottom)
 
                 WindowInsetsCompat.CONSUMED
             }
@@ -104,4 +129,21 @@ object EdgeToEdgeUtil {
             }
         }
     }
+
+    private fun View.updateTopPadding(top: Int) {
+        setPadding(paddingLeft, top, paddingRight, paddingBottom)
+    }
+
+    private fun View.updateBottomPadding(bottom: Int) {
+        setPadding(paddingLeft, paddingTop, paddingRight, bottom)
+    }
+
+    private fun View.addBottomMargin(bottom: Int) {
+        val params = layoutParams as? ViewGroup.MarginLayoutParams
+        params?.let {
+            it.bottomMargin += bottom
+            layoutParams = it
+        }
+    }
+
 }
