@@ -9,6 +9,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.service.NBSync
 import com.newsblur.service.NbSyncManager
+import com.newsblur.util.EdgeToEdgeUtil.applyTheme
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.Log
 import com.newsblur.util.PrefConstants.ThemeValue
@@ -38,9 +39,7 @@ open class NbActivity : AppCompatActivity() {
         Log.offerContext(this)
         Log.d(this, "onCreate")
 
-        // this is not redundant to the applyThemePreference() call in onResume. the theme needs to be set
-        // before onCreate() in order to work
-        PrefsUtils.applyThemePreference(this)
+        applyTheme()
         lastTheme = PrefsUtils.getSelectedTheme(this)
 
         super.onCreate(savedInstanceState)
@@ -86,7 +85,6 @@ open class NbActivity : AppCompatActivity() {
         val currentSelectedTheme = PrefsUtils.getSelectedTheme(this)
         if (lastTheme != currentSelectedTheme) {
             lastTheme = currentSelectedTheme
-            PrefsUtils.applyThemePreference(this)
             UIUtils.restartActivity(this)
         }
     }

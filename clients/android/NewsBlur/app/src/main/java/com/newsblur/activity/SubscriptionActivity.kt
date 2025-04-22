@@ -17,6 +17,7 @@ import com.newsblur.subscription.SubscriptionManager
 import com.newsblur.subscription.SubscriptionManagerImpl
 import com.newsblur.subscription.SubscriptionsListener
 import com.newsblur.util.*
+import com.newsblur.util.EdgeToEdgeUtil.applyView
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject
@@ -65,7 +66,7 @@ class SubscriptionActivity : NbActivity() {
         binding = ActivitySubscriptionBinding.inflate(layoutInflater)
         bindingPremium = ViewPremiumSubscriptionBinding.bind(binding.containerPremiumSubscription.root)
         bindingArchive = ViewArchiveSubscriptionBinding.bind(binding.containerArchiveSubscription.root)
-        setContentView(binding.root)
+        applyView(binding)
         setupUI()
         setupBilling()
     }

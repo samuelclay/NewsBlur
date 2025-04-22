@@ -8,7 +8,11 @@ import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.databinding.ActivityShareExternalStoryBinding
 import com.newsblur.network.APIManager
-import com.newsblur.util.*
+import com.newsblur.util.EdgeToEdgeUtil.applyTheme
+import com.newsblur.util.EdgeToEdgeUtil.applyView
+import com.newsblur.util.executeAsyncTask
+import com.newsblur.util.setViewGone
+import com.newsblur.util.setViewVisible
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -24,10 +28,10 @@ class ShareExternalStoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityShareExternalStoryBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        PrefsUtils.applyTranslucentThemePreference(this)
+        applyTheme()
         super.onCreate(savedInstanceState)
         binding = ActivityShareExternalStoryBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        applyView(binding)
 
         if (intent.action == Intent.ACTION_SEND && intent.type == "text/plain") {
             handleIntent()
