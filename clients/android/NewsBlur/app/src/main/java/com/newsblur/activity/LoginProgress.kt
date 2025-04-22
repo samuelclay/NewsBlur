@@ -12,6 +12,8 @@ import com.newsblur.R
 import com.newsblur.databinding.ActivityLoginProgressBinding
 import com.newsblur.network.APIManager
 import com.newsblur.service.SubscriptionSyncService
+import com.newsblur.util.EdgeToEdgeUtil.applyTheme
+import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
@@ -27,11 +29,11 @@ class LoginProgress : FragmentActivity() {
     private lateinit var binding: ActivityLoginProgressBinding
 
     override fun onCreate(bundle: Bundle?) {
-        PrefsUtils.applyThemePreference(this)
+        applyTheme()
         super.onCreate(bundle)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         binding = ActivityLoginProgressBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        applyView(binding)
 
         val username = intent.getStringExtra("username")
         val password = intent.getStringExtra("password")

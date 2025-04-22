@@ -30,13 +30,15 @@ import com.newsblur.fragment.ReadingPagerFragment
 import com.newsblur.keyboard.KeyboardEvent
 import com.newsblur.keyboard.KeyboardListener
 import com.newsblur.keyboard.KeyboardManager
+import com.newsblur.service.NBSyncService
 import com.newsblur.service.NbSyncManager.UPDATE_REBUILD
 import com.newsblur.service.NbSyncManager.UPDATE_STATUS
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
-import com.newsblur.service.NBSyncService
 import com.newsblur.util.AppConstants
 import com.newsblur.util.CursorFilters
 import com.newsblur.util.DefaultFeedView
+import com.newsblur.util.EdgeToEdgeUtil.applyView
+import com.newsblur.util.EdgeToEdgeUtil.applyViewReading
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.ImageLoader
@@ -118,7 +120,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         super.onCreate(savedInstanceBundle)
         storiesViewModel = ViewModelProvider(this)[StoriesViewModel::class.java]
         binding = ActivityReadingBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        applyViewReading(binding)
 
         try {
             fs = intent.getSerializableExtra(EXTRA_FEEDSET) as FeedSet?

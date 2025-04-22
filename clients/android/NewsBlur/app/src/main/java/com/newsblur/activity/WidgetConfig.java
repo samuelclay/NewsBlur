@@ -1,6 +1,5 @@
 package com.newsblur.activity;
 
-import android.database.Cursor;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -11,6 +10,7 @@ import com.newsblur.databinding.ActivityWidgetConfigBinding;
 import com.newsblur.di.IconLoader;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
+import com.newsblur.util.EdgeToEdgeUtil;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
@@ -77,7 +77,7 @@ public class WidgetConfig extends FeedChooser {
     @Override
     void bindLayout() {
         binding = ActivityWidgetConfigBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        EdgeToEdgeUtil.applyView(this, binding);
         UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.widget), true);
     }
 

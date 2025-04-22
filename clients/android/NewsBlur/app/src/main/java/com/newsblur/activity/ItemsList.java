@@ -6,6 +6,13 @@ import static com.newsblur.service.NbSyncManager.UPDATE_STORY;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Trace;
+import android.text.TextUtils;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnKeyListener;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
@@ -16,14 +23,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.os.Trace;
-import android.text.TextUtils;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnKeyListener;
-
 import com.newsblur.R;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.ActivityItemslistBinding;
@@ -32,12 +31,13 @@ import com.newsblur.delegate.ItemListContextMenuDelegateImpl;
 import com.newsblur.fragment.ItemSetFragment;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.EdgeToEdgeUtil;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Log;
 import com.newsblur.util.PendingTransitionUtils;
-import com.newsblur.util.ReadingActionListener;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.ReadingActionListener;
 import com.newsblur.util.Session;
 import com.newsblur.util.SessionDataSource;
 import com.newsblur.util.StateFilter;
@@ -107,7 +107,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         binding = ActivityItemslistBinding.inflate(getLayoutInflater());
-		setContentView(binding.getRoot());
+        EdgeToEdgeUtil.applyView(this, binding);
 
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		itemSetFragment = (ItemSetFragment) fragmentManager.findFragmentByTag(ItemSetFragment.class.getName());

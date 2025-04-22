@@ -9,6 +9,7 @@ import com.newsblur.databinding.ActivityProfileBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.fragment.ProfileDetailsFragment
 import com.newsblur.network.APIManager
+import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
@@ -36,7 +37,7 @@ class Profile : NbActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        applyView(binding)
         UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.profile), true)
 
         userId = if (savedInstanceState == null) {

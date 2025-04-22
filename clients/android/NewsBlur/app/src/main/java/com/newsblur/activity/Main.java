@@ -38,6 +38,7 @@ import com.newsblur.keyboard.KeyboardManager;
 import com.newsblur.service.BootReceiver;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.EdgeToEdgeUtil;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.PrefsUtils;
@@ -78,7 +79,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         contextMenuDelegate = new MainContextMenuDelegateImpl(this, dbHelper);
         keyboardManager = new KeyboardManager();
-        setContentView(binding.getRoot());
+        EdgeToEdgeUtil.applyViewMain(this, binding);
 
         // set the status bar to an generic loading message when the activity is first created so
         // that something is displayed while the service warms up

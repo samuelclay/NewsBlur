@@ -805,26 +805,6 @@ public class PrefsUtils {
         return FeedListOrder.valueOf(prefs.getString(PrefConstants.FEED_LIST_ORDER, FeedListOrder.ALPHABETICAL.toString()));
     }
 
-    public static void applyThemePreference(Activity activity) {
-        ThemeValue value = getSelectedTheme(activity);
-        if (value == ThemeValue.LIGHT) {
-            activity.setTheme(R.style.NewsBlurTheme);
-        } else if (value == ThemeValue.DARK) {
-            activity.setTheme(R.style.NewsBlurDarkTheme);
-        } else if (value == ThemeValue.BLACK) {
-            activity.setTheme(R.style.NewsBlurBlackTheme);
-        } else if (value == ThemeValue.AUTO) {
-            int nightModeFlags = activity.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-            if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-                activity.setTheme(R.style.NewsBlurDarkTheme);
-            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
-                activity.setTheme(R.style.NewsBlurTheme);
-            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_UNDEFINED) {
-                activity.setTheme(R.style.NewsBlurTheme);
-            }
-        }
-    }
-
     public static void applyTranslucentThemePreference(Activity activity) {
         ThemeValue value = getSelectedTheme(activity);
         if (value == ThemeValue.LIGHT) {
@@ -845,6 +825,7 @@ public class PrefsUtils {
         }
     }
 
+    @NonNull
     public static ThemeValue getSelectedTheme(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
         String value = prefs.getString(PrefConstants.THEME, ThemeValue.AUTO.name());
