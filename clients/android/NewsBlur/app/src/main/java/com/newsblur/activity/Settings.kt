@@ -6,21 +6,23 @@ import androidx.appcompat.app.AppCompatActivity
 import com.newsblur.R
 import com.newsblur.databinding.ActivitySettingsBinding
 import com.newsblur.fragment.SettingsFragment
+import com.newsblur.util.EdgeToEdgeUtil.applyView
+import com.newsblur.util.EdgeToEdgeUtil.applyTheme
 import com.newsblur.util.PrefConstants
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class Settings : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
-        PrefsUtils.applyThemePreference(this)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        applyTheme()
         super.onCreate(savedInstanceState)
         val binding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        applyView(binding)
 
         UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.settings), true)
+
         supportFragmentManager
                 .beginTransaction()
                 .replace(binding.container.id, SettingsFragment())

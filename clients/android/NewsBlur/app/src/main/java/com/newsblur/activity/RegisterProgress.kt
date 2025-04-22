@@ -10,7 +10,8 @@ import com.newsblur.R
 import com.newsblur.databinding.ActivityRegisterProgressBinding
 import com.newsblur.network.APIManager
 import com.newsblur.network.domain.RegisterResponse
-import com.newsblur.util.PrefsUtils
+import com.newsblur.util.EdgeToEdgeUtil.applyTheme
+import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -29,10 +30,10 @@ class RegisterProgress : FragmentActivity() {
     private lateinit var binding: ActivityRegisterProgressBinding
 
     override fun onCreate(bundle: Bundle?) {
-        PrefsUtils.applyThemePreference(this)
+        applyTheme()
         super.onCreate(bundle)
         binding = ActivityRegisterProgressBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        applyView(binding)
 
         val username = intent.getStringExtra("username")
         val password = intent.getStringExtra("password")

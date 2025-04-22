@@ -15,6 +15,7 @@ import com.newsblur.domain.FeedResult
 import com.newsblur.fragment.AddFeedFragment
 import com.newsblur.fragment.AddFeedFragment.AddFeedProgressListener
 import com.newsblur.network.APIManager
+import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,7 +46,7 @@ class FeedSearchActivity : NbActivity(), OnFeedSearchResultClickListener, AddFee
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFeedSearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        applyView(binding)
         setupViews()
         setupListeners()
         binding.inputSearchQuery.requestFocus()

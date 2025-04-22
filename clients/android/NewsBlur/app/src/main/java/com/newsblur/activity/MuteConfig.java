@@ -21,6 +21,7 @@ import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.EdgeToEdgeUtil;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
@@ -74,7 +75,7 @@ public class MuteConfig extends FeedChooser implements MuteConfigAdapter.FeedSta
     @Override
     void bindLayout() {
         binding = ActivityMuteConfigBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        EdgeToEdgeUtil.applyView(this, binding);
         UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.mute_sites), true);
     }
 
