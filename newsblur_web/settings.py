@@ -65,6 +65,10 @@ DOCKERBUILD = os.getenv("DOCKERBUILD")
 REDIS_USER = None
 FLASK_SENTRY_DSN = None
 
+# APNS settings for token-based authentication
+APNS_TEAM_ID = "YOUR_APNS_TEAM_ID"  # Apple Developer Team ID
+APNS_KEY_ID = "YOUR_APNS_KEY_ID"  # APNS Key ID from developer account
+
 # ===================
 # = Global Settings =
 # ===================
