@@ -1,6 +1,7 @@
 import datetime
 import enum
 import html
+import os
 import re
 import urllib.parse
 
@@ -298,7 +299,15 @@ class MUserFeedNotification(mongo.Document):
             return
 
         tokens = MUserNotificationTokens.get_tokens_for_user(self.user_id)
-        # To update APNS:
+        # Using APNS with Token-based authentication (recommended by Apple):
+        # 1. Go to Apple Developer Portal -> Certificates, Identifiers & Profiles -> Keys
+        # 2. Create a new key with APNS enabled
+        # 3. Download the .p8 key file (only available once)
+        # 4. Save the key file to secrets/certificates/ios/apns_key.p8
+        # 5. Note your Team ID and Key ID
+        # 6. Deploy: aps -l work -t apns,repo,celery
+        
+        # Legacy certificate method (kept for reference):
         # 0. Upgrade to latest openssl: brew install openssl
         # 1. Create certificate signing request in Keychain Access
         # 2. Upload to https://developer.apple.com/account/resources/certificates/list
@@ -312,7 +321,15 @@ class MUserFeedNotification(mongo.Document):
         # 7. cat aps.pem aps_key.noenc.pem > aps.p12.pem
         # 8. Verify: openssl s_client -connect gateway.push.apple.com:2195 -cert aps.p12.pem
         # 9. Deploy: aps -l work -t apns,repo,celery
-        apns = APNsClient("/srv/newsblur/config/certificates/aps.p12.pem", use_sandbox=tokens.use_sandbox)
+        
+        # Using token-based authentication (modern method)
+        key_file_path = "/srv/newsblur/config/certificates/apns_key.p8"
+        apns = APNsClient(
+            team_id=settings.APNS_TEAM_ID,
+            auth_key_id=settings.APNS_KEY_ID,
+            auth_key_path=key_file_path,
+            use_sandbox=tokens.use_sandbox
+        )
 
         notification_title_only = is_true(user.profile.preference_value("notification_title_only"))
         title, subtitle, body = self.title_and_body(story, usersub, notification_title_only)

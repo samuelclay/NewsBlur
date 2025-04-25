@@ -4,10 +4,8 @@
     path: /srv/newsblur/config/certificates
     state: directory
 
-- name: Copy APNS certificates
+- name: Copy APNS key file (token-based authentication)
   copy:
-    src: "/srv/secrets-newsblur/certificates/ios/{{ item }}"
-    dest: "/srv/newsblur/config/certificates/{{ item }}"
+    src: "/srv/secrets-newsblur/certificates/ios/apns_key.p8"
+    dest: "/srv/newsblur/config/certificates/apns_key.p8"
     mode: 0400
-  with_items:
-    - aps.p12.pem
