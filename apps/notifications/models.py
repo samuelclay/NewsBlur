@@ -7,9 +7,8 @@ import urllib.parse
 
 import mongoengine as mongo
 import redis
-from apns2.client import APNsClient
-from apns2.errors import BadDeviceToken, DeviceTokenNotForTopic, Unregistered
-from apns2.payload import Payload
+from pyapns_client import APNSClient, IOSPayloadAlert, IOSPayload, IOSNotification
+from pyapns_client import APNSDeviceException, APNSServerException, APNSProgrammingException, UnregisteredException
 from bs4 import BeautifulSoup
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -306,7 +305,7 @@ class MUserFeedNotification(mongo.Document):
         # 4. Save the key file to secrets/certificates/ios/apns_key.p8
         # 5. Note your Team ID and Key ID
         # 6. Deploy: aps -l work -t apns,repo,celery
-        
+
         # Legacy certificate method (kept for reference):
         # 0. Upgrade to latest openssl: brew install openssl
         # 1. Create certificate signing request in Keychain Access
@@ -321,22 +320,24 @@ class MUserFeedNotification(mongo.Document):
         # 7. cat aps.pem aps_key.noenc.pem > aps.p12.pem
         # 8. Verify: openssl s_client -connect gateway.push.apple.com:2195 -cert aps.p12.pem
         # 9. Deploy: aps -l work -t apns,repo,celery
-        
-        # Using token-based authentication (modern method)
+
+        # Using token-based authentication (modern method with pyapns-client)
         key_file_path = "/srv/newsblur/config/certificates/apns_key.p8"
-        apns = APNsClient(
-            team_id=settings.APNS_TEAM_ID,
-            auth_key_id=settings.APNS_KEY_ID,
-            auth_key_path=key_file_path,
-            use_sandbox=tokens.use_sandbox
-        )
 
         notification_title_only = is_true(user.profile.preference_value("notification_title_only"))
         title, subtitle, body = self.title_and_body(story, usersub, notification_title_only)
         image_url = None
         if len(story["image_urls"]):
             image_url = story["image_urls"][0]
-            # print image_url
+
+        # Create APNS client
+        apns = APNSClient(
+            mode=APNSClient.MODE_DEV if tokens.use_sandbox else APNSClient.MODE_PROD,
+            root_cert_path=None,
+            auth_key_path=key_file_path, 
+            auth_key_id=settings.APNS_KEY_ID,
+            team_id=settings.APNS_TEAM_ID
+        )
 
         confirmed_ios_tokens = []
         for token in tokens.ios_tokens:
@@ -345,27 +346,44 @@ class MUserFeedNotification(mongo.Document):
                 "~BMStory notification by iOS: ~FY~SB%s~SN~BM~FY/~SB%s"
                 % (story["story_title"][:50], usersub.feed.feed_title[:50]),
             )
-            payload = Payload(
-                alert={"title": title, "subtitle": subtitle, "body": body},
+
+            # Create payload using helper classes
+            alert = IOSPayloadAlert(title=title, subtitle=subtitle, body=body)
+            custom_data = {
+                "story_hash": story["story_hash"],
+                "story_feed_id": story["story_feed_id"],
+            }
+            if image_url:
+                custom_data["image_url"] = image_url
+                
+            payload = IOSPayload(
+                alert=alert,
+                custom=custom_data,
                 category="STORY_CATEGORY",
-                mutable_content=True,
-                custom={
-                    "story_hash": story["story_hash"],
-                    "story_feed_id": story["story_feed_id"],
-                    "image_url": image_url,
-                },
+                mutable_content=image_url is not None
             )
+            notification = IOSNotification(payload=payload, topic="com.newsblur.NewsBlur")
+
             try:
-                apns.send_notification(token, payload, topic="com.newsblur.NewsBlur")
-            except (BadDeviceToken, Unregistered, DeviceTokenNotForTopic):
-                logging.user(user, "~BMiOS token expired: ~FR~SB%s" % (token[:50]))
-            else:
+                apns.push(notification=notification, device_token=token)
                 confirmed_ios_tokens.append(token)
                 if settings.DEBUG:
                     logging.user(
                         user,
                         "~BMiOS token good: ~FB~SB%s / %s" % (token[:50], len(confirmed_ios_tokens)),
                     )
+            except UnregisteredException as e:
+                logging.user(user, "~BMiOS token unregistered: ~FR~SB%s (since %s)" % (token[:50], e.timestamp_datetime))
+            except APNSDeviceException as e:
+                logging.user(user, "~BMiOS token invalid: ~FR~SB%s" % (token[:50]))
+            except APNSServerException as e:
+                logging.user(user, "~BMiOS notification server error: ~FR~SB%s - %s" % (token[:50], str(e)))
+            except APNSProgrammingException as e:
+                logging.user(user, "~BMiOS notification programming error: ~FR~SB%s - %s" % (token[:50], str(e)))
+            except Exception as e:
+                logging.user(user, "~BMiOS notification error: ~FR~SB%s - %s" % (token[:50], str(e)))
+            finally:
+                apns.close()
 
         if len(confirmed_ios_tokens) < len(tokens.ios_tokens):
             tokens.ios_tokens = confirmed_ios_tokens
