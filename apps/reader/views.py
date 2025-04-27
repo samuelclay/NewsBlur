@@ -101,7 +101,7 @@ from utils.story_functions import (
     format_story_link_date__short,
     strip_tags,
 )
-from utils.user_functions import ajax_login_required, extract_user_agent, get_user
+from utils.user_functions import ajax_login_required, get_user
 from utils.view_functions import (
     get_argument_or_404,
     is_true,
@@ -335,12 +335,6 @@ def load_feeds(request):
 
     if flat:
         return load_feeds_flat(request)
-
-    platform = extract_user_agent(request)
-    if platform in ["iPhone", "iPad", "Androd"]:
-        # Remove this check once the iOS and Android updates go out which have update_counts=False
-        # and then guarantee a refresh_feeds call
-        update_counts = False
 
     try:
         folders = UserSubscriptionFolders.objects.get(user=user)
