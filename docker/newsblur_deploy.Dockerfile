@@ -10,7 +10,7 @@ RUN apt install -y default-jre
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
 RUN export JAVA_HOME
 WORKDIR /tmp
-RUN apt install wget unzip
+RUN apt install -y wget unzip
 RUN wget "https://dl.google.com/closure-compiler/compiler-20200719.zip"
 RUN unzip "compiler-20200719.zip"
 RUN mv closure-compiler-v20200719.jar /usr/local/bin/compiler.jar

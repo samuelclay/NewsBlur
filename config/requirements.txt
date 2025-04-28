@@ -1,5 +1,4 @@
 amqp==2.6.1
-apns2==0.7.2
 appdirs==1.4.4
 asgiref==3.3.4
 attrs==21.1.0
@@ -46,13 +45,8 @@ Flask-BasicAuth==0.2.0
 future==0.18.2
 gunicorn==21.2.0
 gevent==22.10.2
-h2==2.6.2
 hiredis==1.1.0
-hpack==3.0.0
 httplib2==0.18.1
-httpx==0.27.2
-hyper==0.7.0
-hyperframe==3.2.0
 idna==2.10
 image==1.5.33
 iniconfig==1.1.1
@@ -81,9 +75,9 @@ pluggy==0.13.1
 psutil==5.7.3
 psycopg2==2.9.2
 py==1.10.0
+pyapns-client==2.0.6
 pyasn1==0.4.8
 pycparser==2.20
-PyJWT==1.7.1
 pymongo>=3,<4
 PyMySQL==0.10.1
 pynliner==0.8.0

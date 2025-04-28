@@ -88,17 +88,39 @@ def db_check_mongo():
     if request.args.get("consul") == "1":
         return str(1)
 
+    # The `mongo` hostname below is a reference to the newsblurnet docker network, where 172.18.0.0/16 is defined
+    client = None
     try:
-        # The `mongo` hostname below is a reference to the newsblurnet docker network, where 172.18.0.0/16 is defined
         client = pymongo.MongoClient(
             f"mongodb://{settings.MONGO_DB['username']}:{settings.MONGO_DB['password']}@{settings.SERVER_NAME}.node.nyc1.consul/?authSource=admin"
         )
         db = client.newsblur
-    except:
-        abort(Response("Can't connect to db", 503))
-
-    try:
+        
         stories = db.stories.estimated_document_count()
+        if not stories:
+            abort(Response("No stories", 510))
+            
+        status = client.admin.command("replSetGetStatus")
+        members = status["members"]
+        primary_optime = None
+        oldest_secondary_optime = None
+        for member in members:
+            member_state = member["state"]
+            optime = member["optime"]
+            if member_state == PRIMARY_STATE:
+                primary_optime = optime["ts"].time
+            elif member_state == SECONDARY_STATE:
+                if not oldest_secondary_optime or optime["ts"].time < oldest_secondary_optime:
+                    oldest_secondary_optime = optime["ts"].time
+
+        if not primary_optime or not oldest_secondary_optime:
+            abort(Response("No optime", 511))
+
+        # if primary_optime - oldest_secondary_optime > 100:
+        #     abort(Response("Data is too old", 512))
+
+        return str(stories)
+        
     except pymongo.errors.NotMasterError:
         abort(Response("Not Master", 504))
     except pymongo.errors.ServerSelectionTimeoutError:
@@ -107,30 +129,11 @@ def db_check_mongo():
         if "Authentication failed" in str(e):
             abort(Response("Auth failed", 506))
         abort(Response("Operation Failure", 507))
-
-    if not stories:
-        abort(Response("No stories", 510))
-
-    status = client.admin.command("replSetGetStatus")
-    members = status["members"]
-    primary_optime = None
-    oldest_secondary_optime = None
-    for member in members:
-        member_state = member["state"]
-        optime = member["optime"]
-        if member_state == PRIMARY_STATE:
-            primary_optime = optime["ts"].time
-        elif member_state == SECONDARY_STATE:
-            if not oldest_secondary_optime or optime["ts"].time < oldest_secondary_optime:
-                oldest_secondary_optime = optime["ts"].time
-
-    if not primary_optime or not oldest_secondary_optime:
-        abort(Response("No optime", 511))
-
-    # if primary_optime - oldest_secondary_optime > 100:
-    #     abort(Response("Data is too old", 512))
-
-    return str(stories)
+    except Exception as e:
+        abort(Response(f"Error checking replica status: {str(e)}", 508))
+    finally:
+        if client:
+            client.close()
 
 
 @app.route("/db_check/mongo_analytics")
@@ -138,27 +141,30 @@ def db_check_mongo_analytics():
     if request.args.get("consul") == "1":
         return str(1)
 
+    client = None
     try:
         client = pymongo.MongoClient(
             f"mongodb://{settings.MONGO_ANALYTICS_DB['username']}:{settings.MONGO_ANALYTICS_DB['password']}@{settings.SERVER_NAME}.node.consul/?authSource=admin"
         )
         db = client.nbanalytics
-    except:
-        abort(Response("Can't connect to db", 503))
-
-    try:
+        
         fetches = db.feed_fetches.estimated_document_count()
+        if not fetches:
+            abort(Response("No fetches in data", 510))
+        
+        return str(fetches)
+        
     except (pymongo.errors.NotMasterError, pymongo.errors.ServerSelectionTimeoutError):
         abort(Response("Not Master / Server selection timeout", 504))
     except pymongo.errors.OperationFailure as e:
         if "Authentication failed" in str(e):
             abort(Response("Auth failed", 505))
         abort(Response("Operation failure", 506))
-
-    if not fetches:
-        abort(Response("No fetches in data", 510))
-
-    return str(fetches)
+    except Exception as e:
+        abort(Response(f"Error checking analytics: {str(e)}", 507))
+    finally:
+        if client:
+            client.close()
 
 
 @app.route("/db_check/redis_user")

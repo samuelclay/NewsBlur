@@ -1035,7 +1035,7 @@ def load_feed_page(request, feed_id):
     return HttpResponse(data, content_type="text/html; charset=utf-8")
 
 
-@ratelimit(minutes=5, requests=50)
+@ratelimit(minutes=5, requests=50, use_path=True)
 @json.json_view
 def load_starred_stories(request):
     user = get_user(request)
