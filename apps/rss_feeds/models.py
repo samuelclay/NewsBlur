@@ -2749,10 +2749,15 @@ class Feed(models.Model):
 
         # Forbidden feeds get a min of 6 hours
         if self.is_forbidden:
-            if self.num_subscribers > 1:
-                total = max(total, 60 * 12)
+            if self.num_subscribers > 1000:
+                hours = 3
+            elif self.num_subscribers > 100:
+                hours = 6
+            elif self.num_subscribers > 1:
+                hours = 12
             else:
-                total = max(total, 60 * 18)
+                hours = 18
+            total = max(total, hours * 60)
 
         if verbose:
             logging.debug(
