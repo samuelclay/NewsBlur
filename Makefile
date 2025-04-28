@@ -77,6 +77,10 @@ lint:
 	docker exec -it newsblur_web isort --profile black .
 	docker exec -it newsblur_web black --line-length 110 .
 	docker exec -it newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv
+	
+deps:
+	docker exec -t newsblur_web pip install -U uv
+	docker exec -t newsblur_web uv pip install -r requirements.txt
 
 jekyll_build:
 	cd blog && JEKYLL_ENV=production bundle exec jekyll build

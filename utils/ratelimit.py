@@ -11,6 +11,7 @@ class ratelimit(object):
     # This class is designed to be sub-classed
     minutes = 1  # The time period
     requests = 4  # Number of allowed requests in that time period
+    use_path = False  # Whether to include the request path in the key
 
     prefix = "rl-"  # Prefix for memcache key
 
@@ -77,6 +78,12 @@ class ratelimit(object):
             key = request.COOKIES.get("newsblur_sessionid", "")
         if not key:
             key = request.META.get("HTTP_USER_AGENT", "")
+        
+        # Add request path to the key if use_path is enabled
+        if getattr(self, 'use_path', False):
+            path = request.path
+            key = f"{key}-{path}"
+            
         return key
 
     def disallowed(self, request):
