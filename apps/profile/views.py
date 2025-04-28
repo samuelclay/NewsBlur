@@ -547,7 +547,7 @@ def save_ios_receipt(request):
             transaction_identifier,
             receipt,
         )
-        mail_admins(subject, message)
+        # mail_admins(subject, message)
     else:
         logging.user(
             request,
@@ -577,7 +577,7 @@ def save_android_receipt(request):
             product_id,
             order_id,
         )
-        mail_admins(subject, message)
+        # mail_admins(subject, message)
     else:
         logging.user(
             request, "~BM~FBNot sending Android Receipt email, already paid: %s %s" % (product_id, order_id)
