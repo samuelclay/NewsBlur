@@ -22,7 +22,7 @@ struct CardView: View {
     
     var body: some View {
         ZStack(alignment: .leading) {
-            if story.isSelected || cache.isGrid {
+            if story.isSelected || cache.isGrid || cache.isDashboard {
                 RoundedRectangle(cornerRadius: 10).foregroundColor(highlightColor)
                 
                 CardFeedBarView(cache: cache, story: story)
@@ -118,7 +118,7 @@ struct CardView: View {
     }
     
     var highlightColor: Color {
-        if cache.isGrid {
+        if cache.isGrid || cache.isDashboard {
             return Color.themed([0xFDFCFA, 0xFFFDEF, 0x4F4F4F, 0x292B2C])
         } else {
             return Color.themed([0xFFFDEF, 0xEEECCD, 0x303A40, 0x303030])

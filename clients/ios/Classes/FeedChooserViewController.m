@@ -107,7 +107,13 @@ static const CGFloat kFolderTitleHeight = 36.0;
         [self rebuildItemsAnimated:NO];
         
         if (self.dashboardRiverId != nil) {
-            [self selectItemsWithIdentifiers:@[self.dashboardRiverId] animated:NO];
+            id identifier = self.dashboardRiverId;
+            
+            if ([identifier hasPrefix:@"feed:"]) {
+                identifier = [NSNumber numberWithInteger:[identifier substringFromIndex:@"feed:".length].integerValue];
+            }
+            
+            [self selectItemsWithIdentifiers:@[identifier] animated:NO scrollPosition:UITableViewScrollPositionMiddle];
         }
     } else {
         [self updateDictFolders];
@@ -384,10 +390,10 @@ static const CGFloat kFolderTitleHeight = 36.0;
     return identifiers;
 }
 
-- (void)selectItemsWithIdentifiers:(NSArray *)itemIdentifiers animated:(BOOL)animated {
+- (void)selectItemsWithIdentifiers:(NSArray *)itemIdentifiers animated:(BOOL)animated scrollPosition:(UITableViewScrollPosition)scrollPosition {
     [self enumerateAllRowsUsingBlock:^(NSIndexPath *indexPath, FeedChooserItem *item) {
         if ([itemIdentifiers containsObject:item.identifier]) {
-            [self.tableView selectRowAtIndexPath:indexPath animated:animated scrollPosition:UITableViewScrollPositionNone];
+            [self.tableView selectRowAtIndexPath:indexPath animated:animated scrollPosition:scrollPosition];
         } else {
             [self.tableView deselectRowAtIndexPath:indexPath animated:animated];
         }
@@ -585,7 +591,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     self.sort = sort;
     [self sortItemsAnimated:YES];
     
-    [self selectItemsWithIdentifiers:identifiers animated:NO];
+    [self selectItemsWithIdentifiers:identifiers animated:NO scrollPosition:UITableViewScrollPositionNone];
 }
 
 - (void)showOptionsMenu {
@@ -618,14 +624,14 @@ static const CGFloat kFolderTitleHeight = 36.0;
         NSArray *identifiers = [self selectedItemIdentifiers];
         self.ascending = selectedIndex == 0;
         [self sortItemsAnimated:YES];
-        [self selectItemsWithIdentifiers:identifiers animated:NO];
+        [self selectItemsWithIdentifiers:identifiers animated:NO scrollPosition:UITableViewScrollPositionNone];
     }];
     
     [viewController addSegmentedControlWithTitles:@[@"Nested", @"Flat"] selectIndex:self.flat ? 1 : 0 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         NSArray *identifiers = [self selectedItemIdentifiers];
         self.flat = selectedIndex == 1;
         [self rebuildItemsAnimated:YES];
-        [self selectItemsWithIdentifiers:identifiers animated:NO];
+        [self selectItemsWithIdentifiers:identifiers animated:NO scrollPosition:UITableViewScrollPositionNone];
     }];
     
     MenuItemHandler selectAllHandler = ^{
@@ -779,7 +785,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
         }
     }];
     
-    [self selectItemsWithIdentifiers:identifiers animated:NO];
+    [self selectItemsWithIdentifiers:identifiers animated:NO scrollPosition:UITableViewScrollPositionNone];
 }
 
 - (void)performSaveActiveFeeds {
