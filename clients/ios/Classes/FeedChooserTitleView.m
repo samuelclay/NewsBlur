@@ -76,7 +76,8 @@
                     forControlEvents:UIControlEventTouchUpInside];
     [customView addSubview:self.invisibleHeaderButton];
     
-    UIImage *folderImage = [UIImage imageNamed:@"folder-open"];
+    NSString *imageName = self.isSelected ? @"accept" : self.isFlat ? @"dialog-organize" : @"folder-open";
+    UIImage *folderImage = [UIImage imageNamed:imageName];
     CGFloat folderImageViewX = 10.0;
     
     if (((NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]).isPhone) {

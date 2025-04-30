@@ -104,6 +104,10 @@
 }
 
 - (NSString *)detailForSort:(FeedChooserSort)sort {
+    if (self.info[@"active"] == nil) {
+        return @"";
+    }
+    
     switch (sort) {
         case FeedChooserSortSubscribers:
             return [NSString localizedStringWithFormat:NSLocalizedString(@"%@ subscribers", @"number of subscribers"), self.info[@"num_subscribers"]];
