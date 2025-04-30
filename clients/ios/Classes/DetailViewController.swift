@@ -579,6 +579,14 @@ private extension DetailViewController {
                 appDelegate.feedDetailNavigationController = nil
                 appDelegate.feedDetailViewController = feedDetailViewController
                 appDelegate.splitViewController.setViewController(nil, for: .supplementary)
+                
+                if storyTitlesInDashboard, let feedDetailViewController, feedDetailViewController.storyCache.dashboardAll.isEmpty {
+                    feedDetailViewController.storyCache.prepareDashboard()
+                    
+                    DispatchQueue.main.async {
+                        self.appDelegate.feedsViewController.loadDashboard()
+                    }
+                }
             } else {
                 add(viewController: feedDetailViewController, top: true)
             }

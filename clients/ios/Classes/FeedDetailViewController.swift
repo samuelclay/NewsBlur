@@ -11,9 +11,9 @@ import SwiftUI
 
 /// List of stories for a feed.
 class FeedDetailViewController: FeedDetailObjCViewController {
-    lazy var gridViewController = makeGridViewController()
+    private var gridViewController: UIHostingController<FeedDetailGridView>?
     
-    lazy var dashboardViewController = makeDashboardViewController()
+    private var dashboardViewController: UIHostingController<FeedDetailDashboardView>?
     
     lazy var storyCache = StoryCache()
     
@@ -73,6 +73,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     enum DashboardOperation {
         case none
         case change(DashList)
+        case addFirst
         case addBefore(DashList)
         case addAfter(DashList)
     }
@@ -95,30 +96,21 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         return dashboardViewController
     }
     
+    private func add(viewController: UIViewController) {
+        addChild(viewController)
+        view.addSubview(viewController.view)
+        viewController.didMove(toParent: self)
+        
+        NSLayoutConstraint.activate([
+            viewController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            viewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            viewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            viewController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        addChild(gridViewController)
-        view.addSubview(gridViewController.view)
-        gridViewController.didMove(toParent: self)
-        
-        NSLayoutConstraint.activate([
-            gridViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
-            gridViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            gridViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            gridViewController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
-        
-        addChild(dashboardViewController)
-        view.addSubview(dashboardViewController.view)
-        dashboardViewController.didMove(toParent: self)
-        
-        NSLayoutConstraint.activate([
-            dashboardViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
-            dashboardViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            dashboardViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            dashboardViewController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
         
         changedLayout()
     }
@@ -165,8 +157,22 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         _ = view
         
         storyTitlesTable.isHidden = !isLegacyTable || isDashboard
-        gridViewController.view.isHidden = isLegacyTable || isDashboard
-        dashboardViewController.view.isHidden = !isDashboard
+        
+        if let gridViewController {
+            gridViewController.view.isHidden = isLegacyTable || isDashboard
+        } else if !isLegacyTable && !isDashboard {
+            let viewController = makeGridViewController()
+            add(viewController: viewController)
+            gridViewController = viewController
+        }
+        
+        if let dashboardViewController {
+            dashboardViewController.view.isHidden = !isDashboard
+        } else if isDashboard {
+            let viewController = makeDashboardViewController()
+            add(viewController: viewController)
+            dashboardViewController = viewController
+        }
         
         print("🪿 changedLayout for \(isLegacyTable ? "legacy table" : "SwiftUI grid layout")")
         
@@ -259,6 +265,8 @@ class FeedDetailViewController: FeedDetailObjCViewController {
                 break
             case .change(let dashList):
                 storyCache.change(dash: dashList, to: riverId)
+            case .addFirst:
+                storyCache.addFirst(riverId: riverId)
             case .addBefore(let dashList):
                 storyCache.add(riverId: riverId, before: true, dash: dashList)
             case .addAfter(let dashList):
@@ -374,7 +382,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
     func visible(story: Story) {
         print("🐓 Visible: \(story.debugTitle)")
         
-        guard storiesCollection.activeFeedStories != nil else {
+        guard storiesCollection.activeFeedStories != nil, !isDashboard else {
             return
         }
         
@@ -445,6 +453,12 @@ extension FeedDetailViewController: FeedDetailInteraction {
         self.dashboardOperation = .change(dash)
         
         self.appDelegate.showDashboardSites(dash.riverId)
+    }
+    
+    func addFirstDashboard() {
+        self.dashboardOperation = .addFirst
+        
+        self.appDelegate.showDashboardSites(nil)
     }
     
     func addDashboard(before: Bool, dash: DashList) {

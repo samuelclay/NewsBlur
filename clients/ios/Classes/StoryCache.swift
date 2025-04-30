@@ -62,6 +62,10 @@ import Foundation
     @Published var dashboardLeft = [DashList]()
     @Published var dashboardRight = [DashList]()
     
+    var dashboardAll: [DashList] {
+        return dashboardLeft + dashboardRight
+    }
+    
     var all: [Story] {
         if let selected {
             return before + [selected] + after
@@ -233,6 +237,17 @@ import Foundation
         saveDashboard(reloadingFrom: dash.index)
     }
     
+    func addFirst(riverId: String) {
+        let (feedId, folderId) = feedIdAndFolderId(for: riverId)
+        let newDash = DashList(index: 0, side: .left, order: 0, feedId: feedId, folderId: folderId, oldDash: nil)
+        
+        dashboardLeft.append(newDash)
+        
+        updateDashIndexesAndOrder()
+        
+        saveDashboard(reloadingFrom: 0)
+    }
+    
     func add(riverId: String, before: Bool, dash: DashList) {
         let (feedId, folderId) = feedIdAndFolderId(for: riverId)
         let newOrder = before ? dash.order : dash.order + 1
@@ -245,8 +260,6 @@ import Foundation
         }
         
         updateDashIndexesAndOrder()
-        
-//        let index = Self.cachedDashboard.firstIndex(where: { $0.id == dash.id })
         
         saveDashboard(reloadingFrom: dash.index)
     }
