@@ -151,7 +151,7 @@ class FeedsViewController: FeedsObjCViewController {
         }
         
         dashWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5), execute: workItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500), execute: workItem)
     }
     
     private func immediatelyLoadNextDash(prepare: Bool) {
