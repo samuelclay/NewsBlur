@@ -173,9 +173,8 @@ import Foundation
                 continue
             }
             
-            let (feedId, folderId) = feedIdAndFolderId(for: riverId)
             let oldDash = index < oldDashes.count ? oldDashes[index] : nil
-            let dash = DashList(index: index, side: side, order: order, feedId: feedId, folderId: folderId, oldDash: oldDash)
+            let dash = DashList(index: index, side: side, order: order, riverId: riverId, oldDash: oldDash)
             
             localDashboard.append(dash)
             
@@ -219,39 +218,25 @@ import Foundation
         return dashes
     }
     
-    func feedIdAndFolderId(for riverId: String) -> (feedId: String?, folderId: String) {
-        let feedId = riverId.hasPrefix("feed:") ? riverId.deletingPrefix("feed:") : nil
-        
-        guard let folderId = riverId == "river:" ? "everything" : riverId.hasPrefix("river:") ? riverId.deletingPrefix("river:") : appDelegate.parentFolders(forFeed: feedId).first as? String else {
-            return (feedId: feedId, folderId: "everything")
-        }
-        
-        return (feedId: feedId, folderId: folderId)
-    }
-    
     func change(dash: DashList, to riverId: String) {
-        let (feedId, folderId) = feedIdAndFolderId(for: riverId)
+        dash.change(riverId: riverId)
         
-        dash.change(feedId: feedId, folderId: folderId)
-        
-        saveDashboard(reloadingFrom: dash.index)
+        saveDashboard()
     }
     
     func addFirst(riverId: String) {
-        let (feedId, folderId) = feedIdAndFolderId(for: riverId)
-        let newDash = DashList(index: 0, side: .left, order: 0, feedId: feedId, folderId: folderId, oldDash: nil)
+        let newDash = DashList(index: 0, side: .left, order: 0, riverId: riverId, oldDash: nil)
         
         dashboardLeft.append(newDash)
         
         updateDashIndexesAndOrder()
         
-        saveDashboard(reloadingFrom: 0)
+        saveDashboard()
     }
     
     func add(riverId: String, before: Bool, dash: DashList) {
-        let (feedId, folderId) = feedIdAndFolderId(for: riverId)
         let newOrder = before ? dash.order : dash.order + 1
-        let newDash = DashList(index: dash.index, side: dash.side, order: newOrder, feedId: feedId, folderId: folderId, oldDash: nil)
+        let newDash = DashList(index: dash.index, side: dash.side, order: newOrder, riverId: riverId, oldDash: nil)
         
         if newDash.side == .left {
             dashboardLeft.insert(newDash, at: newDash.order)
@@ -261,7 +246,7 @@ import Foundation
         
         updateDashIndexesAndOrder()
         
-        saveDashboard(reloadingFrom: dash.index)
+        saveDashboard()
     }
     
     private func move(dash: DashList, from dashSide: inout [DashList], to index: Int) {
@@ -317,13 +302,9 @@ import Foundation
         saveDashboard()
     }
     
-    func saveDashboard(reloadingFrom index: Int? = nil) {
-        // Reset this so any loading underway is ignored, and it starts loading from the top. Allow immediately reloading from a specific index if not already underway; used when changing or adding a dash.
-        if appDelegate.feedDetailViewController.dashboardIndex >= Self.cachedDashboard.count {
-            appDelegate.feedDetailViewController.dashboardIndex = index ?? -1
-        } else {
-            appDelegate.feedDetailViewController.dashboardIndex = -1
-        }
+    func saveDashboard() {
+        // Reset this so any loading underway is ignored, and it starts loading from the top.
+        appDelegate.feedDetailViewController.dashboardIndex = -1
         
         let endpoint = "reader/save_dashboard_rivers"
         let dashes = Self.cachedDashboard.map { $0.asDictionary }

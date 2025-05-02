@@ -187,6 +187,16 @@ class FeedsViewController: FeedsObjCViewController {
         
         appDelegate.storiesCollection.reset()
         
+        if let searchQuery = dash.searchQuery {
+            appDelegate.storiesCollection.inSearch = true
+            appDelegate.storiesCollection.searchQuery = searchQuery
+            appDelegate.storiesCollection.savedSearchQuery = searchQuery
+        } else {
+            appDelegate.storiesCollection.inSearch = false
+            appDelegate.storiesCollection.searchQuery = nil
+            appDelegate.storiesCollection.savedSearchQuery = nil
+        }
+        
         if let feed = dash.feedId {
             appDelegate.loadFolder(dash.folderId, feedID: feed)
         } else {

@@ -23,12 +23,13 @@ typedef NS_ENUM(NSUInteger, FeedChooserSort)
 @property (nonatomic, readonly) UIImage *icon;
 @property (nonatomic, strong) NSDictionary *info;
 @property (nonatomic, strong) NSMutableArray *contents;
+@property (nonatomic, strong) NSString *search;
 
 + (instancetype)makeFolderWithIdentifier:(NSString *)identifier title:(NSString *)title;
-+ (instancetype)makeItemWithInfo:(NSDictionary *)info;
++ (instancetype)makeItemWithInfo:(NSDictionary *)info search:(NSString *)search;
 
 - (void)addItem:(FeedChooserItem *)item;
-- (void)addItemWithInfo:(NSDictionary *)info;
+- (void)addItemWithInfo:(NSDictionary *)info search:(NSString *)search;
 
 + (NSString *)keyForSort:(FeedChooserSort)sort;
 - (NSString *)detailForSort:(FeedChooserSort)sort;

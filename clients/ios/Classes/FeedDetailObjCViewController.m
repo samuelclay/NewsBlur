@@ -734,10 +734,17 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [appDelegate.storyPagesViewController resetPages];
     [appDelegate.storyPagesViewController hidePages];
     
-    storiesCollection.inSearch = NO;
-    storiesCollection.searchQuery = nil;
-    storiesCollection.savedSearchQuery = nil;
-    [self.searchBar setText:@""];
+    if (appDelegate.isDashboard) {
+        storiesCollection.inSearch = appDelegate.storiesCollection.inSearch;
+        storiesCollection.searchQuery = appDelegate.storiesCollection.searchQuery;
+        storiesCollection.savedSearchQuery = appDelegate.storiesCollection.savedSearchQuery;
+        [self.searchBar setText:storiesCollection.searchQuery ?: @""];
+    } else {
+        storiesCollection.inSearch = NO;
+        storiesCollection.searchQuery = nil;
+        storiesCollection.savedSearchQuery = nil;
+        [self.searchBar setText:@""];
+    }
     [self.notifier hideIn:0];
     [self beginOfflineTimer];
     [appDelegate.cacheImagesOperationQueue cancelAllOperations];

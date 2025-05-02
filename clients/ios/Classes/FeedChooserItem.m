@@ -20,13 +20,14 @@
 @implementation FeedChooserItem
 
 + (instancetype)makeFolderWithIdentifier:(NSString *)identifier title:(NSString *)title {
-    return [self makeItemWithInfo:@{@"id" : identifier, @"feed_title" : title}];
+    return [self makeItemWithInfo:@{@"id" : identifier, @"feed_title" : title} search:nil];
 }
 
-+ (instancetype)makeItemWithInfo:(NSDictionary *)info {
++ (instancetype)makeItemWithInfo:(NSDictionary *)info search:(NSString *)search {
     FeedChooserItem *item = [self new];
     
     item.info = info;
+    item.search = search;
     
     return item;
 }
@@ -35,10 +36,14 @@
     id identifier = self.info[@"id"];
     
     if ([identifier isEqual:@" "]) {
-        return @"everything";
-    } else {
-        return identifier;
+        identifier = @"everything";
     }
+    
+    if (self.search != nil) {
+        identifier = [NSString stringWithFormat:@"%@?%@", identifier, self.search];
+    }
+    
+    return identifier;
 }
 
 - (NSString *)identifierString {
@@ -47,6 +52,10 @@
 
 - (NSString *)title {
     NSString *title = self.info[@"feed_title"];
+    
+    if (self.search != nil) {
+        return [NSString stringWithFormat:@"\"%@\" in %@", self.search, title];
+    }
     
     if ([title isEqualToString:@" "] || [title isEqualToString:@"dashboard"] || [title isEqualToString:@"everything"] || [title isEqualToString:@"infrequent"]) {
         return @"";
@@ -60,7 +69,10 @@
         if (!self.identifier) {
             self.icon = [UIImage imageNamed:@"folder-open"];
         } else {
-            self.icon = [self.appDelegate getFavicon:[self.identifier description] isSocial:NO isSaved:NO];
+            NSString *identifier = self.identifierString;
+            BOOL isSocial = [self.appDelegate isSocialFeed:identifier];
+            BOOL isSaved = [self.appDelegate isSavedFeed:identifier];
+            self.icon = [self.appDelegate getFavicon:identifier isSocial:isSocial isSaved:isSaved];
         }
     }
     
@@ -75,8 +87,8 @@
     [self.contents addObject:item];
 }
 
-- (void)addItemWithInfo:(NSDictionary *)info {
-    [self addItem:[FeedChooserItem makeItemWithInfo:info]];
+- (void)addItemWithInfo:(NSDictionary *)info search:(NSString *)search {
+    [self addItem:[FeedChooserItem makeItemWithInfo:info search:search]];
 }
 
 + (NSString *)keyForSort:(FeedChooserSort)sort {

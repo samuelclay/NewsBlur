@@ -21,8 +21,66 @@ import Foundation
     var side: Side
     var order: Int
     
-    var feedId: String?
-    var folderId: String
+    var riverId: String {
+        didSet {
+            feedId = nil
+            feedIdWithoutSearch = nil
+            folderId = "everything"
+            searchQuery = nil
+            
+            guard let appDelegate = NewsBlurAppDelegate.shared else {
+                return
+            }
+            
+            var localRiverId = riverId
+            
+            if localRiverId.hasPrefix("search:") {
+                localRiverId = localRiverId.deletingPrefix("search:")
+                searchQuery = localRiverId.components(separatedBy: ":").last
+                
+                if let searchQuery {
+                    localRiverId = localRiverId.deletingSuffix(":\(searchQuery)")
+                }
+            }
+            
+            if localRiverId.hasPrefix("feed:") {
+                feedId = localRiverId.deletingPrefix("feed:")
+            } else if appDelegate.isSocialFeed(localRiverId) || appDelegate.isSavedFeed(localRiverId) {
+                feedId = localRiverId
+            } else {
+                feedId = nil
+            }
+            
+            feedIdWithoutSearch = feedId
+            
+            if localRiverId == "river:" {
+                folderId = "everything"
+            } else if localRiverId.hasPrefix("river:") {
+                folderId = localRiverId.deletingPrefix("river:")
+            } else if let parentFolder = appDelegate.parentFolders(forFeed: feedId).first as? String {
+                folderId = parentFolder
+            } else {
+                folderId = "everything"
+            }
+            
+            if let searchQuery {
+                if let hasFeedId = feedId {
+                    feedId = "\(hasFeedId)?\(searchQuery)"
+                } else {
+                    folderId = "\(folderId)?\(searchQuery)"
+                }
+            }
+        }
+    }
+    
+    func set(riverId: String) {
+        self.riverId = riverId
+    }
+    
+    private(set) var feedId: String?
+    private(set) var feedIdWithoutSearch: String?
+    private(set) var folderId = "everything"
+    private(set) var searchQuery: String?
     
     var key: String {
         if let feedId {
@@ -46,11 +104,19 @@ import Foundation
         return feeds.first
     }
     
-    var name: String {
+    var baseName: String {
         if isFolder {
             return folder?.name ?? "Loading..."
         } else {
             return feed?.name ?? "Loading..."
+        }
+    }
+    
+    var name: String {
+        if let searchQuery {
+            return "\"\(searchQuery)\" in \(baseName)"
+        } else {
+            return baseName
         }
     }
     
@@ -62,17 +128,25 @@ import Foundation
         }
     }
     
-    var riverId: String {
-        if let feedId {
-            return "feed:\(feedId)"
-        } else if folderId == "everything" {
-            return "river:"
-        } else if folderId.contains(":") {
-            return folderId
-        } else {
-            return "river:\(folderId)"
-        }
-    }
+//    var riverId: String {
+//        var result: String
+//        
+//        if let feedId {
+//            result = "feed:\(feedId)"
+//        } else if folderId == "everything" {
+//            result = "river:"
+//        } else if folderId.contains(":") {
+//            result = folderId
+//        } else {
+//            result = "river:\(folderId)"
+//        }
+//        
+//        if let searchQuery {
+//            result = "search:\(result):\(searchQuery)"
+//        }
+//        
+//        return result
+//    }
     
     var asDictionary: [String: Any] {
         return ["river_id" : riverId,
@@ -80,14 +154,16 @@ import Foundation
                 "river_order" : order]
     }
     
-    init(index: Int, side: Side, order: Int, feedId: String?, folderId: String, oldDash: DashList?) {
+    init(index: Int, side: Side, order: Int, riverId: String, oldDash: DashList?) {
         self.index = index
         self.side = side
         self.order = order
-        self.feedId = feedId
-        self.folderId = folderId
+        self.riverId = ""
         
-        if let oldDash, index == oldDash.index, side == oldDash.side, order == oldDash.order, feedId == oldDash.feedId, folderId == oldDash.folderId {
+        // This strange behavior is to make the riverId.didSet handler trigger.
+        set(riverId: riverId)
+        
+        if let oldDash, index == oldDash.index, side == oldDash.side, order == oldDash.order, riverId == oldDash.riverId {
             folder = oldDash.folder
             feeds = oldDash.feeds
             stories = oldDash.stories
@@ -104,10 +180,10 @@ import Foundation
         }
     }
     
-    func change(feedId: String?, folderId: String) {
-        self.feedId = feedId
-        self.folderId = folderId
+    func change(riverId: String) {
+        self.riverId = riverId
         
+        id = UUID()
         folder = nil
         feeds.removeAll()
         stories = nil
@@ -151,7 +227,7 @@ import Foundation
 
 extension DashList: @preconcurrency CustomStringConvertible {
     var description: String {
-        let base = "DashList index: \(index), side: \(side), order: \(order)"
+        let base = "DashList index: \(index), side: \(side), order: \(order), riverId: \(riverId)"
         
         if let stories {
             if let feedId {
