@@ -175,30 +175,30 @@ static const CGFloat kFolderTitleHeight = 36.0;
 - (void)rebuildItemsAnimated:(BOOL)animated {
     FeedChooserItem *section = nil;
     
-    BOOL wantRiverId = self.operation == FeedChooserOperationDashboardSites;
+    BOOL isDashboard = self.operation == FeedChooserOperationDashboardSites;
     
     NSMutableArray *sections = [NSMutableArray array];
     NSMutableArray *indexTitles = [NSMutableArray array];
     NSMutableArray *folders = [NSMutableArray array];
     
     if (self.flat) {
-        if (wantRiverId) {
+        if (isDashboard) {
             [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:folders" title:@"Folders"]];
             [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:feeds" title:@"Sites"]];
-            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:river_blurblogs" title:@"Blurblogs"]];
+            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:river_blurblogs" title:@"All Shared Stories"]];
             [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:saved_searches" title:@"Saved Searches"]];
-            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:saved_stories" title:@"Saved Tags"]];
+            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:saved_stories" title:@"Saved Stories"]];
         } else {
             section = [FeedChooserItem makeFolderWithIdentifier:@"" title:@""];
             [sections addObject:section];
         }
     }
     
-    NSMutableDictionary *sectionsDict = [NSMutableDictionary new];
+    NSMutableDictionary *flatSectionsDict = [NSMutableDictionary new];
     
-    if (wantRiverId) {
+    if (isDashboard && self.flat) {
         for (FeedChooserItem *item in sections) {
-            sectionsDict[item.identifier] = item;
+            flatSectionsDict[item.identifier] = item;
         }
     }
     
@@ -209,9 +209,8 @@ static const CGFloat kFolderTitleHeight = 36.0;
     
     NSMutableArray *folderArray = [[allFoldersDict.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)] mutableCopy];
     
-    if (wantRiverId) {
-#warning *** disabled for now as not fully implemented
-//        [folderArray addObjectsFromArray:specialFolders];
+    if (isDashboard) {
+        [folderArray addObjectsFromArray:specialFolders];
     }
     
     for (NSString *folderName in folderArray) {
@@ -222,13 +221,14 @@ static const CGFloat kFolderTitleHeight = 36.0;
         
         if (!self.flat) {
             section = folder;
-        } else if (wantRiverId) {
-            section = sectionsDict[@"dash:folders"];
+        } else if (isDashboard) {
+            section = flatSectionsDict[@"dash:folders"];
             [section addItem:folder];
         }
         
         for (id feedId in self.dictFolders[folderName]) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+            NSString *searchQuery = [appDelegate searchQueryForFeedId:feedIdStr];
             feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
             NSDictionary *info = appDelegate.dictFeeds[feedIdStr];
             
@@ -238,24 +238,32 @@ static const CGFloat kFolderTitleHeight = 36.0;
             
             BOOL isSocialFeed = [appDelegate isSocialFeed:feedIdStr];
             BOOL isSavedFeed = [appDelegate isSavedFeed:feedIdStr];
-            BOOL wantFeed = !isSocialFeed && !isSavedFeed;
+            BOOL wantFeed = (!isSocialFeed && !isSavedFeed) || isDashboard;
+            
+            if (wantFeed && isSocialFeed) {
+                info = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
+            }
+            
+            if (wantFeed && isSavedFeed) {
+                info = [appDelegate.dictSavedStoryTags objectForKey:feedIdStr];
+            }
             
             if (wantFeed && self.operation == FeedChooserOperationWidgetSites && ![info[@"active"] boolValue]) {
                 wantFeed = NO;
             }
             
-            if (wantFeed || wantRiverId) {
-                if (self.flat && wantRiverId) {
+            if (wantFeed) {
+                if (self.flat && isDashboard) {
                     if (isSocialFeed) {
-                        section = sectionsDict[@"dash:river_blurblogs"];
+                        section = flatSectionsDict[@"dash:river_blurblogs"];
                     } else if (isSavedFeed) {
-                        section = sectionsDict[@"dash:saved_stories"];
+                        section = flatSectionsDict[@"dash:saved_stories"];
                     } else {
-                        section = sectionsDict[@"dash:feeds"];
+                        section = flatSectionsDict[@"dash:feeds"];
                     }
                 }
                 
-                [section addItemWithInfo:info];
+                [section addItemWithInfo:info search:searchQuery];
             }
         }
         
@@ -923,6 +931,11 @@ static const CGFloat kFolderTitleHeight = 36.0;
                 if (riverId.integerValue) {
                     riverId = [NSString stringWithFormat:@"feed:%@", riverId];
                 }
+            }
+            
+            if ([riverId containsString:@"?"]) {
+                riverId = [riverId stringByReplacingOccurrencesOfString:@"?" withString:@":"];
+                riverId = [NSString stringWithFormat:@"search:%@", riverId];
             }
             
             [self.appDelegate.feedDetailViewController doneDashboardChooseSite:riverId];

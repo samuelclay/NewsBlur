@@ -76,8 +76,7 @@
                     forControlEvents:UIControlEventTouchUpInside];
     [customView addSubview:self.invisibleHeaderButton];
     
-    NSString *imageName = self.isSelected ? @"accept" : self.isFlat ? @"dialog-organize" : @"folder-open";
-    UIImage *folderImage = [UIImage imageNamed:imageName];
+    UIImage *folderImage = [UIImage imageNamed:self.imageName];
     CGFloat folderImageViewX = 10.0;
     
     if (((NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]).isPhone) {
@@ -87,6 +86,22 @@
     [folderImage drawInRect:CGRectMake(folderImageViewX, 8.0, 20.0, 20.0)];
     
     [self addSubview:customView];
+}
+
+- (NSString *)imageName {
+    if (self.isSelected) {
+        return @"accept";
+    } else if (self.isFlat) {
+        return @"dialog-organize";
+    } else if ([self.title isEqualToString:@"All Shared Stories"]) {
+        return @"all-shares";
+    } else if ([self.title isEqualToString:@"Saved Searches"]) {
+        return @"search";
+    } else if ([self.title isEqualToString:@"Saved Stories"]) {
+        return @"saved-stories";
+    } else {
+        return @"folder-open";
+    }
 }
 
 - (UIFontDescriptor *)fontDescriptor {
