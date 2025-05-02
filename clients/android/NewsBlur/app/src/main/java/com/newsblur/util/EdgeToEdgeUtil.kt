@@ -61,16 +61,14 @@ object EdgeToEdgeUtil {
     fun Activity.applyView(binding: ViewBinding) {
         setContentView(binding.root)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
-                val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-                val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
 
-                findViewById<View>(R.id.toolbar)?.updateTopPadding(statusBar.top)
-                findViewById<View>(R.id.container)?.updateBottomPadding(navBar.bottom)
+            findViewById<View>(R.id.toolbar)?.updateTopPadding(statusBar.top)
+            findViewById<View>(R.id.container)?.updateBottomPadding(navBar.bottom)
 
-                WindowInsetsCompat.CONSUMED
-            }
+            WindowInsetsCompat.CONSUMED
         }
     }
 
@@ -78,20 +76,18 @@ object EdgeToEdgeUtil {
     fun Activity.applyViewMain(binding: ViewBinding) {
         setContentView(binding.root)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
-                val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-                val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
 
-                findViewById<View>(R.id.toolbar)?.updateTopPadding(statusBar.top)
+            findViewById<View>(R.id.toolbar)?.updateTopPadding(statusBar.top)
 
-                // Raise bottom section
-                findViewById<View>(R.id.fragment_feedintelligenceselector)?.updateBottomPadding(navBar.bottom)
-                findViewById<View>(R.id.main_menu_button)?.addBottomMargin(navBar.bottom)
-                findViewById<View>(R.id.main_add_button)?.addBottomMargin(navBar.bottom)
+            // Raise bottom section
+            findViewById<View>(R.id.fragment_feedintelligenceselector)?.updateBottomPadding(navBar.bottom)
+            findViewById<View>(R.id.main_menu_button)?.addBottomMargin(navBar.bottom)
+            findViewById<View>(R.id.main_add_button)?.addBottomMargin(navBar.bottom)
 
-                WindowInsetsCompat.CONSUMED
-            }
+            WindowInsetsCompat.CONSUMED
         }
     }
 
@@ -99,16 +95,14 @@ object EdgeToEdgeUtil {
     fun Activity.applyViewReading(binding: ViewBinding) {
         setContentView(binding.root)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
-                val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-                val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val statusBar = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
 
-                findViewById<View>(R.id.toolbar)?.updateTopPadding(statusBar.top)
-                findViewById<View>(R.id.overlay_container)?.updateBottomPadding(navBar.bottom)
+            findViewById<View>(R.id.toolbar)?.updateTopPadding(statusBar.top)
+            findViewById<View>(R.id.overlay_container)?.updateBottomPadding(navBar.bottom)
 
-                WindowInsetsCompat.CONSUMED
-            }
+            WindowInsetsCompat.CONSUMED
         }
     }
 

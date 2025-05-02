@@ -5,8 +5,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="40dp"
         android:gravity="center_horizontal"
         android:layout_gravity="center_horizontal">
 
@@ -182,6 +182,6 @@
             android:layout_marginRight="12dp"
             android:layout_below="@id/reading_public_comment_header"
             android:orientation="vertical"/>
-		
+
     </RelativeLayout>
 </merge>
