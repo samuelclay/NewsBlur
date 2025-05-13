@@ -9668,6 +9668,12 @@ form.opml_import_form input {
     filter: hue-rotate(140deg) saturate(15);
 }
 
+.NB-menu-manage .NB-menu-manage-feed-promptfilter .NB-menu-manage-image {
+    background: transparent url("/media/embed/icons/nouns/prompt.svg") no-repeat center center;
+    background-size: 18px;
+    filter: hue-rotate(-51deg) saturate(3);
+}
+
 .NB-menu-manage .NB-menu-manage-feed-notifications .NB-menu-manage-image {
     background: transparent url("/media/embed/icons/nouns/dialog-notifications.svg") no-repeat center center;
     background-size: 18px;
@@ -9683,6 +9689,12 @@ form.opml_import_form input {
     background: transparent url("/media/embed/icons/nouns/dialog-trainer.svg") no-repeat center center;
     background-size: 18px;
     filter: hue-rotate(140deg) saturate(15);
+}
+
+.NB-menu-manage .NB-menu-manage-story-prompt .NB-menu-manage-image {
+    background: transparent url("/media/embed/icons/nouns/prompt.svg") no-repeat center center;
+    background-size: 18px;
+    filter: hue-rotate(-51deg) saturate(3);
 }
 
 .NB-menu-manage .NB-menu-manage-story-mark-read-newer.NB-up .NB-menu-manage-image,
