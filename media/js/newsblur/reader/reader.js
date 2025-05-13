@@ -2982,6 +2982,20 @@
             NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
         },
 
+        send_story_to_readwise: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'https://readwise.io/save?';
+            var url = [
+                url,
+                'url=',
+                encodeURIComponent(story.get('story_permalink')),
+                '&title=',
+                encodeURIComponent(story.get('story_title'))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
         send_story_to_email: function (story) {
             // If story is a story_id (string), get the story object
             if (_.isString(story)) {
