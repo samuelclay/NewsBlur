@@ -26,7 +26,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         "lineme": "Line.me",
         "hackernews": "Hacker News",
         "telegram": "Telegram",
-        "linkedin": "LinkedIn"
+        "linkedin": "LinkedIn",
+        "readwise": "Readwise"
     },
 
     initialize: function () {
