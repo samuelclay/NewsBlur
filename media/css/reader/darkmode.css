@@ -804,8 +804,16 @@ color: #a85b40;
     background-color: #252D30;
 }
 
-.NB-dark .NB-classifiers .NB-classifier {
+.NB-dark .NB-classifier {
     background-color: #59656D;
+}
+
+.NB-dark .NB-classifiers .NB-classifier.NB-classifier-like {
+    box-shadow: 1px 1px 1px #1f1f21;
+}
+
+.NB-dark .NB-classifiers .NB-classifier.NB-classifier-dislike {
+    box-shadow: 1px 1px 1px #1f1f21;
 }
 
 .NB-dark .NB-classifiers .NB-classifier label b {
@@ -922,7 +930,7 @@ color: #a85b40;
 .NB-dark .NB-taskbar-options,
 .NB-dark .NB-feedbar-options {
     background: none;
-    background-color: #565759;
+    background-color: #212225;
     color: #c0c0c0;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .1);
     /*border: 1px solid #90928b;*/
