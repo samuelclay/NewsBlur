@@ -241,7 +241,11 @@
     # Don't use this line below as it means there is already a username and password, so no need to set one
     # sleep 2; docker exec mongo mongo -u "{{ mongodb_username }}" -p "{{ mongodb_password }}" --eval '
     cmd: >-
-      sleep 2; docker exec mongo mongo --eval '
+      sleep 2; docker exec mongo mongo admin 
+      -u "{{ mongodb_username }}" 
+      -p "{{ mongodb_password }}" 
+      --authenticationDatabase admin 
+      --eval '
       db.createUser(
         {
           user: "{{ mongodb_username }}",
@@ -250,7 +254,7 @@
             { role: "root", db: "admin" },
           ]
         }
-      )' admin
+      )'
   register: auth_result
   changed_when:
     - auth_result.rc == 0

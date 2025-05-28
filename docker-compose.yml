@@ -132,7 +132,6 @@ services:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-XX:UseSVE=0"
       - "CLI_JAVA_OPTS=-XX:UseSVE=0"
-      - "_JAVA_OPTIONS=-XX:UseSVE=0"
       - cluster.routing.allocation.disk.threshold_enabled=false
       - xpack.security.enabled=false
     ports:
