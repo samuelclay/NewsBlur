@@ -11,6 +11,7 @@ from django.template.loader import render_to_string
 from apps.analyzer.tasks import EmailPopularityQuery
 from apps.rss_feeds.models import Feed
 from utils import log as logging
+from utils.ai_functions import classify_stories_with_ai
 
 
 class FeatureCategory(models.Model):
@@ -166,14 +167,25 @@ class MClassifierFeed(mongo.Document):
         return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, feed)
 
 
-def compute_story_score(story, classifier_titles, classifier_authors, classifier_tags, classifier_feeds):
+def compute_story_score(story, classifier_titles, classifier_authors, classifier_tags, classifier_feeds, prompt_score=None):
     intelligence = {
         "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
         "author": apply_classifier_authors(classifier_authors, story),
         "tags": apply_classifier_tags(classifier_tags, story),
         "title": apply_classifier_titles(classifier_titles, story),
     }
+    
+    # Include AI prompt classifier score if provided
+    if prompt_score is not None:
+        intelligence["prompt"] = prompt_score
+    
     score = 0
+    
+    # If we have a prompt score, it takes priority
+    if "prompt" in intelligence and intelligence["prompt"] != 0:
+        return intelligence["prompt"]
+    
+    # Otherwise use the traditional classifier logic
     score_max = max(intelligence["title"], intelligence["author"], intelligence["tags"])
     score_min = min(intelligence["title"], intelligence["author"], intelligence["tags"])
     if score_max > 0:
@@ -243,6 +255,174 @@ def apply_classifier_feeds(classifiers, feed, social_user_ids=None):
         if social_user_ids and not classifier.feed_id and classifier.social_user_id in social_user_ids:
             return classifier.score
     return 0
+
+
+class MPromptClassifier(mongo.Document):
+    user_id = mongo.IntField()
+    feed_id = mongo.IntField(default=0)  # 0 means applies to folder level
+    folder_id = mongo.StringField(default="")  # Empty string means applies to feed level
+    prompt = mongo.StringField()
+    classifier_type = mongo.StringField(choices=["focus", "hidden"])
+    creation_date = mongo.DateTimeField(default=datetime.datetime.now)
+
+    meta = {
+        "collection": "prompt_classifier",
+        "indexes": [("user_id", "feed_id"), ("user_id", "folder_id")],
+        "allow_inheritance": False,
+    }
+
+    def __str__(self):
+        user = User.objects.get(pk=self.user_id)
+        target = f"Feed: {self.feed_id}" if self.feed_id else f"Folder: {self.folder_id}"
+        return f"{user} - {target}: ({self.classifier_type}) {self.prompt[:50]}..."
+
+    @classmethod
+    def get_prompts_for_user(cls, user_id, feed_ids=None, folder_ids=None):
+        """
+        Get all applicable prompt classifiers for a user and specific feeds/folders.
+        
+        Args:
+            user_id: The ID of the user
+            feed_ids: Optional list of feed IDs to filter by
+            folder_ids: Optional list of folder IDs to filter by
+            
+        Returns:
+            Dictionary with feed_id/folder_id keys and lists of prompts as values
+        """
+        params = {"user_id": user_id}
+        
+        # Get feed-specific prompts
+        feed_prompts = {}
+        if feed_ids:
+            params["feed_id__in"] = feed_ids + [0]  # Include feed-specific and global prompts
+            feed_classifiers = list(cls.objects.filter(**params))
+            
+            # Group by feed_id
+            for prompt in feed_classifiers:
+                if prompt.feed_id not in feed_prompts:
+                    feed_prompts[prompt.feed_id] = []
+                feed_prompts[prompt.feed_id].append(prompt)
+                
+        # Get folder-specific prompts
+        folder_prompts = {}
+        if folder_ids:
+            del params["feed_id__in"] if "feed_id__in" in params else None
+            params["folder_id__in"] = folder_ids + [""]  # Include folder-specific and global prompts
+            folder_classifiers = list(cls.objects.filter(**params))
+            
+            # Group by folder_id
+            for prompt in folder_classifiers:
+                if prompt.folder_id not in folder_prompts:
+                    folder_prompts[prompt.folder_id] = []
+                folder_prompts[prompt.folder_id].append(prompt)
+        
+        return {
+            "feed_prompts": feed_prompts,
+            "folder_prompts": folder_prompts
+        }
+    
+    @classmethod
+    def classify_stories(cls, user_id, stories, feed_ids=None, folder_ids=None):
+        """
+        Apply AI-based classification to a list of stories based on user's prompts.
+        
+        Args:
+            user_id: The ID of the user
+            stories: List of story dictionaries
+            feed_ids: Optional list of feed IDs the stories belong to
+            folder_ids: Optional list of folder IDs the stories belong to
+            
+        Returns:
+            Dictionary mapping story_ids to scores (1 for focus, 0 for neutral, -1 for hidden)
+        """
+        if not stories:
+            return {}
+            
+        # Group stories by feed_id for efficient classification
+        stories_by_feed = defaultdict(list)
+        for story in stories:
+            stories_by_feed[story["story_feed_id"]].append(story)
+            
+        # Get all applicable prompts
+        prompts = cls.get_prompts_for_user(user_id, feed_ids=feed_ids, folder_ids=folder_ids)
+        feed_prompts = prompts["feed_prompts"]
+        folder_prompts = prompts["folder_prompts"]
+        
+        # Final classifications
+        classifications = {story["story_id"]: 0 for story in stories}
+        
+        # Apply feed-specific prompts
+        for feed_id, feed_stories in stories_by_feed.items():
+            # Apply global prompts (feed_id=0)
+            if 0 in feed_prompts:
+                for prompt in feed_prompts[0]:
+                    results = cls._apply_prompt_to_stories(prompt, feed_stories)
+                    cls._update_classifications(classifications, results, prompt.classifier_type)
+                    
+            # Apply feed-specific prompts
+            if feed_id in feed_prompts:
+                for prompt in feed_prompts[feed_id]:
+                    results = cls._apply_prompt_to_stories(prompt, feed_stories)
+                    cls._update_classifications(classifications, results, prompt.classifier_type)
+        
+        # Apply folder-specific prompts if we have folder_ids
+        if folder_ids and folder_prompts:
+            for folder_id in folder_ids:
+                if folder_id in folder_prompts:
+                    # Find stories that belong to feeds in this folder
+                    folder_stories = []
+                    for feed_id, feed_stories in stories_by_feed.items():
+                        # We would need to check if feed_id belongs to folder_id here
+                        # For simplicity, we'll just apply to all stories
+                        # In a real implementation, you'd use a feed_folder mapping
+                        folder_stories.extend(feed_stories)
+                    
+                    # Apply folder prompts to eligible stories
+                    for prompt in folder_prompts[folder_id]:
+                        results = cls._apply_prompt_to_stories(prompt, folder_stories)
+                        cls._update_classifications(classifications, results, prompt.classifier_type)
+        
+        return classifications
+    
+    @classmethod
+    def _apply_prompt_to_stories(cls, prompt, stories):
+        """
+        Apply a single prompt to a list of stories using AI classification.
+        
+        Args:
+            prompt: The MPromptClassifier instance
+            stories: List of story dictionaries
+            
+        Returns:
+            Dictionary mapping story_ids to classifications (1, 0, or -1)
+        """
+        # Use the AI function to classify stories
+        return classify_stories_with_ai(prompt.prompt, stories)
+    
+    @classmethod
+    def _update_classifications(cls, classifications, results, classifier_type):
+        """
+        Update the classification dictionary based on new results and classifier type.
+        
+        Args:
+            classifications: Dictionary to update
+            results: New classification results
+            classifier_type: Type of classifier ("focus" or "hidden")
+            
+        Returns:
+            Updated classifications dictionary
+        """
+        for story_id, result in results.items():
+            # Only update if the AI gave a non-neutral classification
+            if result != 0:
+                # For "focus" classifiers, only accept positive scores (1)
+                if classifier_type == "focus" and result > 0:
+                    classifications[story_id] = 1
+                # For "hidden" classifiers, only accept negative scores (-1)
+                elif classifier_type == "hidden" and result < 0:
+                    classifications[story_id] = -1
+                    
+        return classifications
 
 
 def get_classifiers_for_user(
