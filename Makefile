@@ -8,6 +8,8 @@ newsblur := $(shell $(TIMEOUT_CMD) 2s docker ps -qf "name=newsblur_web")
 .PHONY: node
 
 nb: pull bounce migrate bootstrap collectstatic
+nb-fast: pull bounce-fast migrate bootstrap collectstatic
+nbfast: nb-fast
 
 metrics:
 	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose -f docker-compose.yml -f docker-compose.metrics.yml up -d
@@ -22,6 +24,10 @@ bounce:
 	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose down
 	[[ -d config/certificates ]] && echo "keys exist" || make keys
 	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose up -d --build --remove-orphans
+
+bounce-fast:
+	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose down
+	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose up -d --remove-orphans
 
 bootstrap:
 	docker exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
