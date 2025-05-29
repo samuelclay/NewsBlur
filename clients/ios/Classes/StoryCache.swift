@@ -208,8 +208,10 @@ import Foundation
         var dashes = [DashList]()
         
         for (order, dash) in dashSide.enumerated() {
+            dash.id = UUID()
             dash.index = index
             dash.order = order
+            
             dashes.append(dash)
             
             index += 1
@@ -254,13 +256,7 @@ import Foundation
     }
     
     func moveEarlier(dash: DashList) {
-        let isFirstOnRight = dash.side == .right && dash.order == 0
-        
-        if isFirstOnRight {
-            dashboardRight.removeFirst()
-            dashboardLeft.append(dash)
-            dash.side = .left
-        } else if dash.side == .left {
+        if dash.side == .left {
             move(dash: dash, from: &dashboardLeft, to: dash.order - 1)
         } else {
             move(dash: dash, from: &dashboardRight, to: dash.order - 1)
@@ -271,16 +267,25 @@ import Foundation
     }
     
     func moveLater(dash: DashList) {
-        let isLastOnLeft = dash.side == .left && dash.order == dashboardLeft.count - 1
-        
-        if isLastOnLeft {
-            dashboardLeft.removeLast()
-            dashboardRight.insert(dash, at: 0)
-            dash.side = .right
-        } else if dash.side == .left {
+        if dash.side == .left {
             move(dash: dash, from: &dashboardLeft, to: dash.order + 2)
         } else {
             move(dash: dash, from: &dashboardRight, to: dash.order + 2)
+        }
+        
+        updateDashIndexesAndOrder()
+        saveDashboard()
+    }
+    
+    func moveBetweenSides(dash: DashList) {
+        remove(dash: dash)
+        
+        if dash.side == .left {
+            dashboardRight.insert(dash, at: 0)
+            dash.side = .right
+        } else {
+            dashboardLeft.append(dash)
+            dash.side = .left
         }
         
         updateDashIndexesAndOrder()
@@ -322,6 +327,7 @@ import Foundation
                     }
                 case .failure(let error):
                     print("Error saving dashboard: \(error)")
+                    self.appDelegate.feedsViewController.loadDashboard()
             }
         }
     }
