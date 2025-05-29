@@ -69,36 +69,38 @@ struct CardView: View {
             feedDetailInteraction.tapped(story: story, in: dash)
         }
         .contextMenu {
-            Button {
-                cache.appDelegate.storiesCollection.toggleStoryUnread(story.dictionary)
-                cache.appDelegate.feedDetailViewController.reload()
-            } label: {
-                Label(story.isRead ? "Mark as unread" : "Mark as read", image: "mark-read")
-            }
-            
-            Button {
-                cache.appDelegate.activeStory = story.dictionary
-                cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: false)
-                cache.appDelegate.feedDetailViewController.reload()
-            } label: {
-                Label("Mark newer stories read", image: "mark-read")
-            }
-            
-            Button {
-                cache.appDelegate.activeStory = story.dictionary
-                cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: true)
-                cache.appDelegate.feedDetailViewController.reload()
-            } label: {
-                Label("Mark older stories read", image: "mark-read")
-            }
-            
-            Divider()
-            
-            Button {
-                cache.appDelegate.storiesCollection.toggleStorySaved(story.dictionary)
-                cache.appDelegate.feedDetailViewController.reload()
-            } label: {
-                Label(story.isSaved ? "Unsave this story" : "Save this story", image: "saved-stories")
+            if !cache.isDashboard {
+                Button {
+                    cache.appDelegate.storiesCollection.toggleStoryUnread(story.dictionary)
+                    cache.appDelegate.feedDetailViewController.reload()
+                } label: {
+                    Label(story.isRead ? "Mark as unread" : "Mark as read", image: "mark-read")
+                }
+                
+                Button {
+                    cache.appDelegate.activeStory = story.dictionary
+                    cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: false)
+                    cache.appDelegate.feedDetailViewController.reload()
+                } label: {
+                    Label("Mark newer stories read", image: "mark-read")
+                }
+                
+                Button {
+                    cache.appDelegate.activeStory = story.dictionary
+                    cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: true)
+                    cache.appDelegate.feedDetailViewController.reload()
+                } label: {
+                    Label("Mark older stories read", image: "mark-read")
+                }
+                
+                Divider()
+                
+                Button {
+                    cache.appDelegate.storiesCollection.toggleStorySaved(story.dictionary)
+                    cache.appDelegate.feedDetailViewController.reload()
+                } label: {
+                    Label(story.isSaved ? "Unsave this story" : "Save this story", image: "saved-stories")
+                }
             }
             
             Button {

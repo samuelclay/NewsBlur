@@ -103,18 +103,34 @@ struct DashListActionMenu: View {
             Divider()
             
             Button {
-                cache.moveEarlier(dash: dash)
+                if isSingle && dash.order <= 0 {
+                    cache.moveBetweenSides(dash: dash)
+                } else {
+                    cache.moveEarlier(dash: dash)
+                }
             } label: {
                 Text(moveEarlierTitle)
             }
-            .disabled(dash.side == .left && dash.order <= 0)
+            .disabled(dash.order <= 0 && (!isSingle || dash.side == .left))
             
             Button {
-                cache.moveLater(dash: dash)
+                if isSingle && dash.order >= dashboardForSide.count - 1 {
+                    cache.moveBetweenSides(dash: dash)
+                } else {
+                    cache.moveLater(dash: dash)
+                }
             } label: {
                 Text(moveLaterTitle)
             }
-            .disabled(dash.side == .right && dash.order >= cache.dashboardRight.count - 1)
+            .disabled(dash.order >= dashboardForSide.count - 1 && (!isSingle || dash.side == .right))
+            
+            if !isSingle {
+                Button {
+                    cache.moveBetweenSides(dash: dash)
+                } label: {
+                    Text(moveBetweenSidesTitle)
+                }
+            }
             
             Divider()
             
@@ -162,6 +178,10 @@ struct DashListActionMenu: View {
         .font(.custom("WhitneySSm-Medium", size: 14, relativeTo: .body))
     }
     
+    var isSingle: Bool {
+        return cache.settings.dashboardLayout == .single
+    }
+    
     var isHorizontal: Bool {
         return cache.settings.dashboardLayout == .horizontal
     }
@@ -170,25 +190,12 @@ struct DashListActionMenu: View {
         return cache.settings.dashboardLayout == .vertical
     }
     
-    var isFirstOnLeftSide: Bool {
-        return dash.side == .left && dash.order == 0
-    }
-    
-    var isFirstOnRightSide: Bool {
-        return dash.side == .right && dash.order == 0
-    }
-    
-    var isLastOnLeftSide: Bool {
-        return dash.side == .left && dash.order >= cache.dashboardLeft.count - 1
-    }
-    
-    var isLastOnRightSide: Bool {
-        return dash.side == .right && dash.order >= cache.dashboardRight.count - 1
+    var dashboardForSide: [DashList] {
+        return dash.side == .left ? cache.dashboardLeft : cache.dashboardRight
     }
     
     var moveEarlierTitle: String {
-        // Using isHorizontal and isVertical as always want to use "Up" for Single layout.
-        if (isHorizontal && !isFirstOnRightSide) || (isVertical && isFirstOnRightSide) {
+        if isHorizontal {
             return "Move This List Left"
         } else {
             return "Move This List Up"
@@ -196,11 +203,18 @@ struct DashListActionMenu: View {
     }
     
     var moveLaterTitle: String {
-        // Using isHorizontal and isVertical as always want to use "Down" for Single layout.
-        if (isHorizontal && !isLastOnLeftSide) || (isVertical && isLastOnLeftSide) {
+        if isHorizontal {
             return "Move This List Right"
         } else {
             return "Move This List Down"
+        }
+    }
+    
+    var moveBetweenSidesTitle: String {
+        if isHorizontal {
+            return "Move This List \(dash.side == .left ? "Down" : "Up")"
+        } else {
+            return "Move This List \(dash.side == .left ? "Right" : "Left")"
         }
     }
 }

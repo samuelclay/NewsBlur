@@ -159,7 +159,7 @@ class FeedsViewController: FeedsObjCViewController {
         
         let previousIndex = appDelegate.feedDetailViewController.dashboardIndex
         
-        if previousIndex >= 0, previousIndex < appDelegate.dashboardArray.count {
+        if previousIndex >= 0, previousIndex < StoryCache.cachedDashboard.count {
             let dash = StoryCache.cachedDashboard[previousIndex]
             dash.isFetching = false
         }
@@ -172,7 +172,7 @@ class FeedsViewController: FeedsObjCViewController {
             if prepare {
                 appDelegate.feedDetailViewController.storyCache.prepareDashboard()
             }
-        } else if index >= appDelegate.dashboardArray.count {
+        } else if index >= StoryCache.cachedDashboard.count {
             // Done.
             
             print("Finished loading dashboard: \(StoryCache.cachedDashboard)")
