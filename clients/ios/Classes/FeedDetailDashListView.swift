@@ -240,6 +240,8 @@ struct DashListStoriesView: View {
                     ForEach(stories) { story in
                         CardView(feedDetailInteraction: interaction, cache: cache, dash: dash, story: story)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
                 }
             } else {
                 Spacer()
