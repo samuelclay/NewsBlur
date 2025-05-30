@@ -278,7 +278,7 @@ import Foundation
     }
     
     func moveBetweenSides(dash: DashList) {
-        remove(dash: dash)
+        silentlyRemove(dash: dash)
         
         if dash.side == .left {
             dashboardRight.insert(dash, at: 0)
@@ -296,12 +296,16 @@ import Foundation
         dashSide.remove(atOffsets: IndexSet(integer: dash.order))
     }
     
-    func remove(dash: DashList) {
+    private func silentlyRemove(dash: DashList) {
         if dash.side == .left {
             remove(dash: dash, from: &dashboardLeft)
         } else {
             remove(dash: dash, from: &dashboardRight)
         }
+    }
+    
+    func remove(dash: DashList) {
+        silentlyRemove(dash: dash)
         
         updateDashIndexesAndOrder()
         saveDashboard()
