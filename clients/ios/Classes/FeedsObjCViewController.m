@@ -1053,6 +1053,14 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     @throw [NSException exceptionWithName:@"Missing parentsTitlesForFolderTitle: implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
 
+- (NSString *)folderTitleForFullFolderPath:(NSString *)fullFolderPath {
+    @throw [NSException exceptionWithName:@"Missing folderTitleForFullFolderPath: implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
+- (NSString *)fullFolderPathForFolderTitle:(NSString *)folderTitle {
+    @throw [NSException exceptionWithName:@"Missing fullFolderPathForFolderTitle: implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
 - (void)showUserProfile {
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"username"]];

@@ -105,6 +105,22 @@ class FeedsViewController: FeedsObjCViewController {
         return parentTitles
     }
     
+    @objc(folderTitleForFullFolderPath:) func folderTitle(for fullFolderPath: String) -> String? {
+        return fullFolderPath.components(separatedBy: " ▸ ").last
+    }
+    
+    @objc(fullFolderPathForFolderTitle:) func fullFolderPath(for folderTitle: String) -> String? {
+        let path = appDelegate.dictFoldersArray.first { folder in
+            guard let folder = folder as? String else {
+                return false
+            }
+            
+            return folder.components(separatedBy: " ▸ ").last == folderTitle
+        }
+        
+        return path as? String
+    }
+    
     var dashboardTimer: Timer?
     
     @objc func clearDashboard() {
@@ -150,8 +166,10 @@ class FeedsViewController: FeedsObjCViewController {
             immediatelyLoadNextDash(prepare: true)
         }
         
+        let speed = appDelegate.feedDetailViewController.storyCache.settings.dashboardSpeed
+        
         dashWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500), execute: workItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(speed), execute: workItem)
     }
     
     private func immediatelyLoadNextDash(prepare: Bool) {

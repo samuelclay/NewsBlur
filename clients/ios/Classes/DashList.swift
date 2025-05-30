@@ -45,6 +45,8 @@ import Foundation
             
             if localRiverId.hasPrefix("feed:") {
                 feedId = localRiverId.deletingPrefix("feed:")
+            } else if localRiverId.hasPrefix("starred:") {
+                feedId = localRiverId.replacingOccurrences(of: "starred:", with: "saved:")
             } else if appDelegate.isSocialFeed(localRiverId) || appDelegate.isSavedFeed(localRiverId) {
                 feedId = localRiverId
             } else {
@@ -55,12 +57,22 @@ import Foundation
             
             if localRiverId == "river:" {
                 folderId = "everything"
+            } else if localRiverId == "river:global" {
+                folderId = "river_global"
+            } else if localRiverId == "river:blurblogs" {
+                folderId = "river_blurblogs"
             } else if localRiverId.hasPrefix("river:") {
                 folderId = localRiverId.deletingPrefix("river:")
+            } else if localRiverId.hasPrefix("starred:") {
+                folderId = "saved_stories"
             } else if let parentFolder = appDelegate.parentFolders(forFeed: feedId).first as? String {
                 folderId = parentFolder
             } else {
                 folderId = "everything"
+            }
+            
+            if !appDelegate.dictFoldersArray.contains(folderId) {
+                folderId = appDelegate.feedsViewController.fullFolderPath(for: folderId) ?? "everything"
             }
             
             if let searchQuery {
@@ -115,13 +127,21 @@ import Foundation
     var name: String {
         if let searchQuery {
             return "\"\(searchQuery)\" in \(baseName)"
+        } else if let feedId, riverId.hasPrefix("starred:") {
+            return "Saved Stories — \(feedId.deletingPrefix("saved:"))"
+        } else if baseName == "global" {
+            return "Global Shared Stories"
         } else {
             return baseName
         }
     }
     
     var image: UIImage? {
-        if isFolder {
+        if riverId.hasPrefix("starred:") {
+            return UIImage(named: "tag")
+        } else if riverId == "river:global" {
+            return UIImage(named: "global-shares")
+        } else if isFolder {
             return folder?.image ?? UIImage(named: "folder-open")
         } else {
             return feed?.image

@@ -39,6 +39,10 @@
         identifier = @"everything";
     }
     
+    if (self.info[@"tag"] != nil) {
+        identifier = [NSString stringWithFormat:@"saved:%@", identifier];
+    }
+    
     if (self.search != nil) {
         identifier = [NSString stringWithFormat:@"%@?%@", identifier, self.search];
     }

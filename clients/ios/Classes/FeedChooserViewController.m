@@ -933,6 +933,12 @@ static const CGFloat kFolderTitleHeight = 36.0;
                 }
             }
             
+            if ([riverId hasPrefix:@"saved:"]) {
+                riverId = [riverId stringByReplacingOccurrencesOfString:@"saved:" withString:@"starred:"];
+            } else if ([riverId containsString:@" ▸ "]) {
+                riverId = [NSString stringWithFormat:@"river:%@", [appDelegate.feedsViewController folderTitleForFullFolderPath:riverId]];
+            }
+            
             if ([riverId containsString:@"?"]) {
                 riverId = [riverId stringByReplacingOccurrencesOfString:@"?" withString:@":"];
                 riverId = [NSString stringWithFormat:@"search:%@", riverId];

@@ -162,4 +162,14 @@ import Foundation
         
         return layout
     }
+    
+    var dashboardSpeed: Int {
+        let speed = UserDefaults.standard.integer(forKey: "dashboard_speed")
+        
+        if speed == 0 {
+            return 500
+        } else {
+            return speed
+        }
+    }
 }
