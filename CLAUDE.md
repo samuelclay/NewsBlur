@@ -12,6 +12,9 @@
 
 Note: All docker commands must use `-t` instead of `-it` to avoid interactive mode issues when running through Claude.
 
+## Deployment Commands
+- `aps` - Alias for `ansible-playbook ansible/setup.yml`
+
 ## SSH Access to Servers
 To SSH into NewsBlur servers non-interactively:
 ```bash
