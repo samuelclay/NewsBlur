@@ -27,7 +27,8 @@ if [ $? -eq 0 ]; then
         # Check if cert was modified in the last 5 minutes
         if [ $(find "$CERT_FILE" -mmin -5 | wc -l) -gt 0 ]; then
             echo "[$(date)] Certificates were updated, reloading HAProxy..."
-            cd /srv/newsblur && make www
+            # Reload HAProxy to pick up new certificates
+            docker kill --signal HUP haproxy
             echo "[$(date)] HAProxy reloaded successfully"
         else
             echo "[$(date)] Certificates were not updated (not due for renewal yet)"
