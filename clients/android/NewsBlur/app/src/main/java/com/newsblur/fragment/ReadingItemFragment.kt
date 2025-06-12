@@ -45,6 +45,7 @@ import com.newsblur.service.NbSyncManager.UPDATE_STORY
 import com.newsblur.service.NbSyncManager.UPDATE_TEXT
 import com.newsblur.service.OriginalTextService
 import com.newsblur.util.DefaultFeedView
+import com.newsblur.util.EdgeToEdgeUtil.applyNavBarInsetBottomTo
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.FileCache
@@ -180,7 +181,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         binding.readingWebview.onResume()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentReadingitemBinding.inflate(inflater, container, false)
         readingItemActionsBinding = ReadingItemActionsBinding.bind(binding.root)
 
@@ -210,6 +211,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        view.applyNavBarInsetBottomTo(readingItemActionsBinding.commentsContainer)
         binding.storyContextMenuButton.setOnClickListener { onClickMenuButton() }
         readingItemActionsBinding.markReadStoryButton.setOnClickListener { switchMarkStoryReadState() }
         readingItemActionsBinding.trainStoryButton.setOnClickListener { openStoryTrainer() }
@@ -450,8 +452,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             val msg = if (it.read) {
                 feedUtils.markStoryUnread(it, requireContext())
                 getString(R.string.story_unread)
-            }
-            else {
+            } else {
                 feedUtils.markStoryAsRead(it, requireContext())
                 getString(R.string.story_read)
             }
@@ -468,7 +469,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             readingItemActionsBinding.markReadStoryButton.visibility = View.GONE
         }
 
-        sampledQueue?.add { updateStoryReadTitleState.invoke() } ?: updateStoryReadTitleState.invoke()
+        sampledQueue?.add { updateStoryReadTitleState.invoke() }
+                ?: updateStoryReadTitleState.invoke()
     }
 
     fun openStoryTrainer() {

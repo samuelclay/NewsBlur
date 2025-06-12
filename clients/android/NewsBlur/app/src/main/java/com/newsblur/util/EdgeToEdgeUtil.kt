@@ -6,7 +6,6 @@ import android.content.res.Configuration
 import android.os.Build
 import android.util.TypedValue
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -81,11 +80,7 @@ object EdgeToEdgeUtil {
             val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
 
             findViewById<View>(R.id.toolbar)?.updateTopPadding(statusBar.top)
-
-            // Raise bottom section
-            findViewById<View>(R.id.fragment_feedintelligenceselector)?.updateBottomPadding(navBar.bottom)
-            findViewById<View>(R.id.main_menu_button)?.addBottomMargin(navBar.bottom)
-            findViewById<View>(R.id.main_add_button)?.addBottomMargin(navBar.bottom)
+            findViewById<View>(R.id.bottom_toolbar)?.updateBottomPadding(navBar.bottom)
 
             WindowInsetsCompat.CONSUMED
         }
@@ -105,6 +100,16 @@ object EdgeToEdgeUtil {
             WindowInsetsCompat.CONSUMED
         }
     }
+
+    fun View.applyNavBarInsetBottomTo(targetView: View) {
+        navBarInsetBottom()?.let { bottom ->
+            targetView.updateBottomPadding(bottom)
+        }
+    }
+
+    private fun View.navBarInsetBottom(): Int? = ViewCompat.getRootWindowInsets(this)
+            ?.getInsets(WindowInsetsCompat.Type.navigationBars())
+            ?.bottom
 
     private fun getThemeColor(context: Context, attr: Int): Int {
         val typedValue = TypedValue()
@@ -130,13 +135,4 @@ object EdgeToEdgeUtil {
     private fun View.updateBottomPadding(bottom: Int) {
         setPadding(paddingLeft, paddingTop, paddingRight, bottom)
     }
-
-    private fun View.addBottomMargin(bottom: Int) {
-        val params = layoutParams as? ViewGroup.MarginLayoutParams
-        params?.let {
-            it.bottomMargin += bottom
-            layoutParams = it
-        }
-    }
-
 }
