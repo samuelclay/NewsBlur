@@ -362,8 +362,6 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
                     Configuration.UI_MODE_NIGHT_UNDEFINED -> pager.setPageMarginDrawable(R.drawable.divider_light)
                 }
             }
-            else -> {
-            }
         }
 
         var showFeedMetadata = true
