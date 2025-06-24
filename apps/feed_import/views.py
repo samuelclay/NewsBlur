@@ -15,13 +15,15 @@ from django.urls import reverse
 from mongoengine.errors import ValidationError
 from oauth2client.client import FlowExchangeError, OAuth2WebServerFlow
 
+from django.conf import settings
+
 from apps.feed_import.models import OAuthToken, OPMLExporter, OPMLImporter, UploadedOPML
-from apps.feed_import.tasks import ProcessOPML
+from apps.feed_import.tasks import ProcessOPML, ProcessOPMLExport
 from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
 from utils import json_functions as json
 from utils import log as logging
-from utils.feed_functions import TimeoutError
+from utils.feed_functions import TimeoutError, timelimit
 from utils.user_functions import ajax_login_required, get_user
 
 
@@ -86,17 +88,54 @@ def opml_export(request):
     now = datetime.datetime.now()
     if request.GET.get("user_id") and user.is_staff:
         user = User.objects.get(pk=request.GET["user_id"])
-    exporter = OPMLExporter(user)
-    opml = exporter.process()
 
-    from apps.social.models import MActivity
+    # Try to export OPML with a 15 second timeout (0.01s in dev for testing)
+    timeout_seconds = 0.01 if settings.DEBUG else 15
+    
+    @timelimit(timeout_seconds)
+    def try_opml_export():
+        exporter = OPMLExporter(user)
+        opml = exporter.process()
+        return exporter, opml
 
-    MActivity.new_opml_export(user_id=user.pk, count=exporter.feed_count)
+    try:
+        exporter, opml = try_opml_export()
 
-    response = HttpResponse(opml, content_type="text/xml; charset=utf-8")
-    response["Content-Disposition"] = "attachment; filename=NewsBlur-%s-%s.opml" % (
-        user.username,
-        now.strftime("%Y-%m-%d"),
-    )
+        from apps.social.models import MActivity
 
-    return response
+        MActivity.new_opml_export(user_id=user.pk, count=exporter.feed_count)
+
+        response = HttpResponse(opml, content_type="text/xml; charset=utf-8")
+        response["Content-Disposition"] = "attachment; filename=NewsBlur-%s-%s.opml" % (
+            user.username,
+            now.strftime("%Y-%m-%d"),
+        )
+        return response
+
+    except TimeoutError:
+        # If export takes too long, queue task to email user
+        ProcessOPMLExport.delay(user.pk)
+        logging.user(user, "~FR~SBOPML export took too long, emailing...")
+
+        # Check if this is an AJAX request
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return HttpResponse(
+                json.encode(
+                    {
+                        "code": 2,
+                        "message": "Your OPML export is being processed. You will receive an email shortly with your subscription backup.",
+                    }
+                ),
+                content_type="application/json",
+            )
+        else:
+            # Return HTML page for non-AJAX requests
+            from django.shortcuts import render
+
+            return render(
+                request,
+                "reader/opml_export_delayed.xhtml",
+                {
+                    "user": user,
+                },
+            )

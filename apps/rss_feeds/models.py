@@ -707,7 +707,7 @@ class Feed(models.Model):
         else:
             logging.debug(" ---> No errored feeds to drain")
 
-    def update_all_statistics(self, has_new_stories=False, force=False):
+    def update_all_statistics(self, has_new_stories=False, force=False, delay_fetch_sec=None):
         recount = not self.counts_converted_to_redis
         count_extra = False
         if random.random() < 0.01 or not self.data.popular_tags or not self.data.popular_authors:
@@ -729,6 +729,8 @@ class Feed(models.Model):
             self.save_popular_authors()
             self.save_popular_tags()
             self.save_feed_story_history_statistics()
+
+        self.set_next_scheduled_update(verbose=settings.DEBUG, delay_fetch_sec=delay_fetch_sec)
 
     def calculate_last_story_date(self):
         last_story_date = None
@@ -2775,27 +2777,40 @@ class Feed(models.Model):
             )
         return total
 
-    def set_next_scheduled_update(self, verbose=False, skip_scheduling=False):
+    def set_next_scheduled_update(self, verbose=False, skip_scheduling=False, delay_fetch_sec=None):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
-        total = self.get_next_scheduled_update(force=True, verbose=verbose)
-        error_count = self.error_count
 
-        if error_count:
-            total = total * error_count
-            total = min(total, 60 * 24 * 7)
+        # Use Cache-Control max-age if provided
+        if delay_fetch_sec is not None:
+            minutes_until_next_fetch = delay_fetch_sec / 60
             if verbose:
                 logging.debug(
-                    "   ---> [%-30s] ~FBScheduling feed fetch geometrically: "
-                    "~SB%s errors. Time: %s min" % (self.log_title[:30], self.errors_since_good, total)
+                    "   ---> [%-30s] ~FBScheduling feed fetch using cache-control: "
+                    "~SB%s minutes" % (self.log_title[:30], minutes_until_next_fetch)
                 )
+        else:
+            minutes_until_next_fetch = self.get_next_scheduled_update(force=True, verbose=verbose)
+            error_count = self.error_count
 
-        random_factor = random.randint(0, int(total)) / 4
-        if total == 5:
+            if error_count:
+                minutes_until_next_fetch = minutes_until_next_fetch * error_count
+                minutes_until_next_fetch = min(minutes_until_next_fetch, 60 * 24 * 7)
+                if verbose:
+                    logging.debug(
+                        "   ---> [%-30s] ~FBScheduling feed fetch geometrically: "
+                        "~SB%s errors. Time: %s min"
+                        % (self.log_title[:30], self.errors_since_good, minutes_until_next_fetch)
+                    )
+
+        random_factor = random.randint(0, int(minutes_until_next_fetch)) / 4
+        if minutes_until_next_fetch <= 5:
             # 5 min fetches should be between 5 and 10 minutes
-            random_factor = random.randint(0, int(total))
-        next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(minutes=total + random_factor)
+            random_factor = random.randint(0, int(minutes_until_next_fetch))
+        next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
+            minutes=minutes_until_next_fetch + random_factor
+        )
         original_min_to_decay = self.min_to_decay
-        self.min_to_decay = total
+        self.min_to_decay = minutes_until_next_fetch
 
         delta = self.next_scheduled_update - datetime.datetime.now()
         minutes_to_next_fetch = (delta.seconds + (delta.days * 24 * 3600)) / 60

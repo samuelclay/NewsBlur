@@ -3904,7 +3904,7 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-train', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     (NEWSBLUR.Globals.is_admin && $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-recommend', role: "button" }, [
@@ -3988,7 +3988,7 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-train', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     (feed.get('user_id') != NEWSBLUR.Globals.user_id && $.make('li', { className: 'NB-menu-item NB-menu-manage-delete NB-menu-manage-socialfeed-delete', role: "button" }, [
@@ -4143,7 +4143,7 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-story-train', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     (order == "newest" && $.make('li', { className: 'NB-menu-item NB-menu-manage-story-mark-read-newer NB-up', role: "button" }, [

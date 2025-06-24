@@ -263,7 +263,7 @@ class FetchFeed:
             # 10% chance to turn off is_forbidden flag before fetching
             if random.random() <= 0.1:
                 logging.debug(
-                    "   ---> [%-30s] ~FG~SBTurning off forbidden flag (~FB10%%~FG chance) and fetching normally" 
+                    "   ---> [%-30s] ~FG~SBTurning off forbidden flag (~FB10%%~FG chance) and fetching normally"
                     % (self.feed.log_title[:30])
                 )
                 self.feed.is_forbidden = False
@@ -275,7 +275,8 @@ class FetchFeed:
                 forbidden_feed = self.fetch_forbidden()
                 if not forbidden_feed:
                     logging.debug(
-                        "   ***> [%-30s] ~FRForbidden feed fetch failed: %s" % (self.feed.log_title[:30], address)
+                        "   ***> [%-30s] ~FRForbidden feed fetch failed: %s"
+                        % (self.feed.log_title[:30], address)
                     )
                     return FEED_ERRHTTP, None
                 # Apply encoding preprocessing to special feed content
@@ -516,6 +517,7 @@ class ProcessFeed:
         self.raw_feed = raw_feed
         self.feed_entries = []
         self.archive_seen_story_hashes = set()
+        self.cache_control_max_age = None
 
     def refresh_feed(self):
         self.feed = Feed.get_by_id(self.feed_id)
@@ -532,6 +534,14 @@ class ProcessFeed:
             feed_status, ret_values = self.verify_feed_integrity()
             if feed_status and ret_values:
                 return feed_status, ret_values
+            
+            # Check for Cache-Control max-age in response headers
+            if hasattr(self.fpf, 'headers') and self.fpf.headers:
+                cache_control = self.fpf.headers.get('Cache-Control')
+                if cache_control:
+                    max_age_match = re.search(r'max-age=(\d+)', cache_control)
+                    if max_age_match:
+                        self.cache_control_max_age = int(max_age_match.group(1)) / 60  # Convert seconds to minutes
 
         self.feed_entries = self.fpf.entries
         # If there are more than 100 entries, we should sort the entries in date descending order and cut them off
@@ -655,7 +665,13 @@ class ProcessFeed:
                 len(self.feed_entries),
             )
         )
-        self.feed.update_all_statistics(has_new_stories=bool(ret_values["new"]), force=self.options["force"])
+        if self.cache_control_max_age:
+            logging.debug(
+                "   ---> [%-30s] ~FYUsing Cache-Control max-age: ~SB%s minutes"
+                % (self.feed.log_title[:30], self.cache_control_max_age)
+            )
+        self.feed.update_all_statistics(has_new_stories=bool(ret_values["new"]), force=self.options["force"], 
+                                       delay_fetch_sec=self.cache_control_max_age)
         fetch_date = datetime.datetime.now()
         if ret_values["new"]:
             if not getattr(settings, "TEST_DEBUG", False):

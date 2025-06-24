@@ -12,6 +12,29 @@
 
 Note: All docker commands must use `-t` instead of `-it` to avoid interactive mode issues when running through Claude.
 
+## Deployment Commands
+- `aps` - Alias for `ansible-playbook ansible/setup.yml`
+
+## SSH Access to Servers
+To SSH into NewsBlur servers non-interactively:
+```bash
+./utils/ssh_hz.sh -n <server-name> "<command>"
+```
+
+Example:
+```bash
+./utils/ssh_hz.sh -n happ-web-01 "hostname"
+./utils/ssh_hz.sh -n hdb-redis-story-1 "redis-cli info stats"
+```
+
+Server names are defined in `ansible/inventories/hetzner.ini`. Common server prefixes:
+- `happ-` - Application servers (web, refresh, count, push)
+- `hdb-` - Database servers (redis, mongo, postgres, elasticsearch)
+- `htask-` - Task/Celery workers
+- `hnode-` - Node.js services (page, favicons, text, socket, images)
+- `hwww` - Main web server
+- `hstaging` - Staging server
+
 ## Code Style
 - **Python**: 
   - Black formatter with line-length 110
