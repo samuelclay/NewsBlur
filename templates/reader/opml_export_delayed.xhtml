@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% load utils_tags %}
+
+{% block extra_head_js %}
+    <style>
+        .NB-opml-export-delayed {
+            text-align: center;
+            padding: 100px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .NB-opml-export-delayed h1 {
+            font-size: 36px;
+            color: #282F33;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .NB-opml-export-delayed p {
+            font-size: 18px;
+            color: #484F53;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .NB-opml-export-delayed .NB-logo {
+            margin-bottom: 40px;
+        }
+        
+        .NB-opml-export-delayed .NB-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #3B7FC4;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        
+        .NB-opml-export-delayed .NB-button:hover {
+            background-color: #2968A8;
+        }
+    </style>
+{% endblock %}
+
+{% block bodyclass %}NB-opml-export-delayed{% endblock %}
+
+{% block content %}
+<div class="NB-opml-export-delayed">
+    <div class="NB-logo">
+        <img src="{{ MEDIA_URL }}img/logo_512.png" style="height: 128px;" alt="NewsBlur" />
+    </div>
+    
+    <h1>Your OPML export is being processed</h1>
+    
+    <p>
+        You have a lot of subscriptions! We're preparing your OPML export file now.
+    </p>
+    
+    <p>
+        <strong>You will receive an email shortly with your subscription backup attached.</strong>
+    </p>
+    
+    <p>
+        The email will be sent to: <strong>{{ user.email|safe }}</strong>
+    </p>
+    
+    <a href="/" class="NB-button">Return to NewsBlur</a>
+</div>
+{% endblock %}
