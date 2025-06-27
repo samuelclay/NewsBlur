@@ -567,6 +567,7 @@ private extension DetailViewController {
                 remove(viewController: feedDetailViewController)
                 
                 feedDetailViewController = Storyboards.shared.controller(withIdentifier: .feedDetail) as? FeedDetailViewController
+                feedDetailViewController?.resetFeedDetail()
                 feedDetailViewController?.storiesCollection = appDelegate.storiesCollection
                 
                 add(viewController: feedDetailViewController, top: true)
@@ -601,6 +602,7 @@ private extension DetailViewController {
                 supplementaryFeedDetailViewController?.storiesCollection = appDelegate.storiesCollection
                 appDelegate.feedDetailNavigationController = supplementaryFeedDetailNavigationController
                 appDelegate.feedDetailViewController = supplementaryFeedDetailViewController
+                appDelegate.feedDetailViewController.resetFeedDetail()
                 appDelegate.splitViewController.setViewController(supplementaryFeedDetailNavigationController, for: .supplementary)
                 supplementaryFeedDetailNavigationController = nil
                 supplementaryFeedDetailViewController = nil
@@ -623,6 +625,7 @@ private extension DetailViewController {
                 remove(viewController: feedDetailViewController)
                 
                 feedDetailViewController = Storyboards.shared.controller(withIdentifier: .feedDetail) as? FeedDetailViewController
+                feedDetailViewController?.resetFeedDetail()
                 feedDetailViewController?.storiesCollection = appDelegate.storiesCollection
                 
                 add(viewController: feedDetailViewController, top: isTop)
