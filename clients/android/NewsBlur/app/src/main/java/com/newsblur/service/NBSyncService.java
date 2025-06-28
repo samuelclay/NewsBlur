@@ -190,7 +190,6 @@ public class NBSyncService extends JobService {
             originalTextService = new OriginalTextService(this);
             unreadsService = new UnreadsService(this);
             imagePrefetchService = new ImagePrefetchService(this);
-            com.newsblur.util.Log.offerContext(this);
         }
     }
 

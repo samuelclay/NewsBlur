@@ -36,7 +36,6 @@ open class NbActivity : AppCompatActivity() {
     private var lastTheme: ThemeValue? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.offerContext(this)
         Log.d(this, "onCreate")
 
         applyTheme()
