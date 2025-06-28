@@ -7,6 +7,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
+import com.newsblur.preference.PrefRepository
 import com.newsblur.util.Log
 import com.newsblur.util.PendingIntentUtils.getImmutableBroadcast
 import com.newsblur.util.PrefsUtils
@@ -78,7 +79,7 @@ object WidgetUtils {
         }
     }
 
-    fun isLoggedIn(context: Context): Boolean = PrefsUtils.getUniqueLoginKey(context) != null
+    fun isLoggedIn(prefRepository: PrefRepository): Boolean = prefRepository.getUniqueLoginKey() != null
 
     private fun getUpdateIntent(context: Context) = Intent(context, WidgetUpdateReceiver::class.java).apply {
         action = ACTION_UPDATE_WIDGET

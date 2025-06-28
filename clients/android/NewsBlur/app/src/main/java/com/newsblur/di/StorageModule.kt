@@ -3,6 +3,7 @@ package com.newsblur.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.newsblur.database.BlurDatabaseHelper
+import com.newsblur.preference.PrefRepository
 import com.newsblur.util.FileCache
 import com.newsblur.util.PrefConstants
 import dagger.Module
@@ -51,4 +52,10 @@ class StorageModule {
         thumbnailCache.addChain(storyImageCache)
         return thumbnailCache
     }
+
+    @Singleton
+    @Provides
+    fun providePrefRepository(
+            sharedPreferences: SharedPreferences,
+    ): PrefRepository = PrefRepository(sharedPreferences)
 }

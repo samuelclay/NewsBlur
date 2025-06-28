@@ -1,6 +1,6 @@
 package com.newsblur.util
 
-import android.content.Context
+import com.newsblur.preference.PrefRepository
 
 data class CursorFilters(
         val stateFilter: StateFilter,
@@ -8,9 +8,9 @@ data class CursorFilters(
         val storyOrder: StoryOrder,
 ) {
 
-    constructor(context: Context, fs: FeedSet) : this(
-            stateFilter = PrefsUtils.getStateFilter(context),
-            readFilter = PrefsUtils.getReadFilter(context, fs),
-            storyOrder = PrefsUtils.getStoryOrder(context, fs),
+    constructor(prefRepository: PrefRepository, fs: FeedSet) : this(
+            stateFilter = prefRepository.getStateFilter(),
+            readFilter = prefRepository.getReadFilter(fs),
+            storyOrder = prefRepository.getStoryOrder(fs),
     )
 }

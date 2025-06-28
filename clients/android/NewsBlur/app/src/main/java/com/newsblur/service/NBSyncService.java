@@ -37,6 +37,7 @@ import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadCountResponse;
+import com.newsblur.preference.PrefRepository;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.CursorFilters;
 import com.newsblur.util.FeedSet;
@@ -164,6 +165,9 @@ public class NBSyncService extends JobService {
     @ThumbnailCache
     @Inject
     FileCache thumbnailCache;
+
+    @Inject
+    PrefRepository prefRepository;
 
     /** The time of the last hard API failure we encountered. Used to implement back-off so that the sync
         service doesn't spin in the background chewing up battery when the API is unavailable. */
@@ -414,7 +418,7 @@ public class NBSyncService extends JobService {
 
             ActionsRunning = true;
 
-            StateFilter stateFilter = PrefsUtils.getStateFilter(this);
+            StateFilter stateFilter = prefRepository.getStateFilter();
 
             actionsloop : while (c.moveToNext()) {
                 sendSyncUpdate(UPDATE_STATUS);
@@ -476,7 +480,7 @@ public class NBSyncService extends JobService {
         Log.d(this, "double-checking " + FollowupActions.size() + " actions");
         int impactFlags = 0;
         for (ReadingAction ra : FollowupActions) {
-            int impact = ra.doLocal(this, dbHelper, true);
+            int impact = ra.doLocal(dbHelper, prefRepository, true);
             impactFlags |= impact;
         }
         sendSyncUpdate(impactFlags);
@@ -771,7 +775,7 @@ public class NBSyncService extends JobService {
                 return;
             }
 
-            prepareReadingSession(this, dbHelper, fs);
+            prepareReadingSession(prefRepository, dbHelper, fs);
 
             LastFeedSet = fs;
             
@@ -790,7 +794,7 @@ public class NBSyncService extends JobService {
             int pageNumber = FeedPagesSeen.get(fs);
             int totalStoriesSeen = FeedStoriesSeen.get(fs);
 
-            CursorFilters cursorFilters = new CursorFilters(this, fs);
+            CursorFilters cursorFilters = new CursorFilters(prefRepository, fs);
 
             StorySyncRunning = true;
             sendSyncUpdate(UPDATE_STATUS);
@@ -1130,9 +1134,9 @@ public class NBSyncService extends JobService {
      * set but also when we sync a page of stories, since there are no guarantees which
      * will happen first.
      */
-    public static void prepareReadingSession(Context context, BlurDatabaseHelper dbHelper, FeedSet fs) {
+    public static void prepareReadingSession(PrefRepository prefRepository, BlurDatabaseHelper dbHelper, FeedSet fs) {
         synchronized (PENDING_FEED_MUTEX) {
-            CursorFilters cursorFilters = new CursorFilters(context, fs);
+            CursorFilters cursorFilters = new CursorFilters(prefRepository, fs);
             if (! fs.equals(dbHelper.getSessionFeedSet())) {
                 com.newsblur.util.Log.d(NBSyncService.class.getName(), "preparing new reading session");
                 // the next fetch will be the start of a new reading session; clear it so it

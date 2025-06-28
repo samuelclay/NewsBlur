@@ -29,6 +29,7 @@ import com.newsblur.domain.Story
 import com.newsblur.domain.UserDetails
 import com.newsblur.fragment.ItemSetFragment
 import com.newsblur.fragment.StoryIntelTrainerFragment
+import com.newsblur.preference.PrefRepository
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.GestureAction
@@ -63,6 +64,7 @@ class StoryViewAdapter(
         iconLoader: ImageLoader,
         thumbnailLoader: ImageLoader,
         feedUtils: FeedUtils,
+        prefRepository: PrefRepository,
         listener: OnStoryClickListener,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -91,6 +93,7 @@ class StoryViewAdapter(
     private var thumbnailStyle: ThumbnailStyle
     private var spacingStyle: SpacingStyle
     private val storyOrder: StoryOrder
+    private val prefRepository: PrefRepository
 
     init {
         this.fs = fs
@@ -99,6 +102,7 @@ class StoryViewAdapter(
         this.thumbnailLoader = thumbnailLoader
         this.feedUtils = feedUtils
         this.listener = listener
+        this.prefRepository = prefRepository
 
         if (fs.isGlobalShared) {
             ignoreReadStatus = false
@@ -497,7 +501,7 @@ class StoryViewAdapter(
                 GestureAction.GEST_ACTION_MARKUNREAD -> feedUtils.markStoryUnread(story!!, context)
                 GestureAction.GEST_ACTION_SAVE -> feedUtils.setStorySaved(story!!, true, context, null)
                 GestureAction.GEST_ACTION_UNSAVE -> feedUtils.setStorySaved(story!!, false, context, null)
-                GestureAction.GEST_ACTION_STATISTICS -> feedUtils.openStatistics(context, story!!.feedId)
+                GestureAction.GEST_ACTION_STATISTICS -> feedUtils.openStatistics(context, prefRepository, story!!.feedId)
                 GestureAction.GEST_ACTION_NONE -> {}
                 else -> {}
             }

@@ -77,7 +77,7 @@ class SubscriptionActivity : NbActivity() {
         // linkify before setting the string resource
         BetterLinkMovementMethod.linkify(Linkify.WEB_URLS, binding.textPolicies)
                 .setOnLinkClickListener { _: TextView?, url: String? ->
-                    UIUtils.handleUri(this@SubscriptionActivity, Uri.parse(url))
+                    UIUtils.handleUri(this@SubscriptionActivity, prefRepository, Uri.parse(url))
                     true
                 }
         binding.textPolicies.text = UIUtils.fromHtml(getString(R.string.premium_policies))

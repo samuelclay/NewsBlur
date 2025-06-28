@@ -155,7 +155,7 @@ public class UnreadsService extends SubService {
                 break unreadsyncloop;
             }
 
-            StateFilter stateFilter = PrefsUtils.getStateFilter(parent);
+            StateFilter stateFilter = parent.prefRepository.getStateFilter();
             parent.insertStories(response, stateFilter);
             for (String hash : hashBatch) {
                 StoryHashQueue.remove(hash);

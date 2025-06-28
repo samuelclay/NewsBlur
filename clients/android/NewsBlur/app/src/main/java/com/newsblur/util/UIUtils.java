@@ -51,6 +51,7 @@ import com.newsblur.R;
 import com.newsblur.activity.*;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
+import com.newsblur.preference.PrefRepository;
 
 public class UIUtils {
 
@@ -494,12 +495,12 @@ public class UIUtils {
         return result;
     }
 
-    public static void handleUri(Context context, Uri uri) {
+    public static void handleUri(Context context, PrefRepository prefRepository, Uri uri) {
         DefaultBrowser defaultBrowser = PrefsUtils.getDefaultBrowser(context);
         if (defaultBrowser == DefaultBrowser.SYSTEM_DEFAULT) {
             openSystemDefaultBrowser(context, uri);
         } else if (defaultBrowser == DefaultBrowser.IN_APP_BROWSER) {
-            openInAppBrowser(context, uri);
+            openInAppBrowser(context, prefRepository, uri);
         } else if (defaultBrowser == DefaultBrowser.CHROME) {
             openExternalBrowserApp(context, uri, "com.android.chrome");
         } else if (defaultBrowser == DefaultBrowser.FIREFOX) {
@@ -509,13 +510,13 @@ public class UIUtils {
         }
     }
 
-    private static void openInAppBrowser(Context context, Uri uri) {
+    private static void openInAppBrowser(Context context, PrefRepository prefRepository, Uri uri) {
         int colorPrimary = MaterialColors.getColor(context, androidx.appcompat.R.attr.colorPrimary, ContextCompat.getColor(context, R.color.primary_dark));
         CustomTabColorSchemeParams schemeParams = new CustomTabColorSchemeParams.Builder()
                 .setToolbarColor(colorPrimary)
                 .build();
         CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
-                .setColorScheme(getCustomTabsColorScheme(context))
+                .setColorScheme(getCustomTabsColorScheme(prefRepository))
                 .setDefaultColorSchemeParams(schemeParams)
                 .setShareState(CustomTabsIntent.SHARE_STATE_ON)
                 .setUrlBarHidingEnabled(false)
@@ -569,8 +570,8 @@ public class UIUtils {
         context.startActivity(intent);
     }
 
-    private static int getCustomTabsColorScheme(Context context) {
-        PrefConstants.ThemeValue value = PrefsUtils.getSelectedTheme(context);
+    private static int getCustomTabsColorScheme(PrefRepository prefRepository) {
+        PrefConstants.ThemeValue value = prefRepository.getSelectedTheme();
         if (value == PrefConstants.ThemeValue.DARK || value == PrefConstants.ThemeValue.BLACK) {
             return CustomTabsIntent.COLOR_SCHEME_DARK;
         } else if (value == PrefConstants.ThemeValue.LIGHT) {
