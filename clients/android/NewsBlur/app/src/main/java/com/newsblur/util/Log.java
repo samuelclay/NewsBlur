@@ -116,16 +116,12 @@ public class Log {
             }
             q.offer(s.toString());
         }
-        Runnable r = new Runnable() {
-            public void run() {
-                proc();
-            }
-        };
+        Runnable r = Log::proc;
         executor.execute(r);
     }
 
-    public static void offerContext(Context c) {
-        logloc = c.getExternalCacheDir();
+    public static void offerContext(final Context c) {
+        executor.execute(() -> logloc = c.getExternalCacheDir());
     }
 
     private static void proc() {
