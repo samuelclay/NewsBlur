@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Trace;
-import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -72,7 +71,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @Override
 	public void onCreate(Bundle savedInstanceState) {
         Trace.beginSection("MainOnCreate");
-        PreferenceManager.setDefaultValues(this, R.xml.activity_settings, false);
 
 		super.onCreate(savedInstanceState);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
