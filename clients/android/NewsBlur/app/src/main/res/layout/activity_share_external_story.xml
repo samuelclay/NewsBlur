@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true">
@@ -39,10 +40,10 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:hint="@string/share_comment_hint"
+            android:importantForAutofill="no"
             android:inputType="textCapSentences|textMultiLine"
             android:singleLine="false"
-            android:textSize="15sp"
-            android:importantForAutofill="no" />
+            android:textSize="15sp" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/container_buttons"
@@ -67,10 +68,10 @@
                 android:id="@+id/text_share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="8dp"
                 android:text="@string/share_this"
-                android:layout_marginEnd="32dp"
                 android:textSize="16sp" />
 
             <TextView
