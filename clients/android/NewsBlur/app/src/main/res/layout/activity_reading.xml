@@ -21,12 +21,12 @@
         android:gravity="center_horizontal"
         android:text="@string/loading"
         android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/include_toolbar"
+        app:layout_constraintStart_toStartOf="@id/include_toolbar"
         app:layout_constraintTop_toBottomOf="@id/include_toolbar" />
 
     <FrameLayout
-        android:id="@+id/activity_reading_container"
+        android:id="@+id/content"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -35,13 +35,13 @@
         app:layout_constraintTop_toBottomOf="@id/include_toolbar" />
 
     <FrameLayout
-        android:id="@+id/overlay_container"
+        android:id="@+id/content_bottom_overlay"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintBottom_toBottomOf="@id/content"
+        app:layout_constraintEnd_toEndOf="@id/content"
+        app:layout_constraintStart_toStartOf="@id/content">
 
         <TextView
             android:id="@+id/reading_overlay_text"

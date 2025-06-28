@@ -151,14 +151,14 @@
 
     <!-- Content -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/content"
+        android:id="@+id/no_content"
         style="?listBackground"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:focusable="false"
         app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/content"
+        app:layout_constraintStart_toStartOf="@id/content"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <TextView
@@ -191,7 +191,7 @@
 
     <!-- Search Field -->
     <EditText
-        android:id="@+id/feedlist_search_query"
+        android:id="@+id/input_search_query"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
@@ -202,20 +202,20 @@
         android:inputType="textNoSuggestions"
         android:textSize="16sp"
         android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/content"
+        app:layout_constraintStart_toStartOf="@id/content"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <!-- Swipe Container -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_container"
+        android:id="@+id/content"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:focusable="false"
         app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/feedlist_search_query">
+        app:layout_constraintTop_toBottomOf="@id/input_search_query">
 
         <fragment
             android:name="com.newsblur.fragment.FolderListFragment"
@@ -231,18 +231,18 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:focusable="false"
-        app:layout_constraintBottom_toTopOf="@id/swipe_container"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintBottom_toTopOf="@id/content"
+        app:layout_constraintEnd_toEndOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="@id/toolbar" />
 
     <View
         style="?delimiter"
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:focusable="false"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/swipe_container" />
+        app:layout_constraintEnd_toEndOf="@id/bottom_toolbar"
+        app:layout_constraintStart_toStartOf="@id/bottom_toolbar"
+        app:layout_constraintTop_toBottomOf="@id/content" />
 
     <!-- Sync Status -->
     <TextView
@@ -257,7 +257,7 @@
         android:textColor="@color/status_overlay_text"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="@id/content"
+        app:layout_constraintStart_toStartOf="@id/content" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

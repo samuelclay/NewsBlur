@@ -38,7 +38,6 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.CursorFilters
 import com.newsblur.util.DefaultFeedView
 import com.newsblur.util.EdgeToEdgeUtil.applyView
-import com.newsblur.util.EdgeToEdgeUtil.applyViewReading
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.ImageLoader
@@ -120,7 +119,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         super.onCreate(savedInstanceBundle)
         storiesViewModel = ViewModelProvider(this)[StoriesViewModel::class.java]
         binding = ActivityReadingBinding.inflate(layoutInflater)
-        applyViewReading(binding)
+        applyView(binding)
 
         try {
             fs = intent.getSerializableExtra(EXTRA_FEEDSET) as FeedSet?
@@ -224,7 +223,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
         supportFragmentManager.findFragmentByTag(ReadingPagerFragment::class.java.name)
                 ?: supportFragmentManager.commit {
-                    add(R.id.activity_reading_container, ReadingPagerFragment.newInstance(), ReadingPagerFragment::class.java.name)
+                    add(R.id.content, ReadingPagerFragment.newInstance(), ReadingPagerFragment::class.java.name)
                 }
     }
 

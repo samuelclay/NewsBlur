@@ -14,7 +14,7 @@
         android:src="@drawable/logo_newsblur_blur" />
 
     <ScrollView
-        android:id="@+id/login_container"
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"

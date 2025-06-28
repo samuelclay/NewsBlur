@@ -79,16 +79,16 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         contextMenuDelegate = new MainContextMenuDelegateImpl(this, dbHelper);
         keyboardManager = new KeyboardManager();
-        EdgeToEdgeUtil.applyViewMain(this, binding);
+        EdgeToEdgeUtil.applyView(this, binding);
 
         // set the status bar to an generic loading message when the activity is first created so
         // that something is displayed while the service warms up
         binding.mainSyncStatus.setText(R.string.loading);
         binding.mainSyncStatus.setVisibility(View.VISIBLE);
 
-        binding.swipeContainer.setColorSchemeResources(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
-        binding.swipeContainer.setProgressBackgroundColorSchemeResource(UIUtils.getThemedResource(this, R.attr.actionbarBackground, android.R.attr.background));
-        binding.swipeContainer.setOnRefreshListener(this);
+        binding.content.setColorSchemeResources(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
+        binding.content.setProgressBackgroundColorSchemeResource(UIUtils.getThemedResource(this, R.attr.actionbarBackground, android.R.attr.background));
+        binding.content.setOnRefreshListener(this);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
@@ -104,11 +104,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             binding.mainUserImage.setImageBitmap(userPicture);
         }
         binding.mainUserName.setText(PrefsUtils.getUserDetails(this).username);
-        binding.feedlistSearchQuery.setOnKeyListener(new OnKeyListener() {
+        binding.inputSearchQuery.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
-                    binding.feedlistSearchQuery.setVisibility(View.GONE);
-                    binding.feedlistSearchQuery.setText("");
+                    binding.inputSearchQuery.setVisibility(View.GONE);
+                    binding.inputSearchQuery.setText("");
                     checkSearchQuery();
                     return true;
                 }
@@ -119,7 +119,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
                 return false;
             }
         });
-        binding.feedlistSearchQuery.addTextChangedListener(new TextWatcher() {
+        binding.inputSearchQuery.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 checkSearchQuery();
             }
@@ -169,8 +169,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
 
         if (folderFeedList.getSearchQuery() != null) {
-            binding.feedlistSearchQuery.setText(folderFeedList.getSearchQuery());
-            binding.feedlistSearchQuery.setVisibility(View.VISIBLE);
+            binding.inputSearchQuery.setText(folderFeedList.getSearchQuery());
+            binding.inputSearchQuery.setVisibility(View.VISIBLE);
         }
 
         // triggerSync() might not actually do enough to push a UI update if background sync has been
@@ -199,8 +199,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         if ( !( (state == StateFilter.ALL) ||
                 (state == StateFilter.SOME) ||
                 (state == StateFilter.BEST) ) ) {
-            binding.feedlistSearchQuery.setText("");
-            binding.feedlistSearchQuery.setVisibility(View.GONE);
+            binding.inputSearchQuery.setText("");
+            binding.inputSearchQuery.setVisibility(View.GONE);
             checkSearchQuery();
         }
 
@@ -280,7 +280,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void updateStatusIndicators() {
-        binding.swipeContainer.setRefreshing(NBSyncService.isFeedFolderSyncRunning());
+        binding.content.setRefreshing(NBSyncService.isFeedFolderSyncRunning());
 
         String syncStatus = NBSyncService.getSyncStatusMessage(this, false);
         if (syncStatus != null)  {
@@ -326,12 +326,12 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void onClickSearchFeedsButton() {
-        if (binding.feedlistSearchQuery.getVisibility() != View.VISIBLE) {
-            binding.feedlistSearchQuery.setVisibility(View.VISIBLE);
-            binding.feedlistSearchQuery.requestFocus();
+        if (binding.inputSearchQuery.getVisibility() != View.VISIBLE) {
+            binding.inputSearchQuery.setVisibility(View.VISIBLE);
+            binding.inputSearchQuery.requestFocus();
         } else {
-            binding.feedlistSearchQuery.setText("");
-            binding.feedlistSearchQuery.setVisibility(View.GONE);
+            binding.inputSearchQuery.setText("");
+            binding.inputSearchQuery.setVisibility(View.GONE);
             checkSearchQuery();
         }
     }
@@ -346,15 +346,15 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         if (binding != null) {
             boolean enable = (firstVisibleItem == 0);
             if (wasSwipeEnabled != enable) {
-                binding.swipeContainer.setEnabled(enable);
+                binding.content.setEnabled(enable);
                 wasSwipeEnabled = enable;
             }
         }
     }
 
     private void checkSearchQuery() {
-        String q = binding.feedlistSearchQuery.getText().toString().trim();
-        if (q.length() < 1) {
+        String q = binding.inputSearchQuery.getText().toString().trim();
+        if (q.isEmpty()) {
             q = null;
         }
         folderFeedList.setSearchQuery(q);

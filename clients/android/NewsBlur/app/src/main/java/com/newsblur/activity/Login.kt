@@ -22,7 +22,7 @@ class Login : FragmentActivity() {
         if (supportFragmentManager.findFragmentByTag(LoginRegisterFragment::class.java.name) == null) {
             supportFragmentManager.commit {
                 val login = LoginRegisterFragment()
-                add(R.id.login_container, login, LoginRegisterFragment::class.java.name)
+                add(R.id.content, login, LoginRegisterFragment::class.java.name)
             }
         }
     }

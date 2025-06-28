@@ -41,7 +41,7 @@ class NotificationsActivity : NbActivity(), NotificationsAdapter.Listener {
     private fun setupUI() {
         UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.notifications_title), true)
         adapter = NotificationsAdapter(imageLoader, this).also {
-            binding.recyclerViewFeeds.adapter = it
+            binding.content.adapter = it
         }
     }
 
@@ -50,10 +50,10 @@ class NotificationsActivity : NbActivity(), NotificationsAdapter.Listener {
             viewModel.feeds.collectLatest {
                 val feeds = it.values
                 if (feeds.isNotEmpty()) {
-                    binding.recyclerViewFeeds.setViewVisible()
+                    binding.content.setViewVisible()
                     binding.txtNoNotifications.setViewGone()
                 } else {
-                    binding.recyclerViewFeeds.setViewGone()
+                    binding.content.setViewGone()
                     binding.txtNoNotifications.setViewVisible()
                 }
                 adapter.refreshFeeds(feeds)
