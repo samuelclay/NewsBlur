@@ -20,6 +20,7 @@ import com.newsblur.domain.Feed;
 import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedIntelTrainerFragment;
 import com.newsblur.fragment.RenameDialogFragment;
+import com.newsblur.preference.PrefRepository;
 import com.newsblur.util.FeedExt;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.ImageLoader;
@@ -38,6 +39,9 @@ public class FeedItemsList extends ItemsList {
     @Inject
     @IconLoader
     ImageLoader iconLoader;
+
+    @Inject
+    PrefRepository prefRepository;
 
     public static final String EXTRA_FEED = "feed";
     public static final String EXTRA_FOLDER_NAME = "folderName";
@@ -123,7 +127,7 @@ public class FeedItemsList extends ItemsList {
             // the name change won't be reflected until the activity finishes.
         }
         if (item.getItemId() == R.id.menu_statistics) {
-            feedUtils.openStatistics(this, feed.feedId);
+            feedUtils.openStatistics(this, prefRepository, feed.feedId);
             return true;
         }
         return false;

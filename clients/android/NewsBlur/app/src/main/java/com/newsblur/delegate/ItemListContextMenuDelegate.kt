@@ -10,11 +10,23 @@ import com.newsblur.R
 import com.newsblur.activity.ItemsList
 import com.newsblur.fragment.ItemSetFragment
 import com.newsblur.fragment.SaveSearchFragment
+import com.newsblur.preference.PrefRepository
 import com.newsblur.service.NBSyncService
-import com.newsblur.util.*
+import com.newsblur.util.FeedSet
+import com.newsblur.util.FeedUtils
 import com.newsblur.util.FeedUtils.Companion.triggerSync
+import com.newsblur.util.ListTextSize
 import com.newsblur.util.ListTextSize.Companion.fromSize
 import com.newsblur.util.PrefConstants.ThemeValue
+import com.newsblur.util.PrefsUtils
+import com.newsblur.util.ReadFilter
+import com.newsblur.util.ReadingActionListener
+import com.newsblur.util.SpacingStyle
+import com.newsblur.util.StoryContentPreviewStyle
+import com.newsblur.util.StoryListStyle
+import com.newsblur.util.StoryOrder
+import com.newsblur.util.ThumbnailStyle
+import com.newsblur.util.UIUtils
 
 interface ItemListContextMenuDelegate {
     fun onCreateMenuOptions(menu: Menu, menuInflater: MenuInflater, fs: FeedSet): Boolean
@@ -27,6 +39,7 @@ interface ItemListContextMenuDelegate {
 open class ItemListContextMenuDelegateImpl(
         private val activity: ItemsList,
         private val feedUtils: FeedUtils,
+        private val prefRepository: PrefRepository,
 ) : ItemListContextMenuDelegate, ReadingActionListener by activity {
 
     override fun onCreateMenuOptions(menu: Menu, menuInflater: MenuInflater, fs: FeedSet): Boolean {
@@ -105,12 +118,11 @@ open class ItemListContextMenuDelegateImpl(
             else -> menu.findItem(R.id.menu_list_style_list).isChecked = true
         }
 
-        when (PrefsUtils.getSelectedTheme(activity)) {
+        when (prefRepository.getSelectedTheme()) {
             ThemeValue.LIGHT -> menu.findItem(R.id.menu_theme_light).isChecked = true
             ThemeValue.DARK -> menu.findItem(R.id.menu_theme_dark).isChecked = true
             ThemeValue.BLACK -> menu.findItem(R.id.menu_theme_black).isChecked = true
             ThemeValue.AUTO -> menu.findItem(R.id.menu_theme_auto).isChecked = true
-            else -> Unit
         }
 
         if (showSavedSearch) {
@@ -212,16 +224,16 @@ open class ItemListContextMenuDelegateImpl(
                 searchInputView.visibility = View.GONE
             }
         } else if (item.itemId == R.id.menu_theme_auto) {
-            PrefsUtils.setSelectedTheme(activity, ThemeValue.AUTO)
+            prefRepository.setSelectedTheme(ThemeValue.AUTO)
             UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_light) {
-            PrefsUtils.setSelectedTheme(activity, ThemeValue.LIGHT)
+            prefRepository.setSelectedTheme(ThemeValue.LIGHT)
             UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_dark) {
-            PrefsUtils.setSelectedTheme(activity, ThemeValue.DARK)
+            prefRepository.setSelectedTheme(ThemeValue.DARK)
             UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_black) {
-            PrefsUtils.setSelectedTheme(activity, ThemeValue.BLACK)
+            prefRepository.setSelectedTheme(ThemeValue.BLACK)
             UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_spacing_comfortable) {
             updateSpacingStyle(fragment, SpacingStyle.COMFORTABLE)
@@ -303,7 +315,7 @@ open class ItemListContextMenuDelegateImpl(
 
     private fun restartReadingSession(fragment: ItemSetFragment, fs: FeedSet) {
         NBSyncService.resetFetchState(fs)
-        feedUtils.prepareReadingSession(activity, fs, true)
+        feedUtils.prepareReadingSession(fs, true)
         triggerSync(activity)
         fragment.resetEmptyState()
         fragment.hasUpdated()

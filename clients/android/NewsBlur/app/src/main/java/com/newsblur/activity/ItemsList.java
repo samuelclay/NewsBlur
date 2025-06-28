@@ -85,7 +85,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
         PendingTransitionUtils.overrideEnterTransition(this);
 
-        contextMenuDelegate = new ItemListContextMenuDelegateImpl(this, feedUtils);
+        contextMenuDelegate = new ItemListContextMenuDelegateImpl(this, feedUtils, prefRepository);
         viewModel = new ViewModelProvider(this).get(ItemListViewModel.class);
 		fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
         sessionDataSource = (SessionDataSource) getIntent().getSerializableExtra(EXTRA_SESSION_DATA);
@@ -93,12 +93,12 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         // this is not strictly necessary, since our first refresh with the fs will swap in
         // the correct session, but that can be delayed by sync backup, so we try here to
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
-        feedUtils.prepareReadingSession(this, fs, false);
+        feedUtils.prepareReadingSession(fs, false);
         if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false)) {
             String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
             UIUtils.startReadingActivity(this, fs, hash, readingActivityLaunch);
         } else if (PrefsUtils.isAutoOpenFirstUnread(this)) {
-            StateFilter intelState = PrefsUtils.getStateFilter(this);
+            StateFilter intelState = prefRepository.getStateFilter();
             if (dbHelper.getUnreadCount(fs, intelState) > 0) {
                 UIUtils.startReadingActivity(this, fs, Reading.FIND_FIRST_UNREAD, readingActivityLaunch);
             }
@@ -218,7 +218,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             if (session != null) {
                 // set the next session on the parent activity
                 fs = session.getFeedSet();
-                feedUtils.prepareReadingSession(this, fs, false);
+                feedUtils.prepareReadingSession(fs, false);
                 triggerSync();
 
                 // set the next session on the child activity
@@ -260,7 +260,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         String oldQuery = fs.getSearchQuery();
         fs.setSearchQuery(q);
         if (!TextUtils.equals(q, oldQuery)) {
-            feedUtils.prepareReadingSession(this, fs, true);
+            feedUtils.prepareReadingSession(fs, true);
             triggerSync();
             itemSetFragment.resetEmptyState();
             itemSetFragment.hasUpdated();
@@ -290,7 +290,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     protected void restartReadingSession() {
         NBSyncService.resetFetchState(fs);
-        feedUtils.prepareReadingSession(this, fs, true);
+        feedUtils.prepareReadingSession(fs, true);
         triggerSync();
         itemSetFragment.resetEmptyState();
         itemSetFragment.hasUpdated();

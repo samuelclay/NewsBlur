@@ -51,6 +51,7 @@ import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.preference.PrefRepository;
 import com.newsblur.util.Session;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedExt;
@@ -86,6 +87,9 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     @IconLoader
     ImageLoader iconLoader;
 
+    @Inject
+    PrefRepository prefRepository;
+
     private AllFoldersViewModel allFoldersViewModel;
 	private FolderListAdapter adapter;
 	public StateFilter currentState = StateFilter.SOME;
@@ -101,7 +105,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		allFoldersViewModel = new ViewModelProvider(this).get(AllFoldersViewModel.class);
-        currentState = PrefsUtils.getStateFilter(getActivity());
+        currentState = prefRepository.getStateFilter();
 		adapter = new FolderListAdapter(getActivity(), currentState, iconLoader, dbHelper);
         sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
         feedUtils.currentFolderName = null;

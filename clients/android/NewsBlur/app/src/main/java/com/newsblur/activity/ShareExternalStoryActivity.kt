@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.databinding.ActivityShareExternalStoryBinding
 import com.newsblur.network.APIManager
+import com.newsblur.preference.PrefRepository
 import com.newsblur.util.EdgeToEdgeUtil.applyTheme
 import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.executeAsyncTask
@@ -22,13 +23,16 @@ class ShareExternalStoryActivity : AppCompatActivity() {
     @Inject
     lateinit var apiManager: APIManager
 
+    @Inject
+    lateinit var prefRepository: PrefRepository
+
     private var storyTitle: String? = null
     private var storyUrl: String? = null
 
     private lateinit var binding: ActivityShareExternalStoryBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        applyTheme()
+        applyTheme(prefRepository.getSelectedTheme())
         super.onCreate(savedInstanceState)
         binding = ActivityShareExternalStoryBinding.inflate(layoutInflater)
         applyView(binding)

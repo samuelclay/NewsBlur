@@ -223,10 +223,10 @@ public class PrefsUtils {
 	 * login. If this login key doesn't match the login key you have then assume
 	 * the user is logged out
 	 */
-	public static String getUniqueLoginKey(final Context context) {
-		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-		return preferences.getString(PrefConstants.PREF_UNIQUE_LOGIN, null);
-	}
+//	public static String getUniqueLoginKey(final Context context) {
+//		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+//		return preferences.getString(PrefConstants.PREF_UNIQUE_LOGIN, null);
+//	}
 
     public static String getCustomServer(Context context) {
 		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
@@ -255,11 +255,11 @@ public class PrefsUtils {
 		saveUserImage(context, profile.photoUrl);
 	}
 
-    @Nullable
-    public static String getUserId(Context context) {   
-		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        return preferences.getString(PrefConstants.USER_ID, null);
-    }
+//    @Nullable
+//    public static String getUserId(Context context) {
+//		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+//        return preferences.getString(PrefConstants.USER_ID, null);
+//    }
 
 	public static UserDetails getUserDetails(Context context) {
 		UserDetails user = new UserDetails();
@@ -805,48 +805,28 @@ public class PrefsUtils {
         return FeedListOrder.valueOf(prefs.getString(PrefConstants.FEED_LIST_ORDER, FeedListOrder.ALPHABETICAL.toString()));
     }
 
-    public static void applyTranslucentThemePreference(Activity activity) {
-        ThemeValue value = getSelectedTheme(activity);
-        if (value == ThemeValue.LIGHT) {
-            activity.setTheme(R.style.NewsBlurTheme_Translucent);
-        } else if (value == ThemeValue.DARK) {
-            activity.setTheme(R.style.NewsBlurDarkTheme_Translucent);
-        } else if (value == ThemeValue.BLACK) {
-            activity.setTheme(R.style.NewsBlurBlackTheme_Translucent);
-        } else if (value == ThemeValue.AUTO) {
-            int nightModeFlags = activity.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-            if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-                activity.setTheme(R.style.NewsBlurDarkTheme_Translucent);
-            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_NO) {
-                activity.setTheme(R.style.NewsBlurTheme_Translucent);
-            } else if (nightModeFlags == Configuration.UI_MODE_NIGHT_UNDEFINED) {
-                activity.setTheme(R.style.NewsBlurTheme_Translucent);
-            }
-        }
-    }
+//    @NonNull
+//    public static ThemeValue getSelectedTheme(Context context) {
+//        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+//        String value = prefs.getString(PrefConstants.THEME, ThemeValue.AUTO.name());
+//        // check for legacy hard-coded values. this can go away once installs of v152 or earlier are minimized
+//        if (value.equals("light")) {
+//            setSelectedTheme(context, ThemeValue.LIGHT);
+//            return ThemeValue.LIGHT;
+//        }
+//        if (value.equals("dark")) {
+//            setSelectedTheme(context, ThemeValue.DARK);
+//            return ThemeValue.DARK;
+//        }
+//        return ThemeValue.valueOf(value);
+//    }
 
-    @NonNull
-    public static ThemeValue getSelectedTheme(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        String value = prefs.getString(PrefConstants.THEME, ThemeValue.AUTO.name());
-        // check for legacy hard-coded values. this can go away once installs of v152 or earlier are minimized
-        if (value.equals("light")) {    
-            setSelectedTheme(context, ThemeValue.LIGHT);
-            return ThemeValue.LIGHT;
-        }
-        if (value.equals("dark")) {    
-            setSelectedTheme(context, ThemeValue.DARK);
-            return ThemeValue.DARK;
-        }
-        return ThemeValue.valueOf(value);
-    }
-
-    public static void setSelectedTheme(Context context, ThemeValue value) {
-        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-        Editor editor = prefs.edit();
-        editor.putString(PrefConstants.THEME, value.name());
-        editor.commit();
-    }
+//    public static void setSelectedTheme(Context context, ThemeValue value) {
+//        SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+//        Editor editor = prefs.edit();
+//        editor.putString(PrefConstants.THEME, value.name());
+//        editor.commit();
+//    }
 
     public static StateFilter getStateFilter(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);

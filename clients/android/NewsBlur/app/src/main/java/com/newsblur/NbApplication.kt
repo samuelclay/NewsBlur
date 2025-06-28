@@ -6,12 +6,17 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.preference.PreferenceManager
+import com.newsblur.preference.PrefRepository
 import com.newsblur.util.Log
 import com.newsblur.util.PrefConstants
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 @HiltAndroidApp
 class NbApplication : Application(), DefaultLifecycleObserver {
+
+    @Inject
+    lateinit var prefRepository: PrefRepository
 
     override fun onCreate() {
         super<Application>.onCreate()

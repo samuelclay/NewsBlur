@@ -1,6 +1,5 @@
 package com.newsblur.fragment
 
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Configuration
@@ -39,6 +38,7 @@ import com.newsblur.domain.Story
 import com.newsblur.domain.UserDetails
 import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.network.APIManager
+import com.newsblur.preference.PrefRepository
 import com.newsblur.service.NbSyncManager.UPDATE_INTEL
 import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
@@ -83,6 +83,9 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     @Inject
     @StoryImageCache
     lateinit var storyImageCache: FileCache
+
+    @Inject
+    lateinit var prefRepository: PrefRepository
 
     @JvmField
     var story: Story? = null
@@ -281,13 +284,11 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             menu.findItem(R.id.menu_shortcuts).isVisible = true
         }
 
-        when (PrefsUtils.getSelectedTheme(requireContext())) {
+        when (prefRepository.getSelectedTheme()) {
             ThemeValue.LIGHT -> menu.findItem(R.id.menu_theme_light).isChecked = true
             ThemeValue.DARK -> menu.findItem(R.id.menu_theme_dark).isChecked = true
             ThemeValue.BLACK -> menu.findItem(R.id.menu_theme_black).isChecked = true
             ThemeValue.AUTO -> menu.findItem(R.id.menu_theme_auto).isChecked = true
-            else -> {
-            }
         }
 
         val readingTextSize = PrefsUtils.getReadingTextSize(requireContext())
@@ -408,22 +409,22 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             true
         }
         R.id.menu_theme_auto -> {
-            PrefsUtils.setSelectedTheme(requireContext(), ThemeValue.AUTO)
+            prefRepository.setSelectedTheme(ThemeValue.AUTO)
             UIUtils.restartActivity(requireActivity())
             true
         }
         R.id.menu_theme_light -> {
-            PrefsUtils.setSelectedTheme(requireContext(), ThemeValue.LIGHT)
+            prefRepository.setSelectedTheme(ThemeValue.LIGHT)
             UIUtils.restartActivity(requireActivity())
             true
         }
         R.id.menu_theme_dark -> {
-            PrefsUtils.setSelectedTheme(requireContext(), ThemeValue.DARK)
+            prefRepository.setSelectedTheme(ThemeValue.DARK)
             UIUtils.restartActivity(requireActivity())
             true
         }
         R.id.menu_theme_black -> {
-            PrefsUtils.setSelectedTheme(requireContext(), ThemeValue.BLACK)
+            prefRepository.setSelectedTheme(ThemeValue.BLACK)
             UIUtils.restartActivity(requireActivity())
             true
         }
@@ -464,7 +465,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     private fun updateMarkStoryReadState() {
         if (markStoryReadBehavior == MarkStoryReadBehavior.MANUALLY) {
             readingItemActionsBinding.markReadStoryButton.visibility = View.VISIBLE
-            readingItemActionsBinding.markReadStoryButton.setStoryReadState(requireContext(), story!!.read)
+            readingItemActionsBinding.markReadStoryButton.setStoryReadState(prefRepository, story!!.read)
         } else {
             readingItemActionsBinding.markReadStoryButton.visibility = View.GONE
         }
@@ -870,7 +871,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             storyText = swapInOfflineImages(storyText)
             val currentSize = PrefsUtils.getReadingTextSize(requireContext())
             val font = PrefsUtils.getFont(requireContext())
-            val themeValue = PrefsUtils.getSelectedTheme(requireContext())
+            val themeValue = prefRepository.getSelectedTheme()
 
             val builder = StringBuilder()
             builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0\" />")
@@ -900,8 +901,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                             builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />")
                         }
                     }
-                }
-                else -> {
                 }
             }
 
@@ -1047,7 +1046,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     fun openBrowser() {
         story?.let {
             val uri = Uri.parse(it.permalink)
-            UIUtils.handleUri(requireContext(), uri)
+            UIUtils.handleUri(requireContext(), prefRepository, uri)
         } ?: Log.e(this.javaClass.name, "Error opening null story by permalink URL.")
     }
 
@@ -1105,8 +1104,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     }
 }
 
-private fun MaterialButton.setStoryReadState(context: Context, isRead: Boolean) {
-    var selectedTheme = PrefsUtils.getSelectedTheme(context)
+private fun MaterialButton.setStoryReadState(prefRepository: PrefRepository, isRead: Boolean) {
+    var selectedTheme = prefRepository.getSelectedTheme()
     if (selectedTheme == ThemeValue.AUTO) {
         selectedTheme = when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
             Configuration.UI_MODE_NIGHT_YES -> ThemeValue.DARK

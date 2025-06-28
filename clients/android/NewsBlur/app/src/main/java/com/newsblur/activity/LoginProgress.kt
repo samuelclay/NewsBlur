@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.databinding.ActivityLoginProgressBinding
 import com.newsblur.network.APIManager
+import com.newsblur.preference.PrefRepository
 import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.util.EdgeToEdgeUtil.applyTheme
 import com.newsblur.util.EdgeToEdgeUtil.applyView
@@ -26,10 +27,13 @@ class LoginProgress : FragmentActivity() {
     @Inject
     lateinit var apiManager: APIManager
 
+    @Inject
+    lateinit var prefRepository: PrefRepository
+
     private lateinit var binding: ActivityLoginProgressBinding
 
     override fun onCreate(bundle: Bundle?) {
-        applyTheme()
+        applyTheme(prefRepository.getSelectedTheme())
         super.onCreate(bundle)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         binding = ActivityLoginProgressBinding.inflate(layoutInflater)

@@ -15,6 +15,7 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.Feed
 import com.newsblur.domain.Story
 import com.newsblur.network.APIManager
+import com.newsblur.preference.PrefRepository
 import com.newsblur.util.*
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.TimeoutCancellationException
@@ -31,6 +32,7 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
     private val dbHelper: BlurDatabaseHelper
     private val iconLoader: ImageLoader
     private val thumbnailLoader: ImageLoader
+    private val prefRepository: PrefRepository
     private val appWidgetId: Int
 
     private val storyItems: MutableList<Story> = mutableListOf()
@@ -47,6 +49,7 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
         this.dbHelper = hiltEntryPoint.dbHelper()
         this.iconLoader = hiltEntryPoint.iconLoader()
         this.thumbnailLoader = hiltEntryPoint.thumbnailLoader()
+        this.prefRepository = hiltEntryPoint.prefRepository()
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID)
     }
@@ -124,7 +127,7 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
     override fun onDataSetChanged() = storiesLock.withLock {
         Log.d(this.javaClass.name, "onDataSetChanged")
         // if user logged out don't try to update widget
-        if (!WidgetUtils.isLoggedIn(context)) {
+        if (!WidgetUtils.isLoggedIn(prefRepository)) {
             Log.d(this.javaClass.name, "onDataSetChanged - not logged in")
             return@withLock
         }
@@ -149,7 +152,7 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
                     Log.d(this.javaClass.name, "onDataSetChanged - get remote stories")
                     val response = apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL)
                     response.stories?.let {
-                        val stateFilter = PrefsUtils.getStateFilter(context)
+                        val stateFilter = prefRepository.getStateFilter()
                         Log.d(this.javaClass.name, "onDataSetChanged - got ${it.size} remote stories")
                         processStories(response.stories)
                         dbHelper.insertStories(response, stateFilter, true)

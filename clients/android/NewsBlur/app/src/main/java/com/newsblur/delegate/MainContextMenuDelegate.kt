@@ -12,6 +12,7 @@ import com.newsblur.activity.*
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.fragment.*
 import com.newsblur.keyboard.KeyboardManager
+import com.newsblur.preference.PrefRepository
 import com.newsblur.service.NBSyncService
 import com.newsblur.util.ListTextSize
 import com.newsblur.util.ListTextSize.Companion.fromSize
@@ -31,6 +32,7 @@ interface MainContextMenuDelegate {
 class MainContextMenuDelegateImpl(
         private val activity: Main,
         private val dbHelper: BlurDatabaseHelper,
+        private val prefRepository: PrefRepository,
 ) : MainContextMenuDelegate {
 
     override fun onMenuClick(anchor: View, listener: PopupMenu.OnMenuItemClickListener) {
@@ -46,12 +48,11 @@ class MainContextMenuDelegateImpl(
             menu.findItem(R.id.menu_shortcuts).isVisible = true
         }
 
-        when (PrefsUtils.getSelectedTheme(activity)) {
+        when (prefRepository.getSelectedTheme()) {
             ThemeValue.LIGHT -> menu.findItem(R.id.menu_theme_light).isChecked = true
             ThemeValue.DARK -> menu.findItem(R.id.menu_theme_dark).isChecked = true
             ThemeValue.BLACK -> menu.findItem(R.id.menu_theme_black).isChecked = true
             ThemeValue.AUTO -> menu.findItem(R.id.menu_theme_auto).isChecked = true
-            else -> Unit
         }
 
         val spacingStyle = PrefsUtils.getSpacingStyle(activity)
@@ -146,22 +147,22 @@ class MainContextMenuDelegateImpl(
             true
         }
         R.id.menu_theme_auto -> {
-            PrefsUtils.setSelectedTheme(activity, ThemeValue.AUTO)
+            prefRepository.setSelectedTheme(ThemeValue.AUTO)
             UIUtils.restartActivity(activity)
             false
         }
         R.id.menu_theme_light -> {
-            PrefsUtils.setSelectedTheme(activity, ThemeValue.LIGHT)
+            prefRepository.setSelectedTheme(ThemeValue.LIGHT)
             UIUtils.restartActivity(activity)
             false
         }
         R.id.menu_theme_dark -> {
-            PrefsUtils.setSelectedTheme(activity, ThemeValue.DARK)
+            prefRepository.setSelectedTheme(ThemeValue.DARK)
             UIUtils.restartActivity(activity)
             false
         }
         R.id.menu_theme_black -> {
-            PrefsUtils.setSelectedTheme(activity, ThemeValue.BLACK)
+            prefRepository.setSelectedTheme(ThemeValue.BLACK)
             UIUtils.restartActivity(activity)
             false
         }

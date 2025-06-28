@@ -10,6 +10,7 @@ import com.newsblur.R
 import com.newsblur.databinding.ActivityRegisterProgressBinding
 import com.newsblur.network.APIManager
 import com.newsblur.network.domain.RegisterResponse
+import com.newsblur.preference.PrefRepository
 import com.newsblur.util.EdgeToEdgeUtil.applyTheme
 import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.executeAsyncTask
@@ -27,10 +28,13 @@ class RegisterProgress : FragmentActivity() {
     @Inject
     lateinit var apiManager: APIManager
 
+    @Inject
+    lateinit var prefRepository: PrefRepository
+
     private lateinit var binding: ActivityRegisterProgressBinding
 
     override fun onCreate(bundle: Bundle?) {
-        applyTheme()
+        applyTheme(prefRepository.getSelectedTheme())
         super.onCreate(bundle)
         binding = ActivityRegisterProgressBinding.inflate(layoutInflater)
         applyView(binding)

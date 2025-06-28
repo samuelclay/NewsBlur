@@ -30,6 +30,7 @@ import com.newsblur.databinding.RowFleuronBinding;
 import com.newsblur.di.IconLoader;
 import com.newsblur.di.ThumbnailLoader;
 import com.newsblur.domain.Story;
+import com.newsblur.preference.PrefRepository;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.CursorFilters;
 import com.newsblur.util.FeedSet;
@@ -64,6 +65,9 @@ public class ItemSetFragment extends NbFragment {
     @Inject
     @ThumbnailLoader
     ImageLoader thumbnailLoader;
+
+    @Inject
+    PrefRepository prefRepository;
 
     private static final String BUNDLE_GRIDSTATE = "gridstate";
 
@@ -191,7 +195,7 @@ public class ItemSetFragment extends NbFragment {
             }
         });
 
-        adapter = new StoryViewAdapter(((NbActivity) getActivity()), this, getFeedSet(), listStyle, iconLoader, thumbnailLoader, feedUtils, getOnStoryClickListener());
+        adapter = new StoryViewAdapter(((NbActivity) getActivity()), this, getFeedSet(), listStyle, iconLoader, thumbnailLoader, feedUtils, prefRepository, getOnStoryClickListener());
         adapter.addFooterView(footerView);
         adapter.addFooterView(fleuronBinding.getRoot());
         binding.itemgridfragmentGrid.setAdapter(adapter);
@@ -281,7 +285,7 @@ public class ItemSetFragment extends NbFragment {
 	public void hasUpdated() {
         FeedSet fs = getFeedSet();
         if (isAdded() && fs != null) {
-            storiesViewModel.getActiveStories(fs, new CursorFilters(requireContext(), fs));
+            storiesViewModel.getActiveStories(fs, new CursorFilters(prefRepository, fs));
         }
 	}
 
