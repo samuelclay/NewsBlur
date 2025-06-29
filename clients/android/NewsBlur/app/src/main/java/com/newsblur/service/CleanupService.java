@@ -15,16 +15,16 @@ public class CleanupService extends SubService {
     @Override
     protected void exec() {
 
-        if (!PrefsUtils.isTimeToCleanup(parent)) return;
+        if (!parent.prefRepository.isTimeToCleanup()) return;
 
         activelyRunning = true;
 
         com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up old stories");
         parent.dbHelper.cleanupVeryOldStories();
-        if (!PrefsUtils.isKeepOldStories(parent)) {
+        if (!parent.prefRepository.isKeepOldStories()) {
             parent.dbHelper.cleanupReadStories();
         }
-        PrefsUtils.updateLastCleanupTime(parent);
+        parent.prefRepository.updateLastCleanupTime();
 
         com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up old story texts");
         parent.dbHelper.cleanupStoryText();
@@ -33,13 +33,13 @@ public class CleanupService extends SubService {
         parent.dbHelper.cleanupDismissals();
 
         com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up story image cache");
-        parent.storyImageCache.cleanupUnusedAndOld(parent.dbHelper.getAllStoryImages(), PrefsUtils.getMaxCachedAgeMillis(parent));
+        parent.storyImageCache.cleanupUnusedAndOld(parent.dbHelper.getAllStoryImages(), parent.prefRepository.getMaxCachedAgeMillis());
 
         com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up icon cache");
         parent.iconCache.cleanupOld(PrefConstants.CACHE_AGE_VALUE_30D);
 
         com.newsblur.util.Log.d(this.getClass().getName(), "cleaning up thumbnail cache");
-        parent.thumbnailCache.cleanupUnusedAndOld(parent.dbHelper.getAllStoryThumbnails(), PrefsUtils.getMaxCachedAgeMillis(parent));
+        parent.thumbnailCache.cleanupUnusedAndOld(parent.dbHelper.getAllStoryThumbnails(), parent.prefRepository.getMaxCachedAgeMillis());
 
         activelyRunning = false;
     }

@@ -13,11 +13,9 @@ import com.newsblur.network.APIConstants
 
 object FileDownloader {
 
-    fun exportOpml(context: Context): Long {
+    fun exportOpml(context: Context, userName: String?, cookie: String?): Long {
         val manager = context.getSystemService(DownloadManager::class.java)
         val url = APIConstants.buildUrl(APIConstants.PATH_EXPORT_OPML)
-        val userName = PrefsUtils.getUserName(context)
-        val cookie = PrefsUtils.getCookie(context)
 
         val file = StringBuilder().apply {
             append(context.getString(R.string.newsbluropml))

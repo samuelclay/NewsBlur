@@ -59,25 +59,21 @@ class PrefRepository(
 
     fun load() {}
 
-    fun saveCustomServer(context: Context, customServer: String?) {
+    fun saveCustomServer(customServer: String?) {
         if (customServer == null) return
-        if (customServer.length <= 0) return
-        val preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val edit = preferences.edit()
-        edit.putString(PrefConstants.PREF_CUSTOM_SERVER, customServer)
-        edit.commit()
+        if (customServer.isEmpty()) return
+        sharedPreferences.edit {
+            putString(PrefConstants.PREF_CUSTOM_SERVER, customServer)
+        }
     }
 
-    fun getCustomSever(context: Context): String? {
-        val preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return preferences.getString(PrefConstants.PREF_CUSTOM_SERVER, null)
-    }
+    fun getCustomSever(): String? =
+            sharedPreferences.getString(PrefConstants.PREF_CUSTOM_SERVER, null)
 
-    fun clearCustomServer(context: Context) {
-        val preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val edit = preferences.edit()
-        edit.remove(PrefConstants.PREF_CUSTOM_SERVER)
-        edit.commit()
+    fun clearCustomServer() {
+        sharedPreferences.edit {
+            remove(PrefConstants.PREF_CUSTOM_SERVER)
+        }
     }
 
     fun saveLogin(context: Context, userName: String, cookie: String?) {
@@ -89,7 +85,6 @@ class PrefRepository(
     }
 
     fun checkForUpgrade(context: Context): Boolean {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
         val version = getVersion(context)
         if (version == null) {
             Log.wtf(PrefsUtils::class.java.name, "could not determine app version")
@@ -97,7 +92,7 @@ class PrefRepository(
         }
         if (AppConstants.VERBOSE_LOG) Log.i(PrefsUtils::class.java.name, "launching version: $version")
 
-        val oldVersion = prefs.getString(AppConstants.LAST_APP_VERSION, null)
+        val oldVersion = sharedPreferences.getString(AppConstants.LAST_APP_VERSION, null)
         if ((oldVersion == null) || (oldVersion != version)) {
             com.newsblur.util.Log.i(PrefsUtils::class.java.name, "detected new version of app:$version")
             return true
@@ -105,12 +100,13 @@ class PrefRepository(
         return false
     }
 
-    fun updateVersion(context: Context, appVersion: String?) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
+    fun updateVersion(appVersion: String?) {
         // store the current version
-        prefs.edit().putString(AppConstants.LAST_APP_VERSION, appVersion).commit()
+        sharedPreferences.edit {
+            putString(AppConstants.LAST_APP_VERSION, appVersion)
+        }
         // also make sure we auto-trigger an update, since all data are now gone
-        prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, 0L).commit()
+        sharedPreferences.edit { putLong(AppConstants.LAST_SYNC_TIME, 0L) }
     }
 
     fun getVersion(context: Context): String? {
@@ -182,7 +178,7 @@ class PrefRepository(
         s.append("\n")
         s.append("notifications: ").append(if (isEnableNotifications()) "yes" else "no")
         s.append("\n")
-        s.append("keepread: ").append(if (isKeepOldStories(context)) "yes" else "no")
+        s.append("keepread: ").append(if (isKeepOldStories()) "yes" else "no")
         s.append("\n")
         s.append("thumbs: ").append(if (isShowThumbnails(context)) "yes" else "no")
         s.append("\n")
@@ -217,22 +213,21 @@ class PrefRepository(
         context.startActivity(i)
     }
 
-    fun clearPrefsAndDbForLoginAs(context: Context, dbHelper: BlurDatabaseHelper) {
+    fun clearPrefsAndDbForLoginAs(dbHelper: BlurDatabaseHelper) {
         NBSyncService.softInterrupt()
         NBSyncService.clearState()
 
         // wipe the prefs store except for the cookie and login keys since we need to
         // authenticate further API calls
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val keys: MutableSet<String> = HashSet(prefs.all.keys)
+        val keys: MutableSet<String> = HashSet(sharedPreferences.all.keys)
         keys.remove(PrefConstants.PREF_COOKIE)
         keys.remove(PrefConstants.PREF_UNIQUE_LOGIN)
         keys.remove(PrefConstants.PREF_CUSTOM_SERVER)
-        val editor = prefs.edit()
-        for (key in keys) {
-            editor.remove(key)
+        sharedPreferences.edit(commit = true) {
+            for (key in keys) {
+                remove(key)
+            }
         }
-        editor.commit()
 
         // wipe the local DB
         dbHelper.dropAndRecreateTables()
@@ -298,11 +293,6 @@ class PrefRepository(
         return user
     }
 
-    fun getUserName(context: Context): String? {
-        val preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return preferences.getString(PrefConstants.USER_USERNAME, null)
-    }
-
     private fun saveUserImage(context: Context, pictureUrl: String) {
         val bitmap: Bitmap
         try {
@@ -328,9 +318,8 @@ class PrefRepository(
      * Check to see if it has been sufficiently long since the last sync of the feed/folder
      * data to justify automatically syncing again.
      */
-    fun isTimeToAutoSync(context: Context): Boolean {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val lastTime = prefs.getLong(AppConstants.LAST_SYNC_TIME, 1L)
+    fun isTimeToAutoSync(): Boolean {
+        val lastTime = sharedPreferences.getLong(AppConstants.LAST_SYNC_TIME, 1L)
         return ((lastTime + AppConstants.AUTO_SYNC_TIME_MILLIS) < (Date()).time)
     }
 
@@ -338,41 +327,31 @@ class PrefRepository(
      * Make note that a sync of the feed/folder list has been completed, so we can track
      * how long it has been until another is needed.
      */
-    fun updateLastSyncTime(context: Context) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        prefs.edit().putLong(AppConstants.LAST_SYNC_TIME, (Date()).time).commit()
+    fun updateLastSyncTime() {
+        sharedPreferences.edit { putLong(AppConstants.LAST_SYNC_TIME, (Date()).time) }
     }
 
-    private fun getLastVacuumTime(context: Context): Long {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return prefs.getLong(PrefConstants.LAST_VACUUM_TIME, 1L)
-    }
+    private fun getLastVacuumTime(): Long =
+            sharedPreferences.getLong(PrefConstants.LAST_VACUUM_TIME, 1L)
 
-    fun isTimeToVacuum(context: Context): Boolean {
-        val lastTime = getLastVacuumTime(context)
+    fun isTimeToVacuum(): Boolean {
+        val lastTime = getLastVacuumTime()
         val now = (Date()).time
         return ((lastTime + AppConstants.VACUUM_TIME_MILLIS) < now)
     }
 
-    fun updateLastVacuumTime(context: Context) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        prefs.edit().putLong(PrefConstants.LAST_VACUUM_TIME, (Date()).time).commit()
+    fun updateLastVacuumTime() {
+        sharedPreferences.edit { putLong(PrefConstants.LAST_VACUUM_TIME, (Date()).time) }
     }
 
-    fun isTimeToCleanup(context: Context): Boolean {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val lastTime = prefs.getLong(PrefConstants.LAST_CLEANUP_TIME, 1L)
+    fun isTimeToCleanup(): Boolean {
+        val lastTime = sharedPreferences.getLong(PrefConstants.LAST_CLEANUP_TIME, 1L)
         val nowTime = (Date()).time
-        return if ((lastTime + AppConstants.CLEANUP_TIME_MILLIS) < nowTime) {
-            true
-        } else {
-            false
-        }
+        return (lastTime + AppConstants.CLEANUP_TIME_MILLIS) < nowTime
     }
 
-    fun updateLastCleanupTime(context: Context) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        prefs.edit().putLong(PrefConstants.LAST_CLEANUP_TIME, (Date()).time).commit()
+    fun updateLastCleanupTime() {
+        sharedPreferences.edit { putLong(PrefConstants.LAST_CLEANUP_TIME, (Date()).time) }
     }
 
     fun getStoryOrderForFeed(feedId: String): StoryOrder =
@@ -417,27 +396,22 @@ class PrefRepository(
     fun getStoryListStyleForFolder(folderName: String): StoryListStyle =
             StoryListStyle.safeValueOf(sharedPreferences.getString(PrefConstants.FOLDER_STORY_LIST_STYLE_PREFIX + folderName, StoryListStyle.LIST.toString()))
 
-    fun setStoryListStyleForFolder(context: Context, folderName: String, newValue: StoryListStyle) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val editor = prefs.edit()
-        editor.putString(PrefConstants.FOLDER_STORY_LIST_STYLE_PREFIX + folderName, newValue.toString())
-        editor.commit()
+    fun setStoryListStyleForFolder(folderName: String, newValue: StoryListStyle) {
+        sharedPreferences.edit {
+            putString(PrefConstants.FOLDER_STORY_LIST_STYLE_PREFIX + folderName, newValue.toString())
+        }
     }
 
-    fun setStoryListStyleForFeed(context: Context, feedId: String, newValue: StoryListStyle) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val editor = prefs.edit()
-        editor.putString(PrefConstants.FEED_STORY_LIST_STYLE_PREFIX + feedId, newValue.toString())
-        editor.commit()
+    fun setStoryListStyleForFeed(feedId: String, newValue: StoryListStyle) {
+        sharedPreferences.edit {
+            putString(PrefConstants.FEED_STORY_LIST_STYLE_PREFIX + feedId, newValue.toString())
+        }
     }
 
     private fun getDefaultStoryOrder(prefs: SharedPreferences): StoryOrder =
             StoryOrder.valueOf(prefs.getString(PrefConstants.DEFAULT_STORY_ORDER, StoryOrder.NEWEST.toString())!!)
 
-    fun getDefaultStoryOrder(context: Context): StoryOrder {
-        val preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return getDefaultStoryOrder(preferences)
-    }
+    fun getDefaultStoryOrder(): StoryOrder = getDefaultStoryOrder(sharedPreferences)
 
     private fun getDefaultReadFilter(prefs: SharedPreferences): ReadFilter =
             ReadFilter.valueOf(prefs.getString(PrefConstants.DEFAULT_READ_FILTER, ReadFilter.ALL.toString())!!)
@@ -626,28 +600,28 @@ class PrefRepository(
         }
     }
 
-    fun updateStoryListStyle(context: Context, fs: FeedSet, newListStyle: StoryListStyle) {
+    fun updateStoryListStyle(fs: FeedSet, newListStyle: StoryListStyle) {
         if (fs.isAllNormal) {
-            setStoryListStyleForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME, newListStyle)
+            setStoryListStyleForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME, newListStyle)
         } else if (fs.singleFeed != null) {
-            setStoryListStyleForFeed(context, fs.singleFeed, newListStyle)
+            setStoryListStyleForFeed(fs.singleFeed, newListStyle)
         } else if (fs.multipleFeeds != null) {
-            setStoryListStyleForFolder(context, fs.folderName, newListStyle)
+            setStoryListStyleForFolder(fs.folderName, newListStyle)
         } else if (fs.isAllSocial) {
-            setStoryListStyleForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newListStyle)
+            setStoryListStyleForFolder(PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newListStyle)
         } else if (fs.singleSocialFeed != null) {
-            setStoryListStyleForFeed(context, fs.singleSocialFeed.key, newListStyle)
+            setStoryListStyleForFeed(fs.singleSocialFeed.key, newListStyle)
         } else require(fs.multipleSocialFeeds == null) { "multiple social feeds not supported" }
         if (fs.isAllRead) {
-            setStoryListStyleForFolder(context, PrefConstants.READ_STORIES_FOLDER_NAME, newListStyle)
+            setStoryListStyleForFolder(PrefConstants.READ_STORIES_FOLDER_NAME, newListStyle)
         } else if (fs.isAllSaved) {
-            setStoryListStyleForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME, newListStyle)
+            setStoryListStyleForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME, newListStyle)
         } else if (fs.singleSavedTag != null) {
-            setStoryListStyleForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME, newListStyle)
+            setStoryListStyleForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME, newListStyle)
         } else if (fs.isGlobalShared) {
-            setStoryListStyleForFolder(context, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, newListStyle)
+            setStoryListStyleForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, newListStyle)
         } else if (fs.isInfrequent) {
-            setStoryListStyleForFolder(context, PrefConstants.INFREQUENT_FOLDER_NAME, newListStyle)
+            setStoryListStyleForFolder(PrefConstants.INFREQUENT_FOLDER_NAME, newListStyle)
         } else {
             throw IllegalArgumentException("unknown type of feed set")
         }
@@ -657,69 +631,55 @@ class PrefRepository(
         return DefaultFeedView.STORY
     }
 
-    fun getStoryContentPreviewStyle(context: Context): StoryContentPreviewStyle {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return StoryContentPreviewStyle.valueOf(
-                prefs.getString(PrefConstants.STORIES_SHOW_PREVIEWS_STYLE, StoryContentPreviewStyle.MEDIUM.toString())!!)
-    }
+    fun getStoryContentPreviewStyle(): StoryContentPreviewStyle =
+            StoryContentPreviewStyle.valueOf(sharedPreferences.getString(PrefConstants.STORIES_SHOW_PREVIEWS_STYLE, StoryContentPreviewStyle.MEDIUM.toString())!!)
 
-    fun setStoryContentPreviewStyle(context: Context, value: StoryContentPreviewStyle) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val editor = prefs.edit()
-        editor.putString(PrefConstants.STORIES_SHOW_PREVIEWS_STYLE, value.name)
-        editor.commit()
+    fun setStoryContentPreviewStyle(value: StoryContentPreviewStyle) {
+        sharedPreferences.edit {
+            putString(PrefConstants.STORIES_SHOW_PREVIEWS_STYLE, value.name)
+        }
     }
 
     private fun isShowThumbnails(context: Context): Boolean {
         return getThumbnailStyle(context) != ThumbnailStyle.OFF
     }
 
-    fun setThumbnailStyle(context: Context, value: ThumbnailStyle) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val editor = prefs.edit()
-        editor.putString(PrefConstants.STORIES_THUMBNAIL_STYLE, value.name)
-        editor.commit()
+    fun setThumbnailStyle(value: ThumbnailStyle) {
+        sharedPreferences.edit {
+            putString(PrefConstants.STORIES_THUMBNAIL_STYLE, value.name)
+        }
     }
 
 
     fun getThumbnailStyle(context: Context): ThumbnailStyle {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
         val defaultValue = context.getString(R.string.thumbnail_style_default_value)
-        return ThumbnailStyle.valueOf(prefs.getString(PrefConstants.STORIES_THUMBNAIL_STYLE, defaultValue)!!)
+        return ThumbnailStyle.valueOf(sharedPreferences.getString(PrefConstants.STORIES_THUMBNAIL_STYLE, defaultValue)!!)
     }
 
-    fun isAutoOpenFirstUnread(context: Context): Boolean {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return prefs.getBoolean(PrefConstants.STORIES_AUTO_OPEN_FIRST, false)
-    }
+    fun isAutoOpenFirstUnread(): Boolean =
+            sharedPreferences.getBoolean(PrefConstants.STORIES_AUTO_OPEN_FIRST, false)
 
-    fun isMarkReadOnFeedScroll(context: Context): Boolean {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return prefs.getBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, false)
-    }
+    fun isMarkReadOnFeedScroll(): Boolean =
+            sharedPreferences.getBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, false)
 
-    fun setMarkReadOnScroll(context: Context, value: Boolean) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val editor = prefs.edit()
-        editor.putBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, value)
-        editor.commit()
+    fun setMarkReadOnScroll(value: Boolean) {
+        sharedPreferences.edit {
+            putBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, value)
+        }
     }
 
     fun isOfflineEnabled(): Boolean =
             sharedPreferences.getBoolean(PrefConstants.ENABLE_OFFLINE, false)
 
-    fun isImagePrefetchEnabled(context: Context): Boolean {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return prefs.getBoolean(PrefConstants.ENABLE_IMAGE_PREFETCH, false)
-    }
+    fun isImagePrefetchEnabled(): Boolean =
+            sharedPreferences.getBoolean(PrefConstants.ENABLE_IMAGE_PREFETCH, false)
 
     /**
      * Compares the user's setting for when background data use is allowed against the
      * current network status and sees if it is okay to sync.
      */
     fun isBackgroundNetworkAllowed(context: Context): Boolean {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val mode = prefs.getString(PrefConstants.NETWORK_SELECT, PrefConstants.NETWORK_SELECT_NOMONONME)!!
+        val mode = sharedPreferences.getString(PrefConstants.NETWORK_SELECT, PrefConstants.NETWORK_SELECT_NOMONONME)!!
 
         val connMgr = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeInfo = connMgr.activeNetworkInfo
@@ -745,14 +705,11 @@ class PrefRepository(
         return true
     }
 
-    fun isKeepOldStories(context: Context): Boolean {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return prefs.getBoolean(PrefConstants.KEEP_OLD_STORIES, false)
-    }
+    fun isKeepOldStories(): Boolean =
+            sharedPreferences.getBoolean(PrefConstants.KEEP_OLD_STORIES, false)
 
-    fun getMaxCachedAgeMillis(context: Context): Long {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val `val` = prefs.getString(PrefConstants.CACHE_AGE_SELECT, PrefConstants.CACHE_AGE_SELECT_30D)!!
+    fun getMaxCachedAgeMillis(): Long {
+        val `val` = sharedPreferences.getString(PrefConstants.CACHE_AGE_SELECT, PrefConstants.CACHE_AGE_SELECT_30D)!!
         if (`val` == PrefConstants.CACHE_AGE_SELECT_2D) return PrefConstants.CACHE_AGE_VALUE_2D
         if (`val` == PrefConstants.CACHE_AGE_SELECT_7D) return PrefConstants.CACHE_AGE_VALUE_7D
         if (`val` == PrefConstants.CACHE_AGE_SELECT_14D) return PrefConstants.CACHE_AGE_VALUE_14D
@@ -760,10 +717,8 @@ class PrefRepository(
         return PrefConstants.CACHE_AGE_VALUE_30D
     }
 
-    fun getFeedListOrder(context: Context): FeedListOrder {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return FeedListOrder.valueOf(prefs.getString(PrefConstants.FEED_LIST_ORDER, FeedListOrder.ALPHABETICAL.toString())!!)
-    }
+    fun getFeedListOrder(): FeedListOrder =
+            FeedListOrder.valueOf(sharedPreferences.getString(PrefConstants.FEED_LIST_ORDER, FeedListOrder.ALPHABETICAL.toString())!!)
 
     fun getSelectedTheme(): ThemeValue {
         val value = sharedPreferences.getString(PrefConstants.THEME, ThemeValue.AUTO.name)!!
@@ -974,14 +929,10 @@ class PrefRepository(
      * @return whether a cookie is stored on disk
      * which gets saved when a user is authenticated.
      */
-    fun hasCookie(context: Context): Boolean {
-        return getCookie(context) != null
-    }
+    fun hasCookie(): Boolean = getCookie() != null
 
-    fun getCookie(context: Context): String? {
-        val preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE)
-        return preferences.getString(PrefConstants.PREF_COOKIE, null)
-    }
+    fun getCookie(): String? =
+            sharedPreferences.getString(PrefConstants.PREF_COOKIE, null)
 
     fun getMarkStoryReadBehavior(): MarkStoryReadBehavior =
             MarkStoryReadBehavior.valueOf(sharedPreferences.getString(PrefConstants.STORY_MARK_READ_BEHAVIOR, MarkStoryReadBehavior.IMMEDIATELY.name)!!)
@@ -998,8 +949,5 @@ class PrefRepository(
         editor.commit()
     }
 
-    fun getExtToken(context: Context): String? {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return prefs.getString(PrefConstants.EXT_TOKEN, null)
-    }
+    fun getExtToken(): String? = sharedPreferences.getString(PrefConstants.EXT_TOKEN, null)
 }

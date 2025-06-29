@@ -97,7 +97,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false)) {
             String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
             UIUtils.startReadingActivity(this, fs, hash, readingActivityLaunch);
-        } else if (PrefsUtils.isAutoOpenFirstUnread(this)) {
+        } else if (prefRepository.isAutoOpenFirstUnread()) {
             StateFilter intelState = prefRepository.getStateFilter();
             if (dbHelper.getUnreadCount(fs, intelState) > 0) {
                 UIUtils.startReadingActivity(this, fs, Reading.FIND_FIRST_UNREAD, readingActivityLaunch);

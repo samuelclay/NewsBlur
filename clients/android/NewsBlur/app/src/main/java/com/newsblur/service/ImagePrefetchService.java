@@ -27,12 +27,12 @@ public class ImagePrefetchService extends SubService {
     protected void exec() {
         activelyRunning = true;
         try {
-            if (!PrefsUtils.isImagePrefetchEnabled(parent)) return;
-            if (!PrefsUtils.isBackgroundNetworkAllowed(parent)) return;
+            if (!parent.prefRepository.isImagePrefetchEnabled()) return;
+            if (!parent.prefRepository.isBackgroundNetworkAllowed(parent)) return;
 
             while (StoryImageQueue.size() > 0) {
-                if (! PrefsUtils.isImagePrefetchEnabled(parent)) return;
-                if (! PrefsUtils.isBackgroundNetworkAllowed(parent)) return;
+                if (! parent.prefRepository.isImagePrefetchEnabled()) return;
+                if (! parent.prefRepository.isBackgroundNetworkAllowed(parent)) return;
 
                 com.newsblur.util.Log.d(this, "story images to prefetch: " + StoryImageQueue.size());
                 // on each batch, re-query the DB for images associated with yet-unread stories
@@ -63,8 +63,8 @@ public class ImagePrefetchService extends SubService {
             if (parent.stopSync()) return;
 
             while (ThumbnailQueue.size() > 0) {
-                if (! PrefsUtils.isImagePrefetchEnabled(parent)) return;
-                if (! PrefsUtils.isBackgroundNetworkAllowed(parent)) return;
+                if (! parent.prefRepository.isImagePrefetchEnabled()) return;
+                if (! parent.prefRepository.isBackgroundNetworkAllowed(parent)) return;
 
                 com.newsblur.util.Log.d(this, "story thumbs to prefetch: " + StoryImageQueue.size());
                 // on each batch, re-query the DB for images associated with yet-unread stories
