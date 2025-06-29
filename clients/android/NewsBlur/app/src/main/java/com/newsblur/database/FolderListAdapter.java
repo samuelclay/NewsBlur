@@ -44,7 +44,7 @@ import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.SavedStoryCountsQueryResult;
 import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.SocialFeed;
-import com.newsblur.preference.PrefRepository;
+import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.Session;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedListOrder;
@@ -125,7 +125,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	private StateFilter currentState;
 	private final ImageLoader iconLoader;
 	private final BlurDatabaseHelper dbHelper;
-    private final PrefRepository prefRepository;
+    private final PrefsRepo prefsRepo;
 
     // since we want to implement a custom expando that does group collapse/expand, we need
     // a way to call back to those functions on the listview from the onclick listener of
@@ -142,16 +142,16 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     public String activeSearchQuery;
 
-	public FolderListAdapter(Context context, StateFilter currentState, ImageLoader iconLoader, BlurDatabaseHelper dbHelper, PrefRepository prefRepository) {
+	public FolderListAdapter(Context context, StateFilter currentState, ImageLoader iconLoader, BlurDatabaseHelper dbHelper, PrefsRepo prefsRepo) {
         this.currentState = currentState;
         this.context = context;
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.iconLoader = iconLoader;
 		this.dbHelper = dbHelper;
-        this.prefRepository = prefRepository;
+        this.prefsRepo = prefsRepo;
 
-        textSize = prefRepository.getListTextSize();
-        spacingStyle = prefRepository.getSpacingStyle();
+        textSize = prefsRepo.getListTextSize();
+        spacingStyle = prefsRepo.getSpacingStyle();
 	}
 
 	@Override
@@ -612,7 +612,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         folderNeutCounts = new ArrayList<Integer>();
         folderPosCounts = new ArrayList<Integer>();
 
-        if (prefRepository.isEnableRowInfrequent() && (currentState != StateFilter.SAVED)) addSpecialRow(INFREQUENT_SITE_STORIES_GROUP_KEY);
+        if (prefsRepo.isEnableRowInfrequent() && (currentState != StateFilter.SAVED)) addSpecialRow(INFREQUENT_SITE_STORIES_GROUP_KEY);
         addSpecialRow(ALL_STORIES_GROUP_KEY);
 
         // create a sorted list of folder display names
@@ -657,14 +657,14 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         }
 
         // sort feeds within each folder
-        FeedListOrder feedListOrder = prefRepository.getFeedListOrder();
+        FeedListOrder feedListOrder = prefsRepo.getFeedListOrder();
         Comparator<Feed> feedComparator = Feed.getFeedListOrderComparator(feedListOrder);
         for (List<Feed> folderChildren : activeFolderChildren) {
             Collections.sort(folderChildren, feedComparator);
         }
 
         addSpecialRow(READ_STORIES_GROUP_KEY);
-        if (prefRepository.isEnableRowGlobalShared() && (currentState != StateFilter.SAVED)) addSpecialRow(GLOBAL_SHARED_STORIES_GROUP_KEY);
+        if (prefsRepo.isEnableRowGlobalShared() && (currentState != StateFilter.SAVED)) addSpecialRow(GLOBAL_SHARED_STORIES_GROUP_KEY);
         if ((currentState != StateFilter.SAVED)) addSpecialRow(ALL_SHARED_STORIES_GROUP_KEY);
         addSpecialRow(SAVED_SEARCHES_GROUP_KEY);
         addSpecialRow(SAVED_STORIES_GROUP_KEY);

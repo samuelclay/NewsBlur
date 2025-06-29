@@ -1,6 +1,6 @@
 package com.newsblur.util
 
-import com.newsblur.preference.PrefRepository
+import com.newsblur.preference.PrefsRepo
 
 data class CursorFilters(
         val stateFilter: StateFilter,
@@ -8,9 +8,9 @@ data class CursorFilters(
         val storyOrder: StoryOrder,
 ) {
 
-    constructor(prefRepository: PrefRepository, fs: FeedSet) : this(
-            stateFilter = prefRepository.getStateFilter(),
-            readFilter = prefRepository.getReadFilter(fs),
-            storyOrder = prefRepository.getStoryOrder(fs),
+    constructor(prefsRepo: PrefsRepo, fs: FeedSet) : this(
+            stateFilter = prefsRepo.getStateFilter(),
+            readFilter = prefsRepo.getReadFilter(fs),
+            storyOrder = prefsRepo.getStoryOrder(fs),
     )
 }

@@ -39,7 +39,7 @@ import com.newsblur.network.domain.StoryChangesResponse;
 import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.network.domain.UnreadCountResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
-import com.newsblur.preference.PrefRepository;
+import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.NetworkUtils;
@@ -60,7 +60,7 @@ public class APIManager {
 	private final Gson gson;
     @ApiOkHttpClient
 	private final OkHttpClient apiOkHttpClient;
-    private final PrefRepository prefRepository;
+    private final PrefsRepo prefsRepo;
     private String customUserAgent;
 
 	public APIManager(
@@ -68,14 +68,14 @@ public class APIManager {
             Gson gson,
             String customUserAgent,
             @ApiOkHttpClient OkHttpClient apiOkHttpClient,
-            PrefRepository prefRepository
+            PrefsRepo prefsRepo
     ) {
-        APIConstants.setCustomServer(prefRepository.getCustomServer());
+        APIConstants.setCustomServer(prefsRepo.getCustomServer());
         this.context = context;
         this.gson = gson;
         this.customUserAgent = customUserAgent;
         this.apiOkHttpClient = apiOkHttpClient;
-        this.prefRepository = prefRepository;
+        this.prefsRepo = prefsRepo;
 	}
 
 	public LoginResponse login(final String username, final String password) {
@@ -88,7 +88,7 @@ public class APIManager {
 		final APIResponse response = post(buildUrl(APIConstants.PATH_LOGIN), values);
         LoginResponse loginResponse = response.getLoginResponse(gson);
 		if (!response.isError()) {
-			prefRepository.saveLogin(username, response.getCookie());
+			prefsRepo.saveLogin(username, response.getCookie());
 		} 
         return loginResponse;
     }
@@ -109,7 +109,7 @@ public class APIManager {
             Response response = noredirHttpClient.newCall(requestBuilder.build()).execute();
             if (!response.isRedirect()) return false;
             String newCookie = response.header("Set-Cookie");
-            prefRepository.saveLogin(username, newCookie);
+            prefsRepo.saveLogin(username, newCookie);
         } catch (IOException ioe) {
             return false;
         }
@@ -207,7 +207,7 @@ public class APIManager {
 		final APIResponse response = post(buildUrl(APIConstants.PATH_SIGNUP), values);
         RegisterResponse registerResponse = response.getRegisterResponse(gson);
 		if (!response.isError()) {
-			prefRepository.saveLogin(username, response.getCookie());
+			prefsRepo.saveLogin(username, response.getCookie());
 		}
         return registerResponse;
 	}
@@ -216,7 +216,7 @@ public class APIManager {
 		final APIResponse response = get(buildUrl(APIConstants.PATH_MY_PROFILE));
 		if (!response.isError()) {
 			ProfileResponse profileResponse = response.getResponse(gson, ProfileResponse.class);
-			prefRepository.saveUserDetails(context, profileResponse.user);
+			prefsRepo.saveUserDetails(context, profileResponse.user);
 			return profileResponse;
 		} else {
 			return null;

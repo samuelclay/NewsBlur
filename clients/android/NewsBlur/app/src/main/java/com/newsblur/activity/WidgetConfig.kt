@@ -66,12 +66,12 @@ class WidgetConfig : FeedChooser() {
     }
 
     override fun setupList() {
-        adapter = WidgetConfigAdapter(feedUtils, iconLoader, prefRepository)
+        adapter = WidgetConfigAdapter(feedUtils, iconLoader, prefsRepo)
         binding.listView.setAdapter(adapter)
     }
 
     public override fun setAdapterData() {
-        val feedIds = prefRepository.getWidgetFeedIds() ?: feeds.map { it.feedId }.toSet()
+        val feedIds = prefsRepo.getWidgetFeedIds() ?: feeds.map { it.feedId }.toSet()
         adapter.setFeedIds(feedIds)
 
         super.setAdapterData()
@@ -108,7 +108,7 @@ class WidgetConfig : FeedChooser() {
     }
 
     private fun replaceWidgetFeedIds(feedIds: Set<String>) {
-        prefRepository.setWidgetFeedIds(feedIds)
+        prefsRepo.setWidgetFeedIds(feedIds)
         adapter.replaceFeedIds(feedIds)
     }
 }

@@ -12,7 +12,7 @@ import com.newsblur.databinding.FragmentProfiledetailsBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.UserDetails
 import com.newsblur.network.APIManager
-import com.newsblur.preference.PrefRepository
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
@@ -33,7 +33,7 @@ class ProfileDetailsFragment : Fragment() {
     lateinit var iconLoader: ImageLoader
 
     @Inject
-    lateinit var prefRepository: PrefRepository
+    lateinit var prefsRepo: PrefsRepo
 
     private var user: UserDetails? = null
     private var viewingSelf = false
@@ -96,7 +96,7 @@ class ProfileDetailsFragment : Fragment() {
 
     private fun setUserPicture() {
         lifecycleScope.launch(Dispatchers.IO) {
-            val userPicture = prefRepository.getUserImage(requireContext())
+            val userPicture = prefsRepo.getUserImage(requireContext())
             if (userPicture != null) {
                 val roundedPicture = UIUtils.clipAndRound(userPicture, true, false)
                 withContext(Dispatchers.Main) {

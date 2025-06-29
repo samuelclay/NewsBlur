@@ -6,7 +6,7 @@ import android.app.job.JobScheduler
 import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
-import com.newsblur.preference.PrefRepository
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.subscription.SubscriptionManagerImpl
 import com.newsblur.subscription.SubscriptionsListener
 import com.newsblur.util.AppConstants
@@ -28,11 +28,11 @@ import javax.inject.Inject
 class SubscriptionSyncService : JobService() {
 
     @Inject
-    lateinit var prefRepository: PrefRepository
+    lateinit var prefsRepo: PrefsRepo
 
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.d(this, "onStartJob")
-        if (!prefRepository.hasCookie()) {
+        if (!prefsRepo.hasCookie()) {
             // no user authenticated
             return false
         }

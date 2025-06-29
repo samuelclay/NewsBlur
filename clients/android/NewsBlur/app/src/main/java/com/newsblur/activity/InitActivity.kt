@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.newsblur.database.BlurDatabaseHelper
-import com.newsblur.preference.PrefRepository
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NBSyncService
 import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.util.Log
@@ -29,7 +29,7 @@ class InitActivity : AppCompatActivity() {
     lateinit var dbHelper: BlurDatabaseHelper
 
     @Inject
-    lateinit var prefRepository: PrefRepository
+    lateinit var prefsRepo: PrefsRepo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
@@ -48,12 +48,12 @@ class InitActivity : AppCompatActivity() {
                 userAuthCheck()
             }
         }
-        Log.i(this, "cold launching version " + prefRepository.getVersion(this))
+        Log.i(this, "cold launching version " + prefsRepo.getVersion(this))
     }
 
     // see if a user is already logged in; if so, jump to the Main activity
     private fun userAuthCheck() {
-        if (prefRepository.hasCookie()) {
+        if (prefsRepo.hasCookie()) {
             SubscriptionSyncService.schedule(this)
             val mainIntent = Intent(this, Main::class.java)
             startActivity(mainIntent)
@@ -67,7 +67,7 @@ class InitActivity : AppCompatActivity() {
     // cannot find new tables or columns right after an app upgrade, check to see if the DB
     // needs an upgrade
     private fun upgradeCheck() {
-        val upgrade = prefRepository.checkForUpgrade(this)
+        val upgrade = prefsRepo.checkForUpgrade(this)
         if (upgrade) {
             dbHelper.dropAndRecreateTables()
             // don't actually unset the upgrade flag, the sync service will do this same check and

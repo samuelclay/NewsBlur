@@ -8,5 +8,5 @@ import dagger.hilt.android.components.ActivityComponent
 @EntryPoint
 @InstallIn(ActivityComponent::class)
 interface PrefsEntryPoint {
-    val prefsRepository: PrefRepository
+    val prefsRepository: PrefsRepo
 }

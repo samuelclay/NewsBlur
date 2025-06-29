@@ -10,7 +10,7 @@ import com.newsblur.R
 import com.newsblur.activity.ItemsList
 import com.newsblur.fragment.ItemSetFragment
 import com.newsblur.fragment.SaveSearchFragment
-import com.newsblur.preference.PrefRepository
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NBSyncService
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
@@ -38,7 +38,7 @@ interface ItemListContextMenuDelegate {
 open class ItemListContextMenuDelegateImpl(
         private val activity: ItemsList,
         private val feedUtils: FeedUtils,
-        private val prefRepository: PrefRepository,
+        private val prefsRepo: PrefsRepo,
 ) : ItemListContextMenuDelegate, ReadingActionListener by activity {
 
     override fun onCreateMenuOptions(menu: Menu, menuInflater: MenuInflater, fs: FeedSet): Boolean {
@@ -96,28 +96,28 @@ open class ItemListContextMenuDelegateImpl(
     }
 
     override fun onPrepareMenuOptions(menu: Menu, fs: FeedSet, showSavedSearch: Boolean): Boolean {
-        val storyOrder = prefRepository.getStoryOrder(fs)
+        val storyOrder = prefsRepo.getStoryOrder(fs)
         if (storyOrder == StoryOrder.NEWEST) {
             menu.findItem(R.id.menu_story_order_newest).isChecked = true
         } else if (storyOrder == StoryOrder.OLDEST) {
             menu.findItem(R.id.menu_story_order_oldest).isChecked = true
         }
 
-        val readFilter = prefRepository.getReadFilter(fs)
+        val readFilter = prefsRepo.getReadFilter(fs)
         if (readFilter == ReadFilter.ALL) {
             menu.findItem(R.id.menu_read_filter_all_stories).isChecked = true
         } else if (readFilter == ReadFilter.UNREAD) {
             menu.findItem(R.id.menu_read_filter_unread_only).isChecked = true
         }
 
-        when (prefRepository.getStoryListStyle(fs)) {
+        when (prefsRepo.getStoryListStyle(fs)) {
             StoryListStyle.GRID_F -> menu.findItem(R.id.menu_list_style_grid_f).isChecked = true
             StoryListStyle.GRID_M -> menu.findItem(R.id.menu_list_style_grid_m).isChecked = true
             StoryListStyle.GRID_C -> menu.findItem(R.id.menu_list_style_grid_c).isChecked = true
             else -> menu.findItem(R.id.menu_list_style_list).isChecked = true
         }
 
-        when (prefRepository.getSelectedTheme()) {
+        when (prefsRepo.getSelectedTheme()) {
             ThemeValue.LIGHT -> menu.findItem(R.id.menu_theme_light).isChecked = true
             ThemeValue.DARK -> menu.findItem(R.id.menu_theme_dark).isChecked = true
             ThemeValue.BLACK -> menu.findItem(R.id.menu_theme_black).isChecked = true
@@ -128,14 +128,14 @@ open class ItemListContextMenuDelegateImpl(
             menu.findItem(R.id.menu_save_search).isVisible = true
         }
 
-        when (prefRepository.getStoryContentPreviewStyle()) {
+        when (prefsRepo.getStoryContentPreviewStyle()) {
             StoryContentPreviewStyle.NONE -> menu.findItem(R.id.menu_story_content_preview_none).isChecked = true
             StoryContentPreviewStyle.SMALL -> menu.findItem(R.id.menu_story_content_preview_small).isChecked = true
             StoryContentPreviewStyle.MEDIUM -> menu.findItem(R.id.menu_story_content_preview_medium).isChecked = true
             StoryContentPreviewStyle.LARGE -> menu.findItem(R.id.menu_story_content_preview_large).isChecked = true
         }
 
-        when (prefRepository.getThumbnailStyle(activity)) {
+        when (prefsRepo.getThumbnailStyle()) {
             ThumbnailStyle.LEFT_SMALL -> menu.findItem(R.id.menu_story_thumbnail_left_small).isChecked = true
             ThumbnailStyle.LEFT_LARGE -> menu.findItem(R.id.menu_story_thumbnail_left_large).isChecked = true
             ThumbnailStyle.RIGHT_SMALL -> menu.findItem(R.id.menu_story_thumbnail_right_small).isChecked = true
@@ -143,14 +143,14 @@ open class ItemListContextMenuDelegateImpl(
             ThumbnailStyle.OFF -> menu.findItem(R.id.menu_story_thumbnail_no_preview).isChecked = true
         }
 
-        val spacingStyle = prefRepository.getSpacingStyle()
+        val spacingStyle = prefsRepo.getSpacingStyle()
         if (spacingStyle === SpacingStyle.COMFORTABLE) {
             menu.findItem(R.id.menu_spacing_comfortable).isChecked = true
         } else if (spacingStyle == SpacingStyle.COMPACT) {
             menu.findItem(R.id.menu_spacing_compact).isChecked = true
         }
 
-        when (fromSize(prefRepository.getListTextSize())) {
+        when (fromSize(prefsRepo.getListTextSize())) {
             ListTextSize.XS -> menu.findItem(R.id.menu_text_size_xs).isChecked = true
             ListTextSize.S -> menu.findItem(R.id.menu_text_size_s).isChecked = true
             ListTextSize.M -> menu.findItem(R.id.menu_text_size_m).isChecked = true
@@ -159,7 +159,7 @@ open class ItemListContextMenuDelegateImpl(
             ListTextSize.XXL -> menu.findItem(R.id.menu_text_size_xxl).isChecked = true
         }
 
-        val isMarkReadOnScroll = prefRepository.isMarkReadOnFeedScroll()
+        val isMarkReadOnScroll = prefsRepo.isMarkReadOnFeedScroll()
         if (isMarkReadOnScroll) {
             menu.findItem(R.id.menu_mark_read_on_scroll_enabled).isChecked = true
         } else {
@@ -221,32 +221,32 @@ open class ItemListContextMenuDelegateImpl(
                 searchInputView.visibility = View.GONE
             }
         } else if (item.itemId == R.id.menu_theme_auto) {
-            prefRepository.setSelectedTheme(ThemeValue.AUTO)
+            prefsRepo.setSelectedTheme(ThemeValue.AUTO)
             UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_light) {
-            prefRepository.setSelectedTheme(ThemeValue.LIGHT)
+            prefsRepo.setSelectedTheme(ThemeValue.LIGHT)
             UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_dark) {
-            prefRepository.setSelectedTheme(ThemeValue.DARK)
+            prefsRepo.setSelectedTheme(ThemeValue.DARK)
             UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_theme_black) {
-            prefRepository.setSelectedTheme(ThemeValue.BLACK)
+            prefsRepo.setSelectedTheme(ThemeValue.BLACK)
             UIUtils.restartActivity(activity)
         } else if (item.itemId == R.id.menu_spacing_comfortable) {
             updateSpacingStyle(fragment, SpacingStyle.COMFORTABLE)
         } else if (item.itemId == R.id.menu_spacing_compact) {
             updateSpacingStyle(fragment, SpacingStyle.COMPACT)
         } else if (item.itemId == R.id.menu_list_style_list) {
-            prefRepository.updateStoryListStyle(fs, StoryListStyle.LIST)
+            prefsRepo.updateStoryListStyle(fs, StoryListStyle.LIST)
             fragment.updateListStyle()
         } else if (item.itemId == R.id.menu_list_style_grid_f) {
-            prefRepository.updateStoryListStyle(fs, StoryListStyle.GRID_F)
+            prefsRepo.updateStoryListStyle(fs, StoryListStyle.GRID_F)
             fragment.updateListStyle()
         } else if (item.itemId == R.id.menu_list_style_grid_m) {
-            prefRepository.updateStoryListStyle(fs, StoryListStyle.GRID_M)
+            prefsRepo.updateStoryListStyle(fs, StoryListStyle.GRID_M)
             fragment.updateListStyle()
         } else if (item.itemId == R.id.menu_list_style_grid_c) {
-            prefRepository.updateStoryListStyle(fs, StoryListStyle.GRID_C)
+            prefsRepo.updateStoryListStyle(fs, StoryListStyle.GRID_C)
             fragment.updateListStyle()
         } else if (item.itemId == R.id.menu_save_search) {
             saveSearchFeedId?.let {
@@ -255,35 +255,35 @@ open class ItemListContextMenuDelegateImpl(
                 frag.show(activity.supportFragmentManager, SaveSearchFragment::class.java.name)
             }
         } else if (item.itemId == R.id.menu_story_content_preview_none) {
-            prefRepository.setStoryContentPreviewStyle(StoryContentPreviewStyle.NONE)
+            prefsRepo.setStoryContentPreviewStyle(StoryContentPreviewStyle.NONE)
             fragment.notifyContentPrefsChanged()
         } else if (item.itemId == R.id.menu_story_content_preview_small) {
-            prefRepository.setStoryContentPreviewStyle(StoryContentPreviewStyle.SMALL)
+            prefsRepo.setStoryContentPreviewStyle(StoryContentPreviewStyle.SMALL)
             fragment.notifyContentPrefsChanged()
         } else if (item.itemId == R.id.menu_story_content_preview_medium) {
-            prefRepository.setStoryContentPreviewStyle(StoryContentPreviewStyle.MEDIUM)
+            prefsRepo.setStoryContentPreviewStyle(StoryContentPreviewStyle.MEDIUM)
             fragment.notifyContentPrefsChanged()
         } else if (item.itemId == R.id.menu_story_content_preview_large) {
-            prefRepository.setStoryContentPreviewStyle(StoryContentPreviewStyle.LARGE)
+            prefsRepo.setStoryContentPreviewStyle(StoryContentPreviewStyle.LARGE)
             fragment.notifyContentPrefsChanged()
         } else if (item.itemId == R.id.menu_mark_read_on_scroll_disabled) {
-            prefRepository.setMarkReadOnScroll(false)
+            prefsRepo.setMarkReadOnScroll(false)
         } else if (item.itemId == R.id.menu_mark_read_on_scroll_enabled) {
-            prefRepository.setMarkReadOnScroll(true)
+            prefsRepo.setMarkReadOnScroll(true)
         } else if (item.itemId == R.id.menu_story_thumbnail_left_small) {
-            prefRepository.setThumbnailStyle(ThumbnailStyle.LEFT_SMALL)
+            prefsRepo.setThumbnailStyle(ThumbnailStyle.LEFT_SMALL)
             fragment.updateThumbnailStyle()
         } else if (item.itemId == R.id.menu_story_thumbnail_left_large) {
-            prefRepository.setThumbnailStyle(ThumbnailStyle.LEFT_LARGE)
+            prefsRepo.setThumbnailStyle(ThumbnailStyle.LEFT_LARGE)
             fragment.updateThumbnailStyle()
         } else if (item.itemId == R.id.menu_story_thumbnail_right_small) {
-            prefRepository.setThumbnailStyle(ThumbnailStyle.RIGHT_SMALL)
+            prefsRepo.setThumbnailStyle(ThumbnailStyle.RIGHT_SMALL)
             fragment.updateThumbnailStyle()
         } else if (item.itemId == R.id.menu_story_thumbnail_right_large) {
-            prefRepository.setThumbnailStyle(ThumbnailStyle.RIGHT_LARGE)
+            prefsRepo.setThumbnailStyle(ThumbnailStyle.RIGHT_LARGE)
             fragment.updateThumbnailStyle()
         } else if (item.itemId == R.id.menu_story_thumbnail_no_preview) {
-            prefRepository.setThumbnailStyle(ThumbnailStyle.OFF)
+            prefsRepo.setThumbnailStyle(ThumbnailStyle.OFF)
             fragment.updateThumbnailStyle()
         }
 
@@ -291,22 +291,22 @@ open class ItemListContextMenuDelegateImpl(
     }
 
     private fun updateTextSizeStyle(fragment: ItemSetFragment, listTextSize: ListTextSize) {
-        prefRepository.setListTextSize(listTextSize.size)
+        prefsRepo.setListTextSize(listTextSize.size)
         fragment.updateTextSize()
     }
 
     private fun updateSpacingStyle(fragment: ItemSetFragment, spacingStyle: SpacingStyle) {
-        prefRepository.setSpacingStyle(spacingStyle)
+        prefsRepo.setSpacingStyle(spacingStyle)
         fragment.updateSpacingStyle()
     }
 
     private fun updateStoryOrder(fragment: ItemSetFragment, fs: FeedSet, storyOrder: StoryOrder) {
-        prefRepository.updateStoryOrder(fs, storyOrder)
+        prefsRepo.updateStoryOrder(fs, storyOrder)
         restartReadingSession(fragment, fs)
     }
 
     private fun updateReadFilter(fragment: ItemSetFragment, fs: FeedSet, readFilter: ReadFilter) {
-        prefRepository.updateReadFilter(fs, readFilter)
+        prefsRepo.updateReadFilter(fs, readFilter)
         restartReadingSession(fragment, fs)
     }
 

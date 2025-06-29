@@ -7,7 +7,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.newsblur.database.BlurDatabaseHelper
-import com.newsblur.preference.PrefRepository
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NBSync
 import com.newsblur.service.NbSyncManager
 import com.newsblur.util.EdgeToEdgeUtil.applyTheme
@@ -33,7 +33,7 @@ open class NbActivity : AppCompatActivity() {
     lateinit var dbHelper: BlurDatabaseHelper
 
     @Inject
-    lateinit var prefRepository: PrefRepository
+    lateinit var prefsRepo: PrefsRepo
 
     private var uniqueLoginKey: String? = null
     private var lastTheme: ThemeValue? = null
@@ -42,15 +42,15 @@ open class NbActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         Log.d(this, "onCreate")
 
-        val theme = prefRepository.getSelectedTheme()
+        val theme = prefsRepo.getSelectedTheme()
         applyTheme(theme)
         lastTheme = theme
 
         // in rare cases of process interruption or DB corruption, an activity can launch without valid
         // login creds.  redirect the user back to the loging workflow.
-        if (prefRepository.getUserId() == null) {
+        if (prefsRepo.getUserId() == null) {
             Log.e(this, "post-login activity launched without valid login.")
-            prefRepository.logout(this, dbHelper)
+            prefsRepo.logout(this, dbHelper)
             finish()
         }
 
@@ -59,7 +59,7 @@ open class NbActivity : AppCompatActivity() {
         }
 
         if (uniqueLoginKey == null) {
-            uniqueLoginKey = prefRepository.getUniqueLoginKey()
+            uniqueLoginKey = prefsRepo.getUniqueLoginKey()
         }
 
         finishIfNotLoggedIn()
@@ -84,7 +84,7 @@ open class NbActivity : AppCompatActivity() {
         finishIfNotLoggedIn()
 
         // is is possible that another activity changed the theme while we were on the backstack
-        val currentSelectedTheme = prefRepository.getSelectedTheme()
+        val currentSelectedTheme = prefsRepo.getSelectedTheme()
         if (lastTheme != currentSelectedTheme) {
             lastTheme = currentSelectedTheme
             UIUtils.restartActivity(this)
@@ -97,7 +97,7 @@ open class NbActivity : AppCompatActivity() {
     }
 
     private fun finishIfNotLoggedIn() {
-        val currentLoginKey = prefRepository.getUniqueLoginKey()
+        val currentLoginKey = prefsRepo.getUniqueLoginKey()
         if (currentLoginKey == null || currentLoginKey != uniqueLoginKey) {
             Log.d(this.javaClass.name, "This activity was for a different login. finishing it.")
             finish()

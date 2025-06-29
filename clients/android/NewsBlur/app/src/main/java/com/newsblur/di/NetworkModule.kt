@@ -9,7 +9,7 @@ import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
 import com.newsblur.network.APIManager
 import com.newsblur.network.domain.StoriesResponse
-import com.newsblur.preference.PrefRepository
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.serialization.BooleanTypeAdapter
 import com.newsblur.serialization.ClassifierMapTypeAdapter
 import com.newsblur.serialization.DateStringTypeAdapter
@@ -76,12 +76,12 @@ object NetworkModule {
             customUserAgent: CustomUserAgent,
             gson: Gson,
             @ApiOkHttpClient apiOkHttpClient: OkHttpClient,
-            prefRepository: PrefRepository): APIManager =
+            prefsRepo: PrefsRepo): APIManager =
             APIManager(
                     context,
                     gson,
                     customUserAgent,
                     apiOkHttpClient,
-                    prefRepository,
+                    prefsRepo,
             )
 }

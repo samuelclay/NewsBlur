@@ -37,7 +37,7 @@ import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.UnreadCountResponse;
-import com.newsblur.preference.PrefRepository;
+import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.CursorFilters;
 import com.newsblur.util.FeedSet;
@@ -184,7 +184,7 @@ public class NBSyncService extends JobService {
     FileCache thumbnailCache;
 
     @Inject
-    PrefRepository prefRepository;
+    PrefsRepo prefsRepo;
 
     /**
      * The time of the last hard API failure we encountered. Used to implement back-off so that the sync
@@ -223,7 +223,7 @@ public class NBSyncService extends JobService {
     public int onStartCommand(Intent intent, int flags, final int startId) {
         com.newsblur.util.Log.d(this, "onStartCommand");
         // only perform a sync if the app is actually running or background syncs are enabled
-        if (NbApplication.isAppForeground() || prefRepository.isBackgroundNeeded(this)) {
+        if (NbApplication.isAppForeground() || prefsRepo.isBackgroundNeeded(this)) {
             HaltNow = false;
             // Services actually get invoked on the main system thread, and are not
             // allowed to do tangible work.  We spawn a thread to do so.
@@ -260,7 +260,7 @@ public class NBSyncService extends JobService {
     public boolean onStartJob(final JobParameters params) {
         com.newsblur.util.Log.d(this, "onStartJob");
         // only perform a sync if the app is actually running or background syncs are enabled
-        if (NbApplication.isAppForeground() || prefRepository.isBackgroundNeeded(this)) {
+        if (NbApplication.isAppForeground() || prefsRepo.isBackgroundNeeded(this)) {
             HaltNow = false;
             // Services actually get invoked on the main system thread, and are not
             // allowed to do tangible work.  We spawn a thread to do so.
@@ -341,8 +341,8 @@ public class NBSyncService extends JobService {
 
             // check to see if we are on an allowable network only after ensuring we have CPU
             if (!(NbApplication.isAppForeground() ||
-                    prefRepository.isEnableNotifications() ||
-                    prefRepository.isBackgroundNetworkAllowed(this) ||
+                    prefsRepo.isEnableNotifications() ||
+                    prefsRepo.isBackgroundNetworkAllowed(this) ||
                     WidgetUtils.hasActiveAppWidgets(this))) {
                 Log.d(this.getClass().getName(), "Abandoning sync: app not active and network type not appropriate for background sync.");
                 return;
@@ -389,7 +389,7 @@ public class NBSyncService extends JobService {
      */
     private void housekeeping() {
         try {
-            boolean upgraded = prefRepository.checkForUpgrade(this);
+            boolean upgraded = prefsRepo.checkForUpgrade(this);
             if (upgraded) {
                 HousekeepingRunning = true;
                 sendSyncUpdate(UPDATE_STATUS | UPDATE_REBUILD);
@@ -403,14 +403,14 @@ public class NBSyncService extends JobService {
                 // v61+ is widely deployed
                 FileCache.cleanUpOldCache1(this);
                 FileCache.cleanUpOldCache2(this);
-                String appVersion = prefRepository.getVersion(this);
-                prefRepository.updateVersion(appVersion);
+                String appVersion = prefsRepo.getVersion(this);
+                prefsRepo.updateVersion(appVersion);
                 // update user agent on api calls with latest app version
                 String customUserAgent = NetworkUtils.getCustomUserAgent(appVersion);
                 apiManager.updateCustomUserAgent(customUserAgent);
             }
 
-            boolean autoVac = prefRepository.isTimeToVacuum();
+            boolean autoVac = prefsRepo.isTimeToVacuum();
             // this will lock up the DB for a few seconds, only do it if the UI is hidden
             if (NbApplication.isAppForeground()) autoVac = false;
 
@@ -420,7 +420,7 @@ public class NBSyncService extends JobService {
                 com.newsblur.util.Log.i(this.getClass().getName(), "rebuilding DB . . .");
                 dbHelper.vacuum();
                 com.newsblur.util.Log.i(this.getClass().getName(), ". . . . done rebuilding DB");
-                prefRepository.updateLastVacuumTime();
+                prefsRepo.updateLastVacuumTime();
             }
         } finally {
             if (HousekeepingRunning) {
@@ -445,7 +445,7 @@ public class NBSyncService extends JobService {
 
             ActionsRunning = true;
 
-            StateFilter stateFilter = prefRepository.getStateFilter();
+            StateFilter stateFilter = prefsRepo.getStateFilter();
 
             actionsloop:
             while (c.moveToNext()) {
@@ -508,7 +508,7 @@ public class NBSyncService extends JobService {
         Log.d(this, "double-checking " + FollowupActions.size() + " actions");
         int impactFlags = 0;
         for (ReadingAction ra : FollowupActions) {
-            int impact = ra.doLocal(dbHelper, prefRepository, true);
+            int impact = ra.doLocal(dbHelper, prefsRepo, true);
             impactFlags |= impact;
         }
         sendSyncUpdate(impactFlags);
@@ -539,8 +539,8 @@ public class NBSyncService extends JobService {
             return;
         }
 
-        if (DoFeedsFolders || prefRepository.isTimeToAutoSync()) {
-            prefRepository.updateLastSyncTime();
+        if (DoFeedsFolders || prefsRepo.isTimeToAutoSync()) {
+            prefsRepo.updateLastSyncTime();
             DoFeedsFolders = false;
         } else {
             return;
@@ -572,7 +572,7 @@ public class NBSyncService extends JobService {
                 com.newsblur.util.Log.w(this.getClass().getName(), "Server ignored or rejected auth cookie.");
                 if (authFails >= AppConstants.MAX_API_TRIES) {
                     com.newsblur.util.Log.w(this.getClass().getName(), "too many auth fails, resetting cookie");
-                    prefRepository.logout(this, dbHelper);
+                    prefsRepo.logout(this, dbHelper);
                 }
                 DoFeedsFolders = true;
                 return;
@@ -598,9 +598,9 @@ public class NBSyncService extends JobService {
             isArchive = feedResponse.isArchive;
             isStaff = feedResponse.isStaff;
 
-            prefRepository.setPremium(feedResponse.isPremium, feedResponse.premiumExpire);
-            prefRepository.setArchive(feedResponse.isArchive, feedResponse.premiumExpire);
-            prefRepository.setExtToken(feedResponse.shareExtToken);
+            prefsRepo.setPremium(feedResponse.isPremium, feedResponse.premiumExpire);
+            prefsRepo.setArchive(feedResponse.isArchive, feedResponse.premiumExpire);
+            prefsRepo.setExtToken(feedResponse.shareExtToken);
 
             // note all feeds that belong to some folder so we can find orphans
             for (Folder folder : feedResponse.folders) {
@@ -807,7 +807,7 @@ public class NBSyncService extends JobService {
                 return;
             }
 
-            prepareReadingSession(prefRepository, dbHelper, fs);
+            prepareReadingSession(prefsRepo, dbHelper, fs);
 
             LastFeedSet = fs;
 
@@ -826,7 +826,7 @@ public class NBSyncService extends JobService {
             int pageNumber = FeedPagesSeen.get(fs);
             int totalStoriesSeen = FeedStoriesSeen.get(fs);
 
-            CursorFilters cursorFilters = new CursorFilters(prefRepository, fs);
+            CursorFilters cursorFilters = new CursorFilters(prefsRepo, fs);
 
             StorySyncRunning = true;
             sendSyncUpdate(UPDATE_STATUS);
@@ -842,7 +842,7 @@ public class NBSyncService extends JobService {
                 }
 
                 pageNumber++;
-                StoriesResponse apiResponse = apiManager.getStories(fs, pageNumber, cursorFilters.getStoryOrder(), cursorFilters.getReadFilter(), prefRepository.getInfrequentCutoff());
+                StoriesResponse apiResponse = apiManager.getStories(fs, pageNumber, cursorFilters.getStoryOrder(), cursorFilters.getReadFilter(), prefsRepo.getInfrequentCutoff());
 
                 if (!isStoryResponseGood(apiResponse)) return;
 
@@ -985,7 +985,7 @@ public class NBSyncService extends JobService {
     }
 
     void pushNotifications() {
-        if (!prefRepository.isEnableNotifications()) return;
+        if (!prefsRepo.isEnableNotifications()) return;
 
         // don't notify stories until the queue is flushed so they don't churn
         if (UnreadsService.StoryHashQueue.size() > 0) return;
@@ -1175,9 +1175,9 @@ public class NBSyncService extends JobService {
      * set but also when we sync a page of stories, since there are no guarantees which
      * will happen first.
      */
-    public static void prepareReadingSession(PrefRepository prefRepository, BlurDatabaseHelper dbHelper, FeedSet fs) {
+    public static void prepareReadingSession(PrefsRepo prefsRepo, BlurDatabaseHelper dbHelper, FeedSet fs) {
         synchronized (PENDING_FEED_MUTEX) {
-            CursorFilters cursorFilters = new CursorFilters(prefRepository, fs);
+            CursorFilters cursorFilters = new CursorFilters(prefsRepo, fs);
             if (!fs.equals(dbHelper.getSessionFeedSet())) {
                 com.newsblur.util.Log.d(NBSyncService.class.getName(), "preparing new reading session");
                 // the next fetch will be the start of a new reading session; clear it so it

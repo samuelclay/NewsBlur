@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
-import com.newsblur.preference.PrefRepository;
+import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedOrderFilter;
 import com.newsblur.util.FeedUtils;
@@ -47,18 +47,18 @@ public class FeedChooserAdapter extends BaseExpandableListAdapter {
     protected FeedOrderFilter feedOrderFilter;
     protected final FeedUtils feedUtils;
     protected final ImageLoader iconLoader;
-    protected final PrefRepository prefRepository;
+    protected final PrefsRepo prefsRepo;
 
     protected float textSize;
 
-    FeedChooserAdapter(FeedUtils feedUtils, ImageLoader iconLoader, PrefRepository prefRepository) {
-        folderViewFilter = prefRepository.getFeedChooserFolderView();
-        listOrderFilter = prefRepository.getFeedChooserListOrder();
-        feedOrderFilter = prefRepository.getFeedChooserFeedOrder();
-        textSize = prefRepository.getListTextSize();
+    FeedChooserAdapter(FeedUtils feedUtils, ImageLoader iconLoader, PrefsRepo prefsRepo) {
+        folderViewFilter = prefsRepo.getFeedChooserFolderView();
+        listOrderFilter = prefsRepo.getFeedChooserListOrder();
+        feedOrderFilter = prefsRepo.getFeedChooserFeedOrder();
+        textSize = prefsRepo.getListTextSize();
         this.feedUtils = feedUtils;
         this.iconLoader = iconLoader;
-        this.prefRepository = prefRepository;
+        this.prefsRepo = prefsRepo;
     }
 
     @Override

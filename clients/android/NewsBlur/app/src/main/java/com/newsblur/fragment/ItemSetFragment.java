@@ -30,7 +30,7 @@ import com.newsblur.databinding.RowFleuronBinding;
 import com.newsblur.di.IconLoader;
 import com.newsblur.di.ThumbnailLoader;
 import com.newsblur.domain.Story;
-import com.newsblur.preference.PrefRepository;
+import com.newsblur.preference.PrefsRepo;
 import com.newsblur.service.NBSyncService;
 import com.newsblur.util.CursorFilters;
 import com.newsblur.util.FeedSet;
@@ -66,7 +66,7 @@ public class ItemSetFragment extends NbFragment {
     ImageLoader thumbnailLoader;
 
     @Inject
-    PrefRepository prefRepository;
+    PrefsRepo prefsRepo;
 
     private static final String BUNDLE_GRIDSTATE = "gridstate";
 
@@ -179,7 +179,7 @@ public class ItemSetFragment extends NbFragment {
             }
         });
 
-        StoryListStyle listStyle = prefRepository.getStoryListStyle(getFeedSet());
+        StoryListStyle listStyle = prefsRepo.getStoryListStyle(getFeedSet());
 
         calcColumnCount(listStyle);
         layoutManager = new GridLayoutManager(getActivity(), columnCount);
@@ -194,7 +194,7 @@ public class ItemSetFragment extends NbFragment {
             }
         });
 
-        adapter = new StoryViewAdapter(((NbActivity) getActivity()), this, getFeedSet(), listStyle, iconLoader, thumbnailLoader, feedUtils, prefRepository, getOnStoryClickListener());
+        adapter = new StoryViewAdapter(((NbActivity) getActivity()), this, getFeedSet(), listStyle, iconLoader, thumbnailLoader, feedUtils, prefsRepo, getOnStoryClickListener());
         adapter.addFooterView(footerView);
         adapter.addFooterView(fleuronBinding.getRoot());
         binding.itemgridfragmentGrid.setAdapter(adapter);
@@ -284,7 +284,7 @@ public class ItemSetFragment extends NbFragment {
 	public void hasUpdated() {
         FeedSet fs = getFeedSet();
         if (isAdded() && fs != null) {
-            storiesViewModel.getActiveStories(fs, new CursorFilters(prefRepository, fs));
+            storiesViewModel.getActiveStories(fs, new CursorFilters(prefsRepo, fs));
         }
 	}
 
@@ -324,7 +324,7 @@ public class ItemSetFragment extends NbFragment {
     private void updateLoadingIndicators() {
         calcFleuronPadding();
 
-        if (cursorSeenYet && adapter.getRawStoryCount() > 0 && UIUtils.needsSubscriptionAccess(getFeedSet(), prefRepository)) {
+        if (cursorSeenYet && adapter.getRawStoryCount() > 0 && UIUtils.needsSubscriptionAccess(getFeedSet(), prefsRepo)) {
             fleuronBinding.getRoot().setVisibility(View.VISIBLE);
             fleuronBinding.containerSubscribe.setVisibility(View.VISIBLE);
             binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
@@ -347,7 +347,7 @@ public class ItemSetFragment extends NbFragment {
             }
             fleuronBinding.getRoot().setVisibility(View.INVISIBLE);
         } else {
-            ReadFilter readFilter = prefRepository.getReadFilter(getFeedSet());
+            ReadFilter readFilter = prefsRepo.getReadFilter(getFeedSet());
             if (readFilter == ReadFilter.UNREAD) {
                 binding.emptyViewText.setText(R.string.empty_list_view_no_stories_unread);
             } else {
@@ -370,13 +370,13 @@ public class ItemSetFragment extends NbFragment {
     }
 
     public void updateThumbnailStyle() {
-        ThumbnailStyle thumbnailStyle = prefRepository.getThumbnailStyle(requireContext());
+        ThumbnailStyle thumbnailStyle = prefsRepo.getThumbnailStyle();
         adapter.setThumbnailStyle(thumbnailStyle);
         adapter.notifyAllItemsChanged();
     }
 
     public void updateListStyle() {
-        StoryListStyle listStyle = prefRepository.getStoryListStyle(getFeedSet());
+        StoryListStyle listStyle = prefsRepo.getStoryListStyle(getFeedSet());
         calcColumnCount(listStyle);
         calcGridSpacing(listStyle);
         layoutManager.setSpanCount(columnCount);
@@ -385,13 +385,13 @@ public class ItemSetFragment extends NbFragment {
     }
 
     public void updateSpacingStyle() {
-        SpacingStyle spacingStyle = prefRepository.getSpacingStyle();
+        SpacingStyle spacingStyle = prefsRepo.getSpacingStyle();
         adapter.setSpacingStyle(spacingStyle);
         adapter.notifyAllItemsChanged();
     }
 
     public void updateTextSize() {
-        float textSize = prefRepository.getListTextSize();
+        float textSize = prefsRepo.getListTextSize();
         adapter.setTextSize(textSize);
         adapter.notifyAllItemsChanged();
     }
@@ -460,7 +460,7 @@ public class ItemSetFragment extends NbFragment {
         if (dy < 1) return;
 
         // skip fetching more stories if premium access is required
-        if (UIUtils.needsSubscriptionAccess(getFeedSet(), prefRepository) && adapter.getItemCount() >= 3) return;
+        if (UIUtils.needsSubscriptionAccess(getFeedSet(), prefsRepo) && adapter.getItemCount() >= 3) return;
 
         ensureSufficientStories();
 
@@ -483,7 +483,7 @@ public class ItemSetFragment extends NbFragment {
             indexOfLastUnread = -1;
         }
 
-        if (prefRepository.isMarkReadOnFeedScroll()) {
+        if (prefsRepo.isMarkReadOnFeedScroll()) {
             // we want the top row of stories that is partially obscured. go back one from the first fully visible
             int markEnd = layoutManager.findFirstCompletelyVisibleItemPosition() - 1;
             if (markEnd > lastAutoMarkIndex) {

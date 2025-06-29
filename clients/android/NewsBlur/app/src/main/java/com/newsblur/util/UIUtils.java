@@ -51,7 +51,7 @@ import com.newsblur.R;
 import com.newsblur.activity.*;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
-import com.newsblur.preference.PrefRepository;
+import com.newsblur.preference.PrefsRepo;
 
 public class UIUtils {
 
@@ -495,12 +495,12 @@ public class UIUtils {
         return result;
     }
 
-    public static void handleUri(Context context, PrefRepository prefRepository, Uri uri) {
-        DefaultBrowser defaultBrowser = prefRepository.getDefaultBrowser();
+    public static void handleUri(Context context, PrefsRepo prefsRepo, Uri uri) {
+        DefaultBrowser defaultBrowser = prefsRepo.getDefaultBrowser();
         if (defaultBrowser == DefaultBrowser.SYSTEM_DEFAULT) {
             openSystemDefaultBrowser(context, uri);
         } else if (defaultBrowser == DefaultBrowser.IN_APP_BROWSER) {
-            openInAppBrowser(context, prefRepository, uri);
+            openInAppBrowser(context, prefsRepo, uri);
         } else if (defaultBrowser == DefaultBrowser.CHROME) {
             openExternalBrowserApp(context, uri, "com.android.chrome");
         } else if (defaultBrowser == DefaultBrowser.FIREFOX) {
@@ -510,13 +510,13 @@ public class UIUtils {
         }
     }
 
-    private static void openInAppBrowser(Context context, PrefRepository prefRepository, Uri uri) {
+    private static void openInAppBrowser(Context context, PrefsRepo prefsRepo, Uri uri) {
         int colorPrimary = MaterialColors.getColor(context, androidx.appcompat.R.attr.colorPrimary, ContextCompat.getColor(context, R.color.primary_dark));
         CustomTabColorSchemeParams schemeParams = new CustomTabColorSchemeParams.Builder()
                 .setToolbarColor(colorPrimary)
                 .build();
         CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
-                .setColorScheme(getCustomTabsColorScheme(prefRepository))
+                .setColorScheme(getCustomTabsColorScheme(prefsRepo))
                 .setDefaultColorSchemeParams(schemeParams)
                 .setShareState(CustomTabsIntent.SHARE_STATE_ON)
                 .setUrlBarHidingEnabled(false)
@@ -558,8 +558,8 @@ public class UIUtils {
         }
     }
 
-    public static boolean needsSubscriptionAccess(FeedSet feedSet, PrefRepository prefRepository) {
-        boolean hasSubscription = prefRepository.hasSubscription();
+    public static boolean needsSubscriptionAccess(FeedSet feedSet, PrefsRepo prefsRepo) {
+        boolean hasSubscription = prefsRepo.hasSubscription();
         boolean requiresSubscription = feedSet.isFolder() || feedSet.isInfrequent() ||
                 feedSet.isAllNormal() || feedSet.isGlobalShared() || feedSet.isSingleSavedTag();
         return !hasSubscription && requiresSubscription;
@@ -570,8 +570,8 @@ public class UIUtils {
         context.startActivity(intent);
     }
 
-    private static int getCustomTabsColorScheme(PrefRepository prefRepository) {
-        PrefConstants.ThemeValue value = prefRepository.getSelectedTheme();
+    private static int getCustomTabsColorScheme(PrefsRepo prefsRepo) {
+        PrefConstants.ThemeValue value = prefsRepo.getSelectedTheme();
         if (value == PrefConstants.ThemeValue.DARK || value == PrefConstants.ThemeValue.BLACK) {
             return CustomTabsIntent.COLOR_SCHEME_DARK;
         } else if (value == PrefConstants.ThemeValue.LIGHT) {

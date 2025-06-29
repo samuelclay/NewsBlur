@@ -84,7 +84,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
         PendingTransitionUtils.overrideEnterTransition(this);
 
-        contextMenuDelegate = new ItemListContextMenuDelegateImpl(this, feedUtils, prefRepository);
+        contextMenuDelegate = new ItemListContextMenuDelegateImpl(this, feedUtils, prefsRepo);
         viewModel = new ViewModelProvider(this).get(ItemListViewModel.class);
 		fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
         sessionDataSource = (SessionDataSource) getIntent().getSerializableExtra(EXTRA_SESSION_DATA);
@@ -96,8 +96,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (getIntent().getBooleanExtra(EXTRA_WIDGET_STORY, false)) {
             String hash = (String) getIntent().getSerializableExtra(EXTRA_STORY_HASH);
             UIUtils.startReadingActivity(this, fs, hash, readingActivityLaunch);
-        } else if (prefRepository.isAutoOpenFirstUnread()) {
-            StateFilter intelState = prefRepository.getStateFilter();
+        } else if (prefsRepo.isAutoOpenFirstUnread()) {
+            StateFilter intelState = prefsRepo.getStateFilter();
             if (dbHelper.getUnreadCount(fs, intelState) > 0) {
                 UIUtils.startReadingActivity(this, fs, Reading.FIND_FIRST_UNREAD, readingActivityLaunch);
             }
@@ -251,7 +251,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (q.length() < 1) {
             updateFleuron(false);
             q = null;
-        } else if (!prefRepository.hasSubscription()) {
+        } else if (!prefsRepo.hasSubscription()) {
             updateFleuron(true);
             return;
         }

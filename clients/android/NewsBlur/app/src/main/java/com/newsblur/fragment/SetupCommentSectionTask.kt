@@ -66,7 +66,7 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
         val sharingUserIds: MutableSet<String> = HashSet()
         for (comment in comments) {
             // skip public comments if they are disabled
-            if (!comment.byFriend && !fragment.prefRepository.showPublicComments()) {
+            if (!comment.byFriend && !fragment.prefsRepo.showPublicComments()) {
                 continue
             }
             val commentUser = fragment.dbHelper.getUserProfile(comment.userId)
@@ -342,7 +342,7 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
         this.inflater = inflater
         this.story = story
         viewHolder = WeakReference(view)
-        user = fragment.prefRepository.getUserDetails()
+        user = fragment.prefsRepo.getUserDetails()
         this.iconLoader = iconLoader
     }
 }

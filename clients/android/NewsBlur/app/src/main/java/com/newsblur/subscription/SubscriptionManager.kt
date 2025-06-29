@@ -15,7 +15,7 @@ import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.newsblur.R
 import com.newsblur.network.APIManager
-import com.newsblur.preference.PrefRepository
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NBSyncService
 import com.newsblur.util.AppConstants
 import com.newsblur.util.FeedUtils
@@ -93,7 +93,7 @@ interface SubscriptionManagerEntryPoint {
 
     fun apiManager(): APIManager
 
-    fun prefRepository(): PrefRepository
+    fun prefRepository(): PrefsRepo
 }
 
 class SubscriptionManagerImpl(
