@@ -291,7 +291,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             ThemeValue.AUTO -> menu.findItem(R.id.menu_theme_auto).isChecked = true
         }
 
-        val readingTextSize = PrefsUtils.getReadingTextSize(requireContext())
+        val readingTextSize = prefRepository.getReadingTextSize()
         when (ReadingTextSize.fromSize(readingTextSize)) {
             ReadingTextSize.XS -> menu.findItem(R.id.menu_text_size_xs).isChecked = true
             ReadingTextSize.S -> menu.findItem(R.id.menu_text_size_s).isChecked = true
@@ -301,7 +301,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             ReadingTextSize.XXL -> menu.findItem(R.id.menu_text_size_xxl).isChecked = true
         }
 
-        when (Font.getFont(PrefsUtils.getFontString(requireContext()))) {
+        when (Font.getFont(prefRepository.getFontString())) {
             Font.ANONYMOUS_PRO -> menu.findItem(R.id.menu_font_anonymous).isChecked = true
             Font.CHRONICLE -> menu.findItem(R.id.menu_font_chronicle).isChecked = true
             Font.DEFAULT -> menu.findItem(R.id.menu_font_default).isChecked = true
@@ -869,8 +869,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             sniffAltTexts(storyText)
 
             storyText = swapInOfflineImages(storyText)
-            val currentSize = PrefsUtils.getReadingTextSize(requireContext())
-            val font = PrefsUtils.getFont(requireContext())
+            val currentSize = prefRepository.getReadingTextSize()
+            val font = prefRepository.getFont()
             val themeValue = prefRepository.getSelectedTheme()
 
             val builder = StringBuilder()
@@ -1033,12 +1033,12 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     private fun setTextSizeStyle(readingTextSize: ReadingTextSize) {
         val textSize = readingTextSize.size
-        PrefsUtils.setReadingTextSize(requireContext(), textSize)
+        prefRepository.setReadingTextSize(textSize)
         binding.readingWebview.setTextSize(textSize)
     }
 
     private fun setReadingFont(font: String) {
-       PrefsUtils.setFontString(requireContext(), font)
+       prefRepository.setFontString(font)
         contentHash = 0 // Force reload since content hasn't changed
         reloadStoryContent()
     }

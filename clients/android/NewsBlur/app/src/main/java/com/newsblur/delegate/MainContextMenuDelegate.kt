@@ -62,7 +62,7 @@ class MainContextMenuDelegateImpl(
             menu.findItem(R.id.menu_spacing_compact).isChecked = true
         }
 
-        when (fromSize(PrefsUtils.getListTextSize(activity))) {
+        when (fromSize(prefRepository.getListTextSize())) {
             ListTextSize.XS -> menu.findItem(R.id.menu_text_size_xs).isChecked = true
             ListTextSize.S -> menu.findItem(R.id.menu_text_size_s).isChecked = true
             ListTextSize.M -> menu.findItem(R.id.menu_text_size_m).isChecked = true

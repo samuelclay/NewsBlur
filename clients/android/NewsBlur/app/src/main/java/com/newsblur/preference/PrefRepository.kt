@@ -178,9 +178,9 @@ class PrefRepository(
             s.append("unknown")
         }
         s.append("\n")
-        s.append("prefetch: ").append(if (isOfflineEnabled(context)) "yes" else "no")
+        s.append("prefetch: ").append(if (isOfflineEnabled()) "yes" else "no")
         s.append("\n")
-        s.append("notifications: ").append(if (isEnableNotifications(context)) "yes" else "no")
+        s.append("notifications: ").append(if (isEnableNotifications()) "yes" else "no")
         s.append("\n")
         s.append("keepread: ").append(if (isKeepOldStories(context)) "yes" else "no")
         s.append("\n")
@@ -387,43 +387,35 @@ class PrefRepository(
     fun getReadFilterForFolder(folderName: String): ReadFilter =
             ReadFilter.valueOf(sharedPreferences.getString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, getDefaultReadFilter(sharedPreferences).toString())!!)
 
-    fun setStoryOrderForFolder(context: Context, folderName: String, newValue: StoryOrder) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val editor = prefs.edit()
-        editor.putString(PrefConstants.FOLDER_STORY_ORDER_PREFIX + folderName, newValue.toString())
-        editor.commit()
+    fun setStoryOrderForFolder(folderName: String, newValue: StoryOrder) {
+        sharedPreferences.edit {
+            putString(PrefConstants.FOLDER_STORY_ORDER_PREFIX + folderName, newValue.toString())
+        }
     }
 
-    fun setStoryOrderForFeed(context: Context, feedId: String, newValue: StoryOrder) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val editor = prefs.edit()
-        editor.putString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, newValue.toString())
-        editor.commit()
+    fun setStoryOrderForFeed(feedId: String, newValue: StoryOrder) {
+        sharedPreferences.edit {
+            putString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, newValue.toString())
+        }
     }
 
-    fun setReadFilterForFolder(context: Context, folderName: String, newValue: ReadFilter) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val editor = prefs.edit()
-        editor.putString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, newValue.toString())
-        editor.commit()
+    fun setReadFilterForFolder(folderName: String, newValue: ReadFilter) {
+        sharedPreferences.edit {
+            putString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, newValue.toString())
+        }
     }
 
-    fun setReadFilterForFeed(context: Context, feedId: String, newValue: ReadFilter) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val editor = prefs.edit()
-        editor.putString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, newValue.toString())
-        editor.commit()
+    fun setReadFilterForFeed(feedId: String, newValue: ReadFilter) {
+        sharedPreferences.edit {
+            putString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, newValue.toString())
+        }
     }
 
-    fun getStoryListStyleForFeed(context: Context, feedId: String): StoryListStyle {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return StoryListStyle.safeValueOf(prefs.getString(PrefConstants.FEED_STORY_LIST_STYLE_PREFIX + feedId, StoryListStyle.LIST.toString()))
-    }
+    fun getStoryListStyleForFeed(feedId: String): StoryListStyle =
+            StoryListStyle.safeValueOf(sharedPreferences.getString(PrefConstants.FEED_STORY_LIST_STYLE_PREFIX + feedId, StoryListStyle.LIST.toString()))
 
-    fun getStoryListStyleForFolder(context: Context, folderName: String): StoryListStyle {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return StoryListStyle.safeValueOf(prefs.getString(PrefConstants.FOLDER_STORY_LIST_STYLE_PREFIX + folderName, StoryListStyle.LIST.toString()))
-    }
+    fun getStoryListStyleForFolder(folderName: String): StoryListStyle =
+            StoryListStyle.safeValueOf(sharedPreferences.getString(PrefConstants.FOLDER_STORY_LIST_STYLE_PREFIX + folderName, StoryListStyle.LIST.toString()))
 
     fun setStoryListStyleForFolder(context: Context, folderName: String, newValue: StoryListStyle) {
         val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
@@ -450,55 +442,40 @@ class PrefRepository(
     private fun getDefaultReadFilter(prefs: SharedPreferences): ReadFilter =
             ReadFilter.valueOf(prefs.getString(PrefConstants.DEFAULT_READ_FILTER, ReadFilter.ALL.toString())!!)
 
-    fun isEnableRowGlobalShared(context: Context): Boolean {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return prefs.getBoolean(PrefConstants.ENABLE_ROW_GLOBAL_SHARED, true)
+    fun isEnableRowGlobalShared(): Boolean =
+            sharedPreferences.getBoolean(PrefConstants.ENABLE_ROW_GLOBAL_SHARED, true)
+
+    fun isEnableRowInfrequent(): Boolean =
+            sharedPreferences.getBoolean(PrefConstants.ENABLE_ROW_INFREQUENT_STORIES, true)
+
+    fun showPublicComments(): Boolean =
+            sharedPreferences.getBoolean(PrefConstants.SHOW_PUBLIC_COMMENTS, true)
+
+    fun getReadingTextSize(): Float =
+            sharedPreferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f)
+
+    fun setReadingTextSize(size: Float) {
+        sharedPreferences.edit {
+            putFloat(PrefConstants.PREFERENCE_TEXT_SIZE, size)
+        }
     }
 
-    fun isEnableRowInfrequent(context: Context): Boolean {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return prefs.getBoolean(PrefConstants.ENABLE_ROW_INFREQUENT_STORIES, true)
+    fun getListTextSize(): Float =
+            sharedPreferences.getFloat(PrefConstants.PREFERENCE_LIST_TEXT_SIZE, 1.0f)
+
+    fun setListTextSize(size: Float) {
+        sharedPreferences.edit {
+            putFloat(PrefConstants.PREFERENCE_LIST_TEXT_SIZE, size)
+        }
     }
 
-    fun showPublicComments(context: Context): Boolean {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return prefs.getBoolean(PrefConstants.SHOW_PUBLIC_COMMENTS, true)
-    }
+    fun getInfrequentCutoff(): Int =
+            sharedPreferences.getInt(PrefConstants.PREFERENCE_INFREQUENT_CUTOFF, 30)
 
-    fun getReadingTextSize(context: Context): Float {
-        val preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f)
-    }
-
-    fun setReadingTextSize(context: Context, size: Float) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val editor = prefs.edit()
-        editor.putFloat(PrefConstants.PREFERENCE_TEXT_SIZE, size)
-        editor.commit()
-    }
-
-    fun getListTextSize(context: Context): Float {
-        val preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return preferences.getFloat(PrefConstants.PREFERENCE_LIST_TEXT_SIZE, 1.0f)
-    }
-
-    fun setListTextSize(context: Context, size: Float) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val editor = prefs.edit()
-        editor.putFloat(PrefConstants.PREFERENCE_LIST_TEXT_SIZE, size)
-        editor.commit()
-    }
-
-    fun getInfrequentCutoff(context: Context): Int {
-        val preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return preferences.getInt(PrefConstants.PREFERENCE_INFREQUENT_CUTOFF, 30)
-    }
-
-    fun setInfrequentCutoff(context: Context, newValue: Int) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val editor = prefs.edit()
-        editor.putInt(PrefConstants.PREFERENCE_INFREQUENT_CUTOFF, newValue)
-        editor.commit()
+    fun setInfrequentCutoff(newValue: Int) {
+        sharedPreferences.edit {
+            putInt(PrefConstants.PREFERENCE_INFREQUENT_CUTOFF, newValue)
+        }
     }
 
 //    fun getDefaultViewModeForFeed(context: Context, feedId: String?): DefaultFeedView {
@@ -543,26 +520,26 @@ class PrefRepository(
         }
     }
 
-    fun updateStoryOrder(context: Context, fs: FeedSet, newOrder: StoryOrder) {
+    fun updateStoryOrder(fs: FeedSet, newOrder: StoryOrder) {
         if (fs.isAllNormal) {
-            setStoryOrderForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME, newOrder)
+            setStoryOrderForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME, newOrder)
         } else if (fs.singleFeed != null) {
-            setStoryOrderForFeed(context, fs.singleFeed, newOrder)
+            setStoryOrderForFeed(fs.singleFeed, newOrder)
         } else if (fs.multipleFeeds != null) {
-            setStoryOrderForFolder(context, fs.folderName, newOrder)
+            setStoryOrderForFolder(fs.folderName, newOrder)
         } else if (fs.isAllSocial) {
-            setStoryOrderForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newOrder)
+            setStoryOrderForFolder(PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newOrder)
         } else if (fs.singleSocialFeed != null) {
-            setStoryOrderForFeed(context, fs.singleSocialFeed.key, newOrder)
+            setStoryOrderForFeed(fs.singleSocialFeed.key, newOrder)
         } else require(fs.multipleSocialFeeds == null) { "multiple social feeds not supported" }
         require(!fs.isAllRead) { "AllRead FeedSet type has fixed ordering" }
         if (fs.isAllSaved) {
-            setStoryOrderForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME, newOrder)
+            setStoryOrderForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME, newOrder)
         } else if (fs.singleSavedTag != null) {
-            setStoryOrderForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME, newOrder)
+            setStoryOrderForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME, newOrder)
         } else require(!fs.isGlobalShared) { "GlobalShared FeedSet type has fixed ordering" }
         if (fs.isInfrequent) {
-            setStoryOrderForFolder(context, PrefConstants.INFREQUENT_FOLDER_NAME, newOrder)
+            setStoryOrderForFolder(PrefConstants.INFREQUENT_FOLDER_NAME, newOrder)
         } else {
             throw IllegalArgumentException("unknown type of feed set")
         }
@@ -597,53 +574,53 @@ class PrefRepository(
         throw IllegalArgumentException("unknown type of feed set")
     }
 
-    fun updateReadFilter(context: Context, fs: FeedSet, newFilter: ReadFilter) {
+    fun updateReadFilter(fs: FeedSet, newFilter: ReadFilter) {
         if (fs.isAllNormal) {
-            setReadFilterForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME, newFilter)
+            setReadFilterForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME, newFilter)
         } else if (fs.singleFeed != null) {
-            setReadFilterForFeed(context, fs.singleFeed, newFilter)
+            setReadFilterForFeed(fs.singleFeed, newFilter)
         } else if (fs.multipleFeeds != null) {
-            setReadFilterForFolder(context, fs.folderName, newFilter)
+            setReadFilterForFolder(fs.folderName, newFilter)
         } else if (fs.isAllSocial) {
-            setReadFilterForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newFilter)
+            setReadFilterForFolder(PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newFilter)
         } else if (fs.singleSocialFeed != null) {
-            setReadFilterForFeed(context, fs.singleSocialFeed.key, newFilter)
+            setReadFilterForFeed(fs.singleSocialFeed.key, newFilter)
         } else if (fs.multipleSocialFeeds != null) {
-            setReadFilterForFolder(context, fs.folderName, newFilter)
+            setReadFilterForFolder(fs.folderName, newFilter)
         } else require(!fs.isAllRead) { "read filter not applicable to this type of feedset" }
         require(!fs.isAllSaved) { "read filter not applicable to this type of feedset" }
         require(fs.singleSavedTag == null) { "read filter not applicable to this type of feedset" }
         if (fs.isGlobalShared) {
-            setReadFilterForFolder(context, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, newFilter)
+            setReadFilterForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, newFilter)
         } else if (fs.isInfrequent) {
-            setReadFilterForFolder(context, PrefConstants.INFREQUENT_FOLDER_NAME, newFilter)
+            setReadFilterForFolder(PrefConstants.INFREQUENT_FOLDER_NAME, newFilter)
         } else {
             throw IllegalArgumentException("unknown type of feed set")
         }
     }
 
-    fun getStoryListStyle(context: Context, fs: FeedSet): StoryListStyle {
+    fun getStoryListStyle(fs: FeedSet): StoryListStyle {
         if (fs.isAllNormal) {
-            return getStoryListStyleForFolder(context, PrefConstants.ALL_STORIES_FOLDER_NAME)
+            return getStoryListStyleForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME)
         } else if (fs.singleFeed != null) {
-            return getStoryListStyleForFeed(context, fs.singleFeed)
+            return getStoryListStyleForFeed(fs.singleFeed)
         } else if (fs.multipleFeeds != null) {
-            return getStoryListStyleForFolder(context, fs.folderName)
+            return getStoryListStyleForFolder(fs.folderName)
         } else if (fs.isAllSocial) {
-            return getStoryListStyleForFolder(context, PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME)
+            return getStoryListStyleForFolder(PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME)
         } else if (fs.singleSocialFeed != null) {
-            return getStoryListStyleForFeed(context, fs.singleSocialFeed.key)
+            return getStoryListStyleForFeed(fs.singleSocialFeed.key)
         } else require(fs.multipleSocialFeeds == null) { "requests for multiple social feeds not supported" }
         return if (fs.isAllRead) {
-            getStoryListStyleForFolder(context, PrefConstants.READ_STORIES_FOLDER_NAME)
+            getStoryListStyleForFolder(PrefConstants.READ_STORIES_FOLDER_NAME)
         } else if (fs.isAllSaved) {
-            getStoryListStyleForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME)
+            getStoryListStyleForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME)
         } else if (fs.singleSavedTag != null) {
-            getStoryListStyleForFolder(context, PrefConstants.SAVED_STORIES_FOLDER_NAME)
+            getStoryListStyleForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME)
         } else if (fs.isGlobalShared) {
-            getStoryListStyleForFolder(context, PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME)
+            getStoryListStyleForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME)
         } else if (fs.isInfrequent) {
-            getStoryListStyleForFolder(context, PrefConstants.INFREQUENT_FOLDER_NAME)
+            getStoryListStyleForFolder(PrefConstants.INFREQUENT_FOLDER_NAME)
         } else {
             throw IllegalArgumentException("unknown type of feed set")
         }
@@ -728,10 +705,8 @@ class PrefRepository(
         editor.commit()
     }
 
-    fun isOfflineEnabled(context: Context): Boolean {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return prefs.getBoolean(PrefConstants.ENABLE_OFFLINE, false)
-    }
+    fun isOfflineEnabled(): Boolean =
+            sharedPreferences.getBoolean(PrefConstants.ENABLE_OFFLINE, false)
 
     fun isImagePrefetchEnabled(context: Context): Boolean {
         val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
@@ -812,61 +787,42 @@ class PrefRepository(
 
     fun getStateFilter(): StateFilter = StateFilter.valueOf(sharedPreferences.getString(PrefConstants.STATE_FILTER, StateFilter.SOME.toString())!!)
 
-    fun setStateFilter(context: Context, newValue: StateFilter) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val editor = prefs.edit()
-        editor.putString(PrefConstants.STATE_FILTER, newValue.toString())
-        editor.commit()
+    fun setStateFilter(newValue: StateFilter) {
+        sharedPreferences.edit {
+            putString(PrefConstants.STATE_FILTER, newValue.toString())
+        }
     }
 
-    fun getVolumeKeyNavigation(context: Context): VolumeKeyNavigation {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return VolumeKeyNavigation.valueOf(prefs.getString(PrefConstants.VOLUME_KEY_NAVIGATION, VolumeKeyNavigation.OFF.toString())!!)
-    }
+    fun getVolumeKeyNavigation(): VolumeKeyNavigation =
+            VolumeKeyNavigation.valueOf(sharedPreferences.getString(PrefConstants.VOLUME_KEY_NAVIGATION, VolumeKeyNavigation.OFF.toString())!!)
 
-    fun getMarkAllReadConfirmation(context: Context): MarkAllReadConfirmation {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return MarkAllReadConfirmation.valueOf(prefs.getString(PrefConstants.MARK_ALL_READ_CONFIRMATION, MarkAllReadConfirmation.FOLDER_ONLY.toString())!!)
-    }
+    fun getMarkAllReadConfirmation(): MarkAllReadConfirmation =
+            MarkAllReadConfirmation.valueOf(sharedPreferences.getString(PrefConstants.MARK_ALL_READ_CONFIRMATION, MarkAllReadConfirmation.FOLDER_ONLY.toString())!!)
 
-    fun isConfirmMarkRangeRead(context: Context): Boolean {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return prefs.getBoolean(PrefConstants.MARK_RANGE_READ_CONFIRMATION, false)
-    }
+    fun isConfirmMarkRangeRead(): Boolean =
+            sharedPreferences.getBoolean(PrefConstants.MARK_RANGE_READ_CONFIRMATION, false)
 
-    fun getLeftToRightGestureAction(context: Context): GestureAction {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return GestureAction.valueOf(prefs.getString(PrefConstants.LTR_GESTURE_ACTION, GestureAction.GEST_ACTION_MARKREAD.toString())!!)
-    }
+    fun getLeftToRightGestureAction(): GestureAction =
+            GestureAction.valueOf(sharedPreferences.getString(PrefConstants.LTR_GESTURE_ACTION, GestureAction.GEST_ACTION_MARKREAD.toString())!!)
 
-    fun getRightToLeftGestureAction(context: Context): GestureAction {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return GestureAction.valueOf(prefs.getString(PrefConstants.RTL_GESTURE_ACTION, GestureAction.GEST_ACTION_MARKUNREAD.toString())!!)
-    }
+    fun getRightToLeftGestureAction(): GestureAction =
+            GestureAction.valueOf(sharedPreferences.getString(PrefConstants.RTL_GESTURE_ACTION, GestureAction.GEST_ACTION_MARKUNREAD.toString())!!)
 
-    fun isEnableNotifications(context: Context): Boolean {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return prefs.getBoolean(PrefConstants.ENABLE_NOTIFICATIONS, false)
-    }
+    fun isEnableNotifications(): Boolean =
+            sharedPreferences.getBoolean(PrefConstants.ENABLE_NOTIFICATIONS, false)
 
-    fun isBackgroundNeeded(context: Context): Boolean {
-        return (isEnableNotifications(context) || isOfflineEnabled(context) || hasActiveAppWidgets(context))
-    }
+    fun isBackgroundNeeded(context: Context): Boolean =
+            isEnableNotifications() || isOfflineEnabled() || hasActiveAppWidgets(context)
 
-    fun getFont(context: Context): Font {
-        return Font.getFont(getFontString(context))
-    }
+    fun getFont(): Font = Font.getFont(getFontString())
 
-    fun getFontString(context: Context): String {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return prefs.getString(PrefConstants.READING_FONT, Font.DEFAULT.toString())!!
-    }
+    fun getFontString(): String =
+            sharedPreferences.getString(PrefConstants.READING_FONT, Font.DEFAULT.toString())!!
 
-    fun setFontString(context: Context, newValue: String?) {
-        val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        val editor = prefs.edit()
-        editor.putString(PrefConstants.READING_FONT, newValue)
-        editor.commit()
+    fun setFontString(newValue: String?) {
+        sharedPreferences.edit {
+            putString(PrefConstants.READING_FONT, newValue)
+        }
     }
 
     fun setWidgetFeedIds(context: Context, feedIds: Set<String?>?) {
@@ -1027,10 +983,8 @@ class PrefRepository(
         return preferences.getString(PrefConstants.PREF_COOKIE, null)
     }
 
-    fun getMarkStoryReadBehavior(context: Context): MarkStoryReadBehavior {
-        val preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)
-        return MarkStoryReadBehavior.valueOf(preferences.getString(PrefConstants.STORY_MARK_READ_BEHAVIOR, MarkStoryReadBehavior.IMMEDIATELY.name)!!)
-    }
+    fun getMarkStoryReadBehavior(): MarkStoryReadBehavior =
+            MarkStoryReadBehavior.valueOf(sharedPreferences.getString(PrefConstants.STORY_MARK_READ_BEHAVIOR, MarkStoryReadBehavior.IMMEDIATELY.name)!!)
 
     fun loadNextOnMarkRead(context: Context): Boolean {
         val prefs = context.getSharedPreferences(PrefConstants.PREFERENCES, 0)

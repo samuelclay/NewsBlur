@@ -66,7 +66,7 @@ class MuteConfig : FeedChooser(), FeedStateChangedListener {
     }
 
     override fun setupList() {
-        adapter = MuteConfigAdapter(this, feedUtils, iconLoader, this)
+        adapter = MuteConfigAdapter(this, feedUtils, iconLoader, prefRepository, this)
         binding.listView.setAdapter(adapter)
     }
 

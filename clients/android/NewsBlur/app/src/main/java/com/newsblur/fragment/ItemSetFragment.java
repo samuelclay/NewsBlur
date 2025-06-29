@@ -180,7 +180,7 @@ public class ItemSetFragment extends NbFragment {
             }
         });
 
-        StoryListStyle listStyle = PrefsUtils.getStoryListStyle(getActivity(), getFeedSet());
+        StoryListStyle listStyle = prefRepository.getStoryListStyle(getFeedSet());
 
         calcColumnCount(listStyle);
         layoutManager = new GridLayoutManager(getActivity(), columnCount);
@@ -348,7 +348,7 @@ public class ItemSetFragment extends NbFragment {
             }
             fleuronBinding.getRoot().setVisibility(View.INVISIBLE);
         } else {
-            ReadFilter readFilter = PrefsUtils.getReadFilter(getActivity(), getFeedSet());
+            ReadFilter readFilter = prefRepository.getReadFilter(getFeedSet());
             if (readFilter == ReadFilter.UNREAD) {
                 binding.emptyViewText.setText(R.string.empty_list_view_no_stories_unread);
             } else {
@@ -377,7 +377,7 @@ public class ItemSetFragment extends NbFragment {
     }
 
     public void updateListStyle() {
-        StoryListStyle listStyle = PrefsUtils.getStoryListStyle(getActivity(), getFeedSet());
+        StoryListStyle listStyle = prefRepository.getStoryListStyle(getFeedSet());
         calcColumnCount(listStyle);
         calcGridSpacing(listStyle);
         layoutManager.setSpanCount(columnCount);
@@ -392,7 +392,7 @@ public class ItemSetFragment extends NbFragment {
     }
 
     public void updateTextSize() {
-        float textSize = PrefsUtils.getListTextSize(requireContext());
+        float textSize = prefRepository.getListTextSize();
         adapter.setTextSize(textSize);
         adapter.notifyAllItemsChanged();
     }

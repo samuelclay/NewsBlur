@@ -149,8 +149,8 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         }
 
         intelState = prefRepository.getStateFilter()
-        volumeKeyNavigation = prefRepository.getVolumeKeyNavigation(this)
-        markStoryReadBehavior = prefRepository.getMarkStoryReadBehavior(this)
+        volumeKeyNavigation = prefRepository.getVolumeKeyNavigation()
+        markStoryReadBehavior = prefRepository.getMarkStoryReadBehavior()
 
         setupViews()
         setupListeners()

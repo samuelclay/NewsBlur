@@ -64,7 +64,7 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
         val sharingUserIds: MutableSet<String> = HashSet()
         for (comment in comments) {
             // skip public comments if they are disabled
-            if (!comment.byFriend && !PrefsUtils.showPublicComments(context)) {
+            if (!comment.byFriend && !fragment.prefRepository.showPublicComments()) {
                 continue
             }
             val commentUser = fragment.dbHelper.getUserProfile(comment.userId)

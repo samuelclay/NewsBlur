@@ -155,7 +155,7 @@ class StoryViewAdapter(
             singleFeed = false
         }
 
-        textSize = PrefsUtils.getListTextSize(context)
+        textSize = prefRepository.getListTextSize()
         user = PrefsUtils.getUserDetails(context)
         thumbnailStyle = PrefsUtils.getThumbnailStyle(context)
         spacingStyle = PrefsUtils.getSpacingStyle(context)
@@ -489,11 +489,11 @@ class StoryViewAdapter(
             // by default, do nothing
             var action: GestureAction? = GestureAction.GEST_ACTION_NONE
             if (gestureL2R) {
-                action = PrefsUtils.getLeftToRightGestureAction(context)
+                action = prefRepository.getLeftToRightGestureAction()
                 gestureL2R = false
             }
             if (gestureR2L) {
-                action = PrefsUtils.getRightToLeftGestureAction(context)
+                action = prefRepository.getRightToLeftGestureAction()
                 gestureR2L = false
             }
             when (action) {

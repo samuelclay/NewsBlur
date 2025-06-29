@@ -204,7 +204,7 @@ public class NBSyncService extends JobService {
     public int onStartCommand(Intent intent, int flags, final int startId) {
         com.newsblur.util.Log.d(this, "onStartCommand");
         // only perform a sync if the app is actually running or background syncs are enabled
-        if (NbApplication.isAppForeground() || PrefsUtils.isBackgroundNeeded(this)) {
+        if (NbApplication.isAppForeground() || prefRepository.isBackgroundNeeded(this)) {
             HaltNow = false;
             // Services actually get invoked on the main system thread, and are not
             // allowed to do tangible work.  We spawn a thread to do so.
@@ -224,7 +224,7 @@ public class NBSyncService extends JobService {
             com.newsblur.util.Log.i(this, "Skipping sync: app not active and background sync not enabled.");
             synchronized (COMPLETION_CALLBACKS_MUTEX) {outstandingStartIds.add(startId);}
             checkCompletion();
-        } 
+        }
         // indicate to the system that the service should be alive when started, but
         // needn't necessarily persist under memory pressure
         return Service.START_NOT_STICKY;
@@ -237,7 +237,7 @@ public class NBSyncService extends JobService {
     public boolean onStartJob(final JobParameters params) {
         com.newsblur.util.Log.d(this, "onStartJob");
         // only perform a sync if the app is actually running or background syncs are enabled
-        if (NbApplication.isAppForeground() || PrefsUtils.isBackgroundNeeded(this)) {
+        if (NbApplication.isAppForeground() || prefRepository.isBackgroundNeeded(this)) {
             HaltNow = false;
             // Services actually get invoked on the main system thread, and are not
             // allowed to do tangible work.  We spawn a thread to do so.
@@ -257,7 +257,7 @@ public class NBSyncService extends JobService {
             com.newsblur.util.Log.d(this, "Skipping sync: app not active and background sync not enabled.");
             synchronized (COMPLETION_CALLBACKS_MUTEX) {outstandingStartParams.add(params);}
             checkCompletion();
-        } 
+        }
         return true; // indicate that we are async
     }
 
@@ -300,7 +300,7 @@ public class NBSyncService extends JobService {
 
             if (OfflineNow) {
                 if (NetworkUtils.isOnline(this)) {
-                    OfflineNow = false;   
+                    OfflineNow = false;
                     sendSyncUpdate(UPDATE_STATUS);
                 } else {
                     com.newsblur.util.Log.d(this, "Abandoning sync: network still offline");
@@ -314,7 +314,7 @@ public class NBSyncService extends JobService {
 
             // check to see if we are on an allowable network only after ensuring we have CPU
             if (!( NbApplication.isAppForeground() ||
-                   PrefsUtils.isEnableNotifications(this) || 
+                   PrefsUtils.isEnableNotifications(this) ||
                    PrefsUtils.isBackgroundNetworkAllowed(this) ||
                     WidgetUtils.hasActiveAppWidgets(this)) ) {
                 Log.d(this.getClass().getName(), "Abandoning sync: app not active and network type not appropriate for background sync.");
@@ -332,7 +332,7 @@ public class NBSyncService extends JobService {
 
             // if MD is stale, sync it first so unreads don't get backwards with story unread state
             syncMetadata();
-            
+
             // handle fetching of stories that are actively being requested by the live UI
             syncPendingFeedStories();
 
@@ -354,7 +354,7 @@ public class NBSyncService extends JobService {
 
         } catch (Exception e) {
             com.newsblur.util.Log.e(this.getClass().getName(), "Sync error.", e);
-        } 
+        }
     }
 
     /**
@@ -386,7 +386,7 @@ public class NBSyncService extends JobService {
             boolean autoVac = PrefsUtils.isTimeToVacuum(this);
             // this will lock up the DB for a few seconds, only do it if the UI is hidden
             if (NbApplication.isAppForeground()) autoVac = false;
-            
+
             if (upgraded || autoVac) {
                 HousekeepingRunning = true;
                 sendSyncUpdate(UPDATE_STATUS);
@@ -434,7 +434,7 @@ public class NBSyncService extends JobService {
 
                 // don't block story loading unless this is a brand new action
                 if ((ra.getTried() > 0) && (PendingFeed != null)) continue actionsloop;
-                    
+
                 com.newsblur.util.Log.d(this, "attempting action: " + ra.toContentValues().toString());
                 NewsBlurResponse response = ra.doRemote(apiManager, dbHelper, stateFilter);
 
@@ -605,7 +605,7 @@ public class NBSyncService extends JobService {
                     orphanFeedIds.add(id);
                 }
             }
-            
+
             // data for the folder table
             List<ContentValues> folderValues = new ArrayList<ContentValues>();
             Set<String> foldersSeen = new HashSet<String>(feedResponse.folders.size());
@@ -623,7 +623,7 @@ public class NBSyncService extends JobService {
             for (SocialFeed feed : feedResponse.socialFeeds) {
                 socialFeedValues.add(feed.getValues());
             }
-            
+
             // populate the starred stories count table
             List<ContentValues> starredCountValues = new ArrayList<ContentValues>();
             for (StarredCount sc : feedResponse.starredCounts) {
@@ -778,13 +778,13 @@ public class NBSyncService extends JobService {
             prepareReadingSession(prefRepository, dbHelper, fs);
 
             LastFeedSet = fs;
-            
+
             if (ExhaustedFeeds.contains(fs)) {
                 com.newsblur.util.Log.i(this.getClass().getName(), "No more stories for feed set: " + fs);
                 finished = true;
                 return;
             }
-            
+
             if (!FeedPagesSeen.containsKey(fs)) {
                 FeedPagesSeen.put(fs, 0);
                 FeedStoriesSeen.put(fs, 0);
@@ -806,16 +806,16 @@ public class NBSyncService extends JobService {
 
                 // bail if the active view has changed
                 if (!fs.equals(PendingFeed)) {
-                    return; 
+                    return;
                 }
 
                 pageNumber++;
-                StoriesResponse apiResponse = apiManager.getStories(fs, pageNumber, cursorFilters.getStoryOrder(), cursorFilters.getReadFilter());
-            
+                StoriesResponse apiResponse = apiManager.getStories(fs, pageNumber, cursorFilters.getStoryOrder(), cursorFilters.getReadFilter(), prefRepository.getInfrequentCutoff());
+
                 if (! isStoryResponseGood(apiResponse)) return;
 
                 if (!fs.equals(PendingFeed)) {
-                    return; 
+                    return;
                 }
 
                 insertStories(apiResponse, fs, cursorFilters.getStateFilter());
@@ -1122,7 +1122,7 @@ public class NBSyncService extends JobService {
             if (desiredStoryCount <= alreadyPending) {
                 return false;
             }
-            
+
         }
         return true;
     }
