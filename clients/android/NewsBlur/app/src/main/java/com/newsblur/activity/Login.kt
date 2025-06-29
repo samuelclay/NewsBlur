@@ -7,7 +7,7 @@ import androidx.fragment.app.commit
 import com.newsblur.R
 import com.newsblur.databinding.ActivityLoginBinding
 import com.newsblur.fragment.LoginRegisterFragment
-import com.newsblur.preference.PrefRepository
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.EdgeToEdgeUtil.applyTheme
 import com.newsblur.util.EdgeToEdgeUtil.applyView
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,10 +17,10 @@ import javax.inject.Inject
 class Login : FragmentActivity() {
 
     @Inject
-    lateinit var prefRepository: PrefRepository
+    lateinit var prefsRepo: PrefsRepo
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        applyTheme(prefRepository.getSelectedTheme())
+        applyTheme(prefsRepo.getSelectedTheme())
         super.onCreate(savedInstanceState)
 
         requestWindowFeature(Window.FEATURE_NO_TITLE)

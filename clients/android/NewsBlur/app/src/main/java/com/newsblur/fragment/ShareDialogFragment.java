@@ -15,7 +15,7 @@ import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.domain.Comment;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
-import com.newsblur.preference.PrefRepository;
+import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.UIUtils;
 
@@ -33,7 +33,7 @@ public class ShareDialogFragment extends DialogFragment {
     BlurDatabaseHelper dbHelper;
 
     @Inject
-    PrefRepository prefRepository;
+    PrefsRepo prefsRepo;
 
 	private static final String STORY = "story";
     private static final String SOURCE_USER_ID = "sourceUserId";
@@ -55,7 +55,7 @@ public class ShareDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         story = (Story) getArguments().getSerializable(STORY);
-        user = prefRepository.getUserDetails();
+        user = prefsRepo.getUserDetails();
         sourceUserId = getArguments().getString(SOURCE_USER_ID);
 
         boolean hasBeenShared = false;

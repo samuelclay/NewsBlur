@@ -8,7 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.newsblur.R
 import com.newsblur.databinding.NewsletterDialogBinding
-import com.newsblur.preference.PrefRepository
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.setViewGone
 import com.newsblur.util.setViewVisible
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,7 +18,7 @@ import javax.inject.Inject
 class NewslettersFragment : DialogFragment() {
 
     @Inject
-    lateinit var prefRepository: PrefRepository
+    lateinit var prefsRepo: PrefsRepo
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = NewsletterDialogBinding.inflate(layoutInflater)
@@ -40,8 +40,8 @@ class NewslettersFragment : DialogFragment() {
     }
 
     private fun generateEmail(): String {
-        val username = prefRepository.getUserName()
-        val extToken = prefRepository.getExtToken()
+        val username = prefsRepo.getUserName()
+        val extToken = prefsRepo.getExtToken()
         return if (username.isNullOrBlank() || extToken.isNullOrBlank()) {
             "Error generating forwarding email address"
         } else {

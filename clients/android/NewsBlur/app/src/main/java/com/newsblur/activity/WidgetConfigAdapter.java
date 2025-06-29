@@ -7,7 +7,7 @@ import android.widget.ImageView;
 
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
-import com.newsblur.preference.PrefRepository;
+import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
 
@@ -15,8 +15,8 @@ import java.util.ArrayList;
 
 public class WidgetConfigAdapter extends FeedChooserAdapter {
 
-    WidgetConfigAdapter(FeedUtils feedUtils, ImageLoader iconLoader, PrefRepository prefRepository) {
-        super(feedUtils, iconLoader, prefRepository);
+    WidgetConfigAdapter(FeedUtils feedUtils, ImageLoader iconLoader, PrefsRepo prefsRepo) {
+        super(feedUtils, iconLoader, prefsRepo);
     }
 
     @Override
@@ -68,6 +68,6 @@ public class WidgetConfigAdapter extends FeedChooserAdapter {
     }
 
     private void setWidgetFeedIds() {
-        prefRepository.setWidgetFeedIds(feedIds);
+        prefsRepo.setWidgetFeedIds(feedIds);
     }
 }

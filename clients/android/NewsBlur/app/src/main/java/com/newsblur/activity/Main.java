@@ -73,7 +73,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		super.onCreate(savedInstanceState);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        contextMenuDelegate = new MainContextMenuDelegateImpl(this, dbHelper, prefRepository);
+        contextMenuDelegate = new MainContextMenuDelegateImpl(this, dbHelper, prefsRepo);
         keyboardManager = new KeyboardManager();
         EdgeToEdgeUtil.applyView(this, binding);
 
@@ -242,12 +242,12 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private void setUserImageAndName() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
-            Bitmap rawImage = prefRepository.getUserImage(this);
+            Bitmap rawImage = prefsRepo.getUserImage(this);
             final Bitmap roundedImage = (rawImage != null)
                     ? UIUtils.clipAndRound(rawImage, true, false)
                     : null;
 
-            String username = prefRepository.getUserName();
+            String username = prefsRepo.getUserName();
 
             runOnUiThread(() -> {
                 if (roundedImage != null) {

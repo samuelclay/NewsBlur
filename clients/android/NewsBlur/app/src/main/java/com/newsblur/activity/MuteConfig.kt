@@ -65,7 +65,7 @@ class MuteConfig : FeedChooser(), FeedStateChangedListener {
     }
 
     override fun setupList() {
-        adapter = MuteConfigAdapter(feedUtils, iconLoader, prefRepository, this)
+        adapter = MuteConfigAdapter(feedUtils, iconLoader, prefsRepo, this)
         binding.listView.setAdapter(adapter)
     }
 
@@ -115,7 +115,7 @@ class MuteConfig : FeedChooser(), FeedStateChangedListener {
 
     private fun syncActiveFeedCount() {
         // free standard accounts can follow up to 64 sites
-        val hasSubscription = prefRepository.hasSubscription()
+        val hasSubscription = prefsRepo.hasSubscription()
         if (!hasSubscription && feeds.isNotEmpty()) {
             var activeSites = 0
             for (feed in feeds) {

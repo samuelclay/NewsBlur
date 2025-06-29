@@ -79,7 +79,7 @@ class Profile : NbActivity() {
         lifecycleScope.executeAsyncTask(
                 onPreExecute = {
                     if (TextUtils.isEmpty(userId) && detailsFragment != null) {
-                        detailsFragment!!.setUser(prefRepository.getUserDetails(), true)
+                        detailsFragment!!.setUser(prefsRepo.getUserDetails(), true)
                     }
                 },
                 doInBackground = {
@@ -88,7 +88,7 @@ class Profile : NbActivity() {
                         apiManager.getUser(intentUserId).user
                     } else {
                         apiManager.updateUserProfile()
-                        prefRepository.getUserDetails()
+                        prefsRepo.getUserDetails()
                     }
                 },
                 onPostExecute = { userDetails ->

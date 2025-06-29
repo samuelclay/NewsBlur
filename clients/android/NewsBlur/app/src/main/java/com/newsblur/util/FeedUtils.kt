@@ -14,7 +14,7 @@ import com.newsblur.domain.Story
 import com.newsblur.fragment.ReadingActionConfirmationFragment
 import com.newsblur.network.APIConstants
 import com.newsblur.network.APIManager
-import com.newsblur.preference.PrefRepository
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NBSyncService
 import com.newsblur.service.NbSyncManager
 import com.newsblur.service.NbSyncManager.UPDATE_METADATA
@@ -28,7 +28,7 @@ import com.newsblur.util.FeedExt.setNotifyUnread
 class FeedUtils(
         private val dbHelper: BlurDatabaseHelper,
         private val apiManager: APIManager,
-        private val prefRepository: PrefRepository,
+        private val prefsRepo: PrefsRepo,
 ) {
 
     // this is gross, but the feedset can't hold a folder title
@@ -44,7 +44,7 @@ class FeedUtils(
                     try {
                         if (resetFirst) NBSyncService.resetReadingSession(dbHelper)
                         fs?.let {
-                            NBSyncService.prepareReadingSession(prefRepository, dbHelper, it)
+                            NBSyncService.prepareReadingSession(prefsRepo, dbHelper, it)
                         }
                     } catch (e: Exception) {
                         // this is a UI hinting call and might fail if the DB is being reset, but that is fine
@@ -69,7 +69,7 @@ class FeedUtils(
         NBScope.executeAsyncTask(
                 doInBackground = {
                     val ra = if (saved) ReadingAction.saveStory(storyHash, userTags) else ReadingAction.unsaveStory(storyHash)
-                    ra.doLocal(dbHelper, prefRepository)
+                    ra.doLocal(dbHelper, prefsRepo)
                     dbHelper.enqueueAction(ra)
                 },
                 onPostExecute = {
@@ -250,10 +250,10 @@ class FeedUtils(
         var optionalOverrideMessage: String? = null
         if (olderThan != null || newerThan != null) {
             // if this is a range mark, check that option
-            if (prefRepository.isConfirmMarkRangeRead()) doImmediate = false
+            if (prefsRepo.isConfirmMarkRangeRead()) doImmediate = false
         } else {
             // if this is an all mark, check that option
-            val confirmation = prefRepository.getMarkAllReadConfirmation()
+            val confirmation = prefsRepo.getMarkAllReadConfirmation()
             if (confirmation.feedSetRequiresConfirmation(fs)) doImmediate = false
         }
         // marks hit all stories, even when filtering via search, so warn
@@ -314,7 +314,7 @@ class FeedUtils(
         NBScope.executeAsyncTask(
                 doInBackground = {
                     dbHelper.enqueueAction(ra)
-                    val impact = ra.doLocal(dbHelper, prefRepository)
+                    val impact = ra.doLocal(dbHelper, prefsRepo)
                     syncUpdateStatus(impact)
                     triggerSync(context)
                 }
@@ -357,7 +357,7 @@ class FeedUtils(
         }
         val ra = ReadingAction.shareStory(story.storyHash, story.id, story.feedId, sourceUserId, comment)
         dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper, prefRepository)
+        ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(UPDATE_SOCIAL or UPDATE_STORY)
         triggerSync(context)
     }
@@ -365,7 +365,7 @@ class FeedUtils(
     fun renameFeed(context: Context, feedId: String?, newFeedName: String?) {
         val ra = ReadingAction.renameFeed(feedId, newFeedName)
         dbHelper.enqueueAction(ra)
-        val impact = ra.doLocal(dbHelper, prefRepository)
+        val impact = ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(impact)
         triggerSync(context)
     }
@@ -373,7 +373,7 @@ class FeedUtils(
     fun unshareStory(story: Story, context: Context) {
         val ra = ReadingAction.unshareStory(story.storyHash, story.id, story.feedId)
         dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper, prefRepository)
+        ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(UPDATE_SOCIAL or UPDATE_STORY)
         triggerSync(context)
     }
@@ -381,7 +381,7 @@ class FeedUtils(
     fun likeComment(story: Story, commentUserId: String?, context: Context) {
         val ra = ReadingAction.likeComment(story.id, commentUserId, story.feedId)
         dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper, prefRepository)
+        ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(UPDATE_SOCIAL)
         triggerSync(context)
     }
@@ -389,7 +389,7 @@ class FeedUtils(
     fun unlikeComment(story: Story, commentUserId: String?, context: Context) {
         val ra = ReadingAction.unlikeComment(story.id, commentUserId, story.feedId)
         dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper, prefRepository)
+        ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(UPDATE_SOCIAL)
         triggerSync(context)
     }
@@ -397,7 +397,7 @@ class FeedUtils(
     fun replyToComment(storyId: String?, feedId: String?, commentUserId: String?, replyText: String?, context: Context) {
         val ra = ReadingAction.replyToComment(storyId, feedId, commentUserId, replyText)
         dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper, prefRepository)
+        ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(UPDATE_SOCIAL)
         triggerSync(context)
     }
@@ -405,7 +405,7 @@ class FeedUtils(
     fun updateReply(context: Context, story: Story, commentUserId: String?, replyId: String?, replyText: String?) {
         val ra = ReadingAction.updateReply(story.id, story.feedId, commentUserId, replyId, replyText)
         dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper, prefRepository)
+        ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(UPDATE_SOCIAL)
         triggerSync(context)
     }
@@ -413,7 +413,7 @@ class FeedUtils(
     fun deleteReply(context: Context, story: Story, commentUserId: String?, replyId: String?) {
         val ra = ReadingAction.deleteReply(story.id, story.feedId, commentUserId, replyId)
         dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper, prefRepository)
+        ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(UPDATE_SOCIAL)
         triggerSync(context)
     }
@@ -458,7 +458,7 @@ class FeedUtils(
                     }
 
                     dbHelper.enqueueAction(ra)
-                    ra.doLocal(dbHelper, prefRepository)
+                    ra.doLocal(dbHelper, prefsRepo)
 
                     syncUpdateStatus(UPDATE_METADATA)
                     triggerSync(context)
@@ -469,7 +469,7 @@ class FeedUtils(
     fun instaFetchFeed(context: Context, feedId: String?) {
         val ra = ReadingAction.instaFetch(feedId)
         dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper, prefRepository)
+        ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(UPDATE_METADATA)
         triggerSync(context)
     }
@@ -487,9 +487,9 @@ class FeedUtils(
 
     fun getFeed(feedId: String?): Feed? = dbHelper.getFeed(feedId)
 
-    fun openStatistics(context: Context?, prefRepository: PrefRepository, feedId: String) {
+    fun openStatistics(context: Context?, prefsRepo: PrefsRepo, feedId: String) {
         val url = APIConstants.buildUrl(APIConstants.PATH_FEED_STATISTICS + feedId)
-        UIUtils.handleUri(context, prefRepository, Uri.parse(url))
+        UIUtils.handleUri(context, prefsRepo, Uri.parse(url))
     }
 
     private fun syncUpdateStatus(update: Int) {

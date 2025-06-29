@@ -1,6 +1,5 @@
 package com.newsblur.activity;
 
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -8,7 +7,7 @@ import android.widget.ImageView;
 
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
-import com.newsblur.preference.PrefRepository;
+import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
 
@@ -20,8 +19,8 @@ public class MuteConfigAdapter extends FeedChooserAdapter {
 
     private FeedStateChangedListener listener;
 
-    MuteConfigAdapter(FeedUtils feedUtils, ImageLoader imageLoader, PrefRepository prefRepository, FeedStateChangedListener listener) {
-        super(feedUtils, imageLoader, prefRepository);
+    MuteConfigAdapter(FeedUtils feedUtils, ImageLoader imageLoader, PrefsRepo prefsRepo, FeedStateChangedListener listener) {
+        super(feedUtils, imageLoader, prefsRepo);
         this.listener = listener;
     }
 

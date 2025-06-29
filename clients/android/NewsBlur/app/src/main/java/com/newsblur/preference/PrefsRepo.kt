@@ -13,7 +13,6 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
-import com.newsblur.R
 import com.newsblur.activity.Login
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.UserDetails
@@ -52,31 +51,24 @@ import java.io.InputStream
 import java.net.URL
 import java.util.Date
 
-class PrefRepository(
-        private val sharedPreferences: SharedPreferences,
+class PrefsRepo(
+        private val prefs: SharedPreferences,
 ) {
-
-    fun load() {}
 
     fun saveCustomServer(customServer: String?) {
         if (customServer == null) return
         if (customServer.isEmpty()) return
-        sharedPreferences.edit {
-            putString(PrefConstants.PREF_CUSTOM_SERVER, customServer)
-        }
+        prefs.edit { putString(PrefConstants.PREF_CUSTOM_SERVER, customServer) }
     }
 
-    fun getCustomSever(): String? =
-            sharedPreferences.getString(PrefConstants.PREF_CUSTOM_SERVER, null)
+    fun getCustomSever(): String? = prefs.getString(PrefConstants.PREF_CUSTOM_SERVER, null)
 
     fun clearCustomServer() {
-        sharedPreferences.edit {
-            remove(PrefConstants.PREF_CUSTOM_SERVER)
-        }
+        prefs.edit { remove(PrefConstants.PREF_CUSTOM_SERVER) }
     }
 
     fun saveLogin(userName: String, cookie: String?) {
-        sharedPreferences.edit {
+        prefs.edit {
             putString(PrefConstants.PREF_COOKIE, cookie)
             putString(PrefConstants.PREF_UNIQUE_LOGIN, userName + "_" + System.currentTimeMillis())
         }
@@ -85,33 +77,33 @@ class PrefRepository(
     fun checkForUpgrade(context: Context): Boolean {
         val version = getVersion(context)
         if (version == null) {
-            Log.wtf(PrefRepository::class.java.name, "could not determine app version")
+            Log.wtf(PrefsRepo::class.java.name, "could not determine app version")
             return false
         }
-        if (AppConstants.VERBOSE_LOG) Log.i(PrefRepository::class.java.name, "launching version: $version")
+        if (AppConstants.VERBOSE_LOG) Log.i(PrefsRepo::class.java.name, "launching version: $version")
 
-        val oldVersion = sharedPreferences.getString(AppConstants.LAST_APP_VERSION, null)
+        val oldVersion = prefs.getString(AppConstants.LAST_APP_VERSION, null)
         if ((oldVersion == null) || (oldVersion != version)) {
-            com.newsblur.util.Log.i(PrefRepository::class.java.name, "detected new version of app:$version")
+            com.newsblur.util.Log.i(PrefsRepo::class.java.name, "detected new version of app:$version")
             return true
         }
         return false
     }
 
     fun updateVersion(appVersion: String?) {
-        // store the current version
-        sharedPreferences.edit {
+        prefs.edit {
+            // store the current version
             putString(AppConstants.LAST_APP_VERSION, appVersion)
+            // also make sure we auto-trigger an update, since all data are now gone
+            putLong(AppConstants.LAST_SYNC_TIME, 0L)
         }
-        // also make sure we auto-trigger an update, since all data are now gone
-        sharedPreferences.edit { putLong(AppConstants.LAST_SYNC_TIME, 0L) }
     }
 
     fun getVersion(context: Context): String? {
         try {
             return context.packageManager.getPackageInfo(context.packageName, 0).versionName
         } catch (nnfe: PackageManager.NameNotFoundException) {
-            Log.w(PrefRepository::class.java.name, "could not determine app version")
+            Log.w(PrefsRepo::class.java.name, "could not determine app version")
             return null
         }
     }
@@ -164,9 +156,9 @@ class PrefRepository(
         s.append("pending actions: ").append(NBSyncService.getPendingInfo())
         s.append("\n")
         s.append("premium: ")
-        if (NBSyncService.isPremium === java.lang.Boolean.TRUE) {
+        if (NBSyncService.isPremium == true) {
             s.append("yes")
-        } else if (NBSyncService.isPremium === java.lang.Boolean.FALSE) {
+        } else if (NBSyncService.isPremium == false) {
             s.append("no")
         } else {
             s.append("unknown")
@@ -178,7 +170,7 @@ class PrefRepository(
         s.append("\n")
         s.append("keepread: ").append(if (isKeepOldStories()) "yes" else "no")
         s.append("\n")
-        s.append("thumbs: ").append(if (isShowThumbnails(context)) "yes" else "no")
+        s.append("thumbs: ").append(if (isShowThumbnails()) "yes" else "no")
         s.append("\n")
         return s.toString()
     }
@@ -193,7 +185,7 @@ class PrefRepository(
         NotificationUtils.clear(context)
 
         // wipe the prefs store
-        sharedPreferences.edit { clear() }
+        prefs.edit { clear() }
 
         // wipe the local DB
         dbHelper.dropAndRecreateTables()
@@ -217,11 +209,11 @@ class PrefRepository(
 
         // wipe the prefs store except for the cookie and login keys since we need to
         // authenticate further API calls
-        val keys: MutableSet<String> = HashSet(sharedPreferences.all.keys)
+        val keys: MutableSet<String> = HashSet(prefs.all.keys)
         keys.remove(PrefConstants.PREF_COOKIE)
         keys.remove(PrefConstants.PREF_UNIQUE_LOGIN)
         keys.remove(PrefConstants.PREF_CUSTOM_SERVER)
-        sharedPreferences.edit(commit = true) {
+        prefs.edit(commit = true) {
             for (key in keys) {
                 remove(key)
             }
@@ -236,12 +228,12 @@ class PrefRepository(
      * login. If this login key doesn't match the login key you have then assume
      * the user is logged out
      */
-    fun getUniqueLoginKey(): String? = sharedPreferences.getString(PrefConstants.PREF_UNIQUE_LOGIN, null)
+    fun getUniqueLoginKey(): String? = prefs.getString(PrefConstants.PREF_UNIQUE_LOGIN, null)
 
-    fun getCustomServer(): String? = sharedPreferences.getString(PrefConstants.PREF_CUSTOM_SERVER, null)
+    fun getCustomServer(): String? = prefs.getString(PrefConstants.PREF_CUSTOM_SERVER, null)
 
     fun saveUserDetails(context: Context, profile: UserDetails) {
-        sharedPreferences.edit {
+        prefs.edit {
             putInt(PrefConstants.USER_AVERAGE_STORIES_PER_MONTH, profile.averageStoriesPerMonth)
             putString(PrefConstants.USER_BIO, profile.bio)
             putString(PrefConstants.USER_FEED_ADDRESS, profile.feedAddress)
@@ -261,30 +253,26 @@ class PrefRepository(
         saveUserImage(context, profile.photoUrl)
     }
 
-    fun getUserId(): String? = sharedPreferences.getString(PrefConstants.USER_ID, null)
+    fun getUserId(): String? = prefs.getString(PrefConstants.USER_ID, null)
 
-    fun getUserName(): String? = sharedPreferences.getString(PrefConstants.USER_USERNAME, null)
+    fun getUserName(): String? = prefs.getString(PrefConstants.USER_USERNAME, null)
 
-    fun getUserDetails(): UserDetails {
-        val user = UserDetails()
-
-        user.averageStoriesPerMonth = sharedPreferences.getInt(PrefConstants.USER_AVERAGE_STORIES_PER_MONTH, 0)
-        user.bio = sharedPreferences.getString(PrefConstants.USER_BIO, null)
-        user.feedAddress = sharedPreferences.getString(PrefConstants.USER_FEED_ADDRESS, null)
-        user.feedTitle = sharedPreferences.getString(PrefConstants.USER_FEED_TITLE, null)
-        user.followerCount = sharedPreferences.getInt(PrefConstants.USER_FOLLOWER_COUNT, 0)
-        user.followingCount = sharedPreferences.getInt(PrefConstants.USER_FOLLOWING_COUNT, 0)
-        user.id = sharedPreferences.getString(PrefConstants.USER_ID, null)
-        user.location = sharedPreferences.getString(PrefConstants.USER_LOCATION, null)
-        user.photoService = sharedPreferences.getString(PrefConstants.USER_PHOTO_SERVICE, null)
-        user.photoUrl = sharedPreferences.getString(PrefConstants.USER_PHOTO_URL, null)
-        user.sharedStoriesCount = sharedPreferences.getInt(PrefConstants.USER_SHARED_STORIES_COUNT, 0)
-        user.storiesLastMonth = sharedPreferences.getInt(PrefConstants.USER_STORIES_LAST_MONTH, 0)
-        user.subscriptionCount = sharedPreferences.getInt(PrefConstants.USER_SUBSCRIBER_COUNT, 0)
-        user.username = sharedPreferences.getString(PrefConstants.USER_USERNAME, null)
-        user.website = sharedPreferences.getString(PrefConstants.USER_WEBSITE, null)
-
-        return user
+    fun getUserDetails(): UserDetails = UserDetails().apply {
+        averageStoriesPerMonth = prefs.getInt(PrefConstants.USER_AVERAGE_STORIES_PER_MONTH, 0)
+        bio = prefs.getString(PrefConstants.USER_BIO, null)
+        feedAddress = prefs.getString(PrefConstants.USER_FEED_ADDRESS, null)
+        feedTitle = prefs.getString(PrefConstants.USER_FEED_TITLE, null)
+        followerCount = prefs.getInt(PrefConstants.USER_FOLLOWER_COUNT, 0)
+        followingCount = prefs.getInt(PrefConstants.USER_FOLLOWING_COUNT, 0)
+        id = prefs.getString(PrefConstants.USER_ID, null)
+        location = prefs.getString(PrefConstants.USER_LOCATION, null)
+        photoService = prefs.getString(PrefConstants.USER_PHOTO_SERVICE, null)
+        photoUrl = prefs.getString(PrefConstants.USER_PHOTO_URL, null)
+        sharedStoriesCount = prefs.getInt(PrefConstants.USER_SHARED_STORIES_COUNT, 0)
+        storiesLastMonth = prefs.getInt(PrefConstants.USER_STORIES_LAST_MONTH, 0)
+        subscriptionCount = prefs.getInt(PrefConstants.USER_SUBSCRIBER_COUNT, 0)
+        username = prefs.getString(PrefConstants.USER_USERNAME, null)
+        website = prefs.getString(PrefConstants.USER_WEBSITE, null)
     }
 
     private fun saveUserImage(context: Context, pictureUrl: String) {
@@ -301,7 +289,7 @@ class PrefRepository(
         } catch (e: Exception) {
             // this can fail for a huge number of reasons, from storage problems to
             // missing image codecs. if it fails, a placeholder will be used
-            Log.e(PrefRepository::class.java.name, "couldn't save user profile image", e)
+            Log.e(PrefsRepo::class.java.name, "couldn't save user profile image", e)
         }
     }
 
@@ -313,7 +301,7 @@ class PrefRepository(
      * data to justify automatically syncing again.
      */
     fun isTimeToAutoSync(): Boolean {
-        val lastTime = sharedPreferences.getLong(AppConstants.LAST_SYNC_TIME, 1L)
+        val lastTime = prefs.getLong(AppConstants.LAST_SYNC_TIME, 1L)
         return ((lastTime + AppConstants.AUTO_SYNC_TIME_MILLIS) < (Date()).time)
     }
 
@@ -322,11 +310,10 @@ class PrefRepository(
      * how long it has been until another is needed.
      */
     fun updateLastSyncTime() {
-        sharedPreferences.edit { putLong(AppConstants.LAST_SYNC_TIME, (Date()).time) }
+        prefs.edit { putLong(AppConstants.LAST_SYNC_TIME, (Date()).time) }
     }
 
-    private fun getLastVacuumTime(): Long =
-            sharedPreferences.getLong(PrefConstants.LAST_VACUUM_TIME, 1L)
+    private fun getLastVacuumTime(): Long = prefs.getLong(PrefConstants.LAST_VACUUM_TIME, 1L)
 
     fun isTimeToVacuum(): Boolean {
         val lastTime = getLastVacuumTime()
@@ -335,127 +322,101 @@ class PrefRepository(
     }
 
     fun updateLastVacuumTime() {
-        sharedPreferences.edit { putLong(PrefConstants.LAST_VACUUM_TIME, (Date()).time) }
+        prefs.edit { putLong(PrefConstants.LAST_VACUUM_TIME, (Date()).time) }
     }
 
     fun isTimeToCleanup(): Boolean {
-        val lastTime = sharedPreferences.getLong(PrefConstants.LAST_CLEANUP_TIME, 1L)
+        val lastTime = prefs.getLong(PrefConstants.LAST_CLEANUP_TIME, 1L)
         val nowTime = (Date()).time
         return (lastTime + AppConstants.CLEANUP_TIME_MILLIS) < nowTime
     }
 
     fun updateLastCleanupTime() {
-        sharedPreferences.edit { putLong(PrefConstants.LAST_CLEANUP_TIME, (Date()).time) }
+        prefs.edit { putLong(PrefConstants.LAST_CLEANUP_TIME, (Date()).time) }
     }
 
-    fun getStoryOrderForFeed(feedId: String): StoryOrder =
-            StoryOrder.valueOf(sharedPreferences.getString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, getDefaultStoryOrder(sharedPreferences).toString())!!)
+    fun getStoryOrderForFeed(feedId: String): StoryOrder = StoryOrder.valueOf(
+            prefs.getString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, getDefaultStoryOrder(prefs).toString())!!)
 
-    fun getStoryOrderForFolder(folderName: String): StoryOrder =
-            StoryOrder.valueOf(sharedPreferences.getString(PrefConstants.FOLDER_STORY_ORDER_PREFIX + folderName, getDefaultStoryOrder(sharedPreferences).toString())!!)
+    fun getStoryOrderForFolder(folderName: String): StoryOrder = StoryOrder.valueOf(
+            prefs.getString(PrefConstants.FOLDER_STORY_ORDER_PREFIX + folderName, getDefaultStoryOrder(prefs).toString())!!)
 
-    fun getReadFilterForFeed(feedId: String): ReadFilter =
-            ReadFilter.valueOf(sharedPreferences.getString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, getDefaultReadFilter(sharedPreferences).toString())!!)
+    fun getReadFilterForFeed(feedId: String): ReadFilter = ReadFilter.valueOf(
+            prefs.getString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, getDefaultReadFilter(prefs).toString())!!)
 
-    fun getReadFilterForFolder(folderName: String): ReadFilter =
-            ReadFilter.valueOf(sharedPreferences.getString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, getDefaultReadFilter(sharedPreferences).toString())!!)
+    fun getReadFilterForFolder(folderName: String): ReadFilter = ReadFilter.valueOf(
+            prefs.getString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, getDefaultReadFilter(prefs).toString())!!)
 
-    fun setStoryOrderForFolder(folderName: String, newValue: StoryOrder) {
-        sharedPreferences.edit {
-            putString(PrefConstants.FOLDER_STORY_ORDER_PREFIX + folderName, newValue.toString())
-        }
+    private fun setStoryOrderForFolder(folderName: String, newValue: StoryOrder) {
+        prefs.edit { putString(PrefConstants.FOLDER_STORY_ORDER_PREFIX + folderName, newValue.toString()) }
     }
 
-    fun setStoryOrderForFeed(feedId: String, newValue: StoryOrder) {
-        sharedPreferences.edit {
-            putString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, newValue.toString())
-        }
+    private fun setStoryOrderForFeed(feedId: String, newValue: StoryOrder) {
+        prefs.edit { putString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, newValue.toString()) }
     }
 
-    fun setReadFilterForFolder(folderName: String, newValue: ReadFilter) {
-        sharedPreferences.edit {
-            putString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, newValue.toString())
-        }
+    private fun setReadFilterForFolder(folderName: String, newValue: ReadFilter) {
+        prefs.edit { putString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, newValue.toString()) }
     }
 
-    fun setReadFilterForFeed(feedId: String, newValue: ReadFilter) {
-        sharedPreferences.edit {
-            putString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, newValue.toString())
-        }
+    private fun setReadFilterForFeed(feedId: String, newValue: ReadFilter) {
+        prefs.edit { putString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, newValue.toString()) }
     }
 
-    fun getStoryListStyleForFeed(feedId: String): StoryListStyle =
-            StoryListStyle.safeValueOf(sharedPreferences.getString(PrefConstants.FEED_STORY_LIST_STYLE_PREFIX + feedId, StoryListStyle.LIST.toString()))
+    fun getStoryListStyleForFeed(feedId: String): StoryListStyle = StoryListStyle.safeValueOf(
+            prefs.getString(PrefConstants.FEED_STORY_LIST_STYLE_PREFIX + feedId, StoryListStyle.LIST.toString()))
 
-    fun getStoryListStyleForFolder(folderName: String): StoryListStyle =
-            StoryListStyle.safeValueOf(sharedPreferences.getString(PrefConstants.FOLDER_STORY_LIST_STYLE_PREFIX + folderName, StoryListStyle.LIST.toString()))
+    fun getStoryListStyleForFolder(folderName: String): StoryListStyle = StoryListStyle.safeValueOf(
+            prefs.getString(PrefConstants.FOLDER_STORY_LIST_STYLE_PREFIX + folderName, StoryListStyle.LIST.toString()))
 
-    fun setStoryListStyleForFolder(folderName: String, newValue: StoryListStyle) {
-        sharedPreferences.edit {
-            putString(PrefConstants.FOLDER_STORY_LIST_STYLE_PREFIX + folderName, newValue.toString())
-        }
+    private fun setStoryListStyleForFolder(folderName: String, newValue: StoryListStyle) {
+        prefs.edit { putString(PrefConstants.FOLDER_STORY_LIST_STYLE_PREFIX + folderName, newValue.toString()) }
     }
 
-    fun setStoryListStyleForFeed(feedId: String, newValue: StoryListStyle) {
-        sharedPreferences.edit {
-            putString(PrefConstants.FEED_STORY_LIST_STYLE_PREFIX + feedId, newValue.toString())
-        }
+    private fun setStoryListStyleForFeed(feedId: String, newValue: StoryListStyle) {
+        prefs.edit { putString(PrefConstants.FEED_STORY_LIST_STYLE_PREFIX + feedId, newValue.toString()) }
     }
 
-    private fun getDefaultStoryOrder(prefs: SharedPreferences): StoryOrder =
-            StoryOrder.valueOf(prefs.getString(PrefConstants.DEFAULT_STORY_ORDER, StoryOrder.NEWEST.toString())!!)
+    private fun getDefaultStoryOrder(prefs: SharedPreferences): StoryOrder = StoryOrder.valueOf(
+            prefs.getString(PrefConstants.DEFAULT_STORY_ORDER, StoryOrder.NEWEST.toString())!!)
 
-    fun getDefaultStoryOrder(): StoryOrder = getDefaultStoryOrder(sharedPreferences)
+    fun getDefaultStoryOrder(): StoryOrder = getDefaultStoryOrder(prefs)
 
-    private fun getDefaultReadFilter(prefs: SharedPreferences): ReadFilter =
-            ReadFilter.valueOf(prefs.getString(PrefConstants.DEFAULT_READ_FILTER, ReadFilter.ALL.toString())!!)
+    private fun getDefaultReadFilter(prefs: SharedPreferences): ReadFilter = ReadFilter.valueOf(
+            prefs.getString(PrefConstants.DEFAULT_READ_FILTER, ReadFilter.ALL.toString())!!)
 
-    fun isEnableRowGlobalShared(): Boolean =
-            sharedPreferences.getBoolean(PrefConstants.ENABLE_ROW_GLOBAL_SHARED, true)
+    fun isEnableRowGlobalShared() = prefs.getBoolean(PrefConstants.ENABLE_ROW_GLOBAL_SHARED, true)
 
-    fun isEnableRowInfrequent(): Boolean =
-            sharedPreferences.getBoolean(PrefConstants.ENABLE_ROW_INFREQUENT_STORIES, true)
+    fun isEnableRowInfrequent() = prefs.getBoolean(PrefConstants.ENABLE_ROW_INFREQUENT_STORIES, true)
 
-    fun showPublicComments(): Boolean =
-            sharedPreferences.getBoolean(PrefConstants.SHOW_PUBLIC_COMMENTS, true)
+    fun showPublicComments() = prefs.getBoolean(PrefConstants.SHOW_PUBLIC_COMMENTS, true)
 
-    fun getReadingTextSize(): Float =
-            sharedPreferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f)
+    fun getReadingTextSize() = prefs.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f)
 
     fun setReadingTextSize(size: Float) {
-        sharedPreferences.edit {
-            putFloat(PrefConstants.PREFERENCE_TEXT_SIZE, size)
-        }
+        prefs.edit { putFloat(PrefConstants.PREFERENCE_TEXT_SIZE, size) }
     }
 
-    fun getListTextSize(): Float =
-            sharedPreferences.getFloat(PrefConstants.PREFERENCE_LIST_TEXT_SIZE, 1.0f)
+    fun getListTextSize() = prefs.getFloat(PrefConstants.PREFERENCE_LIST_TEXT_SIZE, 1.0f)
 
     fun setListTextSize(size: Float) {
-        sharedPreferences.edit {
-            putFloat(PrefConstants.PREFERENCE_LIST_TEXT_SIZE, size)
-        }
+        prefs.edit { putFloat(PrefConstants.PREFERENCE_LIST_TEXT_SIZE, size) }
     }
 
-    fun getInfrequentCutoff(): Int =
-            sharedPreferences.getInt(PrefConstants.PREFERENCE_INFREQUENT_CUTOFF, 30)
+    fun getInfrequentCutoff() = prefs.getInt(PrefConstants.PREFERENCE_INFREQUENT_CUTOFF, 30)
 
     fun setInfrequentCutoff(newValue: Int) {
-        sharedPreferences.edit {
-            putInt(PrefConstants.PREFERENCE_INFREQUENT_CUTOFF, newValue)
-        }
+        prefs.edit { putInt(PrefConstants.PREFERENCE_INFREQUENT_CUTOFF, newValue) }
     }
 
     fun getDefaultViewModeForFeed(feedId: String?): DefaultFeedView {
         if (feedId == null || feedId == "0") return DefaultFeedView.STORY
-        return DefaultFeedView.valueOf(sharedPreferences.getString(PrefConstants.FEED_DEFAULT_FEED_VIEW_PREFIX + feedId, getDefaultFeedView().toString())!!)
+        return DefaultFeedView.valueOf(prefs.getString(PrefConstants.FEED_DEFAULT_FEED_VIEW_PREFIX + feedId, DefaultFeedView.STORY.toString())!!)
     }
 
     fun setDefaultViewModeForFeed(feedId: String?, newValue: DefaultFeedView) {
         if (feedId == null || feedId == "0") return
-        sharedPreferences.edit {
-            putString(PrefConstants.FEED_DEFAULT_FEED_VIEW_PREFIX + feedId, newValue.toString())
-        }
+        prefs.edit { putString(PrefConstants.FEED_DEFAULT_FEED_VIEW_PREFIX + feedId, newValue.toString()) }
     }
 
     fun getStoryOrder(fs: FeedSet): StoryOrder {
@@ -619,59 +580,40 @@ class PrefRepository(
         }
     }
 
-    private fun getDefaultFeedView(): DefaultFeedView {
-        return DefaultFeedView.STORY
-    }
-
-    fun getStoryContentPreviewStyle(): StoryContentPreviewStyle =
-            StoryContentPreviewStyle.valueOf(sharedPreferences.getString(PrefConstants.STORIES_SHOW_PREVIEWS_STYLE, StoryContentPreviewStyle.MEDIUM.toString())!!)
+    fun getStoryContentPreviewStyle(): StoryContentPreviewStyle = StoryContentPreviewStyle.valueOf(
+            prefs.getString(PrefConstants.STORIES_SHOW_PREVIEWS_STYLE, StoryContentPreviewStyle.MEDIUM.toString())!!)
 
     fun setStoryContentPreviewStyle(value: StoryContentPreviewStyle) {
-        sharedPreferences.edit {
-            putString(PrefConstants.STORIES_SHOW_PREVIEWS_STYLE, value.name)
-        }
+        prefs.edit { putString(PrefConstants.STORIES_SHOW_PREVIEWS_STYLE, value.name) }
     }
 
-    private fun isShowThumbnails(context: Context): Boolean {
-        return getThumbnailStyle(context) != ThumbnailStyle.OFF
-    }
+    private fun isShowThumbnails() = getThumbnailStyle() != ThumbnailStyle.OFF
 
     fun setThumbnailStyle(value: ThumbnailStyle) {
-        sharedPreferences.edit {
-            putString(PrefConstants.STORIES_THUMBNAIL_STYLE, value.name)
-        }
+        prefs.edit { putString(PrefConstants.STORIES_THUMBNAIL_STYLE, value.name) }
     }
 
+    fun getThumbnailStyle(): ThumbnailStyle = ThumbnailStyle.valueOf(
+            prefs.getString(PrefConstants.STORIES_THUMBNAIL_STYLE, ThumbnailStyle.RIGHT_LARGE.name)!!)
 
-    fun getThumbnailStyle(context: Context): ThumbnailStyle {
-        val defaultValue = context.getString(R.string.thumbnail_style_default_value)
-        return ThumbnailStyle.valueOf(sharedPreferences.getString(PrefConstants.STORIES_THUMBNAIL_STYLE, defaultValue)!!)
-    }
+    fun isAutoOpenFirstUnread() = prefs.getBoolean(PrefConstants.STORIES_AUTO_OPEN_FIRST, false)
 
-    fun isAutoOpenFirstUnread(): Boolean =
-            sharedPreferences.getBoolean(PrefConstants.STORIES_AUTO_OPEN_FIRST, false)
-
-    fun isMarkReadOnFeedScroll(): Boolean =
-            sharedPreferences.getBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, false)
+    fun isMarkReadOnFeedScroll() = prefs.getBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, false)
 
     fun setMarkReadOnScroll(value: Boolean) {
-        sharedPreferences.edit {
-            putBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, value)
-        }
+        prefs.edit { putBoolean(PrefConstants.STORIES_MARK_READ_ON_SCROLL, value) }
     }
 
-    fun isOfflineEnabled(): Boolean =
-            sharedPreferences.getBoolean(PrefConstants.ENABLE_OFFLINE, false)
+    fun isOfflineEnabled() = prefs.getBoolean(PrefConstants.ENABLE_OFFLINE, false)
 
-    fun isImagePrefetchEnabled(): Boolean =
-            sharedPreferences.getBoolean(PrefConstants.ENABLE_IMAGE_PREFETCH, false)
+    fun isImagePrefetchEnabled() = prefs.getBoolean(PrefConstants.ENABLE_IMAGE_PREFETCH, false)
 
     /**
      * Compares the user's setting for when background data use is allowed against the
      * current network status and sees if it is okay to sync.
      */
     fun isBackgroundNetworkAllowed(context: Context): Boolean {
-        val mode = sharedPreferences.getString(PrefConstants.NETWORK_SELECT, PrefConstants.NETWORK_SELECT_NOMONONME)!!
+        val mode = prefs.getString(PrefConstants.NETWORK_SELECT, PrefConstants.NETWORK_SELECT_NOMONONME)!!
 
         val connMgr = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeInfo = connMgr.activeNetworkInfo
@@ -697,11 +639,10 @@ class PrefRepository(
         return true
     }
 
-    fun isKeepOldStories(): Boolean =
-            sharedPreferences.getBoolean(PrefConstants.KEEP_OLD_STORIES, false)
+    fun isKeepOldStories() = prefs.getBoolean(PrefConstants.KEEP_OLD_STORIES, false)
 
     fun getMaxCachedAgeMillis(): Long {
-        val `val` = sharedPreferences.getString(PrefConstants.CACHE_AGE_SELECT, PrefConstants.CACHE_AGE_SELECT_30D)!!
+        val `val` = prefs.getString(PrefConstants.CACHE_AGE_SELECT, PrefConstants.CACHE_AGE_SELECT_30D)!!
         if (`val` == PrefConstants.CACHE_AGE_SELECT_2D) return PrefConstants.CACHE_AGE_VALUE_2D
         if (`val` == PrefConstants.CACHE_AGE_SELECT_7D) return PrefConstants.CACHE_AGE_VALUE_7D
         if (`val` == PrefConstants.CACHE_AGE_SELECT_14D) return PrefConstants.CACHE_AGE_VALUE_14D
@@ -709,11 +650,11 @@ class PrefRepository(
         return PrefConstants.CACHE_AGE_VALUE_30D
     }
 
-    fun getFeedListOrder(): FeedListOrder =
-            FeedListOrder.valueOf(sharedPreferences.getString(PrefConstants.FEED_LIST_ORDER, FeedListOrder.ALPHABETICAL.toString())!!)
+    fun getFeedListOrder(): FeedListOrder = FeedListOrder.valueOf(
+            prefs.getString(PrefConstants.FEED_LIST_ORDER, FeedListOrder.ALPHABETICAL.toString())!!)
 
     fun getSelectedTheme(): ThemeValue {
-        val value = sharedPreferences.getString(PrefConstants.THEME, ThemeValue.AUTO.name)!!
+        val value = prefs.getString(PrefConstants.THEME, ThemeValue.AUTO.name)!!
         // check for legacy hard-coded values. this can go away once installs of v152 or earlier are minimized
         if (value == "light") {
             setSelectedTheme(ThemeValue.LIGHT)
@@ -727,113 +668,94 @@ class PrefRepository(
     }
 
     fun setSelectedTheme(value: ThemeValue) {
-        sharedPreferences.edit {
-            putString(PrefConstants.THEME, value.name)
-        }
+        prefs.edit { putString(PrefConstants.THEME, value.name) }
     }
 
-    fun getStateFilter(): StateFilter = StateFilter.valueOf(sharedPreferences.getString(PrefConstants.STATE_FILTER, StateFilter.SOME.toString())!!)
+    fun getStateFilter(): StateFilter = StateFilter.valueOf(
+            prefs.getString(PrefConstants.STATE_FILTER, StateFilter.SOME.toString())!!)
 
     fun setStateFilter(newValue: StateFilter) {
-        sharedPreferences.edit {
-            putString(PrefConstants.STATE_FILTER, newValue.toString())
-        }
+        prefs.edit { putString(PrefConstants.STATE_FILTER, newValue.toString()) }
     }
 
-    fun getVolumeKeyNavigation(): VolumeKeyNavigation =
-            VolumeKeyNavigation.valueOf(sharedPreferences.getString(PrefConstants.VOLUME_KEY_NAVIGATION, VolumeKeyNavigation.OFF.toString())!!)
+    fun getVolumeKeyNavigation(): VolumeKeyNavigation = VolumeKeyNavigation.valueOf(
+            prefs.getString(PrefConstants.VOLUME_KEY_NAVIGATION, VolumeKeyNavigation.OFF.toString())!!)
 
-    fun getMarkAllReadConfirmation(): MarkAllReadConfirmation =
-            MarkAllReadConfirmation.valueOf(sharedPreferences.getString(PrefConstants.MARK_ALL_READ_CONFIRMATION, MarkAllReadConfirmation.FOLDER_ONLY.toString())!!)
+    fun getMarkAllReadConfirmation(): MarkAllReadConfirmation = MarkAllReadConfirmation.valueOf(
+            prefs.getString(PrefConstants.MARK_ALL_READ_CONFIRMATION, MarkAllReadConfirmation.FOLDER_ONLY.toString())!!)
 
-    fun isConfirmMarkRangeRead(): Boolean =
-            sharedPreferences.getBoolean(PrefConstants.MARK_RANGE_READ_CONFIRMATION, false)
+    fun isConfirmMarkRangeRead() = prefs.getBoolean(PrefConstants.MARK_RANGE_READ_CONFIRMATION, false)
 
-    fun getLeftToRightGestureAction(): GestureAction =
-            GestureAction.valueOf(sharedPreferences.getString(PrefConstants.LTR_GESTURE_ACTION, GestureAction.GEST_ACTION_MARKREAD.toString())!!)
+    fun getLeftToRightGestureAction(): GestureAction = GestureAction.valueOf(
+            prefs.getString(PrefConstants.LTR_GESTURE_ACTION, GestureAction.GEST_ACTION_MARKREAD.toString())!!)
 
-    fun getRightToLeftGestureAction(): GestureAction =
-            GestureAction.valueOf(sharedPreferences.getString(PrefConstants.RTL_GESTURE_ACTION, GestureAction.GEST_ACTION_MARKUNREAD.toString())!!)
+    fun getRightToLeftGestureAction(): GestureAction = GestureAction.valueOf(
+            prefs.getString(PrefConstants.RTL_GESTURE_ACTION, GestureAction.GEST_ACTION_MARKUNREAD.toString())!!)
 
-    fun isEnableNotifications(): Boolean =
-            sharedPreferences.getBoolean(PrefConstants.ENABLE_NOTIFICATIONS, false)
+    fun isEnableNotifications() = prefs.getBoolean(PrefConstants.ENABLE_NOTIFICATIONS, false)
 
-    fun isBackgroundNeeded(context: Context): Boolean =
-            isEnableNotifications() || isOfflineEnabled() || hasActiveAppWidgets(context)
+    fun isBackgroundNeeded(context: Context) = isEnableNotifications() || isOfflineEnabled() || hasActiveAppWidgets(context)
 
     fun getFont(): Font = Font.getFont(getFontString())
 
-    fun getFontString(): String =
-            sharedPreferences.getString(PrefConstants.READING_FONT, Font.DEFAULT.toString())!!
+    fun getFontString() = prefs.getString(PrefConstants.READING_FONT, Font.DEFAULT.toString())!!
 
     fun setFontString(newValue: String?) {
-        sharedPreferences.edit {
-            putString(PrefConstants.READING_FONT, newValue)
-        }
+        prefs.edit { putString(PrefConstants.READING_FONT, newValue) }
     }
 
     fun setWidgetFeedIds(feedIds: Set<String?>?) {
-        sharedPreferences.edit {
-            putStringSet(PrefConstants.WIDGET_FEED_SET, feedIds)
-        }
+        prefs.edit { putStringSet(PrefConstants.WIDGET_FEED_SET, feedIds) }
     }
 
-    fun getWidgetFeedIds(): Set<String>? = sharedPreferences.getStringSet(PrefConstants.WIDGET_FEED_SET, null)
+    fun getWidgetFeedIds(): Set<String>? = prefs.getStringSet(PrefConstants.WIDGET_FEED_SET, null)
 
     fun removeWidgetData() {
-        sharedPreferences.edit {
-            if (sharedPreferences.contains(PrefConstants.WIDGET_FEED_SET)) {
+        prefs.edit {
+            if (prefs.contains(PrefConstants.WIDGET_FEED_SET)) {
                 remove(PrefConstants.WIDGET_FEED_SET)
             }
-            if (sharedPreferences.contains(PrefConstants.WIDGET_BACKGROUND)) {
+            if (prefs.contains(PrefConstants.WIDGET_BACKGROUND)) {
                 remove(PrefConstants.WIDGET_BACKGROUND)
             }
         }
     }
 
-    fun getFeedChooserFeedOrder(): FeedOrderFilter =
-            FeedOrderFilter.valueOf(sharedPreferences.getString(PrefConstants.FEED_CHOOSER_FEED_ORDER, FeedOrderFilter.NAME.toString())!!)
+    fun getFeedChooserFeedOrder(): FeedOrderFilter = FeedOrderFilter.valueOf(
+            prefs.getString(PrefConstants.FEED_CHOOSER_FEED_ORDER, FeedOrderFilter.NAME.toString())!!)
 
     fun setFeedChooserFeedOrder(feedOrderFilter: FeedOrderFilter) {
-        sharedPreferences.edit {
-            putString(PrefConstants.FEED_CHOOSER_FEED_ORDER, feedOrderFilter.toString())
-        }
+        prefs.edit { putString(PrefConstants.FEED_CHOOSER_FEED_ORDER, feedOrderFilter.toString()) }
     }
 
-    fun getFeedChooserListOrder(): ListOrderFilter =
-            ListOrderFilter.valueOf(sharedPreferences.getString(PrefConstants.FEED_CHOOSER_LIST_ORDER, ListOrderFilter.ASCENDING.name)!!)
+    fun getFeedChooserListOrder(): ListOrderFilter = ListOrderFilter.valueOf(
+            prefs.getString(PrefConstants.FEED_CHOOSER_LIST_ORDER, ListOrderFilter.ASCENDING.name)!!)
 
     fun setFeedChooserListOrder(listOrderFilter: ListOrderFilter) {
-        sharedPreferences.edit {
-            putString(PrefConstants.FEED_CHOOSER_LIST_ORDER, listOrderFilter.toString())
-        }
+        prefs.edit { putString(PrefConstants.FEED_CHOOSER_LIST_ORDER, listOrderFilter.toString()) }
     }
 
-    fun getFeedChooserFolderView(): FolderViewFilter =
-            FolderViewFilter.valueOf(sharedPreferences.getString(PrefConstants.FEED_CHOOSER_FOLDER_VIEW, FolderViewFilter.NESTED.name)!!)
+    fun getFeedChooserFolderView(): FolderViewFilter = FolderViewFilter.valueOf(
+            prefs.getString(PrefConstants.FEED_CHOOSER_FOLDER_VIEW, FolderViewFilter.NESTED.name)!!)
 
     fun setFeedChooserFolderView(folderViewFilter: FolderViewFilter) {
-        sharedPreferences.edit {
-            putString(PrefConstants.FEED_CHOOSER_FOLDER_VIEW, folderViewFilter.toString())
-        }
+        prefs.edit { putString(PrefConstants.FEED_CHOOSER_FOLDER_VIEW, folderViewFilter.toString()) }
     }
 
-    fun getWidgetBackground(): WidgetBackground =
-            WidgetBackground.valueOf(sharedPreferences.getString(PrefConstants.WIDGET_BACKGROUND, WidgetBackground.DEFAULT.name)!!)
+    fun getWidgetBackground(): WidgetBackground = WidgetBackground.valueOf(
+            prefs.getString(PrefConstants.WIDGET_BACKGROUND, WidgetBackground.DEFAULT.name)!!)
 
     fun setWidgetBackground(widgetBackground: WidgetBackground) {
-        sharedPreferences.edit {
-            putString(PrefConstants.WIDGET_BACKGROUND, widgetBackground.toString())
-        }
+        prefs.edit { putString(PrefConstants.WIDGET_BACKGROUND, widgetBackground.toString()) }
     }
 
     fun getDefaultBrowser(): DefaultBrowser = DefaultBrowser.getDefaultBrowser(getDefaultBrowserString())
 
-    fun getDefaultBrowserString(): String =
-            sharedPreferences.getString(PrefConstants.DEFAULT_BROWSER, DefaultBrowser.SYSTEM_DEFAULT.toString())!!
+    private fun getDefaultBrowserString() =
+            prefs.getString(PrefConstants.DEFAULT_BROWSER, DefaultBrowser.SYSTEM_DEFAULT.toString())!!
 
     fun setArchive(isArchive: Boolean, archiveExpire: Long?) {
-        sharedPreferences.edit {
+        prefs.edit {
             putBoolean(PrefConstants.IS_ARCHIVE, isArchive)
             if (archiveExpire != null) {
                 putLong(PrefConstants.SUBSCRIPTION_EXPIRE, archiveExpire)
@@ -841,10 +763,10 @@ class PrefRepository(
         }
     }
 
-    fun getIsArchive(): Boolean = sharedPreferences.getBoolean(PrefConstants.IS_ARCHIVE, false)
+    fun getIsArchive() = prefs.getBoolean(PrefConstants.IS_ARCHIVE, false)
 
     fun setPremium(isPremium: Boolean, premiumExpire: Long?) {
-        sharedPreferences.edit {
+        prefs.edit {
             putBoolean(PrefConstants.IS_PREMIUM, isPremium)
             if (premiumExpire != null) {
                 putLong(PrefConstants.SUBSCRIPTION_EXPIRE, premiumExpire)
@@ -852,27 +774,23 @@ class PrefRepository(
         }
     }
 
-    fun getIsPremium(): Boolean = sharedPreferences.getBoolean(PrefConstants.IS_PREMIUM, false)
+    fun getIsPremium() = prefs.getBoolean(PrefConstants.IS_PREMIUM, false)
 
-    fun getSubscriptionExpire(): Long = sharedPreferences.getLong(PrefConstants.SUBSCRIPTION_EXPIRE, -1)
+    fun getSubscriptionExpire(): Long = prefs.getLong(PrefConstants.SUBSCRIPTION_EXPIRE, -1)
 
-    fun hasSubscription(): Boolean = getIsPremium() || getIsArchive()
+    fun hasSubscription() = getIsPremium() || getIsArchive()
 
-    fun hasInAppReviewed(): Boolean = sharedPreferences.getBoolean(PrefConstants.IN_APP_REVIEW, false)
+    fun hasInAppReviewed() = prefs.getBoolean(PrefConstants.IN_APP_REVIEW, false)
 
     fun setInAppReviewed() {
-        sharedPreferences.edit {
-            putBoolean(PrefConstants.IN_APP_REVIEW, true)
-        }
+        prefs.edit { putBoolean(PrefConstants.IN_APP_REVIEW, true) }
     }
 
-    fun getSpacingStyle(): SpacingStyle =
-            SpacingStyle.valueOf(sharedPreferences.getString(PrefConstants.SPACING_STYLE, SpacingStyle.COMFORTABLE.name)!!)
+    fun getSpacingStyle(): SpacingStyle = SpacingStyle.valueOf(
+            prefs.getString(PrefConstants.SPACING_STYLE, SpacingStyle.COMFORTABLE.name)!!)
 
     fun setSpacingStyle(spacingStyle: SpacingStyle) {
-        sharedPreferences.edit {
-            putString(PrefConstants.SPACING_STYLE, spacingStyle.toString())
-        }
+        prefs.edit { putString(PrefConstants.SPACING_STYLE, spacingStyle.toString()) }
     }
 
     /**
@@ -882,19 +800,24 @@ class PrefRepository(
      */
     fun hasCookie(): Boolean = getCookie() != null
 
-    fun getCookie(): String? =
-            sharedPreferences.getString(PrefConstants.PREF_COOKIE, null)
+    fun getCookie(): String? = prefs.getString(PrefConstants.PREF_COOKIE, null)
 
-    fun getMarkStoryReadBehavior(): MarkStoryReadBehavior =
-            MarkStoryReadBehavior.valueOf(sharedPreferences.getString(PrefConstants.STORY_MARK_READ_BEHAVIOR, MarkStoryReadBehavior.IMMEDIATELY.name)!!)
+    fun getMarkStoryReadBehavior(): MarkStoryReadBehavior = MarkStoryReadBehavior.valueOf(
+            prefs.getString(PrefConstants.STORY_MARK_READ_BEHAVIOR, MarkStoryReadBehavior.IMMEDIATELY.name)!!)
 
-    fun loadNextOnMarkRead(): Boolean = sharedPreferences.getBoolean(PrefConstants.LOAD_NEXT_ON_MARK_READ, false)
+    fun loadNextOnMarkRead(): Boolean = prefs.getBoolean(PrefConstants.LOAD_NEXT_ON_MARK_READ, false)
 
     fun setExtToken(token: String?) {
-        sharedPreferences.edit {
+        prefs.edit {
             putString(PrefConstants.EXT_TOKEN, token)
         }
     }
 
-    fun getExtToken(): String? = sharedPreferences.getString(PrefConstants.EXT_TOKEN, null)
+    fun getExtToken(): String? = prefs.getString(PrefConstants.EXT_TOKEN, null)
+
+    fun getBoolean(key: String, default: Boolean): Boolean = prefs.getBoolean(key, default)
+
+    fun putBoolean(key: String, value: Boolean) = prefs.edit {
+        putBoolean(key, value)
+    }
 }

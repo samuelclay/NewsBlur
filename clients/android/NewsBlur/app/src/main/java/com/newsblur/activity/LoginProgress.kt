@@ -11,7 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.databinding.ActivityLoginProgressBinding
 import com.newsblur.network.APIManager
-import com.newsblur.preference.PrefRepository
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.util.EdgeToEdgeUtil.applyTheme
 import com.newsblur.util.EdgeToEdgeUtil.applyView
@@ -27,12 +27,12 @@ class LoginProgress : FragmentActivity() {
     lateinit var apiManager: APIManager
 
     @Inject
-    lateinit var prefRepository: PrefRepository
+    lateinit var prefsRepo: PrefsRepo
 
     private lateinit var binding: ActivityLoginProgressBinding
 
     override fun onCreate(bundle: Bundle?) {
-        applyTheme(prefRepository.getSelectedTheme())
+        applyTheme(prefsRepo.getSelectedTheme())
         super.onCreate(bundle)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         binding = ActivityLoginProgressBinding.inflate(layoutInflater)
@@ -52,7 +52,7 @@ class LoginProgress : FragmentActivity() {
                     if (!response.isError) {
                         apiManager.updateUserProfile()
                     }
-                    val roundedUserImage = prefRepository.getUserImage(this)?.let { userImage ->
+                    val roundedUserImage = prefsRepo.getUserImage(this)?.let { userImage ->
                         UIUtils.clipAndRound(userImage, true, false)
                     }
                     response to roundedUserImage

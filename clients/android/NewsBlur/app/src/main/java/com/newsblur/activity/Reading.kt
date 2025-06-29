@@ -1,7 +1,6 @@
 package com.newsblur.activity
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.database.Cursor
@@ -148,9 +147,9 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
             savedInstanceBundle.getString(EXTRA_STORY_HASH)
         }
 
-        intelState = prefRepository.getStateFilter()
-        volumeKeyNavigation = prefRepository.getVolumeKeyNavigation()
-        markStoryReadBehavior = prefRepository.getMarkStoryReadBehavior()
+        intelState = prefsRepo.getStateFilter()
+        volumeKeyNavigation = prefsRepo.getVolumeKeyNavigation()
+        markStoryReadBehavior = prefsRepo.getMarkStoryReadBehavior()
 
         setupViews()
         setupListeners()
@@ -253,7 +252,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
     private fun getActiveStoriesCursor(finishOnInvalidFs: Boolean = false) {
         fs?.let {
-            val cursorFilters = CursorFilters(prefRepository, it)
+            val cursorFilters = CursorFilters(prefsRepo, it)
             storiesViewModel.getActiveStories(it, cursorFilters)
         } ?: run {
             if (finishOnInvalidFs) {
@@ -350,7 +349,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         pager.visibility = View.INVISIBLE
         pager.pageMargin = UIUtils.dp2px(this, 1)
 
-        when (prefRepository.getSelectedTheme()) {
+        when (prefsRepo.getSelectedTheme()) {
             ThemeValue.LIGHT -> pager.setPageMarginDrawable(R.drawable.divider_light)
             ThemeValue.DARK, ThemeValue.BLACK -> pager.setPageMarginDrawable(R.drawable.divider_dark)
             ThemeValue.AUTO -> {
