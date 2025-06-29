@@ -18,7 +18,6 @@ import com.newsblur.databinding.FragmentLoginregisterBinding
 import com.newsblur.network.APIConstants
 import com.newsblur.preference.PrefRepository
 import com.newsblur.util.AppConstants
-import com.newsblur.util.PrefsUtils
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

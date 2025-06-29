@@ -36,7 +36,6 @@ import com.newsblur.util.CursorFilters;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StoryListStyle;
@@ -325,7 +324,7 @@ public class ItemSetFragment extends NbFragment {
     private void updateLoadingIndicators() {
         calcFleuronPadding();
 
-        if (cursorSeenYet && adapter.getRawStoryCount() > 0 && UIUtils.needsSubscriptionAccess(requireContext(), getFeedSet())) {
+        if (cursorSeenYet && adapter.getRawStoryCount() > 0 && UIUtils.needsSubscriptionAccess(getFeedSet(), prefRepository)) {
             fleuronBinding.getRoot().setVisibility(View.VISIBLE);
             fleuronBinding.containerSubscribe.setVisibility(View.VISIBLE);
             binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
@@ -386,7 +385,7 @@ public class ItemSetFragment extends NbFragment {
     }
 
     public void updateSpacingStyle() {
-        SpacingStyle spacingStyle = PrefsUtils.getSpacingStyle(requireContext());
+        SpacingStyle spacingStyle = prefRepository.getSpacingStyle();
         adapter.setSpacingStyle(spacingStyle);
         adapter.notifyAllItemsChanged();
     }
@@ -461,7 +460,7 @@ public class ItemSetFragment extends NbFragment {
         if (dy < 1) return;
 
         // skip fetching more stories if premium access is required
-        if (UIUtils.needsSubscriptionAccess(requireContext(), getFeedSet()) && adapter.getItemCount() >= 3) return;
+        if (UIUtils.needsSubscriptionAccess(getFeedSet(), prefRepository) && adapter.getItemCount() >= 3) return;
 
         ensureSufficientStories();
 

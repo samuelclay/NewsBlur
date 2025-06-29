@@ -21,7 +21,6 @@ import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.FileDownloader
 import com.newsblur.util.NBScope
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
 import com.newsblur.util.setViewGone

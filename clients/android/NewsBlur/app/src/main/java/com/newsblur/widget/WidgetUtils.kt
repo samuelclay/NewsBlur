@@ -10,7 +10,6 @@ import android.os.SystemClock
 import com.newsblur.preference.PrefRepository
 import com.newsblur.util.Log
 import com.newsblur.util.PendingIntentUtils.getImmutableBroadcast
-import com.newsblur.util.PrefsUtils
 
 object WidgetUtils {
 

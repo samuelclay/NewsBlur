@@ -9,7 +9,6 @@ import androidx.fragment.app.DialogFragment
 import com.newsblur.R
 import com.newsblur.databinding.NewsletterDialogBinding
 import com.newsblur.preference.PrefRepository
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.setViewGone
 import com.newsblur.util.setViewVisible
 import dagger.hilt.android.AndroidEntryPoint

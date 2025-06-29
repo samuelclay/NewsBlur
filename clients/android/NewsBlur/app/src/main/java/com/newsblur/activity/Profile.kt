@@ -11,7 +11,6 @@ import com.newsblur.fragment.ProfileDetailsFragment
 import com.newsblur.network.APIManager
 import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.ImageLoader
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
@@ -80,7 +79,7 @@ class Profile : NbActivity() {
         lifecycleScope.executeAsyncTask(
                 onPreExecute = {
                     if (TextUtils.isEmpty(userId) && detailsFragment != null) {
-                        detailsFragment!!.setUser(this, prefRepository.getUserDetails(), true)
+                        detailsFragment!!.setUser(prefRepository.getUserDetails(), true)
                     }
                 },
                 doInBackground = {
@@ -94,7 +93,7 @@ class Profile : NbActivity() {
                 },
                 onPostExecute = { userDetails ->
                     if (userDetails != null && detailsFragment != null && activityDetailsPagerAdapter != null) {
-                        detailsFragment!!.setUser(this, userDetails, TextUtils.isEmpty(userId))
+                        detailsFragment!!.setUser(userDetails, TextUtils.isEmpty(userId))
                         activityDetailsPagerAdapter!!.setUser(userDetails, iconLoader)
                     }
                 }

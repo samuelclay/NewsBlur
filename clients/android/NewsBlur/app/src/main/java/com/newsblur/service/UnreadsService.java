@@ -5,7 +5,6 @@ import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.ExtensionsKt;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 

@@ -140,11 +140,11 @@ public class UIUtils {
             return null;
         }
     }
-	
+
 	/*
 	 * Convert from device-independent-pixels to pixels for use in custom view drawing, as
-	 * used throughout Android. 
-	 * See: http://bit.ly/MfsAUZ (Romain Guy's comment)  
+	 * used throughout Android.
+	 * See: http://bit.ly/MfsAUZ (Romain Guy's comment)
 	 */
 	public static int dp2px(Context context, int dp) {
 		float scale = context.getResources().getDisplayMetrics().density;
@@ -381,7 +381,7 @@ public class UIUtils {
             return Html.fromHtml(html);
         }
     }
-    
+
     private static final String POSIT_HILITE_FORMAT = "<span style=\"color: #33AA33\">%s</span>";
     private static final String NEGAT_HILITE_FORMAT = "<span style=\"color: #AA3333\">%s</span>";
 
@@ -432,7 +432,7 @@ public class UIUtils {
             row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_thumb_up_green);
             row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_thumb_down_yellow);
             row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear);
-        } else 
+        } else
         if (Integer.valueOf(Classifier.DISLIKE).equals(classifier.get(key))) {
             row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_thumb_up_yellow);
             row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_thumb_down_red);
@@ -496,7 +496,7 @@ public class UIUtils {
     }
 
     public static void handleUri(Context context, PrefRepository prefRepository, Uri uri) {
-        DefaultBrowser defaultBrowser = PrefsUtils.getDefaultBrowser(context);
+        DefaultBrowser defaultBrowser = prefRepository.getDefaultBrowser();
         if (defaultBrowser == DefaultBrowser.SYSTEM_DEFAULT) {
             openSystemDefaultBrowser(context, uri);
         } else if (defaultBrowser == DefaultBrowser.IN_APP_BROWSER) {
@@ -558,8 +558,8 @@ public class UIUtils {
         }
     }
 
-    public static boolean needsSubscriptionAccess(Context context, FeedSet feedSet) {
-        boolean hasSubscription = PrefsUtils.hasSubscription(context);
+    public static boolean needsSubscriptionAccess(FeedSet feedSet, PrefRepository prefRepository) {
+        boolean hasSubscription = prefRepository.hasSubscription();
         boolean requiresSubscription = feedSet.isFolder() || feedSet.isInfrequent() ||
                 feedSet.isAllNormal() || feedSet.isGlobalShared() || feedSet.isSingleSavedTag();
         return !hasSubscription && requiresSubscription;

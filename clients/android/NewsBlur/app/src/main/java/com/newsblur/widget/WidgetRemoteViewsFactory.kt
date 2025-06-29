@@ -133,7 +133,7 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
         }
 
         // get fs based on pref widget feed ids
-        val feedIds = PrefsUtils.getWidgetFeedIds(context)
+        val feedIds = prefRepository.getWidgetFeedIds()
         val fs = if (feedIds == null || feedIds.isNotEmpty()) {
             // null feed ids get all feeds
             FeedSet.widgetFeeds(feedIds)
@@ -172,7 +172,7 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
         Log.d(this.javaClass.name, "onDestroy")
         cancellationSignal.cancel()
         WidgetUtils.disableWidgetUpdate(context)
-        PrefsUtils.removeWidgetData(context)
+        prefRepository.removeWidgetData()
     }
 
     /**

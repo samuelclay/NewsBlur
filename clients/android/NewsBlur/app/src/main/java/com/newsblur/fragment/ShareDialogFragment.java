@@ -17,7 +17,6 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.preference.PrefRepository;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
 import javax.inject.Inject;

@@ -9,7 +9,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.newsblur.R;
 import com.newsblur.database.BlurDatabaseHelper;
-import com.newsblur.util.PrefsUtils;
+import com.newsblur.preference.PrefRepository;
 
 import javax.inject.Inject;
 
@@ -21,6 +21,9 @@ public class LogoutDialogFragment extends DialogFragment {
     @Inject
     BlurDatabaseHelper dbHelper;
 
+    @Inject
+    PrefRepository prefRepository;
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -28,7 +31,7 @@ public class LogoutDialogFragment extends DialogFragment {
         builder.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                PrefsUtils.logout(getActivity(), dbHelper);
+                prefRepository.logout(requireContext(), dbHelper);
                 // make sure the instance of Main that called us is killed now, or else the system
                 // might try to recycle it with a stale login ID, which will cause it to self-destruct
                 getActivity().finish();

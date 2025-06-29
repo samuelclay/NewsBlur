@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.ExtensionsKt;
-import com.newsblur.util.PrefsUtils;
 
 import java.util.Collections;
 import java.util.HashSet;

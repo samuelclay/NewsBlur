@@ -39,7 +39,6 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.EdgeToEdgeUtil;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ShortcutUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;

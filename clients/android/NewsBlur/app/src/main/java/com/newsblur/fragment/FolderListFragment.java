@@ -61,7 +61,6 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefConstants;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.ListTextSize;
 import com.newsblur.viewModel.AllFoldersViewModel;
@@ -71,7 +70,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class FolderListFragment extends NbFragment implements OnCreateContextMenuListener, 
+public class FolderListFragment extends NbFragment implements OnCreateContextMenuListener,
                                                               OnChildClickListener,
                                                               OnGroupClickListener,
                                                               OnGroupCollapseListener,
@@ -124,7 +123,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         super.onResume();
         if (adapter != null) {
             float textSize = prefRepository.getListTextSize();
-            SpacingStyle spacingStyle = PrefsUtils.getSpacingStyle(requireContext());
+            SpacingStyle spacingStyle = prefRepository.getSpacingStyle();
             adapter.setTextSize(textSize);
             adapter.setSpacingStyle(spacingStyle);
             adapter.notifyDataSetChanged();
@@ -561,7 +560,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 	private void checkAccountFeedsLimit() {
         new Handler().postDelayed(() -> {
-            if (getActivity() != null && adapter.totalActiveFeedCount > AppConstants.FREE_ACCOUNT_SITE_LIMIT && !PrefsUtils.hasSubscription(getActivity())) {
+            if (getActivity() != null && adapter.totalActiveFeedCount > AppConstants.FREE_ACCOUNT_SITE_LIMIT && !prefRepository.hasSubscription()) {
                 Intent intent = new Intent(getActivity(), MuteConfig.class);
                 startActivity(intent);
             }
@@ -624,7 +623,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     }
 
     public void setSpacingStyle(SpacingStyle spacingStyle) {
-        PrefsUtils.setSpacingStyle(requireContext(), spacingStyle);
+        prefRepository.setSpacingStyle(spacingStyle);
         if (adapter != null) {
             adapter.setSpacingStyle(spacingStyle);
             adapter.notifyDataSetChanged();
@@ -633,7 +632,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
     @Nullable
     private SessionDataSource getSessionData(FeedSet fs, String folderName, @Nullable Feed feed) {
-        if (PrefsUtils.loadNextOnMarkRead(requireContext())) {
+        if (prefRepository.loadNextOnMarkRead()) {
             Session activeSession = new Session(fs, folderName, feed);
             return adapter.buildSessionDataSource(activeSession);
         }
