@@ -150,7 +150,7 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
                 // Taking more than 20 seconds in this method will result in an ANR.
                 withTimeout(18000) {
                     Log.d(this.javaClass.name, "onDataSetChanged - get remote stories")
-                    val response = apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL)
+                    val response = apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL, prefRepository.getInfrequentCutoff())
                     response.stories?.let {
                         val stateFilter = prefRepository.getStateFilter()
                         Log.d(this.javaClass.name, "onDataSetChanged - got ${it.size} remote stories")

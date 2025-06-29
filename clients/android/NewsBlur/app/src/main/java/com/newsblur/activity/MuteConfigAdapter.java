@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
+import com.newsblur.preference.PrefRepository;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
 
@@ -19,8 +20,8 @@ public class MuteConfigAdapter extends FeedChooserAdapter {
 
     private FeedStateChangedListener listener;
 
-    MuteConfigAdapter(Context context, FeedUtils feedUtils, ImageLoader imageLoader, FeedStateChangedListener listener) {
-        super(context, feedUtils, imageLoader);
+    MuteConfigAdapter(Context context, FeedUtils feedUtils, ImageLoader imageLoader, PrefRepository prefRepository, FeedStateChangedListener listener) {
+        super(context, feedUtils, imageLoader, prefRepository);
         this.listener = listener;
     }
 

@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
+import com.newsblur.preference.PrefRepository;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedOrderFilter;
 import com.newsblur.util.FeedUtils;
@@ -51,11 +52,11 @@ public class FeedChooserAdapter extends BaseExpandableListAdapter {
 
     protected float textSize;
 
-    FeedChooserAdapter(Context context, FeedUtils feedUtils, ImageLoader iconLoader) {
+    FeedChooserAdapter(Context context, FeedUtils feedUtils, ImageLoader iconLoader, PrefRepository prefRepository) {
         folderViewFilter = PrefsUtils.getFeedChooserFolderView(context);
         listOrderFilter = PrefsUtils.getFeedChooserListOrder(context);
         feedOrderFilter = PrefsUtils.getFeedChooserFeedOrder(context);
-        textSize = PrefsUtils.getListTextSize(context);
+        textSize = prefRepository.getListTextSize();
         this.feedUtils = feedUtils;
         this.iconLoader = iconLoader;
     }

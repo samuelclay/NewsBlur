@@ -104,14 +104,14 @@ open class ItemListContextMenuDelegateImpl(
             menu.findItem(R.id.menu_story_order_oldest).isChecked = true
         }
 
-        val readFilter = PrefsUtils.getReadFilter(activity, fs)
+        val readFilter = prefRepository.getReadFilter(fs)
         if (readFilter == ReadFilter.ALL) {
             menu.findItem(R.id.menu_read_filter_all_stories).isChecked = true
         } else if (readFilter == ReadFilter.UNREAD) {
             menu.findItem(R.id.menu_read_filter_unread_only).isChecked = true
         }
 
-        when (PrefsUtils.getStoryListStyle(activity, fs)) {
+        when (prefRepository.getStoryListStyle(fs)) {
             StoryListStyle.GRID_F -> menu.findItem(R.id.menu_list_style_grid_f).isChecked = true
             StoryListStyle.GRID_M -> menu.findItem(R.id.menu_list_style_grid_m).isChecked = true
             StoryListStyle.GRID_C -> menu.findItem(R.id.menu_list_style_grid_c).isChecked = true
@@ -153,7 +153,7 @@ open class ItemListContextMenuDelegateImpl(
             menu.findItem(R.id.menu_spacing_compact).isChecked = true
         }
 
-        when (fromSize(PrefsUtils.getListTextSize(activity))) {
+        when (fromSize(prefRepository.getListTextSize())) {
             ListTextSize.XS -> menu.findItem(R.id.menu_text_size_xs).isChecked = true
             ListTextSize.S -> menu.findItem(R.id.menu_text_size_s).isChecked = true
             ListTextSize.M -> menu.findItem(R.id.menu_text_size_m).isChecked = true
@@ -294,7 +294,7 @@ open class ItemListContextMenuDelegateImpl(
     }
 
     private fun updateTextSizeStyle(fragment: ItemSetFragment, listTextSize: ListTextSize) {
-        PrefsUtils.setListTextSize(activity, listTextSize.size)
+        prefRepository.setListTextSize(listTextSize.size)
         fragment.updateTextSize()
     }
 
@@ -304,12 +304,12 @@ open class ItemListContextMenuDelegateImpl(
     }
 
     private fun updateStoryOrder(fragment: ItemSetFragment, fs: FeedSet, storyOrder: StoryOrder) {
-        PrefsUtils.updateStoryOrder(activity, fs, storyOrder)
+        prefRepository.updateStoryOrder(fs, storyOrder)
         restartReadingSession(fragment, fs)
     }
 
     private fun updateReadFilter(fragment: ItemSetFragment, fs: FeedSet, readFilter: ReadFilter) {
-        PrefsUtils.updateReadFilter(activity, fs, readFilter)
+        prefRepository.updateReadFilter(fs, readFilter)
         restartReadingSession(fragment, fs)
     }
 

@@ -67,7 +67,7 @@ class WidgetConfig : FeedChooser() {
     }
 
     override fun setupList() {
-        adapter = WidgetConfigAdapter(this, feedUtils, iconLoader)
+        adapter = WidgetConfigAdapter(this, feedUtils, iconLoader, prefRepository)
         binding.listView.setAdapter(adapter)
     }
 

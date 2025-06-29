@@ -265,7 +265,7 @@ public class APIManager {
      * Fetches stories for the given FeedSet, choosing the correct API and the right
      * request parameters as needed.
      */
-    public StoriesResponse getStories(FeedSet fs, int pageNumber, StoryOrder order, ReadFilter filter) {
+    public StoriesResponse getStories(FeedSet fs, int pageNumber, StoryOrder order, ReadFilter filter, int infrequentCutoff) {
         Uri uri;
         ValueMultimap values = new ValueMultimap();
     
@@ -300,7 +300,7 @@ public class APIManager {
         } else if (fs.isInfrequent()) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
             values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
-            values.put(APIConstants.PARAMETER_INFREQUENT, Integer.toString(PrefsUtils.getInfrequentCutoff(context)));
+            values.put(APIConstants.PARAMETER_INFREQUENT, Integer.toString(infrequentCutoff));
         } else if (fs.isAllNormal()) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
             values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);

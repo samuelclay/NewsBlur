@@ -250,10 +250,10 @@ class FeedUtils(
         var optionalOverrideMessage: String? = null
         if (olderThan != null || newerThan != null) {
             // if this is a range mark, check that option
-            if (PrefsUtils.isConfirmMarkRangeRead(activity)) doImmediate = false
+            if (prefRepository.isConfirmMarkRangeRead()) doImmediate = false
         } else {
             // if this is an all mark, check that option
-            val confirmation = PrefsUtils.getMarkAllReadConfirmation(activity)
+            val confirmation = prefRepository.getMarkAllReadConfirmation()
             if (confirmation.feedSetRequiresConfirmation(fs)) doImmediate = false
         }
         // marks hit all stories, even when filtering via search, so warn

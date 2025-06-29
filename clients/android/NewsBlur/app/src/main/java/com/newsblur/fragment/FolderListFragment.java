@@ -106,7 +106,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		super.onCreate(savedInstanceState);
 		allFoldersViewModel = new ViewModelProvider(this).get(AllFoldersViewModel.class);
         currentState = prefRepository.getStateFilter();
-		adapter = new FolderListAdapter(getActivity(), currentState, iconLoader, dbHelper);
+		adapter = new FolderListAdapter(getActivity(), currentState, iconLoader, dbHelper, prefRepository);
         sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
         feedUtils.currentFolderName = null;
         // NB: it is by design that loaders are not started until we get a
@@ -123,7 +123,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     public void onResume() {
         super.onResume();
         if (adapter != null) {
-            float textSize = PrefsUtils.getListTextSize(requireContext());
+            float textSize = prefRepository.getListTextSize();
             SpacingStyle spacingStyle = PrefsUtils.getSpacingStyle(requireContext());
             adapter.setTextSize(textSize);
             adapter.setSpacingStyle(spacingStyle);
@@ -405,7 +405,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 	public void changeState(StateFilter state) {
 		currentState = state;
-        PrefsUtils.setStateFilter(getActivity(), state);
+        prefRepository.setStateFilter(state);
         adapter.changeState(state);
 		hasUpdated();
 	}
@@ -616,7 +616,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     }
 
     public void setListTextSize(ListTextSize listTextSize) {
-        PrefsUtils.setListTextSize(requireContext(), listTextSize.getSize());
+        prefRepository.setListTextSize(listTextSize.getSize());
         if (adapter != null) {
             adapter.setTextSize(listTextSize.getSize());
             adapter.notifyDataSetChanged();
