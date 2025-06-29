@@ -102,7 +102,7 @@ public class UnreadsService extends SubService {
 
         // now sort the unreads we need to fetch so they are fetched roughly in the order
         // the user is likely to read them.  if the user reads newest first, those come first.
-        final boolean sortNewest = (PrefsUtils.getDefaultStoryOrder(parent) == StoryOrder.NEWEST);
+        final boolean sortNewest = (parent.prefRepository.getDefaultStoryOrder() == StoryOrder.NEWEST);
         // custom comparator that understands to sort tuples by the value of the second element
         Comparator<String[]> hashSorter = new Comparator<String[]>() {
             public int compare(String[] lhs, String[] rhs) {
@@ -134,8 +134,8 @@ public class UnreadsService extends SubService {
         unreadsyncloop: while (StoryHashQueue.size() > 0) {
             if (parent.stopSync()) break unreadsyncloop;
 
-            boolean isOfflineEnabled = PrefsUtils.isOfflineEnabled(parent);
-            boolean isEnableNotifications = PrefsUtils.isEnableNotifications(parent);
+            boolean isOfflineEnabled = parent.prefRepository.isOfflineEnabled();
+            boolean isEnableNotifications = parent.prefRepository.isEnableNotifications();
             if (! (isOfflineEnabled || isEnableNotifications)) return;
 
             List<String> hashBatch = new ArrayList<>(AppConstants.UNREAD_FETCH_BATCH_SIZE);

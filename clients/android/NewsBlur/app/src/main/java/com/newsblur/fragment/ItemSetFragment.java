@@ -371,7 +371,7 @@ public class ItemSetFragment extends NbFragment {
     }
 
     public void updateThumbnailStyle() {
-        ThumbnailStyle thumbnailStyle = PrefsUtils.getThumbnailStyle(requireContext());
+        ThumbnailStyle thumbnailStyle = prefRepository.getThumbnailStyle(requireContext());
         adapter.setThumbnailStyle(thumbnailStyle);
         adapter.notifyAllItemsChanged();
     }
@@ -484,7 +484,7 @@ public class ItemSetFragment extends NbFragment {
             indexOfLastUnread = -1;
         }
 
-        if (PrefsUtils.isMarkReadOnFeedScroll(requireContext())) {
+        if (prefRepository.isMarkReadOnFeedScroll()) {
             // we want the top row of stories that is partially obscured. go back one from the first fully visible
             int markEnd = layoutManager.findFirstCompletelyVisibleItemPosition() - 1;
             if (markEnd > lastAutoMarkIndex) {

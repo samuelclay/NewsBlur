@@ -658,7 +658,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         }
 
         // sort feeds within each folder
-        FeedListOrder feedListOrder = PrefsUtils.getFeedListOrder(context);
+        FeedListOrder feedListOrder = prefRepository.getFeedListOrder();
         Comparator<Feed> feedComparator = Feed.getFeedListOrderComparator(feedListOrder);
         for (List<Feed> folderChildren : activeFolderChildren) {
             Collections.sort(folderChildren, feedComparator);

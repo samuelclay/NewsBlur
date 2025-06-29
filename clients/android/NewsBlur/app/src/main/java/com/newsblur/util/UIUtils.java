@@ -444,8 +444,8 @@ public class UIUtils {
         }
     }
 
-    public static void inflateStoryContextMenu(ContextMenu menu, MenuInflater inflater, Context context, FeedSet fs, Story story) {
-        if (PrefsUtils.getStoryOrder(context, fs) == StoryOrder.NEWEST) {
+    public static void inflateStoryContextMenu(ContextMenu menu, MenuInflater inflater, FeedSet fs, Story story, StoryOrder storyOrder) {
+        if (storyOrder == StoryOrder.NEWEST) {
             inflater.inflate(R.menu.context_story_newest, menu);
         } else {
             inflater.inflate(R.menu.context_story_oldest, menu);

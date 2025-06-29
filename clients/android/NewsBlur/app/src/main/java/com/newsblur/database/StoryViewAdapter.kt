@@ -156,10 +156,10 @@ class StoryViewAdapter(
         }
 
         textSize = prefRepository.getListTextSize()
-        user = PrefsUtils.getUserDetails(context)
-        thumbnailStyle = PrefsUtils.getThumbnailStyle(context)
+        user = prefRepository.getUserDetails()
+        thumbnailStyle = prefRepository.getThumbnailStyle(context)
         spacingStyle = PrefsUtils.getSpacingStyle(context)
-        storyOrder = PrefsUtils.getStoryOrder(context, fs)
+        storyOrder = prefRepository.getStoryOrder(fs)
 
         executorService = Executors.newFixedThreadPool(1)
 
@@ -423,7 +423,8 @@ class StoryViewAdapter(
             }
             if (gestureL2R || gestureR2L) return
             val inflater = MenuInflater(context)
-            UIUtils.inflateStoryContextMenu(menu, inflater, context, fs, story)
+            val storyOrder = fs?.let { prefRepository.getStoryOrder(it) } ?: StoryOrder.NEWEST
+            UIUtils.inflateStoryContextMenu(menu, inflater, fs, story, storyOrder)
             for (i in 0 until menu.size()) {
                 menu.getItem(i).setOnMenuItemClickListener(this)
             }
@@ -653,7 +654,7 @@ class StoryViewAdapter(
     }
 
     private fun bindRow(vh: StoryRowViewHolder, story: Story) {
-        val storyContentPreviewStyle = PrefsUtils.getStoryContentPreviewStyle(context)
+        val storyContentPreviewStyle = prefRepository.getStoryContentPreviewStyle()
         if (storyContentPreviewStyle != StoryContentPreviewStyle.NONE) {
             vh.storyTitleView.maxLines = 3
             if (storyContentPreviewStyle == StoryContentPreviewStyle.LARGE) {

@@ -21,6 +21,7 @@ import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.FileDownloader
 import com.newsblur.util.NBScope
+import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
 import com.newsblur.util.setViewGone
@@ -90,7 +91,9 @@ class ImportExportActivity : NbActivity() {
     }
 
     private fun exportOpmlFile() {
-        DownloadCompleteReceiver.expectedFileDownloadId = FileDownloader.exportOpml(this)
+        val userName = prefRepository.getUserName()
+        val cookie = prefRepository.getCookie()
+        DownloadCompleteReceiver.expectedFileDownloadId = FileDownloader.exportOpml(this, userName, cookie)
         val msg = "${getString(R.string.newsblur_opml)} download started"
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }

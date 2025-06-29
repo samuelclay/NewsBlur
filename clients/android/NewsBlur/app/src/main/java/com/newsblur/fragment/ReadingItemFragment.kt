@@ -147,7 +147,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         classifier = requireArguments().getSerializable("classifier") as Classifier?
         sourceUserId = requireArguments().getString("sourceUserId")
 
-        user = PrefsUtils.getUserDetails(requireContext())
+        user = prefRepository.getUserDetails()
         markStoryReadBehavior = PrefsUtils.getMarkStoryReadBehavior(requireContext())
 
         if (markStoryReadBehavior == MarkStoryReadBehavior.IMMEDIATELY) {
