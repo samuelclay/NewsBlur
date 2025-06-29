@@ -45,7 +45,6 @@ import com.newsblur.util.FileCache;
 import com.newsblur.util.Log;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.NotificationUtils;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadingAction;
 import com.newsblur.util.StateFilter;
 import com.newsblur.widget.WidgetUtils;
@@ -599,9 +598,9 @@ public class NBSyncService extends JobService {
             isArchive = feedResponse.isArchive;
             isStaff = feedResponse.isStaff;
 
-            PrefsUtils.setPremium(this, feedResponse.isPremium, feedResponse.premiumExpire);
-            PrefsUtils.setArchive(this, feedResponse.isArchive, feedResponse.premiumExpire);
-            PrefsUtils.setExtToken(this, feedResponse.shareExtToken);
+            prefRepository.setPremium(feedResponse.isPremium, feedResponse.premiumExpire);
+            prefRepository.setArchive(feedResponse.isArchive, feedResponse.premiumExpire);
+            prefRepository.setExtToken(feedResponse.shareExtToken);
 
             // note all feeds that belong to some folder so we can find orphans
             for (Folder folder : feedResponse.folders) {

@@ -1,6 +1,5 @@
 package com.newsblur.activity;
 
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -11,14 +10,13 @@ import com.newsblur.domain.Feed;
 import com.newsblur.preference.PrefRepository;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
-import com.newsblur.util.PrefsUtils;
 
 import java.util.ArrayList;
 
 public class WidgetConfigAdapter extends FeedChooserAdapter {
 
-    WidgetConfigAdapter(Context context, FeedUtils feedUtils, ImageLoader iconLoader, PrefRepository prefRepository) {
-        super(context, feedUtils, iconLoader, prefRepository);
+    WidgetConfigAdapter(FeedUtils feedUtils, ImageLoader iconLoader, PrefRepository prefRepository) {
+        super(feedUtils, iconLoader, prefRepository);
     }
 
     @Override
@@ -42,7 +40,7 @@ public class WidgetConfigAdapter extends FeedChooserAdapter {
                     feedIds.add(feed.feedId);
                 }
             }
-            setWidgetFeedIds(parent.getContext());
+            setWidgetFeedIds();
             notifyDataChanged();
         });
         return groupView;
@@ -64,12 +62,12 @@ public class WidgetConfigAdapter extends FeedChooserAdapter {
             } else {
                 feedIds.remove(feed.feedId);
             }
-            setWidgetFeedIds(parent.getContext());
+            setWidgetFeedIds();
         });
         return childView;
     }
 
-    private void setWidgetFeedIds(Context context) {
-        PrefsUtils.setWidgetFeedIds(context, feedIds);
+    private void setWidgetFeedIds() {
+        prefRepository.setWidgetFeedIds(feedIds);
     }
 }

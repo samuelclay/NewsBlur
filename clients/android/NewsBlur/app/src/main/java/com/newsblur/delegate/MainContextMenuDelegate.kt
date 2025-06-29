@@ -17,7 +17,6 @@ import com.newsblur.service.NBSyncService
 import com.newsblur.util.ListTextSize
 import com.newsblur.util.ListTextSize.Companion.fromSize
 import com.newsblur.util.PrefConstants.ThemeValue
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.SpacingStyle
 import com.newsblur.util.UIUtils
 import com.newsblur.widget.WidgetUtils
@@ -55,7 +54,7 @@ class MainContextMenuDelegateImpl(
             ThemeValue.AUTO -> menu.findItem(R.id.menu_theme_auto).isChecked = true
         }
 
-        val spacingStyle = PrefsUtils.getSpacingStyle(activity)
+        val spacingStyle = prefRepository.getSpacingStyle()
         if (spacingStyle == SpacingStyle.COMFORTABLE) {
             menu.findItem(R.id.menu_spacing_comfortable).isChecked = true
         } else if (spacingStyle == SpacingStyle.COMPACT) {

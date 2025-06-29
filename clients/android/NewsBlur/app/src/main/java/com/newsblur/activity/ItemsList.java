@@ -36,7 +36,6 @@ import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.Log;
 import com.newsblur.util.PendingTransitionUtils;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadingActionListener;
 import com.newsblur.util.Session;
 import com.newsblur.util.SessionDataSource;
@@ -252,7 +251,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (q.length() < 1) {
             updateFleuron(false);
             q = null;
-        } else if (!PrefsUtils.hasSubscription(this)) {
+        } else if (!prefRepository.hasSubscription()) {
             updateFleuron(true);
             return;
         }

@@ -18,7 +18,6 @@ import com.newsblur.util.FeedUtils.Companion.triggerSync
 import com.newsblur.util.ListTextSize
 import com.newsblur.util.ListTextSize.Companion.fromSize
 import com.newsblur.util.PrefConstants.ThemeValue
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.ReadFilter
 import com.newsblur.util.ReadingActionListener
 import com.newsblur.util.SpacingStyle
@@ -144,7 +143,7 @@ open class ItemListContextMenuDelegateImpl(
             ThumbnailStyle.OFF -> menu.findItem(R.id.menu_story_thumbnail_no_preview).isChecked = true
         }
 
-        val spacingStyle = PrefsUtils.getSpacingStyle(activity)
+        val spacingStyle = prefRepository.getSpacingStyle()
         if (spacingStyle === SpacingStyle.COMFORTABLE) {
             menu.findItem(R.id.menu_spacing_comfortable).isChecked = true
         } else if (spacingStyle == SpacingStyle.COMPACT) {
@@ -297,7 +296,7 @@ open class ItemListContextMenuDelegateImpl(
     }
 
     private fun updateSpacingStyle(fragment: ItemSetFragment, spacingStyle: SpacingStyle) {
-        PrefsUtils.setSpacingStyle(activity, spacingStyle)
+        prefRepository.setSpacingStyle(spacingStyle)
         fragment.updateSpacingStyle()
     }
 

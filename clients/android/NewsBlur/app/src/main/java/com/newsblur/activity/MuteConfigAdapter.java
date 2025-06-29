@@ -20,8 +20,8 @@ public class MuteConfigAdapter extends FeedChooserAdapter {
 
     private FeedStateChangedListener listener;
 
-    MuteConfigAdapter(Context context, FeedUtils feedUtils, ImageLoader imageLoader, PrefRepository prefRepository, FeedStateChangedListener listener) {
-        super(context, feedUtils, imageLoader, prefRepository);
+    MuteConfigAdapter(FeedUtils feedUtils, ImageLoader imageLoader, PrefRepository prefRepository, FeedStateChangedListener listener) {
+        super(feedUtils, imageLoader, prefRepository);
         this.listener = listener;
     }
 

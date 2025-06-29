@@ -52,7 +52,6 @@ import com.newsblur.util.SessionDataSource;
 import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.ImageLoader;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 
@@ -152,7 +151,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         this.prefRepository = prefRepository;
 
         textSize = prefRepository.getListTextSize();
-        spacingStyle = PrefsUtils.getSpacingStyle(context);
+        spacingStyle = prefRepository.getSpacingStyle();
 	}
 
 	@Override

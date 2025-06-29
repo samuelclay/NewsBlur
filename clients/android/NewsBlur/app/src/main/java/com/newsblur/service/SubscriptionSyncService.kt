@@ -6,13 +6,15 @@ import android.app.job.JobScheduler
 import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
+import com.newsblur.preference.PrefRepository
 import com.newsblur.subscription.SubscriptionManagerImpl
 import com.newsblur.subscription.SubscriptionsListener
 import com.newsblur.util.AppConstants
 import com.newsblur.util.Log
 import com.newsblur.util.NBScope
-import com.newsblur.util.PrefsUtils
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Service to sync user subscription with NewsBlur backend.
@@ -22,11 +24,15 @@ import kotlinx.coroutines.launch
  * This could occur when the user has renewed the subscription
  * via Play Store.
  */
+@AndroidEntryPoint
 class SubscriptionSyncService : JobService() {
+
+    @Inject
+    lateinit var prefRepository: PrefRepository
 
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.d(this, "onStartJob")
-        if (!PrefsUtils.hasCookie(this)) {
+        if (!prefRepository.hasCookie()) {
             // no user authenticated
             return false
         }

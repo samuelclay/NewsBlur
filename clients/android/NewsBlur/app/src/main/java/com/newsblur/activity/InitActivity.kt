@@ -11,7 +11,6 @@ import com.newsblur.service.NBSyncService
 import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.util.Log
 import com.newsblur.util.NotificationUtils
-import com.newsblur.util.PrefsUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

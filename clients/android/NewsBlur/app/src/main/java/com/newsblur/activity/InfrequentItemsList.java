@@ -6,7 +6,6 @@ import android.view.MenuItem;
 import com.newsblur.R;
 import com.newsblur.fragment.InfrequentCutoffDialogFragment;
 import com.newsblur.fragment.InfrequentCutoffDialogFragment.InfrequentCutoffChangedListener;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
 public class InfrequentItemsList extends ItemsList implements InfrequentCutoffChangedListener {

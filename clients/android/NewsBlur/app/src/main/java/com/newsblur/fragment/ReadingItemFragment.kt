@@ -53,7 +53,6 @@ import com.newsblur.util.Font
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.PrefConstants.ThemeValue
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.ReadingTextSize
 import com.newsblur.util.StoryChangesState
 import com.newsblur.util.StoryUtils
@@ -148,7 +147,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         sourceUserId = requireArguments().getString("sourceUserId")
 
         user = prefRepository.getUserDetails()
-        markStoryReadBehavior = PrefsUtils.getMarkStoryReadBehavior(requireContext())
+        markStoryReadBehavior = prefRepository.getMarkStoryReadBehavior()
 
         if (markStoryReadBehavior == MarkStoryReadBehavior.IMMEDIATELY) {
             sampledQueue = SampledQueue(250, 5)
@@ -191,7 +190,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         val readingActivity = requireActivity() as Reading
         fs = readingActivity.fs
 
-        selectedViewMode = PrefsUtils.getDefaultViewModeForFeed(readingActivity, story!!.feedId)
+        selectedViewMode = prefRepository.getDefaultViewModeForFeed(story!!.feedId)
 
         registerForContextMenu(binding.readingWebview)
         binding.readingWebview.setCustomViewLayout(binding.customViewContainer)
@@ -681,12 +680,12 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     private fun setViewMode(newMode: DefaultFeedView) {
         selectedViewMode = newMode
-        PrefsUtils.setDefaultViewModeForFeed(requireContext(), story!!.feedId, newMode)
+        prefRepository.setDefaultViewModeForFeed(story!!.feedId, newMode)
     }
 
     fun viewModeChanged() {
         synchronized(selectedViewMode!!) {
-            selectedViewMode = PrefsUtils.getDefaultViewModeForFeed(requireContext(), story!!.feedId)
+            selectedViewMode = prefRepository.getDefaultViewModeForFeed(story!!.feedId)
         }
         // these can come from async tasks
         activity?.runOnUiThread { reloadStoryContent() }

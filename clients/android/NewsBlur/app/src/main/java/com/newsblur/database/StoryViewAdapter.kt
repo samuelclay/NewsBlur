@@ -36,7 +36,6 @@ import com.newsblur.util.GestureAction
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.ImageLoader.PhotoToLoad
 import com.newsblur.util.Log
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.SpacingStyle
 import com.newsblur.util.StoryContentPreviewStyle
 import com.newsblur.util.StoryListStyle
@@ -158,7 +157,7 @@ class StoryViewAdapter(
         textSize = prefRepository.getListTextSize()
         user = prefRepository.getUserDetails()
         thumbnailStyle = prefRepository.getThumbnailStyle(context)
-        spacingStyle = PrefsUtils.getSpacingStyle(context)
+        spacingStyle = prefRepository.getSpacingStyle()
         storyOrder = prefRepository.getStoryOrder(fs)
 
         executorService = Executors.newFixedThreadPool(1)
@@ -189,7 +188,7 @@ class StoryViewAdapter(
     override fun getItemCount(): Int = storyCount + footerViews.size
 
     val storyCount: Int
-        get() = if (fs != null && UIUtils.needsSubscriptionAccess(context, fs)) {
+        get() = if (fs != null && UIUtils.needsSubscriptionAccess(fs, prefRepository)) {
             min(3.0, stories.size.toDouble()).toInt()
         } else {
             stories.size

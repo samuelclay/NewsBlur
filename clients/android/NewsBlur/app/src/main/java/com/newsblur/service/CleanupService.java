@@ -2,7 +2,6 @@ package com.newsblur.service;
 
 import com.newsblur.util.ExtensionsKt;
 import com.newsblur.util.PrefConstants;
-import com.newsblur.util.PrefsUtils;
 
 public class CleanupService extends SubService {
 

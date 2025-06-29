@@ -24,7 +24,6 @@ import com.newsblur.preference.PrefRepository;
 import com.newsblur.util.FeedExt;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.ImageLoader;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.Session;
 import com.newsblur.util.SessionDataSource;
 import com.newsblur.util.UIUtils;
@@ -75,7 +74,7 @@ public class FeedItemsList extends ItemsList {
         if (reviewInfo != null) {
             Task<Void> flow = reviewManager.launchReviewFlow(this, reviewInfo);
             flow.addOnCompleteListener(task -> {
-                PrefsUtils.setInAppReviewed(this);
+                prefRepository.setInAppReviewed();
                 super.onBackPressed();
             });
         } else {
@@ -180,7 +179,7 @@ public class FeedItemsList extends ItemsList {
     }
 
     private void checkInAppReview() {
-        if (!PrefsUtils.hasInAppReviewed(this)) {
+        if (!prefRepository.hasInAppReviewed()) {
             reviewManager = ReviewManagerFactory.create(this);
             Task<ReviewInfo> request = reviewManager.requestReviewFlow();
             request.addOnCompleteListener(task -> {
