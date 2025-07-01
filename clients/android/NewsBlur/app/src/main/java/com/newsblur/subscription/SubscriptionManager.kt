@@ -3,6 +3,7 @@ package com.newsblur.subscription
 import android.app.Activity
 import android.content.Context
 import com.android.billingclient.api.*
+import com.android.billingclient.api.BillingFlowParams.SubscriptionUpdateParams.ReplacementMode
 import com.newsblur.R
 import com.newsblur.network.APIManager
 import com.newsblur.service.NBSyncService
@@ -189,7 +190,7 @@ class SubscriptionManagerImpl(
                     billingFlowParamsBuilder.setSubscriptionUpdateParams(
                             BillingFlowParams.SubscriptionUpdateParams.newBuilder()
                                     .setOldPurchaseToken(it.purchaseToken)
-                                    .setReplaceProrationMode(BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE)
+                                    .setSubscriptionReplacementMode(ReplacementMode.CHARGE_PRORATED_PRICE)
                                     .build()
                     )
                 }
