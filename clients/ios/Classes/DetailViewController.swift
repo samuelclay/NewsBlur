@@ -391,7 +391,7 @@ class DetailViewController: BaseViewController {
             return
         }
         
-        print("🎈 prepareStoriesForGridView: \(storyPagesViewController.currentPage.activeStory?["story_title"] ?? "none")")
+        NSLog("🎈 prepareStoriesForGridView: \(storyPagesViewController.currentPage.activeStory?["story_title"] ?? "none")")
         
         remove(viewController: storyPagesViewController)
         
@@ -409,7 +409,7 @@ class DetailViewController: BaseViewController {
 ////            return
 ////        }
 ////
-////        print("🎈 moveStoriesToGridCell: \(storyPagesViewController.currentPage.activeStory["story_title"] ?? "none")")
+////        NSLog("🎈 moveStoriesToGridCell: \(storyPagesViewController.currentPage.activeStory["story_title"] ?? "none")")
 ////
 ////        add(viewController: storyPagesViewController, to: cellContent, of: appDelegate.feedDetailViewController)
 ////

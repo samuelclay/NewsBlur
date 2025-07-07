@@ -119,7 +119,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         super.viewWillAppear(animated)
         
         if view.frame.origin.y == 0, let navigationController, navigationController.navigationBar.frame.origin.y < 0 {
-            print("FeedDetailViewController: viewWillAppear in the wrong place: frame: \(view.frame), nav frame: \(navigationController.navigationBar.frame); this is a bug that started with iOS 18; working around it")
+            NSLog("FeedDetailViewController: viewWillAppear in the wrong place: frame: \(view.frame), nav frame: \(navigationController.navigationBar.frame); this is a bug that started with iOS 18; working around it")
             
             view.frame.origin.y = -navigationController.navigationBar.frame.origin.y
             
@@ -174,7 +174,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
             dashboardViewController = viewController
         }
         
-        print("🪿 changedLayout for \(isLegacyTable ? "legacy table" : "SwiftUI grid layout")")
+        NSLog("🪿🎛️ changedLayout for \(isLegacyTable ? "legacy table" : "SwiftUI grid layout")")
         
         deferredReload()
     }
@@ -189,9 +189,9 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     
     func deferredReload(story: Story? = nil) {
         if let story {
-            print("🪿 queuing deferred reload for \(story)")
+            NSLog("🪿🎛️ queuing deferred reload for \(story)")
         } else {
-            print("🪿 queuing deferred reload")
+            NSLog("🪿🎛️ queuing deferred reload")
         }
         
         reloadWorkItem?.cancel()
@@ -208,12 +208,12 @@ class FeedDetailViewController: FeedDetailObjCViewController {
             }
             
             if pendingStories.isEmpty {
-                print("🪿 starting deferred reload")
+                NSLog("🪿🎛️ starting deferred reload")
                 
                 let secondsSinceScroll = -scrollingDate.timeIntervalSinceNow
                 
                 if secondsSinceScroll < 0.5 {
-                    print("🪿 too soon to reload; \(secondsSinceScroll) seconds since scroll")
+                    NSLog("🪿🎛️ too soon to reload; \(secondsSinceScroll) seconds since scroll")
                     deferredReload(story: story)
                     return
                 }
@@ -380,7 +380,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
     }
     
     func visible(story: Story) {
-        print("🐓 Visible: \(story.debugTitle)")
+        NSLog("🐓 Visible: \(story.debugTitle)")
         
         guard storiesCollection.activeFeedStories != nil, !isDashboard else {
             return
@@ -397,7 +397,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
                 fetchFeedDetail(storiesCollection.feedPage + 1, withCallback: nil)
             }
             
-            print("🐓 Fetching next page took \(-debug.timeIntervalSinceNow) seconds")
+            NSLog("🐓 Fetching next page took \(-debug.timeIntervalSinceNow) seconds")
         }
         
         scrollingDate = Date()
@@ -408,7 +408,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
             return
         }
         
-        print("🪿 Tapped \(story.debugTitle)")
+        NSLog("🪿 Tapped \(story.debugTitle)")
         
         if isDashboard {
             tappedDashboard(story: story, in: dash)
@@ -468,7 +468,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
     }
     
     func reading(story: Story) {
-        print("🪿 Reading \(story.debugTitle)")
+        NSLog("🪿 Reading \(story.debugTitle)")
     }
     
     func read(story: Story) {
@@ -479,7 +479,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
         let dict = story.dictionary
         
         if isSwiftUI, appDelegate.feedDetailViewController.markStoryReadIfNeeded(dict, isScrolling: false) {
-            print("🪿 Marking as read \(story.debugTitle)")
+            NSLog("🪿 Marking as read \(story.debugTitle)")
             
             deferredReload(story: story)
         }
@@ -489,7 +489,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
         let dict = story.dictionary
         
         if isSwiftUI, !storiesCollection.isStoryUnread(dict) {
-            print("🪿 Marking as unread \(story.debugTitle)")
+            NSLog("🪿 Marking as unread \(story.debugTitle)")
             
             storiesCollection.markStoryUnread(dict)
             storiesCollection.syncStory(asRead: dict)
@@ -499,7 +499,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
     }
     
     func hid(story: Story) {
-        print("🪿 Hiding \(story.debugTitle)")
+        NSLog("🪿 Hiding \(story.debugTitle)")
         
         appDelegate.activeStory = nil
         reload()
@@ -510,7 +510,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
         let storyHeight = appDelegate.storyPagesViewController.currentPage.view.frame.size.height
         let skipHeader: CGFloat = 200
         
-        print("🪿 Scrolled story \(story.debugTitle) to offset \(offset ?? 0), story height: \(storyHeight), feed detail height: \(feedDetailHeight)")
+        NSLog("🪿🎛️ Scrolled story \(story.debugTitle) to offset \(offset ?? 0), story height: \(storyHeight), feed detail height: \(feedDetailHeight)")
         
         if offset == nil {
             appDelegate.storyPagesViewController.traverseBottomConstraint.constant = storyHeight - feedDetailHeight

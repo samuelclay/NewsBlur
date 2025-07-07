@@ -226,7 +226,7 @@ import Foundation
         get {
             let order = defaults.object(forKey: "dashboard:\(key):order") as? String ?? "newest"
             
-            print("🏃🏼‍♂️ DashList activeOrder dashboard:\(key):order: \(order)")  // log
+            NSLog("🎛️ DashList activeOrder dashboard:\(key):order: \(order)")  // log
             
             return order
         }

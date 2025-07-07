@@ -97,7 +97,7 @@ struct FeedDetailGridView: View {
                             return
                         }
                         
-                        print("🪿 Selection: '\(oldSelected?.title ?? "none")' -> '\(newSelected?.title ?? "none")'")
+                        NSLog("🪿 Selection: '\(oldSelected?.title ?? "none")' -> '\(newSelected?.title ?? "none")'")
                         
                         if newSelected == nil, !cache.isPhone, let oldSelected, let story = cache.story(with: oldSelected.index) {
                             scroller.scrollTo(story.id, anchor: .top)
@@ -162,7 +162,7 @@ struct FeedDetailGridView: View {
             }
             .onPreferenceChange(CardKey.self) {
                 if feedDetailInteraction.isMarkReadOnScroll, let value = $0.first, value.frame.minY < -(value.frame.size.height / 2) {
-                    print("🐓 Scrolled off the top: \(story.debugTitle): \($0)")
+                    NSLog("🐓 Scrolled off the top: \(story.debugTitle): \($0)")
                     
 //                    withAnimation(Animation.spring().delay(2)) {
                         feedDetailInteraction.read(story: story)
@@ -182,8 +182,8 @@ struct FeedDetailGridView: View {
                             feedDetailInteraction.read(story: story)
                         case (0..., -30...30):
                             feedDetailInteraction.unread(story: story)
-//                        case (-100...100, ...0):  print("up swipe")
-//                        case (-100...100, 0...):  print("down swipe")
+//                        case (-100...100, ...0):  NSLog("up swipe")
+//                        case (-100...100, 0...):  NSLog("down swipe")
                         default:  break
                     }
                 }
@@ -199,7 +199,7 @@ struct FeedDetailGridView: View {
                 }
                 .onPreferenceChange(CardKey.self) {
                     if cache.isMagazine, let value = $0.first {
-                        print("🐓 Magazine story scrolled: \(story.debugTitle): \($0), minY \(value.frame.minY), maxY: \(value.frame.maxY), height: \(value.frame.size.height)")
+                        NSLog("🐓 Magazine story scrolled: \(story.debugTitle): \($0), minY \(value.frame.minY), maxY: \(value.frame.maxY), height: \(value.frame.size.height)")
                         
                         feedDetailInteraction.scrolled(story: story, offset: value.frame.maxY)
                     }
