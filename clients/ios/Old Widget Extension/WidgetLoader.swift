@@ -48,11 +48,11 @@ class Loader: NSObject, URLSessionDataDelegate {
     }
 
     func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
-        print("error: \(error.debugDescription)")
+        NSLog("error: \(error.debugDescription)")
     }
 
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        print("data: \(data)")
+        NSLog("data: \(data)")
         
         receivedData.append(data)
     }

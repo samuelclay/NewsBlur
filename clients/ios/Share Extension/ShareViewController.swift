@@ -365,7 +365,7 @@ extension ShareViewController: URLSessionTaskDelegate {
         content.title = "NewsBlur"
         
         if let error {
-            print("task completed with error: \(error)")
+            NSLog("task completed with error: \(error)")
             
             NSLog("⚾️ share error: \(error)")
             
@@ -378,7 +378,7 @@ extension ShareViewController: URLSessionTaskDelegate {
                 content.body = "Unable to add this site"
             }
         } else {
-            print("task completed successfully: \(String(describing: task.response))")
+            NSLog("task completed successfully: \(String(describing: task.response))")
             
             NSLog("⚾️ share success: \(String(describing: task.response))")
             
@@ -400,7 +400,7 @@ extension ShareViewController: URLSessionTaskDelegate {
         
         notificationCenter.add(request) { (error) in
             if let error {
-                print("notification error: \(error)")
+                NSLog("notification error: \(error)")
             }
         }
     }

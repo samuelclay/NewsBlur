@@ -85,6 +85,8 @@ import Foundation
     var currentFeed: Feed?
     
     func reload() {
+        NSLog("🪿🎛️ StoryCache reload")
+        
         guard let storiesCollection = appDelegate.storiesCollection else {
             return
         }
@@ -129,7 +131,7 @@ import Foundation
         selected = selectedIndex >= 0 ? Story(index: selectedIndex) : nil
         after = afterSelection.map { Story(index: $0) }
         
-        print("🪿 Reload: \(before.count) before, \(selected == nil ? "none" : selected!.debugTitle) selected, \(after.count) after, took \(-debug.timeIntervalSinceNow) seconds")
+        NSLog("🪿🎛️ ...reload: \(before.count) before, \(selected == nil ? "none" : selected!.debugTitle) selected, \(after.count) after, took \(-debug.timeIntervalSinceNow) seconds")
         
         
         //
@@ -162,6 +164,8 @@ import Foundation
         dashboardLeft.removeAll()
         dashboardRight.removeAll()
         
+        NSLog("🎛️ prepareDashboard")
+        
         guard let dashboardArray = appDelegate.dashboardArray as? [[String : Any]] else {
             return
         }
@@ -193,6 +197,8 @@ import Foundation
         dashboardRight.sort { $0.order < $1.order }
         
         updateDashIndexesAndOrder()
+        
+        NSLog("🎛️ ...dashboardLeft: \(dashboardLeft.count), dashboardRight: \(dashboardRight.count)")
     }
     
     func updateDashIndexesAndOrder() {
@@ -323,20 +329,22 @@ import Foundation
         Request(method: .post, endpoint: endpoint, parameters: parameters) { result in
             switch result {
                 case .success(let response):
-                    print("Successfully saved dashboard")
+                    NSLog("🎛️ Successfully saved dashboard")
                     
                     if let response = response as? [String: Any], let dashboard = response["dashboard_rivers"] as? [Any] {
                         self.appDelegate.dashboardArray = dashboard
                         self.appDelegate.feedsViewController.loadDashboard()
                     }
                 case .failure(let error):
-                    print("Error saving dashboard: \(error)")
+                    NSLog("🎛️ Error saving dashboard: \(error)")
                     self.appDelegate.feedsViewController.loadDashboard()
             }
         }
     }
     
     func reloadDashboard(for index: Int) {
+        NSLog("🎛️ reloadDashboard for \(index)")
+        
         guard index >= 0, index < Self.cachedDashboard.count else {
             return
         }
@@ -353,7 +361,7 @@ import Foundation
         
         dash.stories = Array(before.prefix(dash.numberOfStories))
         
-        print("Reloaded dashboard for \(index); folder: \(dash.folder?.name ?? "?"); feeds: \(dash.feeds); stories: \(dash.stories ?? [])")
+        NSLog("🎛️ ...reloaded dashboard for \(index); folder: \(dash.folder?.name ?? "?"); feeds: \(dash.feeds); stories: \(dash.stories ?? [])")
     }
     
     func redrawDashboard() {

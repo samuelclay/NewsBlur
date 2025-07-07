@@ -124,6 +124,8 @@ class FeedsViewController: FeedsObjCViewController {
     var dashboardTimer: Timer?
     
     @objc func clearDashboard() {
+        NSLog("🎛️ clearDashboard")
+        
         appDelegate.feedDetailViewController.dashboardIndex = -1
         appDelegate.detailViewController.storyTitlesInDashboard = false
         
@@ -132,17 +134,26 @@ class FeedsViewController: FeedsObjCViewController {
     }
     
     @objc func reloadDashboard() {
+        NSLog("🎛️ feeds reloadDashboard")
+        
         appDelegate.feedDetailViewController.dashboardIndex = -1
         
         immediatelyLoadNextDash(prepare: false)
     }
     
     @objc func loadDashboard() {
+        NSLog("🎛️ loadDashboard")
+        
         if !appDelegate.detailViewController.storyTitlesInDashboard {
+            NSLog("🎛️ ...not showing dashboard")
             return
         } else if appDelegate.feedDetailViewController.dashboardIndex >= 0 {
+            NSLog("🎛️ ...deferred loading dashboard")
+            
             deferredLoadNextDash()
         } else {
+            NSLog("🎛️ ...resetting timer")
+            
             let frequency: TimeInterval = 5 * 60
             
             dashboardTimer?.invalidate()
@@ -156,6 +167,8 @@ class FeedsViewController: FeedsObjCViewController {
     var dashWorkItem: DispatchWorkItem?
     
     private func deferredLoadNextDash() {
+        NSLog("🎛️ deferredLoadNextDash")
+        
         dashWorkItem?.cancel()
         
         let workItem = DispatchWorkItem { [weak self] in
@@ -173,6 +186,8 @@ class FeedsViewController: FeedsObjCViewController {
     }
     
     private func immediatelyLoadNextDash(prepare: Bool) {
+        NSLog("🎛️ immediatelyLoadNextDash(prepare: \(prepare))")
+        
         appDelegate.feedDetailViewController.storyCache.reloadDashboard(for: appDelegate.feedDetailViewController.dashboardIndex)
         
         let previousIndex = appDelegate.feedDetailViewController.dashboardIndex
@@ -193,13 +208,15 @@ class FeedsViewController: FeedsObjCViewController {
         } else if index >= StoryCache.cachedDashboard.count {
             // Done.
             
-            print("Finished loading dashboard: \(StoryCache.cachedDashboard)")
+            NSLog("🎛️ ...finished loading dashboard: \(StoryCache.cachedDashboard)")
             
             appDelegate.feedDetailViewController.reload()
             return
         }
         
         let dash = StoryCache.cachedDashboard[index]
+        
+        NSLog("🎛️ ...starting to fetch dashboard \(index): \(dash)")
         
         dash.isFetching = true
         
@@ -216,8 +233,12 @@ class FeedsViewController: FeedsObjCViewController {
         }
         
         if let feed = dash.feedId {
+            NSLog("🎛️ ...loadFolder \(dash.folderId) feedID: \(feed)")
+            
             appDelegate.loadFolder(dash.folderId, feedID: feed)
         } else {
+            NSLog("🎛️ loadRiverFeedDetailView \(dash.folderId)")
+            
             appDelegate.loadRiverFeedDetailView(appDelegate.feedDetailViewController, withFolder: dash.folderId)
         }
     }

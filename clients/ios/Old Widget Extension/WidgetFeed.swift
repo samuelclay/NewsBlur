@@ -79,7 +79,7 @@ struct Feed: Identifiable {
             blue = Double( hex & 0x0000FF) / 255
         }
         
-        print("Reading color from '\(hexString)': red: \(red), green: \(green), blue: \(blue), alpha: \(alpha)")
+        NSLog("Reading color from '\(hexString)': red: \(red), green: \(green), blue: \(blue), alpha: \(alpha)")
         
         return UIColor(red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha: CGFloat(alpha))
     }
