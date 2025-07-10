@@ -13,6 +13,7 @@ import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
+import com.android.billingclient.api.BillingFlowParams.SubscriptionUpdateParams.ReplacementMode
 import com.newsblur.R
 import com.newsblur.network.APIManager
 import com.newsblur.preference.PrefsRepo
@@ -217,7 +218,7 @@ class SubscriptionManagerImpl(
                     billingFlowParamsBuilder.setSubscriptionUpdateParams(
                             BillingFlowParams.SubscriptionUpdateParams.newBuilder()
                                     .setOldPurchaseToken(it.purchaseToken)
-                                    .setReplaceProrationMode(BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE)
+                                    .setSubscriptionReplacementMode(ReplacementMode.CHARGE_PRORATED_PRICE)
                                     .build()
                     )
                 }
