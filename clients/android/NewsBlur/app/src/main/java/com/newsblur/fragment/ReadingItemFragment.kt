@@ -193,6 +193,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         selectedViewMode = prefsRepo.getDefaultViewModeForFeed(story!!.feedId)
 
         registerForContextMenu(binding.readingWebview)
+        binding.readingWebview.setPrefsRepo(prefsRepo)
         binding.readingWebview.setCustomViewLayout(binding.customViewContainer)
         binding.readingWebview.setWebviewWrapperLayout(binding.readingContainer)
         binding.readingWebview.setBackgroundColor(Color.TRANSPARENT)

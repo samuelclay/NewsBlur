@@ -32,8 +32,8 @@ class LoginProgress : FragmentActivity() {
     private lateinit var binding: ActivityLoginProgressBinding
 
     override fun onCreate(bundle: Bundle?) {
-        applyTheme(prefsRepo.getSelectedTheme())
         super.onCreate(bundle)
+        applyTheme(prefsRepo.getSelectedTheme())
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         binding = ActivityLoginProgressBinding.inflate(layoutInflater)
         applyView(binding)

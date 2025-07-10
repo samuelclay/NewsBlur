@@ -10,5 +10,5 @@ object Config {
 
     const val androidTestInstrumentation = "androidx.test.runner.AndroidJUnitRunner"
 
-    val javaVersion = JavaVersion.VERSION_17
+    val javaVersion = JavaVersion.VERSION_21
 }
