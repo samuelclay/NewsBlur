@@ -7,13 +7,13 @@ import com.android.billingclient.api.AcknowledgePurchaseResponseListener
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.BillingFlowParams.SubscriptionUpdateParams.ReplacementMode
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
-import com.android.billingclient.api.BillingFlowParams.SubscriptionUpdateParams.ReplacementMode
 import com.newsblur.R
 import com.newsblur.network.APIManager
 import com.newsblur.preference.PrefsRepo
@@ -23,10 +23,7 @@ import com.newsblur.util.FeedUtils
 import com.newsblur.util.Log
 import com.newsblur.util.NBScope
 import com.newsblur.util.executeAsyncTask
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -88,17 +85,10 @@ interface SubscriptionsListener {
     fun onBillingConnectionError(message: String? = null) {}
 }
 
-@EntryPoint
-@InstallIn(SingletonComponent::class)
-interface SubscriptionManagerEntryPoint {
-
-    fun apiManager(): APIManager
-
-    fun prefRepository(): PrefsRepo
-}
-
 class SubscriptionManagerImpl(
         private val context: Context,
+        private val apiManager: APIManager,
+        private val prefRepository: PrefsRepo,
         private val scope: CoroutineScope = NBScope,
 ) : SubscriptionManager {
 
@@ -230,9 +220,6 @@ class SubscriptionManagerImpl(
     }
 
     override suspend fun syncActiveSubscription() = scope.launch(Dispatchers.Default) {
-        val hiltEntryPoint = EntryPointAccessors // TODO
-                .fromApplication(context.applicationContext, SubscriptionManagerEntryPoint::class.java)
-        val prefRepository = hiltEntryPoint.prefRepository()
         val isPremium = prefRepository.getIsPremium()
         val isArchive = prefRepository.getIsArchive()
         val activePlayStoreSubscription = getActiveSubscriptionAsync().await()
@@ -255,21 +242,14 @@ class SubscriptionManagerImpl(
         }
     }
 
-    override suspend fun hasActiveSubscription(): Boolean {
-        val hiltEntryPoint = EntryPointAccessors // TODO
-                .fromApplication(context.applicationContext, SubscriptionManagerEntryPoint::class.java)
-        val prefRepository = hiltEntryPoint.prefRepository()
-        return prefRepository.hasSubscription() ||
-                getActiveSubscriptionAsync().await() != null
-    }
+    override suspend fun hasActiveSubscription(): Boolean =
+            prefRepository.hasSubscription() || getActiveSubscriptionAsync().await() != null
 
     override fun saveReceipt(purchase: Purchase) {
         Log.d(this, "saveReceipt: ${purchase.orderId}")
-        val hiltEntryPoint = EntryPointAccessors
-                .fromApplication(context.applicationContext, SubscriptionManagerEntryPoint::class.java)
         scope.executeAsyncTask(
                 doInBackground = {
-                    hiltEntryPoint.apiManager().saveReceipt(purchase.orderId, purchase.products.first())
+                    apiManager.saveReceipt(purchase.orderId, purchase.products.first())
                 },
                 onPostExecute = {
                     if (!it.isError) {
@@ -346,10 +326,6 @@ class SubscriptionManagerImpl(
      * Generate subscription renewal message.
      */
     private fun getRenewalMessage(purchase: Purchase?): String? {
-        val hiltEntryPoint = EntryPointAccessors // TODO
-                .fromApplication(context.applicationContext, SubscriptionManagerEntryPoint::class.java)
-        val prefRepository = hiltEntryPoint.prefRepository()
-
         val expirationTimeMs = prefRepository.getSubscriptionExpire()
         return when {
             // lifetime subscription
