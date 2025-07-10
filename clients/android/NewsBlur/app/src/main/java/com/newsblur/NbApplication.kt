@@ -43,13 +43,13 @@ class NbApplication : Application(), DefaultLifecycleObserver {
 //                            .build()
 //            )
 
-            StrictMode.setThreadPolicy(
-                    StrictMode.ThreadPolicy.Builder()
-                            .detectDiskReads()
-                            .detectDiskWrites()
-                            .penaltyLog()
-                            .build()
-            )
+//            StrictMode.setThreadPolicy(
+//                    StrictMode.ThreadPolicy.Builder()
+//                            .detectDiskReads()
+//                            .detectDiskWrites()
+//                            .penaltyLog()
+//                            .build()
+//            )
         }
     }
 

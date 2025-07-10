@@ -20,8 +20,8 @@ class Login : FragmentActivity() {
     lateinit var prefsRepo: PrefsRepo
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        applyTheme(prefsRepo.getSelectedTheme())
         super.onCreate(savedInstanceState)
+        applyTheme(prefsRepo.getSelectedTheme())
 
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         applyView(ActivityLoginBinding.inflate(layoutInflater))

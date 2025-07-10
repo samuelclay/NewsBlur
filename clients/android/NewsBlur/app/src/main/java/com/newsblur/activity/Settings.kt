@@ -21,8 +21,8 @@ class Settings : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChange
     lateinit var prefsRepo: PrefsRepo
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        applyTheme(prefsRepo.getSelectedTheme())
         super.onCreate(savedInstanceState)
+        applyTheme(prefsRepo.getSelectedTheme())
         val binding = ActivitySettingsBinding.inflate(layoutInflater)
         applyView(binding)
 

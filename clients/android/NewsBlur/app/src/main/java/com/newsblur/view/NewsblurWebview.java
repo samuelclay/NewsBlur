@@ -1,7 +1,6 @@
 package com.newsblur.view;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -23,10 +22,7 @@ import com.newsblur.R;
 import com.newsblur.activity.Reading;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.preference.PrefsRepo;
-import com.newsblur.preference.PrefsEntryPoint;
 import com.newsblur.util.UIUtils;
-
-import dagger.hilt.android.EntryPointAccessors;
 
 public class NewsblurWebview extends WebView {
 
@@ -37,15 +33,11 @@ public class NewsblurWebview extends WebView {
     // we need the less-abstract activity class in order to manipulate the overlay widgets
     public Reading activity;
 
-    private PrefsRepo prefsRepo;
+    public PrefsRepo prefsRepo;
 
 	@SuppressLint("SetJavaScriptEnabled")
     public NewsblurWebview(Context context, AttributeSet attrs) {
 		super(context, attrs);
-
-        prefsRepo = EntryPointAccessors
-                .fromActivity((Activity) getContext(), PrefsEntryPoint.class)
-                .getPrefsRepository();
 
 		setVerticalScrollBarEnabled(false);
 		setHorizontalScrollBarEnabled(false);
@@ -115,6 +107,10 @@ public class NewsblurWebview extends WebView {
      */
     public void setWebviewWrapperLayout(View webviewWrapperLayout) {
         this.webChromeClient.webviewWrapperLayout = webviewWrapperLayout;
+    }
+
+    public void setPrefsRepo(PrefsRepo prefsRepo) {
+        this.prefsRepo = prefsRepo;
     }
 
     class NewsblurWebViewClient extends WebViewClient {

@@ -34,8 +34,8 @@ class RegisterProgress : FragmentActivity() {
     private lateinit var binding: ActivityRegisterProgressBinding
 
     override fun onCreate(bundle: Bundle?) {
-        applyTheme(prefsRepo.getSelectedTheme())
         super.onCreate(bundle)
+        applyTheme(prefsRepo.getSelectedTheme())
         binding = ActivityRegisterProgressBinding.inflate(layoutInflater)
         applyView(binding)
 
