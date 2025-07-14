@@ -1017,6 +1017,27 @@ class FeedFetcherWorker:
                     weight = "-"
                     quick = "-"
                     rand = "-"
+                
+                # Check for openrss.org rate limiting
+                if not skip and "openrss.org" in feed.feed_address and not self.options.get("force"):
+                    r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+                    current_timestamp = int(time.time())
+                    openrss_key = f"openrss_fetch:{current_timestamp}"
+                    
+                    # Try to set the key with 5 minutes expiration, only if it doesn't exist
+                    was_set = r.set(openrss_key, 1, nx=True, ex=300)
+                    
+                    if not was_set:
+                        # Another openrss.org feed was fetched in this same second
+                        skip = True
+                        logging.debug(
+                            f"   ---> [{feed.log_title[:30]:<30}] ~FYSkipping openrss.org fetch, another openrss feed fetched in last second"
+                        )
+                    else:
+                        logging.debug(
+                            f"   ---> [{feed.log_title[:30]:<30}] ~FGProceeding with openrss.org fetch"
+                        )
+                
                 if skip:
                     logging.debug(
                         "   ---> [%-30s] ~BGFaking fetch, skipping (%s/month, %s subs, %s < %s)..."
