@@ -1,6 +1,5 @@
 package com.newsblur.fragment
 
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Configuration
@@ -39,6 +38,7 @@ import com.newsblur.domain.Story
 import com.newsblur.domain.UserDetails
 import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.network.APIManager
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NbSyncManager.UPDATE_INTEL
 import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
@@ -53,7 +53,6 @@ import com.newsblur.util.Font
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.PrefConstants.ThemeValue
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.ReadingTextSize
 import com.newsblur.util.StoryChangesState
 import com.newsblur.util.StoryUtils
@@ -83,6 +82,9 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     @Inject
     @StoryImageCache
     lateinit var storyImageCache: FileCache
+
+    @Inject
+    lateinit var prefsRepo: PrefsRepo
 
     @JvmField
     var story: Story? = null
@@ -144,8 +146,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         classifier = requireArguments().getSerializable("classifier") as Classifier?
         sourceUserId = requireArguments().getString("sourceUserId")
 
-        user = PrefsUtils.getUserDetails(requireContext())
-        markStoryReadBehavior = PrefsUtils.getMarkStoryReadBehavior(requireContext())
+        user = prefsRepo.getUserDetails()
+        markStoryReadBehavior = prefsRepo.getMarkStoryReadBehavior()
 
         if (markStoryReadBehavior == MarkStoryReadBehavior.IMMEDIATELY) {
             sampledQueue = SampledQueue(250, 5)
@@ -188,9 +190,10 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         val readingActivity = requireActivity() as Reading
         fs = readingActivity.fs
 
-        selectedViewMode = PrefsUtils.getDefaultViewModeForFeed(readingActivity, story!!.feedId)
+        selectedViewMode = prefsRepo.getDefaultViewModeForFeed(story!!.feedId)
 
         registerForContextMenu(binding.readingWebview)
+        binding.readingWebview.setPrefsRepo(prefsRepo)
         binding.readingWebview.setCustomViewLayout(binding.customViewContainer)
         binding.readingWebview.setWebviewWrapperLayout(binding.readingContainer)
         binding.readingWebview.setBackgroundColor(Color.TRANSPARENT)
@@ -281,16 +284,14 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             menu.findItem(R.id.menu_shortcuts).isVisible = true
         }
 
-        when (PrefsUtils.getSelectedTheme(requireContext())) {
+        when (prefsRepo.getSelectedTheme()) {
             ThemeValue.LIGHT -> menu.findItem(R.id.menu_theme_light).isChecked = true
             ThemeValue.DARK -> menu.findItem(R.id.menu_theme_dark).isChecked = true
             ThemeValue.BLACK -> menu.findItem(R.id.menu_theme_black).isChecked = true
             ThemeValue.AUTO -> menu.findItem(R.id.menu_theme_auto).isChecked = true
-            else -> {
-            }
         }
 
-        val readingTextSize = PrefsUtils.getReadingTextSize(requireContext())
+        val readingTextSize = prefsRepo.getReadingTextSize()
         when (ReadingTextSize.fromSize(readingTextSize)) {
             ReadingTextSize.XS -> menu.findItem(R.id.menu_text_size_xs).isChecked = true
             ReadingTextSize.S -> menu.findItem(R.id.menu_text_size_s).isChecked = true
@@ -300,7 +301,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             ReadingTextSize.XXL -> menu.findItem(R.id.menu_text_size_xxl).isChecked = true
         }
 
-        when (Font.getFont(PrefsUtils.getFontString(requireContext()))) {
+        when (Font.getFont(prefsRepo.getFontString())) {
             Font.ANONYMOUS_PRO -> menu.findItem(R.id.menu_font_anonymous).isChecked = true
             Font.CHRONICLE -> menu.findItem(R.id.menu_font_chronicle).isChecked = true
             Font.DEFAULT -> menu.findItem(R.id.menu_font_default).isChecked = true
@@ -408,22 +409,22 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             true
         }
         R.id.menu_theme_auto -> {
-            PrefsUtils.setSelectedTheme(requireContext(), ThemeValue.AUTO)
+            prefsRepo.setSelectedTheme(ThemeValue.AUTO)
             UIUtils.restartActivity(requireActivity())
             true
         }
         R.id.menu_theme_light -> {
-            PrefsUtils.setSelectedTheme(requireContext(), ThemeValue.LIGHT)
+            prefsRepo.setSelectedTheme(ThemeValue.LIGHT)
             UIUtils.restartActivity(requireActivity())
             true
         }
         R.id.menu_theme_dark -> {
-            PrefsUtils.setSelectedTheme(requireContext(), ThemeValue.DARK)
+            prefsRepo.setSelectedTheme(ThemeValue.DARK)
             UIUtils.restartActivity(requireActivity())
             true
         }
         R.id.menu_theme_black -> {
-            PrefsUtils.setSelectedTheme(requireContext(), ThemeValue.BLACK)
+            prefsRepo.setSelectedTheme(ThemeValue.BLACK)
             UIUtils.restartActivity(requireActivity())
             true
         }
@@ -464,7 +465,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     private fun updateMarkStoryReadState() {
         if (markStoryReadBehavior == MarkStoryReadBehavior.MANUALLY) {
             readingItemActionsBinding.markReadStoryButton.visibility = View.VISIBLE
-            readingItemActionsBinding.markReadStoryButton.setStoryReadState(requireContext(), story!!.read)
+            readingItemActionsBinding.markReadStoryButton.setStoryReadState(prefsRepo, story!!.read)
         } else {
             readingItemActionsBinding.markReadStoryButton.visibility = View.GONE
         }
@@ -680,12 +681,12 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     private fun setViewMode(newMode: DefaultFeedView) {
         selectedViewMode = newMode
-        PrefsUtils.setDefaultViewModeForFeed(requireContext(), story!!.feedId, newMode)
+        prefsRepo.setDefaultViewModeForFeed(story!!.feedId, newMode)
     }
 
     fun viewModeChanged() {
         synchronized(selectedViewMode!!) {
-            selectedViewMode = PrefsUtils.getDefaultViewModeForFeed(requireContext(), story!!.feedId)
+            selectedViewMode = prefsRepo.getDefaultViewModeForFeed(story!!.feedId)
         }
         // these can come from async tasks
         activity?.runOnUiThread { reloadStoryContent() }
@@ -868,9 +869,9 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             sniffAltTexts(storyText)
 
             storyText = swapInOfflineImages(storyText)
-            val currentSize = PrefsUtils.getReadingTextSize(requireContext())
-            val font = PrefsUtils.getFont(requireContext())
-            val themeValue = PrefsUtils.getSelectedTheme(requireContext())
+            val currentSize = prefsRepo.getReadingTextSize()
+            val font = prefsRepo.getFont()
+            val themeValue = prefsRepo.getSelectedTheme()
 
             val builder = StringBuilder()
             builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0\" />")
@@ -900,8 +901,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                             builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />")
                         }
                     }
-                }
-                else -> {
                 }
             }
 
@@ -1034,12 +1033,12 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     private fun setTextSizeStyle(readingTextSize: ReadingTextSize) {
         val textSize = readingTextSize.size
-        PrefsUtils.setReadingTextSize(requireContext(), textSize)
+        prefsRepo.setReadingTextSize(textSize)
         binding.readingWebview.setTextSize(textSize)
     }
 
     private fun setReadingFont(font: String) {
-       PrefsUtils.setFontString(requireContext(), font)
+       prefsRepo.setFontString(font)
         contentHash = 0 // Force reload since content hasn't changed
         reloadStoryContent()
     }
@@ -1047,7 +1046,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     fun openBrowser() {
         story?.let {
             val uri = Uri.parse(it.permalink)
-            UIUtils.handleUri(requireContext(), uri)
+            UIUtils.handleUri(requireContext(), prefsRepo, uri)
         } ?: Log.e(this.javaClass.name, "Error opening null story by permalink URL.")
     }
 
@@ -1105,8 +1104,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     }
 }
 
-private fun MaterialButton.setStoryReadState(context: Context, isRead: Boolean) {
-    var selectedTheme = PrefsUtils.getSelectedTheme(context)
+private fun MaterialButton.setStoryReadState(prefsRepo: PrefsRepo, isRead: Boolean) {
+    var selectedTheme = prefsRepo.getSelectedTheme()
     if (selectedTheme == ThemeValue.AUTO) {
         selectedTheme = when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
             Configuration.UI_MODE_NIGHT_YES -> ThemeValue.DARK

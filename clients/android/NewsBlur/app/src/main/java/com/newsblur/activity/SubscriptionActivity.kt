@@ -13,13 +13,20 @@ import com.newsblur.databinding.ActivitySubscriptionBinding
 import com.newsblur.databinding.ViewArchiveSubscriptionBinding
 import com.newsblur.databinding.ViewPremiumSubscriptionBinding
 import com.newsblur.di.IconLoader
+import com.newsblur.network.APIManager
 import com.newsblur.subscription.SubscriptionManager
 import com.newsblur.subscription.SubscriptionManagerImpl
 import com.newsblur.subscription.SubscriptionsListener
-import com.newsblur.util.*
+import com.newsblur.util.AppConstants
+import com.newsblur.util.BetterLinkMovementMethod
 import com.newsblur.util.EdgeToEdgeUtil.applyView
+import com.newsblur.util.ImageLoader
+import com.newsblur.util.UIUtils
+import com.newsblur.util.setViewGone
+import com.newsblur.util.setViewVisible
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import java.util.Currency
+import java.util.Locale
 import javax.inject.Inject
 
 /**
@@ -36,6 +43,9 @@ class SubscriptionActivity : NbActivity() {
     @IconLoader
     @Inject
     lateinit var iconLoader: ImageLoader
+
+    @Inject
+    lateinit var apiManager: APIManager
 
     private lateinit var binding: ActivitySubscriptionBinding
     private lateinit var bindingPremium: ViewPremiumSubscriptionBinding
@@ -77,7 +87,7 @@ class SubscriptionActivity : NbActivity() {
         // linkify before setting the string resource
         BetterLinkMovementMethod.linkify(Linkify.WEB_URLS, binding.textPolicies)
                 .setOnLinkClickListener { _: TextView?, url: String? ->
-                    UIUtils.handleUri(this@SubscriptionActivity, Uri.parse(url))
+                    UIUtils.handleUri(this@SubscriptionActivity, prefsRepo, Uri.parse(url))
                     true
                 }
         binding.textPolicies.text = UIUtils.fromHtml(getString(R.string.premium_policies))
@@ -85,7 +95,12 @@ class SubscriptionActivity : NbActivity() {
     }
 
     private fun setupBilling() {
-        subscriptionManager = SubscriptionManagerImpl(this, lifecycleScope)
+        subscriptionManager = SubscriptionManagerImpl(
+                context = this,
+                apiManager = apiManager,
+                prefRepository = prefsRepo,
+                scope = lifecycleScope,
+        )
         subscriptionManager.startBillingConnection(subscriptionManagerListener)
     }
 

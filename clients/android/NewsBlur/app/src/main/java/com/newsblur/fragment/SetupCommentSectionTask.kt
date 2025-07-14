@@ -18,10 +18,12 @@ import com.newsblur.activity.Profile
 import com.newsblur.domain.Comment
 import com.newsblur.domain.Story
 import com.newsblur.domain.UserDetails
-import com.newsblur.util.*
+import com.newsblur.util.ImageLoader
+import com.newsblur.util.UIUtils
+import com.newsblur.util.ViewUtils
+import com.newsblur.util.executeAsyncTask
 import com.newsblur.view.FlowLayout
 import java.lang.ref.WeakReference
-import java.util.*
 
 class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: View, inflater: LayoutInflater, story: Story?, iconLoader: ImageLoader) {
 
@@ -64,7 +66,7 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
         val sharingUserIds: MutableSet<String> = HashSet()
         for (comment in comments) {
             // skip public comments if they are disabled
-            if (!comment.byFriend && !PrefsUtils.showPublicComments(context)) {
+            if (!comment.byFriend && !fragment.prefsRepo.showPublicComments()) {
                 continue
             }
             val commentUser = fragment.dbHelper.getUserProfile(comment.userId)
@@ -340,7 +342,7 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
         this.inflater = inflater
         this.story = story
         viewHolder = WeakReference(view)
-        user = PrefsUtils.getUserDetails(context)
+        user = fragment.prefsRepo.getUserDetails()
         this.iconLoader = iconLoader
     }
 }

@@ -21,6 +21,7 @@ import android.widget.FrameLayout;
 import com.newsblur.R;
 import com.newsblur.activity.Reading;
 import com.newsblur.fragment.ReadingItemFragment;
+import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.UIUtils;
 
 public class NewsblurWebview extends WebView {
@@ -31,6 +32,8 @@ public class NewsblurWebview extends WebView {
     public ReadingItemFragment fragment;
     // we need the less-abstract activity class in order to manipulate the overlay widgets
     public Reading activity;
+
+    public PrefsRepo prefsRepo;
 
 	@SuppressLint("SetJavaScriptEnabled")
     public NewsblurWebview(Context context, AttributeSet attrs) {
@@ -106,16 +109,20 @@ public class NewsblurWebview extends WebView {
         this.webChromeClient.webviewWrapperLayout = webviewWrapperLayout;
     }
 
+    public void setPrefsRepo(PrefsRepo prefsRepo) {
+        this.prefsRepo = prefsRepo;
+    }
+
     class NewsblurWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            UIUtils.handleUri(getContext(), Uri.parse(url));
+            UIUtils.handleUri(getContext(), prefsRepo, Uri.parse(url));
             return true;
         }
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            UIUtils.handleUri(getContext(), request.getUrl());
+            UIUtils.handleUri(getContext(), prefsRepo, request.getUrl());
             return true;
         }
 

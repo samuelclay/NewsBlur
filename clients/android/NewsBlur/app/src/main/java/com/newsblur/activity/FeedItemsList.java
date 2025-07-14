@@ -20,10 +20,10 @@ import com.newsblur.domain.Feed;
 import com.newsblur.fragment.DeleteFeedFragment;
 import com.newsblur.fragment.FeedIntelTrainerFragment;
 import com.newsblur.fragment.RenameDialogFragment;
+import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.FeedExt;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.ImageLoader;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.Session;
 import com.newsblur.util.SessionDataSource;
 import com.newsblur.util.UIUtils;
@@ -38,6 +38,9 @@ public class FeedItemsList extends ItemsList {
     @Inject
     @IconLoader
     ImageLoader iconLoader;
+
+    @Inject
+    PrefsRepo prefsRepo;
 
     public static final String EXTRA_FEED = "feed";
     public static final String EXTRA_FOLDER_NAME = "folderName";
@@ -71,7 +74,7 @@ public class FeedItemsList extends ItemsList {
         if (reviewInfo != null) {
             Task<Void> flow = reviewManager.launchReviewFlow(this, reviewInfo);
             flow.addOnCompleteListener(task -> {
-                PrefsUtils.setInAppReviewed(this);
+                prefsRepo.setInAppReviewed();
                 super.onBackPressed();
             });
         } else {
@@ -123,7 +126,7 @@ public class FeedItemsList extends ItemsList {
             // the name change won't be reflected until the activity finishes.
         }
         if (item.getItemId() == R.id.menu_statistics) {
-            feedUtils.openStatistics(this, feed.feedId);
+            feedUtils.openStatistics(this, prefsRepo, feed.feedId);
             return true;
         }
         return false;
@@ -176,7 +179,7 @@ public class FeedItemsList extends ItemsList {
     }
 
     private void checkInAppReview() {
-        if (!PrefsUtils.hasInAppReviewed(this)) {
+        if (!prefsRepo.hasInAppReviewed()) {
             reviewManager = ReviewManagerFactory.create(this);
             Task<ReviewInfo> request = reviewManager.requestReviewFlow();
             request.addOnCompleteListener(task -> {

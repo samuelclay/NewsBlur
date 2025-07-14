@@ -10,7 +10,6 @@ import com.newsblur.domain.Feed
 import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.ImageLoader
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.viewModel.FeedFolderData
 import com.newsblur.widget.WidgetUtils.updateWidget
@@ -67,12 +66,12 @@ class WidgetConfig : FeedChooser() {
     }
 
     override fun setupList() {
-        adapter = WidgetConfigAdapter(this, feedUtils, iconLoader)
+        adapter = WidgetConfigAdapter(feedUtils, iconLoader, prefsRepo)
         binding.listView.setAdapter(adapter)
     }
 
     public override fun setAdapterData() {
-        val feedIds = PrefsUtils.getWidgetFeedIds(this) ?: feeds.map { it.feedId }.toSet()
+        val feedIds = prefsRepo.getWidgetFeedIds() ?: feeds.map { it.feedId }.toSet()
         adapter.setFeedIds(feedIds)
 
         super.setAdapterData()
@@ -109,7 +108,7 @@ class WidgetConfig : FeedChooser() {
     }
 
     private fun replaceWidgetFeedIds(feedIds: Set<String>) {
-        PrefsUtils.setWidgetFeedIds(this, feedIds)
+        prefsRepo.setWidgetFeedIds(feedIds)
         adapter.replaceFeedIds(feedIds)
     }
 }

@@ -16,10 +16,16 @@ import com.newsblur.activity.LoginProgress
 import com.newsblur.activity.RegisterProgress
 import com.newsblur.databinding.FragmentLoginregisterBinding
 import com.newsblur.network.APIConstants
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.AppConstants
-import com.newsblur.util.PrefsUtils
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginRegisterFragment : Fragment() {
+
+    @Inject
+    lateinit var prefsRepo: PrefsRepo
 
     private lateinit var binding: FragmentLoginregisterBinding
 
@@ -51,7 +57,7 @@ class LoginRegisterFragment : Fragment() {
         binding.loginForgotPassword.setOnClickListener { launchForgotPasswordPage() }
         binding.loginCustomServer.setOnClickListener { showCustomServer(true) }
         binding.buttonResetUrl.setOnClickListener { showCustomServer(false) }
-        val customServerUrl = PrefsUtils.getCustomSever(requireContext())
+        val customServerUrl = prefsRepo.getCustomSever()
         if (!TextUtils.isEmpty(customServerUrl)) {
             binding.loginCustomServerValue.setText(customServerUrl)
             showCustomServer(true)
@@ -64,7 +70,7 @@ class LoginRegisterFragment : Fragment() {
             val customServerValue = binding.loginCustomServerValue.text.toString()
             if (!TextUtils.isEmpty(customServerValue) && customServerValue.startsWith("https://")) {
                 APIConstants.setCustomServer(customServerValue)
-                PrefsUtils.saveCustomServer(activity, customServerValue)
+                prefsRepo.saveCustomServer(customServerValue)
             } else if (!TextUtils.isEmpty(customServerValue)) {
                 Toast.makeText(requireActivity(), R.string.login_custom_server_scheme_error, Toast.LENGTH_LONG).show()
                 return
@@ -114,7 +120,7 @@ class LoginRegisterFragment : Fragment() {
         if (!isVisible) {
             binding.loginCustomServerValue.setText("")
             APIConstants.unsetCustomServer()
-            PrefsUtils.clearCustomServer(context)
+            prefsRepo.clearCustomServer()
         }
     }
 }

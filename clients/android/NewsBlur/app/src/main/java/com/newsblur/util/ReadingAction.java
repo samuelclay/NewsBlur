@@ -6,7 +6,6 @@ import static com.newsblur.service.NbSyncManager.UPDATE_SOCIAL;
 import static com.newsblur.service.NbSyncManager.UPDATE_STORY;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
@@ -21,6 +20,7 @@ import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.APIManager;
+import com.newsblur.preference.PrefsRepo;
 import com.newsblur.service.NbSyncManager;
 import com.newsblur.service.NBSyncService;
 
@@ -395,8 +395,11 @@ public class ReadingAction implements Serializable {
         return result;
     }
 
-    public int doLocal(@NonNull Context context, @NonNull BlurDatabaseHelper dbHelper) {
-        return doLocal(context, dbHelper, false);
+    public int doLocal(
+            @NonNull BlurDatabaseHelper dbHelper,
+            @NonNull PrefsRepo prefsRepo
+    ) {
+        return doLocal(dbHelper, prefsRepo, false);
     }
 
     /**
@@ -406,8 +409,12 @@ public class ReadingAction implements Serializable {
      *
      * @return the union of update impact flags that resulted from this action.
      */
-    public int doLocal(@NonNull Context context, @NonNull BlurDatabaseHelper dbHelper, boolean isFollowup) {
-        String userId = PrefsUtils.getUserId(context);
+    public int doLocal(
+            @NonNull BlurDatabaseHelper dbHelper,
+            @NonNull PrefsRepo prefsRepo,
+            boolean isFollowup
+    ) {
+        String userId = prefsRepo.getUserId();
         int impact = 0;
         switch (type) {
 

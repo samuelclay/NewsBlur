@@ -51,6 +51,7 @@ import com.newsblur.R;
 import com.newsblur.activity.*;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
+import com.newsblur.preference.PrefsRepo;
 
 public class UIUtils {
 
@@ -139,11 +140,11 @@ public class UIUtils {
             return null;
         }
     }
-	
+
 	/*
 	 * Convert from device-independent-pixels to pixels for use in custom view drawing, as
-	 * used throughout Android. 
-	 * See: http://bit.ly/MfsAUZ (Romain Guy's comment)  
+	 * used throughout Android.
+	 * See: http://bit.ly/MfsAUZ (Romain Guy's comment)
 	 */
 	public static int dp2px(Context context, int dp) {
 		float scale = context.getResources().getDisplayMetrics().density;
@@ -380,7 +381,7 @@ public class UIUtils {
             return Html.fromHtml(html);
         }
     }
-    
+
     private static final String POSIT_HILITE_FORMAT = "<span style=\"color: #33AA33\">%s</span>";
     private static final String NEGAT_HILITE_FORMAT = "<span style=\"color: #AA3333\">%s</span>";
 
@@ -431,7 +432,7 @@ public class UIUtils {
             row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_thumb_up_green);
             row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_thumb_down_yellow);
             row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear);
-        } else 
+        } else
         if (Integer.valueOf(Classifier.DISLIKE).equals(classifier.get(key))) {
             row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_thumb_up_yellow);
             row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_thumb_down_red);
@@ -443,8 +444,8 @@ public class UIUtils {
         }
     }
 
-    public static void inflateStoryContextMenu(ContextMenu menu, MenuInflater inflater, Context context, FeedSet fs, Story story) {
-        if (PrefsUtils.getStoryOrder(context, fs) == StoryOrder.NEWEST) {
+    public static void inflateStoryContextMenu(ContextMenu menu, MenuInflater inflater, FeedSet fs, Story story, StoryOrder storyOrder) {
+        if (storyOrder == StoryOrder.NEWEST) {
             inflater.inflate(R.menu.context_story_newest, menu);
         } else {
             inflater.inflate(R.menu.context_story_oldest, menu);
@@ -494,12 +495,12 @@ public class UIUtils {
         return result;
     }
 
-    public static void handleUri(Context context, Uri uri) {
-        DefaultBrowser defaultBrowser = PrefsUtils.getDefaultBrowser(context);
+    public static void handleUri(Context context, PrefsRepo prefsRepo, Uri uri) {
+        DefaultBrowser defaultBrowser = prefsRepo.getDefaultBrowser();
         if (defaultBrowser == DefaultBrowser.SYSTEM_DEFAULT) {
             openSystemDefaultBrowser(context, uri);
         } else if (defaultBrowser == DefaultBrowser.IN_APP_BROWSER) {
-            openInAppBrowser(context, uri);
+            openInAppBrowser(context, prefsRepo, uri);
         } else if (defaultBrowser == DefaultBrowser.CHROME) {
             openExternalBrowserApp(context, uri, "com.android.chrome");
         } else if (defaultBrowser == DefaultBrowser.FIREFOX) {
@@ -509,13 +510,13 @@ public class UIUtils {
         }
     }
 
-    private static void openInAppBrowser(Context context, Uri uri) {
+    private static void openInAppBrowser(Context context, PrefsRepo prefsRepo, Uri uri) {
         int colorPrimary = MaterialColors.getColor(context, androidx.appcompat.R.attr.colorPrimary, ContextCompat.getColor(context, R.color.primary_dark));
         CustomTabColorSchemeParams schemeParams = new CustomTabColorSchemeParams.Builder()
                 .setToolbarColor(colorPrimary)
                 .build();
         CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
-                .setColorScheme(getCustomTabsColorScheme(context))
+                .setColorScheme(getCustomTabsColorScheme(prefsRepo))
                 .setDefaultColorSchemeParams(schemeParams)
                 .setShareState(CustomTabsIntent.SHARE_STATE_ON)
                 .setUrlBarHidingEnabled(false)
@@ -557,8 +558,8 @@ public class UIUtils {
         }
     }
 
-    public static boolean needsSubscriptionAccess(Context context, FeedSet feedSet) {
-        boolean hasSubscription = PrefsUtils.hasSubscription(context);
+    public static boolean needsSubscriptionAccess(FeedSet feedSet, PrefsRepo prefsRepo) {
+        boolean hasSubscription = prefsRepo.hasSubscription();
         boolean requiresSubscription = feedSet.isFolder() || feedSet.isInfrequent() ||
                 feedSet.isAllNormal() || feedSet.isGlobalShared() || feedSet.isSingleSavedTag();
         return !hasSubscription && requiresSubscription;
@@ -569,8 +570,8 @@ public class UIUtils {
         context.startActivity(intent);
     }
 
-    private static int getCustomTabsColorScheme(Context context) {
-        PrefConstants.ThemeValue value = PrefsUtils.getSelectedTheme(context);
+    private static int getCustomTabsColorScheme(PrefsRepo prefsRepo) {
+        PrefConstants.ThemeValue value = prefsRepo.getSelectedTheme();
         if (value == PrefConstants.ThemeValue.DARK || value == PrefConstants.ThemeValue.BLACK) {
             return CustomTabsIntent.COLOR_SCHEME_DARK;
         } else if (value == PrefConstants.ThemeValue.LIGHT) {

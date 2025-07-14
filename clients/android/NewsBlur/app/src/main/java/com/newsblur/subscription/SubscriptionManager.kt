@@ -2,20 +2,40 @@ package com.newsblur.subscription
 
 import android.app.Activity
 import android.content.Context
-import com.android.billingclient.api.*
+import com.android.billingclient.api.AcknowledgePurchaseParams
+import com.android.billingclient.api.AcknowledgePurchaseResponseListener
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingFlowParams.SubscriptionUpdateParams.ReplacementMode
+import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PurchasesUpdatedListener
+import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryPurchasesParams
 import com.newsblur.R
 import com.newsblur.network.APIManager
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NBSyncService
-import com.newsblur.util.*
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
+import com.newsblur.util.AppConstants
+import com.newsblur.util.FeedUtils
+import com.newsblur.util.Log
+import com.newsblur.util.NBScope
+import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 interface SubscriptionManager {
 
@@ -65,15 +85,10 @@ interface SubscriptionsListener {
     fun onBillingConnectionError(message: String? = null) {}
 }
 
-@EntryPoint
-@InstallIn(SingletonComponent::class)
-interface SubscriptionManagerEntryPoint {
-
-    fun apiManager(): APIManager
-}
-
 class SubscriptionManagerImpl(
         private val context: Context,
+        private val apiManager: APIManager,
+        private val prefRepository: PrefsRepo,
         private val scope: CoroutineScope = NBScope,
 ) : SubscriptionManager {
 
@@ -87,14 +102,17 @@ class SubscriptionManagerImpl(
                     syncActiveSubscription()
                 }
             }
+
             BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
                 // Billing API version is not supported for the type requested.
                 Log.d(this, "acknowledgePurchaseResponseListener BILLING_UNAVAILABLE")
             }
+
             BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE -> {
                 // Network connection is down.
                 Log.d(this, "acknowledgePurchaseResponseListener SERVICE_UNAVAILABLE")
             }
+
             else -> {
                 // Handle any other error codes.
                 Log.d(this, "acknowledgePurchaseResponseListener ERROR - message: " + billingResult.debugMessage)
@@ -202,8 +220,8 @@ class SubscriptionManagerImpl(
     }
 
     override suspend fun syncActiveSubscription() = scope.launch(Dispatchers.Default) {
-        val isPremium = PrefsUtils.getIsPremium(context)
-        val isArchive = PrefsUtils.getIsArchive(context)
+        val isPremium = prefRepository.getIsPremium()
+        val isArchive = prefRepository.getIsArchive()
         val activePlayStoreSubscription = getActiveSubscriptionAsync().await()
 
         if (isPremium || isArchive || activePlayStoreSubscription != null) {
@@ -225,16 +243,13 @@ class SubscriptionManagerImpl(
     }
 
     override suspend fun hasActiveSubscription(): Boolean =
-            PrefsUtils.hasSubscription(context) ||
-                    getActiveSubscriptionAsync().await() != null
+            prefRepository.hasSubscription() || getActiveSubscriptionAsync().await() != null
 
     override fun saveReceipt(purchase: Purchase) {
         Log.d(this, "saveReceipt: ${purchase.orderId}")
-        val hiltEntryPoint = EntryPointAccessors
-                .fromApplication(context.applicationContext, SubscriptionManagerEntryPoint::class.java)
         scope.executeAsyncTask(
                 doInBackground = {
-                    hiltEntryPoint.apiManager().saveReceipt(purchase.orderId, purchase.products.first())
+                    apiManager.saveReceipt(purchase.orderId, purchase.products.first())
                 },
                 onPostExecute = {
                     if (!it.isError) {
@@ -311,12 +326,13 @@ class SubscriptionManagerImpl(
      * Generate subscription renewal message.
      */
     private fun getRenewalMessage(purchase: Purchase?): String? {
-        val expirationTimeMs = PrefsUtils.getSubscriptionExpire(context)
+        val expirationTimeMs = prefRepository.getSubscriptionExpire()
         return when {
             // lifetime subscription
             expirationTimeMs == 0L -> {
                 context.getString(R.string.premium_subscription_no_expiration)
             }
+
             expirationTimeMs > 0 -> {
                 // date constructor expects ms
                 val expirationDate = Date(expirationTimeMs * 1000)
@@ -328,6 +344,7 @@ class SubscriptionManagerImpl(
                     context.getString(R.string.premium_subscription_renewal, dateFormat.format(expirationDate))
                 }
             }
+
             else -> null
         }
     }

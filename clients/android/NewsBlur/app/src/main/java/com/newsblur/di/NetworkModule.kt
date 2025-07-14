@@ -9,7 +9,12 @@ import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
 import com.newsblur.network.APIManager
 import com.newsblur.network.domain.StoriesResponse
-import com.newsblur.serialization.*
+import com.newsblur.preference.PrefsRepo
+import com.newsblur.serialization.BooleanTypeAdapter
+import com.newsblur.serialization.ClassifierMapTypeAdapter
+import com.newsblur.serialization.DateStringTypeAdapter
+import com.newsblur.serialization.StoriesResponseTypeAdapter
+import com.newsblur.serialization.StoryTypeAdapter
 import com.newsblur.util.AppConstants
 import com.newsblur.util.NetworkUtils
 import dagger.Module
@@ -18,7 +23,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
-import java.util.*
+import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -70,9 +75,13 @@ object NetworkModule {
             @ApplicationContext context: Context,
             customUserAgent: CustomUserAgent,
             gson: Gson,
-            @ApiOkHttpClient apiOkHttpClient: OkHttpClient): APIManager =
-            APIManager(context,
+            @ApiOkHttpClient apiOkHttpClient: OkHttpClient,
+            prefsRepo: PrefsRepo): APIManager =
+            APIManager(
+                    context,
                     gson,
                     customUserAgent,
-                    apiOkHttpClient)
+                    apiOkHttpClient,
+                    prefsRepo,
+            )
 }

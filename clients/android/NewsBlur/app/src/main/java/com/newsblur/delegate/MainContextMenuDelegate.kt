@@ -12,11 +12,11 @@ import com.newsblur.activity.*
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.fragment.*
 import com.newsblur.keyboard.KeyboardManager
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NBSyncService
 import com.newsblur.util.ListTextSize
 import com.newsblur.util.ListTextSize.Companion.fromSize
 import com.newsblur.util.PrefConstants.ThemeValue
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.SpacingStyle
 import com.newsblur.util.UIUtils
 import com.newsblur.widget.WidgetUtils
@@ -31,6 +31,7 @@ interface MainContextMenuDelegate {
 class MainContextMenuDelegateImpl(
         private val activity: Main,
         private val dbHelper: BlurDatabaseHelper,
+        private val prefsRepo: PrefsRepo,
 ) : MainContextMenuDelegate {
 
     override fun onMenuClick(anchor: View, listener: PopupMenu.OnMenuItemClickListener) {
@@ -46,22 +47,21 @@ class MainContextMenuDelegateImpl(
             menu.findItem(R.id.menu_shortcuts).isVisible = true
         }
 
-        when (PrefsUtils.getSelectedTheme(activity)) {
+        when (prefsRepo.getSelectedTheme()) {
             ThemeValue.LIGHT -> menu.findItem(R.id.menu_theme_light).isChecked = true
             ThemeValue.DARK -> menu.findItem(R.id.menu_theme_dark).isChecked = true
             ThemeValue.BLACK -> menu.findItem(R.id.menu_theme_black).isChecked = true
             ThemeValue.AUTO -> menu.findItem(R.id.menu_theme_auto).isChecked = true
-            else -> Unit
         }
 
-        val spacingStyle = PrefsUtils.getSpacingStyle(activity)
+        val spacingStyle = prefsRepo.getSpacingStyle()
         if (spacingStyle == SpacingStyle.COMFORTABLE) {
             menu.findItem(R.id.menu_spacing_comfortable).isChecked = true
         } else if (spacingStyle == SpacingStyle.COMPACT) {
             menu.findItem(R.id.menu_spacing_compact).isChecked = true
         }
 
-        when (fromSize(PrefsUtils.getListTextSize(activity))) {
+        when (fromSize(prefsRepo.getListTextSize())) {
             ListTextSize.XS -> menu.findItem(R.id.menu_text_size_xs).isChecked = true
             ListTextSize.S -> menu.findItem(R.id.menu_text_size_s).isChecked = true
             ListTextSize.M -> menu.findItem(R.id.menu_text_size_m).isChecked = true
@@ -95,13 +95,13 @@ class MainContextMenuDelegateImpl(
             true
         }
         R.id.menu_feedback_email -> {
-            PrefsUtils.sendLogEmail(activity, dbHelper)
+            prefsRepo.sendLogEmail(activity, dbHelper)
             true
         }
         R.id.menu_feedback_post -> {
             try {
                 val i = Intent(Intent.ACTION_VIEW)
-                i.data = Uri.parse(PrefsUtils.createFeedbackLink(activity, dbHelper))
+                i.data = Uri.parse(prefsRepo.createFeedbackLink(activity, dbHelper))
                 activity.startActivity(i)
             } catch (e: Exception) {
                 Log.wtf(this.javaClass.name, "device cannot even open URLs to report feedback")
@@ -146,22 +146,22 @@ class MainContextMenuDelegateImpl(
             true
         }
         R.id.menu_theme_auto -> {
-            PrefsUtils.setSelectedTheme(activity, ThemeValue.AUTO)
+            prefsRepo.setSelectedTheme(ThemeValue.AUTO)
             UIUtils.restartActivity(activity)
             false
         }
         R.id.menu_theme_light -> {
-            PrefsUtils.setSelectedTheme(activity, ThemeValue.LIGHT)
+            prefsRepo.setSelectedTheme(ThemeValue.LIGHT)
             UIUtils.restartActivity(activity)
             false
         }
         R.id.menu_theme_dark -> {
-            PrefsUtils.setSelectedTheme(activity, ThemeValue.DARK)
+            prefsRepo.setSelectedTheme(ThemeValue.DARK)
             UIUtils.restartActivity(activity)
             false
         }
         R.id.menu_theme_black -> {
-            PrefsUtils.setSelectedTheme(activity, ThemeValue.BLACK)
+            prefsRepo.setSelectedTheme(ThemeValue.BLACK)
             UIUtils.restartActivity(activity)
             false
         }
