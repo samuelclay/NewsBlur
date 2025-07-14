@@ -65,7 +65,7 @@ class LoginProgress : FragmentActivity() {
                         binding.loginLoggingIn.startAnimation(a)
                         if (userImage != null) {
                             binding.loginProfilePicture.visibility = View.VISIBLE
-                            binding.loginProfilePicture.setImageBitmap(UIUtils.clipAndRound(userImage, true, false))
+                            binding.loginProfilePicture.setImageBitmap(userImage)
                         }
                         binding.loginFeedProgress.visibility = View.VISIBLE
                         val b = AnimationUtils.loadAnimation(this, R.anim.text_up)

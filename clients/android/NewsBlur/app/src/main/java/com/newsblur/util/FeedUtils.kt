@@ -82,11 +82,14 @@ class FeedUtils(
     fun deleteSavedSearch(feedId: String?, query: String?) {
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.deleteSearch(feedId, query)
+                    val response = apiManager.deleteSearch(feedId, query)
+                    if (!response.isError) {
+                        dbHelper.deleteSavedSearch(feedId, query)
+                    }
+                    response
                 },
                 onPostExecute = { newsBlurResponse ->
                     if (!newsBlurResponse.isError) {
-                        dbHelper.deleteSavedSearch(feedId, query)
                         syncUpdateStatus(UPDATE_METADATA)
                     }
                 }
@@ -111,10 +114,10 @@ class FeedUtils(
         NBScope.executeAsyncTask(
                 doInBackground = {
                     apiManager.deleteFeed(feedId, folderName)
-                },
-                onPostExecute = {
                     // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
                     dbHelper.deleteFeed(feedId)
+                },
+                onPostExecute = {
                     syncUpdateStatus(UPDATE_METADATA)
                 }
         )
@@ -124,10 +127,10 @@ class FeedUtils(
         NBScope.executeAsyncTask(
                 doInBackground = {
                     apiManager.unfollowUser(userId)
-                },
-                onPostExecute = {
                     // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
                     dbHelper.deleteSocialFeed(userId)
+                },
+                onPostExecute = {
                     syncUpdateStatus(UPDATE_METADATA)
                 }
         )
@@ -269,12 +272,15 @@ class FeedUtils(
                 fs.isAllNormal -> {
                     activity.resources.getString(R.string.all_stories)
                 }
+
                 fs.isFolder -> {
                     fs.folderName
                 }
+
                 fs.isSingleSocial -> {
                     dbHelper.getSocialFeed(fs.singleSocialFeed.key)?.feedTitle ?: ""
                 }
+
                 else -> {
                     dbHelper.getFeed(fs.singleFeed)?.title ?: ""
                 }
@@ -459,7 +465,8 @@ class FeedUtils(
 
                     dbHelper.enqueueAction(ra)
                     ra.doLocal(dbHelper, prefsRepo)
-
+                },
+                onPostExecute = {
                     syncUpdateStatus(UPDATE_METADATA)
                     triggerSync(context)
                 }
