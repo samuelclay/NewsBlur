@@ -24,7 +24,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.newsblur.R;
-import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.ActivityMainBinding;
 import com.newsblur.delegate.MainContextMenuDelegate;
 import com.newsblur.delegate.MainContextMenuDelegateImpl;
@@ -40,11 +39,13 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.EdgeToEdgeUtil;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ShortcutUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -55,9 +56,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     @Inject
     FeedUtils feedUtils;
-
-    @Inject
-    BlurDatabaseHelper dbHelper;
 
     public static final String EXTRA_FORCE_SHOW_FEED_ID = "force_show_feed_id";
 
@@ -75,7 +73,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 		super.onCreate(savedInstanceState);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        contextMenuDelegate = new MainContextMenuDelegateImpl(this, dbHelper);
+        contextMenuDelegate = new MainContextMenuDelegateImpl(this, dbHelper, prefsRepo);
         keyboardManager = new KeyboardManager();
         EdgeToEdgeUtil.applyView(this, binding);
 
@@ -96,12 +94,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         // make sure the interval sync is scheduled, since we are the root Activity
         BootReceiver.scheduleSyncService(this);
 
-        Bitmap userPicture = PrefsUtils.getUserImage(this);
-        if (userPicture != null) {
-            userPicture = UIUtils.clipAndRound(userPicture, true, false);
-            binding.mainUserImage.setImageBitmap(userPicture);
-        }
-        binding.mainUserName.setText(PrefsUtils.getUserDetails(this).username);
+        setUserImageAndName();
+
         binding.inputSearchQuery.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
@@ -243,6 +237,25 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             else return super.onKeyUp(keyCode, event);
         }
         return super.onKeyUp(keyCode, event);
+    }
+
+    private void setUserImageAndName() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            Bitmap rawImage = prefsRepo.getUserImage(this);
+            final Bitmap roundedImage = (rawImage != null)
+                    ? UIUtils.clipAndRound(rawImage, true, false)
+                    : null;
+
+            String username = prefsRepo.getUserName();
+
+            runOnUiThread(() -> {
+                if (roundedImage != null) {
+                    binding.mainUserImage.setImageBitmap(roundedImage);
+                }
+                binding.mainUserName.setText(username);
+            });
+        });
     }
 
     public void updateUnreadCounts(int neutCount, int posiCount) {

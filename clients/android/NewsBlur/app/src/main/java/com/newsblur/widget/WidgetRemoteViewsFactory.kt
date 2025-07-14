@@ -15,6 +15,7 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.Feed
 import com.newsblur.domain.Story
 import com.newsblur.network.APIManager
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.*
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.TimeoutCancellationException
@@ -31,6 +32,7 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
     private val dbHelper: BlurDatabaseHelper
     private val iconLoader: ImageLoader
     private val thumbnailLoader: ImageLoader
+    private val prefsRepo: PrefsRepo
     private val appWidgetId: Int
 
     private val storyItems: MutableList<Story> = mutableListOf()
@@ -47,6 +49,7 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
         this.dbHelper = hiltEntryPoint.dbHelper()
         this.iconLoader = hiltEntryPoint.iconLoader()
         this.thumbnailLoader = hiltEntryPoint.thumbnailLoader()
+        this.prefsRepo = hiltEntryPoint.prefRepository()
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID)
     }
@@ -73,7 +76,7 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
 
         // image dimensions same as R.layout.view_widget_story_item
         iconLoader.displayWidgetImage(story.extern_faviconUrl, R.id.story_item_feedicon, UIUtils.dp2px(context, 19), rv)
-        if (PrefsUtils.getThumbnailStyle(context) != ThumbnailStyle.OFF && !TextUtils.isEmpty(story.thumbnailUrl)) {
+        if (prefsRepo.getThumbnailStyle() != ThumbnailStyle.OFF && !TextUtils.isEmpty(story.thumbnailUrl)) {
             thumbnailLoader.displayWidgetImage(story.thumbnailUrl, R.id.story_item_thumbnail, UIUtils.dp2px(context, 64), rv)
         } else {
             rv.setViewVisibility(R.id.story_item_thumbnail, View.GONE)
@@ -124,13 +127,13 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
     override fun onDataSetChanged() = storiesLock.withLock {
         Log.d(this.javaClass.name, "onDataSetChanged")
         // if user logged out don't try to update widget
-        if (!WidgetUtils.isLoggedIn(context)) {
+        if (!WidgetUtils.isLoggedIn(prefsRepo)) {
             Log.d(this.javaClass.name, "onDataSetChanged - not logged in")
             return@withLock
         }
 
         // get fs based on pref widget feed ids
-        val feedIds = PrefsUtils.getWidgetFeedIds(context)
+        val feedIds = prefsRepo.getWidgetFeedIds()
         val fs = if (feedIds == null || feedIds.isNotEmpty()) {
             // null feed ids get all feeds
             FeedSet.widgetFeeds(feedIds)
@@ -147,9 +150,9 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
                 // Taking more than 20 seconds in this method will result in an ANR.
                 withTimeout(18000) {
                     Log.d(this.javaClass.name, "onDataSetChanged - get remote stories")
-                    val response = apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL)
+                    val response = apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL, prefsRepo.getInfrequentCutoff())
                     response.stories?.let {
-                        val stateFilter = PrefsUtils.getStateFilter(context)
+                        val stateFilter = prefsRepo.getStateFilter()
                         Log.d(this.javaClass.name, "onDataSetChanged - got ${it.size} remote stories")
                         processStories(response.stories)
                         dbHelper.insertStories(response, stateFilter, true)
@@ -169,7 +172,7 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
         Log.d(this.javaClass.name, "onDestroy")
         cancellationSignal.cancel()
         WidgetUtils.disableWidgetUpdate(context)
-        PrefsUtils.removeWidgetData(context)
+        prefsRepo.removeWidgetData()
     }
 
     /**

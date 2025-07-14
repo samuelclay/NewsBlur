@@ -39,11 +39,11 @@ import com.newsblur.network.domain.StoryChangesResponse;
 import com.newsblur.network.domain.StoryTextResponse;
 import com.newsblur.network.domain.UnreadCountResponse;
 import com.newsblur.network.domain.UnreadStoryHashesResponse;
+import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.PrefConstants;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StoryOrder;
 import com.newsblur.widget.WidgetUtils;
@@ -60,14 +60,22 @@ public class APIManager {
 	private final Gson gson;
     @ApiOkHttpClient
 	private final OkHttpClient apiOkHttpClient;
+    private final PrefsRepo prefsRepo;
     private String customUserAgent;
 
-	public APIManager(final Context context, Gson gson, String customUserAgent, @ApiOkHttpClient OkHttpClient apiOkHttpClient) {
-        APIConstants.setCustomServer(PrefsUtils.getCustomServer(context));
+	public APIManager(
+            final Context context,
+            Gson gson,
+            String customUserAgent,
+            @ApiOkHttpClient OkHttpClient apiOkHttpClient,
+            PrefsRepo prefsRepo
+    ) {
+        APIConstants.setCustomServer(prefsRepo.getCustomServer());
         this.context = context;
         this.gson = gson;
         this.customUserAgent = customUserAgent;
         this.apiOkHttpClient = apiOkHttpClient;
+        this.prefsRepo = prefsRepo;
 	}
 
 	public LoginResponse login(final String username, final String password) {
@@ -80,7 +88,7 @@ public class APIManager {
 		final APIResponse response = post(buildUrl(APIConstants.PATH_LOGIN), values);
         LoginResponse loginResponse = response.getLoginResponse(gson);
 		if (!response.isError()) {
-			PrefsUtils.saveLogin(context, username, response.getCookie());
+			prefsRepo.saveLogin(username, response.getCookie());
 		} 
         return loginResponse;
     }
@@ -101,7 +109,7 @@ public class APIManager {
             Response response = noredirHttpClient.newCall(requestBuilder.build()).execute();
             if (!response.isRedirect()) return false;
             String newCookie = response.header("Set-Cookie");
-            PrefsUtils.saveLogin(context, username, newCookie);
+            prefsRepo.saveLogin(username, newCookie);
         } catch (IOException ioe) {
             return false;
         }
@@ -199,7 +207,7 @@ public class APIManager {
 		final APIResponse response = post(buildUrl(APIConstants.PATH_SIGNUP), values);
         RegisterResponse registerResponse = response.getRegisterResponse(gson);
 		if (!response.isError()) {
-			PrefsUtils.saveLogin(context, username, response.getCookie());
+			prefsRepo.saveLogin(username, response.getCookie());
 		}
         return registerResponse;
 	}
@@ -208,7 +216,7 @@ public class APIManager {
 		final APIResponse response = get(buildUrl(APIConstants.PATH_MY_PROFILE));
 		if (!response.isError()) {
 			ProfileResponse profileResponse = response.getResponse(gson, ProfileResponse.class);
-			PrefsUtils.saveUserDetails(context, profileResponse.user);
+			prefsRepo.saveUserDetails(context, profileResponse.user);
 			return profileResponse;
 		} else {
 			return null;
@@ -265,7 +273,7 @@ public class APIManager {
      * Fetches stories for the given FeedSet, choosing the correct API and the right
      * request parameters as needed.
      */
-    public StoriesResponse getStories(FeedSet fs, int pageNumber, StoryOrder order, ReadFilter filter) {
+    public StoriesResponse getStories(FeedSet fs, int pageNumber, StoryOrder order, ReadFilter filter, int infrequentCutoff) {
         Uri uri;
         ValueMultimap values = new ValueMultimap();
     
@@ -300,7 +308,7 @@ public class APIManager {
         } else if (fs.isInfrequent()) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
             values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);
-            values.put(APIConstants.PARAMETER_INFREQUENT, Integer.toString(PrefsUtils.getInfrequentCutoff(context)));
+            values.put(APIConstants.PARAMETER_INFREQUENT, Integer.toString(infrequentCutoff));
         } else if (fs.isAllNormal()) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
             values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE);

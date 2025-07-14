@@ -7,14 +7,21 @@ import androidx.fragment.app.commit
 import com.newsblur.R
 import com.newsblur.databinding.ActivityLoginBinding
 import com.newsblur.fragment.LoginRegisterFragment
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.EdgeToEdgeUtil.applyTheme
 import com.newsblur.util.EdgeToEdgeUtil.applyView
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class Login : FragmentActivity() {
 
+    @Inject
+    lateinit var prefsRepo: PrefsRepo
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        applyTheme()
         super.onCreate(savedInstanceState)
+        applyTheme(prefsRepo.getSelectedTheme())
 
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         applyView(ActivityLoginBinding.inflate(layoutInflater))

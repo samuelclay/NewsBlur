@@ -1,7 +1,6 @@
 package com.newsblur.activity
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.database.Cursor
@@ -43,7 +42,6 @@ import com.newsblur.util.FeedUtils
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.PrefConstants.ThemeValue
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.StateFilter
 import com.newsblur.util.UIUtils
 import com.newsblur.util.ViewUtils
@@ -149,15 +147,15 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
             savedInstanceBundle.getString(EXTRA_STORY_HASH)
         }
 
-        intelState = PrefsUtils.getStateFilter(this)
-        volumeKeyNavigation = PrefsUtils.getVolumeKeyNavigation(this)
-        markStoryReadBehavior = PrefsUtils.getMarkStoryReadBehavior(this)
+        intelState = prefsRepo.getStateFilter()
+        volumeKeyNavigation = prefsRepo.getVolumeKeyNavigation()
+        markStoryReadBehavior = prefsRepo.getMarkStoryReadBehavior()
 
         setupViews()
         setupListeners()
         setupObservers()
         setupOnBackPressed()
-        getActiveStoriesCursor(this, true)
+        getActiveStoriesCursor(true)
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
@@ -185,7 +183,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         // this is not strictly necessary, since our first refresh with the fs will swap in
         // the correct session, but that can be delayed by sync backup, so we try here to
         // reduce UI lag, or in case somehow we got redisplayed in a zero-story state
-        feedUtils.prepareReadingSession(this, fs, false)
+        feedUtils.prepareReadingSession(fs, false)
         keyboardManager.addListener(this)
     }
 
@@ -252,9 +250,9 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         })
     }
 
-    private fun getActiveStoriesCursor(context: Context, finishOnInvalidFs: Boolean = false) {
+    private fun getActiveStoriesCursor(finishOnInvalidFs: Boolean = false) {
         fs?.let {
-            val cursorFilters = CursorFilters(context, it)
+            val cursorFilters = CursorFilters(prefsRepo, it)
             storiesViewModel.getActiveStories(it, cursorFilters)
         } ?: run {
             if (finishOnInvalidFs) {
@@ -351,7 +349,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         pager.visibility = View.INVISIBLE
         pager.pageMargin = UIUtils.dp2px(this, 1)
 
-        when (PrefsUtils.getSelectedTheme(this)) {
+        when (prefsRepo.getSelectedTheme()) {
             ThemeValue.LIGHT -> pager.setPageMarginDrawable(R.drawable.divider_light)
             ThemeValue.DARK, ThemeValue.BLACK -> pager.setPageMarginDrawable(R.drawable.divider_dark)
             ThemeValue.AUTO -> {
@@ -420,7 +418,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
             }
         }
         if (updateType and UPDATE_STORY != 0) {
-            getActiveStoriesCursor(this)
+            getActiveStoriesCursor()
             updateOverlayNav()
         }
 

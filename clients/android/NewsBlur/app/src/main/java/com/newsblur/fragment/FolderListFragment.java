@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -51,6 +50,7 @@ import com.newsblur.domain.Feed;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.SavedSearch;
 import com.newsblur.domain.SocialFeed;
+import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.Session;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedExt;
@@ -59,8 +59,6 @@ import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
-import com.newsblur.util.PrefConstants;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.ListTextSize;
 import com.newsblur.viewModel.AllFoldersViewModel;
@@ -70,7 +68,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class FolderListFragment extends NbFragment implements OnCreateContextMenuListener, 
+public class FolderListFragment extends NbFragment implements OnCreateContextMenuListener,
                                                               OnChildClickListener,
                                                               OnGroupClickListener,
                                                               OnGroupCollapseListener,
@@ -86,10 +84,12 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     @IconLoader
     ImageLoader iconLoader;
 
+    @Inject
+    PrefsRepo prefsRepo;
+
     private AllFoldersViewModel allFoldersViewModel;
 	private FolderListAdapter adapter;
 	public StateFilter currentState = StateFilter.SOME;
-	private SharedPreferences sharedPreferences;
 	private FragmentFolderfeedlistBinding binding;
     public boolean firstCursorSeenYet = false;
 
@@ -101,9 +101,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		allFoldersViewModel = new ViewModelProvider(this).get(AllFoldersViewModel.class);
-        currentState = PrefsUtils.getStateFilter(getActivity());
-		adapter = new FolderListAdapter(getActivity(), currentState, iconLoader, dbHelper);
-        sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        currentState = prefsRepo.getStateFilter();
+		adapter = new FolderListAdapter(getActivity(), currentState, iconLoader, dbHelper, prefsRepo);
         feedUtils.currentFolderName = null;
         // NB: it is by design that loaders are not started until we get a
         // ping from the sync service indicating that it has initialised
@@ -119,8 +118,8 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     public void onResume() {
         super.onResume();
         if (adapter != null) {
-            float textSize = PrefsUtils.getListTextSize(requireContext());
-            SpacingStyle spacingStyle = PrefsUtils.getSpacingStyle(requireContext());
+            float textSize = prefsRepo.getListTextSize();
+            SpacingStyle spacingStyle = prefsRepo.getSpacingStyle();
             adapter.setTextSize(textSize);
             adapter.setSpacingStyle(spacingStyle);
             adapter.notifyDataSetChanged();
@@ -197,11 +196,11 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
      */
 	public void checkOpenFolderPreferences() {
         // make sure we didn't beat construction
-        if ((this.binding.folderfeedList == null) || (this.sharedPreferences == null)) return;
+        if (this.binding.folderfeedList == null) return;
 
 		for (int i = 0; i < adapter.getGroupCount(); i++) {
 			String flatGroupName = adapter.getGroupUniqueName(i);
-			if (sharedPreferences.getBoolean(AppConstants.FOLDER_PRE + "_" + flatGroupName, true)) {
+			if (prefsRepo.getBoolean(AppConstants.FOLDER_PRE + "_" + flatGroupName, true)) {
 				if (binding.folderfeedList.isGroupExpanded(i) == false) {
                     binding.folderfeedList.expandGroup(i);
                     adapter.setFolderClosed(flatGroupName, false);
@@ -401,7 +400,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 	public void changeState(StateFilter state) {
 		currentState = state;
-        PrefsUtils.setStateFilter(getActivity(), state);
+        prefsRepo.setStateFilter(state);
         adapter.changeState(state);
 		hasUpdated();
 	}
@@ -492,7 +491,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
         String flatGroupName = adapter.getGroupUniqueName(groupPosition);
         // save the expanded preference, since the widget likes to forget it
-        sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + flatGroupName, true).commit();
+        prefsRepo.putBoolean(AppConstants.FOLDER_PRE + "_" + flatGroupName, true);
 
         if (adapter.isRowSavedStories(groupPosition)) return;
 
@@ -511,7 +510,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
         String flatGroupName = adapter.getGroupUniqueName(groupPosition);
         // save the collapsed preference, since the widget likes to forget it
-        sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + "_" + flatGroupName, false).commit();
+        prefsRepo.putBoolean(AppConstants.FOLDER_PRE + "_" + flatGroupName, false);
 
         if (adapter.isRowSavedStories(groupPosition)) return;
 
@@ -557,7 +556,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
 	private void checkAccountFeedsLimit() {
         new Handler().postDelayed(() -> {
-            if (getActivity() != null && adapter.totalActiveFeedCount > AppConstants.FREE_ACCOUNT_SITE_LIMIT && !PrefsUtils.hasSubscription(getActivity())) {
+            if (getActivity() != null && adapter.totalActiveFeedCount > AppConstants.FREE_ACCOUNT_SITE_LIMIT && !prefsRepo.hasSubscription()) {
                 Intent intent = new Intent(getActivity(), MuteConfig.class);
                 startActivity(intent);
             }
@@ -612,7 +611,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     }
 
     public void setListTextSize(ListTextSize listTextSize) {
-        PrefsUtils.setListTextSize(requireContext(), listTextSize.getSize());
+        prefsRepo.setListTextSize(listTextSize.getSize());
         if (adapter != null) {
             adapter.setTextSize(listTextSize.getSize());
             adapter.notifyDataSetChanged();
@@ -620,7 +619,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
     }
 
     public void setSpacingStyle(SpacingStyle spacingStyle) {
-        PrefsUtils.setSpacingStyle(requireContext(), spacingStyle);
+        prefsRepo.setSpacingStyle(spacingStyle);
         if (adapter != null) {
             adapter.setSpacingStyle(spacingStyle);
             adapter.notifyDataSetChanged();
@@ -629,7 +628,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 
     @Nullable
     private SessionDataSource getSessionData(FeedSet fs, String folderName, @Nullable Feed feed) {
-        if (PrefsUtils.loadNextOnMarkRead(requireContext())) {
+        if (prefsRepo.loadNextOnMarkRead()) {
             Session activeSession = new Session(fs, folderName, feed);
             return adapter.buildSessionDataSource(activeSession);
         }

@@ -13,14 +13,20 @@ import com.newsblur.R
 import com.newsblur.activity.AllStoriesItemsList
 import com.newsblur.activity.ItemsList
 import com.newsblur.activity.WidgetConfig
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FeedSet
 import com.newsblur.util.PendingIntentUtils.getImmutableBroadcast
 import com.newsblur.util.PendingIntentUtils.getMutableBroadcast
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.WidgetBackground
 import com.newsblur.widget.WidgetUtils.checkWidgetUpdateAlarm
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class WidgetProvider : AppWidgetProvider() {
+
+    @Inject
+    lateinit var prefsRepo: PrefsRepo
 
     /**
      * Called when the BroadcastReceiver receives an Intent broadcast.
@@ -54,8 +60,8 @@ class WidgetProvider : AppWidgetProvider() {
         // update each of the app widgets with the remote adapter
         Log.d(this.javaClass.name, "onUpdate")
         checkWidgetUpdateAlarm(context)
-        val widgetBackground = PrefsUtils.getWidgetBackground(context)
-        val feedIds = PrefsUtils.getWidgetFeedIds(context)
+        val widgetBackground = prefsRepo.getWidgetBackground()
+        val feedIds = prefsRepo.getWidgetFeedIds()
         for (appWidgetId in appWidgetIds) {
 
             // Set up the intent that starts the WidgetRemoteViewService, which will

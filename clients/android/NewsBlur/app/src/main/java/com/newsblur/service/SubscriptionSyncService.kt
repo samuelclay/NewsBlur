@@ -6,13 +6,16 @@ import android.app.job.JobScheduler
 import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
+import com.newsblur.network.APIManager
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.subscription.SubscriptionManagerImpl
 import com.newsblur.subscription.SubscriptionsListener
 import com.newsblur.util.AppConstants
 import com.newsblur.util.Log
 import com.newsblur.util.NBScope
-import com.newsblur.util.PrefsUtils
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Service to sync user subscription with NewsBlur backend.
@@ -22,16 +25,27 @@ import kotlinx.coroutines.launch
  * This could occur when the user has renewed the subscription
  * via Play Store.
  */
+@AndroidEntryPoint
 class SubscriptionSyncService : JobService() {
+
+    @Inject
+    lateinit var apiManager: APIManager
+
+    @Inject
+    lateinit var prefsRepo: PrefsRepo
 
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.d(this, "onStartJob")
-        if (!PrefsUtils.hasCookie(this)) {
+        if (!prefsRepo.hasCookie()) {
             // no user authenticated
             return false
         }
 
-        val subscriptionManager = SubscriptionManagerImpl(this@SubscriptionSyncService)
+        val subscriptionManager = SubscriptionManagerImpl(
+                context = this@SubscriptionSyncService,
+                apiManager = apiManager,
+                prefRepository = prefsRepo,
+        )
         subscriptionManager.startBillingConnection(object : SubscriptionsListener {
             override fun onBillingConnectionReady() {
                 NBScope.launch {

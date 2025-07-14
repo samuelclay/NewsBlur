@@ -11,10 +11,10 @@ import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.databinding.ActivityLoginProgressBinding
 import com.newsblur.network.APIManager
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.util.EdgeToEdgeUtil.applyTheme
 import com.newsblur.util.EdgeToEdgeUtil.applyView
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,11 +26,14 @@ class LoginProgress : FragmentActivity() {
     @Inject
     lateinit var apiManager: APIManager
 
+    @Inject
+    lateinit var prefsRepo: PrefsRepo
+
     private lateinit var binding: ActivityLoginProgressBinding
 
     override fun onCreate(bundle: Bundle?) {
-        applyTheme()
         super.onCreate(bundle)
+        applyTheme(prefsRepo.getSelectedTheme())
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         binding = ActivityLoginProgressBinding.inflate(layoutInflater)
         applyView(binding)
@@ -49,18 +52,20 @@ class LoginProgress : FragmentActivity() {
                     if (!response.isError) {
                         apiManager.updateUserProfile()
                     }
-                    response
+                    val roundedUserImage = prefsRepo.getUserImage(this)?.let { userImage ->
+                        UIUtils.clipAndRound(userImage, true, false)
+                    }
+                    response to roundedUserImage
                 },
-                onPostExecute = {
-                    if (!it.isError) {
+                onPostExecute = { (response, userImage) ->
+                    if (!response.isError) {
                         val a = AnimationUtils.loadAnimation(this, R.anim.text_down)
                         binding.loginLoggingIn.setText(R.string.login_logged_in)
                         binding.loginLoggingInProgress.visibility = View.GONE
                         binding.loginLoggingIn.startAnimation(a)
-                        val userImage = PrefsUtils.getUserImage(this)
                         if (userImage != null) {
                             binding.loginProfilePicture.visibility = View.VISIBLE
-                            binding.loginProfilePicture.setImageBitmap(UIUtils.clipAndRound(userImage, true, false))
+                            binding.loginProfilePicture.setImageBitmap(userImage)
                         }
                         binding.loginFeedProgress.visibility = View.VISIBLE
                         val b = AnimationUtils.loadAnimation(this, R.anim.text_up)
@@ -72,7 +77,7 @@ class LoginProgress : FragmentActivity() {
                         val startMain = Intent(this, Main::class.java)
                         startActivity(startMain)
                     } else {
-                        Toast.makeText(this, it.getErrorMessage(getString(R.string.login_message_error)), Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, response.getErrorMessage(getString(R.string.login_message_error)), Toast.LENGTH_LONG).show()
                         startActivity(Intent(this, Login::class.java))
                     }
                 }

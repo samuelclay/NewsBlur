@@ -18,10 +18,8 @@ import com.newsblur.util.PrefConstants.ThemeValue
 
 object EdgeToEdgeUtil {
 
-    fun Activity.applyTheme() {
-        val value = PrefsUtils.getSelectedTheme(this)
-
-        val themeRes: Int = when (value) {
+    fun Activity.applyTheme(theme: ThemeValue) {
+        val themeRes: Int = when (theme) {
             ThemeValue.LIGHT -> R.style.NewsBlurTheme
             ThemeValue.DARK -> R.style.NewsBlurDarkTheme
             ThemeValue.BLACK -> R.style.NewsBlurBlackTheme
@@ -39,7 +37,7 @@ object EdgeToEdgeUtil {
 
         // system bar
         val window = this.window
-        val isLightIcons = shouldUseLightIcons(this, value)
+        val isLightIcons = shouldUseLightIcons(this, theme)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             WindowCompat.setDecorFitsSystemWindows(window, false)

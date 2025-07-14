@@ -29,13 +29,13 @@ import com.newsblur.domain.Story
 import com.newsblur.domain.UserDetails
 import com.newsblur.fragment.ItemSetFragment
 import com.newsblur.fragment.StoryIntelTrainerFragment
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.GestureAction
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.ImageLoader.PhotoToLoad
 import com.newsblur.util.Log
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.SpacingStyle
 import com.newsblur.util.StoryContentPreviewStyle
 import com.newsblur.util.StoryListStyle
@@ -63,6 +63,7 @@ class StoryViewAdapter(
         iconLoader: ImageLoader,
         thumbnailLoader: ImageLoader,
         feedUtils: FeedUtils,
+        prefsRepo: PrefsRepo,
         listener: OnStoryClickListener,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -91,6 +92,7 @@ class StoryViewAdapter(
     private var thumbnailStyle: ThumbnailStyle
     private var spacingStyle: SpacingStyle
     private val storyOrder: StoryOrder
+    private val prefsRepo: PrefsRepo
 
     init {
         this.fs = fs
@@ -99,6 +101,7 @@ class StoryViewAdapter(
         this.thumbnailLoader = thumbnailLoader
         this.feedUtils = feedUtils
         this.listener = listener
+        this.prefsRepo = prefsRepo
 
         if (fs.isGlobalShared) {
             ignoreReadStatus = false
@@ -151,11 +154,11 @@ class StoryViewAdapter(
             singleFeed = false
         }
 
-        textSize = PrefsUtils.getListTextSize(context)
-        user = PrefsUtils.getUserDetails(context)
-        thumbnailStyle = PrefsUtils.getThumbnailStyle(context)
-        spacingStyle = PrefsUtils.getSpacingStyle(context)
-        storyOrder = PrefsUtils.getStoryOrder(context, fs)
+        textSize = prefsRepo.getListTextSize()
+        user = prefsRepo.getUserDetails()
+        thumbnailStyle = prefsRepo.getThumbnailStyle()
+        spacingStyle = prefsRepo.getSpacingStyle()
+        storyOrder = prefsRepo.getStoryOrder(fs)
 
         executorService = Executors.newFixedThreadPool(1)
 
@@ -185,7 +188,7 @@ class StoryViewAdapter(
     override fun getItemCount(): Int = storyCount + footerViews.size
 
     val storyCount: Int
-        get() = if (fs != null && UIUtils.needsSubscriptionAccess(context, fs)) {
+        get() = if (fs != null && UIUtils.needsSubscriptionAccess(fs, prefsRepo)) {
             min(3.0, stories.size.toDouble()).toInt()
         } else {
             stories.size
@@ -419,7 +422,8 @@ class StoryViewAdapter(
             }
             if (gestureL2R || gestureR2L) return
             val inflater = MenuInflater(context)
-            UIUtils.inflateStoryContextMenu(menu, inflater, context, fs, story)
+            val storyOrder = fs?.let { prefsRepo.getStoryOrder(it) } ?: StoryOrder.NEWEST
+            UIUtils.inflateStoryContextMenu(menu, inflater, fs, story, storyOrder)
             for (i in 0 until menu.size()) {
                 menu.getItem(i).setOnMenuItemClickListener(this)
             }
@@ -485,11 +489,11 @@ class StoryViewAdapter(
             // by default, do nothing
             var action: GestureAction? = GestureAction.GEST_ACTION_NONE
             if (gestureL2R) {
-                action = PrefsUtils.getLeftToRightGestureAction(context)
+                action = prefsRepo.getLeftToRightGestureAction()
                 gestureL2R = false
             }
             if (gestureR2L) {
-                action = PrefsUtils.getRightToLeftGestureAction(context)
+                action = prefsRepo.getRightToLeftGestureAction()
                 gestureR2L = false
             }
             when (action) {
@@ -497,7 +501,7 @@ class StoryViewAdapter(
                 GestureAction.GEST_ACTION_MARKUNREAD -> feedUtils.markStoryUnread(story!!, context)
                 GestureAction.GEST_ACTION_SAVE -> feedUtils.setStorySaved(story!!, true, context, null)
                 GestureAction.GEST_ACTION_UNSAVE -> feedUtils.setStorySaved(story!!, false, context, null)
-                GestureAction.GEST_ACTION_STATISTICS -> feedUtils.openStatistics(context, story!!.feedId)
+                GestureAction.GEST_ACTION_STATISTICS -> feedUtils.openStatistics(context, prefsRepo, story!!.feedId)
                 GestureAction.GEST_ACTION_NONE -> {}
                 else -> {}
             }
@@ -649,7 +653,7 @@ class StoryViewAdapter(
     }
 
     private fun bindRow(vh: StoryRowViewHolder, story: Story) {
-        val storyContentPreviewStyle = PrefsUtils.getStoryContentPreviewStyle(context)
+        val storyContentPreviewStyle = prefsRepo.getStoryContentPreviewStyle()
         if (storyContentPreviewStyle != StoryContentPreviewStyle.NONE) {
             vh.storyTitleView.maxLines = 3
             if (storyContentPreviewStyle == StoryContentPreviewStyle.LARGE) {

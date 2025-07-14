@@ -20,7 +20,6 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.ImageLoader
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.viewModel.FeedFolderData
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,7 +65,7 @@ class MuteConfig : FeedChooser(), FeedStateChangedListener {
     }
 
     override fun setupList() {
-        adapter = MuteConfigAdapter(this, feedUtils, iconLoader, this)
+        adapter = MuteConfigAdapter(feedUtils, iconLoader, prefsRepo, this)
         binding.listView.setAdapter(adapter)
     }
 
@@ -116,7 +115,7 @@ class MuteConfig : FeedChooser(), FeedStateChangedListener {
 
     private fun syncActiveFeedCount() {
         // free standard accounts can follow up to 64 sites
-        val hasSubscription = PrefsUtils.hasSubscription(this)
+        val hasSubscription = prefsRepo.hasSubscription()
         if (!hasSubscription && feeds.isNotEmpty()) {
             var activeSites = 0
             for (feed in feeds) {

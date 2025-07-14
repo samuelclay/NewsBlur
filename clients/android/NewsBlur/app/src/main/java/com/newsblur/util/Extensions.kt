@@ -1,10 +1,11 @@
 package com.newsblur.util
 
-import kotlinx.coroutines.*
-
 import android.view.View
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -14,9 +15,9 @@ fun <R> CoroutineScope.executeAsyncTask(
         onPreExecute: () -> Unit = { },
         doInBackground: () -> R,
         onPostExecute: (R) -> Unit = { }) =
-        launch {
+        launch(Dispatchers.IO) {
             withContext(Dispatchers.Main) { onPreExecute() }
-            val result = withContext(Dispatchers.IO) { doInBackground() }
+            val result = doInBackground()
             withContext(Dispatchers.Main) { onPostExecute(result) }
         }
 

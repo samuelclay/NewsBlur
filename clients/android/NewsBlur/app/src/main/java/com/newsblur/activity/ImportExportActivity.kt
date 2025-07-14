@@ -90,7 +90,9 @@ class ImportExportActivity : NbActivity() {
     }
 
     private fun exportOpmlFile() {
-        DownloadCompleteReceiver.expectedFileDownloadId = FileDownloader.exportOpml(this)
+        val userName = prefsRepo.getUserName()
+        val cookie = prefsRepo.getCookie()
+        DownloadCompleteReceiver.expectedFileDownloadId = FileDownloader.exportOpml(this, userName, cookie)
         val msg = "${getString(R.string.newsblur_opml)} download started"
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }

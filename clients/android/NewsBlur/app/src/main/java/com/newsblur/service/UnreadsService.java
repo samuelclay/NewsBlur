@@ -5,7 +5,6 @@ import com.newsblur.network.domain.UnreadStoryHashesResponse;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.ExtensionsKt;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
 
@@ -102,7 +101,7 @@ public class UnreadsService extends SubService {
 
         // now sort the unreads we need to fetch so they are fetched roughly in the order
         // the user is likely to read them.  if the user reads newest first, those come first.
-        final boolean sortNewest = (PrefsUtils.getDefaultStoryOrder(parent) == StoryOrder.NEWEST);
+        final boolean sortNewest = (parent.prefsRepo.getDefaultStoryOrder() == StoryOrder.NEWEST);
         // custom comparator that understands to sort tuples by the value of the second element
         Comparator<String[]> hashSorter = new Comparator<String[]>() {
             public int compare(String[] lhs, String[] rhs) {
@@ -134,8 +133,8 @@ public class UnreadsService extends SubService {
         unreadsyncloop: while (StoryHashQueue.size() > 0) {
             if (parent.stopSync()) break unreadsyncloop;
 
-            boolean isOfflineEnabled = PrefsUtils.isOfflineEnabled(parent);
-            boolean isEnableNotifications = PrefsUtils.isEnableNotifications(parent);
+            boolean isOfflineEnabled = parent.prefsRepo.isOfflineEnabled();
+            boolean isEnableNotifications = parent.prefsRepo.isEnableNotifications();
             if (! (isOfflineEnabled || isEnableNotifications)) return;
 
             List<String> hashBatch = new ArrayList<>(AppConstants.UNREAD_FETCH_BATCH_SIZE);
@@ -155,7 +154,7 @@ public class UnreadsService extends SubService {
                 break unreadsyncloop;
             }
 
-            StateFilter stateFilter = PrefsUtils.getStateFilter(parent);
+            StateFilter stateFilter = parent.prefsRepo.getStateFilter();
             parent.insertStories(response, stateFilter);
             for (String hash : hashBatch) {
                 StoryHashQueue.remove(hash);

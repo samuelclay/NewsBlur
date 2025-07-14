@@ -13,7 +13,6 @@ import com.newsblur.domain.Folder
 import com.newsblur.util.FeedOrderFilter
 import com.newsblur.util.FolderViewFilter
 import com.newsblur.util.ListOrderFilter
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.WidgetBackground
 import com.newsblur.viewModel.FeedFolderData
 import com.newsblur.viewModel.FeedFolderViewModel
@@ -54,14 +53,14 @@ abstract class FeedChooser : NbActivity() {
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         super.onPrepareOptionsMenu(menu)
-        val listOrderFilter = PrefsUtils.getFeedChooserListOrder(this)
+        val listOrderFilter = prefsRepo.getFeedChooserListOrder()
         if (listOrderFilter == ListOrderFilter.ASCENDING) {
             menu.findItem(R.id.menu_sort_order_ascending).setChecked(true)
         } else if (listOrderFilter == ListOrderFilter.DESCENDING) {
             menu.findItem(R.id.menu_sort_order_descending).setChecked(true)
         }
 
-        val feedOrderFilter = PrefsUtils.getFeedChooserFeedOrder(this)
+        val feedOrderFilter = prefsRepo.getFeedChooserFeedOrder()
         if (feedOrderFilter == FeedOrderFilter.NAME) {
             menu.findItem(R.id.menu_sort_by_name).setChecked(true)
         } else if (feedOrderFilter == FeedOrderFilter.SUBSCRIBERS) {
@@ -74,14 +73,14 @@ abstract class FeedChooser : NbActivity() {
             menu.findItem(R.id.menu_sort_by_number_opens).setChecked(true)
         }
 
-        val folderViewFilter = PrefsUtils.getFeedChooserFolderView(this)
+        val folderViewFilter = prefsRepo.getFeedChooserFolderView()
         if (folderViewFilter == FolderViewFilter.NESTED) {
             menu.findItem(R.id.menu_folder_view_nested).setChecked(true)
         } else if (folderViewFilter == FolderViewFilter.FLAT) {
             menu.findItem(R.id.menu_folder_view_flat).setChecked(true)
         }
 
-        val widgetBackground = PrefsUtils.getWidgetBackground(this)
+        val widgetBackground = prefsRepo.getWidgetBackground()
         if (widgetBackground == WidgetBackground.DEFAULT) {
             menu.findItem(R.id.menu_widget_background_default).setChecked(true)
         } else if (widgetBackground == WidgetBackground.TRANSPARENT) {
@@ -149,23 +148,23 @@ abstract class FeedChooser : NbActivity() {
     }
 
     private fun replaceFeedOrderFilter(feedOrderFilter: FeedOrderFilter) {
-        PrefsUtils.setFeedChooserFeedOrder(this, feedOrderFilter)
+        prefsRepo.setFeedChooserFeedOrder(feedOrderFilter)
         adapter.replaceFeedOrder(feedOrderFilter)
     }
 
     private fun replaceListOrderFilter(listOrderFilter: ListOrderFilter) {
-        PrefsUtils.setFeedChooserListOrder(this, listOrderFilter)
+        prefsRepo.setFeedChooserListOrder(listOrderFilter)
         adapter.replaceListOrder(listOrderFilter)
     }
 
     private fun replaceFolderView(folderViewFilter: FolderViewFilter) {
-        PrefsUtils.setFeedChooserFolderView(this, folderViewFilter)
+        prefsRepo.setFeedChooserFolderView(folderViewFilter)
         adapter.replaceFolderView(folderViewFilter)
         setAdapterData()
     }
 
     private fun setWidgetBackground(widgetBackground: WidgetBackground) {
-        PrefsUtils.setWidgetBackground(this, widgetBackground)
+        prefsRepo.setWidgetBackground(widgetBackground)
         updateWidget(this)
     }
 
