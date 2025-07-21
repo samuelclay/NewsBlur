@@ -127,7 +127,7 @@ class PrefsRepo(
              """.trimIndent()
         val localPath = FileProvider.getUriForFile(context, "com.newsblur.fileprovider", f)
         val i = Intent(Intent.ACTION_SEND)
-        i.setType("*/*")
+        i.type = "*/*"
         i.putExtra(Intent.EXTRA_EMAIL, arrayOf("android@newsblur.com"))
         i.putExtra(Intent.EXTRA_SUBJECT, "Android logs (" + getUserName() + ")")
         i.putExtra(Intent.EXTRA_TEXT, debugInfo)
@@ -199,7 +199,7 @@ class PrefsRepo(
 
         // prompt for a new login
         val i = Intent(context, Login::class.java)
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         context.startActivity(i)
     }
 
@@ -430,18 +430,19 @@ class PrefsRepo(
             return getStoryOrderForFolder(PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME)
         } else if (fs.singleSocialFeed != null) {
             return getStoryOrderForFeed(fs.singleSocialFeed.key)
-        } else require(fs.multipleSocialFeeds == null) { "requests for multiple social feeds not supported" }
-        return if (fs.isAllRead) {
+        } else if (fs.multipleSocialFeeds == null) {
+            throw IllegalArgumentException("requests for multiple social feeds not supported")
+        } else if (fs.isAllRead) {
             // dummy value, not really used
-            StoryOrder.NEWEST
+            return StoryOrder.NEWEST
         } else if (fs.isAllSaved) {
-            getStoryOrderForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME)
+            return getStoryOrderForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME)
         } else if (fs.singleSavedTag != null) {
-            getStoryOrderForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME)
+            return getStoryOrderForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME)
         } else if (fs.isGlobalShared) {
-            StoryOrder.NEWEST
+            return StoryOrder.NEWEST
         } else if (fs.isInfrequent) {
-            getStoryOrderForFolder(PrefConstants.INFREQUENT_FOLDER_NAME)
+            return getStoryOrderForFolder(PrefConstants.INFREQUENT_FOLDER_NAME)
         } else {
             throw IllegalArgumentException("unknown type of feed set")
         }
@@ -458,14 +459,17 @@ class PrefsRepo(
             setStoryOrderForFolder(PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newOrder)
         } else if (fs.singleSocialFeed != null) {
             setStoryOrderForFeed(fs.singleSocialFeed.key, newOrder)
-        } else require(fs.multipleSocialFeeds == null) { "multiple social feeds not supported" }
-        require(!fs.isAllRead) { "AllRead FeedSet type has fixed ordering" }
-        if (fs.isAllSaved) {
+        } else if (fs.multipleSocialFeeds == null) {
+            throw IllegalArgumentException("multiple social feeds not supported")
+        } else if (!fs.isAllRead) {
+            throw IllegalArgumentException("AllRead FeedSet type has fixed ordering")
+        } else if (fs.isAllSaved) {
             setStoryOrderForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME, newOrder)
         } else if (fs.singleSavedTag != null) {
             setStoryOrderForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME, newOrder)
-        } else require(!fs.isGlobalShared) { "GlobalShared FeedSet type has fixed ordering" }
-        if (fs.isInfrequent) {
+        } else if (!fs.isGlobalShared) {
+            throw IllegalArgumentException("GlobalShared FeedSet type has fixed ordering")
+        } else if (fs.isInfrequent) {
             setStoryOrderForFolder(PrefConstants.INFREQUENT_FOLDER_NAME, newOrder)
         } else {
             throw IllegalArgumentException("unknown type of feed set")
@@ -483,8 +487,9 @@ class PrefsRepo(
             return getReadFilterForFolder(PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME)
         } else if (fs.singleSocialFeed != null) {
             return getReadFilterForFeed(fs.singleSocialFeed.key)
-        } else require(fs.multipleSocialFeeds == null) { "requests for multiple social feeds not supported" }
-        if (fs.isAllRead) {
+        } else if (fs.multipleSocialFeeds == null) {
+            throw IllegalArgumentException("requests for multiple social feeds not supported")
+        } else if (fs.isAllRead) {
             // it would make no sense to look for read stories in unread-only
             return ReadFilter.ALL
         } else if (fs.isAllSaved) {
@@ -514,10 +519,13 @@ class PrefsRepo(
             setReadFilterForFeed(fs.singleSocialFeed.key, newFilter)
         } else if (fs.multipleSocialFeeds != null) {
             setReadFilterForFolder(fs.folderName, newFilter)
-        } else require(!fs.isAllRead) { "read filter not applicable to this type of feedset" }
-        require(!fs.isAllSaved) { "read filter not applicable to this type of feedset" }
-        require(fs.singleSavedTag == null) { "read filter not applicable to this type of feedset" }
-        if (fs.isGlobalShared) {
+        } else if (fs.isAllRead) {
+            throw IllegalArgumentException("read filter not applicable to this type of feedset")
+        } else if (fs.isAllSaved) {
+            throw IllegalArgumentException("read filter not applicable to this type of feedset")
+        } else if (fs.getSingleSavedTag() != null) {
+            throw IllegalArgumentException("read filter not applicable to this type of feedset")
+        } else if (fs.isGlobalShared) {
             setReadFilterForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME, newFilter)
         } else if (fs.isInfrequent) {
             setReadFilterForFolder(PrefConstants.INFREQUENT_FOLDER_NAME, newFilter)
@@ -537,17 +545,18 @@ class PrefsRepo(
             return getStoryListStyleForFolder(PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME)
         } else if (fs.singleSocialFeed != null) {
             return getStoryListStyleForFeed(fs.singleSocialFeed.key)
-        } else require(fs.multipleSocialFeeds == null) { "requests for multiple social feeds not supported" }
-        return if (fs.isAllRead) {
-            getStoryListStyleForFolder(PrefConstants.READ_STORIES_FOLDER_NAME)
+        } else if (fs.multipleSocialFeeds == null) {
+            throw IllegalArgumentException("requests for multiple social feeds not supported")
+        } else if (fs.isAllRead) {
+            return getStoryListStyleForFolder(PrefConstants.READ_STORIES_FOLDER_NAME)
         } else if (fs.isAllSaved) {
-            getStoryListStyleForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME)
+            return getStoryListStyleForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME)
         } else if (fs.singleSavedTag != null) {
-            getStoryListStyleForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME)
+            return getStoryListStyleForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME)
         } else if (fs.isGlobalShared) {
-            getStoryListStyleForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME)
+            return getStoryListStyleForFolder(PrefConstants.GLOBAL_SHARED_STORIES_FOLDER_NAME)
         } else if (fs.isInfrequent) {
-            getStoryListStyleForFolder(PrefConstants.INFREQUENT_FOLDER_NAME)
+            return getStoryListStyleForFolder(PrefConstants.INFREQUENT_FOLDER_NAME)
         } else {
             throw IllegalArgumentException("unknown type of feed set")
         }
@@ -564,8 +573,9 @@ class PrefsRepo(
             setStoryListStyleForFolder(PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newListStyle)
         } else if (fs.singleSocialFeed != null) {
             setStoryListStyleForFeed(fs.singleSocialFeed.key, newListStyle)
-        } else require(fs.multipleSocialFeeds == null) { "multiple social feeds not supported" }
-        if (fs.isAllRead) {
+        } else if (fs.multipleSocialFeeds == null) {
+            throw IllegalArgumentException("multiple social feeds not supported")
+        } else if (fs.isAllRead) {
             setStoryListStyleForFolder(PrefConstants.READ_STORIES_FOLDER_NAME, newListStyle)
         } else if (fs.isAllSaved) {
             setStoryListStyleForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME, newListStyle)

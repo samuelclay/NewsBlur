@@ -32,8 +32,8 @@ class ShareExternalStoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityShareExternalStoryBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        applyTheme(prefsRepo.getSelectedTheme())
         super.onCreate(savedInstanceState)
+        applyTheme(prefsRepo.getSelectedTheme())
         binding = ActivityShareExternalStoryBinding.inflate(layoutInflater)
         applyView(binding)
 
