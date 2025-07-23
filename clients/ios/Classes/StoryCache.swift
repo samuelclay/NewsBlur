@@ -320,6 +320,7 @@ import Foundation
     func saveDashboard() {
         // Reset this so any loading underway is ignored, and it starts loading from the top.
         appDelegate.feedDetailViewController.dashboardIndex = -1
+        appDelegate.feedDetailViewController.dashboardSingleMode = false
         
         let endpoint = "reader/save_dashboard_rivers"
         let dashes = Self.cachedDashboard.map { $0.asDictionary }

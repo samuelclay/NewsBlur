@@ -101,6 +101,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishedLoadingFeedsNotification:) name:@"FinishedLoadingFeedsNotification" object:nil];
     
     self.dashboardIndex = -1;
+    self.dashboardSingleMode = NO;
     
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);

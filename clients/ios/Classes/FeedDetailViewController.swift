@@ -467,6 +467,10 @@ extension FeedDetailViewController: FeedDetailInteraction {
         self.appDelegate.showDashboardSites(nil)
     }
     
+    func reloadOneDash(with dash: DashList) {
+        self.appDelegate.feedsViewController.reloadOneDash(with: dash.index)
+    }
+    
     func reading(story: Story) {
         NSLog("🪿 Reading \(story.debugTitle)")
     }
