@@ -153,30 +153,6 @@
 			<string>dashboard_layout</string>
 		</dict>
 		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Dashboard speed</string>
-			<key>Titles</key>
-			<array>
-				<string>Normal</string>
-				<string>A little slower</string>
-				<string>More slower</string>
-				<string>Much slower</string>
-			</array>
-			<key>DefaultValue</key>
-			<integer>500</integer>
-			<key>Values</key>
-			<array>
-				<integer>500</integer>
-				<integer>1000</integer>
-				<integer>2000</integer>
-				<integer>5000</integer>
-			</array>
-			<key>Key</key>
-			<string>dashboard_speed</string>
-		</dict>
-		<dict>
 			<key>FooterText</key>
 			<string>You can change this setting in the Infrequent Site Stories view.</string>
 			<key>Type</key>
