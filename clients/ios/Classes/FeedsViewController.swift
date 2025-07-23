@@ -127,6 +127,7 @@ class FeedsViewController: FeedsObjCViewController {
         NSLog("🎛️ clearDashboard")
         
         appDelegate.feedDetailViewController.dashboardIndex = -1
+        appDelegate.feedDetailViewController.dashboardSingleMode = false
         appDelegate.detailViewController.storyTitlesInDashboard = false
         
         dashboardTimer?.invalidate()
@@ -137,8 +138,24 @@ class FeedsViewController: FeedsObjCViewController {
         NSLog("🎛️ feeds reloadDashboard")
         
         appDelegate.feedDetailViewController.dashboardIndex = -1
+        appDelegate.feedDetailViewController.dashboardSingleMode = false
         
-        immediatelyLoadNextDash(prepare: false)
+        immediatelyLoadNextDash(prepare: false, finishingSingleMode: false)
+    }
+    
+    @objc func reloadOneDash(with dashIndex: Int) {
+        NSLog("🎛️ feeds reloadOneDash(with: \(dashIndex))")
+        
+        let previousIndex = appDelegate.feedDetailViewController.dashboardIndex
+        
+        if previousIndex >= 0, previousIndex < StoryCache.cachedDashboard.count {
+            reloadDashboard()
+        } else {
+            appDelegate.feedDetailViewController.dashboardIndex = dashIndex
+            appDelegate.feedDetailViewController.dashboardSingleMode = true
+            
+            immediatelyLoadNextDash(prepare: false, finishingSingleMode: false)
+        }
     }
     
     @objc func loadDashboard() {
@@ -160,7 +177,7 @@ class FeedsViewController: FeedsObjCViewController {
             dashboardTimer = Timer.scheduledTimer(timeInterval: frequency, target: self, selector: #selector(reloadDashboard), userInfo: nil, repeats: true
             )
             
-            immediatelyLoadNextDash(prepare: true)
+            immediatelyLoadNextDash(prepare: true, finishingSingleMode: false)
         }
     }
     
@@ -176,7 +193,8 @@ class FeedsViewController: FeedsObjCViewController {
                 return
             }
             
-            immediatelyLoadNextDash(prepare: true)
+            immediatelyLoadNextDash(prepare: true,
+                                    finishingSingleMode: appDelegate.feedDetailViewController.dashboardSingleMode)
         }
         
         let speed = appDelegate.feedDetailViewController.storyCache.settings.dashboardSpeed
@@ -185,19 +203,35 @@ class FeedsViewController: FeedsObjCViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(speed), execute: workItem)
     }
     
-    private func immediatelyLoadNextDash(prepare: Bool) {
-        NSLog("🎛️ immediatelyLoadNextDash(prepare: \(prepare))")
-        
-        appDelegate.feedDetailViewController.storyCache.reloadDashboard(for: appDelegate.feedDetailViewController.dashboardIndex)
+    private func immediatelyLoadNextDash(prepare: Bool, finishingSingleMode: Bool) {
+        NSLog("🎛️ immediatelyLoadNextDash(prepare: \(prepare), finishingSingleMode: \(finishingSingleMode))")
         
         let previousIndex = appDelegate.feedDetailViewController.dashboardIndex
         
         if previousIndex >= 0, previousIndex < StoryCache.cachedDashboard.count {
-            let dash = StoryCache.cachedDashboard[previousIndex]
-            dash.isFetching = false
+            if finishingSingleMode || !appDelegate.feedDetailViewController.dashboardSingleMode {
+                appDelegate.feedDetailViewController.storyCache.reloadDashboard(for: previousIndex)
+                
+                let dash = StoryCache.cachedDashboard[previousIndex]
+                dash.isFetching = false
+            }
+            
+            if finishingSingleMode {
+                NSLog("🎛️ ...finished loading single dash")
+                
+                appDelegate.feedDetailViewController.dashboardIndex = StoryCache.cachedDashboard.count
+                appDelegate.feedDetailViewController.dashboardSingleMode = false
+                
+                appDelegate.feedDetailViewController.reload()
+                return
+            }
+        } else {
+            appDelegate.feedDetailViewController.dashboardSingleMode = false
         }
         
-        appDelegate.feedDetailViewController.dashboardIndex += 1
+        if !appDelegate.feedDetailViewController.dashboardSingleMode {
+            appDelegate.feedDetailViewController.dashboardIndex += 1
+        }
         
         let index = appDelegate.feedDetailViewController.dashboardIndex
         

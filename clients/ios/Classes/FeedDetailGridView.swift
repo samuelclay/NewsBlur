@@ -21,6 +21,7 @@ import SwiftUI
     func changeDashboard(dash: DashList)
     func addFirstDashboard()
     func addDashboard(before: Bool, dash: DashList)
+    func reloadOneDash(with dash: DashList)
     func reading(story: Story)
     func read(story: Story)
     func unread(story: Story)

@@ -149,15 +149,24 @@ struct DashListActionMenu: View {
                 Text("15 stories").tag(15)
                 Text("20 stories").tag(20)
             }
+            .onChange(of: dash.numberOfStories) { newValue in
+                interaction.reloadOneDash(with: dash)
+            }
             
             Picker("Ordered", selection: $dash.activeOrder) {
                 Text("Newest first").tag("newest")
                 Text("Oldest first").tag("oldest")
             }
+            .onChange(of: dash.activeOrder) { newValue in
+                interaction.reloadOneDash(with: dash)
+            }
             
             Picker("Include", selection: $dash.activeReadFilter) {
                 Text("All stories").tag("all")
                 Text("Unread only").tag("unread")
+            }
+            .onChange(of: dash.activeReadFilter) { newValue in
+                interaction.reloadOneDash(with: dash)
             }
         } label: {
             if #available(iOS 15.0, *) {
