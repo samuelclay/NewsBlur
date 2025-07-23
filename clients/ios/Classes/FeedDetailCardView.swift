@@ -238,7 +238,7 @@ struct CardContentView: View {
                         }
                         
                         Text(story.title)
-                            .font(font(named: "WhitneySSm-Medium", size: 18).bold())
+                            .font(font(named: "WhitneySSm-Medium", size: 16).bold())
                             .foregroundColor(titleColor)
                             .lineLimit(titleLimit)
                             .truncationMode(.tail)
@@ -256,7 +256,7 @@ struct CardContentView: View {
                     
                     if cache.isGrid || cache.settings.content != .title {
                         Text(content)
-                            .font(font(named: "WhitneySSm-Book", size: 15))
+                            .font(font(named: "WhitneySSm-Book", size: 14))
                             .foregroundColor(contentColor)
                             .lineLimit(contentLimit)
                             .truncationMode(.tail)
