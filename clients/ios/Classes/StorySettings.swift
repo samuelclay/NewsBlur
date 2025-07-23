@@ -164,14 +164,16 @@ import Foundation
     }
     
     var dashboardSpeed: Int {
-        let speed = UserDefaults.standard.integer(forKey: "dashboard_speed")
+        return 500
         
-        if speed == 0 {
-            NSLog("🎛️ dashboard speed is 0, defaulting to 500ms")
-            return 500
-        } else {
-            NSLog("🎛️ dashboard speed is \(speed)ms")
-            return speed
-        }
+//        let speed = UserDefaults.standard.integer(forKey: "dashboard_speed")
+//        
+//        if speed == 0 {
+//            NSLog("🎛️ dashboard speed is 0, defaulting to 500ms")
+//            return 500
+//        } else {
+//            NSLog("🎛️ dashboard speed is \(speed)ms")
+//            return speed
+//        }
     }
 }
