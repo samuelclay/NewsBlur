@@ -1500,7 +1500,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                 feedOpening = @"story";
             }
             
-            if ([feedOpening isEqualToString:@"story"]) {
+            if ([feedOpening isEqualToString:@"story"] && !self.isDashboard) {
                 appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
                 [appDelegate loadStoryDetailView];
             }
