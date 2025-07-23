@@ -535,13 +535,33 @@ class ProcessFeed:
             if feed_status and ret_values:
                 return feed_status, ret_values
             
-            # Check for Cache-Control max-age in response headers
+            # Check for Cache-Control max-age and Retry-After in response headers
             if hasattr(self.fpf, 'headers') and self.fpf.headers:
+                # Check Cache-Control header
                 cache_control = self.fpf.headers.get('Cache-Control')
                 if cache_control:
                     max_age_match = re.search(r'max-age=(\d+)', cache_control)
                     if max_age_match:
                         self.cache_control_max_age = int(max_age_match.group(1)) / 60  # Convert seconds to minutes
+                
+                # Check Retry-After header
+                retry_after = self.fpf.headers.get('Retry-After')
+                if retry_after:
+                    try:
+                        # Retry-After can be seconds (integer) or HTTP-date
+                        retry_seconds = int(retry_after)
+                        retry_minutes = retry_seconds / 60
+                        # Use retry-after if it's longer than cache-control (or if cache-control is not set)
+                        if self.cache_control_max_age is None or retry_minutes > self.cache_control_max_age:
+                            self.cache_control_max_age = retry_minutes
+                            logging.debug(
+                                f"   ---> [{self.feed.log_title[:30]:<30}] ~FYUsing Retry-After header: ~SB{retry_seconds} seconds ({retry_minutes:.1f} minutes)"
+                            )
+                    except ValueError:
+                        # If it's not an integer, it might be an HTTP-date - skip for now
+                        logging.debug(
+                            f"   ---> [{self.feed.log_title[:30]:<30}] ~FRCouldn't parse Retry-After header: {retry_after}"
+                        )
 
         self.feed_entries = self.fpf.entries
         # If there are more than 100 entries, we should sort the entries in date descending order and cut them off
@@ -667,11 +687,10 @@ class ProcessFeed:
         )
         if self.cache_control_max_age:
             logging.debug(
-                "   ---> [%-30s] ~FYUsing Cache-Control max-age: ~SB%s minutes"
-                % (self.feed.log_title[:30], self.cache_control_max_age)
+                f"   ---> [{self.feed.log_title[:30]:<30}] ~FYScheduling next fetch with delay: ~SB{self.cache_control_max_age:.1f} minutes"
             )
         self.feed.update_all_statistics(has_new_stories=bool(ret_values["new"]), force=self.options["force"], 
-                                       delay_fetch_sec=self.cache_control_max_age)
+                                       delay_fetch_sec=self.cache_control_max_age * 60 if self.cache_control_max_age else None)
         fetch_date = datetime.datetime.now()
         if ret_values["new"]:
             if not getattr(settings, "TEST_DEBUG", False):
@@ -1017,6 +1036,27 @@ class FeedFetcherWorker:
                     weight = "-"
                     quick = "-"
                     rand = "-"
+                
+                # Check for openrss.org rate limiting
+                if not skip and "openrss.org" in feed.feed_address and not self.options.get("force"):
+                    r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+                    current_timestamp = int(time.time())
+                    openrss_key = f"openrss_fetch:{current_timestamp}"
+                    
+                    # Try to set the key with 5 minutes expiration, only if it doesn't exist
+                    was_set = r.set(openrss_key, 1, nx=True, ex=300)
+                    
+                    if not was_set:
+                        # Another openrss.org feed was fetched in this same second
+                        skip = True
+                        logging.debug(
+                            f"   ---> [{feed.log_title[:30]:<30}] ~FYSkipping openrss.org fetch, another openrss feed fetched in last second"
+                        )
+                    else:
+                        logging.debug(
+                            f"   ---> [{feed.log_title[:30]:<30}] ~FGProceeding with openrss.org fetch"
+                        )
+                
                 if skip:
                     logging.debug(
                         "   ---> [%-30s] ~BGFaking fetch, skipping (%s/month, %s subs, %s < %s)..."
