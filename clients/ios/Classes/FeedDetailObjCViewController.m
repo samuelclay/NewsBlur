@@ -2561,10 +2561,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 #if TARGET_OS_MACCATALYST
     UINavigationController *feedDetailNavController = appDelegate.feedDetailViewController.navigationController;
     UIView *sourceView = feedDetailNavController.view;
-    CGRect sourceRect = CGRectMake(120, 0, 20, 20);
+    CGRect sourceRect = CGRectMake(120, 10, 20, 20);
     
     if (appDelegate.splitViewController.isFeedListHidden) {
-        sourceRect = CGRectMake(192, 0, 20, 20);
+        sourceRect = CGRectMake(-130, 10, 20, 20);
     }
     
     [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount sourceView:sourceView sourceRect:sourceRect completionHandler:^(BOOL marked){
@@ -2821,10 +2821,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 #if TARGET_OS_MACCATALYST
     UINavigationController *feedDetailNavController = appDelegate.feedDetailViewController.navigationController;
     UIView *sourceView = feedDetailNavController.view;
-    CGRect sourceRect = CGRectMake(152, 0, 20, 20);
+    CGRect sourceRect = CGRectMake(152, 10, 20, 20);
     
     if (appDelegate.splitViewController.isFeedListHidden) {
-        sourceRect = CGRectMake(224, 0, 20, 20);
+        sourceRect = CGRectMake(-98, 10, 20, 20);
     }
     
     [viewController showFromNavigationController:navController barButtonItem:nil sourceView:sourceView sourceRect:sourceRect permittedArrowDirections:UIPopoverArrowDirectionDown];
