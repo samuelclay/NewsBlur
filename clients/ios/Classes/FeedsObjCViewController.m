@@ -231,7 +231,16 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     }
     
     self.currentRowAtIndexPath = nil;
-    self.currentSection = NewsBlurTopSectionAllStories;
+    
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSString *appOpening = [userPreferences stringForKey:@"app_opening"];
+    
+    if ([appOpening isEqualToString:@"feeds"]) {
+        self.currentSection = -1;
+    } else {
+        self.currentSection = NewsBlurTopSectionAllStories;
+    }
+    
     self.lastRowAtIndexPath = nil;
     self.lastSection = NewsBlurTopSectionAllStories;
     
