@@ -149,7 +149,8 @@
     invisibleHeaderButton.frame = CGRectMake(rect.origin.x, 0, customView.frame.size.width, customView.frame.size.height);
     invisibleHeaderButton.layer.cornerRadius = 10;
     invisibleHeaderButton.clipsToBounds = YES;
-    invisibleHeaderButton.alpha = .1;
+    invisibleHeaderButton.alpha = .2;
+    invisibleHeaderButton.backgroundColor = self.selectionColor;
     invisibleHeaderButton.tag = section;
     invisibleHeaderButton.accessibilityLabel = [NSString stringWithFormat:@"%@ folder%@", folderTitle, accessibilityCount];
     invisibleHeaderButton.accessibilityTraits = UIAccessibilityTraitNone;

@@ -1868,8 +1868,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (IBAction)sectionTapped:(UIButton *)button {
-    [self clearSelectedHeader];
-    
     button.backgroundColor = UIColorFromRGB(0x214607);
 }
 
@@ -1886,6 +1884,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if (self.currentSection >= 0) {
         FolderTitleView *title = self.folderTitleViews[@(self.currentSection)];
         
+        title.selectionColor = [UIColor clearColor];
+        
         [UIView animateWithDuration:0.2 animations:^{
             title.invisibleHeaderButton.layer.backgroundColor = [UIColor clearColor].CGColor;
         } completion:NULL];
@@ -1898,6 +1898,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if (self.currentSection >= 0) {
         FolderTitleView *title = self.folderTitleViews[@(self.currentSection)];
         
+        title.selectionColor = [UIColor clearColor];
         title.invisibleHeaderButton.backgroundColor = UIColor.clearColor;
         
         self.currentSection = -1;
@@ -1919,6 +1920,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [color getHue:&hue saturation:&saturation brightness:&brightness alpha:&alpha];
         color = [UIColor colorWithHue:hue saturation:1 brightness:1 alpha:alpha];
         
+        title.selectionColor = color;
         title.invisibleHeaderButton.backgroundColor = color;
         [title.invisibleHeaderButton setNeedsDisplay];
     }
