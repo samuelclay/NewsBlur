@@ -236,7 +236,7 @@ struct DashListStoriesView: View {
     let interaction: FeedDetailInteraction
     
     var body: some View {
-        VStack(alignment: .center) {
+        VStack(alignment: .center, spacing: 1) {
             if let stories = dash.stories {
                 if stories.isEmpty {
                     Spacer()
