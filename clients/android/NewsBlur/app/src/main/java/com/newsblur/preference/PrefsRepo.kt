@@ -430,7 +430,7 @@ class PrefsRepo(
             return getStoryOrderForFolder(PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME)
         } else if (fs.singleSocialFeed != null) {
             return getStoryOrderForFeed(fs.singleSocialFeed.key)
-        } else if (fs.multipleSocialFeeds == null) {
+        } else if (fs.multipleSocialFeeds != null) {
             throw IllegalArgumentException("requests for multiple social feeds not supported")
         } else if (fs.isAllRead) {
             // dummy value, not really used
@@ -459,7 +459,7 @@ class PrefsRepo(
             setStoryOrderForFolder(PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newOrder)
         } else if (fs.singleSocialFeed != null) {
             setStoryOrderForFeed(fs.singleSocialFeed.key, newOrder)
-        } else if (fs.multipleSocialFeeds == null) {
+        } else if (fs.multipleSocialFeeds != null) {
             throw IllegalArgumentException("multiple social feeds not supported")
         } else if (!fs.isAllRead) {
             throw IllegalArgumentException("AllRead FeedSet type has fixed ordering")
@@ -487,7 +487,7 @@ class PrefsRepo(
             return getReadFilterForFolder(PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME)
         } else if (fs.singleSocialFeed != null) {
             return getReadFilterForFeed(fs.singleSocialFeed.key)
-        } else if (fs.multipleSocialFeeds == null) {
+        } else if (fs.multipleSocialFeeds != null) {
             throw IllegalArgumentException("requests for multiple social feeds not supported")
         } else if (fs.isAllRead) {
             // it would make no sense to look for read stories in unread-only
@@ -545,7 +545,7 @@ class PrefsRepo(
             return getStoryListStyleForFolder(PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME)
         } else if (fs.singleSocialFeed != null) {
             return getStoryListStyleForFeed(fs.singleSocialFeed.key)
-        } else if (fs.multipleSocialFeeds == null) {
+        } else if (fs.multipleSocialFeeds != null) {
             throw IllegalArgumentException("requests for multiple social feeds not supported")
         } else if (fs.isAllRead) {
             return getStoryListStyleForFolder(PrefConstants.READ_STORIES_FOLDER_NAME)
@@ -573,7 +573,7 @@ class PrefsRepo(
             setStoryListStyleForFolder(PrefConstants.ALL_SHARED_STORIES_FOLDER_NAME, newListStyle)
         } else if (fs.singleSocialFeed != null) {
             setStoryListStyleForFeed(fs.singleSocialFeed.key, newListStyle)
-        } else if (fs.multipleSocialFeeds == null) {
+        } else if (fs.multipleSocialFeeds != null) {
             throw IllegalArgumentException("multiple social feeds not supported")
         } else if (fs.isAllRead) {
             setStoryListStyleForFolder(PrefConstants.READ_STORIES_FOLDER_NAME, newListStyle)
