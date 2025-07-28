@@ -243,7 +243,7 @@ struct CardContentView: View {
                             .lineLimit(titleLimit)
                             .truncationMode(.tail)
                         
-                        if cache.isList {
+                        if !cache.isDashboard, cache.isList {
                             Spacer()
                             
                             Text(story.dateAndAuthor)
@@ -264,7 +264,7 @@ struct CardContentView: View {
                             .padding(.bottom, cache.settings.spacing == .compact ? -5 : 0)
                     }
                     
-                    if !cache.isList {
+                    if cache.isDashboard || !cache.isList {
                         Spacer()
                         
                         Text(story.dateAndAuthor)
