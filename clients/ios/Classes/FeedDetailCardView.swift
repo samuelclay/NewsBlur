@@ -297,7 +297,9 @@ struct CardContentView: View {
     }
     
     var titleLimit: Int {
-        if cache.isList {
+        if cache.isDashboard {
+            return cache.settings.content.baseLimit * 2
+        } else if cache.isList {
             return cache.settings.content.baseLimit
         } else if cache.isMagazine {
             return cache.settings.content.baseLimit * 4
@@ -309,7 +311,9 @@ struct CardContentView: View {
     }
     
     var contentLimit: Int {
-        if cache.isList {
+        if cache.isDashboard {
+            return cache.settings.content.baseLimit * 2
+        } else if cache.isList {
             return cache.settings.content.baseLimit
         } else if cache.isMagazine {
             return cache.settings.content.baseLimit * 4
