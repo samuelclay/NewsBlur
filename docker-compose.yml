@@ -126,14 +126,17 @@ services:
   db_elasticsearch:
     container_name: db_elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
-    mem_limit: 4g
+    mem_limit: 1200m
+    mem_reservation: 512m
     restart: unless-stopped
     environment:
       - discovery.type=single-node
-      - "ES_JAVA_OPTS=-XX:UseSVE=0"
+      - "ES_JAVA_OPTS=-Xms384m -Xmx384m -XX:UseSVE=0"
       - "CLI_JAVA_OPTS=-XX:UseSVE=0"
       - cluster.routing.allocation.disk.threshold_enabled=false
       - xpack.security.enabled=false
+      - bootstrap.memory_lock=false
+      - indices.breaker.total.use_real_memory=false
     ports:
       - 9200:9200
       - 9300:9300
