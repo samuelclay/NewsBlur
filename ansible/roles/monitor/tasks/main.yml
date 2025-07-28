@@ -29,12 +29,7 @@
     container_default_behavior: no_defaults
     volumes:
       - /srv/newsblur:/srv/newsblur
-    networks_cli_compatible: yes
-    network_mode: default
-    networks:
-      - name: newsblurnet
-    ports:
-      - "5579:5579"
+    network_mode: host
 
 - name: Restart monitor
   become: yes
