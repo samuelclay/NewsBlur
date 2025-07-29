@@ -663,6 +663,7 @@
         
         self.inFindingStoryMode = YES;
         self.findingStoryStartDate = [NSDate date];
+        self.findingStoryDictionary = nil;
         self.tryFeedStoryId = storyHash;
         self.tryFeedFeedId = nil;
         
@@ -1744,6 +1745,7 @@
     self.isTryFeedView = YES;
     self.inFindingStoryMode = YES;
     self.findingStoryStartDate = [NSDate date];
+    self.findingStoryDictionary = nil;
     self.tryFeedStoryId = contentId;
     self.tryFeedFeedId = feedId;
     
@@ -2257,6 +2259,7 @@
     if (-appDelegate.findingStoryStartDate.timeIntervalSinceNow > 10) {
         self.inFindingStoryMode = NO;
         self.findingStoryStartDate = nil;
+        self.findingStoryDictionary = nil;
         self.tryFeedStoryId = nil;
         self.tryFeedFeedId = nil;
     }

@@ -187,6 +187,8 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     
     var scrollingDate = Date.distantPast
     
+//    var findingStory: Story?
+    
     func deferredReload(story: Story? = nil) {
         if let story {
             NSLog("🪿🎛️ queuing deferred reload for \(story)")
@@ -238,6 +240,12 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     }
     
     @objc override func reload() {
+//        if appDelegate.findingStoryDictionary != nil {
+//            findingStory = Story(index: 0, dictionary: appDelegate.findingStoryDictionary)
+//        } else if !appDelegate.inFindingStoryMode {
+//            findingStory = nil
+//        }
+        
         deferredReload()
     }
     
@@ -292,6 +300,11 @@ extension FeedDetailViewController {
         } else {
             storyCache.reload()
         }
+        
+//        if findingStory != nil {
+//            storyCache.selected = findingStory
+//            findingStory = nil
+//        }
         
         if isLegacyTable {
             reloadTable()
@@ -435,6 +448,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
         
         appDelegate.inFindingStoryMode = true
         appDelegate.findingStoryStartDate = Date()
+        appDelegate.findingStoryDictionary = story.dictionary
         appDelegate.tryFeedStoryId = story.hash
         appDelegate.tryFeedFeedId = dash.feedId
         
