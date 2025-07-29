@@ -83,6 +83,13 @@ import Foundation
         load()
     }
     
+    init(index: Int, dictionary: AnyDictionary) {
+        self.index = index
+        self.dictionary = dictionary
+        
+        loadFromDictionary()
+    }
+    
     private func string(for key: String) -> String {
         return dictionary[key] as? String ?? ""
     }
@@ -104,6 +111,14 @@ import Foundation
         }
         
         dictionary = story
+        
+        loadFromDictionary()
+    }
+    
+    private func loadFromDictionary() {
+        guard let appDelegate = NewsBlurAppDelegate.shared, let storiesCollection = appDelegate.storiesCollection else {
+            return
+        }
         
         if let dictID = dictionary["story_feed_id"], let id = appDelegate.feedIdWithoutSearchQuery("\(dictID)") {
             if let cachedFeed = StoryCache.feeds[id] {

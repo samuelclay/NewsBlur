@@ -599,6 +599,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     if (self.isMovingToParentViewController) {
         appDelegate.inFindingStoryMode = NO;
         appDelegate.findingStoryStartDate = nil;
+        appDelegate.findingStoryDictionary = nil;
         appDelegate.tryFeedStoryId = nil;
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     }
@@ -818,6 +819,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     NSString *storyImageUrl = [[storyImageUrls firstObject] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     
     if (storyImageUrl == nil) {
+        return;
+    }
+    
+    if ([storyImageUrl hasPrefix:@"http://data:image"]) {
         return;
     }
     
@@ -1227,6 +1232,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         self.appDelegate.tryFeedStoryId = nil;
         self.appDelegate.inFindingStoryMode = NO;
         self.appDelegate.findingStoryStartDate = nil;
+        self.appDelegate.findingStoryDictionary = nil;
         //            storiesCollection.feedPage = 1;
         [self loadOfflineStories];
         [self showOfflineNotifier];
@@ -1516,8 +1522,24 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         }
         appDelegate.inFindingStoryMode = NO;
         appDelegate.findingStoryStartDate = nil;
+        appDelegate.findingStoryDictionary = nil;
         appDelegate.tryFeedStoryId = nil;
         return;
+    }
+    
+    if (appDelegate.findingStoryDictionary != nil) {
+        NSLog(@"Got a finding story dictionary, so showing that while we look");
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.appDelegate.detailViewController.storyPagesViewController refreshPages];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.appDelegate.detailViewController.currentStoryController.activeStory = [self.appDelegate.findingStoryDictionary mutableCopy];
+                [self.appDelegate.detailViewController.currentStoryController drawStory];
+                
+                self.appDelegate.findingStoryDictionary = nil;
+            });
+        });
     }
     
     if (!self.view.window || [storiesCollection.activeFeedStories count] == 0) {
@@ -1573,6 +1595,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             appDelegate.tryFeedStoryId = nil;
             appDelegate.inFindingStoryMode = NO;
             appDelegate.findingStoryStartDate = nil;
+            appDelegate.findingStoryDictionary = nil;
         }
     }
 }

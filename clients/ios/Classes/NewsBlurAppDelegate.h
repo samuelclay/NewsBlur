@@ -219,6 +219,7 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
 @property (nonatomic, readwrite) BOOL hasLoadedFeedDetail;
 @property (nonatomic, readwrite) NSDate *findingStoryStartDate;
+@property (nonatomic) NSDictionary *findingStoryDictionary;
 @property (nonatomic) NSString *tryFeedStoryId;
 @property (nonatomic) NSString *tryFeedFeedId;
 @property (nonatomic) NSString *tryFeedCategory;
