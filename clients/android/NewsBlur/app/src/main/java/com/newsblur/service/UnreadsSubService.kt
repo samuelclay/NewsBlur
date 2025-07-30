@@ -1,41 +1,41 @@
 package com.newsblur.service
 
 import com.newsblur.network.domain.StoriesResponse
-import com.newsblur.service.SyncServiceUtil.isStoryResponseGood
 import com.newsblur.util.AppConstants
 import com.newsblur.util.FeedUtils.Companion.inferFeedId
 import com.newsblur.util.Log
-import com.newsblur.util.NBScope
 import com.newsblur.util.StoryOrder
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.ensureActive
 import java.util.Collections
-import kotlin.concurrent.Volatile
+import java.util.concurrent.ConcurrentLinkedQueue
 
-class UnreadsService(parent: NBSyncService) : SubService(parent, NBScope) {
+class UnreadsSubService(parent: SyncService) : SyncSubService(parent) {
 
-    override fun exec() {
-        activelyRunning = true
-        try {
-            if (isDoMetadata) {
-                syncUnreadList()
-                isDoMetadata = false
-            }
+    override suspend fun execute() = coroutineScope {
+        ensureActive()
+        if (isDoMetadata) {
+            syncUnreadList()
+            isDoMetadata = false
+        }
 
-            if (StoryHashQueue.size > 0) {
-                this.newUnreadStories
-                parent.pushNotifications()
-            }
-        } finally {
-            activelyRunning = false
+        ensureActive()
+        if (storyHashQueue.isNotEmpty()) {
+            getNewUnreadStories()
+            parent.pushNotifications()
         }
     }
 
-    private fun syncUnreadList() {
-        if (parent.stopSync()) return
+    override fun clear() {
+        storyHashQueue.clear()
+    }
 
+    private suspend fun syncUnreadList() = coroutineScope {
+        ensureActive()
         // get unread hashes and dates from the API
         val unreadHashes = parent.apiManager.getUnreadStoryHashes()
 
-        if (parent.stopSync()) return
+        ensureActive()
 
         // get all the stories we thought were unread before. we should not enqueue a fetch of
         // stories we already have.  also, if any existing unreads fail to appear in
@@ -78,7 +78,7 @@ class UnreadsService(parent: NBSyncService) : SubService(parent, NBScope) {
         // list, mark them read now
         parent.dbHelper.markStoryHashesRead(oldUnreadHashes)
 
-        if (parent.stopSync()) return
+        ensureActive()
 
         // now sort the unreads we need to fetch so they are fetched roughly in the order
         // the user is likely to read them.  if the user reads newest first, those come first.
@@ -100,58 +100,55 @@ class UnreadsService(parent: NBSyncService) : SubService(parent, NBScope) {
         }
         Collections.sort(sortationList, hashSorter)
 
-        // now that we have the sorted set of hashes, turn them into a list over which we 
+        // now that we have the sorted set of hashes, turn them into a list over which we
         // can iterate to fetch them
-        StoryHashQueue.clear()
+        storyHashQueue.clear()
         for (tuple in sortationList) {
             // element [0] of the tuple is the story hash, the rest can safely be thown out
-            StoryHashQueue.add(tuple[0])
+            storyHashQueue.add(tuple[0])
         }
     }
 
-    private val newUnreadStories: Unit
-        get() {
-            val notifyFeeds = parent.dbHelper.getNotifyFeeds()
-            unreadSyncLoop@ while (StoryHashQueue.isNotEmpty()) {
-                if (parent.stopSync()) break@unreadSyncLoop
+    private suspend fun getNewUnreadStories() = coroutineScope {
+        val notifyFeeds = parent.dbHelper.getNotifyFeeds()
+        unreadSyncLoop@ while (storyHashQueue.isNotEmpty()) {
+            ensureActive()
+            val isOfflineEnabled = parent.prefsRepo.isOfflineEnabled()
+            val isEnableNotifications = parent.prefsRepo.isEnableNotifications()
+            if (!(isOfflineEnabled || isEnableNotifications)) return@coroutineScope
 
-                val isOfflineEnabled = parent.prefsRepo.isOfflineEnabled()
-                val isEnableNotifications = parent.prefsRepo.isEnableNotifications()
-                if (!(isOfflineEnabled || isEnableNotifications)) return
-
-                val hashBatch: MutableList<String> = ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE)
-                val hashSkips: MutableList<String> = ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE)
-                batchLoop@ for (hash in StoryHashQueue) {
-                    if (isOfflineEnabled || notifyFeeds.contains(inferFeedId(hash))) {
-                        hashBatch.add(hash)
-                    } else {
-                        hashSkips.add(hash)
-                    }
-                    if (hashBatch.size >= AppConstants.UNREAD_FETCH_BATCH_SIZE) break@batchLoop
+            val hashBatch: MutableList<String> = ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE)
+            val hashSkips: MutableList<String> = ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE)
+            batchLoop@ for (hash in storyHashQueue) {
+                if (isOfflineEnabled || notifyFeeds.contains(inferFeedId(hash))) {
+                    hashBatch.add(hash)
+                } else {
+                    hashSkips.add(hash)
                 }
-                val response = parent.apiManager.getStoriesByHash(hashBatch)
-                if (!isStoryResponseGood(response)) {
-                    Log.e(this, "error fetching unreads batch, abandoning sync.")
-                    break@unreadSyncLoop
-                }
-
-                val stateFilter = parent.prefsRepo.getStateFilter()
-                parent.insertStories(response, stateFilter)
-                for (hash in hashBatch) {
-                    StoryHashQueue.remove(hash)
-                }
-                for (hash in hashSkips) {
-                    StoryHashQueue.remove(hash)
-                }
-
-                parent.prefetchImages(response)
+                if (hashBatch.size >= AppConstants.UNREAD_FETCH_BATCH_SIZE) break@batchLoop
             }
+
+            ensureActive()
+            val response = parent.apiManager.getStoriesByHash(hashBatch)
+            if (!SyncServiceUtil.isStoryResponseGood(response)) {
+                Log.e(this, "error fetching unreads batch, abandoning sync.")
+                break@unreadSyncLoop
+            }
+
+            val stateFilter = parent.prefsRepo.getStateFilter()
+            parent.insertStories(response, stateFilter)
+            for (hash in hashBatch) {
+                storyHashQueue.remove(hash)
+            }
+            for (hash in hashSkips) {
+                storyHashQueue.remove(hash)
+            }
+
+            parent.prefetchImages(response)
         }
+    }
 
     companion object {
-
-        @JvmField
-        var activelyRunning: Boolean = false
 
         @Volatile
         var isDoMetadata: Boolean = false
@@ -159,20 +156,15 @@ class UnreadsService(parent: NBSyncService) : SubService(parent, NBScope) {
 
         /** Unread story hashes the API listed that we do not appear to have locally yet.  */
         @JvmField
-        var StoryHashQueue: MutableList<String> = ArrayList<String>()
+        var storyHashQueue = ConcurrentLinkedQueue<String>()
 
-        @JvmStatic
-        fun clear() {
-            StoryHashQueue.clear()
-        }
-
+        /**
+         * Describe the number of unreads left to be synced or return an empty message (space padded).
+         */
         @JvmStatic
         val pendingCount: String
-            /**
-             * Describe the number of unreads left to be synced or return an empty message (space padded).
-             */
             get() {
-                val c: Int = StoryHashQueue.size
+                val c: Int = storyHashQueue.size
                 return if (c < 1) " " else " $c "
             }
 
@@ -182,4 +174,3 @@ class UnreadsService(parent: NBSyncService) : SubService(parent, NBScope) {
         }
     }
 }
-

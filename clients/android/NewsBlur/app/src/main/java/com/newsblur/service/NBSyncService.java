@@ -403,7 +403,7 @@ public class NBSyncService extends JobService {
                 // v61+ is widely deployed
                 FileCache.cleanUpOldCache1(this);
                 FileCache.cleanUpOldCache2(this);
-                String appVersion = prefsRepo.getVersion(this);
+                String appVersion = NbApplication.getVersion(this);
                 prefsRepo.updateVersion(appVersion);
                 // update user agent on api calls with latest app version
                 String customUserAgent = NetworkUtils.getCustomUserAgent(appVersion);
@@ -521,7 +521,7 @@ public class NBSyncService extends JobService {
 
         // if there is a what-is-unread sync in progress, hold off on confirming actions,
         // as this subservice can vend stale unread data
-        if (UnreadsService.isDoMetadata()) return;
+        if (UnreadsService.Companion.isDoMetadata()) return;
 
         FollowupActions.clear();
     }
@@ -844,7 +844,7 @@ public class NBSyncService extends JobService {
                 pageNumber++;
                 StoriesResponse apiResponse = apiManager.getStories(fs, pageNumber, cursorFilters.getStoryOrder(), cursorFilters.getReadFilter(), prefsRepo.getInfrequentCutoff());
 
-                if (!isStoryResponseGood(apiResponse)) return;
+                if (!SyncServiceUtil.isStoryResponseGood(apiResponse)) return;
 
                 if (!fs.equals(PendingFeed)) {
                     return;
@@ -876,18 +876,6 @@ public class NBSyncService extends JobService {
                 if (finished && fs.equals(PendingFeed)) PendingFeed = null;
             }
         }
-    }
-
-    private boolean isStoryResponseGood(StoriesResponse response) {
-        if (response == null) {
-            com.newsblur.util.Log.e(this.getClass().getName(), "Null response received while loading stories.");
-            return false;
-        }
-        if (response.stories == null) {
-            com.newsblur.util.Log.e(this.getClass().getName(), "Null stories member received while loading stories.");
-            return false;
-        }
-        return true;
     }
 
     private long workaroundReadStoryTimestamp;

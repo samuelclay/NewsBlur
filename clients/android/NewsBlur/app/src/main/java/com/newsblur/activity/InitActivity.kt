@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import com.newsblur.NbApplication
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NBSyncService
@@ -48,7 +49,7 @@ class InitActivity : AppCompatActivity() {
                 userAuthCheck()
             }
         }
-        Log.i(this, "cold launching version " + prefsRepo.getVersion(this))
+        Log.i(this, "cold launching version " + NbApplication.getVersion(this))
     }
 
     // see if a user is already logged in; if so, jump to the Main activity
