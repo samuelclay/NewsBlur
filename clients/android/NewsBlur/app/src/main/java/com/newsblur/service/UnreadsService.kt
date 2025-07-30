@@ -1,6 +1,7 @@
 package com.newsblur.service
 
 import com.newsblur.network.domain.StoriesResponse
+import com.newsblur.service.SyncServiceUtil.isStoryResponseGood
 import com.newsblur.util.AppConstants
 import com.newsblur.util.FeedUtils.Companion.inferFeedId
 import com.newsblur.util.Log
@@ -146,18 +147,6 @@ class UnreadsService(parent: NBSyncService) : SubService(parent, NBScope) {
                 parent.prefetchImages(response)
             }
         }
-
-    private fun isStoryResponseGood(response: StoriesResponse?): Boolean {
-        if (response == null) {
-            Log.e(this, "Null response received while loading stories.")
-            return false
-        }
-        if (response.stories == null) {
-            Log.e(this, "Null stories member received while loading stories.")
-            return false
-        }
-        return true
-    }
 
     companion object {
 

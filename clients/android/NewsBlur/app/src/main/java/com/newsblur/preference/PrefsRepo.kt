@@ -13,6 +13,7 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
+import com.newsblur.NbApplication
 import com.newsblur.activity.Login
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.UserDetails
@@ -75,7 +76,7 @@ class PrefsRepo(
     }
 
     fun checkForUpgrade(context: Context): Boolean {
-        val version = getVersion(context)
+        val version = NbApplication.getVersion(context)
         if (version == null) {
             Log.wtf(PrefsRepo::class.java.name, "could not determine app version")
             return false
@@ -96,15 +97,6 @@ class PrefsRepo(
             putString(AppConstants.LAST_APP_VERSION, appVersion)
             // also make sure we auto-trigger an update, since all data are now gone
             putLong(AppConstants.LAST_SYNC_TIME, 0L)
-        }
-    }
-
-    fun getVersion(context: Context): String? {
-        try {
-            return context.packageManager.getPackageInfo(context.packageName, 0).versionName
-        } catch (nnfe: PackageManager.NameNotFoundException) {
-            Log.w(PrefsRepo::class.java.name, "could not determine app version")
-            return null
         }
     }
 
@@ -139,7 +131,7 @@ class PrefsRepo(
 
     private fun getDebugInfo(context: Context, dbHelper: BlurDatabaseHelper): String {
         val s = StringBuilder()
-        s.append("app version: ").append(getVersion(context))
+        s.append("app version: ").append(NbApplication.getVersion(context))
         s.append("\n")
         s.append("android version: ").append(Build.VERSION.RELEASE).append(" (").append(Build.DISPLAY).append(")")
         s.append("\n")
