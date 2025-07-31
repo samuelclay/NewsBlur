@@ -10,7 +10,7 @@ import kotlinx.coroutines.ensureActive
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.regex.Pattern
 
-class OriginalTextSubService(parent: SyncService) : SyncSubService(parent) {
+class OriginalTextSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate) {
 
     override suspend fun execute() = coroutineScope {
         while (true) {
@@ -29,7 +29,7 @@ class OriginalTextSubService(parent: SyncService) : SyncSubService(parent) {
         }
     }
 
-    override fun clear() {
+    fun clear() {
         storyHashes.clear()
     }
 
@@ -37,7 +37,7 @@ class OriginalTextSubService(parent: SyncService) : SyncSubService(parent) {
         for (hash in batch) {
             ensureActive()
             var result: String? = null
-            val response = parent.apiManager.getStoryText(inferFeedId(hash), hash)
+            val response = apiManager.getStoryText(inferFeedId(hash), hash)
             if (response != null) {
                 if (response.originalText == null) {
                     // a null value in an otherwise valid response to this call indicates a fatal
@@ -56,11 +56,11 @@ class OriginalTextSubService(parent: SyncService) : SyncSubService(parent) {
 
             if (result != null) {
                 // store the fetched text in the DB
-                parent.dbHelper.putStoryText(hash, result)
+                dbHelper.putStoryText(hash, result)
                 // scan for potentially cache-able images in the extracted 'text'
                 val imgTagMatcher = imgSniff.matcher(result)
                 while (imgTagMatcher.find()) {
-                    parent.addImageUrlToPrefetch(imgTagMatcher.group(2))
+                    addImageUrlToPrefetch(imgTagMatcher.group(2))
                 }
             }
 

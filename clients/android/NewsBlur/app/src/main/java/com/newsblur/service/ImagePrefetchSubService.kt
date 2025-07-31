@@ -8,20 +8,21 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.ensureActive
 import java.util.concurrent.ConcurrentLinkedQueue
 
-class ImagePrefetchSubService(parent: SyncService) : SyncSubService(parent) {
+class ImagePrefetchSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate) {
 
     override suspend fun execute() = coroutineScope {
-        if (!parent.prefsRepo.isImagePrefetchEnabled()) return@coroutineScope
-        if (!parent.prefsRepo.isBackgroundNetworkAllowed(parent)) return@coroutineScope
+        if (!prefsRepo.isImagePrefetchEnabled()) return@coroutineScope
+        if (!prefsRepo.isBackgroundNetworkAllowed(context)) return@coroutineScope
 
         while (storyImageQueue.isNotEmpty()) {
-            if (!parent.prefsRepo.isImagePrefetchEnabled()) return@coroutineScope
-            if (!parent.prefsRepo.isBackgroundNetworkAllowed(parent)) return@coroutineScope
+            ensureActive()
+            if (!prefsRepo.isImagePrefetchEnabled()) return@coroutineScope
+            if (!prefsRepo.isBackgroundNetworkAllowed(context)) return@coroutineScope
 
             Log.d(this, "story images to prefetch: " + storyImageQueue.size)
             // on each batch, re-query the DB for images associated with yet-unread stories
             // this is a bit expensive, but we are running totally async at a really low priority
-            val unreadImages = parent.dbHelper.getAllStoryImages()
+            val unreadImages = dbHelper.getAllStoryImages()
             val fetchedImages: MutableSet<String> = HashSet()
             val batch: MutableSet<String> = HashSet(AppConstants.IMAGE_PREFETCH_BATCH_SIZE)
             batchLoop@ for (url in storyImageQueue) {
@@ -34,7 +35,7 @@ class ImagePrefetchSubService(parent: SyncService) : SyncSubService(parent) {
                     // don't fetch the image if the associated story was marked read before we got to it
                     if (unreadImages.contains(url)) {
                         if (AppConstants.VERBOSE_LOG) android.util.Log.d(this.javaClass.name, "prefetching image: $url")
-                        parent.storyImageCache.cacheFile(url)
+                        storyImageCache.cacheFile(url)
                     }
                     fetchedImages.add(url)
                 }
@@ -47,13 +48,13 @@ class ImagePrefetchSubService(parent: SyncService) : SyncSubService(parent) {
         ensureActive()
 
         while (thumbnailQueue.isNotEmpty()) {
-            if (!parent.prefsRepo.isImagePrefetchEnabled()) return@coroutineScope
-            if (!parent.prefsRepo.isBackgroundNetworkAllowed(parent)) return@coroutineScope
+            if (!prefsRepo.isImagePrefetchEnabled()) return@coroutineScope
+            if (!prefsRepo.isBackgroundNetworkAllowed(context)) return@coroutineScope
 
             Log.d(this, "story thumbs to prefetch: " + thumbnailQueue.size)
             // on each batch, re-query the DB for images associated with yet-unread stories
             // this is a bit expensive, but we are running totally async at a really low priority
-            val unreadImages = parent.dbHelper.getAllStoryThumbnails()
+            val unreadImages = dbHelper.getAllStoryThumbnails()
             val fetchedImages: MutableSet<String> = HashSet()
             val batch: MutableSet<String> = HashSet(AppConstants.IMAGE_PREFETCH_BATCH_SIZE)
             batchLoop@ for (url in thumbnailQueue) {
@@ -66,7 +67,7 @@ class ImagePrefetchSubService(parent: SyncService) : SyncSubService(parent) {
                     // don't fetch the image if the associated story was marked read before we got to it
                     if (unreadImages.contains(url)) {
                         if (AppConstants.VERBOSE_LOG) android.util.Log.d(this.javaClass.name, "prefetching thumbnail: $url")
-                        parent.thumbnailCache.cacheFile(url)
+                        thumbnailCache.cacheFile(url)
                     }
                     fetchedImages.add(url)
                 }
@@ -77,7 +78,7 @@ class ImagePrefetchSubService(parent: SyncService) : SyncSubService(parent) {
         }
     }
 
-    override fun clear() {
+    fun clear() {
         storyImageQueue.clear()
         thumbnailQueue.clear()
     }

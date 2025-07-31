@@ -127,6 +127,9 @@
             android:name=".service.NBSyncService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
+            android:name=".service.SyncService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
             android:name=".widget.WidgetRemoteViewsService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
