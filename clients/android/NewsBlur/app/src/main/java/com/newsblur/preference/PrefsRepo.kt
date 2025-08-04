@@ -3,7 +3,6 @@ package com.newsblur.preference
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
@@ -18,8 +17,9 @@ import com.newsblur.activity.Login
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.UserDetails
 import com.newsblur.network.APIConstants
-import com.newsblur.service.NBSyncService
-import com.newsblur.service.SubscriptionSyncService.Companion.cancel
+import com.newsblur.service.SubscriptionSyncService
+import com.newsblur.service.SyncService
+import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppConstants
 import com.newsblur.util.DefaultBrowser
 import com.newsblur.util.DefaultFeedView
@@ -54,6 +54,7 @@ import java.util.Date
 
 class PrefsRepo(
         private val prefs: SharedPreferences,
+        private val syncServiceState: SyncServiceState,
 ) {
 
     fun saveCustomServer(customServer: String?) {
@@ -143,17 +144,15 @@ class PrefsRepo(
         s.append("\n")
         s.append("server: ").append(if (APIConstants.isCustomServer()) "custom" else "default")
         s.append("\n")
-        s.append("speed: ").append(NBSyncService.getSpeedInfo())
+        s.append("speed: ").append(syncServiceState.getSpeedInfo())
         s.append("\n")
-        s.append("pending actions: ").append(NBSyncService.getPendingInfo())
+        s.append("pending actions: ").append(syncServiceState.getPendingInfo())
         s.append("\n")
         s.append("premium: ")
-        if (NBSyncService.isPremium == true) {
+        if (getIsPremium()) {
             s.append("yes")
-        } else if (NBSyncService.isPremium == false) {
-            s.append("no")
         } else {
-            s.append("unknown")
+            s.append("no")
         }
         s.append("\n")
         s.append("prefetch: ").append(if (isOfflineEnabled()) "yes" else "no")
@@ -168,11 +167,11 @@ class PrefsRepo(
     }
 
     fun logout(context: Context, dbHelper: BlurDatabaseHelper) {
-        NBSyncService.softInterrupt()
-        NBSyncService.clearState()
+        SyncService.stop(context)
+        syncServiceState.clearState()
 
         // cancel scheduled subscription sync service
-        cancel(context)
+        SubscriptionSyncService.cancel(context)
 
         NotificationUtils.clear(context)
 
@@ -196,9 +195,6 @@ class PrefsRepo(
     }
 
     fun clearPrefsAndDbForLoginAs(dbHelper: BlurDatabaseHelper) {
-        NBSyncService.softInterrupt()
-        NBSyncService.clearState()
-
         // wipe the prefs store except for the cookie and login keys since we need to
         // authenticate further API calls
         val keys: MutableSet<String> = HashSet(prefs.all.keys)
@@ -766,6 +762,14 @@ class PrefsRepo(
     }
 
     fun getIsArchive() = prefs.getBoolean(PrefConstants.IS_ARCHIVE, false)
+
+    fun setIsStaff(isStaff: Boolean) {
+        prefs.edit {
+            putBoolean(PrefConstants.IS_STAFF, isStaff)
+        }
+    }
+
+    fun getIsStaff() = prefs.getBoolean(PrefConstants.IS_STAFF, false)
 
     fun setPremium(isPremium: Boolean, premiumExpire: Long?) {
         prefs.edit {

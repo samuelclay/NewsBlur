@@ -17,50 +17,50 @@ import java.util.concurrent.CancellationException
  * flags and data used by these modules need to be static so that parts of the app without a
  * handle to the service object can access them.
  */
-abstract class SubService(
-        @JvmField
-        protected val parent: NBSyncService,
-        private val coroutineScope: CoroutineScope = NBScope,
-) {
-
-    private var mainJob: Job? = null
-
-    protected abstract fun exec()
-
-    fun start() {
-        mainJob = coroutineScope.launch(Dispatchers.IO) {
-            if (parent.stopSync()) return@launch
-
-            Thread.currentThread().name = this@SubService.javaClass.name
-            execInternal()
-
-            if (isActive) {
-                parent.checkCompletion()
-                parent.sendSyncUpdate(NbSyncManager.UPDATE_STATUS)
-            }
-        }
-    }
-
-    private suspend fun execInternal() = coroutineScope {
-        try {
-            ensureActive()
-            exec()
-        } catch (e: Exception) {
-            Log.e(this@SubService.javaClass.name, "Sync error.", e)
-        }
-    }
-
-    fun shutdown() {
-        Log.d(this, "SubService shutdown")
-        try {
-            mainJob?.cancel()
-        } catch (e: CancellationException) {
-            Log.d(this, "SubService cancelled")
-        } finally {
-            Log.d(this, "SubService stopped")
-        }
-    }
-
-    val isRunning: Boolean
-        get() = mainJob?.isActive ?: false
-}
+//abstract class SubService(
+//        @JvmField
+//        protected val parent: NBSyncService,
+//        private val coroutineScope: CoroutineScope = NBScope,
+//) {
+//
+//    private var mainJob: Job? = null
+//
+//    protected abstract fun exec()
+//
+//    fun start() {
+//        mainJob = coroutineScope.launch(Dispatchers.IO) {
+//            if (parent.stopSync()) return@launch
+//
+//            Thread.currentThread().name = this@SubService.javaClass.name
+//            execInternal()
+//
+//            if (isActive) {
+//                parent.checkCompletion()
+//                parent.sendSyncUpdate(NbSyncManager.UPDATE_STATUS)
+//            }
+//        }
+//    }
+//
+//    private suspend fun execInternal() = coroutineScope {
+//        try {
+//            ensureActive()
+//            exec()
+//        } catch (e: Exception) {
+//            Log.e(this@SubService.javaClass.name, "Sync error.", e)
+//        }
+//    }
+//
+//    fun shutdown() {
+//        Log.d(this, "SubService shutdown")
+//        try {
+//            mainJob?.cancel()
+//        } catch (e: CancellationException) {
+//            Log.d(this, "SubService cancelled")
+//        } finally {
+//            Log.d(this, "SubService stopped")
+//        }
+//    }
+//
+//    val isRunning: Boolean
+//        get() = mainJob?.isActive ?: false
+//}

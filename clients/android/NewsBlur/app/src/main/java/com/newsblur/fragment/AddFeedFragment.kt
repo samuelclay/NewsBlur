@@ -22,7 +22,7 @@ import com.newsblur.databinding.RowAddFeedFolderBinding
 import com.newsblur.domain.Folder
 import com.newsblur.fragment.AddFeedFragment.AddFeedAdapter.FolderViewHolder
 import com.newsblur.network.APIManager
-import com.newsblur.service.NBSyncService
+import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppConstants
 import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,6 +37,9 @@ class AddFeedFragment : DialogFragment() {
 
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
+
+    @Inject
+    lateinit var syncServiceState: SyncServiceState
 
     private lateinit var binding: DialogAddFeedBinding
 
@@ -107,7 +110,7 @@ class AddFeedFragment : DialogFragment() {
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     if (!it.isError) {
                         // trigger a sync when we return to Main so that the new feed will show up
-                        NBSyncService.forceFeedsFolders()
+                        syncServiceState.forceFeedsFolders()
                         intent.putExtra(Main.EXTRA_FORCE_SHOW_FEED_ID, it.feed.feedId)
                     } else {
                         Toast.makeText(activity, R.string.add_feed_error, Toast.LENGTH_SHORT).show()

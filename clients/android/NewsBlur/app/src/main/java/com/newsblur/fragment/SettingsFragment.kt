@@ -14,7 +14,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.newsblur.R
 import com.newsblur.database.BlurDatabaseHelper
-import com.newsblur.service.NBSyncService
+import com.newsblur.service.SyncServiceState
 import com.newsblur.util.FeedUtils.Companion.triggerSync
 import com.newsblur.util.NotificationUtils
 import com.newsblur.util.PrefConstants
@@ -26,6 +26,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
+
+    @Inject
+    lateinit var syncServiceState: SyncServiceState
 
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
         if (!isGranted) Toast
@@ -60,7 +63,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             setTitle(R.string.menu_delete_offline_stories_confirmation)
         }
         dbHelper.deleteStories()
-        NBSyncService.forceFeedsFolders()
+        syncServiceState.forceFeedsFolders()
         triggerSync(requireContext())
     }
 

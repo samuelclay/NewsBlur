@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.service.SyncServiceState
 import com.newsblur.util.FileCache
 import com.newsblur.util.PrefConstants
 import dagger.Module
@@ -57,5 +58,6 @@ class StorageModule {
     @Provides
     fun providePrefRepository(
             sharedPreferences: SharedPreferences,
-    ): PrefsRepo = PrefsRepo(sharedPreferences)
+            syncServiceState: SyncServiceState,
+    ): PrefsRepo = PrefsRepo(sharedPreferences, syncServiceState)
 }

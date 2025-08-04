@@ -15,7 +15,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.newsblur.R
 import com.newsblur.databinding.ActivityImportExportBinding
 import com.newsblur.network.APIManager
-import com.newsblur.service.NBSyncService
 import com.newsblur.util.DownloadCompleteReceiver
 import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.FeedUtils
@@ -131,7 +130,7 @@ class ImportExportActivity : NbActivity() {
                         ).show()
 
                         // refresh all feeds and folders
-                        NBSyncService.forceFeedsFolders()
+                        syncServiceState.forceFeedsFolders()
                         FeedUtils.triggerSync(this)
                     }
 

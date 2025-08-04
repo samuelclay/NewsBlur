@@ -15,7 +15,7 @@ import com.newsblur.databinding.DialogStoryUserTagsBinding
 import com.newsblur.databinding.RowSavedTagBinding
 import com.newsblur.domain.StarredCount
 import com.newsblur.domain.Story
-import com.newsblur.service.NBSyncService
+import com.newsblur.service.SyncServiceState
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.TagsAdapter
@@ -32,6 +32,9 @@ class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
 
     @Inject
     lateinit var feedUtils: FeedUtils
+
+    @Inject
+    lateinit var syncServiceState: SyncServiceState
 
     private lateinit var story: Story
     private lateinit var fs: FeedSet
@@ -224,7 +227,7 @@ class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
 
     private fun saveTags() {
         val savedTagList = getSavedTagsList()
-        NBSyncService.forceFeedsFolders()
+        syncServiceState.forceFeedsFolders()
         feedUtils.setStorySaved(story, true, requireContext(), savedTagList)
     }
 }

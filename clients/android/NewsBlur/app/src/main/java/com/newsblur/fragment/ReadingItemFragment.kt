@@ -43,7 +43,7 @@ import com.newsblur.service.NbSyncManager.UPDATE_INTEL
 import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
 import com.newsblur.service.NbSyncManager.UPDATE_TEXT
-import com.newsblur.service.OriginalTextService
+import com.newsblur.service.OriginalTextSubService
 import com.newsblur.util.DefaultFeedView
 import com.newsblur.util.EdgeToEdgeUtil.applyNavBarInsetBottomTo
 import com.newsblur.util.FeedSet
@@ -784,7 +784,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                     },
                     onPostExecute = { result ->
                         if (result != null) {
-                            if (OriginalTextService.NULL_STORY_TEXT == result) {
+                            if (OriginalTextSubService.NULL_STORY_TEXT == result) {
                                 // the server reported that text mode is not available.  kick back to story mode
                                 com.newsblur.util.Log.d(this, "orig text not avail for story: " + story.storyHash)
                                 textViewUnavailable = true
@@ -794,7 +794,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                             reloadStoryContent()
                         } else {
                             com.newsblur.util.Log.d(this, "orig text not yet cached for story: " + story.storyHash)
-                            OriginalTextService.addHash(story.storyHash)
+                            OriginalTextSubService.addHash(story.storyHash)
                             triggerSync()
                         }
                     }

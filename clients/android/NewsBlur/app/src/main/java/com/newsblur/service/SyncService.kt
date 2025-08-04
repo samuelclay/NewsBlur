@@ -3,6 +3,7 @@ package com.newsblur.service
 import android.app.job.JobParameters
 import android.app.job.JobService
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import com.newsblur.NbApplication
@@ -26,8 +27,6 @@ import com.newsblur.service.NbSyncManager.UPDATE_STORY
 import com.newsblur.service.NbSyncManager.submitError
 import com.newsblur.service.NbSyncManager.submitUpdate
 import com.newsblur.service.SyncServiceUtil.isStoryResponseGood
-import com.newsblur.service.UnreadsService.Companion.doMetadata
-import com.newsblur.service.UnreadsService.Companion.isDoMetadata
 import com.newsblur.util.AppConstants
 import com.newsblur.util.CursorFilters
 import com.newsblur.util.FeedSet
@@ -48,7 +47,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
-import kotlin.concurrent.Volatile
 import kotlin.coroutines.CoroutineContext
 
 @AndroidEntryPoint
@@ -74,6 +72,9 @@ open class SyncService : JobService(), CoroutineScope {
 
     @Inject
     lateinit var prefsRepo: PrefsRepo
+
+    @Inject
+    lateinit var syncServiceState: SyncServiceState
 
     override val coroutineContext: CoroutineContext =
             CoroutineName("SyncService") +
@@ -236,8 +237,8 @@ open class SyncService : JobService(), CoroutineScope {
         var c: Cursor? = null
         try {
             c = dbHelper.getActions()
-            lastActionCount = c.count
-            if (lastActionCount < 1) return
+            syncServiceState.lastActionCount = c.count
+            if (syncServiceState.lastActionCount < 1) return
 
 //            NBSyncService.ActionsRunning = true
 
@@ -256,10 +257,10 @@ open class SyncService : JobService(), CoroutineScope {
                 }
 
                 // don't block story loading unless this is a brand new action
-                if ((ra.tried > 0) && (PendingFeed != null)) continue@actionsLoop
+                if ((ra.tried > 0) && (syncServiceState.pendingFeed != null)) continue@actionsLoop
 
                 Log.d(this, "attempting action: " + ra.toContentValues().toString())
-                val response = ra.doRemote(apiManager, dbHelper, stateFilter)
+                val response = ra.doRemote(apiManager, dbHelper, syncServiceState, stateFilter)
 
                 if (response == null) {
                     Log.e(this.javaClass.name, "Discarding reading action with client-side error.")
@@ -280,10 +281,10 @@ open class SyncService : JobService(), CoroutineScope {
                 } else {
                     // success!
                     dbHelper.clearAction(id)
-                    FollowupActions.add(ra)
+                    syncServiceState.addFollowupAction(ra)
                     sendSyncUpdate(response.impactCode)
                 }
-                lastActionCount--
+                syncServiceState.lastActionCount--
             }
         } finally {
             BlurDatabaseHelper.closeQuietly(c)
@@ -305,9 +306,9 @@ open class SyncService : JobService(), CoroutineScope {
             return
         }
 
-        if (DoFeedsFolders || prefsRepo.isTimeToAutoSync()) {
+        if (syncServiceState.doFeedsFolders || prefsRepo.isTimeToAutoSync()) {
             prefsRepo.updateLastSyncTime()
-            DoFeedsFolders = false
+            syncServiceState.doFeedsFolders = false
         } else {
             return
         }
@@ -335,28 +336,28 @@ open class SyncService : JobService(), CoroutineScope {
             if (!feedResponse.isAuthenticated) {
                 // we should not have got this far without being logged in, so the server either
                 // expired or ignored out cookie. keep track of this.
-                authFails += 1
+                syncServiceState.authFails += 1
                 Log.w(this.javaClass.name, "Server ignored or rejected auth cookie.")
-                if (authFails >= AppConstants.MAX_API_TRIES) {
+                if (syncServiceState.authFails >= AppConstants.MAX_API_TRIES) {
                     Log.w(this.javaClass.name, "too many auth fails, resetting cookie")
                     prefsRepo.logout(this, dbHelper)
                 }
-                DoFeedsFolders = true
+                syncServiceState.doFeedsFolders = true
                 return
             } else {
-                authFails = 0
+                syncServiceState.authFails = 0
             }
 
             // a metadata sync invalidates pagination and feed status
-            ExhaustedFeeds.clear()
-            FeedPagesSeen.clear()
-            FeedStoriesSeen.clear()
+            syncServiceState.clearExhaustedFeeds()
+            syncServiceState.clearSeenFeedPages()
+            syncServiceState.clearSeenFeedStories()
             unreadsSubService.clear()
-            RecountCandidates.clear()
+            syncServiceState.clearRecountCandidates()
 
-            lastFFConnMillis = feedResponse.connTime
-            lastFFReadMillis = feedResponse.readTime
-            lastFFParseMillis = feedResponse.parseTime
+            syncServiceState.lastFFConnMillis = feedResponse.connTime
+            syncServiceState.lastFFReadMillis = feedResponse.readTime
+            syncServiceState.lastFFParseMillis = feedResponse.parseTime
             val startTime = System.currentTimeMillis()
 
             prefsRepo.setPremium(feedResponse.isPremium, feedResponse.premiumExpire)
@@ -435,17 +436,17 @@ open class SyncService : JobService(), CoroutineScope {
 
             dbHelper.setFeedsFolders(folderValues, feedValues, socialFeedValues, starredCountValues, savedSearchesValues)
 
-            lastFFWriteMillis = System.currentTimeMillis() - startTime
-            lastFeedCount = feedValues.size.toLong()
+            syncServiceState.lastFFWriteMillis = System.currentTimeMillis() - startTime
+            syncServiceState.lastFeedCount = feedValues.size.toLong()
 
-            Log.i(this.javaClass.name, "got feed list: " + getSpeedInfo())
+            Log.i(this.javaClass.name, "got feed list: " + syncServiceState.getSpeedInfo())
 
-            doMetadata()
+            unreadsSubService.doMetadata()
             unreadsSubService.start()
             cleanupSubService.start()
             starredSubService.start()
         } finally {
-            FFSyncRunning = false
+//            FFSyncRunning = false
             sendSyncUpdate(UPDATE_METADATA or UPDATE_STATUS)
         }
     }
@@ -458,18 +459,18 @@ open class SyncService : JobService(), CoroutineScope {
         // more to do, in which case we will clear it
         var finished = false
 
-        val fs = PendingFeed
+        val fs = syncServiceState.pendingFeed
 
         try {
             // see if we need to quickly reset fetch state for a feed. we
             // do this before the loop to prevent-mid loop state corruption
-            synchronized(MUTEX_ResetFeed) {
-                if (ResetFeed != null) {
-                    Log.i(this.javaClass.name, "Resetting state for feed set: $ResetFeed")
-                    ExhaustedFeeds.remove(ResetFeed)
-                    FeedStoriesSeen.remove(ResetFeed)
-                    FeedPagesSeen.remove(ResetFeed)
-                    ResetFeed = null
+            synchronized(syncServiceState.resetFeedMutex) {
+                syncServiceState.resetFeed?.let { resetFeed ->
+                    Log.i(this.javaClass.name, "Resetting state for feed set: $resetFeed")
+                    syncServiceState.removeFeedSetExhausted(resetFeed)
+                    syncServiceState.removeFeedStoriesSeen(resetFeed)
+                    syncServiceState.removeFeedPagesSeen(resetFeed)
+                    syncServiceState.resetFeed = null
                     // a reset should also reset the stories table, just in case an async page of stories came in between the
                     // caller's (presumed) reset and our call ot prepareReadingSession(). unsetting the session feedset will
                     // cause the later call to prepareReadingSession() to do another reset
@@ -484,34 +485,34 @@ open class SyncService : JobService(), CoroutineScope {
 
             prepareReadingSession(prefsRepo, dbHelper, fs)
 
-            LastFeedSet = fs
+            syncServiceState.lastFeedSet = fs
 
-            if (ExhaustedFeeds.contains(fs)) {
+            if (syncServiceState.exhaustedFeeds.contains(fs)) {
                 Log.i(this.javaClass.name, "No more stories for feed set: $fs")
                 finished = true
                 return
             }
 
-            if (!FeedPagesSeen.containsKey(fs)) {
-                FeedPagesSeen.put(fs, 0)
-                FeedStoriesSeen.put(fs, 0)
-                workaroundReadStoryTimestamp = (Date()).time
-                workaroundGlobalSharedStoryTimestamp = (Date()).time
+            if (!syncServiceState.feedPagesSeen.containsKey(fs)) {
+                syncServiceState.addFeedPagesSeen(fs, 0)
+                syncServiceState.addFeedStoriesSeen(fs, 0)
+                syncServiceState.workaroundReadStoryTimestamp = (Date()).time
+                syncServiceState.workaroundGlobalSharedStoryTimestamp = (Date()).time
             }
-            var pageNumber: Int = FeedPagesSeen[fs]!!
-            var totalStoriesSeen: Int = FeedStoriesSeen[fs]!!
+            var pageNumber: Int = syncServiceState.feedPagesSeen[fs]!!
+            var totalStoriesSeen: Int = syncServiceState.feedStoriesSeen[fs]!!
 
             val cursorFilters = CursorFilters(prefsRepo, fs)
 
 //            StorySyncRunning = true
             sendSyncUpdate(UPDATE_STATUS)
 
-            while (totalStoriesSeen < PendingFeedTarget) {
+            while (totalStoriesSeen < syncServiceState.pendingFeedTarget) {
                 // this is a good heuristic for double-checking if we have left the story list
-                if (FlushRecounts) return
+                if (syncServiceState.doFlushRecounts) return
 
                 // bail if the active view has changed
-                if (fs != PendingFeed) {
+                if (fs != syncServiceState.pendingFeed) {
                     return
                 }
 
@@ -520,7 +521,7 @@ open class SyncService : JobService(), CoroutineScope {
 
                 if (!isStoryResponseGood(apiResponse)) return
 
-                if (fs != PendingFeed) {
+                if (fs != syncServiceState.pendingFeed) {
                     return
                 }
 
@@ -529,11 +530,11 @@ open class SyncService : JobService(), CoroutineScope {
                 finishActions()
                 sendSyncUpdate(UPDATE_STORY or UPDATE_STATUS)
 
-                FeedPagesSeen.put(fs, pageNumber)
+                syncServiceState.addFeedPagesSeen(fs, pageNumber)
                 totalStoriesSeen += apiResponse.stories.size
-                FeedStoriesSeen.put(fs, totalStoriesSeen)
+                syncServiceState.addFeedStoriesSeen(fs, totalStoriesSeen)
                 if (apiResponse.stories.size == 0) {
-                    ExhaustedFeeds.add(fs)
+                    syncServiceState.addFeedSetExhausted(fs)
                     finished = true
                     return
                 }
@@ -545,8 +546,8 @@ open class SyncService : JobService(), CoroutineScope {
         } finally {
 //            NBSyncService.StorySyncRunning = false
             sendSyncUpdate(UPDATE_STATUS)
-            synchronized(PENDING_FEED_MUTEX) {
-                if (finished && fs == PendingFeed) PendingFeed = null
+            synchronized(syncServiceState.pendingFeedMutex) {
+                if (finished && fs == syncServiceState.pendingFeed) syncServiceState.pendingFeed = null
             }
         }
     }
@@ -567,8 +568,8 @@ open class SyncService : JobService(), CoroutineScope {
             for (story in apiResponse.stories) {
                 // this fake TS was set when we fetched the first page. have it decrease as
                 // we page through, so they append to the list as if most-recent-first.
-                workaroundReadStoryTimestamp--
-                story.lastReadTimestamp = workaroundReadStoryTimestamp
+                syncServiceState.workaroundReadStoryTimestamp--
+                story.lastReadTimestamp = syncServiceState.workaroundReadStoryTimestamp
             }
         }
 
@@ -580,8 +581,8 @@ open class SyncService : JobService(), CoroutineScope {
             for (story in apiResponse.stories) {
                 // this fake TS was set when we fetched the first page. have it decrease as
                 // we page through, so they append to the list as if most-recent-first.
-                workaroundGlobalSharedStoryTimestamp--
-                story.sharedTimestamp = workaroundGlobalSharedStoryTimestamp
+                syncServiceState.workaroundGlobalSharedStoryTimestamp--
+                story.sharedTimestamp = syncServiceState.workaroundGlobalSharedStoryTimestamp
             }
         }
 
@@ -628,11 +629,11 @@ open class SyncService : JobService(), CoroutineScope {
      * API actions didn't race-overwrite them.  Do these, and then clean up the DB.
      */
     private fun finishActions() {
-        if (FollowupActions.isEmpty()) return
+        if (syncServiceState.followupActions.isEmpty()) return
 
-        Log.d(this, "double-checking " + FollowupActions.size + " actions")
+        Log.d(this, "double-checking " + syncServiceState.followupActions.size + " actions")
         var impactFlags = 0
-        for (ra in FollowupActions) {
+        for (ra in syncServiceState.followupActions) {
             val impact = ra.doLocal(dbHelper, prefsRepo, true)
             impactFlags = impactFlags or impact
         }
@@ -640,15 +641,15 @@ open class SyncService : JobService(), CoroutineScope {
 
         // if there is a feed fetch loop running, don't clear, there will likely be races for
         // stories that were just tapped as they were being re-fetched
-        synchronized(PENDING_FEED_MUTEX) {
-            if (PendingFeed != null) return
+        synchronized(syncServiceState.pendingFeedMutex) {
+            if (syncServiceState.pendingFeed != null) return
         }
 
         // if there is a what-is-unread sync in progress, hold off on confirming actions,
         // as this subservice can vend stale unread data
-        if (isDoMetadata) return
+        if (unreadsSubService.isDoMetadata) return
 
-        FollowupActions.clear()
+        syncServiceState.clearFollowupActions()
     }
 
     fun prefetchImages(apiResponse: StoriesResponse) {
@@ -677,7 +678,7 @@ open class SyncService : JobService(), CoroutineScope {
      * will happen first.
      */
     fun prepareReadingSession(prefsRepo: PrefsRepo, dbHelper: BlurDatabaseHelper, fs: FeedSet) {
-        synchronized(PENDING_FEED_MUTEX) {
+        synchronized(syncServiceState.pendingFeedMutex) {
             val cursorFilters = CursorFilters(prefsRepo, fs)
             if (fs != dbHelper.getSessionFeedSet()) {
                 Log.d(SyncService::class.java.name, "preparing new reading session")
@@ -698,10 +699,10 @@ open class SyncService : JobService(), CoroutineScope {
      * See if any feeds have been touched in a way that require us to double-check unread counts;
      */
     private fun checkRecounts() {
-        if (!FlushRecounts) return
+        if (!syncServiceState.doFeedsFolders) return
 
         try {
-            if (RecountCandidates.isEmpty()) return
+            if (syncServiceState.recountCandidates.isEmpty()) return
 
 //            NBSyncService.RecountsRunning = true
             sendSyncUpdate(UPDATE_STATUS)
@@ -709,7 +710,7 @@ open class SyncService : JobService(), CoroutineScope {
             // of all candidate feeds that were touched, now check to see if any
             // actually need their counts fetched
             val dirtySets = mutableSetOf<FeedSet>()
-            for (fs in RecountCandidates) {
+            for (fs in syncServiceState.recountCandidates) {
                 // check for mismatched local and remote counts we need to reconcile
                 if (dbHelper.getUnreadCount(fs, StateFilter.SOME) != dbHelper.getLocalUnreadCount(fs, StateFilter.SOME)) {
                     dirtySets.add(fs)
@@ -720,7 +721,7 @@ open class SyncService : JobService(), CoroutineScope {
                 }
             }
             if (dirtySets.isEmpty()) {
-                RecountCandidates.clear()
+                syncServiceState.clearRecountCandidates()
                 return
             }
 
@@ -729,7 +730,7 @@ open class SyncService : JobService(), CoroutineScope {
             // if we are offline, the best we can do is perform a local unread recount and
             // save the true one for when we go back online.
             if (!NetworkUtils.isOnline(this)) {
-                for (fs in RecountCandidates) {
+                for (fs in syncServiceState.recountCandidates) {
                     dbHelper.updateLocalFeedCounts(fs)
                 }
             } else {
@@ -737,7 +738,7 @@ open class SyncService : JobService(), CoroutineScope {
                 if (dbHelper.getUntriedActionCount() > 0) return
 
                 val apiIds = mutableSetOf<String>()
-                for (fs in RecountCandidates) {
+                for (fs in syncServiceState.recountCandidates) {
                     apiIds.addAll(fs.getFlatFeedIds())
                 }
 
@@ -757,13 +758,13 @@ open class SyncService : JobService(), CoroutineScope {
                         dbHelper.updateSocialFeedCounts(feedId, entry.value.getValuesSocial())
                     }
                 }
-                RecountCandidates.clear()
+                syncServiceState.clearRecountCandidates()
 
                 // if there was a mismatch, some stories might have been missed at the head of the
                 // pagination loop, so reset it
                 for (fs in dirtySets) {
-                    FeedPagesSeen.put(fs, 0)
-                    FeedStoriesSeen.put(fs, 0)
+                    syncServiceState.addFeedPagesSeen(fs, 0)
+                    syncServiceState.addFeedStoriesSeen(fs, 0)
                 }
             }
         } finally {
@@ -771,13 +772,13 @@ open class SyncService : JobService(), CoroutineScope {
 //                NBSyncService.RecountsRunning = false
             sendSyncUpdate(UPDATE_METADATA or UPDATE_STATUS)
 //            }
-            FlushRecounts = false
+            syncServiceState.doFeedsFolders = false
         }
     }
 
     private fun backoffBackgroundCalls(): Boolean {
         if (isAppForeground) return false
-        if (System.currentTimeMillis() > (lastAPIFailure + AppConstants.API_BACKGROUND_BACKOFF_MILLIS)) return false
+        if (System.currentTimeMillis() > (syncServiceState.lastApiFailure + AppConstants.API_BACKGROUND_BACKOFF_MILLIS)) return false
         Log.i(this.javaClass.name, "abandoning background sync due to recent API failures.")
         return true
     }
@@ -796,7 +797,7 @@ open class SyncService : JobService(), CoroutineScope {
 
     private fun noteHardAPIFailure() {
         Log.w(this.javaClass.name, "hard API failure")
-        lastAPIFailure = System.currentTimeMillis()
+        syncServiceState.lastApiFailure = System.currentTimeMillis()
     }
 
     fun pushNotifications() {
@@ -805,7 +806,7 @@ open class SyncService : JobService(), CoroutineScope {
         // don't notify stories until the queue is flushed so they don't churn
         if (UnreadsSubService.storyHashQueue.isNotEmpty()) return
         // don't slow down active story loading
-        if (PendingFeed != null) return
+        if (syncServiceState.pendingFeed != null) return
 
         val cFocus = dbHelper.notifyFocusStoriesCursor
         val cUnread = dbHelper.notifyUnreadStoriesCursor
@@ -814,200 +815,23 @@ open class SyncService : JobService(), CoroutineScope {
         BlurDatabaseHelper.closeQuietly(cUnread)
     }
 
-    /**
-     * Requests that the service fetch additional stories for the specified feed/folder. Returns
-     * true if more will be fetched as a result of this request.
-     *
-     * @param desiredStoryCount the minimum number of stories to fetch.
-     * @param callerSeen        the number of stories the caller thinks they have seen for the FeedSet
-     * or a negative number if the caller trusts us to track for them, or null if the caller
-     * has ambiguous or no state about the FeedSet and wants us to refresh for them.
-     */
-    fun requestMoreForFeed(fs: FeedSet, desiredStoryCount: Int, callerSeen: Int?): Boolean {
-        synchronized(PENDING_FEED_MUTEX) {
-            if (ExhaustedFeeds.contains(fs) && (fs == LastFeedSet && (callerSeen != null))) {
-                android.util.Log.d(SyncService::class.java.name, "rejecting request for feedset that is exhaused")
-                return false
-            }
-            var alreadyPending = 0
-            if (fs == PendingFeed) alreadyPending = PendingFeedTarget
-            var alreadySeen = FeedStoriesSeen.get(fs)
-            if (alreadySeen == null) alreadySeen = 0
-            if ((callerSeen != null) && (callerSeen < alreadySeen)) {
-                // the caller is probably filtering and thinks they have fewer than we do, so
-                // update our count to agree with them, and force-allow another requet
-                alreadySeen = callerSeen
-                FeedStoriesSeen.put(fs, callerSeen)
-                alreadyPending = 0
-            }
+    fun isOrphanFeed(feedId: String): Boolean = orphanFeedIds.contains(feedId)
 
-            PendingFeed = fs
-            PendingFeedTarget = desiredStoryCount
+    fun isDisabledFeed(feedId: String): Boolean = disabledFeedIds.contains(feedId)
 
-            if (fs != LastFeedSet) {
-                return true
-            }
-            if (desiredStoryCount <= alreadySeen) {
-                return false
-            }
-            if (desiredStoryCount <= alreadyPending) {
-                return false
-            }
-        }
-        return true
-    }
-
-    /**
-     * Resets any internal temp vars or queues. Called when switching accounts.
-     */
     fun clearState() {
-        PendingFeed = null
-        ResetFeed = null
-        FollowupActions.clear()
-        RecountCandidates.clear()
-        ExhaustedFeeds.clear()
-        FeedPagesSeen.clear()
-        FeedStoriesSeen.clear()
+        syncServiceState.clearState()
         originalTextSubService.clear()
         unreadsSubService.clear()
         imagePrefetchSubService.clear()
     }
 
-    fun isOrphanFeed(feedId: String): Boolean = orphanFeedIds.contains(feedId)
-
-    fun isDisabledFeed(feedId: String): Boolean = disabledFeedIds.contains(feedId)
-
-    fun interrupt() {
-        Log.i(SyncService::class.java.name, "Interrupt")
-        coroutineContext.cancel()
-    }
-
     companion object {
-        /**
-         * The time of the last hard API failure we encountered. Used to implement back-off so that the sync
-         * service doesn't spin in the background chewing up battery when the API is unavailable.
-         */
-        private var lastAPIFailure: Long = 0
-        private var lastActionCount: Int = 0
 
-        /**
-         * Feed set that we need to sync immediately for the UI.
-         */
-        private val MUTEX_ResetFeed: Any = Any()
-        private var PendingFeed: FeedSet? = null
-        private var PendingFeedTarget: Int = 0
-        private val PENDING_FEED_MUTEX: Any = Any()
-
-        /**
-         * Feed to reset to zero-state, so it is fetched fresh, presumably with new filters.
-         */
-        private var ResetFeed: FeedSet? = null
-
-        /**
-         * Actions that may need to be double-checked locally due to overlapping API calls.
-         */
-        private val FollowupActions = mutableListOf<ReadingAction>()
-
-        @Volatile
-        private var DoFeedsFolders: Boolean = false
-
-        @Volatile
-        private var FFSyncRunning: Boolean = false
-
-        /**
-         * Feed sets that the API has said to have no more pages left.
-         */
-        private val ExhaustedFeeds = mutableSetOf<FeedSet>()
-
-        /**
-         * The number of pages we have collected for the given feed set.
-         */
-        private val FeedPagesSeen = mutableMapOf<FeedSet, Int>()
-
-        /**
-         * The number of stories we have collected for the given feed set.
-         */
-        private val FeedStoriesSeen = mutableMapOf<FeedSet, Int>()
-
-        /**
-         * Feed IDs (API stype) that have been acted upon and need a double-check for counts.
-         */
-        private val RecountCandidates = mutableSetOf<FeedSet>()
-
-        /**
-         * The last feed set that was actually fetched from the API.
-         */
-        private var LastFeedSet: FeedSet? = null
-
-        private var lastFeedCount: Long = 0L
-        private var lastFFConnMillis: Long = 0L
-        private var lastFFReadMillis: Long = 0L
-        private var lastFFParseMillis: Long = 0L
-        private var lastFFWriteMillis: Long = 0L
-
-        private var workaroundReadStoryTimestamp: Long = 0
-        private var workaroundGlobalSharedStoryTimestamp: Long = 0
-
-        @Volatile
-        private var FlushRecounts: Boolean = false
-
-        @Volatile
-        private var authFails: Int = 0
-
-        /**
-         * Force a refresh of feed/folder data on the next sync, even if enough time
-         * hasn't passed for an autosync.
-         */
-        fun forceFeedsFolders() {
-            DoFeedsFolders = true
+        fun stop(context: Context) {
+            Log.i(SyncService::class.java.name, "Stop service")
+            val stopIntent = Intent(context, SyncService::class.java)
+            context.stopService(stopIntent)
         }
-
-        fun flushRecounts() {
-            FlushRecounts = true
-        }
-
-        /**
-         * Is there a sync for a given FeedSet running?
-         */
-        fun isFeedSetSyncing(fs: FeedSet): Boolean {
-//            return (fs == PendingFeed && (!NBSyncService.stopSync(context))) // TODO
-            return fs == PendingFeed // TODO
-        }
-
-        fun addRecountCandidates(fs: FeedSet?) {
-            if (fs == null) return
-            // if this is a special feedset (read, saved, global shared, etc) that doesn't represent a
-            // countable set of stories, don't bother recounting it
-            if (fs.getFlatFeedIds().isEmpty()) return
-            RecountCandidates.add(fs)
-        }
-
-        fun resetFetchState(fs: FeedSet?) {
-            synchronized(MUTEX_ResetFeed) {
-                Log.d(SyncService::class.java.name, "requesting feed fetch state reset")
-                ResetFeed = fs
-            }
-        }
-
-        fun isFeedSetStoriesFresh(fs: FeedSet?): Boolean {
-            val count = FeedStoriesSeen[fs]
-            if (count == null) return false
-            return count >= 1
-        }
-
-        fun isFeedSetExhausted(fs: FeedSet?): Boolean = ExhaustedFeeds.contains(fs)
-
-        fun getSpeedInfo(): String = StringBuilder().apply {
-            append(lastFeedCount).append(" feeds in ")
-            append(" conn:").append(lastFFConnMillis)
-            append(" read:").append(lastFFReadMillis)
-            append(" parse:").append(lastFFParseMillis)
-            append(" store:").append(lastFFWriteMillis)
-        }.toString()
-
-        fun getPendingInfo(): String = StringBuilder().apply {
-            append(" pre:").append(lastActionCount)
-            append(" post:").append(FollowupActions.size)
-        }.toString()
     }
 }

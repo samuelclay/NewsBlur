@@ -11,6 +11,9 @@ import java.util.concurrent.ConcurrentLinkedQueue
 
 class UnreadsSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate) {
 
+    var isDoMetadata: Boolean = false
+        private set
+
     override suspend fun execute() = coroutineScope {
         ensureActive()
         if (isDoMetadata) {
@@ -147,11 +150,11 @@ class UnreadsSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
         }
     }
 
-    companion object {
+    fun doMetadata() {
+        isDoMetadata = true
+    }
 
-        @Volatile
-        var isDoMetadata: Boolean = false
-            private set
+    companion object {
 
         /** Unread story hashes the API listed that we do not appear to have locally yet.  */
         @JvmField
@@ -166,10 +169,5 @@ class UnreadsSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
                 val c: Int = storyHashQueue.size
                 return if (c < 1) " " else " $c "
             }
-
-        @JvmStatic
-        fun doMetadata() {
-            isDoMetadata = true
-        }
     }
 }

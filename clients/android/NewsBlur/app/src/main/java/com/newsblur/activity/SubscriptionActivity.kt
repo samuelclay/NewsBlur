@@ -99,6 +99,7 @@ class SubscriptionActivity : NbActivity() {
                 context = this,
                 apiManager = apiManager,
                 prefRepository = prefsRepo,
+                syncServiceState = syncServiceState,
                 scope = lifecycleScope,
         )
         subscriptionManager.startBillingConnection(subscriptionManagerListener)
