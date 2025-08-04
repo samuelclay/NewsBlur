@@ -34,6 +34,9 @@ class SubscriptionSyncService : JobService() {
     @Inject
     lateinit var prefsRepo: PrefsRepo
 
+    @Inject
+    lateinit var syncServiceState: SyncServiceState
+
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.d(this, "onStartJob")
         if (!prefsRepo.hasCookie()) {
@@ -44,6 +47,7 @@ class SubscriptionSyncService : JobService() {
         val subscriptionManager = SubscriptionManagerImpl(
                 context = this@SubscriptionSyncService,
                 apiManager = apiManager,
+                syncServiceState = syncServiceState,
                 prefRepository = prefsRepo,
         )
         subscriptionManager.startBillingConnection(object : SubscriptionsListener {

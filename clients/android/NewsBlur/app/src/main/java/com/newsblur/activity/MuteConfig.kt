@@ -14,7 +14,6 @@ import com.newsblur.activity.MuteConfigAdapter.FeedStateChangedListener
 import com.newsblur.databinding.ActivityMuteConfigBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.Feed
-import com.newsblur.service.NBSyncService
 import com.newsblur.service.NbSyncManager.UPDATE_STATUS
 import com.newsblur.util.AppConstants
 import com.newsblur.util.EdgeToEdgeUtil.applyView
@@ -99,7 +98,7 @@ class MuteConfig : FeedChooser(), FeedStateChangedListener {
     override fun handleUpdate(updateType: Int) {
         super.handleUpdate(updateType)
         if ((updateType and UPDATE_STATUS) != 0) {
-            val syncStatus = NBSyncService.getSyncStatusMessage(this, false)
+            val syncStatus = syncServiceState.getSyncStatusMessage()
             if (syncStatus != null) {
                 binding.textSyncStatus.text = syncStatus
                 binding.textSyncStatus.visibility = View.VISIBLE

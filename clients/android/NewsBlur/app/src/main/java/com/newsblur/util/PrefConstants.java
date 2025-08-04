@@ -28,6 +28,7 @@ public class PrefConstants {
 
 	public static final String IS_PREMIUM = "is_premium";
 	public static final String IS_ARCHIVE = "is_archive";
+    public static final String IS_STAFF = "is_staff";
     // don't update key value for backward compat
 	public static final String SUBSCRIPTION_EXPIRE = "premium_expire";
 

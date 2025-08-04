@@ -13,6 +13,8 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.databinding.LoginasDialogBinding
 import com.newsblur.network.APIManager
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.service.SyncService
+import com.newsblur.service.SyncServiceState
 import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -29,6 +31,9 @@ class LoginAsDialogFragment : DialogFragment() {
     @Inject
     lateinit var prefsRepo: PrefsRepo
 
+    @Inject
+    lateinit var syncServiceState: SyncServiceState
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(R.string.loginas_title)
@@ -42,6 +47,8 @@ class LoginAsDialogFragment : DialogFragment() {
                     doInBackground = {
                         val result = apiManager.loginAs(username)
                         if (result) {
+                            SyncService.stop(requireContext())
+                            syncServiceState.clearState()
                             prefsRepo.clearPrefsAndDbForLoginAs(dbHelper)
                             apiManager.updateUserProfile()
                         }

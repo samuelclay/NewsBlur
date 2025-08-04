@@ -31,7 +31,7 @@ import com.newsblur.di.IconLoader;
 import com.newsblur.di.ThumbnailLoader;
 import com.newsblur.domain.Story;
 import com.newsblur.preference.PrefsRepo;
-import com.newsblur.service.NBSyncService;
+import com.newsblur.service.SyncServiceState;
 import com.newsblur.util.CursorFilters;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
@@ -67,6 +67,9 @@ public class ItemSetFragment extends NbFragment {
 
     @Inject
     PrefsRepo prefsRepo;
+
+    @Inject
+    SyncServiceState syncServiceState;
 
     private static final String BUNDLE_GRIDSTATE = "gridstate";
 
@@ -242,9 +245,12 @@ public class ItemSetFragment extends NbFragment {
 
     protected void triggerRefresh(int desiredStoryCount, Integer totalSeen) {
         // ask the sync service for as many stories as we want
-        boolean gotSome = NBSyncService.requestMoreForFeed(getFeedSet(), desiredStoryCount, totalSeen);
-        // if the service thinks it can get more, or if we haven't even seen a cursor yet, start the service
-        if (gotSome || (totalSeen == null)) triggerSync();
+        FeedSet fs = getFeedSet();
+        if (fs != null) {
+            boolean gotSome = syncServiceState.requestMoreForFeed(fs, desiredStoryCount, totalSeen);
+            // if the service thinks it can get more, or if we haven't even seen a cursor yet, start the service
+            if (gotSome || (totalSeen == null)) triggerSync();
+        }
     }
 
     /**
@@ -333,12 +339,12 @@ public class ItemSetFragment extends NbFragment {
             return;
         }
 
-        if ( (!cursorSeenYet) || NBSyncService.isFeedSetSyncing(getFeedSet(), getActivity()) ) {
+        if ( (!cursorSeenYet) || syncServiceState.isFeedSetSyncing(getFeedSet()) ) {
             binding.emptyViewText.setText(R.string.empty_list_view_loading);
             binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.ITALIC);
             binding.emptyViewImage.setVisibility(View.INVISIBLE);
 
-            if (NBSyncService.isFeedSetStoriesFresh(getFeedSet())) {
+            if (syncServiceState.isFeedSetStoriesFresh(getFeedSet())) {
                 binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
                 bottomProgressView.setVisibility(View.VISIBLE);
             } else {
@@ -358,7 +364,7 @@ public class ItemSetFragment extends NbFragment {
 
             binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
             bottomProgressView.setVisibility(View.INVISIBLE);
-            if (cursorSeenYet && NBSyncService.isFeedSetExhausted(getFeedSet()) && (adapter.getRawStoryCount() > 0)) {
+            if (cursorSeenYet && syncServiceState.isFeedSetExhausted(getFeedSet()) && (adapter.getRawStoryCount() > 0)) {
                 fleuronBinding.containerSubscribe.setVisibility(View.GONE);
                 fleuronBinding.getRoot().setVisibility(View.VISIBLE);
             }

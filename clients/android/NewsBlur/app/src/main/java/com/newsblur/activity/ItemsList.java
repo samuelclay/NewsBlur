@@ -29,7 +29,7 @@ import com.newsblur.databinding.ActivityItemslistBinding;
 import com.newsblur.delegate.ItemListContextMenuDelegate;
 import com.newsblur.delegate.ItemListContextMenuDelegateImpl;
 import com.newsblur.fragment.ItemSetFragment;
-import com.newsblur.service.NBSyncService;
+import com.newsblur.service.SyncServiceState;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.EdgeToEdgeUtil;
 import com.newsblur.util.FeedSet;
@@ -56,6 +56,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Inject
     FeedUtils feedUtils;
 
+    @Inject
+    SyncServiceState syncServiceState;
+
     public static final String EXTRA_FEED_SET = "feed_set";
     public static final String EXTRA_STORY_HASH = "story_hash";
     public static final String EXTRA_WIDGET_STORY = "widget_story";
@@ -80,13 +83,13 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Override
     protected void onCreate(Bundle bundle) {
         Trace.beginSection("ItemsListOnCreate");
-		super.onCreate(bundle);
+        super.onCreate(bundle);
 
         PendingTransitionUtils.overrideEnterTransition(this);
 
-        contextMenuDelegate = new ItemListContextMenuDelegateImpl(this, feedUtils, prefsRepo);
+        contextMenuDelegate = new ItemListContextMenuDelegateImpl(this, feedUtils, prefsRepo, syncServiceState);
         viewModel = new ViewModelProvider(this).get(ItemListViewModel.class);
-		fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
+        fs = (FeedSet) getIntent().getSerializableExtra(EXTRA_FEED_SET);
         sessionDataSource = (SessionDataSource) getIntent().getSerializableExtra(EXTRA_SESSION_DATA);
 
         // this is not strictly necessary, since our first refresh with the fs will swap in
@@ -108,14 +111,14 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         binding = ActivityItemslistBinding.inflate(getLayoutInflater());
         EdgeToEdgeUtil.applyView(this, binding);
 
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		itemSetFragment = (ItemSetFragment) fragmentManager.findFragmentByTag(ItemSetFragment.class.getName());
-		if (itemSetFragment == null) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        itemSetFragment = (ItemSetFragment) fragmentManager.findFragmentByTag(ItemSetFragment.class.getName());
+        if (itemSetFragment == null) {
             itemSetFragment = ItemSetFragment.newInstance();
-			FragmentTransaction transaction = fragmentManager.beginTransaction();
-			transaction.add(R.id.activity_itemlist_container, itemSetFragment, ItemSetFragment.class.getName());
-			transaction.commit();
-		}
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.add(R.id.activity_itemlist_container, itemSetFragment, ItemSetFragment.class.getName());
+            transaction.commit();
+        }
 
         String activeSearchQuery;
         if (bundle != null) {
@@ -126,7 +129,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (activeSearchQuery != null) {
             binding.itemlistSearchQuery.setText(activeSearchQuery);
             binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
-        } else if (getIntent().getBooleanExtra(EXTRA_VISIBLE_SEARCH, false)){
+        } else if (getIntent().getBooleanExtra(EXTRA_VISIBLE_SEARCH, false)) {
             binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
             binding.itemlistSearchQuery.requestFocus();
         }
@@ -142,12 +145,12 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 if ((keyCode == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
                     checkSearchQuery();
                     return true;
-                }   
+                }
                 return false;
             }
         });
         Trace.endSection();
-	}
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -165,7 +168,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Override
     protected void onResume() {
         super.onResume();
-        if (NBSyncService.isHousekeepingRunning()) finish();
+//        if (NBSyncService.isHousekeepingRunning()) finish(); // TODO
         updateStatusIndicators();
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
@@ -175,37 +178,37 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Override
     protected void onPause() {
         super.onPause();
-        NBSyncService.addRecountCandidates(fs);
+        syncServiceState.addRecountCandidate(fs);
     }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		return contextMenuDelegate.onCreateMenuOptions(menu, getMenuInflater(), fs);
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return contextMenuDelegate.onCreateMenuOptions(menu, getMenuInflater(), fs);
+    }
 
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         boolean showSavedSearch = !TextUtils.isEmpty(binding.itemlistSearchQuery.getText());
         return contextMenuDelegate.onPrepareMenuOptions(menu, fs, showSavedSearch);
     }
 
     @Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         return contextMenuDelegate.onOptionsItemSelected(item, itemSetFragment, fs, binding.itemlistSearchQuery, getSaveSearchFeedId());
-	}
+    }
 
     @Override
-	public void handleUpdate(int updateType) {
+    public void handleUpdate(int updateType) {
         if ((updateType & UPDATE_REBUILD) != 0) {
             finish();
         }
         if ((updateType & UPDATE_STATUS) != 0) {
             updateStatusIndicators();
         }
-		if ((updateType & UPDATE_STORY) != 0) {
+        if ((updateType & UPDATE_STORY) != 0) {
             if (itemSetFragment != null) {
-			    itemSetFragment.hasUpdated();
+                itemSetFragment.hasUpdated();
             }
         }
     }
@@ -233,8 +236,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     private void updateStatusIndicators() {
         if (binding.itemlistSyncStatus != null) {
-            String syncStatus = NBSyncService.getSyncStatusMessage(this, true);
-            if (syncStatus != null)  {
+            String syncStatus = syncServiceState.getSyncStatusMessage(); // TODO
+            if (syncStatus != null) {
                 if (AppConstants.VERBOSE_LOG) {
                     syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
                 }
@@ -268,27 +271,27 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     }
 
     private void updateFleuron(boolean requiresPremium) {
-	    FragmentTransaction transaction = getSupportFragmentManager()
+        FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
 
-	    if (requiresPremium) {
-	        transaction.hide(itemSetFragment);
+        if (requiresPremium) {
+            transaction.hide(itemSetFragment);
             binding.footerFleuron.textSubscription.setText(R.string.premium_subscribers_search);
             binding.footerFleuron.containerSubscribe.setVisibility(View.VISIBLE);
             binding.footerFleuron.getRoot().setVisibility(View.VISIBLE);
             binding.footerFleuron.containerSubscribe.setOnClickListener(view -> UIUtils.startSubscriptionActivity(this));
         } else {
-	        transaction.show(itemSetFragment);
+            transaction.show(itemSetFragment);
             binding.footerFleuron.containerSubscribe.setVisibility(View.GONE);
             binding.footerFleuron.getRoot().setVisibility(View.GONE);
             binding.footerFleuron.containerSubscribe.setOnClickListener(null);
         }
-	    transaction.commit();
+        transaction.commit();
     }
 
     protected void restartReadingSession() {
-        NBSyncService.resetFetchState(fs);
+        syncServiceState.resetFetchState(fs);
         feedUtils.prepareReadingSession(fs, true);
         triggerSync();
         itemSetFragment.resetEmptyState();

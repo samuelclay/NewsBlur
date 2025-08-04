@@ -13,7 +13,6 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.fragment.*
 import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.preference.PrefsRepo
-import com.newsblur.service.NBSyncService
 import com.newsblur.util.ListTextSize
 import com.newsblur.util.ListTextSize.Companion.fromSize
 import com.newsblur.util.PrefConstants.ThemeValue
@@ -39,7 +38,7 @@ class MainContextMenuDelegateImpl(
         val menu = pm.menu
         pm.menuInflater.inflate(R.menu.main, menu)
 
-        if (NBSyncService.isStaff == true) {
+        if (prefsRepo.getIsStaff()) {
             menu.findItem(R.id.menu_loginas).isVisible = true
         }
 

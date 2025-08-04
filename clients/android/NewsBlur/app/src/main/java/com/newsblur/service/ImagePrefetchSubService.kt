@@ -1,7 +1,5 @@
 package com.newsblur.service
 
-import com.newsblur.service.ImagePrefetchService.Companion.StoryImageQueue
-import com.newsblur.service.ImagePrefetchService.Companion.ThumbnailQueue
 import com.newsblur.util.AppConstants
 import com.newsblur.util.Log
 import kotlinx.coroutines.coroutineScope
@@ -84,11 +82,11 @@ class ImagePrefetchSubService(delegate: SyncServiceDelegate) : SyncSubService(de
     }
 
     fun addStoryUrl(url: String?) {
-        url?.let { StoryImageQueue.add(it) }
+        url?.let { storyImageQueue.add(it) }
     }
 
     fun addThumbnailUrl(url: String?) {
-        url?.let { ThumbnailQueue.add(it) }
+        url?.let { thumbnailQueue.add(it) }
     }
 
     companion object {
