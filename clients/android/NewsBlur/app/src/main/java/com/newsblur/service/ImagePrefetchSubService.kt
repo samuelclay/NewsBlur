@@ -76,11 +76,6 @@ class ImagePrefetchSubService(delegate: SyncServiceDelegate) : SyncSubService(de
         }
     }
 
-    fun clear() {
-        storyImageQueue.clear()
-        thumbnailQueue.clear()
-    }
-
     fun addStoryUrl(url: String?) {
         url?.let { storyImageQueue.add(it) }
     }
@@ -98,8 +93,12 @@ class ImagePrefetchSubService(delegate: SyncServiceDelegate) : SyncSubService(de
         /** URLs of thumbnails for recently fetched stories that are candidates for prefetch.  */
         private val thumbnailQueue = ConcurrentLinkedQueue<String>()
 
-        @JvmStatic
         val pendingCount: Int
             get() = (storyImageQueue.size + thumbnailQueue.size)
+
+        fun clear() {
+            storyImageQueue.clear()
+            thumbnailQueue.clear()
+        }
     }
 }

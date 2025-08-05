@@ -98,7 +98,7 @@ class MuteConfig : FeedChooser(), FeedStateChangedListener {
     override fun handleUpdate(updateType: Int) {
         super.handleUpdate(updateType)
         if ((updateType and UPDATE_STATUS) != 0) {
-            val syncStatus = syncServiceState.getSyncStatusMessage()
+            val syncStatus = syncServiceState.getSyncStatusMessage(this, false)
             if (syncStatus != null) {
                 binding.textSyncStatus.text = syncStatus
                 binding.textSyncStatus.visibility = View.VISIBLE

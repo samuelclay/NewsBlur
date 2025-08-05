@@ -6,6 +6,7 @@ import com.newsblur.network.APIManager
 import com.newsblur.network.domain.StoriesResponse
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FileCache
+import com.newsblur.util.Log
 import com.newsblur.util.StateFilter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -32,6 +33,8 @@ interface SyncServiceDelegate {
     fun prefetchImages(response: StoriesResponse)
     fun isOrphanFeed(feedId: String): Boolean
     fun isDisabledFeed(feedId: String): Boolean
+    fun setServiceState(state: ServiceState)
+    fun setServiceStateIdleIf(state: ServiceState)
 }
 
 internal class SyncServiceDelegateImpl(
@@ -41,13 +44,13 @@ internal class SyncServiceDelegateImpl(
     override val subJob: Job = SupervisorJob(syncService.coroutineContext[Job])
     override val subScope: CoroutineScope = syncService + subJob
 
-    override val dbHelper: BlurDatabaseHelper = syncService.dbHelper
-    override val apiManager: APIManager = syncService.apiManager
-    override val prefsRepo: PrefsRepo = syncService.prefsRepo
-    override val storyImageCache: FileCache = syncService.storyImageCache
-    override val iconCache: FileCache = syncService.iconCache
-    override val thumbnailCache: FileCache = syncService.thumbnailCache
-    override val context: Context = syncService.applicationContext
+    override val dbHelper: BlurDatabaseHelper get() = syncService.dbHelper
+    override val apiManager: APIManager get() = syncService.apiManager
+    override val prefsRepo: PrefsRepo get() = syncService.prefsRepo
+    override val storyImageCache: FileCache get() = syncService.storyImageCache
+    override val iconCache: FileCache get() = syncService.iconCache
+    override val thumbnailCache: FileCache get() = syncService.thumbnailCache
+    override val context: Context get() = syncService.applicationContext
 
     override fun sendSyncUpdate(update: Int) {
         syncService.sendSyncUpdate(update)
@@ -62,16 +65,25 @@ internal class SyncServiceDelegateImpl(
     }
 
     override fun insertStories(response: StoriesResponse, stateFilter: StateFilter) {
-        syncService.insertStories(response, stateFilter)
+        Log.d(SyncService::class.java.name, "got stories from sub sync: " + response.stories.size)
+        dbHelper.insertStories(response, stateFilter, false)
     }
 
     override fun prefetchImages(response: StoriesResponse) {
         syncService.prefetchImages(response)
     }
 
-    override fun isOrphanFeed(feedId: String): Boolean =
-            syncService.isOrphanFeed(feedId)
+    override fun isOrphanFeed(feedId: String): Boolean = syncService.isOrphanFeed(feedId)
 
-    override fun isDisabledFeed(feedId: String): Boolean =
-            syncService.isDisabledFeed(feedId)
+    override fun isDisabledFeed(feedId: String): Boolean = syncService.isDisabledFeed(feedId)
+
+    override fun setServiceState(state: ServiceState) {
+        syncService.syncServiceState.setServiceState(state)
+    }
+
+    override fun setServiceStateIdleIf(state: ServiceState) {
+        if (syncService.syncServiceState == state) {
+            syncService.syncServiceState.setServiceState(ServiceState.Idle)
+        }
+    }
 }

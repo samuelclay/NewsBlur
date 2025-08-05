@@ -44,6 +44,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
@@ -100,13 +102,7 @@ open class SyncService : JobService(), CoroutineScope {
      */
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.d(this, "onStartJob")
-        launch {
-            try {
-                sync()
-            } finally {
-                jobFinished(params, false)
-            }
-        }
+        launch { sync(); jobFinished(params, false) }
         return true // async
     }
 
@@ -121,6 +117,7 @@ open class SyncService : JobService(), CoroutineScope {
 
     override fun onStopJob(params: JobParameters?): Boolean {
         Log.d(this, "onStopJob")
+        syncServiceState.setServiceState(ServiceState.Idle)
         coroutineContext.cancel()
         return false
     }
@@ -130,21 +127,19 @@ open class SyncService : JobService(), CoroutineScope {
         Log.d(this, "onNetworkChanged")
     }
 
-    private suspend fun sync() {
+    private fun sync() {
         Log.d(this, "Starting primary sync")
+        ensureActive()
 
         housekeeping()
+        ensureActive()
 
         if (!NetworkUtils.isOnline(this)) {
             Log.d(this, "Skipping sync: device is offline")
             return
         }
 
-        // TODO revisit this check
-        if (!(isAppForeground ||
-                        prefsRepo.isEnableNotifications() ||
-                        prefsRepo.isBackgroundNetworkAllowed(this) ||
-                        hasActiveAppWidgets(this))) {
+        if (!(isAppForeground || prefsRepo.isEnableNotifications() || prefsRepo.isBackgroundNetworkAllowed(this) || hasActiveAppWidgets(this))) {
             Log.d(this.javaClass.name, "Skipping sync: app not active and network type not appropriate for background sync.")
             return
         }
@@ -180,10 +175,13 @@ open class SyncService : JobService(), CoroutineScope {
         pushNotifications()
 
         Log.d(this, "Finishing primary sync")
+
+        syncServiceState.setServiceState(ServiceState.Idle)
     }
 
     override fun onDestroy() {
         Log.d(this, "onDestroy")
+        syncServiceState.setServiceState(ServiceState.Idle)
         coroutineContext.cancel()
         super.onDestroy()
     }
@@ -195,7 +193,7 @@ open class SyncService : JobService(), CoroutineScope {
         try {
             val upgraded = prefsRepo.checkForUpgrade(this)
             if (upgraded) {
-//                NBSyncService.HousekeepingRunning = true
+                syncServiceState.setServiceState(ServiceState.Housekeeping)
                 sendSyncUpdate(UPDATE_STATUS or UPDATE_REBUILD)
 
                 // wipe DB on first background run after upgrading
@@ -216,7 +214,7 @@ open class SyncService : JobService(), CoroutineScope {
             if (isAppForeground) autoVac = false
 
             if (upgraded || autoVac) {
-//                NBSyncService.HousekeepingRunning = true
+                syncServiceState.setServiceState(ServiceState.Housekeeping)
                 sendSyncUpdate(UPDATE_STATUS)
                 Log.i(this.javaClass.name, "rebuilding DB . . .")
                 dbHelper.vacuum()
@@ -224,10 +222,7 @@ open class SyncService : JobService(), CoroutineScope {
                 prefsRepo.updateLastVacuumTime()
             }
         } finally {
-//            if (NBSyncService.HousekeepingRunning) {
-//                NBSyncService.HousekeepingRunning = false
             sendSyncUpdate(UPDATE_METADATA)
-//            }
         }
     }
 
@@ -240,7 +235,7 @@ open class SyncService : JobService(), CoroutineScope {
             syncServiceState.lastActionCount = c.count
             if (syncServiceState.lastActionCount < 1) return
 
-//            NBSyncService.ActionsRunning = true
+            syncServiceState.setServiceState(ServiceState.ActionsSync)
 
             val stateFilter = prefsRepo.getStateFilter()
 
@@ -288,7 +283,6 @@ open class SyncService : JobService(), CoroutineScope {
             }
         } finally {
             BlurDatabaseHelper.closeQuietly(c)
-//            NBSyncService.ActionsRunning = false
             sendSyncUpdate(UPDATE_STATUS)
         }
     }
@@ -315,7 +309,7 @@ open class SyncService : JobService(), CoroutineScope {
 
         Log.i(this.javaClass.name, "ready to sync feed list")
 
-//        FFSyncRunning = true // TODO remove?
+        syncServiceState.setServiceState(ServiceState.FolderFeedSync)
         sendSyncUpdate(UPDATE_STATUS)
 
         // there is an issue with feeds that have no folder or folders that list feeds that do not exist.  capture them for workarounds.
@@ -352,7 +346,7 @@ open class SyncService : JobService(), CoroutineScope {
             syncServiceState.clearExhaustedFeeds()
             syncServiceState.clearSeenFeedPages()
             syncServiceState.clearSeenFeedStories()
-            unreadsSubService.clear()
+            UnreadsSubService.clear()
             syncServiceState.clearRecountCandidates()
 
             syncServiceState.lastFFConnMillis = feedResponse.connTime
@@ -446,7 +440,6 @@ open class SyncService : JobService(), CoroutineScope {
             cleanupSubService.start()
             starredSubService.start()
         } finally {
-//            FFSyncRunning = false
             sendSyncUpdate(UPDATE_METADATA or UPDATE_STATUS)
         }
     }
@@ -504,17 +497,18 @@ open class SyncService : JobService(), CoroutineScope {
 
             val cursorFilters = CursorFilters(prefsRepo, fs)
 
-//            StorySyncRunning = true
+            syncServiceState.setServiceState(ServiceState.StorySync)
             sendSyncUpdate(UPDATE_STATUS)
 
-            while (totalStoriesSeen < syncServiceState.pendingFeedTarget) {
-                // this is a good heuristic for double-checking if we have left the story list
-                if (syncServiceState.doFlushRecounts) return
+            ensureActive()
+            while (isActive && totalStoriesSeen < syncServiceState.pendingFeedTarget) {
 
                 // bail if the active view has changed
                 if (fs != syncServiceState.pendingFeed) {
                     return
                 }
+
+                ensureActive()
 
                 pageNumber++
                 val apiResponse = apiManager.getStories(fs, pageNumber, cursorFilters.storyOrder, cursorFilters.readFilter, prefsRepo.getInfrequentCutoff())
@@ -544,17 +538,11 @@ open class SyncService : JobService(), CoroutineScope {
             }
             finished = true
         } finally {
-//            NBSyncService.StorySyncRunning = false
             sendSyncUpdate(UPDATE_STATUS)
             synchronized(syncServiceState.pendingFeedMutex) {
                 if (finished && fs == syncServiceState.pendingFeed) syncServiceState.pendingFeed = null
             }
         }
-    }
-
-    fun insertStories(apiResponse: StoriesResponse, stateFilter: StateFilter) {
-        Log.d(SyncService::class.java.name, "got stories from sub sync: " + apiResponse.stories.size)
-        dbHelper.insertStories(apiResponse, stateFilter, false)
     }
 
     private fun insertStories(apiResponse: StoriesResponse, fs: FeedSet, stateFilter: StateFilter) {
@@ -704,7 +692,7 @@ open class SyncService : JobService(), CoroutineScope {
         try {
             if (syncServiceState.recountCandidates.isEmpty()) return
 
-//            NBSyncService.RecountsRunning = true
+            syncServiceState.setServiceState(ServiceState.RecountsSync)
             sendSyncUpdate(UPDATE_STATUS)
 
             // of all candidate feeds that were touched, now check to see if any
@@ -768,11 +756,8 @@ open class SyncService : JobService(), CoroutineScope {
                 }
             }
         } finally {
-//            if (NBSyncService.RecountsRunning) {
-//                NBSyncService.RecountsRunning = false
             sendSyncUpdate(UPDATE_METADATA or UPDATE_STATUS)
-//            }
-            syncServiceState.doFeedsFolders = false
+            syncServiceState.doFlushRecounts = false
         }
     }
 
@@ -818,13 +803,6 @@ open class SyncService : JobService(), CoroutineScope {
     fun isOrphanFeed(feedId: String): Boolean = orphanFeedIds.contains(feedId)
 
     fun isDisabledFeed(feedId: String): Boolean = disabledFeedIds.contains(feedId)
-
-    fun clearState() {
-        syncServiceState.clearState()
-        originalTextSubService.clear()
-        unreadsSubService.clear()
-        imagePrefetchSubService.clear()
-    }
 
     companion object {
 
