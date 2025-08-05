@@ -7,21 +7,26 @@ import com.newsblur.util.FeedUtils.Companion.inferFeedId
 import com.newsblur.util.Log
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.isActive
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.regex.Pattern
 
 class OriginalTextSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate) {
 
     override suspend fun execute() = coroutineScope {
-        val hashes = storyHashes.toList()
+        setServiceState(ServiceState.OriginalTextSync)
 
-        hashes.chunked(AppConstants.ORIGINAL_TEXT_BATCH_SIZE).forEach { batch ->
-            ensureActive()
-            setServiceState(ServiceState.OriginalTextSync)
+        try {
+            while (isActive) {
+                val batch = storyHashes.take(AppConstants.ORIGINAL_TEXT_BATCH_SIZE)
 
-            fetchBatch(batch)
+                if (batch.isEmpty()) break
 
-            sendSyncUpdate(UPDATE_TEXT)
+                fetchBatch(batch)
+
+                sendSyncUpdate(UPDATE_TEXT)
+            }
+        } finally {
             setServiceStateIdleIf(ServiceState.OriginalTextSync)
         }
     }
