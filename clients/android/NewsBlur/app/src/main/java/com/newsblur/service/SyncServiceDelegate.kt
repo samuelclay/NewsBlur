@@ -8,15 +8,8 @@ import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FileCache
 import com.newsblur.util.Log
 import com.newsblur.util.StateFilter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.plus
 
 interface SyncServiceDelegate {
-
-    val subJob: Job
-    val subScope: CoroutineScope
 
     val dbHelper: BlurDatabaseHelper
     val apiManager: APIManager
@@ -40,9 +33,6 @@ interface SyncServiceDelegate {
 internal class SyncServiceDelegateImpl(
         private val syncService: SyncService,
 ) : SyncServiceDelegate {
-
-    override val subJob: Job = SupervisorJob(syncService.coroutineContext[Job])
-    override val subScope: CoroutineScope = syncService + subJob
 
     override val dbHelper: BlurDatabaseHelper get() = syncService.dbHelper
     override val apiManager: APIManager get() = syncService.apiManager
