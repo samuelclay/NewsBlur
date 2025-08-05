@@ -42,8 +42,10 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -78,10 +80,13 @@ open class SyncService : JobService(), CoroutineScope {
     @Inject
     lateinit var syncServiceState: SyncServiceState
 
+    private val serviceJob = SupervisorJob()
+    private var mainJob: Job? = null
+
     override val coroutineContext: CoroutineContext =
             CoroutineName("SyncService") +
                     Dispatchers.IO +
-                    SupervisorJob() +
+                    serviceJob +
                     CoroutineExceptionHandler { context, throwable ->
                         Log.e("SyncService", "Coroutine exception on context $context with $throwable")
                     }
@@ -102,7 +107,8 @@ open class SyncService : JobService(), CoroutineScope {
      */
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.d(this, "onStartJob")
-        launch { sync(); jobFinished(params, false) }
+        mainJob?.cancel()
+        mainJob = launch { sync(); jobFinished(params, false) }
         return true // async
     }
 
@@ -111,14 +117,16 @@ open class SyncService : JobService(), CoroutineScope {
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(this, "onStartCommand")
-        launch { sync() }
+        mainJob?.cancel()
+        mainJob = launch { sync() }
         return START_NOT_STICKY
     }
 
     override fun onStopJob(params: JobParameters?): Boolean {
         Log.d(this, "onStopJob")
         syncServiceState.setServiceState(ServiceState.Idle)
-        coroutineContext.cancel()
+        mainJob?.cancel()
+        mainJob = null
         return false
     }
 
@@ -127,21 +135,23 @@ open class SyncService : JobService(), CoroutineScope {
         Log.d(this, "onNetworkChanged")
     }
 
-    private fun sync() {
+    private suspend fun sync() = coroutineScope {
         Log.d(this, "Starting primary sync")
         ensureActive()
 
         housekeeping()
         ensureActive()
 
-        if (!NetworkUtils.isOnline(this)) {
+        if (!NetworkUtils.isOnline(this@SyncService)) {
             Log.d(this, "Skipping sync: device is offline")
-            return
+            return@coroutineScope
         }
 
-        if (!(isAppForeground || prefsRepo.isEnableNotifications() || prefsRepo.isBackgroundNetworkAllowed(this) || hasActiveAppWidgets(this))) {
+        if (!(isAppForeground || prefsRepo.isEnableNotifications() ||
+                        prefsRepo.isBackgroundNetworkAllowed(this@SyncService) ||
+                        hasActiveAppWidgets(this@SyncService))) {
             Log.d(this.javaClass.name, "Skipping sync: app not active and network type not appropriate for background sync.")
-            return
+            return@coroutineScope
         }
 
 
@@ -149,7 +159,7 @@ open class SyncService : JobService(), CoroutineScope {
         sendSyncUpdate(UPDATE_DB_READY)
 
         // async text requests might have been queued up and are being waiting on by the live UI. give them priority
-        originalTextSubService.start()
+        originalTextSubService.start(this)
 
         // first: catch up
         syncActions()
@@ -167,8 +177,8 @@ open class SyncService : JobService(), CoroutineScope {
         checkRecounts()
 
         // async story and image prefetch are lower priority and don't affect active reading, do them last
-        unreadsSubService.start()
-        imagePrefetchSubService.start()
+        unreadsSubService.start(this)
+        imagePrefetchSubService.start(this)
 
         // almost all notifications will be pushed after the unreadsService gets new stories, but double-check
         // here in case some made it through the feed sync loop first
@@ -436,9 +446,9 @@ open class SyncService : JobService(), CoroutineScope {
             Log.i(this.javaClass.name, "got feed list: " + syncServiceState.getSpeedInfo())
 
             unreadsSubService.doMetadata()
-            unreadsSubService.start()
-            cleanupSubService.start()
-            starredSubService.start()
+            unreadsSubService.start(this)
+            cleanupSubService.start(this)
+            starredSubService.start(this)
         } finally {
             sendSyncUpdate(UPDATE_METADATA or UPDATE_STATUS)
         }
@@ -655,7 +665,7 @@ open class SyncService : JobService(), CoroutineScope {
                 imagePrefetchSubService.addThumbnailUrl(story.thumbnailUrl)
             }
         }
-        imagePrefetchSubService.start()
+        imagePrefetchSubService.start(this)
     }
 
     /**
