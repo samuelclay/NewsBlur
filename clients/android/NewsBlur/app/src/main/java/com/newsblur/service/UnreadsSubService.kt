@@ -15,21 +15,23 @@ class UnreadsSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
         private set
 
     override suspend fun execute() = coroutineScope {
-        ensureActive()
-        if (isDoMetadata) {
-            syncUnreadList()
-            isDoMetadata = false
-        }
+        try {
+            ensureActive()
+            setServiceState(ServiceState.UnreadsSync)
 
-        ensureActive()
-        if (storyHashQueue.isNotEmpty()) {
-            getNewUnreadStories()
-            pushNotifications()
-        }
-    }
+            if (isDoMetadata) {
+                syncUnreadList()
+                isDoMetadata = false
+            }
 
-    fun clear() {
-        storyHashQueue.clear()
+            ensureActive()
+            if (storyHashQueue.isNotEmpty()) {
+                getNewUnreadStories()
+                pushNotifications()
+            }
+        } finally {
+            setServiceStateIdleIf(ServiceState.UnreadsSync)
+        }
     }
 
     private suspend fun syncUnreadList() = coroutineScope {
@@ -157,17 +159,19 @@ class UnreadsSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
     companion object {
 
         /** Unread story hashes the API listed that we do not appear to have locally yet.  */
-        @JvmField
         var storyHashQueue = ConcurrentLinkedQueue<String>()
 
         /**
          * Describe the number of unreads left to be synced or return an empty message (space padded).
          */
-        @JvmStatic
         val pendingCount: String
             get() {
                 val c: Int = storyHashQueue.size
                 return if (c < 1) " " else " $c "
             }
+
+        fun clear() {
+            storyHashQueue.clear()
+        }
     }
 }

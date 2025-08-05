@@ -8,6 +8,8 @@ class CleanupSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
     override suspend fun execute() {
         if (!prefsRepo.isTimeToCleanup()) return
 
+        setServiceState(ServiceState.CleanupSync)
+
         Log.d(this.javaClass.name, "cleaning up old stories")
         dbHelper.cleanupVeryOldStories()
         if (!prefsRepo.isKeepOldStories()) {
@@ -35,5 +37,7 @@ class CleanupSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
                 dbHelper.getAllStoryThumbnails(),
                 prefsRepo.getMaxCachedAgeMillis(),
         )
+
+        setServiceStateIdleIf(ServiceState.CleanupSync)
     }
 }

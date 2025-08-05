@@ -168,7 +168,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
     @Override
     protected void onResume() {
         super.onResume();
-//        if (NBSyncService.isHousekeepingRunning()) finish(); // TODO
+        if (syncServiceState.isHousekeepingRunning()) finish();
         updateStatusIndicators();
         // Reading activities almost certainly changed the read/unread state of some stories. Ensure
         // we reflect those changes promptly.
@@ -236,7 +236,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 
     private void updateStatusIndicators() {
         if (binding.itemlistSyncStatus != null) {
-            String syncStatus = syncServiceState.getSyncStatusMessage(); // TODO
+            String syncStatus = syncServiceState.getSyncStatusMessage(this, true);
             if (syncStatus != null) {
                 if (AppConstants.VERBOSE_LOG) {
                     syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);

@@ -1,9 +1,13 @@
 package com.newsblur.service
 
+import android.content.Context
+import com.newsblur.R
 import com.newsblur.database.BlurDatabaseHelper
+import com.newsblur.util.AppConstants
 import com.newsblur.util.FeedSet
 import com.newsblur.util.Log
 import com.newsblur.util.ReadingAction
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.concurrent.Volatile
@@ -29,7 +33,6 @@ interface SyncServiceState {
     var resetFeed: FeedSet?
 
     var doFeedsFolders: Boolean
-    var ffsyncRunning: Boolean
     var doFlushRecounts: Boolean
     var authFails: Int
 
@@ -91,7 +94,7 @@ interface SyncServiceState {
     fun getSpeedInfo(): String
     fun getPendingInfo(): String
 
-    fun getSyncStatusMessage(): String?
+    fun getSyncStatusMessage(context: Context, brief: Boolean): String?
 
     fun requestMoreForFeed(fs: FeedSet, desiredStoryCount: Int, callerSeen: Int?): Boolean
 
@@ -115,10 +118,17 @@ interface SyncServiceState {
 
     fun clearFollowupActions()
     fun addFollowupAction(ra: ReadingAction)
+
+    fun setServiceState(state: ServiceState)
+    fun isFeedFolderSyncRunning(): Boolean
+    fun isHousekeepingRunning(): Boolean
+    fun isFeedCountSyncRunning(): Boolean
 }
 
 @Singleton
 class DefaultSyncServiceState @Inject constructor() : SyncServiceState {
+
+    private val serviceState = MutableStateFlow<ServiceState>(ServiceState.Idle)
 
     override var lastApiFailure: Long = 0L
     override var lastActionCount: Int = 0
@@ -137,8 +147,6 @@ class DefaultSyncServiceState @Inject constructor() : SyncServiceState {
 
     @Volatile
     override var authFails: Int = 0
-
-    override var ffsyncRunning: Boolean = false
 
     private val _exhaustedFeeds = mutableSetOf<FeedSet>()
     private val _feedPagesSeen = mutableMapOf<FeedSet, Int>()
@@ -164,6 +172,10 @@ class DefaultSyncServiceState @Inject constructor() : SyncServiceState {
 
     override val pendingFeedMutex: Any = Any()
     override val resetFeedMutex: Any = Any()
+
+    override fun setServiceState(state: ServiceState) {
+        serviceState.value = state
+    }
 
     /**
      * Force a refresh of feed/folder data on the next sync
@@ -217,11 +229,33 @@ class DefaultSyncServiceState @Inject constructor() : SyncServiceState {
         append(" post:").append(_followupActions.size)
     }.toString()
 
-    override fun getSyncStatusMessage(): String? {
-        // TODO
-        return null
-    }
+    override fun getSyncStatusMessage(context: Context, brief: Boolean): String? = when (val state = serviceState.value) {
+        is ServiceState.Housekeeping -> context.resources.getString(R.string.sync_status_housekeeping)
+        is ServiceState.FolderFeedSync -> context.resources.getString(R.string.sync_status_ffsync)
+        is ServiceState.CleanupSync -> context.resources.getString(R.string.sync_status_cleanup)
+        is ServiceState.StarredSync -> context.resources.getString(R.string.sync_status_starred)
+        else -> {
+            if (brief && !AppConstants.VERBOSE_LOG) null
+            when (state) {
+                is ServiceState.ActionsSync -> String.format(context.resources.getString(R.string.sync_status_actions), lastActionCount)
+                is ServiceState.RecountsSync -> context.resources.getString(R.string.sync_status_recounts)
+                is ServiceState.StorySync -> context.resources.getString(R.string.sync_status_stories)
+                is ServiceState.UnreadsSync -> takeIf { UnreadsSubService.pendingCount.isNotBlank() }?.let {
+                    String.format(context.resources.getString(R.string.sync_status_unreads), UnreadsSubService.pendingCount)
+                }
 
+                is ServiceState.OriginalTextSync -> takeIf { OriginalTextSubService.pendingCount > 0 }?.let {
+                    String.format(context.resources.getString(R.string.sync_status_text), OriginalTextSubService.pendingCount)
+                }
+
+                is ServiceState.ImagePrefetchSync -> takeIf { ImagePrefetchSubService.pendingCount > 0 }?.let {
+                    String.format(context.resources.getString(R.string.sync_status_images), ImagePrefetchSubService.pendingCount)
+                }
+
+                else -> null
+            }
+        }
+    }
 
     override fun requestMoreForFeed(fs: FeedSet, desiredStoryCount: Int, callerSeen: Int?): Boolean {
         synchronized(pendingFeedMutex) {
@@ -265,6 +299,10 @@ class DefaultSyncServiceState @Inject constructor() : SyncServiceState {
         _exhaustedFeeds.clear()
         _feedPagesSeen.clear()
         _feedStoriesSeen.clear()
+
+        OriginalTextSubService.clear()
+        UnreadsSubService.clear()
+        ImagePrefetchSubService.clear()
     }
 
     override fun clearRecountCandidates() {
@@ -318,4 +356,27 @@ class DefaultSyncServiceState @Inject constructor() : SyncServiceState {
     override fun addRecountCandidates(impactedFeeds: Set<FeedSet>) {
         _recountCandidates.addAll(impactedFeeds)
     }
+
+    override fun isFeedFolderSyncRunning(): Boolean = isHousekeepingRunning() ||
+            serviceState.value is ServiceState.FolderFeedSync
+
+    override fun isHousekeepingRunning(): Boolean = serviceState.value is ServiceState.Housekeeping
+
+    override fun isFeedCountSyncRunning(): Boolean =
+            isFeedFolderSyncRunning() || serviceState.value is ServiceState.RecountsSync
+}
+
+interface ServiceState {
+    data object Idle : ServiceState
+    data object Housekeeping : ServiceState
+    data object ActionsSync : ServiceState
+    data object FolderFeedSync : ServiceState
+    data object StorySync : ServiceState
+    data object RecountsSync : ServiceState
+
+    data object CleanupSync : ServiceState
+    data object StarredSync : ServiceState
+    data object UnreadsSync : ServiceState
+    data object OriginalTextSync : ServiceState
+    data object ImagePrefetchSync : ServiceState
 }

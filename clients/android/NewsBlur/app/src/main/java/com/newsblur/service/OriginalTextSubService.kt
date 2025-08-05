@@ -13,6 +13,8 @@ import java.util.regex.Pattern
 class OriginalTextSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate) {
 
     override suspend fun execute() = coroutineScope {
+        setServiceState(ServiceState.OriginalTextSync)
+
         while (true) {
             ensureActive()
             val batch = mutableListOf<String>()
@@ -25,12 +27,9 @@ class OriginalTextSubService(delegate: SyncServiceDelegate) : SyncSubService(del
 
             fetchBatch(batch)
 
+            setServiceStateIdleIf(ServiceState.OriginalTextSync)
             sendSyncUpdate(UPDATE_TEXT)
         }
-    }
-
-    fun clear() {
-        storyHashes.clear()
     }
 
     private suspend fun fetchBatch(batch: List<String>) = coroutineScope {
@@ -77,6 +76,10 @@ class OriginalTextSubService(delegate: SyncServiceDelegate) : SyncSubService(del
         private val storyHashes = ConcurrentLinkedQueue<String>()
 
         fun addHash(hash: String) = storyHashes.add(hash)
+
+        fun clear() {
+            storyHashes.clear()
+        }
 
         val pendingCount get() = storyHashes.size
     }

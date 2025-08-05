@@ -273,7 +273,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
      */
     public void updateFeedCount(int feedCount) {
         if (feedCount < 1) {
-            if (/*syncServiceState.isFeedCountSyncRunning() ||*/ (!folderFeedList.firstCursorSeenYet)) { // TODO
+            if (syncServiceState.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
                 binding.emptyViewImage.setVisibility(View.INVISIBLE);
                 binding.emptyViewText.setVisibility(View.INVISIBLE);
             } else {
@@ -294,9 +294,9 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void updateStatusIndicators() {
-//        binding.content.setRefreshing(syncServiceState.isFeedFolderSyncRunning()); // TODO
+        binding.content.setRefreshing(syncServiceState.isFeedFolderSyncRunning());
 
-        String syncStatus = syncServiceState.getSyncStatusMessage(); // TODO
+        String syncStatus = syncServiceState.getSyncStatusMessage(this, false);
         if (syncStatus != null) {
             if (AppConstants.VERBOSE_LOG) {
                 syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
