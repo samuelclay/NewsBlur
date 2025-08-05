@@ -165,6 +165,7 @@ class UnreadsService(parent: NBSyncService) : SubService(parent, NBScope) {
         var activelyRunning: Boolean = false
 
         @Volatile
+        @JvmStatic
         var isDoMetadata: Boolean = false
             private set
 
