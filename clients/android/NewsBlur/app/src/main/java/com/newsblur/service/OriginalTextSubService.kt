@@ -13,22 +13,16 @@ import java.util.regex.Pattern
 class OriginalTextSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate) {
 
     override suspend fun execute() = coroutineScope {
-        setServiceState(ServiceState.OriginalTextSync)
+        val hashes = storyHashes.toList()
 
-        while (true) {
+        hashes.chunked(AppConstants.ORIGINAL_TEXT_BATCH_SIZE).forEach { batch ->
             ensureActive()
-            val batch = mutableListOf<String>()
-            for (hash in storyHashes) {
-                if (batch.size >= AppConstants.ORIGINAL_TEXT_BATCH_SIZE) break
-                batch += hash
-            }
-
-            if (batch.isEmpty()) return@coroutineScope
+            setServiceState(ServiceState.OriginalTextSync)
 
             fetchBatch(batch)
 
-            setServiceStateIdleIf(ServiceState.OriginalTextSync)
             sendSyncUpdate(UPDATE_TEXT)
+            setServiceStateIdleIf(ServiceState.OriginalTextSync)
         }
     }
 
