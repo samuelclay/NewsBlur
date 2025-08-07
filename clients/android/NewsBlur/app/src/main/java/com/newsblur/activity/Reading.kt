@@ -752,9 +752,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
     private fun overlayTextClick() {
         val item = readingFragment ?: return
-        lifecycleScope.executeAsyncTask(
-                doInBackground = { item.switchSelectedViewMode() }
-        )
+        item.switchSelectedViewMode()
     }
 
     private val readingFragment: ReadingItemFragment?

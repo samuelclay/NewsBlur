@@ -111,8 +111,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     /** The text-mode story HTML, as retrieved via the secondary original text API.  */
     private var originalText: String? = null
-    private var imageAltTexts: HashMap<String, String>? = null
-    private var imageUrlRemaps: HashMap<String, String>? = null
+    private val imageAltTexts = mutableMapOf<String, String?>()
+    private val imageUrlRemaps = mutableMapOf<String, String?>()
     private var sourceUserId: String? = null
     private var contentHash = 0
 
@@ -124,6 +124,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     private var isLoadFinished = false
     private var savedScrollPosRel = 0f
     private val webViewContentMutex = Any()
+    private val loadLock = Any()
 
     private lateinit var binding: FragmentReadingitemBinding
     private lateinit var readingItemActionsBinding: ReadingItemActionsBinding
@@ -231,9 +232,9 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             // as anchors, not images, and may not point to the corresponding image URL.
             var imageURL = result.extra
             imageURL = imageURL!!.replace("file://", "")
-            val mappedURL = imageUrlRemaps!![imageURL]
+            val mappedURL = imageUrlRemaps[imageURL]
             val finalURL: String = mappedURL ?: imageURL
-            val altText = imageAltTexts!![finalURL]
+            val altText = imageAltTexts[finalURL]
             val builder = AlertDialog.Builder(requireActivity())
             builder.setTitle(finalURL)
             if (altText != null) {
@@ -321,6 +322,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             openBrowser()
             true
         }
+
         R.id.menu_reading_sharenewsblur -> {
             var sourceUserId: String? = null
             if (fs!!.singleSocialFeed != null) sourceUserId = fs!!.singleSocialFeed.key
@@ -328,74 +330,92 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             newFragment.show(requireActivity().supportFragmentManager, "dialog")
             true
         }
+
         R.id.menu_send_story -> {
             feedUtils.sendStoryUrl(story, requireContext())
             true
         }
+
         R.id.menu_send_story_full -> {
             feedUtils.sendStoryFull(story, requireContext())
             true
         }
+
         R.id.menu_shortcuts -> {
             showStoryShortcuts()
             true
         }
+
         R.id.menu_text_size_xs -> {
             setTextSizeStyle(ReadingTextSize.XS)
             true
         }
+
         R.id.menu_text_size_s -> {
             setTextSizeStyle(ReadingTextSize.S)
             true
         }
+
         R.id.menu_text_size_m -> {
             setTextSizeStyle(ReadingTextSize.M)
             true
         }
+
         R.id.menu_text_size_l -> {
             setTextSizeStyle(ReadingTextSize.L)
             true
         }
+
         R.id.menu_text_size_xl -> {
             setTextSizeStyle(ReadingTextSize.XL)
             true
         }
+
         R.id.menu_text_size_xxl -> {
             setTextSizeStyle(ReadingTextSize.XXL)
             true
         }
+
         R.id.menu_font_anonymous -> {
             setReadingFont(getString(R.string.anonymous_pro_font_prefvalue))
             true
         }
+
         R.id.menu_font_chronicle -> {
             setReadingFont(getString(R.string.chronicle_font_prefvalue))
             true
         }
+
         R.id.menu_font_default -> {
             setReadingFont(getString(R.string.default_font_prefvalue))
             true
         }
+
         R.id.menu_font_gotham -> {
             setReadingFont(getString(R.string.gotham_narrow_font_prefvalue))
             true
         }
+
         R.id.menu_font_noto_sand -> {
             setReadingFont(getString(R.string.noto_sans_font_prefvalue))
             true
         }
+
         R.id.menu_font_noto_serif -> {
             setReadingFont(getString(R.string.noto_serif_font_prefvalue))
             true
         }
+
         R.id.menu_font_open_sans -> {
             setReadingFont(getString(R.string.open_sans_condensed_font_prefvalue))
             true
         }
+
         R.id.menu_font_roboto -> {
             setReadingFont(getString(R.string.roboto_font_prefvalue))
             true
         }
+
         R.id.menu_reading_save -> {
             if (story!!.starred) {
                 feedUtils.setStorySaved(story!!, false, requireContext(), null)
@@ -404,30 +424,36 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             }
             true
         }
+
         R.id.menu_reading_markunread -> {
             feedUtils.markStoryUnread(story!!, requireContext())
             true
         }
+
         R.id.menu_theme_auto -> {
             prefsRepo.setSelectedTheme(ThemeValue.AUTO)
             UIUtils.restartActivity(requireActivity())
             true
         }
+
         R.id.menu_theme_light -> {
             prefsRepo.setSelectedTheme(ThemeValue.LIGHT)
             UIUtils.restartActivity(requireActivity())
             true
         }
+
         R.id.menu_theme_dark -> {
             prefsRepo.setSelectedTheme(ThemeValue.DARK)
             UIUtils.restartActivity(requireActivity())
             true
         }
+
         R.id.menu_theme_black -> {
             prefsRepo.setSelectedTheme(ThemeValue.BLACK)
             UIUtils.restartActivity(requireActivity())
             true
         }
+
         R.id.menu_intel -> {
             // check against training on feedless stories
             if (story!!.feedId != "0") {
@@ -435,6 +461,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             }
             true
         }
+
         R.id.menu_go_to_feed -> {
             val feed = dbHelper.getFeed(story!!.feedId)
             feed?.let {
@@ -443,6 +470,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             }
             true
         }
+
         else -> {
             super.onOptionsItemSelected(item)
         }
@@ -595,6 +623,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                         chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.tag_green_text))
                         chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_up_green)
                     }
+
                     Classifier.DISLIKE -> {
                         chip.setChipBackgroundColorResource(R.color.tag_red)
                         chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.tag_red_text))
@@ -685,11 +714,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     }
 
     fun viewModeChanged() {
-        synchronized(selectedViewMode!!) {
-            selectedViewMode = prefsRepo.getDefaultViewModeForFeed(story!!.feedId)
-        }
-        // these can come from async tasks
-        activity?.runOnUiThread { reloadStoryContent() }
+        selectedViewMode = prefsRepo.getDefaultViewModeForFeed(story!!.feedId)
+        reloadStoryContent()
     }
 
     private fun reloadStoryContent() {
@@ -710,6 +736,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                     binding.readingTextmodefailed.visibility = View.VISIBLE
                     needStoryContent = true
                 }
+
                 originalText == null -> {
                     binding.readingTextloading.visibility = View.VISIBLE
                     enableProgress(true)
@@ -717,8 +744,9 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                     // still show the story mode version, as the text mode one may take some time
                     needStoryContent = true
                 }
+
                 else -> {
-                    setupWebview(originalText!!)
+                    setupWebview(originalText!!) // TODO extract images
                     onContentLoadFinished()
                 }
             }
@@ -728,7 +756,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             if (storyContent == null) {
                 loadStoryContent()
             } else {
-                setupWebview(storyContent!!)
+                setupWebview(storyContent!!) // TODO extract images
                 onContentLoadFinished()
             }
         }
@@ -849,26 +877,21 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         // sometimes we get called before the activity is ready. abort, since we will get a refresh when
         // the cursor loads
         activity?.let {
-            it.runOnUiThread { _setupWebview(storyText) }
+            _setupWebview(storyText)
         }
     }
 
     private fun _setupWebview(storyTextString: String) {
-        var storyText = storyTextString
-        if (activity == null) {
-            // this method gets called by async UI bits that might hold stale fragment references with no assigned
-            // activity.  If this happens, just abort the call.
-            return
-        }
         synchronized(webViewContentMutex) {
-            // this method might get called repeatedly despite no content change, which is expensive
+
+            var storyText = storyTextString
             val contentHash = storyText.hashCode()
             if (this.contentHash == contentHash) return
             this.contentHash = contentHash
 
-            sniffAltTexts(storyText)
+            sniffAltTexts(storyText)// TODO run off the main thread
 
-            storyText = swapInOfflineImages(storyText)
+            storyText = swapInOfflineImages(storyText) // TODO run off the main thread
             val currentSize = prefsRepo.getReadingTextSize()
             val font = prefsRepo.getFont()
             val themeValue = prefsRepo.getSelectedTheme()
@@ -879,24 +902,27 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" />")
             when (themeValue) {
                 ThemeValue.LIGHT -> {
-                    //                builder.append("<meta name=\"color-scheme\" content=\"light\"/>");
-                    //                builder.append("<meta name=\"supported-color-schemes\" content=\"light\"/>");
                     builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />")
                 }
+
                 ThemeValue.DARK -> {
                     builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\" />")
                 }
+
                 ThemeValue.BLACK -> {
                     builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"black_reading.css\" />")
                 }
+
                 ThemeValue.AUTO -> {
                     when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
                         Configuration.UI_MODE_NIGHT_YES -> {
                             builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\" />")
                         }
+
                         Configuration.UI_MODE_NIGHT_NO -> {
                             builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />")
                         }
+
                         Configuration.UI_MODE_NIGHT_UNDEFINED -> {
                             builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />")
                         }
@@ -917,29 +943,29 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         //   NOTE: if doing this via regex has a smell, you have a good nose!  This method is far from perfect
         //   and may miss valid cases or trucate tags, but it works for popular feeds (read: XKCD) and doesn't
         //   require us to import a proper parser lib of hundreds of kilobytes just for this one feature.
-        imageAltTexts = HashMap()
+        imageAltTexts.clear()
         // sniff for alts first
         var imgTagMatcher = altSniff1.matcher(html)
         while (imgTagMatcher.find()) {
-            imageAltTexts!![imgTagMatcher.group(2)] = imgTagMatcher.group(4)
+            imageAltTexts[imgTagMatcher.group(2)] = imgTagMatcher.group(4)
         }
         imgTagMatcher = altSniff2.matcher(html)
         while (imgTagMatcher.find()) {
-            imageAltTexts!![imgTagMatcher.group(4)] = imgTagMatcher.group(2)
+            imageAltTexts[imgTagMatcher.group(4)] = imgTagMatcher.group(2)
         }
         // then sniff for 'title' tags, so they will overwrite alts and take precedence
         imgTagMatcher = altSniff3.matcher(html)
         while (imgTagMatcher.find()) {
-            imageAltTexts!![imgTagMatcher.group(2)] = imgTagMatcher.group(4)
+            imageAltTexts[imgTagMatcher.group(2)] = imgTagMatcher.group(4)
         }
         imgTagMatcher = altSniff4.matcher(html)
         while (imgTagMatcher.find()) {
-            imageAltTexts!![imgTagMatcher.group(4)] = imgTagMatcher.group(2)
+            imageAltTexts[imgTagMatcher.group(4)] = imgTagMatcher.group(2)
         }
 
         // while were are at it, create a place where we can later cache offline image remaps so that when
         // we do an alt-text lookup, we can search for the right URL key.
-        imageUrlRemaps = HashMap()
+        imageUrlRemaps.clear()
     }
 
     private fun swapInOfflineImages(htmlString: String): String {
@@ -949,7 +975,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             val url = imageTagMatcher.group(2)
             val localPath = storyImageCache.getCachedLocation(url) ?: continue
             html = html.replace(imageTagMatcher.group(1) + "\"" + url + "\"", "src=\"$localPath\"")
-            imageUrlRemaps!![localPath] = url
+            imageUrlRemaps[localPath] = url
         }
 
         return html
@@ -977,7 +1003,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     }
 
     private fun checkLoadStatus() {
-        synchronized(isLoadFinished) {
+        synchronized(loadLock) {
             if (isContentLoadFinished && isWebLoadFinished && isSocialLoadFinished) {
                 // iff this is the first time all content has finished loading, trigger any UI
                 // behaviour that is position-dependent
@@ -1038,7 +1064,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     }
 
     private fun setReadingFont(font: String) {
-       prefsRepo.setFontString(font)
+        prefsRepo.setFontString(font)
         contentHash = 0 // Force reload since content hasn't changed
         reloadStoryContent()
     }

@@ -236,7 +236,7 @@ class DefaultSyncServiceState @Inject constructor() : SyncServiceState {
         is ServiceState.StarredSync -> context.resources.getString(R.string.sync_status_starred)
         else -> {
             if (brief && !AppConstants.VERBOSE_LOG) null
-            when (state) {
+            else when (state) {
                 is ServiceState.ActionsSync -> String.format(context.resources.getString(R.string.sync_status_actions), lastActionCount)
                 is ServiceState.RecountsSync -> context.resources.getString(R.string.sync_status_recounts)
                 is ServiceState.StorySync -> context.resources.getString(R.string.sync_status_stories)
