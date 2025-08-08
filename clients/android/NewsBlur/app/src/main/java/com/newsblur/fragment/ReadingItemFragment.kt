@@ -804,7 +804,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         }
     }
 
-    private fun loadOriginalText() {
+    private fun loadOriginalText() { // TODO just fetch the story text from db or network without sync
         story?.let { story ->
             lifecycleScope.executeAsyncTask(
                     doInBackground = {
@@ -1041,10 +1041,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     fun showStoryShortcuts() {
         val newFragment = StoryShortcutsFragment()
         newFragment.show(requireActivity().supportFragmentManager, StoryShortcutsFragment::class.java.name)
-    }
-
-    fun flagWebviewError() {
-        // TODO: enable a selective reload mechanism on load failures?
     }
 
     private val updateStoryReadTitleState = {
