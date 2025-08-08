@@ -190,15 +190,19 @@ public class BlurDatabaseHelper {
 
     public void deleteFeed(@Nullable String feedId) {
         String[] selArgs = new String[] {feedId};
-        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.FEED_TABLE, DatabaseConstants.FEED_ID + " = ?", selArgs);}
-        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_FEED_ID + " = ?", selArgs);}
+        synchronized (RW_MUTEX) {
+            dbRW.delete(DatabaseConstants.FEED_TABLE, DatabaseConstants.FEED_ID + " = ?", selArgs);
+            dbRW.delete(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_FEED_ID + " = ?", selArgs);
+        }
     }
 
     public void deleteSocialFeed(@Nullable String userId) {
         String[] selArgs = new String[] {userId};
-        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.SOCIALFEED_TABLE, DatabaseConstants.SOCIAL_FEED_ID + " = ?", selArgs);}
-        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_FEED_ID + " = ?", selArgs);}
-        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ?", selArgs);}
+        synchronized (RW_MUTEX) {
+            dbRW.delete(DatabaseConstants.SOCIALFEED_TABLE, DatabaseConstants.SOCIAL_FEED_ID + " = ?", selArgs);
+            dbRW.delete(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_FEED_ID + " = ?", selArgs);
+            dbRW.delete(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ?", selArgs);
+        }
     }
 
     public void deleteSavedSearch(@Nullable String feedId, @Nullable String query) {
@@ -210,8 +214,10 @@ public class BlurDatabaseHelper {
 
     public void deleteStories() {
         vacuum();
-        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.STORY_TABLE, null, null);}
-        synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.STORY_TEXT_TABLE, null, null);}
+        synchronized (RW_MUTEX) {
+            dbRW.delete(DatabaseConstants.STORY_TABLE, null, null);
+            dbRW.delete(DatabaseConstants.STORY_TEXT_TABLE, null, null);
+        }
     }
 
     @Nullable
