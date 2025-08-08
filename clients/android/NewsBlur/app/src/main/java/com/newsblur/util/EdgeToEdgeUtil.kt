@@ -39,18 +39,6 @@ object EdgeToEdgeUtil {
         val window = this.window
         val isLightIcons = shouldUseLightIcons(this, theme)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
-        } else {
-            WindowCompat.setDecorFitsSystemWindows(window, true)
-        }
-
-        val statusBarColor = getThemeColor(this, android.R.attr.statusBarColor)
-        val navBarColor = getThemeColor(this, android.R.attr.navigationBarColor)
-
-        window.statusBarColor = statusBarColor
-        window.navigationBarColor = navBarColor
-
         WindowCompat.getInsetsController(window, window.decorView).apply {
             isAppearanceLightStatusBars = isLightIcons
             isAppearanceLightNavigationBars = isLightIcons
