@@ -1,5 +1,10 @@
 # NewsBlur Development Guidelines
 
+## Python Environment
+- **Always use `uv run` to execute Python scripts** - This automatically activates the virtualenv
+- Example: `uv run python utils/script.py`
+- Do NOT use `source ~/.virtualenvs/newsblur/bin/activate` - use `uv run` instead
+
 ## Build & Test Commands
 - `make nb` - Build and start all services
 - `make bounce` - Restart all containers with new images
