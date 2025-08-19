@@ -878,7 +878,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
      * passes back the last read item position from the pager
      */
     override fun finish() {
-        setResult(Activity.RESULT_OK, Intent().apply {
+        setResult(RESULT_OK, Intent().apply {
             pager?.currentItem?.let { position ->
                 com.newsblur.util.Log.d(this@Reading.javaClass.name, "Finish reading at position $position")
                 putExtra(LAST_READING_POS, position)

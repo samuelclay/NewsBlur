@@ -124,9 +124,6 @@
         <activity android:name=".activity.SocialFeedReading" />
 
         <service
-            android:name=".service.NBSyncService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service
             android:name=".service.SyncService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service

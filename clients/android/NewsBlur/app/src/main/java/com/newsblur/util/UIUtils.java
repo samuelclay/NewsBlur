@@ -371,15 +371,8 @@ public class UIUtils {
         v.setPadding(oldPadL, oldPadT, oldPadR, oldPadB);
     }
 
-    // API 24 introduced a more customizable impl of fromHtml but also *immediately* deprecated the
-    // default version in the same release, so it is necessary to wrap this is plat-specific helper
-    @SuppressWarnings("deprecation")
     public static Spanned fromHtml(String html) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
-        } else {
-            return Html.fromHtml(html);
-        }
+        return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
     }
 
     private static final String POSIT_HILITE_FORMAT = "<span style=\"color: #33AA33\">%s</span>";
