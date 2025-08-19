@@ -142,21 +142,23 @@ open class SyncService : JobService(), CoroutineScope {
         housekeeping()
         ensureActive()
 
-        if (!NetworkUtils.isOnline(this@SyncService)) {
-            Log.d(this, "Skipping sync: device is offline")
-            return@coroutineScope
-        }
-
-        if (!(isAppForeground || prefsRepo.isEnableNotifications() ||
-                        prefsRepo.isBackgroundNetworkAllowed(this@SyncService) ||
-                        hasActiveAppWidgets(this@SyncService))) {
-            Log.d(this.javaClass.name, "Skipping sync: app not active and network type not appropriate for background sync.")
-            return@coroutineScope
-        }
-
-
         // ping activities to indicate that housekeeping is done, and the DB is safe to use
         sendSyncUpdate(UPDATE_DB_READY)
+
+        if (!NetworkUtils.isOnline(this@SyncService)) {
+            Log.d(this.javaClass.name, "Skipping sync: device is offline")
+            return@coroutineScope
+        }
+
+        if (!isAppForeground && !prefsRepo.isBackgroundNeeded(this@SyncService)) {
+            Log.d(this.javaClass.name, "Skipping sync: device is in the background and background sync is disabled")
+            return@coroutineScope
+        }
+
+        if (!isAppForeground && !prefsRepo.isBackgroundNetworkAllowed(this@SyncService)) {
+            Log.d(this.javaClass.name, "Skipping sync: network type not appropriate for background sync.")
+            return@coroutineScope
+        }
 
         // async text requests might have been queued up and are being waiting on by the live UI. give them priority
         originalTextSubService.start(this)
@@ -366,6 +368,7 @@ open class SyncService : JobService(), CoroutineScope {
 
             prefsRepo.setPremium(feedResponse.isPremium, feedResponse.premiumExpire)
             prefsRepo.setArchive(feedResponse.isArchive, feedResponse.premiumExpire)
+            prefsRepo.setIsStaff(feedResponse.isStaff)
             prefsRepo.setExtToken(feedResponse.shareExtToken)
 
             // note all feeds that belong to some folder so we can find orphans
