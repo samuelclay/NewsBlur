@@ -13,6 +13,7 @@ import androidx.annotation.WorkerThread
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
 import com.newsblur.NbApplication
+import com.newsblur.BuildConfig
 import com.newsblur.activity.Login
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.UserDetails
@@ -132,7 +133,7 @@ class PrefsRepo(
 
     private fun getDebugInfo(context: Context, dbHelper: BlurDatabaseHelper): String {
         val s = StringBuilder()
-        s.append("app version: ").append(NbApplication.getVersion(context))
+        s.append("app version: ").append(NbApplication.getVersion(context)).append(" (${BuildConfig.VERSION_CODE})")
         s.append("\n")
         s.append("android version: ").append(Build.VERSION.RELEASE).append(" (").append(Build.DISPLAY).append(")")
         s.append("\n")
@@ -449,7 +450,7 @@ class PrefsRepo(
             setStoryOrderForFeed(fs.singleSocialFeed.key, newOrder)
         } else if (fs.multipleSocialFeeds != null) {
             throw IllegalArgumentException("multiple social feeds not supported")
-        } else if (!fs.isAllRead) {
+        } else if (fs.isAllRead) {
             throw IllegalArgumentException("AllRead FeedSet type has fixed ordering")
         } else if (fs.isAllSaved) {
             setStoryOrderForFolder(PrefConstants.SAVED_STORIES_FOLDER_NAME, newOrder)
