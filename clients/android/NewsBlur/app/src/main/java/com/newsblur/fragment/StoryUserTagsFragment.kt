@@ -1,7 +1,6 @@
 package com.newsblur.fragment
 
 import android.app.Dialog
-import android.database.Cursor
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -21,7 +20,6 @@ import com.newsblur.util.FeedUtils
 import com.newsblur.util.TagsAdapter
 import com.newsblur.viewModel.StoryUserTagsViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap

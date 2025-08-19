@@ -346,7 +346,7 @@ class DefaultSyncServiceState @Inject constructor() : SyncServiceState {
     }
 
     override fun resetReadingSession(dbHelper: BlurDatabaseHelper) {
-        Log.d(SyncServiceState::class.simpleName, "requesting reading session reset");
+        Log.d(SyncServiceState::class.simpleName, "requesting reading session reset")
         synchronized(pendingFeedMutex) {
             pendingFeed = null
             dbHelper.sessionFeedSet = null

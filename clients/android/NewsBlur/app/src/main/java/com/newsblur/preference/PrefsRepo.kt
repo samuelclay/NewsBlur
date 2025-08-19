@@ -160,7 +160,7 @@ class PrefsRepo(
         s.append("\n")
         s.append("notifications: ").append(if (isEnableNotifications()) "yes" else "no")
         s.append("\n")
-        s.append("keepread: ").append(if (isKeepOldStories()) "yes" else "no")
+        s.append("keep read: ").append(if (isKeepOldStories()) "yes" else "no")
         s.append("\n")
         s.append("thumbs: ").append(if (isShowThumbnails()) "yes" else "no")
         s.append("\n")

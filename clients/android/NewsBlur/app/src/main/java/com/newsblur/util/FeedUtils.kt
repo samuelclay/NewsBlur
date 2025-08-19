@@ -58,7 +58,7 @@ class FeedUtils(
                                     // after we insert our first page and not trigger
                                     dbHelper.prepareReadingSession(fs, cursorFilters.stateFilter, cursorFilters.readFilter)
                                     // note which feedset we are loading so we can trigger another reset when it changes
-                                    dbHelper.sessionFeedSet = fs;
+                                    dbHelper.sessionFeedSet = fs
                                     NbSyncManager.submitUpdate(UPDATE_STORY or UPDATE_STATUS)
                                 }
                             }

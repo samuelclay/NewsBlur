@@ -39,7 +39,7 @@ class ImportExportActivity : NbActivity() {
     private lateinit var binding: ActivityImportExportBinding
 
     private val filePickResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             handleFilePickResult(result.data)
         }
     }
