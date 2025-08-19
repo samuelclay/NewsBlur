@@ -3,7 +3,6 @@ package com.newsblur.util
 import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration
-import android.os.Build
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -97,12 +96,6 @@ object EdgeToEdgeUtil {
     private fun View.navBarInsetBottom(): Int? = ViewCompat.getRootWindowInsets(this)
             ?.getInsets(WindowInsetsCompat.Type.navigationBars())
             ?.bottom
-
-    private fun getThemeColor(context: Context, attr: Int): Int {
-        val typedValue = TypedValue()
-        context.theme.resolveAttribute(attr, typedValue, true)
-        return typedValue.data
-    }
 
     private fun shouldUseLightIcons(context: Context, theme: ThemeValue): Boolean {
         return when (theme) {
