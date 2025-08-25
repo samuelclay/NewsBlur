@@ -697,8 +697,11 @@ def mark_story_as_shared(request):
             },
         )
 
-    quota = 100
-    if not request.user.profile.is_premium:
+    if request.user.profile.is_archive:
+        quota = 150
+    elif request.user.profile.is_premium:
+        quota = 50
+    else:
         quota = 3
     if MSharedStory.feed_quota(request.user.pk, story.story_hash, quota=quota):
         logging.user(
