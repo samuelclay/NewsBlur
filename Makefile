@@ -257,4 +257,4 @@ clean:
 
 
 grafana-dashboards:
-	python3 utils/grafana_backup.py
+	uv run python utils/grafana_backup.py
