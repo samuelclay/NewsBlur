@@ -1214,6 +1214,15 @@
 }
 
 #pragma mark -
+#pragma mark Menus
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+    [super buildMenuWithBuilder:builder];
+    
+    [AppMenuHelper.shared buildMenuWithBuilder:builder];
+}
+
+#pragma mark -
 #pragma mark View Management
 
 - (void)prepareViewControllers {
@@ -1262,6 +1271,8 @@
     
     [feedsViewController view];
     [feedsViewController loadOfflineFeeds:NO];
+    
+    [[UIMenuSystem mainSystem] setNeedsRebuild];
 }
 
 - (StoryPagesViewController *)storyPagesViewController {

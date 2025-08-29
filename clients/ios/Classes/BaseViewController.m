@@ -257,7 +257,18 @@
     return !appDelegate.storyPagesViewController.currentPage.view.isHidden && appDelegate.storyPagesViewController.currentPage.noStoryMessage.isHidden;
 }
 
+#pragma mark -
+#pragma mark Menus
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+    [super buildMenuWithBuilder:builder];
+    
+    [AppMenuHelper.shared buildMenuWithBuilder:builder];
+}
+
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+    [AppMenuHelper.shared prepareIfNeeded];
+    
     if (action == @selector(chooseLayout:) || action == @selector(findInFeedDetail:)) {
         return self.isFeedShown;
     } else if (action == @selector(chooseTitle:) || action == @selector(choosePreview:)) {
@@ -559,7 +570,7 @@
     [ThemeManager themeManager].theme = string;
 }
 
-- (IBAction)toggleSidebar:(id)sender{
+- (IBAction)toggleFeeds:(id)sender {
     UISplitViewController *splitViewController = self.appDelegate.splitViewController;
     
     [UIView animateWithDuration:0.2 animations:^{

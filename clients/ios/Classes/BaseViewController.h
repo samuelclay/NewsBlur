@@ -60,6 +60,7 @@
 
 - (IBAction)chooseColumns:(id)sender;
 - (IBAction)chooseLayout:(id)sender;
+- (IBAction)chooseIntelligence:(id)sender;
 - (IBAction)chooseDashboard:(id)sender;
 - (IBAction)chooseTitle:(id)sender;
 - (IBAction)choosePreview:(id)sender;
@@ -68,6 +69,7 @@
 - (IBAction)chooseFontSize:(id)sender;
 - (IBAction)chooseSpacing:(id)sender;
 - (IBAction)chooseTheme:(id)sender;
+- (IBAction)toggleFeeds:(id)sender;
 
 - (IBAction)moveSite:(id)sender;
 - (IBAction)openRenameSite:(id)sender;
