@@ -479,7 +479,7 @@ class DetailViewController: BaseViewController {
         
         let currentFeedDetailWidth = splitViewController?.supplementaryColumnWidth ?? 400
         
-        if currentFeedDetailWidth != feedDetailWidth {
+        if currentFeedDetailWidth > 0, currentFeedDetailWidth != feedDetailWidth {
             feedDetailWidth = currentFeedDetailWidth
         }
     }
@@ -546,10 +546,10 @@ private extension DetailViewController {
         splitViewController?.primaryBackgroundStyle = .sidebar
         splitViewController?.minimumPrimaryColumnWidth = 250
         splitViewController?.maximumPrimaryColumnWidth = 700
-        splitViewController?.minimumSupplementaryColumnWidth = 250
+        splitViewController?.minimumSupplementaryColumnWidth = storyTitlesOnLeft ? 250 : 0
         splitViewController?.maximumSupplementaryColumnWidth = 700
         splitViewController?.preferredPrimaryColumnWidth = feedsWidth
-        splitViewController?.preferredSupplementaryColumnWidth = feedDetailWidth
+        splitViewController?.preferredSupplementaryColumnWidth = storyTitlesOnLeft ? feedDetailWidth : 0
 #endif
         
         if !storyTitlesInGridView || isPhone {
@@ -579,6 +579,11 @@ private extension DetailViewController {
                 supplementaryFeedDetailViewController = appDelegate.feedDetailViewController
                 appDelegate.feedDetailNavigationController = nil
                 appDelegate.feedDetailViewController = feedDetailViewController
+                
+                if isOS26OrLater {
+                    showHideSupplementary(show: false)
+                }
+                
                 appDelegate.splitViewController.setViewController(nil, for: .supplementary)
                 
                 if storyTitlesInDashboard, let feedDetailViewController, feedDetailViewController.storyCache.dashboardAll.isEmpty {
@@ -589,6 +594,10 @@ private extension DetailViewController {
                     }
                 }
             } else {
+                if isOS26OrLater {
+                    showHideSupplementary(show: false)
+                }
+                
                 add(viewController: feedDetailViewController, top: true)
             }
             
@@ -606,6 +615,10 @@ private extension DetailViewController {
                 appDelegate.splitViewController.setViewController(supplementaryFeedDetailNavigationController, for: .supplementary)
                 supplementaryFeedDetailNavigationController = nil
                 supplementaryFeedDetailViewController = nil
+            }
+            
+            if isOS26OrLater {
+                showHideSupplementary(show: true)
             }
             
             if !isPhone {
@@ -637,8 +650,17 @@ private extension DetailViewController {
                 supplementaryFeedDetailViewController = appDelegate.feedDetailViewController
                 appDelegate.feedDetailNavigationController = nil
                 appDelegate.feedDetailViewController = feedDetailViewController
+                
+                if isOS26OrLater {
+                    showHideSupplementary(show: false)
+                }
+                
                 appDelegate.splitViewController.setViewController(nil, for: .supplementary)
             } else {
+                if isOS26OrLater {
+                    showHideSupplementary(show: false)
+                }
+                
                 let appropriateSuperview = isTop ? topContainerView : bottomContainerView
                 
                 if feedDetailViewController?.view.superview != appropriateSuperview {
@@ -691,6 +713,36 @@ private extension DetailViewController {
         viewController.willMove(toParent: nil)
         viewController.removeFromParent()
         viewController.view.removeFromSuperview()
+    }
+    
+    func showHideSupplementary(show: Bool) {
+//        guard let split = appDelegate.splitViewController else {
+//            return
+//        }
+        
+        if show {
+            splitViewController?.minimumSupplementaryColumnWidth = 250
+            splitViewController?.preferredSupplementaryColumnWidth = feedDetailWidth
+            
+//            split.preferredDisplayMode = .twoBesideSecondary   // primary + supplementary beside secondary
+//            split.show(.supplementary)
+        } else {
+            splitViewController?.minimumSupplementaryColumnWidth = 0
+            splitViewController?.preferredSupplementaryColumnWidth = 0
+            
+//            split.preferredDisplayMode = .oneBesideSecondary
+//            
+//            split.hide(.supplementary)
+//
+//            DispatchQueue.main.async {
+//                split.show(.primary)
+//                split.show(.secondary)
+//                
+//                split.view.setNeedsLayout()
+//                split.view.layoutIfNeeded()
+//            }
+        }
+
     }
     
     /// The status bar portion of the navigation controller isn't the right color, due to a white subview bleeding through the visual effect view. This somewhat hacky function will correct that.

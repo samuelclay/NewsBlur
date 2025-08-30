@@ -215,6 +215,14 @@
     }
 }
 
+- (BOOL)isOS26OrLater {
+    if (@available(iOS 26.0, *)) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
 - (BOOL)isPortrait {
     UIWindow *window = [NewsBlurAppDelegate sharedAppDelegate].window;
     UIInterfaceOrientation orientation = window.windowScene.interfaceOrientation;
