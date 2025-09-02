@@ -151,6 +151,8 @@ public class APIConstants {
     public static final String VALUE_TRUE = "true";
     public static final String VALUE_FALSE = "false";
     public static final String VALUE_STARRED = "starred";
-	
+
 	public static final String S3_URL_FEED_ICONS = "https://s3.amazonaws.com/icons.newsblur.com/";
+
+    public static final String NULL_STORY_TEXT = "__NULL_STORY_TEXT__";
 }

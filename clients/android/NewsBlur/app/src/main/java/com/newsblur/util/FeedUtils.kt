@@ -13,6 +13,7 @@ import com.newsblur.domain.Feed
 import com.newsblur.domain.Story
 import com.newsblur.fragment.ReadingActionConfirmationFragment
 import com.newsblur.network.APIConstants
+import com.newsblur.network.APIConstants.NULL_STORY_TEXT
 import com.newsblur.network.APIManager
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NBSyncService
@@ -20,7 +21,6 @@ import com.newsblur.service.NbSyncManager
 import com.newsblur.service.NbSyncManager.UPDATE_METADATA
 import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
-import com.newsblur.service.OriginalTextService
 import com.newsblur.util.FeedExt.disableNotification
 import com.newsblur.util.FeedExt.setNotifyFocus
 import com.newsblur.util.FeedExt.setNotifyUnread
@@ -345,7 +345,7 @@ class FeedUtils(
     fun sendStoryFull(story: Story?, context: Context) {
         if (story == null) return
         var body = getStoryText(story.storyHash)
-        if (body.isNullOrEmpty() || body == OriginalTextService.NULL_STORY_TEXT) {
+        if (body.isNullOrEmpty() || body == NULL_STORY_TEXT) {
             body = getStoryContent(story.storyHash)
         }
         val intent = Intent(Intent.ACTION_SEND)

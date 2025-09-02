@@ -472,6 +472,7 @@ public class APIManager {
         }
     }
 
+    @Nullable
 	public StoryTextResponse getStoryText(String feedId, String storyId) {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_FEEDID, feedId);
