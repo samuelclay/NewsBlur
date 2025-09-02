@@ -161,7 +161,7 @@ public class NBSyncService extends JobService {
     private boolean mainSyncRunning = false;
     private CleanupService cleanupService;
     private StarredService starredService;
-    private OriginalTextService originalTextService;
+//    private OriginalTextService originalTextService;
     private UnreadsService unreadsService;
     protected ImagePrefetchService imagePrefetchService;
 
@@ -210,7 +210,7 @@ public class NBSyncService extends JobService {
         if (cleanupService == null || imagePrefetchService == null) {
             cleanupService = new CleanupService(this);
             starredService = new StarredService(this);
-            originalTextService = new OriginalTextService(this);
+//            originalTextService = new OriginalTextService(this);
             unreadsService = new UnreadsService(this);
             imagePrefetchService = new ImagePrefetchService(this);
         }
@@ -352,7 +352,7 @@ public class NBSyncService extends JobService {
             sendSyncUpdate(UPDATE_DB_READY);
 
             // async text requests might have been queued up and are being waiting on by the live UI. give them priority
-            originalTextService.start();
+//            originalTextService.start();
 
             // first: catch up
             syncActions();
@@ -1008,7 +1008,7 @@ public class NBSyncService extends JobService {
         if (mainSyncRunning) return;
         if ((cleanupService != null) && cleanupService.isRunning()) return;
         if ((starredService != null) && starredService.isRunning()) return;
-        if ((originalTextService != null) && originalTextService.isRunning()) return;
+//        if ((originalTextService != null) && originalTextService.isRunning()) return;
         if ((unreadsService != null) && unreadsService.isRunning()) return;
         if ((imagePrefetchService != null) && imagePrefetchService.isRunning()) return;
         Log.d(this, "confirmed completion");
@@ -1103,8 +1103,8 @@ public class NBSyncService extends JobService {
         if (StorySyncRunning) return context.getResources().getString(R.string.sync_status_stories);
         if (UnreadsService.activelyRunning)
             return String.format(context.getResources().getString(R.string.sync_status_unreads), UnreadsService.getPendingCount());
-        if (OriginalTextService.getActivelyRunning())
-            return String.format(context.getResources().getString(R.string.sync_status_text), OriginalTextService.getPendingCount());
+//        if (OriginalTextService.getActivelyRunning())
+//            return String.format(context.getResources().getString(R.string.sync_status_text), OriginalTextService.getPendingCount());
         if (ImagePrefetchService.activelyRunning)
             return String.format(context.getResources().getString(R.string.sync_status_images), ImagePrefetchService.getPendingCount());
         return null;
@@ -1245,7 +1245,7 @@ public class NBSyncService extends JobService {
         ExhaustedFeeds.clear();
         FeedPagesSeen.clear();
         FeedStoriesSeen.clear();
-        OriginalTextService.clear();
+//        OriginalTextService.clear();
         UnreadsService.clear();
         ImagePrefetchService.clear();
     }
@@ -1262,7 +1262,7 @@ public class NBSyncService extends JobService {
             if (cleanupService != null) cleanupService.shutdown();
             if (unreadsService != null) unreadsService.shutdown();
             if (starredService != null) starredService.shutdown();
-            if (originalTextService != null) originalTextService.shutdown();
+//            if (originalTextService != null) originalTextService.shutdown();
             if (imagePrefetchService != null) imagePrefetchService.shutdown();
             if (primaryExecutor != null) {
                 primaryExecutor.shutdown();

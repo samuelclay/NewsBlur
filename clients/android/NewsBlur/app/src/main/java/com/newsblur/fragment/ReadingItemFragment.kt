@@ -22,7 +22,10 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.newsblur.R
@@ -37,13 +40,13 @@ import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
 import com.newsblur.domain.UserDetails
 import com.newsblur.keyboard.KeyboardManager
+import com.newsblur.network.APIConstants.NULL_STORY_TEXT
 import com.newsblur.network.APIManager
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NbSyncManager.UPDATE_INTEL
 import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
 import com.newsblur.service.NbSyncManager.UPDATE_TEXT
-import com.newsblur.service.OriginalTextService
 import com.newsblur.util.DefaultFeedView
 import com.newsblur.util.EdgeToEdgeUtil.applyNavBarInsetBottomTo
 import com.newsblur.util.FeedSet
@@ -58,7 +61,9 @@ import com.newsblur.util.StoryChangesState
 import com.newsblur.util.StoryUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
+import com.newsblur.viewModel.ReadingItemViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -132,8 +137,12 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     private lateinit var markStoryReadBehavior: MarkStoryReadBehavior
     private var sampledQueue: SampledQueue? = null
 
+    private lateinit var viewModel: ReadingItemViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(this)[ReadingItemViewModel::class.java]
+
         story = requireArguments().getSerializable("story") as Story?
 
         displayFeedDetails = requireArguments().getBoolean("displayFeedDetails")
@@ -215,11 +224,20 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.applyNavBarInsetBottomTo(readingItemActionsBinding.commentsContainer)
+
         binding.storyContextMenuButton.setOnClickListener { onClickMenuButton() }
         readingItemActionsBinding.markReadStoryButton.setOnClickListener { switchMarkStoryReadState() }
         readingItemActionsBinding.trainStoryButton.setOnClickListener { openStoryTrainer() }
         readingItemActionsBinding.saveStoryButton.setOnClickListener { switchStorySavedState() }
         readingItemActionsBinding.shareStoryButton.setOnClickListener { openShareDialog() }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                viewModel.readingPayload.collect {
+                    handleReadingItemState(it)
+                }
+            }
+        }
     }
 
     override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
@@ -270,6 +288,28 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         } else {
             super.onCreateContextMenu(menu, v, menuInfo)
         }
+    }
+
+    private fun handleReadingItemState(readingPayload: ReadingItemViewModel.ReadingPayload) {
+        when (readingPayload) {
+            ReadingItemViewModel.Idle -> {}
+            ReadingItemViewModel.NoStoryContent -> {
+                com.newsblur.util.Log.w(this, "Couldn't find story content for existing story.")
+                activity?.finish()
+            }
+
+            is ReadingItemViewModel.StoryContent -> {
+                storyContent = readingPayload.content
+            }
+
+            is ReadingItemViewModel.StoryOriginalText -> {
+                if (readingPayload.text == NULL_STORY_TEXT) {
+                    textViewUnavailable = true
+                } else
+                    originalText = readingPayload.text
+            }
+        }
+        reloadStoryContent()
     }
 
     private fun onClickMenuButton() {
@@ -713,7 +753,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                 originalText == null -> {
                     binding.readingTextloading.visibility = View.VISIBLE
                     enableProgress(true)
-                    loadOriginalText()
+                    story?.let { viewModel.loadOriginalText(it.storyHash) } ?: activity?.finish()
                     // still show the story mode version, as the text mode one may take some time
                     needStoryContent = true
                 }
@@ -726,7 +766,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
         if (needStoryContent) {
             if (storyContent == null) {
-                loadStoryContent()
+                story?.let { viewModel.loadStoryContent(it.storyHash) } ?: activity?.finish()
             } else {
                 setupWebview(storyContent!!)
                 onContentLoadFinished()
@@ -773,51 +813,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         if (updateType and UPDATE_INTEL != 0) {
             classifier = dbHelper.getClassifierForFeed(story!!.feedId)
             setupTagsAndIntel()
-        }
-    }
-
-    private fun loadOriginalText() {
-        story?.let { story ->
-            lifecycleScope.executeAsyncTask(
-                    doInBackground = {
-                        feedUtils.getStoryText(story.storyHash)
-                    },
-                    onPostExecute = { result ->
-                        if (result != null) {
-                            if (OriginalTextService.NULL_STORY_TEXT == result) {
-                                // the server reported that text mode is not available.  kick back to story mode
-                                com.newsblur.util.Log.d(this, "orig text not avail for story: " + story.storyHash)
-                                textViewUnavailable = true
-                            } else {
-                                originalText = result
-                            }
-                            reloadStoryContent()
-                        } else {
-                            com.newsblur.util.Log.d(this, "orig text not yet cached for story: " + story.storyHash)
-                            OriginalTextService.addHash(story.storyHash)
-                            triggerSync()
-                        }
-                    }
-            )
-        }
-    }
-
-    private fun loadStoryContent() {
-        story?.let { story ->
-            lifecycleScope.executeAsyncTask(
-                    doInBackground = {
-                        feedUtils.getStoryContent(story.storyHash)
-                    },
-                    onPostExecute = { result ->
-                        if (result != null) {
-                            storyContent = result
-                            reloadStoryContent()
-                        } else {
-                            com.newsblur.util.Log.w(this, "couldn't find story content for existing story.")
-                            activity?.finish()
-                        }
-                    }
-            )
         }
     }
 
