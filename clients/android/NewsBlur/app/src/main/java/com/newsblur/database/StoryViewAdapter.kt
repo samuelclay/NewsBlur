@@ -738,7 +738,9 @@ class StoryViewAdapter(
         }
         if (params != null && thumbnailStyle.isSmall()) {
             val verticalMargin = if (singleFeed) verticalContainerMargin + UIUtils.dp2px(context, 2) else verticalContainerMargin
-            params.setMargins(UIUtils.dp2px(context, 8), verticalMargin, 0, verticalMargin)
+            val leftMargin = if (thumbnailStyle.isLeft()) UIUtils.dp2px(context, 8) else 0
+            val rightMargin = if (thumbnailStyle.isRight()) UIUtils.dp2px(context, 8) else 0
+            params.setMargins(leftMargin, verticalMargin, rightMargin, verticalMargin)
             params.addRule(RelativeLayout.ALIGN_BOTTOM, vh.storySnippet.id)
         } else if (params != null) {
             params.setMargins(0, 0, 0, 0)
