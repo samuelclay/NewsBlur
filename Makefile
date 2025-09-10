@@ -80,9 +80,9 @@ jekyll:
 jekyll_drafts:
 	cd blog && JEKYLL_ENV=production bundle exec jekyll serve --drafts --config _config.yml
 lint:
-	docker exec -it newsblur_web isort --profile black .
-	docker exec -it newsblur_web black --line-length 110 .
-	docker exec -it newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv
+	docker exec -t newsblur_web isort --profile black .
+	docker exec -t newsblur_web black --line-length 110 .
+	docker exec -t newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv
 	
 deps:
 	docker exec -t newsblur_web pip install -U uv
