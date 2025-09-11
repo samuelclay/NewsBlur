@@ -38,7 +38,6 @@ import com.newsblur.di.IconLoader
 import com.newsblur.di.StoryImageCache
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
-import com.newsblur.domain.UserDetails
 import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.network.APIConstants.NULL_STORY_TEXT
 import com.newsblur.network.APIManager
@@ -109,7 +108,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     private var faviconText: String? = null
     private var classifier: Classifier? = null
     private var displayFeedDetails = false
-    private var user: UserDetails? = null
+    private var userId: String? = null
+    private var enableHighlights = false
 
     var selectedViewMode: DefaultFeedView = DefaultFeedView.STORY
         private set
@@ -140,7 +140,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     private lateinit var binding: FragmentReadingitemBinding
     private lateinit var readingItemActionsBinding: ReadingItemActionsBinding
 
-
     private lateinit var markStoryReadBehavior: MarkStoryReadBehavior
     private var sampledQueue: SampledQueue? = null
 
@@ -162,7 +161,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         classifier = requireArguments().getSerializable("classifier") as Classifier?
         sourceUserId = requireArguments().getString("sourceUserId")
 
-        user = prefsRepo.getUserDetails()
+        userId = prefsRepo.getUserDetails().id
+        enableHighlights = prefsRepo.getIsPremium() || prefsRepo.getIsArchive()
         markStoryReadBehavior = prefsRepo.getMarkStoryReadBehavior()
 
         if (markStoryReadBehavior == MarkStoryReadBehavior.IMMEDIATELY) {
@@ -604,7 +604,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     private fun updateShareButton() {
         for (userId in story!!.sharedUserIds) {
-            if (TextUtils.equals(userId, user!!.id)) {
+            if (userId == this@ReadingItemFragment.userId!!) {
                 readingItemActionsBinding.shareStoryButton.setText(R.string.already_shared)
                 return
             }
@@ -938,6 +938,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     }
 
     private fun applyStoryHighlights() {
+        if (!enableHighlights) return
         val json = JSONArray(storyHighlights).toString()
         binding.readingWebview.evaluateJavascript("NB_applyHighlights($json);", null)
     }
