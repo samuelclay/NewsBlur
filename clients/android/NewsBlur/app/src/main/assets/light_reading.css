@@ -41,3 +41,10 @@ del {
 .NB-story del {
     background-color: #f5c3c3;
 }
+
+.NB-starred-story-selection-highlight {
+  background: rgba(255, 235, 59, 0.60);
+  padding: 0 .06em;
+  border-radius: .20em;
+  box-shadow: none;
+}

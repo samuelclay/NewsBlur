@@ -11,20 +11,20 @@ import android.database.Cursor;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.Serializable;
-
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Classifier;
+import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
-import com.newsblur.network.APIManager;
 import com.newsblur.preference.PrefsRepo;
-import com.newsblur.service.NbSyncManager;
 import com.newsblur.service.NBSyncService;
+import com.newsblur.service.NbSyncManager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -68,6 +68,7 @@ public class ReadingAction implements Serializable {
     private String notifyFilter;
     private List<String> notifyTypes;
     private List<String> userTags;
+    private List<String> highlights;
     private Classifier classifier;
     private String newFeedName;
 
@@ -105,19 +106,20 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
-    public static ReadingAction saveStory(@Nullable String hash, @Nullable List<String> userTags) {
+    public static ReadingAction saveStory(
+            @NonNull String hash,
+            @NonNull List<String> highlights,
+            @NonNull List<String> userTags
+    ) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.SAVE;
         ra.storyHash = hash;
-        if (userTags == null) {
-            ra.userTags = new ArrayList<>();
-        } else {
-            ra.userTags = userTags;
-        }
+        ra.highlights = highlights;
+        ra.userTags = userTags;
         return ra;
     }
 
-    public static ReadingAction unsaveStory(@Nullable String hash) {
+    public static ReadingAction unsaveStory(@NonNull String hash) {
         ReadingAction ra = new ReadingAction();
         ra.type = ActionType.UNSAVE;
         ra.storyHash = hash;
@@ -297,13 +299,13 @@ public class ReadingAction implements Serializable {
                     result = apiManager.markFeedsAsRead(feedSet, olderThan, newerThan);
                 }
                 break;
-                
+
             case MARK_UNREAD:
                 result = apiManager.markStoryHashUnread(storyHash);
                 break;
 
             case SAVE:
-                result = apiManager.markStoryAsStarred(storyHash, userTags);
+                result = apiManager.markStoryAsStarred(storyHash, highlights, userTags);
                 break;
 
             case UNSAVE:
@@ -331,7 +333,7 @@ public class ReadingAction implements Serializable {
                 break;
 
             case EDIT_REPLY:
-                 commentResponse = apiManager.editReply(storyId, feedId, commentUserId, replyId, commentReplyText);
+                commentResponse = apiManager.editReply(storyId, feedId, commentUserId, replyId, commentReplyText);
                 break;
 
             case DELETE_REPLY:
@@ -428,19 +430,19 @@ public class ReadingAction implements Serializable {
                 impact |= UPDATE_METADATA;
                 impact |= UPDATE_STORY;
                 break;
-                
+
             case MARK_UNREAD:
                 dbHelper.setStoryReadState(storyHash, false);
                 impact |= UPDATE_METADATA;
                 break;
 
             case SAVE:
-                dbHelper.setStoryStarred(storyHash, userTags, true);
+                dbHelper.setStoryStarred(storyHash, highlights, userTags, true);
                 impact |= UPDATE_METADATA;
                 break;
 
             case UNSAVE:
-                dbHelper.setStoryStarred(storyHash, null, false);
+                dbHelper.setStoryStarred(storyHash, Collections.emptyList(), Collections.emptyList(), false);
                 impact |= UPDATE_METADATA;
                 break;
 

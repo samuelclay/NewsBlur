@@ -23,7 +23,7 @@ class NotifySaveReceiver : BroadcastReceiver() {
         NBScope.executeAsyncTask(
                 doInBackground = {
                     dbHelper.putStoryDismissed(storyHash)
-                    feedUtils.setStorySaved(storyHash, true, c)
+                    feedUtils.setStorySaved(storyHash, true, c, emptyList())
                 }
         )
     }
