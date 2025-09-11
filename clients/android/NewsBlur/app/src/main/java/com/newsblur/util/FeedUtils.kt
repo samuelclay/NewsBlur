@@ -53,22 +53,45 @@ class FeedUtils(
         )
     }
 
-    fun setStorySaved(storyHash: String?, saved: Boolean, context: Context) {
-        val userTags: MutableList<String?> = ArrayList()
-        if (currentFolderName != null) {
-            userTags.add(currentFolderName)
+    fun setStorySaved(
+            storyHash: String?,
+            saved: Boolean,
+            context: Context,
+            highlights: List<String>,
+    ) {
+        val userTags = buildList {
+            currentFolderName?.let { add(it) }
         }
-        setStorySaved(storyHash, saved, context, userTags)
+        setStorySaved(storyHash, saved, context, highlights, userTags)
     }
 
-    fun setStorySaved(story: Story, saved: Boolean, context: Context, userTags: List<String?>?) {
-        setStorySaved(story.storyHash, saved, context, userTags)
+    fun setStorySaved(
+            story: Story,
+            saved: Boolean,
+            context: Context,
+            highlights: List<String>,
+            userTags: List<String>,
+    ) {
+        setStorySaved(story.storyHash, saved, context, highlights, userTags)
     }
 
-    private fun setStorySaved(storyHash: String?, saved: Boolean, context: Context, userTags: List<String?>?) {
+    private fun setStorySaved(
+            storyHash: String?,
+            saved: Boolean,
+            context: Context,
+            highlights: List<String>,
+            userTags: List<String>,
+    ) {
+        if (storyHash == null) {
+            Log.w(FeedUtils::class.java.name, "setStorySaved: storyHash is null")
+            return
+        }
+
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    val ra = if (saved) ReadingAction.saveStory(storyHash, userTags) else ReadingAction.unsaveStory(storyHash)
+                    val ra =
+                            if (saved) ReadingAction.saveStory(storyHash, highlights, userTags)
+                            else ReadingAction.unsaveStory(storyHash)
                     ra.doLocal(dbHelper, prefsRepo)
                     dbHelper.enqueueAction(ra)
                 },

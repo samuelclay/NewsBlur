@@ -49,6 +49,9 @@ public class Story implements Serializable {
 	@SerializedName("user_tags")
     public String[] userTags = new String[]{};
 
+    @SerializedName("highlights")
+    public String[] highlights = new String[]{};
+
 	@SerializedName("social_user_id")
 	public String socialUserId;
 
@@ -149,6 +152,7 @@ public class Story implements Serializable {
         values.put(DatabaseConstants.STORY_INTELLIGENCE_TOTAL, intelligence.calcTotalIntel());
 		values.put(DatabaseConstants.STORY_TAGS, StoryUtil.nullSafeJoin(",", tags));
 		values.put(DatabaseConstants.STORY_USER_TAGS, StoryUtil.nullSafeJoin(",", userTags));
+		values.put(DatabaseConstants.STORY_HIGHLIGHTS, StoryUtil.nullSafeJoin(",", highlights));
 		values.put(DatabaseConstants.STORY_READ, read);
 		values.put(DatabaseConstants.STORY_STARRED, starred);
 		values.put(DatabaseConstants.STORY_STARRED_DATE, starredTimestamp);
@@ -186,6 +190,7 @@ public class Story implements Serializable {
 		story.starred = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_STARRED)) > 0;
 		story.starredTimestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_STARRED_DATE));
 		story.tags = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TAGS)), ",");
+		story.highlights = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_HIGHLIGHTS)), ",");
 		story.userTags = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_USER_TAGS)), ",");
 		story.feedId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_FEED_ID));
 		story.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_ID));

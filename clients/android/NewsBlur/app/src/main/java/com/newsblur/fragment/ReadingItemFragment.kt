@@ -38,7 +38,6 @@ import com.newsblur.di.IconLoader
 import com.newsblur.di.StoryImageCache
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
-import com.newsblur.domain.UserDetails
 import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.network.APIConstants.NULL_STORY_TEXT
 import com.newsblur.network.APIManager
@@ -58,12 +57,18 @@ import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.ReadingTextSize
 import com.newsblur.util.StoryChangesState
+import com.newsblur.util.StoryUtil
 import com.newsblur.util.StoryUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
 import com.newsblur.viewModel.ReadingItemViewModel
+import com.newsblur.web.WebviewActionType
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.regex.Pattern
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -103,9 +108,10 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     private var faviconText: String? = null
     private var classifier: Classifier? = null
     private var displayFeedDetails = false
-    private var user: UserDetails? = null
+    private var userId: String? = null
+    private var enableHighlights = false
 
-    var selectedViewMode: DefaultFeedView? = null
+    var selectedViewMode: DefaultFeedView = DefaultFeedView.STORY
         private set
 
     private var textViewUnavailable = false
@@ -120,19 +126,19 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     private var imageUrlRemaps: HashMap<String, String>? = null
     private var sourceUserId: String? = null
     private var contentHash = 0
+    private val storyHighlights = mutableSetOf<String>()
 
     // these three flags are progressively set by async callbacks and unioned
     // to set isLoadFinished, when we trigger any final UI tricks.
     private var isContentLoadFinished = false
-    private var isWebLoadFinished = false
     private var isSocialLoadFinished = false
-    private var isLoadFinished = false
+    private val isWebLoadFinished = AtomicBoolean(false)
+    private val isLoadFinished = AtomicBoolean(false)
     private var savedScrollPosRel = 0f
     private val webViewContentMutex = Any()
 
     private lateinit var binding: FragmentReadingitemBinding
     private lateinit var readingItemActionsBinding: ReadingItemActionsBinding
-
 
     private lateinit var markStoryReadBehavior: MarkStoryReadBehavior
     private var sampledQueue: SampledQueue? = null
@@ -155,7 +161,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         classifier = requireArguments().getSerializable("classifier") as Classifier?
         sourceUserId = requireArguments().getString("sourceUserId")
 
-        user = prefsRepo.getUserDetails()
+        userId = prefsRepo.getUserDetails().id
+        enableHighlights = prefsRepo.getIsPremium() || prefsRepo.getIsArchive()
         markStoryReadBehavior = prefsRepo.getMarkStoryReadBehavior()
 
         if (markStoryReadBehavior == MarkStoryReadBehavior.IMMEDIATELY) {
@@ -165,6 +172,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             savedScrollPosRel = savedInstanceState.getFloat(BUNDLE_SCROLL_POS_REL)
             // we can't actually use the saved scroll position until the webview finishes loading
         }
+
+        story?.let { storyHighlights.addAll(it.highlights) }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -208,6 +217,9 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         binding.readingWebview.setBackgroundColor(Color.TRANSPARENT)
         binding.readingWebview.fragment = this
         binding.readingWebview.activity = readingActivity
+        binding.readingWebview.setWebviewActionDelegate { action, selectedText ->
+            handleWebviewAction(action, selectedText)
+        }
 
         setupItemMetadata()
         updateTrainButton()
@@ -233,8 +245,15 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                viewModel.readingPayload.collect {
-                    handleReadingItemState(it)
+                launch {
+                    viewModel.readingPayload.collect {
+                        handleReadingItemState(it)
+                    }
+                }
+                launch {
+                    viewModel.storyHighlightsUpdate.collect {
+                        handleStoryHighlightsUpdate(it)
+                    }
                 }
             }
         }
@@ -312,6 +331,16 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         reloadStoryContent()
     }
 
+    private fun handleStoryHighlightsUpdate(highlights: List<String>) {
+        story?.let {
+            if (storyHighlights == highlights) return@let
+            storyHighlights.clear()
+            storyHighlights.addAll(highlights)
+
+            applyStoryHighlights()
+        }
+    }
+
     private fun onClickMenuButton() {
         val pm = PopupMenu(requireActivity(), binding.storyContextMenuButton)
         val menu = pm.menu
@@ -361,6 +390,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             openBrowser()
             true
         }
+
         R.id.menu_reading_sharenewsblur -> {
             var sourceUserId: String? = null
             if (fs!!.singleSocialFeed != null) sourceUserId = fs!!.singleSocialFeed.key
@@ -368,106 +398,130 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             newFragment.show(requireActivity().supportFragmentManager, "dialog")
             true
         }
+
         R.id.menu_send_story -> {
             feedUtils.sendStoryUrl(story, requireContext())
             true
         }
+
         R.id.menu_send_story_full -> {
             feedUtils.sendStoryFull(story, requireContext())
             true
         }
+
         R.id.menu_shortcuts -> {
             showStoryShortcuts()
             true
         }
+
         R.id.menu_text_size_xs -> {
             setTextSizeStyle(ReadingTextSize.XS)
             true
         }
+
         R.id.menu_text_size_s -> {
             setTextSizeStyle(ReadingTextSize.S)
             true
         }
+
         R.id.menu_text_size_m -> {
             setTextSizeStyle(ReadingTextSize.M)
             true
         }
+
         R.id.menu_text_size_l -> {
             setTextSizeStyle(ReadingTextSize.L)
             true
         }
+
         R.id.menu_text_size_xl -> {
             setTextSizeStyle(ReadingTextSize.XL)
             true
         }
+
         R.id.menu_text_size_xxl -> {
             setTextSizeStyle(ReadingTextSize.XXL)
             true
         }
+
         R.id.menu_font_anonymous -> {
             setReadingFont(getString(R.string.anonymous_pro_font_prefvalue))
             true
         }
+
         R.id.menu_font_chronicle -> {
             setReadingFont(getString(R.string.chronicle_font_prefvalue))
             true
         }
+
         R.id.menu_font_default -> {
             setReadingFont(getString(R.string.default_font_prefvalue))
             true
         }
+
         R.id.menu_font_gotham -> {
             setReadingFont(getString(R.string.gotham_narrow_font_prefvalue))
             true
         }
+
         R.id.menu_font_noto_sand -> {
             setReadingFont(getString(R.string.noto_sans_font_prefvalue))
             true
         }
+
         R.id.menu_font_noto_serif -> {
             setReadingFont(getString(R.string.noto_serif_font_prefvalue))
             true
         }
+
         R.id.menu_font_open_sans -> {
             setReadingFont(getString(R.string.open_sans_condensed_font_prefvalue))
             true
         }
+
         R.id.menu_font_roboto -> {
             setReadingFont(getString(R.string.roboto_font_prefvalue))
             true
         }
+
         R.id.menu_reading_save -> {
             if (story!!.starred) {
-                feedUtils.setStorySaved(story!!, false, requireContext(), null)
+                feedUtils.setStorySaved(story!!, false, requireContext(), emptyList(), emptyList())
             } else {
-                feedUtils.setStorySaved(story!!.storyHash, true, requireContext())
+                feedUtils.setStorySaved(story!!.storyHash, true, requireContext(), emptyList())
             }
             true
         }
+
         R.id.menu_reading_markunread -> {
             feedUtils.markStoryUnread(story!!, requireContext())
             true
         }
+
         R.id.menu_theme_auto -> {
             prefsRepo.setSelectedTheme(ThemeValue.AUTO)
             UIUtils.restartActivity(requireActivity())
             true
         }
+
         R.id.menu_theme_light -> {
             prefsRepo.setSelectedTheme(ThemeValue.LIGHT)
             UIUtils.restartActivity(requireActivity())
             true
         }
+
         R.id.menu_theme_dark -> {
             prefsRepo.setSelectedTheme(ThemeValue.DARK)
             UIUtils.restartActivity(requireActivity())
             true
         }
+
         R.id.menu_theme_black -> {
             prefsRepo.setSelectedTheme(ThemeValue.BLACK)
             UIUtils.restartActivity(requireActivity())
             true
         }
+
         R.id.menu_intel -> {
             // check against training on feedless stories
             if (story!!.feedId != "0") {
@@ -475,6 +529,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             }
             true
         }
+
         R.id.menu_go_to_feed -> {
             val feed = dbHelper.getFeed(story!!.feedId)
             feed?.let {
@@ -483,6 +538,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             }
             true
         }
+
         else -> {
             super.onOptionsItemSelected(item)
         }
@@ -526,10 +582,10 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     fun switchStorySavedState(notifyUser: Boolean = false) {
         story?.let {
             val msg = if (it.starred) {
-                feedUtils.setStorySaved(it.storyHash, false, requireContext())
+                feedUtils.setStorySaved(it.storyHash, false, requireContext(), emptyList()) // TODO
                 getString(R.string.story_saved)
             } else {
-                feedUtils.setStorySaved(it.storyHash, true, requireContext())
+                feedUtils.setStorySaved(it.storyHash, true, requireContext(), emptyList()) // TODO
                 getString(R.string.story_unsaved)
             }
             if (notifyUser) UIUtils.showSnackBar(binding.root, msg)
@@ -548,7 +604,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     private fun updateShareButton() {
         for (userId in story!!.sharedUserIds) {
-            if (TextUtils.equals(userId, user!!.id)) {
+            if (userId == this@ReadingItemFragment.userId!!) {
                 readingItemActionsBinding.shareStoryButton.setText(R.string.already_shared)
                 return
             }
@@ -635,6 +691,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                         chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.tag_green_text))
                         chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_up_green)
                     }
+
                     Classifier.DISLIKE -> {
                         chip.setChipBackgroundColorResource(R.color.tag_red)
                         chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.tag_red_text))
@@ -725,7 +782,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     }
 
     fun viewModeChanged() {
-        synchronized(selectedViewMode!!) {
+        synchronized(selectedViewMode) {
             selectedViewMode = prefsRepo.getDefaultViewModeForFeed(story!!.feedId)
         }
         // these can come from async tasks
@@ -750,6 +807,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                     binding.readingTextmodefailed.visibility = View.VISIBLE
                     needStoryContent = true
                 }
+
                 originalText == null -> {
                     binding.readingTextloading.visibility = View.VISIBLE
                     enableProgress(true)
@@ -757,9 +815,9 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                     // still show the story mode version, as the text mode one may take some time
                     needStoryContent = true
                 }
+
                 else -> {
                     setupWebview(originalText!!)
-                    onContentLoadFinished()
                 }
             }
         }
@@ -769,7 +827,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                 story?.let { viewModel.loadStoryContent(it.storyHash) } ?: activity?.finish()
             } else {
                 setupWebview(storyContent!!)
-                onContentLoadFinished()
             }
         }
 
@@ -840,74 +897,53 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         }
     }
 
-    private fun setupWebview(storyText: String) {
+    private fun setupWebview(content: String) {
         // sometimes we get called before the activity is ready. abort, since we will get a refresh when
         // the cursor loads
         activity?.let {
-            it.runOnUiThread { _setupWebview(storyText) }
+            it.runOnUiThread { _setupWebview(content, storyHighlights) }
         }
     }
 
-    private fun _setupWebview(storyTextString: String) {
-        var storyText = storyTextString
+    private fun _setupWebview(content: String, highlights: Set<String>) {
         if (activity == null) {
             // this method gets called by async UI bits that might hold stale fragment references with no assigned
             // activity.  If this happens, just abort the call.
             return
         }
-        synchronized(webViewContentMutex) {
-            // this method might get called repeatedly despite no content change, which is expensive
-            val contentHash = storyText.hashCode()
-            if (this.contentHash == contentHash) return
-            this.contentHash = contentHash
+        val size = prefsRepo.getReadingTextSize()
+        val fontCss = prefsRepo.getFont().forWebView(size)
+        val theme = prefsRepo.getSelectedTheme()
+        val nightMask = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
 
-            sniffAltTexts(storyText)
+        viewLifecycleOwner.lifecycleScope.launch {
+            sniffAltTexts(content)
+            val html = StoryUtil.buildMinimalHtml(
+                    storyHtml = swapInOfflineImages(content),
+                    fontCss = fontCss,
+                    themeValue = theme,
+                    nightMask = nightMask,
+            )
+            val newHash = (html to highlights).hashCode()
+            synchronized(webViewContentMutex) {
+                // this method might get called repeatedly despite no content change, which is expensive
+                if (this@ReadingItemFragment.contentHash == newHash) return@synchronized
+                this@ReadingItemFragment.contentHash = newHash
 
-            storyText = swapInOfflineImages(storyText)
-            val currentSize = prefsRepo.getReadingTextSize()
-            val font = prefsRepo.getFont()
-            val themeValue = prefsRepo.getSelectedTheme()
-
-            val builder = StringBuilder()
-            builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0\" />")
-            builder.append(font.forWebView(currentSize))
-            builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" />")
-            when (themeValue) {
-                ThemeValue.LIGHT -> {
-                    //                builder.append("<meta name=\"color-scheme\" content=\"light\"/>");
-                    //                builder.append("<meta name=\"supported-color-schemes\" content=\"light\"/>");
-                    builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />")
-                }
-                ThemeValue.DARK -> {
-                    builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\" />")
-                }
-                ThemeValue.BLACK -> {
-                    builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"black_reading.css\" />")
-                }
-                ThemeValue.AUTO -> {
-                    when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-                        Configuration.UI_MODE_NIGHT_YES -> {
-                            builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"dark_reading.css\" />")
-                        }
-                        Configuration.UI_MODE_NIGHT_NO -> {
-                            builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />")
-                        }
-                        Configuration.UI_MODE_NIGHT_UNDEFINED -> {
-                            builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"light_reading.css\" />")
-                        }
-                    }
-                }
+                isWebLoadFinished.set(false)
+                binding.readingWebview.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "UTF-8", null)
+                onContentLoadFinished()
             }
-
-            builder.append("</head><body><div class=\"NB-story\">")
-            builder.append(storyText)
-            builder.append("<script type=\"text/javascript\" src=\"storyDetailView.js\"></script>")
-            builder.append("</div></body></html>")
-            binding.readingWebview.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null)
         }
     }
 
-    private fun sniffAltTexts(html: String) {
+    private fun applyStoryHighlights() {
+        if (!enableHighlights) return
+        val json = JSONArray(storyHighlights).toString()
+        binding.readingWebview.evaluateJavascript("NB_applyHighlights($json);", null)
+    }
+
+    private suspend fun sniffAltTexts(html: String) = withContext(Dispatchers.Default) {
         // Find images with alt tags and cache the text for use on long-press
         //   NOTE: if doing this via regex has a smell, you have a good nose!  This method is far from perfect
         //   and may miss valid cases or trucate tags, but it works for popular feeds (read: XKCD) and doesn't
@@ -958,10 +994,9 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     /** The webview has finished loading our desired content.  */
     fun onWebLoadFinished() {
-        if (!isWebLoadFinished) {
+        if (!isWebLoadFinished.getAndSet(true)) {
             binding.readingWebview.evaluateJavascript("loadImages();", null)
         }
-        isWebLoadFinished = true
         checkLoadStatus()
     }
 
@@ -973,13 +1008,14 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     private fun checkLoadStatus() {
         synchronized(isLoadFinished) {
-            if (isContentLoadFinished && isWebLoadFinished && isSocialLoadFinished) {
+            if (isContentLoadFinished && isWebLoadFinished.get() && isSocialLoadFinished) {
                 // iff this is the first time all content has finished loading, trigger any UI
                 // behaviour that is position-dependent
-                if (!isLoadFinished) {
+                if (!isLoadFinished.getAndSet(true)) {
                     onLoadFinished()
                 }
-                isLoadFinished = true
+
+                applyStoryHighlights()
             }
         }
     }
@@ -1012,10 +1048,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         newFragment.show(requireActivity().supportFragmentManager, StoryShortcutsFragment::class.java.name)
     }
 
-    fun flagWebviewError() {
-        // TODO: enable a selective reload mechanism on load failures?
-    }
-
     private val updateStoryReadTitleState = {
         story?.let {
             val (typeFace, iconVisibility) =
@@ -1033,7 +1065,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     }
 
     private fun setReadingFont(font: String) {
-       prefsRepo.setFontString(font)
+        prefsRepo.setFontString(font)
         contentHash = 0 // Force reload since content hasn't changed
         reloadStoryContent()
     }
@@ -1066,6 +1098,22 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
      * preventing unnecessary reprocessing.
      */
     fun shouldReceiveUpdateText(updateType: Int) = updateType and UPDATE_TEXT != 0 && originalText == null
+
+    private fun handleWebviewAction(actionType: WebviewActionType, selectedText: String) {
+        when (actionType) {
+            WebviewActionType.WEB_SEARCH -> {
+                if (selectedText.isNotEmpty()) {
+                    UIUtils.openWebSearch(requireContext(), selectedText)
+                }
+            }
+
+            WebviewActionType.HIGHLIGHT -> {
+                story?.let {
+                    viewModel.updateHighlights(selectedText, it.storyHash, storyHighlights)
+                }
+            }
+        }
+    }
 
     companion object {
         private const val BUNDLE_SCROLL_POS_REL = "scrollStateRel"

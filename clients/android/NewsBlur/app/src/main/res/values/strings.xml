@@ -172,6 +172,7 @@
     <string name="menu_story_list_style_choose">List style</string>
     <string name="menu_save_search">Save Search</string>
     <string name="menu_web_search">Web search</string>
+    <string name="menu_highlight">Highlight</string>
     <string name="list_style_list">List</string>
     <string name="list_style_grid_f">Grid (fine)</string>
     <string name="list_style_grid_m">Grid (medium)</string>
