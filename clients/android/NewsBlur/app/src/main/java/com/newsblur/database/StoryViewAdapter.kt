@@ -450,10 +450,10 @@ class StoryViewAdapter(
                 return true
             } else if (item.itemId == R.id.menu_save_story) {
                 //TODO get folder name
-                feedUtils.setStorySaved(story!!, true, context, null)
+                feedUtils.setStorySaved(story!!.storyHash, true, context, emptyList())
                 return true
             } else if (item.itemId == R.id.menu_unsave_story) {
-                feedUtils.setStorySaved(story!!, false, context, null)
+                feedUtils.setStorySaved(story!!.storyHash, false, context, emptyList())
                 return true
             } else if (item.itemId == R.id.menu_intel) {
                 if (story!!.feedId == "0") return true // cannot train on feedless stories
@@ -499,8 +499,8 @@ class StoryViewAdapter(
             when (action) {
                 GestureAction.GEST_ACTION_MARKREAD -> feedUtils.markStoryAsRead(story!!, context)
                 GestureAction.GEST_ACTION_MARKUNREAD -> feedUtils.markStoryUnread(story!!, context)
-                GestureAction.GEST_ACTION_SAVE -> feedUtils.setStorySaved(story!!, true, context, null)
-                GestureAction.GEST_ACTION_UNSAVE -> feedUtils.setStorySaved(story!!, false, context, null)
+                GestureAction.GEST_ACTION_SAVE -> feedUtils.setStorySaved(story!!.storyHash, true, context, emptyList())
+                GestureAction.GEST_ACTION_UNSAVE -> feedUtils.setStorySaved(story!!.storyHash, false, context, emptyList())
                 GestureAction.GEST_ACTION_STATISTICS -> feedUtils.openStatistics(context, prefsRepo, story!!.feedId)
                 GestureAction.GEST_ACTION_NONE -> {}
                 else -> {}

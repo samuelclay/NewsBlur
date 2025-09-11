@@ -204,7 +204,7 @@
                     android:textStyle="italic"
                     android:visibility="gone" />
 
-                <com.newsblur.view.NewsblurWebview
+                <com.newsblur.web.NewsblurWebview
                     android:id="@+id/reading_webview"
                     style="?readingBackground"
                     android:layout_width="match_parent"
