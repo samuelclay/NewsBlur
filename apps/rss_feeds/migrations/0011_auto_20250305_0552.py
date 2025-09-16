@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rss_feeds', '0010_feed_discover_indexed'),
+        ("rss_feeds", "0010_feed_discover_indexed"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='feed',
-            name='date_forbidden',
+            model_name="feed",
+            name="date_forbidden",
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='feed',
-            name='is_forbidden',
+            model_name="feed",
+            name="is_forbidden",
             field=models.BooleanField(blank=True, null=True),
         ),
     ]
