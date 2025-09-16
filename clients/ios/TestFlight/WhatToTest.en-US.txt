@@ -1,5 +1,1 @@
-Some widget interaction improvements:
-
-- Fixed an occasional crash when choosing a story in a widget.
-- Improved reliability of finding the story.
-- Prevented marking the first story as read when finding a story, if the setting to select the first story is chosen.
+- TBD.
