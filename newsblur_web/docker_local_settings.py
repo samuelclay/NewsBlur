@@ -179,4 +179,4 @@ IMAGES_SECRET_KEY = "0000000000000000000000000000000"
 
 # APNS settings for token-based authentication
 APNS_TEAM_ID = "XXXXXXXXXX"  # Apple Developer Team ID (10 characters)
-APNS_KEY_ID = "XXXXXXXXXX"   # APNS Key ID (10 characters)
+APNS_KEY_ID = "XXXXXXXXXX"  # APNS Key ID (10 characters)
