@@ -2652,6 +2652,11 @@ class Feed(models.Model):
 
     def get_next_scheduled_update(self, force=False, verbose=True, premium_speed=False, pro_speed=False):
         if self.min_to_decay and not force and not premium_speed:
+            if verbose:
+                logging.debug(
+                    "   ---> [%-30s] Using cached min_to_decay: %s min"
+                    % (self.log_title[:30], self.min_to_decay)
+                )
             return self.min_to_decay
 
         from apps.notifications.models import MUserFeedNotification
@@ -2662,10 +2667,23 @@ class Feed(models.Model):
             self.pro_subscribers += 1
 
         spd = self.stories_last_month / 30.0
+        # Weighted subscriber calculation: premium users count fully, regular users count as 1/10
         subs = self.active_premium_subscribers + (
             (self.active_subscribers - self.active_premium_subscribers) / 10.0
         )
         notification_count = MUserFeedNotification.objects.filter(feed_id=self.pk).count()
+
+        if verbose:
+            logging.debug(
+                "   ---> [%-30s] ~FBWeighted subscriber calculation:~SN %.1f = %s premium + (%s-%s)/10 regular"
+                % (
+                    self.log_title[:30],
+                    subs,
+                    self.active_premium_subscribers,
+                    self.active_subscribers,
+                    self.active_premium_subscribers,
+                )
+            )
         # Calculate sub counts:
         #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers > 10 AND stories_last_month >= 30;
         #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers > 1 AND active_premium_subscribers < 10 AND stories_last_month >= 30;
@@ -2684,24 +2702,46 @@ class Feed(models.Model):
         if spd >= 1:
             if subs >= 10:
                 total = 6
+                decay_reason = "High activity: >=1 story/day, >=10 weighted subs"
             elif subs > 1:
                 total = 15
+                decay_reason = "Good activity: >=1 story/day, >1 weighted subs"
             else:
                 total = 45
+                decay_reason = "Moderate activity: >=1 story/day, <=1 weighted subs"
         elif spd > 0:
             if subs > 1:
                 total = 60 - (spd * 60)
+                decay_reason = (
+                    "Low activity: <1 story/day (%.2f), >1 weighted subs, formula: 60-(%.2f*60)=%.1f"
+                    % (spd, spd, total)
+                )
             else:
                 total = 60 * 6 - (spd * 60 * 6)
+                decay_reason = (
+                    "Very low activity: <1 story/day (%.2f), <=1 weighted subs, formula: 360-(%.2f*360)=%.1f"
+                    % (spd, spd, total)
+                )
         elif spd == 0:
             if subs > 1:
                 total = 60 * 6
+                decay_reason = "No stories: 0 stories/month, >1 weighted subs"
             elif subs == 1:
                 total = 60 * 12
+                decay_reason = "No stories: 0 stories/month, =1 weighted subs"
             else:
                 total = 60 * 24
+                decay_reason = "No stories: 0 stories/month, <1 weighted subs"
             months_since_last_story = seconds_timesince(self.last_story_date) / (60 * 60 * 24 * 30)
             total *= max(1, months_since_last_story)
+            if months_since_last_story > 1:
+                decay_reason += ", multiplied by %.1f months since last story" % months_since_last_story
+
+        if verbose:
+            logging.debug(
+                "   ---> [%-30s] ~FBBase decay calculation:~SN %s min - %s"
+                % (self.log_title[:30], total, decay_reason)
+            )
         # updates_per_day_delay = 3 * 60 / max(.25, ((max(0, self.active_subscribers)**.2)
         #                                             * (self.stories_last_month**0.25)))
         # if self.active_premium_subscribers > 0:
@@ -2719,38 +2759,76 @@ class Feed(models.Model):
         #     subscriber_bonus /= min(self.active_subscribers+self.premium_subscribers, 5)
         # subscriber_bonus = int(subscriber_bonus)
 
+        original_total = total
+        adjustments = []
+
         if self.is_push:
             fetch_history = MFetchHistory.feed(self.pk)
             if len(fetch_history["push_history"]):
+                before_push = total
                 total = total * 12
+                adjustments.append("Push feed penalty: %s min -> %s min (x12)" % (before_push, total))
 
         # Any notifications means a 30 min minumum
         if notification_count > 0:
+            before_notif = total
             total = min(total, 30)
+            if before_notif != total:
+                adjustments.append(
+                    "Notification boost: %s min -> %s min (30 min max for %s notifications)"
+                    % (before_notif, total, notification_count)
+                )
 
         # 4 hour max for premiums, 48 hour max for free
         if subs >= 1:
+            before_cap = total
             total = min(total, 60 * 4 * 1)
+            if before_cap != total:
+                adjustments.append(
+                    "Premium cap: %s min -> %s min (4 hour max with %.1f weighted subs)"
+                    % (before_cap, total, subs)
+                )
         else:
+            before_cap = total
             total = min(total, 60 * 24 * 2)
+            if before_cap != total:
+                adjustments.append("Free cap: %s min -> %s min (48 hour max)" % (before_cap, total))
 
         # Craigslist feeds get 6 hours minimum
         if "craigslist" in self.feed_address:
+            before_cl = total
             total = max(total, 60 * 6)
+            if before_cl != total:
+                adjustments.append("Craigslist minimum: %s min -> %s min (6 hour min)" % (before_cl, total))
 
         # Twitter feeds get 2 hours minimum
         if "twitter" in self.feed_address:
+            before_tw = total
             total = max(total, 60 * 2)
+            if before_tw != total:
+                adjustments.append("Twitter minimum: %s min -> %s min (2 hour min)" % (before_tw, total))
 
         # Pro subscribers get absolute minimum
         if self.pro_subscribers and self.pro_subscribers >= 1:
+            before_pro = total
             if self.stories_last_month == 0:
                 total = min(total, 60)
+                if before_pro != total:
+                    adjustments.append(
+                        "Pro boost (no stories): %s min -> %s min (60 min max for %s pro subs)"
+                        % (before_pro, total, self.pro_subscribers)
+                    )
             else:
                 total = min(total, settings.PRO_MINUTES_BETWEEN_FETCHES)
+                if before_pro != total:
+                    adjustments.append(
+                        "Pro boost: %s min -> %s min (%s min max for %s pro subs)"
+                        % (before_pro, total, settings.PRO_MINUTES_BETWEEN_FETCHES, self.pro_subscribers)
+                    )
 
         # Forbidden feeds get a min of 6 hours
         if self.is_forbidden:
+            before_forbidden = total
             if self.num_subscribers > 1000:
                 hours = 3
             elif self.num_subscribers > 100:
@@ -2760,6 +2838,17 @@ class Feed(models.Model):
             else:
                 hours = 18
             total = max(total, hours * 60)
+            if before_forbidden != total:
+                adjustments.append(
+                    "Forbidden penalty: %s min -> %s min (%s hour min for %s subs)"
+                    % (before_forbidden, total, hours, self.num_subscribers)
+                )
+
+        if verbose and adjustments:
+            logging.debug(
+                "   ---> [%-30s] ~FBDecay adjustments applied:~SN\n         %s"
+                % (self.log_title[:30], "\n         ".join(adjustments))
+            )
 
         if verbose:
             logging.debug(
@@ -2783,29 +2872,93 @@ class Feed(models.Model):
         # Use Cache-Control max-age if provided
         if delay_fetch_sec is not None:
             minutes_until_next_fetch = delay_fetch_sec / 60
+            base_total = minutes_until_next_fetch
             if verbose:
                 logging.debug(
                     "   ---> [%-30s] ~FBScheduling feed fetch using cache-control: "
                     "~SB%s minutes" % (self.log_title[:30], minutes_until_next_fetch)
                 )
         else:
+            # Log subscriber counts for debugging
+            if verbose:
+                from apps.notifications.models import MUserFeedNotification
+
+                notification_count = MUserFeedNotification.objects.filter(feed_id=self.pk).count()
+                spd = self.stories_last_month / 30.0
+                months_since_last_story = (
+                    seconds_timesince(self.last_story_date) / (60 * 60 * 24 * 30) if self.last_story_date else 999
+                )
+
+                logging.debug(
+                    "   ---> [%-30s] ~FBCalculating decay time with:~SN\n"
+                    "         Subscribers: total=%s, active=%s, active_premium=%s, pro=%s, archive=%s\n"
+                    "         Stories: last_month=%s (%.2f/day), last_story_date=%s (%.1f months ago)\n"
+                    "         State: is_push=%s, is_forbidden=%s, notifications=%s, errors_since_good=%s"
+                    % (
+                        self.log_title[:30],
+                        self.num_subscribers,
+                        self.active_subscribers,
+                        self.active_premium_subscribers,
+                        self.pro_subscribers,
+                        self.archive_subscribers,
+                        self.stories_last_month,
+                        spd,
+                        self.last_story_date,
+                        months_since_last_story,
+                        self.is_push,
+                        self.is_forbidden,
+                        notification_count,
+                        self.errors_since_good,
+                    )
+                )
+
             minutes_until_next_fetch = self.get_next_scheduled_update(force=True, verbose=verbose)
+            base_total = minutes_until_next_fetch
             error_count = self.error_count
 
             if error_count:
+                original_total = minutes_until_next_fetch
                 minutes_until_next_fetch = minutes_until_next_fetch * error_count
                 minutes_until_next_fetch = min(minutes_until_next_fetch, 60 * 24 * 7)
                 if verbose:
                     logging.debug(
                         "   ---> [%-30s] ~FBScheduling feed fetch geometrically: "
-                        "~SB%s errors. Time: %s min"
-                        % (self.log_title[:30], self.errors_since_good, minutes_until_next_fetch)
+                        "~SB%s errors (errors_since_good=%s + redis_errors). Time adjusted from %s to %s min"
+                        % (self.log_title[:30], error_count, self.errors_since_good, original_total, minutes_until_next_fetch)
                     )
 
         random_factor = random.randint(0, int(minutes_until_next_fetch)) / 4
         if minutes_until_next_fetch <= 5:
             # 5 min fetches should be between 5 and 10 minutes
             random_factor = random.randint(0, int(minutes_until_next_fetch))
+
+        if verbose and delay_fetch_sec is None:
+            logging.debug(
+                "   ---> [%-30s] ~FBFinal decay calculation:~SN base=%s min, with_errors=%s min, random_factor=%.1f min"
+                % (self.log_title[:30], base_total, minutes_until_next_fetch, random_factor)
+            )
+
+            # Explain why this specific time was chosen
+            reasons = []
+            if self.active_premium_subscribers >= 1:
+                reasons.append("has %s active premium subscriber(s)" % self.active_premium_subscribers)
+            if self.pro_subscribers >= 1:
+                reasons.append("has %s pro subscriber(s)" % self.pro_subscribers)
+            if self.is_push:
+                reasons.append("is push feed")
+            if self.is_forbidden:
+                reasons.append("is forbidden (rate limited)")
+            if error_count > 0:
+                reasons.append("has %s error(s)" % error_count)
+            if self.stories_last_month == 0:
+                reasons.append("no stories in last month")
+
+            if reasons:
+                logging.debug(
+                    "   ---> [%-30s] ~FBReasons for %s min decay:~SN %s"
+                    % (self.log_title[:30], minutes_until_next_fetch, ", ".join(reasons))
+                )
+
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
             minutes=minutes_until_next_fetch + random_factor
         )
@@ -2813,13 +2966,19 @@ class Feed(models.Model):
         self.min_to_decay = minutes_until_next_fetch
 
         delta = self.next_scheduled_update - datetime.datetime.now()
-        minutes_to_next_fetch = (delta.seconds + (delta.days * 24 * 3600)) / 60
-        if minutes_to_next_fetch > self.min_to_decay or not skip_scheduling:
+        minutes_to_next_fetch_current = (delta.seconds + (delta.days * 24 * 3600)) / 60
+        if minutes_to_next_fetch_current > self.min_to_decay or not skip_scheduling:
             self.next_scheduled_update = next_scheduled_update
             if self.active_subscribers >= 1:
                 r.zadd("scheduled_updates", {self.pk: self.next_scheduled_update.strftime("%s")})
             r.zrem("tasked_feeds", self.pk)
             r.srem("queued_feeds", self.pk)
+
+            if verbose:
+                logging.debug(
+                    "   ---> [%-30s] ~FBScheduled next update for:~SN %s (in %.1f min)"
+                    % (self.log_title[:30], next_scheduled_update, minutes_until_next_fetch + random_factor)
+                )
 
         updated_fields = ["last_update", "next_scheduled_update"]
         if self.min_to_decay != original_min_to_decay:
