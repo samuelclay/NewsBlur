@@ -176,11 +176,11 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         story?.let { storyHighlights.addAll(it.highlights) }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        super.onSaveInstanceState(savedInstanceState)
         val heightm = binding.readingScrollview.getChildAt(0).measuredHeight
         val pos = binding.readingScrollview.scrollY
-        outState.putFloat(BUNDLE_SCROLL_POS_REL, pos.toFloat() / heightm)
+        savedInstanceState.putFloat(BUNDLE_SCROLL_POS_REL, pos.toFloat() / heightm)
     }
 
     override fun onDestroyView() {

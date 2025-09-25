@@ -570,9 +570,9 @@ public class ItemSetFragment extends NbFragment {
     }
 
     @Override
-    public void onSaveInstanceState (Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(BUNDLE_GRIDSTATE, binding.itemgridfragmentGrid.getLayoutManager().onSaveInstanceState());
+    public void onSaveInstanceState (@NonNull Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putParcelable(BUNDLE_GRIDSTATE, binding.itemgridfragmentGrid.getLayoutManager().onSaveInstanceState());
     }
 
 }

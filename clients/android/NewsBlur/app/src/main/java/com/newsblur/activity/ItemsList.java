@@ -43,6 +43,8 @@ import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.viewModel.ItemListViewModel;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -150,11 +152,11 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
 	}
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+    protected void onSaveInstanceState(@NotNull Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
         String q = binding.itemlistSearchQuery.getText().toString().trim();
-        if (q.length() > 0) {
-            outState.putString(BUNDLE_ACTIVE_SEARCH_QUERY, q);
+        if (!q.isEmpty()) {
+            savedInstanceState.putString(BUNDLE_ACTIVE_SEARCH_QUERY, q);
         }
     }
 
