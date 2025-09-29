@@ -1,6 +1,5 @@
 package com.newsblur.network;
 
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +28,8 @@ import com.newsblur.network.domain.AddFeedResponse;
 import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.InteractionsResponse;
-import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.ProfileResponse;
-import com.newsblur.network.domain.RegisterResponse;
 import com.newsblur.network.domain.StarredStoryHashesResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.StoryChangesResponse;
@@ -52,7 +49,6 @@ import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class APIManager {
 
@@ -77,44 +73,6 @@ public class APIManager {
         this.apiOkHttpClient = apiOkHttpClient;
         this.prefsRepo = prefsRepo;
 	}
-
-	public LoginResponse login(final String username, final String password) {
-        // This call should be pretty rare, but is expensive on the server side.  Log it
-        // at an above-debug level so it will be noticed if it ever gets called too often.
-        com.newsblur.util.Log.i(this.getClass().getName(), "calling login API");
-		final ContentValues values = new ContentValues();
-		values.put(APIConstants.PARAMETER_USERNAME, username);
-		values.put(APIConstants.PARAMETER_PASSWORD, password);
-		final APIResponse response = post(buildUrl(APIConstants.PATH_LOGIN), values);
-        LoginResponse loginResponse = response.getLoginResponse(gson);
-		if (!response.isError()) {
-			prefsRepo.saveLogin(username, response.getCookie());
-		} 
-        return loginResponse;
-    }
-
-    public boolean loginAs(String username) {
-        ContentValues values = new ContentValues();
-        values.put(APIConstants.PARAMETER_USER, username);
-        String urlString = buildUrl(APIConstants.PATH_LOGINAS) + "?" + builderGetParametersString(values);
-        com.newsblur.util.Log.i(this.getClass().getName(), "doing superuser swap: " + urlString);
-        // This API returns a redirect that means the call worked, but we do not want to follow it.  To
-        // just get the cookie from the 302 and stop, we directly use a one-off OkHttpClient.
-        Request.Builder requestBuilder = new Request.Builder().url(urlString);
-        addCookieHeader(requestBuilder);
-        OkHttpClient noredirHttpClient = new OkHttpClient.Builder()
-                                         .followRedirects(false)
-                                         .build();
-        try {
-            Response response = noredirHttpClient.newCall(requestBuilder.build()).execute();
-            if (!response.isRedirect()) return false;
-            String newCookie = response.header("Set-Cookie");
-            prefsRepo.saveLogin(username, newCookie);
-        } catch (IOException ioe) {
-            return false;
-        }
-        return true;
-    }
 
 	public NewsBlurResponse markFeedsAsRead(FeedSet fs, Long includeOlder, Long includeNewer) {
 		ValueMultimap values = new ValueMultimap();
@@ -160,7 +118,7 @@ public class APIManager {
 		APIResponse response = post(buildUrl(APIConstants.PATH_MARK_FEED_AS_READ), values);
         return response.getResponse(gson, NewsBlurResponse.class);
 	}
-	
+
 	private NewsBlurResponse markAllAsRead() {
 		ValueMultimap values = new ValueMultimap();
 		values.put(APIConstants.PARAMETER_DAYS, "0");
@@ -187,7 +145,7 @@ public class APIManager {
 		APIResponse response = post(buildUrl(APIConstants.PATH_MARK_STORY_AS_STARRED), values);
         return response.getResponse(gson, NewsBlurResponse.class);
 	}
-	
+
     public NewsBlurResponse markStoryAsUnstarred(String storyHash) {
 		ValueMultimap values = new ValueMultimap();
 		values.put(APIConstants.PARAMETER_STORY_HASH, storyHash);
@@ -201,19 +159,6 @@ public class APIManager {
         APIResponse response = post(buildUrl(APIConstants.PATH_MARK_STORY_HASH_UNREAD), values);
         return response.getResponse(gson, NewsBlurResponse.class);
     }
-
-	public RegisterResponse signup(final String username, final String password, final String email) {
-		final ContentValues values = new ContentValues();
-		values.put(APIConstants.PARAMETER_USERNAME, username);
-		values.put(APIConstants.PARAMETER_PASSWORD, password);
-		values.put(APIConstants.PARAMETER_EMAIL, email);
-		final APIResponse response = post(buildUrl(APIConstants.PATH_SIGNUP), values);
-        RegisterResponse registerResponse = response.getRegisterResponse(gson);
-		if (!response.isError()) {
-			prefsRepo.saveLogin(username, response.getCookie());
-		}
-        return registerResponse;
-	}
 
 	public ProfileResponse updateUserProfile() {
 		final APIResponse response = get(buildUrl(APIConstants.PATH_MY_PROFILE));
@@ -279,7 +224,7 @@ public class APIManager {
     public StoriesResponse getStories(FeedSet fs, int pageNumber, StoryOrder order, ReadFilter filter, int infrequentCutoff) {
         Uri uri;
         ValueMultimap values = new ValueMultimap();
-    
+
         // create the URI and populate request params depending on what kind of stories we want
         if (fs.isForWidget()) {
             uri = Uri.parse(buildUrl(APIConstants.PATH_RIVER_STORIES));
@@ -406,7 +351,7 @@ public class APIManager {
 
 	/**
      * Fetch the list of feeds/folders/socials from the backend.
-     * 
+     *
      * @param doUpdateCounts forces a refresh of unread counts.  This has a high latency
      *        cost and should not be set if the call is being used to display the UI for
      *        the first time, in which case it is more appropriate to make a separate,
@@ -677,7 +622,7 @@ public class APIManager {
     }
 
     /* HTTP METHODS */
-   
+
 	private APIResponse get(final String urlString) {
         APIResponse response;
         int tryCount = 0;
@@ -700,7 +645,7 @@ public class APIManager {
 		return new APIResponse(apiOkHttpClient, requestBuilder.build(), expectedReturnCode);
 	}
 
-	private void addCookieHeader(Request.Builder requestBuilder) {
+    void addCookieHeader(Request.Builder requestBuilder) {
 		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
 		if (cookie != null) {
@@ -712,7 +657,7 @@ public class APIManager {
         return this.get(urlString + "?" + builderGetParametersString(values));
 	}
 
-    private String builderGetParametersString(ContentValues values) {
+    String builderGetParametersString(ContentValues values) {
         List<String> parameters = new ArrayList<>();
         for (Entry<String, Object> entry : values.valueSet()) {
             StringBuilder builder = new StringBuilder();
@@ -723,12 +668,12 @@ public class APIManager {
         }
         return TextUtils.join("&", parameters);
     }
-	
+
 	private APIResponse get(final String urlString, final ValueMultimap valueMap) {
         return this.get(urlString + "?" + valueMap.getParameterString());
 	}
 
-	private APIResponse post(String urlString, RequestBody formBody) {
+    APIResponse post(String urlString, RequestBody formBody) {
         APIResponse response;
         int tryCount = 0;
         do {
@@ -763,15 +708,15 @@ public class APIManager {
 		return new APIResponse(apiOkHttpClient, requestBuilder.build());
 	}
 
-	private APIResponse post(final String urlString, final ContentValues values) {
+    APIResponse post(final String urlString, final ContentValues values) {
 		FormBody.Builder formEncodingBuilder = new FormBody.Builder();
 		for (Entry<String, Object> entry : values.valueSet()) {
 			formEncodingBuilder.add(entry.getKey(), (String)entry.getValue());
 		}
         return this.post(urlString, formEncodingBuilder.build());
 	}
-	
-	private APIResponse post(final String urlString, final ValueMultimap valueMap) {
+
+    APIResponse post(final String urlString, final ValueMultimap valueMap) {
         return this.post(urlString, valueMap.asFormEncodedRequestBody());
 	}
 

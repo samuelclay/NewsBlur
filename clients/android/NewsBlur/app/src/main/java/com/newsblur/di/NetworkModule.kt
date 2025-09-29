@@ -8,6 +8,8 @@ import com.google.gson.reflect.TypeToken
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
 import com.newsblur.network.APIManager
+import com.newsblur.network.AuthApi
+import com.newsblur.network.AuthApiImpl
 import com.newsblur.network.domain.StoriesResponse
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.serialization.BooleanTypeAdapter
@@ -84,4 +86,12 @@ object NetworkModule {
                     apiOkHttpClient,
                     prefsRepo,
             )
+
+    @Singleton
+    @Provides
+    fun provideAuthApi(
+            gson: Gson,
+            apiManager: APIManager,
+            prefsRepo: PrefsRepo,
+    ): AuthApi = AuthApiImpl(gson, apiManager, prefsRepo)
 }
