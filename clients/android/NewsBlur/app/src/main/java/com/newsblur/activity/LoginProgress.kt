@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.databinding.ActivityLoginProgressBinding
 import com.newsblur.network.APIManager
+import com.newsblur.network.AuthApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.util.EdgeToEdgeUtil.applyTheme
@@ -25,6 +26,9 @@ class LoginProgress : FragmentActivity() {
 
     @Inject
     lateinit var apiManager: APIManager
+
+    @Inject
+    lateinit var authApi: AuthApi
 
     @Inject
     lateinit var prefsRepo: PrefsRepo
@@ -47,7 +51,10 @@ class LoginProgress : FragmentActivity() {
                     binding.loginLoggingIn.startAnimation(a)
                 },
                 doInBackground = {
-                    val response = apiManager.login(username, password)
+                    val response = authApi.login(
+                            username.orEmpty(),
+                            password.orEmpty(),
+                    )
                     // pre-load the profile if the login was good
                     if (!response.isError) {
                         apiManager.updateUserProfile()
