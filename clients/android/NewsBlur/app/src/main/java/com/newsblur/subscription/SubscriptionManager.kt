@@ -9,6 +9,7 @@ import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingFlowParams.SubscriptionUpdateParams.ReplacementMode
 import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
@@ -23,7 +24,6 @@ import com.newsblur.util.FeedUtils
 import com.newsblur.util.Log
 import com.newsblur.util.NBScope
 import com.newsblur.util.executeAsyncTask
-import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -164,7 +164,9 @@ class SubscriptionManagerImpl(
 
     private val billingClient: BillingClient = BillingClient.newBuilder(context)
             .setListener(purchaseUpdateListener)
-            .enablePendingPurchases()
+            .enablePendingPurchases(
+                    PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
+            )
             .build()
 
     override fun startBillingConnection(listener: SubscriptionsListener?) {
@@ -276,7 +278,8 @@ class SubscriptionManagerImpl(
             ))
         }.build()
 
-        billingClient.queryProductDetailsAsync(params) { _: BillingResult?, productDetailsList: List<ProductDetails> ->
+        billingClient.queryProductDetailsAsync(params) { _, productDetails ->
+            val productDetailsList = productDetails.productDetailsList
             Log.d(this, "ProductDetailsResponse $productDetailsList")
             val productDetails = productDetailsList.filter {
                 it.productId == AppConstants.PREMIUM_SUB_ID ||
