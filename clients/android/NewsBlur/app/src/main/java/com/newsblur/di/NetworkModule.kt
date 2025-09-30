@@ -10,6 +10,8 @@ import com.newsblur.domain.Story
 import com.newsblur.network.APIManager
 import com.newsblur.network.AuthApi
 import com.newsblur.network.AuthApiImpl
+import com.newsblur.network.FolderApi
+import com.newsblur.network.FolderApiImpl
 import com.newsblur.network.UserApi
 import com.newsblur.network.UserApiImpl
 import com.newsblur.network.domain.StoriesResponse
@@ -105,4 +107,11 @@ object NetworkModule {
             apiManager: APIManager,
             prefsRepo: PrefsRepo,
     ): UserApi = UserApiImpl(context, gson, apiManager, prefsRepo)
+
+    @Singleton
+    @Provides
+    fun provideFolderApi(
+            gson: Gson,
+            apiManager: APIManager,
+    ): FolderApi = FolderApiImpl(gson, apiManager)
 }

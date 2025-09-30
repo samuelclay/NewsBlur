@@ -15,6 +15,7 @@ import com.newsblur.fragment.ReadingActionConfirmationFragment
 import com.newsblur.network.APIConstants
 import com.newsblur.network.APIConstants.NULL_STORY_TEXT
 import com.newsblur.network.APIManager
+import com.newsblur.network.FolderApi
 import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NBSyncService
@@ -30,6 +31,7 @@ class FeedUtils(
         private val dbHelper: BlurDatabaseHelper,
         private val apiManager: APIManager,
         private val userApi: UserApi,
+        private val folderApi: FolderApi,
         private val prefsRepo: PrefsRepo,
 ) {
 
@@ -161,10 +163,10 @@ class FeedUtils(
         )
     }
 
-    fun deleteFolder(folderName: String?, inFolder: String?, context: Context) {
+    fun deleteFolder(folderName: String?, inFolder: String, context: Context) {
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.deleteFolder(folderName, inFolder)
+                    folderApi.deleteFolder(folderName, inFolder)
                 },
                 onPostExecute = { result ->
                     if (!result.isError) {
@@ -175,10 +177,10 @@ class FeedUtils(
         )
     }
 
-    fun renameFolder(folderName: String?, newFolderName: String?, inFolder: String?, context: Context) {
+    fun renameFolder(folderName: String?, newFolderName: String, inFolder: String, context: Context) {
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.renameFolder(folderName, newFolderName, inFolder)
+                    folderApi.renameFolder(folderName, newFolderName, inFolder)
                 },
                 onPostExecute = { result ->
                     if (!result.isError) {
@@ -449,11 +451,11 @@ class FeedUtils(
         triggerSync(context)
     }
 
-    fun moveFeedToFolders(context: Context, feedId: String?, toFolders: Set<String?>, inFolders: Set<String?>?) {
+    fun moveFeedToFolders(context: Context, feedId: String?, toFolders: Set<String>, inFolders: Set<String>) {
         if (toFolders.isEmpty()) return
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.moveFeedToFolders(feedId, toFolders, inFolders)
+                    folderApi.moveFeedToFolders(feedId, toFolders, inFolders)
                 },
                 onPostExecute = {
                     NBSyncService.forceFeedsFolders()
