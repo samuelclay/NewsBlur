@@ -15,6 +15,7 @@ import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Classifier;
 import com.newsblur.network.APIManager;
+import com.newsblur.network.StoryApi;
 import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
@@ -50,7 +51,9 @@ public class ReadingAction implements Serializable {
         INSTA_FETCH,
         UPDATE_INTEL,
         RENAME_FEED
-    };
+    }
+
+    ;
 
     private long time;
     private int tried;
@@ -87,7 +90,7 @@ public class ReadingAction implements Serializable {
         this.time = time;
         this.tried = tried;
     }
-    
+
     public int getTried() {
         return tried;
     }
@@ -257,8 +260,8 @@ public class ReadingAction implements Serializable {
         return ra;
     }
 
-	public ContentValues toContentValues() {
-		ContentValues values = new ContentValues();
+    public ContentValues toContentValues() {
+        ContentValues values = new ContentValues();
         values.put(DatabaseConstants.ACTION_TIME, time);
         values.put(DatabaseConstants.ACTION_TRIED, tried);
         // because ReadingActions will have to represent a wide and ever-growing variety of interactions,
@@ -267,23 +270,28 @@ public class ReadingAction implements Serializable {
         // cardinality, only the ACTION_TIME and ACTION_TRIED values are stored in columns of their own, and
         // all remaining fields are frozen as JSON, since they are never queried upon.
         values.put(DatabaseConstants.ACTION_PARAMS, DatabaseConstants.JsonHelper.toJson(this));
-		return values;
-	}
+        return values;
+    }
 
-	public static ReadingAction fromCursor(@NonNull Cursor c) {
+    public static ReadingAction fromCursor(@NonNull Cursor c) {
         long time = c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_TIME));
         int tried = c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_TRIED));
         String params = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_PARAMS));
-		ReadingAction ra = DatabaseConstants.JsonHelper.fromJson(params, ReadingAction.class);
+        ReadingAction ra = DatabaseConstants.JsonHelper.fromJson(params, ReadingAction.class);
         ra.time = time;
         ra.tried = tried;
-		return ra;
-	}
+        return ra;
+    }
 
     /**
      * Execute this action remotely via the API.
      */
-    public NewsBlurResponse doRemote(@NonNull APIManager apiManager, @NonNull BlurDatabaseHelper dbHelper, @NonNull StateFilter stateFilter) {
+    public NewsBlurResponse doRemote(
+            @NonNull APIManager apiManager,
+            @NonNull StoryApi storyApi,
+            @NonNull BlurDatabaseHelper dbHelper,
+            @NonNull StateFilter stateFilter
+    ) {
         // generic response to return
         NewsBlurResponse result = null;
         // optional specific responses that are locally actionable
@@ -294,50 +302,50 @@ public class ReadingAction implements Serializable {
 
             case MARK_READ:
                 if (storyHash != null) {
-                    result = apiManager.markStoryAsRead(storyHash);
+                    result = storyApi.markStoryAsRead(storyHash);
                 } else if (feedSet != null) {
                     result = apiManager.markFeedsAsRead(feedSet, olderThan, newerThan);
                 }
                 break;
 
             case MARK_UNREAD:
-                result = apiManager.markStoryHashUnread(storyHash);
+                result = storyApi.markStoryHashUnread(storyHash);
                 break;
 
             case SAVE:
-                result = apiManager.markStoryAsStarred(storyHash, highlights, userTags);
+                result = storyApi.markStoryAsStarred(storyHash, highlights, userTags);
                 break;
 
             case UNSAVE:
-                result = apiManager.markStoryAsUnstarred(storyHash);
+                result = storyApi.markStoryAsUnstarred(storyHash);
                 break;
 
             case SHARE:
-                storiesResponse = apiManager.shareStory(storyId, feedId, commentReplyText, sourceUserId);
+                storiesResponse = storyApi.shareStory(storyId, feedId, commentReplyText, sourceUserId);
                 break;
 
             case UNSHARE:
-                storiesResponse = apiManager.unshareStory(storyId, feedId);
+                storiesResponse = storyApi.unshareStory(storyId, feedId);
                 break;
 
             case LIKE_COMMENT:
-                result = apiManager.favouriteComment(storyId, commentUserId, feedId);
+                result = storyApi.favouriteComment(storyId, commentUserId, feedId);
                 break;
 
             case UNLIKE_COMMENT:
-                result = apiManager.unFavouriteComment(storyId, commentUserId, feedId);
+                result = storyApi.unFavouriteComment(storyId, commentUserId, feedId);
                 break;
 
             case REPLY:
-                commentResponse = apiManager.replyToComment(storyId, feedId, commentUserId, commentReplyText);
+                commentResponse = storyApi.replyToComment(storyId, feedId, commentUserId, commentReplyText);
                 break;
 
             case EDIT_REPLY:
-                commentResponse = apiManager.editReply(storyId, feedId, commentUserId, replyId, commentReplyText);
+                commentResponse = storyApi.editReply(storyId, feedId, commentUserId, replyId, commentReplyText);
                 break;
 
             case DELETE_REPLY:
-                commentResponse = apiManager.deleteReply(storyId, feedId, commentUserId, replyId);
+                commentResponse = storyApi.deleteReply(storyId, feedId, commentUserId, replyId);
                 break;
 
             case MUTE_FEEDS:
@@ -372,7 +380,7 @@ public class ReadingAction implements Serializable {
                 throw new IllegalStateException("cannot execute uknown type of action.");
 
         }
-        
+
         if (storiesResponse != null) {
             result = storiesResponse;
             if (storiesResponse.story != null) {
@@ -408,7 +416,6 @@ public class ReadingAction implements Serializable {
      * Excecute this action on the local DB. These *must* be idempotent.
      *
      * @param isFollowup flag that this is a double-check invocation and is noncritical
-     *
      * @return the union of update impact flags that resulted from this action.
      */
     public int doLocal(
@@ -485,7 +492,7 @@ public class ReadingAction implements Serializable {
                 dbHelper.deleteReply(replyId);
                 impact |= UPDATE_SOCIAL;
                 break;
-                
+
             case MUTE_FEEDS:
             case UNMUTE_FEEDS:
                 dbHelper.setFeedsActive(modifiedFeedIds, type == ActionType.UNMUTE_FEEDS);
@@ -506,7 +513,7 @@ public class ReadingAction implements Serializable {
                 // individual tags and authors etc in the UI, but story scores won't be updated until a refresh.
                 // for best offline operation, we could try to duplicate that business logic locally
                 dbHelper.clearClassifiersForFeed(feedId);
-                classifier.feedId = feedId; 
+                classifier.feedId = feedId;
                 dbHelper.insertClassifier(classifier);
                 impact |= UPDATE_INTEL;
                 break;

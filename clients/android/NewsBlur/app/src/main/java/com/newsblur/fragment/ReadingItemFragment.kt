@@ -40,7 +40,7 @@ import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
 import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.network.APIConstants.NULL_STORY_TEXT
-import com.newsblur.network.APIManager
+import com.newsblur.network.StoryApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NbSyncManager.UPDATE_INTEL
 import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
@@ -77,7 +77,7 @@ import kotlin.math.roundToInt
 class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     @Inject
-    lateinit var apiManager: APIManager
+    lateinit var storyApi: StoryApi
 
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
@@ -881,10 +881,10 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                         binding.readingStoryChanges.setText(R.string.story_changes_loading)
                     },
                     doInBackground = {
-                        apiManager.getStoryChanges(story.storyHash, showChanges)
+                        storyApi.getStoryChanges(story.storyHash, showChanges)
                     },
                     onPostExecute = { response ->
-                        if (!response.isError && response.story != null) {
+                        if (response != null && !response.isError && response.story != null) {
                             storyContent = response.story.content
                             reloadStoryContent()
                             binding.readingStoryChanges.setText(if (showChanges) R.string.story_hide_changes else R.string.story_show_changes)

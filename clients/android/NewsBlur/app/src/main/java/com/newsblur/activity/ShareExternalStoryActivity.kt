@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.databinding.ActivityShareExternalStoryBinding
-import com.newsblur.network.APIManager
+import com.newsblur.network.StoryApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.EdgeToEdgeUtil.applyTheme
 import com.newsblur.util.EdgeToEdgeUtil.applyView
@@ -21,7 +21,7 @@ import javax.inject.Inject
 class ShareExternalStoryActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var apiManager: APIManager
+    lateinit var storyApi: StoryApi
 
     @Inject
     lateinit var prefsRepo: PrefsRepo
@@ -66,7 +66,7 @@ class ShareExternalStoryActivity : AppCompatActivity() {
                     binding.containerButtons.setViewGone()
                 },
                 doInBackground = {
-                    apiManager.shareExternalStory(storyTitle!!, storyUrl!!, comment)
+                    storyApi.shareExternalStory(storyTitle!!, storyUrl!!, comment)
                 },
                 onPostExecute = { response ->
                     if (!response.isError) finishWithToast("NewsBlur shared $storyTitle successfully!")
@@ -82,7 +82,7 @@ class ShareExternalStoryActivity : AppCompatActivity() {
                     binding.containerButtons.setViewGone()
                 },
                 doInBackground = {
-                    apiManager.saveExternalStory(storyTitle!!, storyUrl!!)
+                    storyApi.saveExternalStory(storyTitle!!, storyUrl!!)
                 },
                 onPostExecute = { response ->
                     if (!response.isError) finishWithToast("NewsBlur saved $storyTitle successfully!")
