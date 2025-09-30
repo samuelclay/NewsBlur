@@ -23,13 +23,10 @@ import com.newsblur.domain.Classifier;
 import com.newsblur.domain.FeedResult;
 import com.newsblur.domain.ValueMultimap;
 import static com.newsblur.network.APIConstants.buildUrl;
-import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.network.domain.AddFeedResponse;
 import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.FeedFolderResponse;
-import com.newsblur.network.domain.InteractionsResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
-import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.StarredStoryHashesResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.network.domain.StoryChangesResponse;
@@ -56,7 +53,6 @@ public class APIManager {
 	private final Gson gson;
     @ApiOkHttpClient
 	private final OkHttpClient apiOkHttpClient;
-    private final PrefsRepo prefsRepo;
     private String customUserAgent;
 
 	public APIManager(
@@ -71,7 +67,6 @@ public class APIManager {
         this.gson = gson;
         this.customUserAgent = customUserAgent;
         this.apiOkHttpClient = apiOkHttpClient;
-        this.prefsRepo = prefsRepo;
 	}
 
 	public NewsBlurResponse markFeedsAsRead(FeedSet fs, Long includeOlder, Long includeNewer) {
@@ -159,17 +154,6 @@ public class APIManager {
         APIResponse response = post(buildUrl(APIConstants.PATH_MARK_STORY_HASH_UNREAD), values);
         return response.getResponse(gson, NewsBlurResponse.class);
     }
-
-	public ProfileResponse updateUserProfile() {
-		final APIResponse response = get(buildUrl(APIConstants.PATH_MY_PROFILE));
-		if (!response.isError()) {
-			ProfileResponse profileResponse = response.getResponse(gson, ProfileResponse.class);
-			prefsRepo.saveUserDetails(context, profileResponse.user);
-			return profileResponse;
-		} else {
-			return null;
-		}
-	}
 
     public NewsBlurResponse moveFeedToFolders(String feedId, Set<String> toFolders, Set<String> inFolders) {
         ValueMultimap values = new ValueMultimap();
@@ -292,20 +276,6 @@ public class APIManager {
         return response.getResponse(gson, StoriesResponse.class);
     }
 
-	public boolean followUser(final String userId) {
-		final ContentValues values = new ContentValues();
-		values.put(APIConstants.PARAMETER_USERID, userId);
-		final APIResponse response = post(buildUrl(APIConstants.PATH_FOLLOW), values);
-        return !response.isError();
-	}
-
-	public boolean unfollowUser(final String userId) {
-		final ContentValues values = new ContentValues();
-		values.put(APIConstants.PARAMETER_USERID, userId);
-		final APIResponse response = post(buildUrl(APIConstants.PATH_UNFOLLOW), values);
-        return !response.isError();
-	}
-
 	public APIResponse saveExternalStory(@NonNull String storyTitle, @NonNull String storyUrl) {
         ContentValues values = new ContentValues();
         values.put(APIConstants.PARAMETER_TITLE, storyTitle);
@@ -382,43 +352,6 @@ public class APIManager {
 		APIResponse response = post(buildUrl(APIConstants.PATH_CLASSIFIER_SAVE), values);
 		return response.getResponse(gson, NewsBlurResponse.class);
 	}
-
-	public ProfileResponse getUser(String userId) {
-		final ContentValues values = new ContentValues();
-		values.put(APIConstants.PARAMETER_USER_ID, userId);
-		final APIResponse response = get(buildUrl(APIConstants.PATH_USER_PROFILE), values);
-		if (!response.isError()) {
-            return response.getResponse(gson, ProfileResponse.class);
-		} else {
-			return null;
-		}
-	}
-
-    public ActivitiesResponse getActivities(String userId, int pageNumber) {
-        final ContentValues values = new ContentValues();
-        values.put(APIConstants.PARAMETER_USER_ID, userId);
-        values.put(APIConstants.PARAMETER_LIMIT, "10");
-        values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
-        final APIResponse response = get(buildUrl(APIConstants.PATH_USER_ACTIVITIES), values);
-        if (!response.isError()) {
-            return response.getResponse(gson, ActivitiesResponse.class);
-        } else {
-            return null;
-        }
-    }
-
-    public InteractionsResponse getInteractions(String userId, int pageNumber) {
-        final ContentValues values = new ContentValues();
-        values.put(APIConstants.PARAMETER_USER_ID, userId);
-        values.put(APIConstants.PARAMETER_LIMIT, "10");
-        values.put(APIConstants.PARAMETER_PAGE_NUMBER, Integer.toString(pageNumber));
-        final APIResponse response = get(buildUrl(APIConstants.PATH_USER_INTERACTIONS), values);
-        if (!response.isError()) {
-            return response.getResponse(gson, InteractionsResponse.class);
-        } else {
-            return null;
-        }
-    }
 
     @Nullable
 	public StoryTextResponse getStoryText(String feedId, String storyId) {
@@ -623,7 +556,7 @@ public class APIManager {
 
     /* HTTP METHODS */
 
-	private APIResponse get(final String urlString) {
+    APIResponse get(final String urlString) {
         APIResponse response;
         int tryCount = 0;
         do {
@@ -653,7 +586,7 @@ public class APIManager {
 		}
 	}
 
-	private APIResponse get(final String urlString, final ContentValues values) {
+    APIResponse get(final String urlString, final ContentValues values) {
         return this.get(urlString + "?" + builderGetParametersString(values));
 	}
 
