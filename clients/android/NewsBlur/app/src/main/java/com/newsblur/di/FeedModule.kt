@@ -2,6 +2,7 @@ package com.newsblur.di
 
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.network.APIManager
+import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FeedUtils
 import dagger.Module
@@ -19,6 +20,7 @@ class FeedModule {
     fun provideFeedUtils(
             dbHelper: BlurDatabaseHelper,
             apiManager: APIManager,
+            userApi: UserApi,
             prefsRepo: PrefsRepo
-    ) = FeedUtils(dbHelper, apiManager, prefsRepo)
+    ) = FeedUtils(dbHelper, apiManager, userApi, prefsRepo)
 }

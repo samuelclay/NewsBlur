@@ -15,6 +15,7 @@ import com.newsblur.fragment.ReadingActionConfirmationFragment
 import com.newsblur.network.APIConstants
 import com.newsblur.network.APIConstants.NULL_STORY_TEXT
 import com.newsblur.network.APIManager
+import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NBSyncService
 import com.newsblur.service.NbSyncManager
@@ -28,6 +29,7 @@ import com.newsblur.util.FeedExt.setNotifyUnread
 class FeedUtils(
         private val dbHelper: BlurDatabaseHelper,
         private val apiManager: APIManager,
+        private val userApi: UserApi,
         private val prefsRepo: PrefsRepo,
 ) {
 
@@ -149,7 +151,7 @@ class FeedUtils(
     fun deleteSocialFeed(userId: String?) {
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.unfollowUser(userId)
+                    userApi.unfollowUser(userId)
                     // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
                     dbHelper.deleteSocialFeed(userId)
                 },

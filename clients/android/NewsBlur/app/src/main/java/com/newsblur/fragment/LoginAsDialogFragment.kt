@@ -11,8 +11,8 @@ import com.newsblur.R
 import com.newsblur.activity.Main
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.databinding.LoginasDialogBinding
-import com.newsblur.network.APIManager
 import com.newsblur.network.AuthApi
+import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,7 +22,7 @@ import javax.inject.Inject
 class LoginAsDialogFragment : DialogFragment() {
 
     @Inject
-    lateinit var apiManager: APIManager
+    lateinit var userApi: UserApi
 
     @Inject
     lateinit var authApi: AuthApi
@@ -47,7 +47,7 @@ class LoginAsDialogFragment : DialogFragment() {
                         val result = authApi.loginAs(username)
                         if (result) {
                             prefsRepo.clearPrefsAndDbForLoginAs(dbHelper)
-                            apiManager.updateUserProfile()
+                            userApi.updateUserProfile()
                         }
                         result
                     },
