@@ -22,6 +22,7 @@ import com.newsblur.databinding.RowAddFeedFolderBinding
 import com.newsblur.domain.Folder
 import com.newsblur.fragment.AddFeedFragment.AddFeedAdapter.FolderViewHolder
 import com.newsblur.network.APIManager
+import com.newsblur.network.FolderApi
 import com.newsblur.service.NBSyncService
 import com.newsblur.util.AppConstants
 import com.newsblur.util.executeAsyncTask
@@ -34,6 +35,9 @@ class AddFeedFragment : DialogFragment() {
 
     @Inject
     lateinit var apiManager: APIManager
+
+    @Inject
+    lateinit var folderApi: FolderApi
 
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
@@ -78,7 +82,7 @@ class AddFeedFragment : DialogFragment() {
 
         lifecycleScope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.addFolder(folderName)
+                    folderApi.addFolder(folderName)
                 },
                 onPostExecute = {
                     binding.inputFolderName.isEnabled = true
