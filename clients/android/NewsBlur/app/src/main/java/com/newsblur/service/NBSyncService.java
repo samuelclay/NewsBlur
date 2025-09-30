@@ -33,6 +33,7 @@ import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIConstants;
 import com.newsblur.network.APIManager;
+import com.newsblur.network.StoryApi;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
@@ -167,6 +168,9 @@ public class NBSyncService extends JobService {
 
     @Inject
     APIManager apiManager;
+
+    @Inject
+    StoryApi storyApi;
 
     @Inject
     BlurDatabaseHelper dbHelper;
@@ -464,7 +468,7 @@ public class NBSyncService extends JobService {
                 if ((ra.getTried() > 0) && (PendingFeed != null)) continue actionsloop;
 
                 com.newsblur.util.Log.d(this, "attempting action: " + ra.toContentValues().toString());
-                NewsBlurResponse response = ra.doRemote(apiManager, dbHelper, stateFilter);
+                NewsBlurResponse response = ra.doRemote(apiManager, storyApi, dbHelper, stateFilter);
 
                 if (response == null) {
                     com.newsblur.util.Log.e(this.getClass().getName(), "Discarding reading action with client-side error.");
@@ -842,7 +846,7 @@ public class NBSyncService extends JobService {
                 }
 
                 pageNumber++;
-                StoriesResponse apiResponse = apiManager.getStories(fs, pageNumber, cursorFilters.getStoryOrder(), cursorFilters.getReadFilter(), prefsRepo.getInfrequentCutoff());
+                StoriesResponse apiResponse = storyApi.getStories(fs, pageNumber, cursorFilters.getStoryOrder(), cursorFilters.getReadFilter(), prefsRepo.getInfrequentCutoff());
 
                 if (!isStoryResponseGood(apiResponse)) return;
 

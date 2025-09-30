@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.database.DatabaseConstants
 import com.newsblur.network.APIConstants.NULL_STORY_TEXT
-import com.newsblur.network.APIManager
+import com.newsblur.network.StoryApi
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.FeedUtils.Companion.inferFeedId
 import com.newsblur.util.Log
@@ -23,9 +23,9 @@ import javax.inject.Inject
 @HiltViewModel
 class ReadingItemViewModel
 @Inject constructor(
-        @ApplicationContext private val context: Context,
+        @param:ApplicationContext private val context: Context,
         private val database: BlurDatabaseHelper,
-        private val apiManager: APIManager,
+        private val storyApi: StoryApi,
         private val feedUtils: FeedUtils,
 ) : ViewModel() {
 
@@ -41,7 +41,7 @@ class ReadingItemViewModel
             if (result != null) {
                 _readingPayload.emit(StoryOriginalText(result))
             } else {
-                val response = apiManager.getStoryText(inferFeedId(hash), hash)
+                val response = storyApi.getStoryText(inferFeedId(hash), hash)
                 val text = when {
                     response == null || response.originalText == null -> {
                         // a null value in an otherwise valid response to this call indicates a fatal

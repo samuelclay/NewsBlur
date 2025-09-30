@@ -14,7 +14,7 @@ import com.newsblur.R
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.Feed
 import com.newsblur.domain.Story
-import com.newsblur.network.APIManager
+import com.newsblur.network.StoryApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.*
 import dagger.hilt.android.EntryPointAccessors
@@ -28,7 +28,7 @@ import kotlin.math.min
 class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFactory {
 
     private val context: Context
-    private val apiManager: APIManager
+    private val storyApi: StoryApi
     private val dbHelper: BlurDatabaseHelper
     private val iconLoader: ImageLoader
     private val thumbnailLoader: ImageLoader
@@ -45,7 +45,7 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
         val hiltEntryPoint = EntryPointAccessors
                 .fromApplication(context.applicationContext, WidgetRemoteViewsFactoryEntryPoint::class.java)
         this.context = context
-        this.apiManager = hiltEntryPoint.apiManager()
+        this.storyApi = hiltEntryPoint.storyApi()
         this.dbHelper = hiltEntryPoint.dbHelper()
         this.iconLoader = hiltEntryPoint.iconLoader()
         this.thumbnailLoader = hiltEntryPoint.thumbnailLoader()
@@ -150,15 +150,15 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
                 // Taking more than 20 seconds in this method will result in an ANR.
                 withTimeout(18000) {
                     Log.d(this.javaClass.name, "onDataSetChanged - get remote stories")
-                    val response = apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL, prefsRepo.getInfrequentCutoff())
-                    response.stories?.let {
+                    val response = storyApi.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL, prefsRepo.getInfrequentCutoff())
+                    response?.stories?.let {
                         val stateFilter = prefsRepo.getStateFilter()
                         Log.d(this.javaClass.name, "onDataSetChanged - got ${it.size} remote stories")
                         processStories(response.stories)
                         dbHelper.insertStories(response, stateFilter, true)
                     } ?: Log.d(this.javaClass.name, "onDataSetChanged - null remote stories")
                 }
-            } catch (e: TimeoutCancellationException) {
+            } catch (_: TimeoutCancellationException) {
                 Log.d(this.javaClass.name, "onDataSetChanged - timeout")
             }
         }

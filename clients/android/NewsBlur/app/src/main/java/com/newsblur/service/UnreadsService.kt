@@ -32,7 +32,7 @@ class UnreadsService(parent: NBSyncService) : SubService(parent, NBScope) {
         if (parent.stopSync()) return
 
         // get unread hashes and dates from the API
-        val unreadHashes = parent.apiManager.getUnreadStoryHashes()
+        val unreadHashes = parent.storyApi.getUnreadStoryHashes()
 
         if (parent.stopSync()) return
 
@@ -128,7 +128,7 @@ class UnreadsService(parent: NBSyncService) : SubService(parent, NBScope) {
                     }
                     if (hashBatch.size >= AppConstants.UNREAD_FETCH_BATCH_SIZE) break@batchLoop
                 }
-                val response = parent.apiManager.getStoriesByHash(hashBatch)
+                val response = parent.storyApi.getStoriesByHash(hashBatch)
                 if (!isStoryResponseGood(response)) {
                     Log.e(this, "error fetching unreads batch, abandoning sync.")
                     break@unreadSyncLoop

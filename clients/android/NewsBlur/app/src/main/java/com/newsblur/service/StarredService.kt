@@ -13,7 +13,7 @@ class StarredService(parent: NBSyncService) : SubService(parent) {
         if (parent.stopSync()) return
 
         // get all starred story hashes from remote db
-        val starredHashesResponse = parent.apiManager.starredStoryHashes
+        val starredHashesResponse = parent.storyApi.getStarredStoryHashes()
 
         if (parent.stopSync()) return
 
