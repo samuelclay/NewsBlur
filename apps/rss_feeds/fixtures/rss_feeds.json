@@ -1,13 +1,78 @@
 [
     {
         "pk": 1,
+        "model": "auth.user",
+        "fields": {
+            "username": "test_user",
+            "first_name": "",
+            "last_name": "",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2011-07-18 00:23:49",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$180000$fpQMtncRvf8S$n3XmosswKzC3ERp8IBfP+rup9S2g4Zk/MNLKiy9DQ4k=",
+            "email": "test@newsblur.com",
+            "date_joined": "2011-07-18 00:23:49"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "auth.user",
+        "fields": {
+            "username": "test_user_1b",
+            "first_name": "",
+            "last_name": "",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2011-07-18 00:23:49",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$180000$fpQMtncRvf8S$n3XmosswKzC3ERp8IBfP+rup9S2g4Zk/MNLKiy9DQ4k=",
+            "email": "test1b@newsblur.com",
+            "date_joined": "2011-07-18 00:23:49"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "rss_feeds.feed",
+        "fields": {
+            "premium_subscribers": 0,
+            "creation": "2011-07-18",
+            "exception_code": 500,
+            "last_load_time": 1,
+            "active_subscribers": 1,
+            "feed_address": "https://blog.newsblur.com/rss",
+            "feed_link": "https://blog.newsblur.com/",
+            "last_update": "2011-07-18 04:27:26",
+            "etag": "",
+            "average_stories_per_month": 0,
+            "feed_title": "The NewsBlur Blog",
+            "last_modified": null,
+            "next_scheduled_update": "2011-07-18 16:43:25",
+            "favicon_color": "de9b3c",
+            "stories_last_month": 0,
+            "active": true,
+            "favicon_not_found": false,
+            "has_page_exception": false,
+            "fetched_once": true,
+            "days_to_trim": 90,
+            "num_subscribers": 1,
+            "last_story_date": "2011-07-18 04:10:01",
+            "min_to_decay": 720,
+            "has_feed_exception": false
+        }
+    },
+    {
+        "pk": 1,
         "model": "reader.usersubscriptionfolders",
         "fields": {
             "folders": "[{\"Tech\": [4, 5]}, 2, 3, 6, 766]",
             "user": 1
         }
     },
-
     {
         "pk": 2,
         "model": "reader.usersubscription",
@@ -109,21 +174,19 @@
             "last_read_date": "2009-07-28 23:17:27"
         }
     },
-
-    
     {
-        "pk": 2, 
-        "model": "rss_feeds.feed", 
-        "fields": {            
+        "pk": 2,
+        "model": "rss_feeds.feed",
+        "fields": {
             "premium_subscribers": -1,
             "creation": "2011-08-27",
             "exception_code": 0,
             "last_load_time": 0,
             "active_subscribers": 1,
-            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker2.xml", 
-            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker2.html", 
+            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker2.xml",
+            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker2.html",
             "hash_address_and_link": "2",
-            "feed_link_locked": true,  
+            "feed_link_locked": true,
             "last_update": "2011-08-27 02:45:21",
             "etag": null,
             "average_stories_per_month": 0,
@@ -143,20 +206,19 @@
             "has_feed_exception": false
         }
     },
-    
     {
-        "pk": 3, 
-        "model": "rss_feeds.feed", 
-        "fields": {            
+        "pk": 3,
+        "model": "rss_feeds.feed",
+        "fields": {
             "premium_subscribers": -1,
             "creation": "2011-08-27",
             "exception_code": 0,
             "last_load_time": 0,
             "active_subscribers": 1,
-            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker3.xml", 
-            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker3.html", 
+            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker3.xml",
+            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker3.html",
             "hash_address_and_link": "3",
-            "feed_link_locked": true,  
+            "feed_link_locked": true,
             "last_update": "2011-08-27 02:45:21",
             "etag": null,
             "average_stories_per_month": 0,
@@ -176,20 +238,19 @@
             "has_feed_exception": false
         }
     },
-    
     {
-        "pk": 4, 
-        "model": "rss_feeds.feed", 
-        "fields": {            
+        "pk": 4,
+        "model": "rss_feeds.feed",
+        "fields": {
             "premium_subscribers": -1,
             "creation": "2011-08-27",
             "exception_code": 0,
             "last_load_time": 0,
             "active_subscribers": 1,
-            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker4.xml", 
-            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker4.html", 
+            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker4.xml",
+            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker4.html",
             "hash_address_and_link": "4",
-            "feed_link_locked": true,  
+            "feed_link_locked": true,
             "last_update": "2011-08-27 02:45:21",
             "etag": null,
             "average_stories_per_month": 0,
@@ -209,20 +270,19 @@
             "has_feed_exception": false
         }
     },
-    
     {
-        "pk": 5, 
-        "model": "rss_feeds.feed", 
-        "fields": {            
+        "pk": 5,
+        "model": "rss_feeds.feed",
+        "fields": {
             "premium_subscribers": -1,
             "creation": "2011-08-27",
             "exception_code": 0,
             "last_load_time": 0,
             "active_subscribers": 1,
-            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker5.xml", 
-            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker5.html", 
+            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker5.xml",
+            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker5.html",
             "hash_address_and_link": "5",
-            "feed_link_locked": true,  
+            "feed_link_locked": true,
             "last_update": "2011-08-27 02:45:21",
             "etag": null,
             "average_stories_per_month": 0,
@@ -242,20 +302,19 @@
             "has_feed_exception": false
         }
     },
-    
     {
-        "pk": 6, 
-        "model": "rss_feeds.feed", 
-        "fields": {            
+        "pk": 6,
+        "model": "rss_feeds.feed",
+        "fields": {
             "premium_subscribers": -1,
             "creation": "2011-08-27",
             "exception_code": 0,
             "last_load_time": 0,
             "active_subscribers": 1,
-            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker6.xml", 
-            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker6.html", 
+            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker6.xml",
+            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker6.html",
             "hash_address_and_link": "6",
-            "feed_link_locked": true,  
+            "feed_link_locked": true,
             "last_update": "2011-08-27 02:45:21",
             "etag": null,
             "average_stories_per_month": 0,
@@ -275,20 +334,19 @@
             "has_feed_exception": false
         }
     },
-    
     {
-        "pk": 7, 
-        "model": "rss_feeds.feed", 
-        "fields": {            
+        "pk": 7,
+        "model": "rss_feeds.feed",
+        "fields": {
             "premium_subscribers": -1,
             "creation": "2011-08-27",
             "exception_code": 0,
             "last_load_time": 0,
             "active_subscribers": 1,
-            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker7.xml", 
-            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker7.html", 
+            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker7.xml",
+            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker7.html",
             "hash_address_and_link": "7",
-            "feed_link_locked": true,  
+            "feed_link_locked": true,
             "last_update": "2011-08-27 02:45:21",
             "etag": null,
             "average_stories_per_month": 0,
@@ -308,20 +366,19 @@
             "has_feed_exception": false
         }
     },
-    
     {
-        "pk": 8, 
-        "model": "rss_feeds.feed", 
-        "fields": {            
+        "pk": 8,
+        "model": "rss_feeds.feed",
+        "fields": {
             "premium_subscribers": -1,
             "creation": "2011-08-27",
             "exception_code": 0,
             "last_load_time": 0,
             "active_subscribers": 1,
-            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker8.xml", 
-            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker8.html", 
+            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker8.xml",
+            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker8.html",
             "hash_address_and_link": "8",
-            "feed_link_locked": true,  
+            "feed_link_locked": true,
             "last_update": "2011-08-27 02:45:21",
             "etag": null,
             "average_stories_per_month": 0,
@@ -341,20 +398,19 @@
             "has_feed_exception": false
         }
     },
-    
     {
-        "pk": 9, 
-        "model": "rss_feeds.feed", 
-        "fields": {            
+        "pk": 9,
+        "model": "rss_feeds.feed",
+        "fields": {
             "premium_subscribers": -1,
             "creation": "2011-08-27",
             "exception_code": 0,
             "last_load_time": 0,
             "active_subscribers": 1,
-            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker9.xml", 
-            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker9.html", 
+            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker9.xml",
+            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker9.html",
             "hash_address_and_link": "9",
-            "feed_link_locked": true,  
+            "feed_link_locked": true,
             "last_update": "2011-08-27 02:45:21",
             "etag": null,
             "average_stories_per_month": 0,
@@ -375,18 +431,18 @@
         }
     },
     {
-        "pk": 766, 
-        "model": "rss_feeds.feed", 
-        "fields": {            
+        "pk": 766,
+        "model": "rss_feeds.feed",
+        "fields": {
             "premium_subscribers": -1,
             "creation": "2011-08-27",
             "exception_code": 0,
             "last_load_time": 0,
             "active_subscribers": 1,
-            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/google1.xml", 
-            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/google.html", 
+            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/google1.xml",
+            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/google.html",
             "hash_address_and_link": "766",
-            "feed_link_locked": true,  
+            "feed_link_locked": true,
             "last_update": "2011-08-27 02:45:21",
             "etag": null,
             "average_stories_per_month": 0,
@@ -406,20 +462,19 @@
             "has_feed_exception": false
         }
     },
-    
     {
-        "pk": 56, 
-        "model": "rss_feeds.feed", 
-        "fields": {            
+        "pk": 56,
+        "model": "rss_feeds.feed",
+        "fields": {
             "premium_subscribers": -1,
             "creation": "2011-08-27",
             "exception_code": 0,
             "last_load_time": 0,
             "active_subscribers": 1,
-            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker56.xml", 
-            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker56.html", 
+            "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker56.xml",
+            "feed_link": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gawker56.html",
             "hash_address_and_link": "56",
-            "feed_link_locked": true,  
+            "feed_link_locked": true,
             "last_update": "2011-08-27 02:45:21",
             "etag": null,
             "average_stories_per_month": 0,
