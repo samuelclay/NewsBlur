@@ -1,7 +1,8 @@
+import os
+
 from django.test.runner import DiscoverRunner
 from django.test.utils import setup_databases
 from mongoengine.connection import connect, disconnect
-import os
 
 
 class TestRunner(DiscoverRunner):
@@ -20,11 +21,11 @@ class TestRunner(DiscoverRunner):
         result = setup_databases(self.verbosity, self.interactive, **kwargs)
 
         # Ensure Site exists for subdomain middleware
-        from django.contrib.sites.models import Site
         from django.conf import settings
+        from django.contrib.sites.models import Site
+
         Site.objects.update_or_create(
-            pk=settings.SITE_ID,
-            defaults={'domain': 'testserver', 'name': 'Test Server'}
+            pk=settings.SITE_ID, defaults={"domain": "testserver", "name": "Test Server"}
         )
 
         return result
@@ -37,7 +38,7 @@ class TestRunner(DiscoverRunner):
             conn = pymongo.MongoClient("db_mongo", 29019)
         else:
             conn = pymongo.MongoClient("127.0.0.1", 27017)
-        
+
         db_name = "newsblur_test"
         conn.drop_database(db_name)
         print("Dropping test-database: %s" % db_name)

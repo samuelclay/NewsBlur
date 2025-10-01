@@ -7,14 +7,22 @@ import urllib.parse
 
 import mongoengine as mongo
 import redis
-from pyapns_client import APNSClient, IOSPayloadAlert, IOSPayload, IOSNotification
-from pyapns_client import APNSDeviceException, APNSServerException, APNSProgrammingException, UnregisteredException
 from bs4 import BeautifulSoup
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from pyapns_client import (
+    APNSClient,
+    APNSDeviceException,
+    APNSProgrammingException,
+    APNSServerException,
+    IOSNotification,
+    IOSPayload,
+    IOSPayloadAlert,
+    UnregisteredException,
+)
 
 from apps.analyzer.models import (
     MClassifierAuthor,
@@ -334,9 +342,9 @@ class MUserFeedNotification(mongo.Document):
         apns = APNSClient(
             mode=APNSClient.MODE_DEV if tokens.use_sandbox else APNSClient.MODE_PROD,
             root_cert_path=None,
-            auth_key_path=key_file_path, 
+            auth_key_path=key_file_path,
             auth_key_id=settings.APNS_KEY_ID,
-            team_id=settings.APNS_TEAM_ID
+            team_id=settings.APNS_TEAM_ID,
         )
 
         confirmed_ios_tokens = []
@@ -355,12 +363,12 @@ class MUserFeedNotification(mongo.Document):
             }
             if image_url:
                 custom_data["image_url"] = image_url
-                
+
             payload = IOSPayload(
                 alert=alert,
                 custom=custom_data,
                 category="STORY_CATEGORY",
-                mutable_content=image_url is not None
+                mutable_content=image_url is not None,
             )
             notification = IOSNotification(payload=payload, topic="com.newsblur.NewsBlur")
 
@@ -373,13 +381,18 @@ class MUserFeedNotification(mongo.Document):
                         "~BMiOS token good: ~FB~SB%s / %s" % (token[:50], len(confirmed_ios_tokens)),
                     )
             except UnregisteredException as e:
-                logging.user(user, "~BMiOS token unregistered: ~FR~SB%s (since %s)" % (token[:50], e.timestamp_datetime))
+                logging.user(
+                    user,
+                    "~BMiOS token unregistered: ~FR~SB%s (since %s)" % (token[:50], e.timestamp_datetime),
+                )
             except APNSDeviceException as e:
                 logging.user(user, "~BMiOS token invalid: ~FR~SB%s" % (token[:50]))
             except APNSServerException as e:
                 logging.user(user, "~BMiOS notification server error: ~FR~SB%s - %s" % (token[:50], str(e)))
             except APNSProgrammingException as e:
-                logging.user(user, "~BMiOS notification programming error: ~FR~SB%s - %s" % (token[:50], str(e)))
+                logging.user(
+                    user, "~BMiOS notification programming error: ~FR~SB%s - %s" % (token[:50], str(e))
+                )
             except Exception as e:
                 logging.user(user, "~BMiOS notification error: ~FR~SB%s - %s" % (token[:50], str(e)))
             finally:

@@ -17,11 +17,8 @@ class Test_Import(TransactionTestCase):
         self.client = Client()
         # Create test user instead of using fixtures to avoid conflicts
         from django.contrib.auth.models import User
-        self.user = User.objects.create_user(
-            username="conesus",
-            email="samuel@newsblur.com",
-            password="test"
-        )
+
+        self.user = User.objects.create_user(username="conesus", email="samuel@newsblur.com", password="test")
         self.user.set_password("test")
         self.user.save()
 
@@ -42,17 +39,38 @@ class Test_Import(TransactionTestCase):
         self.assertEqual(subs.count(), 54)
 
         # Verify folder structure is created correctly
-        # Just verify the structure exists and has folders
         usf = UserSubscriptionFolders.objects.get(user=user)
         folders = json_functions.decode(usf.folders)
-        
-        # Check that we have some folders created
-        self.assertIsInstance(folders, list)
-        self.assertGreater(len(folders), 0)
-        
-        # Check that we have some dict folders (named folders)
-        has_named_folders = any(isinstance(f, dict) for f in folders)
-        self.assertTrue(has_named_folders, "Should have named folders")
+        self.assertEqual(
+            folders,
+            [
+                {"New York": [1, 2, 3, 4, 5, 6, 7, 8, 9]},
+                {"tech": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]},
+                {
+                    "Blogs": [
+                        29,
+                        30,
+                        31,
+                        32,
+                        33,
+                        34,
+                        35,
+                        36,
+                        37,
+                        38,
+                        39,
+                        40,
+                        41,
+                        42,
+                        43,
+                        44,
+                        {"The Bloglets": [45, 46, 47, 48, 49]},
+                    ]
+                },
+                {"Cooking": [50, 51, 52, 53]},
+                54,
+            ],
+        )
 
     def test_opml_import__empty(self):
         self.client.login(username="conesus", password="test")
@@ -75,9 +93,10 @@ class Test_Duplicate_Feeds(TransactionTestCase):
     def test_duplicate_feeds(self):
         # Create test users with unique IDs to avoid conflicts
         from django.contrib.auth.models import User
-        User.objects.create_user(pk=101, username='test1', email='test1@example.com', password='test')
-        User.objects.create_user(pk=102, username='test2', email='test2@example.com', password='test')
-        
+
+        User.objects.create_user(pk=101, username="test1", email="test1@example.com", password="test")
+        User.objects.create_user(pk=102, username="test2", email="test2@example.com", password="test")
+
         # had to load the feed data this way to hit the save() override.
         # it wouldn't work with loaddata or fixures
 
@@ -86,8 +105,8 @@ class Test_Duplicate_Feeds(TransactionTestCase):
         feed_data_1 = feed_data[0]
         feed_data_2 = feed_data[1]
         # Include the pk so the feeds match the subscriptions
-        feed_1 = Feed(pk=feed_data_1['pk'], **{k: v for k, v in feed_data_1.items() if k != 'pk'})
-        feed_2 = Feed(pk=feed_data_2['pk'], **{k: v for k, v in feed_data_2.items() if k != 'pk'})
+        feed_1 = Feed(pk=feed_data_1["pk"], **{k: v for k, v in feed_data_1.items() if k != "pk"})
+        feed_2 = Feed(pk=feed_data_2["pk"], **{k: v for k, v in feed_data_2.items() if k != "pk"})
         feed_1.save()
         feed_2.save()
 
@@ -103,10 +122,10 @@ class Test_Duplicate_Feeds(TransactionTestCase):
         # After merge, both users should have subscriptions to the same feed
         user_1_subscriptions = UserSubscription.objects.filter(user__id=101)
         user_2_subscriptions = UserSubscription.objects.filter(user__id=102)
-        
+
         # User 2 might have been merged into user 1's feed, or a new subscription created
         self.assertTrue(user_1_subscriptions.exists(), "User 1 should still have a subscription")
-        
+
         if user_2_subscriptions.exists():
             user_1_feed_subscription = user_1_subscriptions[0].feed_id
             user_2_feed_subscription = user_2_subscriptions[0].feed_id

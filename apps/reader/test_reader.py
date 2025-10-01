@@ -18,6 +18,25 @@ class Test_Reader(TransactionTestCase):
 
     def setUp(self):
         # MongoDB connection is handled by the test runner
+        import redis
+
+        # Clear Redis keys for test feeds (using db=10 for tests)
+        redis_story_port = (
+            settings.REDIS_STORY_PORT
+            if hasattr(settings, "REDIS_STORY_PORT")
+            else settings.REDIS_STORY.get("port", 6579)
+        )
+        redis_pool = redis.ConnectionPool(host=settings.REDIS_STORY["host"], port=redis_story_port, db=10)
+        r = redis.Redis(connection_pool=redis_pool)
+        # Clear read stories for user 3 (conesus) and test feed IDs: 1-10, 766
+        test_feed_ids = list(range(1, 11)) + [766]
+        r.delete("RS:3")
+        r.delete("lRS:3")
+        for feed_id in test_feed_ids:
+            r.delete(f"RS:3:{feed_id}")
+            r.delete(f"zF:{feed_id}")
+            r.delete(f"F:{feed_id}")
+
         self.client = Client()
 
     def tearDown(self):

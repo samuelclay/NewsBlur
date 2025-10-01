@@ -15,8 +15,6 @@ from django.urls import reverse
 from mongoengine.errors import ValidationError
 from oauth2client.client import FlowExchangeError, OAuth2WebServerFlow
 
-from django.conf import settings
-
 from apps.feed_import.models import OAuthToken, OPMLExporter, OPMLImporter, UploadedOPML
 from apps.feed_import.tasks import ProcessOPML, ProcessOPMLExport
 from apps.reader.forms import SignupForm
@@ -91,7 +89,7 @@ def opml_export(request):
 
     # Try to export OPML with a 15 second timeout (0.01s in dev for testing)
     timeout_seconds = 0.01 if settings.DEBUG else 15
-    
+
     @timelimit(timeout_seconds)
     def try_opml_export():
         exporter = OPMLExporter(user)

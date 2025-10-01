@@ -21,15 +21,15 @@ DEFAULT_LEASE_SECONDS = 10 * 24 * 60 * 60  # 10 days
 class PushSubscriptionManager(models.Manager):
     def subscribe(self, topic, feed, hub=None, callback=None, lease_seconds=None, force_retry=False):
         # Disable timeout in test environment
-        if getattr(settings, 'TEST_DEBUG', False):
+        if getattr(settings, "TEST_DEBUG", False):
             return self._subscribe_impl(topic, feed, hub, callback, lease_seconds, force_retry)
-        
+
         @timelimit(5)
         def _timed_subscribe():
             return self._subscribe_impl(topic, feed, hub, callback, lease_seconds, force_retry)
-        
+
         return _timed_subscribe()
-    
+
     def _subscribe_impl(self, topic, feed, hub=None, callback=None, lease_seconds=None, force_retry=False):
         if hub is None:
             hub = self._get_hub(topic)
@@ -90,6 +90,7 @@ class PushSubscriptionManager(models.Manager):
                 # Raise URLError for non-successful responses (not 202/204)
                 if response and response.status_code not in (202, 204):
                     import urllib.error
+
                     raise urllib.error.URLError("error subscribing to %s on %s:\n%s" % (topic, hub, error))
 
         subscription.save()

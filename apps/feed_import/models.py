@@ -120,14 +120,14 @@ class OPMLImporter(Importer):
 
     def try_processing(self):
         # Disable timeout in test environment
-        if getattr(settings, 'TEST_DEBUG', False):
+        if getattr(settings, "TEST_DEBUG", False):
             folders = self.process()
             return folders
-        
+
         @timelimit(10)
         def _timed_process():
             return self.process()
-        
+
         folders = _timed_process()
         return folders
 

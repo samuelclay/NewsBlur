@@ -61,12 +61,12 @@ class AppDirectoriesFinder(PipelineAppDirectoriesFinder):
         "*LICENSE*",
         "*README*",
     ]
-    
+
     def find_files(self, storage, path=None, all=False):
         """
         Override to properly handle wildcard patterns like 'underscore-*.js'
         """
-        path = path or ''
+        path = path or ""
         for pattern in self.find_pattern_matches(path):
             for path in storage.listdir(pattern[0])[1]:
                 if self.is_ignored(path, pattern[0]):
@@ -126,12 +126,12 @@ class FileSystemFinder(PipelineFileSystemFinder):
         # 'Gemfile*',
         "node_modules",
     ]
-    
+
     def find_files(self, storage, path=None, all=False):
         """
         Override to properly handle wildcard patterns like 'underscore-*.js'
         """
-        path = path or ''
+        path = path or ""
         for pattern in self.find_pattern_matches(path):
             for path in storage.listdir(pattern[0])[1]:
                 if self.is_ignored(path, pattern[0]):
