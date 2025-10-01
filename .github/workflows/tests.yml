@@ -31,6 +31,14 @@ jobs:
           mkdir -p config/certificates
           openssl dhparam -out config/certificates/dhparam-2048.pem 2048
 
+      - name: Create docker volumes with proper permissions
+        run: |
+          mkdir -p docker/volumes/db_mongo
+          mkdir -p docker/volumes/db_postgres
+          mkdir -p docker/volumes/db_redis
+          mkdir -p docker/volumes/db_elasticsearch
+          chmod -R 777 docker/volumes
+
       - name: Start services
         run: docker compose up -d
         env:
