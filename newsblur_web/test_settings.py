@@ -4,16 +4,16 @@ DOCKERBUILD = os.getenv("DOCKERBUILD")
 from newsblur_web.settings import *
 
 # Use PostgreSQL for tests to avoid SQLite concurrency issues
-DATABASES['default'] = {
-    'NAME': 'newsblur',
-    'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    'USER': 'newsblur',
-    'PASSWORD': 'newsblur',
-    'HOST': 'db_postgres' if DOCKERBUILD else 'localhost',
-    'PORT': '5432',
-    'TEST': {
-        'NAME': 'test_newsblur',
-    }
+DATABASES["default"] = {
+    "NAME": "newsblur",
+    "ENGINE": "django.db.backends.postgresql_psycopg2",
+    "USER": "newsblur",
+    "PASSWORD": "newsblur",
+    "HOST": "db_postgres" if DOCKERBUILD else "localhost",
+    "PORT": "5432",
+    "TEST": {
+        "NAME": "test_newsblur",
+    },
 }
 
 LOGGING_CONFIG = None
@@ -29,12 +29,12 @@ def _fixture_setup_with_site(self):
     result = _original_fixture_setup(self)
 
     # Ensure the test Site exists before running the test
-    from django.contrib.sites.models import Site
     from django.conf import settings
+    from django.contrib.sites.models import Site
+
     try:
         Site.objects.update_or_create(
-            pk=settings.SITE_ID,
-            defaults={'domain': 'testserver', 'name': 'Test Server'}
+            pk=settings.SITE_ID, defaults={"domain": "testserver", "name": "Test Server"}
         )
     except Exception:
         pass
@@ -76,8 +76,8 @@ TEST_DEBUG = True
 DEBUG = True
 
 # Fix subdomain middleware warning in tests
-PARENT_HOST = 'testserver'
-SESSION_COOKIE_DOMAIN = 'testserver'
+PARENT_HOST = "testserver"
+SESSION_COOKIE_DOMAIN = "testserver"
 SITE_ID = 2
 SENTRY_DSN = None
 HOMEPAGE_USERNAME = "conesus"

@@ -53,20 +53,11 @@ class MockResponse(object):
 
 class PSHBTestBase:
     urls = "apps.push.urls"
-    
+
     def create_feed_and_subscription(self, topic="topic", hub="hub", verified=False, **kwargs):
         """Helper to create a Feed and PushSubscription for testing."""
-        feed = Feed.objects.create(
-            feed_link=topic,
-            feed_title="Test Feed for %s" % topic
-        )
-        sub = PushSubscription.objects.create(
-            feed=feed,
-            topic=topic,
-            hub=hub,
-            verified=verified,
-            **kwargs
-        )
+        feed = Feed.objects.create(feed_link=topic, feed_title="Test Feed for %s" % topic)
+        sub = PushSubscription.objects.create(feed=feed, topic=topic, hub=hub, verified=verified, **kwargs)
         return sub
 
     def setUp(self):
@@ -100,8 +91,12 @@ class Test_PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
         active.
         """
         self.responses.append(MockResponse(204))
-        feed = Feed.objects.create(feed_link="topic", feed_title="Test Feed", hash_address_and_link="test_sync_verify")
-        sub = PushSubscription.objects.subscribe("topic", feed, hub="hub", callback="callback", lease_seconds=2000)
+        feed = Feed.objects.create(
+            feed_link="topic", feed_title="Test Feed", hash_address_and_link="test_sync_verify"
+        )
+        sub = PushSubscription.objects.subscribe(
+            "topic", feed, hub="hub", callback="callback", lease_seconds=2000
+        )
         self.assertEquals(len(self.signals), 2)
         self.assertEquals(self.signals[0], (pre_subscribe, {"sender": sub, "created": True}))
         self.assertEquals(self.signals[1], (verified, {"sender": sub}))
@@ -126,8 +121,12 @@ class Test_PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
         subscription is verified.
         """
         self.responses.append(MockResponse(202))
-        feed = Feed.objects.create(feed_link="topic", feed_title="Test Feed", hash_address_and_link="test_async_verify")
-        sub = PushSubscription.objects.subscribe("topic", feed, hub="hub", callback="callback", lease_seconds=2000)
+        feed = Feed.objects.create(
+            feed_link="topic", feed_title="Test Feed", hash_address_and_link="test_async_verify"
+        )
+        sub = PushSubscription.objects.subscribe(
+            "topic", feed, hub="hub", callback="callback", lease_seconds=2000
+        )
         self.assertEquals(len(self.signals), 1)
         self.assertEquals(self.signals[0], (pre_subscribe, {"sender": sub, "created": True}))
         self.assertEquals(sub.hub, "hub")
@@ -151,7 +150,9 @@ class Test_PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
         should default to 864000 (10 days).
         """
         self.responses.append(MockResponse(202))
-        feed = Feed.objects.create(feed_link="topic", feed_title="Test Feed", hash_address_and_link="test_lease_seconds")
+        feed = Feed.objects.create(
+            feed_link="topic", feed_title="Test Feed", hash_address_and_link="test_lease_seconds"
+        )
         sub = PushSubscription.objects.subscribe("topic", feed, hub="hub", callback="callback")
         rough_expires = datetime.now() + timedelta(seconds=864000)
         self.assert_(abs(sub.lease_expires - rough_expires).seconds < 5, "lease more than 5 seconds off")
@@ -164,7 +165,9 @@ class Test_PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
         If a non-202/204 status is returned, raise a URLError.
         """
         self.responses.append(MockResponse(500, "error data"))
-        feed = Feed.objects.create(feed_link="topic", feed_title="Test Feed", hash_address_and_link="test_error_subscribe")
+        feed = Feed.objects.create(
+            feed_link="topic", feed_title="Test Feed", hash_address_and_link="test_error_subscribe"
+        )
         try:
             PushSubscription.objects.subscribe("topic", feed, hub="hub", callback="callback")
         except urllib.error.URLError as e:
@@ -209,6 +212,7 @@ class Test_PSHBCallbackViewCase(PSHBTestBase, TestCase):
         * token doesn't match the subscription
         """
         import logging
+
         # Suppress expected 404 warnings in this test
         logging.disable(logging.WARNING)
         try:
@@ -329,13 +333,12 @@ class Test_PSHBUpdateCase(PSHBTestBase, TestCase):
 
         # Create a feed first since PushSubscription requires it
         feed = Feed.objects.create(
-            feed_link="http://publisher.example.com/happycats.xml",
-            feed_title="Happy Cats Test Feed"
+            feed_link="http://publisher.example.com/happycats.xml", feed_title="Happy Cats Test Feed"
         )
         sub = PushSubscription.objects.create(
             feed=feed,
-            hub="http://myhub.example.com/endpoint", 
-            topic="http://publisher.example.com/happycats.xml"
+            hub="http://myhub.example.com/endpoint",
+            topic="http://publisher.example.com/happycats.xml",
         )
 
         # The current implementation doesn't parse or send update signals
@@ -369,9 +372,9 @@ class Test_PSHBUpdateCase(PSHBTestBase, TestCase):
         sub = self.create_feed_and_subscription(
             hub="hub",
             topic="http://publisher.example.com/happycats.xml",
-            lease_expires=datetime.now() + timedelta(days=1)
+            lease_expires=datetime.now() + timedelta(days=1),
         )
-        
+
         # Add response for subscription update
         self.responses.append(MockResponse(204))
 
@@ -405,9 +408,9 @@ class Test_PSHBUpdateCase(PSHBTestBase, TestCase):
         sub = self.create_feed_and_subscription(
             hub="http://myhub.example.com/endpoint",
             topic="topic",
-            lease_expires=datetime.now() + timedelta(days=1)
+            lease_expires=datetime.now() + timedelta(days=1),
         )
-        
+
         # Add response for subscription update
         self.responses.append(MockResponse(204))
 
@@ -441,7 +444,7 @@ class Test_PSHBUpdateCase(PSHBTestBase, TestCase):
         sub = self.create_feed_and_subscription(
             hub="hub", topic="topic", lease_expires=datetime.now() + timedelta(days=1)
         )
-        
+
         # Add response for subscription update
         self.responses.append(MockResponse(204))
 

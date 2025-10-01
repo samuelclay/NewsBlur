@@ -151,12 +151,18 @@ def read_streams(streams, follow=True):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Search NewsBlur logs across servers')
-    parser.add_argument('role', help="Role/hostname to search (e.g., 'web', 'app', 'task', or specific hostname)")
-    parser.add_argument('search_string', help='String to search for in logs')
-    parser.add_argument('--no-follow', action='store_true', help='Do not tail -f, just return existing matches')
-    parser.add_argument('--current-only', action='store_true', help='Only search newsblur.log, not archived logs')
-    
+    parser = argparse.ArgumentParser(description="Search NewsBlur logs across servers")
+    parser.add_argument(
+        "role", help="Role/hostname to search (e.g., 'web', 'app', 'task', or specific hostname)"
+    )
+    parser.add_argument("search_string", help="String to search for in logs")
+    parser.add_argument(
+        "--no-follow", action="store_true", help="Do not tail -f, just return existing matches"
+    )
+    parser.add_argument(
+        "--current-only", action="store_true", help="Only search newsblur.log, not archived logs"
+    )
+
     args = parser.parse_args()
-    
+
     main(args.role, args.search_string, follow=not args.no_follow, current_only=args.current_only)

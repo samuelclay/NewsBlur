@@ -80,7 +80,7 @@ jekyll_drafts:
 lint:
 	docker exec -it newsblur_web isort --profile black .
 	docker exec -it newsblur_web black --line-length 110 .
-	docker exec -it newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv
+	docker exec -it newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv,apps/analyzer/archive,utils/archive,vendor
 	
 deps:
 	docker exec -t newsblur_web pip install -U uv
@@ -94,7 +94,7 @@ jekyll_build:
 SCOPE ?= apps
 ARGS ?= --noinput -v 1 --failfast
 test:
-	docker compose exec -T newsblur_web python3 manage.py test $(SCOPE) $(ARGS)
+	docker compose exec -T newsblur_web python3 manage.py test $(SCOPE) --noinput $(ARGS)
 
 keys:
 	mkdir -p config/certificates
