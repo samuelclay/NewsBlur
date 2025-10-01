@@ -144,7 +144,7 @@ def preprocess_feed_encoding(raw_xml):
 
 MAX_ENTRIES_TO_PROCESS = 100
 MAX_ENTRIES_HIGH_VOLUME = 250
-HIGH_VOLUME_FEED_URLS = ['arxiv.org']  # Feeds that can handle more stories per fetch
+HIGH_VOLUME_FEED_URLS = ["arxiv.org"]  # Feeds that can handle more stories per fetch
 
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = list(range(5))
 
@@ -568,16 +568,18 @@ class ProcessFeed:
                         )
 
         self.feed_entries = self.fpf.entries
-        
+
         # Check if this is a high-volume feed that can handle more stories
         max_entries = MAX_ENTRIES_TO_PROCESS
         feed_address_lower = self.feed.feed_address.lower()
         for high_volume_url in HIGH_VOLUME_FEED_URLS:
             if high_volume_url in feed_address_lower:
                 max_entries = MAX_ENTRIES_HIGH_VOLUME
-                logging.debug(f"   ---> [{self.feed.log_title[:30]:<30}] High-volume feed detected ({high_volume_url}), allowing up to {max_entries} stories")
+                logging.debug(
+                    f"   ---> [{self.feed.log_title[:30]:<30}] High-volume feed detected ({high_volume_url}), allowing up to {max_entries} stories"
+                )
                 break
-        
+
         # If there are more than max_entries, we should sort the entries in date descending order and cut them off
         if len(self.feed_entries) > max_entries:
             self.feed_entries = sorted(self.feed_entries, key=lambda x: extract_story_date(x), reverse=True)[
