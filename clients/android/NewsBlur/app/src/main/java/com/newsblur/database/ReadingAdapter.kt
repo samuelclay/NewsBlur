@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commitNow
 import androidx.viewpager.widget.PagerAdapter
 import com.newsblur.activity.Reading
 import com.newsblur.domain.Classifier
@@ -268,19 +269,20 @@ class ReadingAdapter(
     }
 
     override fun restoreState(state: Parcelable?, loader: ClassLoader?) {
-        // most FragmentManager impls. will re-create added fragments even if they
-        // are not set to retaininstance. we want to only save state, not objects,
-        // so before we start restoration, clear out any stale instances.  without
-        // this, the pager will leak fragments on rotation or context switch.
-        for (fragment in fm.fragments) {
-            if (fragment is ReadingItemFragment) {
-                fm.beginTransaction().remove(fragment).commit()
+        fm.commitNow(allowStateLoss = true) {
+            for (fragment in fm.fragments) {
+                if (fragment is ReadingItemFragment) {
+                    remove(fragment)
+                }
             }
         }
-        val bundle = state as Bundle
+
+        val bundle = state as? Bundle ?: return
         bundle.classLoader = loader
+
         fragments.clear()
         states.clear()
+
         for (key in bundle.keySet()) {
             if (key.startsWith("ss-")) {
                 val storyHash = key.substring(3)
