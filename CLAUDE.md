@@ -12,8 +12,8 @@
 - `make debug` - Debug mode for pdb
 - `make log` - View logs
 - `make lint` - Run linting (isort, black, flake8)
-- `make test` - Run all tests
-- Run single test: `docker exec -t newsblur_web python3 manage.py test apps.path.to.test.TestClass.test_method -v 3`
+- `make test` - Run all tests (defaults: SCOPE=apps, ARGS="--noinput -v 1 --failfast")
+- `make test SCOPE=apps.rss_feeds ARGS="-v 2"`
 
 Note: All docker commands must use `-t` instead of `-it` to avoid interactive mode issues when running through Claude.
 

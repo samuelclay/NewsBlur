@@ -2,24 +2,18 @@ from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
 from django.urls import reverse
-from mongoengine.connection import connect, disconnect
 
 from utils import json_functions as json
 
 
 class Test_Profile(TestCase):
-    fixtures = [
-        "subscriptions.json",
-        "rss_feeds.json",
-    ]
-
     def setUp(self):
-        disconnect()
-        settings.MONGODB = connect("test_newsblur")
+        # MongoDB connection is handled by the test runner
         self.client = Client(HTTP_USER_AGENT="Mozilla/5.0")
 
     def tearDown(self):
-        settings.MONGODB.drop_database("test_newsblur")
+        # Database cleanup is handled by the test runner
+        pass
 
     def test_create_account(self):
         resp = self.client.get(reverse("load-feeds"))
