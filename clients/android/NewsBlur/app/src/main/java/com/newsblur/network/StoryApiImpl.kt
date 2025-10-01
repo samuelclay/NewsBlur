@@ -12,7 +12,6 @@ import com.newsblur.network.domain.StoriesResponse
 import com.newsblur.network.domain.StoryChangesResponse
 import com.newsblur.network.domain.StoryTextResponse
 import com.newsblur.network.domain.UnreadStoryHashesResponse
-import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FeedSet
 import com.newsblur.util.ReadFilter
 import com.newsblur.util.StoryOrder
@@ -26,7 +25,6 @@ import kotlin.apply
 class StoryApiImpl(
         private val gson: Gson,
         private val apiManager: APIManager,
-        private val prefsRepo: PrefsRepo,
 ) : StoryApi {
 
     override fun getStories(
