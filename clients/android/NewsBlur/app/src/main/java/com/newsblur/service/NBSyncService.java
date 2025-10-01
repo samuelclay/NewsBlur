@@ -33,6 +33,7 @@ import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIConstants;
 import com.newsblur.network.APIManager;
+import com.newsblur.network.FeedApi;
 import com.newsblur.network.StoryApi;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
@@ -162,7 +163,7 @@ public class NBSyncService extends JobService {
     private boolean mainSyncRunning = false;
     private CleanupService cleanupService;
     private StarredService starredService;
-//    private OriginalTextService originalTextService;
+    //    private OriginalTextService originalTextService;
     private UnreadsService unreadsService;
     protected ImagePrefetchService imagePrefetchService;
 
@@ -171,6 +172,9 @@ public class NBSyncService extends JobService {
 
     @Inject
     StoryApi storyApi;
+
+    @Inject
+    FeedApi feedApi;
 
     @Inject
     BlurDatabaseHelper dbHelper;
@@ -468,7 +472,13 @@ public class NBSyncService extends JobService {
                 if ((ra.getTried() > 0) && (PendingFeed != null)) continue actionsloop;
 
                 com.newsblur.util.Log.d(this, "attempting action: " + ra.toContentValues().toString());
-                NewsBlurResponse response = ra.doRemote(apiManager, storyApi, dbHelper, stateFilter);
+                NewsBlurResponse response = ra.doRemote(
+                        apiManager,
+                        feedApi,
+                        storyApi,
+                        dbHelper,
+                        stateFilter
+                );
 
                 if (response == null) {
                     com.newsblur.util.Log.e(this.getClass().getName(), "Discarding reading action with client-side error.");
@@ -562,7 +572,7 @@ public class NBSyncService extends JobService {
         disabledFeedIds.clear();
 
         try {
-            FeedFolderResponse feedResponse = apiManager.getFolderFeedMapping(true);
+            FeedFolderResponse feedResponse = feedApi.getFolderFeedMapping(true);
 
             if (feedResponse == null) {
                 noteHardAPIFailure();
@@ -745,7 +755,7 @@ public class NBSyncService extends JobService {
                     apiIds.addAll(fs.getFlatFeedIds());
                 }
 
-                UnreadCountResponse apiResponse = apiManager.getFeedUnreadCounts(apiIds);
+                UnreadCountResponse apiResponse = feedApi.getFeedUnreadCounts(apiIds);
                 if ((apiResponse == null) || (apiResponse.isError())) {
                     com.newsblur.util.Log.w(this.getClass().getName(), "Bad response to feed_unread_count");
                     return;

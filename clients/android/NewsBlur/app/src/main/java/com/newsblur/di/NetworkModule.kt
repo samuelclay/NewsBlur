@@ -10,6 +10,8 @@ import com.newsblur.domain.Story
 import com.newsblur.network.APIManager
 import com.newsblur.network.AuthApi
 import com.newsblur.network.AuthApiImpl
+import com.newsblur.network.FeedApi
+import com.newsblur.network.FeedApiImpl
 import com.newsblur.network.FolderApi
 import com.newsblur.network.FolderApiImpl
 import com.newsblur.network.StoryApi
@@ -122,6 +124,12 @@ object NetworkModule {
     fun provideStoryApi(
             gson: Gson,
             apiManager: APIManager,
-            prefsRepo: PrefsRepo,
-    ): StoryApi = StoryApiImpl(gson, apiManager, prefsRepo)
+    ): StoryApi = StoryApiImpl(gson, apiManager)
+
+    @Singleton
+    @Provides
+    fun provideFeedApi(
+            gson: Gson,
+            apiManager: APIManager,
+    ): FeedApi = FeedApiImpl(gson, apiManager)
 }

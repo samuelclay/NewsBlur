@@ -22,12 +22,9 @@ import com.newsblur.domain.FeedResult;
 import com.newsblur.domain.ValueMultimap;
 import static com.newsblur.network.APIConstants.buildUrl;
 import com.newsblur.network.domain.AddFeedResponse;
-import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
-import com.newsblur.network.domain.UnreadCountResponse;
 import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.AppConstants;
-import com.newsblur.util.FeedSet;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.PrefConstants;
 
@@ -56,94 +53,6 @@ public class APIManager {
         this.gson = gson;
         this.customUserAgent = customUserAgent;
         this.apiOkHttpClient = apiOkHttpClient;
-	}
-
-	public NewsBlurResponse markFeedsAsRead(FeedSet fs, Long includeOlder, Long includeNewer) {
-		ValueMultimap values = new ValueMultimap();
-
-        if (fs.getSingleFeed() != null) {
-            values.put(APIConstants.PARAMETER_FEEDID, fs.getSingleFeed());
-        } else if (fs.getMultipleFeeds() != null) {
-            for (String feedId : fs.getMultipleFeeds()) {
-                // the API isn't supposed to care if the zero-id pseudo feed gets mentioned, but it seems to
-                // error out for some users
-                if (!feedId.equals("0")) {
-                    values.put(APIConstants.PARAMETER_FEEDID, feedId);
-                }
-            }
-        } else if (fs.getSingleSocialFeed() != null) {
-            values.put(APIConstants.PARAMETER_FEEDID, APIConstants.VALUE_PREFIX_SOCIAL + fs.getSingleSocialFeed().getKey());
-        } else if (fs.getMultipleSocialFeeds() != null) {
-            for (Map.Entry<String,String> entry : fs.getMultipleSocialFeeds().entrySet()) {
-                values.put(APIConstants.PARAMETER_FEEDID, APIConstants.VALUE_PREFIX_SOCIAL + entry.getKey());
-            }
-        } else if (fs.isAllNormal()) {
-            // all stories uses a special API call
-            return markAllAsRead();
-        } else if (fs.isAllSocial()) {
-            values.put(APIConstants.PARAMETER_FEEDID, APIConstants.VALUE_ALLSOCIAL);
-        } else {
-            throw new IllegalStateException("Asked to get stories for FeedSet of unknown type.");
-        }
-
-        if (includeOlder != null) {
-            // the app uses  milliseconds but the API wants seconds
-            long cut = includeOlder.longValue();
-            values.put(APIConstants.PARAMETER_CUTOFF_TIME, Long.toString(cut/1000L));
-            values.put(APIConstants.PARAMETER_DIRECTION, APIConstants.VALUE_OLDER);
-        }
-        if (includeNewer != null) {
-            // the app uses  milliseconds but the API wants seconds
-            long cut = includeNewer.longValue();
-            values.put(APIConstants.PARAMETER_CUTOFF_TIME, Long.toString(cut/1000L));
-            values.put(APIConstants.PARAMETER_DIRECTION, APIConstants.VALUE_NEWER);
-        }
-
-		APIResponse response = post(buildUrl(APIConstants.PATH_MARK_FEED_AS_READ), values);
-        return response.getResponse(gson, NewsBlurResponse.class);
-	}
-
-	private NewsBlurResponse markAllAsRead() {
-		ValueMultimap values = new ValueMultimap();
-		values.put(APIConstants.PARAMETER_DAYS, "0");
-		APIResponse response = post(buildUrl(APIConstants.PATH_MARK_ALL_AS_READ), values);
-        return response.getResponse(gson, NewsBlurResponse.class);
-	}
-
-    public UnreadCountResponse getFeedUnreadCounts(Set<String> apiIds) {
-        ValueMultimap values = new ValueMultimap();
-        for (String id : apiIds) {
-            values.put(APIConstants.PARAMETER_FEEDID, id);
-        }
-        APIResponse response = get(buildUrl(APIConstants.PATH_FEED_UNREAD_COUNT), values);
-        return response.getResponse(gson, UnreadCountResponse.class);
-    }
-
-	/**
-     * Fetch the list of feeds/folders/socials from the backend.
-     *
-     * @param doUpdateCounts forces a refresh of unread counts.  This has a high latency
-     *        cost and should not be set if the call is being used to display the UI for
-     *        the first time, in which case it is more appropriate to make a separate,
-     *        additional call to refreshFeedCounts().
-     */
-    public FeedFolderResponse getFolderFeedMapping(boolean doUpdateCounts) {
-		ContentValues params = new ContentValues();
-		params.put(APIConstants.PARAMETER_UPDATE_COUNTS, (doUpdateCounts ? "true" : "false"));
-		APIResponse response = get(buildUrl(APIConstants.PATH_FEEDS), params);
-
-		if (response.isError()) {
-            // we can't use the magic polymorphism of NewsBlurResponse because this result uses
-            // a custom parser below. let the caller know the action failed.
-            return null;
-        }
-
-		// note: this response is complex enough, we have to do a custom parse in the FFR
-        FeedFolderResponse result = new FeedFolderResponse(response.getResponseBody(), gson);
-        // bind a litle extra instrumentation to this response, since it powers the feedback link
-        result.connTime = response.connectTime;
-        result.readTime = response.readTime;
-        return result;
 	}
 
     public NewsBlurResponse updateFeedIntel(String feedId, Classifier classifier) {

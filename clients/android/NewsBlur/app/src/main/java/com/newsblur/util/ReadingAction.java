@@ -15,6 +15,7 @@ import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Classifier;
 import com.newsblur.network.APIManager;
+import com.newsblur.network.FeedApi;
 import com.newsblur.network.StoryApi;
 import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
@@ -288,6 +289,7 @@ public class ReadingAction implements Serializable {
      */
     public NewsBlurResponse doRemote(
             @NonNull APIManager apiManager,
+            @NonNull FeedApi feedApi,
             @NonNull StoryApi storyApi,
             @NonNull BlurDatabaseHelper dbHelper,
             @NonNull StateFilter stateFilter
@@ -304,7 +306,7 @@ public class ReadingAction implements Serializable {
                 if (storyHash != null) {
                     result = storyApi.markStoryAsRead(storyHash);
                 } else if (feedSet != null) {
-                    result = apiManager.markFeedsAsRead(feedSet, olderThan, newerThan);
+                    result = feedApi.markFeedsAsRead(feedSet, olderThan, newerThan);
                 }
                 break;
 
