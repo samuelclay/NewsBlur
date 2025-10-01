@@ -156,46 +156,15 @@
       delay: 5
       until: result_8001.status == 200
 
-    - name: Update HAProxy config to use backup server
-      delegate_to: "{{ haproxy_host }}"
-      run_once: true
-      block:
-        - name: Generate temporary HAProxy config with backup server
-          template:
-            src: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.j2
-            dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.new
-          when: disable_consul_services_ie_staging is not defined
-          vars:
-            maintenance_mode: true
-
-        - name: Generate temporary HAProxy config with backup server
-          template:
-            src: /srv/newsblur/docker/haproxy/haproxy.staging.cfg
-            dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.new
-          when: disable_consul_services_ie_staging is defined
-          vars:
-            maintenance_mode: true
-
-        - name: Verify new HAProxy config
-          shell: docker exec haproxy haproxy -c -f /srv/newsblur/docker/haproxy/haproxy.consul.cfg.new
-          register: haproxy_verified
-          failed_when: haproxy_verified.rc != 0
-
-        - name: Replace active HAProxy config
-          command: mv /srv/newsblur/docker/haproxy/haproxy.consul.cfg.new /srv/newsblur/docker/haproxy/haproxy.consul.cfg
-
-        - name: Reload HAProxy configuration
-          shell: "docker kill -s HUP haproxy"
-
-        - name: Wait for HAProxy to start using new configuration
-          pause:
-            seconds: 2
-
     - name: Stop primary container
       docker_container:
         name: newsblur_web
         state: stopped
         container_default_behavior: no_defaults
+
+    - name: Wait for HAProxy to detect primary is down and failover to backup
+      pause:
+        seconds: 3
 
     - name: Deploy new container
       docker_container:
@@ -230,37 +199,6 @@
       retries: 10
       delay: 5
       until: result_8000.status == 200
-
-    - name: Update HAProxy config to use new server
-      delegate_to: "{{ haproxy_host }}"
-      run_once: true
-      block:
-        - name: Generate temporary HAProxy config with new server
-          template:
-            src: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.j2
-            dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.new
-          when: disable_consul_services_ie_staging is not defined
-          vars:
-            maintenance_mode: false
-
-        - name: Generate temporary HAProxy config with new server
-          template:
-            src: /srv/newsblur/docker/haproxy/haproxy.staging.cfg
-            dest: /srv/newsblur/docker/haproxy/haproxy.consul.cfg.new
-          when: disable_consul_services_ie_staging is defined
-          vars:
-            maintenance_mode: false
-
-        - name: Verify new HAProxy config
-          shell: docker exec haproxy haproxy -c -f /srv/newsblur/docker/haproxy/haproxy.consul.cfg.new
-          register: haproxy_verified
-          failed_when: haproxy_verified.rc != 0
-
-        - name: Replace active HAProxy config
-          command: mv /srv/newsblur/docker/haproxy/haproxy.consul.cfg.new /srv/newsblur/docker/haproxy/haproxy.consul.cfg
-
-        - name: Reload HAProxy configuration
-          shell: "docker kill -s HUP haproxy"
 
     - name: Stop and remove backup container
       docker_container:
