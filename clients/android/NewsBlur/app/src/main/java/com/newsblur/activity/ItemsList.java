@@ -116,7 +116,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             itemSetFragment = ItemSetFragment.newInstance();
 			FragmentTransaction transaction = fragmentManager.beginTransaction();
 			transaction.add(R.id.activity_itemlist_container, itemSetFragment, ItemSetFragment.class.getName());
-			transaction.commit();
+			transaction.commitNow();
 		}
 
         String activeSearchQuery;
@@ -286,7 +286,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             binding.footerFleuron.getRoot().setVisibility(View.GONE);
             binding.footerFleuron.containerSubscribe.setOnClickListener(null);
         }
-	    transaction.commit();
+	    transaction.commitNow();
     }
 
     protected void restartReadingSession() {

@@ -153,7 +153,7 @@ public class ItemSetFragment extends NbFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.fragment_itemgrid, null);
+		View v = inflater.inflate(R.layout.fragment_itemgrid, container, false);
         binding = FragmentItemgridBinding.bind(v);
         View fleuronView = inflater.inflate(R.layout.row_fleuron, null);
         fleuronBinding = RowFleuronBinding.bind(fleuronView);
