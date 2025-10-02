@@ -582,6 +582,7 @@ TWITTER_CONSUMER_KEY = "ooooooooooooooooooooo"
 TWITTER_CONSUMER_SECRET = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 YOUTUBE_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 SCRAPENINJA_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+SCRAPINGBEE_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
 # ===============
 # = AWS Backing =
@@ -666,7 +667,7 @@ os.environ["HF_HOME"] = "/srv/newsblur/docker/volumes/discover"
 
 def clear_prometheus_aggregation_stats():
     prom_folder = "/srv/newsblur/.prom_cache"
-    os.makedirs(prom_folder, exist_ok=True)
+    os.makedirs(prom_folder, mode=0o777, exist_ok=True)
     os.environ["PROMETHEUS_MULTIPROC_DIR"] = prom_folder
     for filename in os.listdir(prom_folder):
         file_path = os.path.join(prom_folder, filename)

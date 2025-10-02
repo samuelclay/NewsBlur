@@ -730,7 +730,7 @@ class Feed(models.Model):
             self.save_popular_tags()
             self.save_feed_story_history_statistics()
 
-        self.set_next_scheduled_update(verbose=settings.DEBUG, delay_fetch_sec=delay_fetch_sec)
+        self.set_next_scheduled_update(delay_fetch_sec=delay_fetch_sec)
 
     def calculate_last_story_date(self):
         last_story_date = None
@@ -766,7 +766,7 @@ class Feed(models.Model):
     def setup_feed_for_premium_subscribers(self, allow_skip_resync=False):
         self.count_subscribers()
         self.count_similar_feeds()
-        self.set_next_scheduled_update(verbose=settings.DEBUG)
+        self.set_next_scheduled_update()
         self.sync_redis(allow_skip_resync=allow_skip_resync)
 
     def schedule_fetch_archive_feed(self):
@@ -854,7 +854,7 @@ class Feed(models.Model):
         if status_code not in (200, 304):
             self.errors_since_good += 1
             self.count_errors_in_history("feed", status_code, fetch_history=fetch_history)
-            self.set_next_scheduled_update(verbose=settings.DEBUG)
+            self.set_next_scheduled_update()
         elif self.has_feed_exception or self.errors_since_good:
             self.errors_since_good = 0
             self.has_feed_exception = False
@@ -1483,7 +1483,7 @@ class Feed(models.Model):
             feed = Feed.get_by_id(feed.pk)
         if feed:
             feed.last_update = datetime.datetime.utcnow()
-            feed.set_next_scheduled_update(verbose=settings.DEBUG)
+            feed.set_next_scheduled_update()
             r.zadd("fetched_feeds_last_hour", {feed.pk: int(datetime.datetime.now().strftime("%s"))})
 
         if not feed or original_feed_id != feed.pk:
