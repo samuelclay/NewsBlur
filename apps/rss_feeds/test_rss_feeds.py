@@ -10,6 +10,19 @@ from utils import json_functions as json
 
 
 class Test_Feed(TransactionTestCase):
+    """
+    Tests for feed loading and story processing.
+
+    Note: These tests use TransactionTestCase for proper test isolation, but some
+    test contamination still occurs with unread counts. The tests use range assertions
+    (e.g., assertIn(count, [19, 20])) to handle edge cases where previous tests may
+    have left state in the database. Each test explicitly calls calculate_feed_scores()
+    to force recalculation of unread counts.
+
+    Known fixture issues:
+    - google1.xml and google2.xml have different tracking parameters in URLs,
+      causing story duplication instead of updates (see test_load_feeds__google)
+    """
     fixtures = ["initial_data.json"]
 
     def setUp(self):
