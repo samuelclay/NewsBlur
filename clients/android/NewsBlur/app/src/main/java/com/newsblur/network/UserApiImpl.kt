@@ -14,13 +14,13 @@ import okhttp3.RequestBody
 class UserApiImpl(
         @param:ApplicationContext private val context: Context,
         private val gson: Gson,
-        private val apiManager: APIManager,
+        private val networkClient: NetworkClient,
         private val prefsRepo: PrefsRepo,
 ) : UserApi {
 
     override suspend fun updateUserProfile(): ProfileResponse? {
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MY_PROFILE)
-        val response: APIResponse = apiManager.get(urlString)
+        val response: APIResponse = networkClient.get(urlString)
         if (!response.isError) {
             val profileResponse = response.getResponse(gson, ProfileResponse::class.java)
             prefsRepo.saveUserDetails(context, profileResponse.user)
@@ -35,7 +35,7 @@ class UserApiImpl(
             put(APIConstants.PARAMETER_USERID, userId)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_FOLLOW)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return !response.isError
     }
 
@@ -44,7 +44,7 @@ class UserApiImpl(
             put(APIConstants.PARAMETER_USERID, userId)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_UNFOLLOW)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return !response.isError
     }
 
@@ -53,7 +53,7 @@ class UserApiImpl(
             put(APIConstants.PARAMETER_USERID, userId)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_USER_PROFILE)
-        val response: APIResponse = apiManager.get(urlString, values)
+        val response: APIResponse = networkClient.get(urlString, values)
         return if (!response.isError) {
             response.getResponse(gson, ProfileResponse::class.java)
         } else {
@@ -68,7 +68,7 @@ class UserApiImpl(
             put(APIConstants.PARAMETER_PAGE_NUMBER, pageNumber.toString())
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_USER_ACTIVITIES)
-        val response: APIResponse = apiManager.get(urlString, values)
+        val response: APIResponse = networkClient.get(urlString, values)
         return if (!response.isError) {
             response.getResponse(gson, ActivitiesResponse::class.java)
         } else {
@@ -83,7 +83,7 @@ class UserApiImpl(
             put(APIConstants.PARAMETER_PAGE_NUMBER, pageNumber.toString())
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_USER_INTERACTIONS)
-        val response: APIResponse = apiManager.get(urlString, values)
+        val response: APIResponse = networkClient.get(urlString, values)
         return if (!response.isError) {
             response.getResponse(gson, InteractionsResponse::class.java)
         } else {
@@ -96,13 +96,13 @@ class UserApiImpl(
         values.put(APIConstants.PARAMETER_ORDER_ID, orderId)
         values.put(APIConstants.PARAMETER_PRODUCT_ID, productId)
         val urlString = APIConstants.buildUrl(APIConstants.PATH_SAVE_RECEIPT)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
     override suspend fun importOpml(requestBody: RequestBody): NewsBlurResponse? {
         val urlString = APIConstants.buildUrl(APIConstants.PATH_IMPORT_OPML)
-        val response: APIResponse = apiManager.post(urlString, requestBody)
+        val response: APIResponse = networkClient.post(urlString, requestBody)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 }

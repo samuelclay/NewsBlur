@@ -8,7 +8,7 @@ import com.newsblur.util.AppConstants
 
 class FolderApiImpl(
         private val gson: Gson,
-        private val apiManager: APIManager,
+        private val networkClient: NetworkClient,
 ) : FolderApi {
 
     override suspend fun addFolder(folderName: String): NewsBlurResponse {
@@ -16,7 +16,7 @@ class FolderApiImpl(
             put(APIConstants.PARAMETER_FOLDER, folderName)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_ADD_FOLDER)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -26,7 +26,7 @@ class FolderApiImpl(
             put(APIConstants.PARAMETER_IN_FOLDER, inFolder)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_DELETE_FOLDER)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -37,7 +37,7 @@ class FolderApiImpl(
             put(APIConstants.PARAMETER_IN_FOLDER, inFolder)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_RENAME_FOLDER)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -55,7 +55,7 @@ class FolderApiImpl(
         }
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MOVE_FEED_TO_FOLDERS)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 }

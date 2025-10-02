@@ -24,7 +24,7 @@ import kotlin.apply
 
 class StoryApiImpl(
         private val gson: Gson,
-        private val apiManager: APIManager,
+        private val networkClient: NetworkClient,
 ) : StoryApi {
 
     override fun getStories(
@@ -100,7 +100,7 @@ class StoryApiImpl(
             values.put(APIConstants.PARAMETER_QUERY, fs.searchQuery)
         }
 
-        val response: APIResponse = apiManager.get(uri.toString(), values)
+        val response: APIResponse = networkClient.get(uri.toString(), values)
         return response.getResponse<StoriesResponse?>(gson, StoriesResponse::class.java)
     }
 
@@ -110,7 +110,7 @@ class StoryApiImpl(
             put(APIConstants.PARAMETER_STORYID, storyId)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_STORY_TEXT)
-        val response: APIResponse = apiManager.get(urlString, values)
+        val response: APIResponse = networkClient.get(urlString, values)
         return if (!response.isError) {
             response.getResponse(gson, StoryTextResponse::class.java)
         } else {
@@ -124,7 +124,7 @@ class StoryApiImpl(
             put(APIConstants.PARAMETER_SHOW_CHANGES, if (showChanges) APIConstants.VALUE_TRUE else APIConstants.VALUE_FALSE)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_STORY_CHANGES)
-        val response: APIResponse = apiManager.get(urlString, values)
+        val response: APIResponse = networkClient.get(urlString, values)
         return response.getResponse(gson, StoryChangesResponse::class.java)
     }
 
@@ -133,7 +133,7 @@ class StoryApiImpl(
             put(APIConstants.PARAMETER_STORY_HASH, hash)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MARK_STORY_HASH_UNREAD)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -142,7 +142,7 @@ class StoryApiImpl(
             put(APIConstants.PARAMETER_STORY_HASH, storyHash)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MARK_STORY_AS_UNSTARRED)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -151,13 +151,13 @@ class StoryApiImpl(
             put(APIConstants.PARAMETER_INCLUDE_TIMESTAMPS, "1")
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_UNREAD_HASHES)
-        val response: APIResponse = apiManager.get(urlString, values)
+        val response: APIResponse = networkClient.get(urlString, values)
         return response.getResponse(gson, UnreadStoryHashesResponse::class.java)
     }
 
     override fun getStarredStoryHashes(): StarredStoryHashesResponse {
         val urlString = APIConstants.buildUrl(APIConstants.PATH_STARRED_STORY_HASHES)
-        val response: APIResponse = apiManager.get(urlString)
+        val response: APIResponse = networkClient.get(urlString)
         return response.getResponse(gson, StarredStoryHashesResponse::class.java)
     }
 
@@ -169,7 +169,7 @@ class StoryApiImpl(
             put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_RIVER_STORIES)
-        val response: APIResponse = apiManager.get(urlString, values)
+        val response: APIResponse = networkClient.get(urlString, values)
         return response.getResponse(gson, StoriesResponse::class.java)
     }
 
@@ -179,7 +179,7 @@ class StoryApiImpl(
 
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MARK_STORIES_READ)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -194,7 +194,7 @@ class StoryApiImpl(
             }
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MARK_STORY_AS_STARRED)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -205,7 +205,7 @@ class StoryApiImpl(
 
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_SAVE_EXTERNAL_STORY)
-        return apiManager.post(urlString, values)
+        return networkClient.post(urlString, values)
     }
 
     override suspend fun shareExternalStory(storyTitle: String, storyUrl: String, shareComments: String): APIResponse {
@@ -216,7 +216,7 @@ class StoryApiImpl(
 
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_SHARE_EXTERNAL_STORY)
-        return apiManager.post(urlString, values)
+        return networkClient.post(urlString, values)
     }
 
     override fun shareStory(storyId: String?, feedId: String?, comment: String?, sourceUserId: String?): StoriesResponse? {
@@ -232,7 +232,7 @@ class StoryApiImpl(
             put(APIConstants.PARAMETER_STORYID, storyId)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_SHARE_STORY)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         // this call returns a new copy of the story with all fields updated and some metadata
         return response.getResponse(gson, StoriesResponse::class.java)
     }
@@ -244,7 +244,7 @@ class StoryApiImpl(
         }
 
         val urlString = APIConstants.buildUrl(APIConstants.PATH_UNSHARE_STORY)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         // this call returns a new copy of the story with all fields updated and some metadata
         return response.getResponse<StoriesResponse?>(gson, StoriesResponse::class.java)
     }
@@ -256,7 +256,7 @@ class StoryApiImpl(
             put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_LIKE_COMMENT)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse<NewsBlurResponse?>(gson, NewsBlurResponse::class.java)
     }
 
@@ -267,7 +267,7 @@ class StoryApiImpl(
             put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_UNLIKE_COMMENT)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -279,7 +279,7 @@ class StoryApiImpl(
             put(APIConstants.PARAMETER_REPLY_TEXT, reply)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_REPLY_TO)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         // this call returns a new copy of the comment with all fields updated
         return response.getResponse(gson, CommentResponse::class.java)
     }
@@ -293,7 +293,7 @@ class StoryApiImpl(
             put(APIConstants.PARAMETER_REPLY_TEXT, reply)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_EDIT_REPLY)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         // this call returns a new copy of the comment with all fields updated
         return response.getResponse(gson, CommentResponse::class.java)
     }
@@ -306,7 +306,7 @@ class StoryApiImpl(
             put(APIConstants.PARAMETER_REPLY_ID, replyId)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_DELETE_REPLY)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         // this call returns a new copy of the comment with all fields updated
         return response.getResponse(gson, CommentResponse::class.java)
     }

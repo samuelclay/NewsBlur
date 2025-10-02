@@ -32,8 +32,8 @@ import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.StarredCount;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIConstants;
-import com.newsblur.network.APIManager;
 import com.newsblur.network.FeedApi;
+import com.newsblur.network.NetworkClient;
 import com.newsblur.network.StoryApi;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
@@ -168,7 +168,7 @@ public class NBSyncService extends JobService {
     protected ImagePrefetchService imagePrefetchService;
 
     @Inject
-    APIManager apiManager;
+    NetworkClient networkClient;
 
     @Inject
     StoryApi storyApi;
@@ -415,7 +415,7 @@ public class NBSyncService extends JobService {
                 prefsRepo.updateVersion(appVersion);
                 // update user agent on api calls with latest app version
                 String customUserAgent = NetworkUtils.getCustomUserAgent(appVersion);
-                apiManager.updateCustomUserAgent(customUserAgent);
+                networkClient.updateCustomUserAgent(customUserAgent);
             }
 
             boolean autoVac = prefsRepo.isTimeToVacuum();
@@ -473,7 +473,6 @@ public class NBSyncService extends JobService {
 
                 com.newsblur.util.Log.d(this, "attempting action: " + ra.toContentValues().toString());
                 NewsBlurResponse response = ra.doRemote(
-                        apiManager,
                         feedApi,
                         storyApi,
                         dbHelper,

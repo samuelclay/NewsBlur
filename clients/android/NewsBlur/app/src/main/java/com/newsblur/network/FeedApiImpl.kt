@@ -15,7 +15,7 @@ import com.newsblur.util.FeedSet
 
 class FeedApiImpl(
         private val gson: Gson,
-        private val apiManager: APIManager,
+        private val networkClient: NetworkClient,
 ) : FeedApi {
 
     override fun markFeedsAsRead(fs: FeedSet, includeOlder: Long?, includeNewer: Long?): NewsBlurResponse? {
@@ -60,7 +60,7 @@ class FeedApiImpl(
         }
 
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MARK_FEED_AS_READ)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -71,7 +71,7 @@ class FeedApiImpl(
             }
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_FEED_UNREAD_COUNT)
-        val response: APIResponse = apiManager.get(urlString, values)
+        val response: APIResponse = networkClient.get(urlString, values)
         return response.getResponse(gson, UnreadCountResponse::class.java)
     }
 
@@ -88,7 +88,7 @@ class FeedApiImpl(
             put(APIConstants.PARAMETER_UPDATE_COUNTS, (if (doUpdateCounts) APIConstants.VALUE_TRUE else APIConstants.VALUE_FALSE))
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_FEEDS)
-        val response: APIResponse = apiManager.get(urlString, params)
+        val response: APIResponse = networkClient.get(urlString, params)
 
         if (response.isError) {
             // we can't use the magic polymorphism of NewsBlurResponse because this result uses
@@ -108,7 +108,7 @@ class FeedApiImpl(
         val values = classifier.getAPITuples()
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         val urlString = APIConstants.buildUrl(APIConstants.PATH_CLASSIFIER_SAVE)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -119,7 +119,7 @@ class FeedApiImpl(
             values.put(APIConstants.PARAMETER_FOLDER, folderName)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_ADD_FEED)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, AddFeedResponse::class.java)
     }
 
@@ -127,7 +127,7 @@ class FeedApiImpl(
         val values = ContentValues()
         values.put(APIConstants.PARAMETER_FEED_SEARCH_TERM, searchTerm)
         val urlString = APIConstants.buildUrl(APIConstants.PATH_FEED_AUTOCOMPLETE)
-        val response: APIResponse = apiManager.get(urlString, values)
+        val response: APIResponse = networkClient.get(urlString, values)
 
         return if (!response.isError) {
             gson.fromJson(response.responseBody, Array<FeedResult>::class.java)
@@ -143,7 +143,7 @@ class FeedApiImpl(
             values.put(APIConstants.PARAMETER_IN_FOLDER, folderName)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_DELETE_FEED)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -152,7 +152,7 @@ class FeedApiImpl(
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         values.put(APIConstants.PARAMETER_QUERY, query)
         val urlString = APIConstants.buildUrl(APIConstants.PATH_DELETE_SEARCH)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -161,7 +161,7 @@ class FeedApiImpl(
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         values.put(APIConstants.PARAMETER_QUERY, query)
         val urlString = APIConstants.buildUrl(APIConstants.PATH_SAVE_SEARCH)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -171,7 +171,7 @@ class FeedApiImpl(
             values.put(APIConstants.PARAMETER_APPROVED_FEEDS, feed)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_SAVE_FEED_CHOOSER)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -183,7 +183,7 @@ class FeedApiImpl(
         }
         if (notifyFilter != null) values.put(APIConstants.PARAMETER_NOTIFICATION_FILTER, notifyFilter)
         val urlString = APIConstants.buildUrl(APIConstants.PATH_SET_NOTIFICATIONS)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -193,7 +193,7 @@ class FeedApiImpl(
         // this param appears fixed and mandatory for the call to succeed
         values.put(APIConstants.PARAMETER_RESET_FETCH, APIConstants.VALUE_FALSE)
         val urlString = APIConstants.buildUrl(APIConstants.PATH_INSTA_FETCH)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -202,7 +202,7 @@ class FeedApiImpl(
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         values.put(APIConstants.PARAMETER_FEEDTITLE, newFeedName)
         val urlString = APIConstants.buildUrl(APIConstants.PATH_RENAME_FEED)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
@@ -211,7 +211,7 @@ class FeedApiImpl(
             put(APIConstants.PARAMETER_DAYS, "0")
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MARK_ALL_AS_READ)
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 }
