@@ -207,6 +207,10 @@ staging: deploy_staging
 deploy_staging_static: staging_static
 staging_static:
 	ansible-playbook ansible/deploy.yml -l staging --tags static
+test_deploy_staging:
+	./utils/load_test_deploy.sh --staging
+test_deploy_app:
+	./utils/load_test_deploy.sh --app
 celery_stop:
 	ansible-playbook ansible/deploy.yml -l task --tags stop
 sentry:

@@ -1,19 +1,12 @@
 ---
-- name: DEPLOY -> app
+# One-time setup tasks
+- name: DEPLOY -> Prepare deployment
   hosts: app,staging
   gather_facts: false
-  # serial: "50%"
   vars_files:
     - ../env_vars/base.yml
-    - roles/letsencrypt/defaults/main.yml
-  vars:
-    haproxy_host: "{{ 'hstaging' if 'staging' in inventory_hostname else 'hwww' }}"
 
   tasks:
-    # - name: Leave consul
-    #   command: consul leave
-    #   ignore_errors: yes
-
     - name: Update Sentry release
       connection: local
       run_once: yes
@@ -87,132 +80,37 @@
         - never
         - static
 
-    - name: Downloading JS/CSS assets from S3
-      vars:
-        ansible_python_interpreter: /usr/bin/python3
-      amazon.aws.aws_s3:
-        bucket: newsblur-backups
-        object: /static_py3.tgz
-        dest: /srv/newsblur/static.tgz
-        mode: get
-        overwrite: different
-        aws_access_key: "{{ lookup('ini', 'aws_access_key_id section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
-        aws_secret_key: "{{ lookup('ini', 'aws_secret_access_key section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
-        endpoint_url: "https://s3.us-east-1.amazonaws.com"
-      tags:
-        - never
-        - static
-      register: jscss_updated
+# Deploy Group A (odd servers)
+- name: DEPLOY -> app Group A (odd servers)
+  hosts: hdjango_a:hrefresh_a:hcount_a:hpush_a:staging_a
+  gather_facts: false
+  vars_files:
+    - ../env_vars/base.yml
+    - roles/letsencrypt/defaults/main.yml
+  vars:
+    haproxy_host: "{{ 'hstaging' if 'staging' in inventory_hostname else 'hwww' }}"
+    group_name: A
+  tasks:
+    - include_tasks: deploy_app_group.yml
 
-    - name: Decompress downloaded JS/CSS
-      unarchive:
-        src: /srv/newsblur/static.tgz
-        dest: /srv/newsblur/static
-      when: jscss_updated is succeeded
-      tags:
-        - never
-        - static
+# Deploy Group B (even servers)
+- name: DEPLOY -> app Group B (even servers)
+  hosts: hdjango_b:hrefresh_b:hcount_b:hpush_b:staging_b
+  gather_facts: false
+  vars_files:
+    - ../env_vars/base.yml
+    - roles/letsencrypt/defaults/main.yml
+  vars:
+    haproxy_host: "{{ 'hstaging' if 'staging' in inventory_hostname else 'hwww' }}"
+    group_name: B
+  tasks:
+    - include_tasks: deploy_app_group.yml
 
-    - name: Pull newsblur_web github
-      git:
-        repo: https://github.com/samuelclay/NewsBlur.git
-        dest: /srv/newsblur/
-        version: master
-      register: pulled
-      tags:
-        - static
-
-    - name: Start backup container on port 8001
-      docker_container:
-        name: newsblur_web_backup
-        image: newsblur/newsblur_python3
-        container_default_behavior: no_defaults
-        pull: yes
-        env:
-          DOCKERBUILD: ""
-        state: started
-        command: gunicorn --config /srv/newsblur/config/gunicorn_conf.py newsblur_web.wsgi:application
-        hostname: "{{ inventory_hostname }}"
-        log_driver: json-file
-        log_options:
-          max-size: 100m
-        networks_cli_compatible: yes
-        network_mode: default
-        networks:
-          - name: newsblurnet
-        ports:
-          - "8001:8000"
-        restart_policy: no
-        user: 1000:1001
-        volumes:
-          - /srv/newsblur:/srv/newsblur
-
-    - name: Wait for backup container to be healthy
-      uri:
-        url: "http://localhost:8001/_haproxychk"
-        status_code: 200
-      register: result_8001
-      retries: 10
-      delay: 5
-      until: result_8001.status == 200
-
-    - name: Stop primary container
-      docker_container:
-        name: newsblur_web
-        state: stopped
-        container_default_behavior: no_defaults
-
-    - name: Wait for HAProxy to detect primary is down and failover to backup
-      pause:
-        seconds: 3
-
-    - name: Deploy new container
-      docker_container:
-        name: newsblur_web
-        image: newsblur/newsblur_python3
-        container_default_behavior: no_defaults
-        pull: yes
-        env:
-          DOCKERBUILD: ""
-        state: started
-        command: gunicorn --config /srv/newsblur/config/gunicorn_conf.py newsblur_web.wsgi:application
-        hostname: "{{ inventory_hostname }}"
-        log_driver: json-file
-        log_options:
-          max-size: 100m
-        networks_cli_compatible: yes
-        network_mode: default
-        networks:
-          - name: newsblurnet
-        ports:
-          - "8000:8000"
-        restart_policy: unless-stopped
-        user: 1000:1001
-        volumes:
-          - /srv/newsblur:/srv/newsblur
-
-    - name: Wait for new container to be healthy
-      uri:
-        url: "http://localhost:8000/_haproxychk"
-        status_code: 200
-      register: result_8000
-      retries: 10
-      delay: 5
-      until: result_8000.status == 200
-
-    - name: Stop and remove backup container
-      docker_container:
-        name: newsblur_web_backup
-        state: absent
-        container_default_behavior: no_defaults
-
-    - name: Start Consul
-      become: yes
-      service:
-        name: consul
-        state: started
-        enabled: true
-
+# Maintenance mode tasks
+- name: Maintenance mode management
+  hosts: app,staging
+  gather_facts: false
+  tasks:
     - name: Entering maintenance mode
       template:
         src: /srv/newsblur/templates/maintenance_off.html

@@ -108,20 +108,18 @@ backend app_django
     balance roundrobin
     option allbackups
     option httpchk GET /_haproxychk
-    default-server check inter 1000ms on-error mark-down fall 2 rise 2 on-marked-down shutdown-sessions resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    default-server check inter 1000ms on-error mark-down fall 2 rise 1 resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     {% for host in groups.hdjango %}
     server {{host}} {{host}}.node.nyc1.consul:8000
-    server {{host}}-backup {{host}}.node.nyc1.consul:8001 backup
     {% endfor %}
 
 backend app_count
     balance roundrobin
     option allbackups
     option httpchk GET /_haproxychk
-    default-server check inter 1000ms on-error mark-down fall 2 rise 2 on-marked-down shutdown-sessions resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    default-server check inter 1000ms on-error mark-down fall 2 rise 1 resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     {% for host in groups.hcount %}
     server {{host}} {{host}}.node.nyc1.consul:8000
-    server {{host}}-backup {{host}}.node.nyc1.consul:8001 backup
     {% endfor %}
     # server-template app-counts 1 _app-counts._tcp.service.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     
@@ -129,10 +127,9 @@ backend app_refresh
     balance roundrobin
     option allbackups
     option httpchk GET /_haproxychk
-    default-server check inter 1000ms on-error mark-down fall 2 rise 2 on-marked-down shutdown-sessions resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    default-server check inter 1000ms on-error mark-down fall 2 rise 1 resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     {% for host in groups.hrefresh %}
     server {{host}} {{host}}.node.nyc1.consul:8000
-    server {{host}}-backup {{host}}.node.nyc1.consul:8001 backup
     {% endfor %}
     # server-template app-refresh 1 _app-refresh._tcp.service.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
@@ -140,10 +137,9 @@ backend app_push
     balance roundrobin
     option allbackups
     option httpchk GET /_haproxychk
-    default-server check inter 1000ms on-error mark-down fall 2 rise 2 on-marked-down shutdown-sessions resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    default-server check inter 1000ms on-error mark-down fall 2 rise 1 resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     {% for host in groups.hpush %}
     server {{host}} {{host}}.node.nyc1.consul:8000
-    server {{host}}-backup {{host}}.node.nyc1.consul:8001 backup
     {% endfor %}
     # server-template app-push 1 _app-push._tcp.service.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
@@ -197,10 +193,9 @@ backend node_page
 backend staging
     balance roundrobin
     option httpchk GET /_haproxychk
-    default-server check inter 1000ms on-error mark-down fall 2 rise 2 on-marked-down shutdown-sessions resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    default-server check inter 1000ms on-error mark-down fall 2 rise 1 resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     {% for host in groups.staging %}
     server {{host}} {{host}}.node.nyc1.consul:8000
-    server {{host}}-backup {{host}}.node.nyc1.consul:8001 backup
     {% endfor %}
 
 backend blog
