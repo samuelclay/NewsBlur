@@ -12,7 +12,7 @@ import okio.IOException
 
 class AuthApiImpl(
         private val gson: Gson,
-        private val apiManager: APIManager,
+        private val networkClient: NetworkClient,
         private val prefsRepo: PrefsRepo,
 ) : AuthApi {
 
@@ -24,7 +24,7 @@ class AuthApiImpl(
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_LOGIN)
 
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         val loginResponse = response.getLoginResponse(gson)
         if (!response.isError) {
             prefsRepo.saveLogin(username, response.cookie)
@@ -36,12 +36,12 @@ class AuthApiImpl(
         val values = ContentValues().apply {
             put(APIConstants.PARAMETER_USER, username)
         }
-        val urlString = APIConstants.buildUrl(APIConstants.PATH_LOGINAS) + "?" + apiManager.builderGetParametersString(values)
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_LOGINAS) + "?" + networkClient.builderGetParametersString(values)
         Log.i(this.javaClass.name, "Doing superuser swap: $urlString")
         // This API returns a redirect that means the call worked, but we do not want to follow it.  To
         // just get the cookie from the 302 and stop, we directly use a one-off OkHttpClient.
         val requestBuilder = Request.Builder().url(urlString)
-        apiManager.addCookieHeader(requestBuilder)
+        networkClient.addCookieHeader(requestBuilder)
         val noredirHttpClient = OkHttpClient.Builder()
                 .followRedirects(false)
                 .build()
@@ -65,7 +65,7 @@ class AuthApiImpl(
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_SIGNUP)
 
-        val response: APIResponse = apiManager.post(urlString, values)
+        val response: APIResponse = networkClient.post(urlString, values)
         val registerResponse = response.getRegisterResponse(gson)
         if (!response.isError) {
             prefsRepo.saveLogin(username, response.cookie)

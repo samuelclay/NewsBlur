@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Classifier;
-import com.newsblur.network.APIManager;
 import com.newsblur.network.FeedApi;
 import com.newsblur.network.StoryApi;
 import com.newsblur.network.domain.CommentResponse;
@@ -288,7 +287,6 @@ public class ReadingAction implements Serializable {
      * Execute this action remotely via the API.
      */
     public NewsBlurResponse doRemote(
-            @NonNull APIManager apiManager,
             @NonNull FeedApi feedApi,
             @NonNull StoryApi storyApi,
             @NonNull BlurDatabaseHelper dbHelper,

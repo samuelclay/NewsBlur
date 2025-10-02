@@ -1,7 +1,6 @@
 package com.newsblur.di
 
 import com.newsblur.database.BlurDatabaseHelper
-import com.newsblur.network.APIManager
 import com.newsblur.network.FeedApi
 import com.newsblur.network.FolderApi
 import com.newsblur.network.UserApi

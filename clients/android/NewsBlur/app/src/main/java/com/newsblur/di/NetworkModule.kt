@@ -7,13 +7,14 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
-import com.newsblur.network.APIManager
 import com.newsblur.network.AuthApi
 import com.newsblur.network.AuthApiImpl
 import com.newsblur.network.FeedApi
 import com.newsblur.network.FeedApiImpl
 import com.newsblur.network.FolderApi
 import com.newsblur.network.FolderApiImpl
+import com.newsblur.network.NetworkClient
+import com.newsblur.network.NetworkClientImpl
 import com.newsblur.network.StoryApi
 import com.newsblur.network.StoryApiImpl
 import com.newsblur.network.UserApi
@@ -81,55 +82,53 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideApiManager(
+    fun provideNetworkClient(
             @ApplicationContext context: Context,
-            customUserAgent: CustomUserAgent,
-            gson: Gson,
             @ApiOkHttpClient apiOkHttpClient: OkHttpClient,
-            prefsRepo: PrefsRepo): APIManager =
-            APIManager(
-                    context,
-                    gson,
-                    customUserAgent,
-                    apiOkHttpClient,
-                    prefsRepo,
-            )
+            customUserAgent: CustomUserAgent,
+            prefsRepo: PrefsRepo,
+    ): NetworkClient = NetworkClientImpl(
+            context = context,
+            client = apiOkHttpClient,
+            initialUserAgent = customUserAgent,
+            prefsRepo = prefsRepo,
+    )
 
     @Singleton
     @Provides
     fun provideAuthApi(
             gson: Gson,
-            apiManager: APIManager,
+            networkClient: NetworkClient,
             prefsRepo: PrefsRepo,
-    ): AuthApi = AuthApiImpl(gson, apiManager, prefsRepo)
+    ): AuthApi = AuthApiImpl(gson, networkClient, prefsRepo)
 
     @Singleton
     @Provides
     fun provideUserApi(
             @ApplicationContext context: Context,
             gson: Gson,
-            apiManager: APIManager,
+            networkClient: NetworkClient,
             prefsRepo: PrefsRepo,
-    ): UserApi = UserApiImpl(context, gson, apiManager, prefsRepo)
+    ): UserApi = UserApiImpl(context, gson, networkClient, prefsRepo)
 
     @Singleton
     @Provides
     fun provideFolderApi(
             gson: Gson,
-            apiManager: APIManager,
-    ): FolderApi = FolderApiImpl(gson, apiManager)
+            networkClient: NetworkClient,
+    ): FolderApi = FolderApiImpl(gson, networkClient)
 
     @Singleton
     @Provides
     fun provideStoryApi(
             gson: Gson,
-            apiManager: APIManager,
-    ): StoryApi = StoryApiImpl(gson, apiManager)
+            networkClient: NetworkClient,
+    ): StoryApi = StoryApiImpl(gson, networkClient)
 
     @Singleton
     @Provides
     fun provideFeedApi(
             gson: Gson,
-            apiManager: APIManager,
-    ): FeedApi = FeedApiImpl(gson, apiManager)
+            networkClient: NetworkClient,
+    ): FeedApi = FeedApiImpl(gson, networkClient)
 }

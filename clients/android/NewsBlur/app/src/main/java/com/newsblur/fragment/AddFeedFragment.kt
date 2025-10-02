@@ -20,7 +20,6 @@ import com.newsblur.databinding.DialogAddFeedBinding
 import com.newsblur.databinding.RowAddFeedFolderBinding
 import com.newsblur.domain.Folder
 import com.newsblur.fragment.AddFeedFragment.AddFeedAdapter.FolderViewHolder
-import com.newsblur.network.APIManager
 import com.newsblur.network.FeedApi
 import com.newsblur.network.FolderApi
 import com.newsblur.service.NBSyncService
@@ -32,9 +31,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AddFeedFragment : DialogFragment() {
-
-    @Inject
-    lateinit var apiManager: APIManager
 
     @Inject
     lateinit var folderApi: FolderApi
