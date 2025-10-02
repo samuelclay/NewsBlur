@@ -1,32 +1,26 @@
 package com.newsblur.network;
 
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import static com.newsblur.network.APIConstants.buildUrl;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.newsblur.di.ApiOkHttpClient;
-import com.newsblur.domain.Classifier;
-import com.newsblur.domain.FeedResult;
 import com.newsblur.domain.ValueMultimap;
-import static com.newsblur.network.APIConstants.buildUrl;
-import com.newsblur.network.domain.AddFeedResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.util.PrefConstants;
+
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -35,13 +29,13 @@ import okhttp3.RequestBody;
 
 public class APIManager {
 
-	private final Context context;
-	private final Gson gson;
+    private final Context context;
+    private final Gson gson;
     @ApiOkHttpClient
-	private final OkHttpClient apiOkHttpClient;
+    private final OkHttpClient apiOkHttpClient;
     private String customUserAgent;
 
-	public APIManager(
+    public APIManager(
             final Context context,
             Gson gson,
             String customUserAgent,
@@ -53,113 +47,6 @@ public class APIManager {
         this.gson = gson;
         this.customUserAgent = customUserAgent;
         this.apiOkHttpClient = apiOkHttpClient;
-	}
-
-    public NewsBlurResponse updateFeedIntel(String feedId, Classifier classifier) {
-        ValueMultimap values = classifier.getAPITuples();
-        values.put(APIConstants.PARAMETER_FEEDID, feedId);
-		APIResponse response = post(buildUrl(APIConstants.PATH_CLASSIFIER_SAVE), values);
-		return response.getResponse(gson, NewsBlurResponse.class);
-	}
-
-	public AddFeedResponse addFeed(String feedUrl, @Nullable String folderName) {
-		ContentValues values = new ContentValues();
-		values.put(APIConstants.PARAMETER_URL, feedUrl);
-		if (!TextUtils.isEmpty(folderName) && !folderName.equals(AppConstants.ROOT_FOLDER)) {
-		    values.put(APIConstants.PARAMETER_FOLDER, folderName);
-        }
-		APIResponse response = post(buildUrl(APIConstants.PATH_ADD_FEED), values);
-		return response.getResponse(gson, AddFeedResponse.class);
-	}
-
-    @Nullable
-	public FeedResult[] searchForFeed(String searchTerm) {
-		ContentValues values = new ContentValues();
-		values.put(APIConstants.PARAMETER_FEED_SEARCH_TERM, searchTerm);
-		final APIResponse response = get(buildUrl(APIConstants.PATH_FEED_AUTOCOMPLETE), values);
-
-		if (!response.isError()) {
-            return gson.fromJson(response.getResponseBody(), FeedResult[].class);
-		} else {
-			return null;
-		}
-	}
-
-	public NewsBlurResponse deleteFeed(String feedId, String folderName) {
-		ContentValues values = new ContentValues();
-		values.put(APIConstants.PARAMETER_FEEDID, feedId);
-		if ((!TextUtils.isEmpty(folderName)) && (!folderName.equals(AppConstants.ROOT_FOLDER))) {
-			values.put(APIConstants.PARAMETER_IN_FOLDER, folderName);
-		}
-		APIResponse response = post(buildUrl(APIConstants.PATH_DELETE_FEED), values);
-		return response.getResponse(gson, NewsBlurResponse.class);
-	}
-
-	public NewsBlurResponse deleteSearch(String feedId, String query) {
-        ContentValues values = new ContentValues();
-        values.put(APIConstants.PARAMETER_FEEDID, feedId);
-        values.put(APIConstants.PARAMETER_QUERY, query);
-        APIResponse response = post(buildUrl(APIConstants.PATH_DELETE_SEARCH), values);
-        return response.getResponse(gson, NewsBlurResponse.class);
-    }
-
-    public NewsBlurResponse saveSearch(String feedId, String query) {
-        ContentValues values = new ContentValues();
-        values.put(APIConstants.PARAMETER_FEEDID, feedId);
-        values.put(APIConstants.PARAMETER_QUERY, query);
-        APIResponse response = post(buildUrl(APIConstants.PATH_SAVE_SEARCH), values);
-        return response.getResponse(gson, NewsBlurResponse.class);
-    }
-
-    public NewsBlurResponse saveFeedChooser(Set<String> feeds) {
-        ValueMultimap values = new ValueMultimap();
-        for (String feed : feeds) {
-            values.put(APIConstants.PARAMETER_APPROVED_FEEDS, feed);
-        }
-        APIResponse response = post(buildUrl(APIConstants.PATH_SAVE_FEED_CHOOSER), values);
-        return response.getResponse(gson, NewsBlurResponse.class);
-    }
-
-    public NewsBlurResponse updateFeedNotifications(String feedId, List<String> notifyTypes, String notifyFilter) {
-        ValueMultimap values = new ValueMultimap();
-        values.put(APIConstants.PARAMETER_FEEDID, feedId);
-        for (String type : notifyTypes) {
-            values.put(APIConstants.PARAMETER_NOTIFICATION_TYPES, type);
-        }
-        if (notifyFilter != null )
-            values.put(APIConstants.PARAMETER_NOTIFICATION_FILTER, notifyFilter);
-        APIResponse response = post(buildUrl(APIConstants.PATH_SET_NOTIFICATIONS), values);
-        return response.getResponse(gson, NewsBlurResponse.class);
-    }
-
-    public NewsBlurResponse instaFetch(String feedId) {
-        ValueMultimap values = new ValueMultimap();
-        values.put(APIConstants.PARAMETER_FEEDID, feedId);
-        // this param appears fixed and mandatory for the call to succeed
-        values.put(APIConstants.PARAMETER_RESET_FETCH, APIConstants.VALUE_FALSE);
-        APIResponse response = post(buildUrl(APIConstants.PATH_INSTA_FETCH), values);
-        return response.getResponse(gson, NewsBlurResponse.class);
-    }
-
-    public NewsBlurResponse renameFeed(String feedId, String newFeedName) {
-        ValueMultimap values = new ValueMultimap();
-        values.put(APIConstants.PARAMETER_FEEDID, feedId);
-        values.put(APIConstants.PARAMETER_FEEDTITLE, newFeedName);
-        APIResponse response = post(buildUrl(APIConstants.PATH_RENAME_FEED), values);
-        return response.getResponse(gson, NewsBlurResponse.class);
-    }
-
-    public NewsBlurResponse saveReceipt(String orderId, String productId) {
-        ContentValues values = new ContentValues();
-        values.put(APIConstants.PARAMETER_ORDER_ID, orderId);
-        values.put(APIConstants.PARAMETER_PRODUCT_ID, productId);
-        APIResponse response = post(buildUrl(APIConstants.PATH_SAVE_RECEIPT), values);
-        return response.getResponse(gson, NewsBlurResponse.class);
-    }
-
-    public NewsBlurResponse importOpml(RequestBody requestBody) {
-        APIResponse response = post(buildUrl(APIConstants.PATH_IMPORT_OPML), requestBody);
-        return response.getResponse(gson, NewsBlurResponse.class);
     }
 
     public void updateCustomUserAgent(String customUserAgent) {
@@ -178,29 +65,29 @@ public class APIManager {
         return response;
     }
 
-	private APIResponse get_single(final String urlString, int expectedReturnCode) {
-		if (!NetworkUtils.isOnline(context)) {
-			return new APIResponse();
-		}
+    APIResponse get_single(final String urlString, int expectedReturnCode) {
+        if (!NetworkUtils.isOnline(context)) {
+            return new APIResponse();
+        }
 
-		Request.Builder requestBuilder = new Request.Builder().url(urlString);
-		addCookieHeader(requestBuilder);
-		requestBuilder.header("User-Agent", this.customUserAgent);
+        Request.Builder requestBuilder = new Request.Builder().url(urlString);
+        addCookieHeader(requestBuilder);
+        requestBuilder.header("User-Agent", this.customUserAgent);
 
-		return new APIResponse(apiOkHttpClient, requestBuilder.build(), expectedReturnCode);
-	}
+        return new APIResponse(apiOkHttpClient, requestBuilder.build(), expectedReturnCode);
+    }
 
     void addCookieHeader(Request.Builder requestBuilder) {
-		SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
-		String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
-		if (cookie != null) {
-			requestBuilder.header("Cookie", cookie);
-		}
-	}
+        SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+        String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
+        if (cookie != null) {
+            requestBuilder.header("Cookie", cookie);
+        }
+    }
 
     APIResponse get(final String urlString, final ContentValues values) {
         return this.get(urlString + "?" + builderGetParametersString(values));
-	}
+    }
 
     String builderGetParametersString(ContentValues values) {
         List<String> parameters = new ArrayList<>();
@@ -216,7 +103,7 @@ public class APIManager {
 
     APIResponse get(final String urlString, final ValueMultimap valueMap) {
         return this.get(urlString + "?" + valueMap.getParameterString());
-	}
+    }
 
     APIResponse post(String urlString, RequestBody formBody) {
         APIResponse response;
@@ -228,13 +115,13 @@ public class APIManager {
         return response;
     }
 
-	private APIResponse post_single(String urlString, RequestBody formBody) {
-		if (!NetworkUtils.isOnline(context)) {
-			return new APIResponse();
-		}
+    private APIResponse post_single(String urlString, RequestBody formBody) {
+        if (!NetworkUtils.isOnline(context)) {
+            return new APIResponse();
+        }
 
-		if (AppConstants.VERBOSE_LOG_NET) {
-			Log.d(this.getClass().getName(), "API POST " + urlString);
+        if (AppConstants.VERBOSE_LOG_NET) {
+            Log.d(this.getClass().getName(), "API POST " + urlString);
             String body = "";
             try {
                 okio.Buffer buffer = new okio.Buffer();
@@ -243,27 +130,27 @@ public class APIManager {
             } catch (Exception e) {
                 // this is debug code, do not raise
             }
-			Log.d(this.getClass().getName(), "post body: " + body);
-		}
+            Log.d(this.getClass().getName(), "post body: " + body);
+        }
 
-		Request.Builder requestBuilder = new Request.Builder().url(urlString);
-		addCookieHeader(requestBuilder);
-		requestBuilder.post(formBody);
+        Request.Builder requestBuilder = new Request.Builder().url(urlString);
+        addCookieHeader(requestBuilder);
+        requestBuilder.post(formBody);
 
-		return new APIResponse(apiOkHttpClient, requestBuilder.build());
-	}
+        return new APIResponse(apiOkHttpClient, requestBuilder.build());
+    }
 
     APIResponse post(final String urlString, final ContentValues values) {
-		FormBody.Builder formEncodingBuilder = new FormBody.Builder();
-		for (Entry<String, Object> entry : values.valueSet()) {
-			formEncodingBuilder.add(entry.getKey(), (String)entry.getValue());
-		}
+        FormBody.Builder formEncodingBuilder = new FormBody.Builder();
+        for (Entry<String, Object> entry : values.valueSet()) {
+            formEncodingBuilder.add(entry.getKey(), (String) entry.getValue());
+        }
         return this.post(urlString, formEncodingBuilder.build());
-	}
+    }
 
     APIResponse post(final String urlString, final ValueMultimap valueMap) {
         return this.post(urlString, valueMap.asFormEncodedRequestBody());
-	}
+    }
 
     /**
      * Pause for the sake of exponential retry-backoff as apropriate before the Nth call as counted

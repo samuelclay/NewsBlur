@@ -121,7 +121,7 @@ class StoryApiImpl(
     override suspend fun getStoryChanges(storyHash: String?, showChanges: kotlin.Boolean): StoryChangesResponse? {
         val values = ContentValues().apply {
             put(APIConstants.PARAMETER_STORY_HASH, storyHash)
-            put(APIConstants.PARAMETER_SHOW_CHANGES, if (showChanges) "true" else "false")
+            put(APIConstants.PARAMETER_SHOW_CHANGES, if (showChanges) APIConstants.VALUE_TRUE else APIConstants.VALUE_FALSE)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_STORY_CHANGES)
         val response: APIResponse = apiManager.get(urlString, values)

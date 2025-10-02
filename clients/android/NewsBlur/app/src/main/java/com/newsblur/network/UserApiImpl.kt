@@ -5,9 +5,11 @@ import android.content.Context
 import com.google.gson.Gson
 import com.newsblur.network.domain.ActivitiesResponse
 import com.newsblur.network.domain.InteractionsResponse
+import com.newsblur.network.domain.NewsBlurResponse
 import com.newsblur.network.domain.ProfileResponse
 import com.newsblur.preference.PrefsRepo
 import dagger.hilt.android.qualifiers.ApplicationContext
+import okhttp3.RequestBody
 
 class UserApiImpl(
         @param:ApplicationContext private val context: Context,
@@ -87,5 +89,20 @@ class UserApiImpl(
         } else {
             null
         }
+    }
+
+    override suspend fun saveReceipt(orderId: String?, productId: String?): NewsBlurResponse? {
+        val values = ContentValues()
+        values.put(APIConstants.PARAMETER_ORDER_ID, orderId)
+        values.put(APIConstants.PARAMETER_PRODUCT_ID, productId)
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_SAVE_RECEIPT)
+        val response: APIResponse = apiManager.post(urlString, values)
+        return response.getResponse(gson, NewsBlurResponse::class.java)
+    }
+
+    override suspend fun importOpml(requestBody: RequestBody): NewsBlurResponse? {
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_IMPORT_OPML)
+        val response: APIResponse = apiManager.post(urlString, requestBody)
+        return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 }

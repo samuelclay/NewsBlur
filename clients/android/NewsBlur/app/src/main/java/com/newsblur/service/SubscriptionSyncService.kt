@@ -6,7 +6,7 @@ import android.app.job.JobScheduler
 import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
-import com.newsblur.network.APIManager
+import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.subscription.SubscriptionManagerImpl
 import com.newsblur.subscription.SubscriptionsListener
@@ -29,7 +29,7 @@ import javax.inject.Inject
 class SubscriptionSyncService : JobService() {
 
     @Inject
-    lateinit var apiManager: APIManager
+    lateinit var userApi: UserApi
 
     @Inject
     lateinit var prefsRepo: PrefsRepo
@@ -43,7 +43,7 @@ class SubscriptionSyncService : JobService() {
 
         val subscriptionManager = SubscriptionManagerImpl(
                 context = this@SubscriptionSyncService,
-                apiManager = apiManager,
+                userApi = userApi,
                 prefRepository = prefsRepo,
         )
         subscriptionManager.startBillingConnection(object : SubscriptionsListener {

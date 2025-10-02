@@ -14,7 +14,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.newsblur.R
 import com.newsblur.databinding.ActivityImportExportBinding
-import com.newsblur.network.APIManager
+import com.newsblur.network.UserApi
 import com.newsblur.service.NBSyncService
 import com.newsblur.util.DownloadCompleteReceiver
 import com.newsblur.util.EdgeToEdgeUtil.applyView
@@ -35,7 +35,7 @@ import javax.inject.Inject
 class ImportExportActivity : NbActivity() {
 
     @Inject
-    lateinit var apiManager: APIManager
+    lateinit var userApi: UserApi
 
     private lateinit var binding: ActivityImportExportBinding
 
@@ -114,13 +114,15 @@ class ImportExportActivity : NbActivity() {
                             .setType(MultipartBody.FORM)
                             .addFormDataPart("file", file.name, file.asRequestBody())
                             .build()
-                    apiManager.importOpml(requestBody)
+                    userApi.importOpml(requestBody)
                 },
                 onPostExecute = {
-                    if (it.isError) {
+                    if (it == null || it.isError) {
+                        val error = it?.getErrorMessage("Error importing OPML file")
+                                ?: "Error importing OPML file"
                         Snackbar.make(
                                 binding.root,
-                                it.getErrorMessage("Error importing OPML file"),
+                                error,
                                 Snackbar.LENGTH_LONG
                         ).show()
                     } else {
