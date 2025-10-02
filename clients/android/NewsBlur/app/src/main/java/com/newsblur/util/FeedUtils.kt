@@ -14,7 +14,7 @@ import com.newsblur.domain.Story
 import com.newsblur.fragment.ReadingActionConfirmationFragment
 import com.newsblur.network.APIConstants
 import com.newsblur.network.APIConstants.NULL_STORY_TEXT
-import com.newsblur.network.APIManager
+import com.newsblur.network.FeedApi
 import com.newsblur.network.FolderApi
 import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
@@ -29,7 +29,7 @@ import com.newsblur.util.FeedExt.setNotifyUnread
 
 class FeedUtils(
         private val dbHelper: BlurDatabaseHelper,
-        private val apiManager: APIManager,
+        private val feedApi: FeedApi,
         private val userApi: UserApi,
         private val folderApi: FolderApi,
         private val prefsRepo: PrefsRepo,
@@ -109,14 +109,14 @@ class FeedUtils(
     fun deleteSavedSearch(feedId: String?, query: String?) {
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    val response = apiManager.deleteSearch(feedId, query)
-                    if (!response.isError) {
+                    val response = feedApi.deleteSearch(feedId, query)
+                    if (response!= null && !response.isError) {
                         dbHelper.deleteSavedSearch(feedId, query)
                     }
                     response
                 },
                 onPostExecute = { newsBlurResponse ->
-                    if (!newsBlurResponse.isError) {
+                    if (newsBlurResponse != null && !newsBlurResponse.isError) {
                         syncUpdateStatus(UPDATE_METADATA)
                     }
                 }
@@ -126,10 +126,10 @@ class FeedUtils(
     fun saveSearch(feedId: String?, query: String?, context: Context) {
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.saveSearch(feedId, query)
+                    feedApi.saveSearch(feedId, query)
                 },
                 onPostExecute = { newsBlurResponse ->
-                    if (!newsBlurResponse.isError) {
+                    if (newsBlurResponse != null && !newsBlurResponse.isError) {
                         NBSyncService.forceFeedsFolders()
                         triggerSync(context)
                     }
@@ -140,7 +140,7 @@ class FeedUtils(
     fun deleteFeed(feedId: String?, folderName: String?) {
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.deleteFeed(feedId, folderName)
+                    feedApi.deleteFeed(feedId, folderName)
                     // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
                     dbHelper.deleteFeed(feedId)
                 },

@@ -140,8 +140,7 @@ public class APIResponse {
             response.isProtocolError = true;
             return response;
         } else {
-            LoginResponse response = gson.fromJson(this.responseBody, LoginResponse.class);
-            return response;
+            return gson.fromJson(this.responseBody, LoginResponse.class);
         }
     }
 
@@ -155,8 +154,7 @@ public class APIResponse {
             response.isProtocolError = true;
             return response;
         } else {
-            RegisterResponse response = gson.fromJson(this.responseBody, RegisterResponse.class);
-            return response;
+            return gson.fromJson(this.responseBody, RegisterResponse.class);
         }
     }
 

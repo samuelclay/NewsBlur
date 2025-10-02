@@ -13,7 +13,7 @@ import com.newsblur.databinding.ActivitySubscriptionBinding
 import com.newsblur.databinding.ViewArchiveSubscriptionBinding
 import com.newsblur.databinding.ViewPremiumSubscriptionBinding
 import com.newsblur.di.IconLoader
-import com.newsblur.network.APIManager
+import com.newsblur.network.UserApi
 import com.newsblur.subscription.SubscriptionManager
 import com.newsblur.subscription.SubscriptionManagerImpl
 import com.newsblur.subscription.SubscriptionsListener
@@ -45,7 +45,7 @@ class SubscriptionActivity : NbActivity() {
     lateinit var iconLoader: ImageLoader
 
     @Inject
-    lateinit var apiManager: APIManager
+    lateinit var userApi: UserApi
 
     private lateinit var binding: ActivitySubscriptionBinding
     private lateinit var bindingPremium: ViewPremiumSubscriptionBinding
@@ -97,7 +97,7 @@ class SubscriptionActivity : NbActivity() {
     private fun setupBilling() {
         subscriptionManager = SubscriptionManagerImpl(
                 context = this,
-                apiManager = apiManager,
+                userApi = userApi,
                 prefRepository = prefsRepo,
                 scope = lifecycleScope,
         )

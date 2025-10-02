@@ -352,22 +352,22 @@ public class ReadingAction implements Serializable {
 
             case MUTE_FEEDS:
             case UNMUTE_FEEDS:
-                result = apiManager.saveFeedChooser(activeFeedIds);
+                result = feedApi.saveFeedChooser(activeFeedIds);
                 break;
 
             case SET_NOTIFY:
-                result = apiManager.updateFeedNotifications(feedId, notifyTypes, notifyFilter);
+                result = feedApi.updateFeedNotifications(feedId, notifyTypes, notifyFilter);
                 break;
 
             case INSTA_FETCH:
-                result = apiManager.instaFetch(feedId);
+                result = feedApi.instaFetch(feedId);
                 // also trigger a recount, which will unflag the feed as pending
                 NBSyncService.addRecountCandidates(FeedSet.singleFeed(feedId));
                 NBSyncService.flushRecounts();
                 break;
 
             case UPDATE_INTEL:
-                result = apiManager.updateFeedIntel(feedId, classifier);
+                result = feedApi.updateFeedIntel(feedId, classifier);
                 // also reset stories for the calling view so they get new scores
                 NBSyncService.resetFetchState(feedSet);
                 // and recount unreads to get new focus counts
@@ -375,7 +375,7 @@ public class ReadingAction implements Serializable {
                 break;
 
             case RENAME_FEED:
-                result = apiManager.renameFeed(feedId, newFeedName);
+                result = feedApi.renameFeed(feedId, newFeedName);
                 break;
 
             default:

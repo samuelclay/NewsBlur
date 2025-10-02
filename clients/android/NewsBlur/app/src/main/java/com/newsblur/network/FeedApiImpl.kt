@@ -1,11 +1,16 @@
 package com.newsblur.network
 
 import android.content.ContentValues
+import android.text.TextUtils
 import com.google.gson.Gson
+import com.newsblur.domain.Classifier
+import com.newsblur.domain.FeedResult
 import com.newsblur.domain.ValueMultimap
+import com.newsblur.network.domain.AddFeedResponse
 import com.newsblur.network.domain.FeedFolderResponse
 import com.newsblur.network.domain.NewsBlurResponse
 import com.newsblur.network.domain.UnreadCountResponse
+import com.newsblur.util.AppConstants
 import com.newsblur.util.FeedSet
 
 class FeedApiImpl(
@@ -80,7 +85,7 @@ class FeedApiImpl(
      */
     override fun getFolderFeedMapping(doUpdateCounts: Boolean): FeedFolderResponse? {
         val params = ContentValues().apply {
-            put(APIConstants.PARAMETER_UPDATE_COUNTS, (if (doUpdateCounts) "true" else "false"))
+            put(APIConstants.PARAMETER_UPDATE_COUNTS, (if (doUpdateCounts) APIConstants.VALUE_TRUE else APIConstants.VALUE_FALSE))
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_FEEDS)
         val response: APIResponse = apiManager.get(urlString, params)
@@ -92,11 +97,113 @@ class FeedApiImpl(
         }
 
         // note: this response is complex enough, we have to do a custom parse in the FFR
-        val result = FeedFolderResponse(response.getResponseBody(), gson)
+        val result = FeedFolderResponse(response.responseBody, gson)
         // bind a little extra instrumentation to this response, since it powers the feedback link
         result.connTime = response.connectTime
         result.readTime = response.readTime
         return result
+    }
+
+    override fun updateFeedIntel(feedId: String?, classifier: Classifier): NewsBlurResponse? {
+        val values = classifier.getAPITuples()
+        values.put(APIConstants.PARAMETER_FEEDID, feedId)
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_CLASSIFIER_SAVE)
+        val response: APIResponse = apiManager.post(urlString, values)
+        return response.getResponse(gson, NewsBlurResponse::class.java)
+    }
+
+    override suspend fun addFeed(feedUrl: String?, folderName: String?): AddFeedResponse? {
+        val values = ContentValues()
+        values.put(APIConstants.PARAMETER_URL, feedUrl)
+        if (!TextUtils.isEmpty(folderName) && folderName != AppConstants.ROOT_FOLDER) {
+            values.put(APIConstants.PARAMETER_FOLDER, folderName)
+        }
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_ADD_FEED)
+        val response: APIResponse = apiManager.post(urlString, values)
+        return response.getResponse(gson, AddFeedResponse::class.java)
+    }
+
+    override suspend fun searchForFeed(searchTerm: String?): Array<FeedResult>? {
+        val values = ContentValues()
+        values.put(APIConstants.PARAMETER_FEED_SEARCH_TERM, searchTerm)
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_FEED_AUTOCOMPLETE)
+        val response: APIResponse = apiManager.get(urlString, values)
+
+        return if (!response.isError) {
+            gson.fromJson(response.responseBody, Array<FeedResult>::class.java)
+        } else {
+            null
+        }
+    }
+
+    override suspend fun deleteFeed(feedId: String?, folderName: String?): NewsBlurResponse? {
+        val values = ContentValues()
+        values.put(APIConstants.PARAMETER_FEEDID, feedId)
+        if ((!TextUtils.isEmpty(folderName)) && (folderName != AppConstants.ROOT_FOLDER)) {
+            values.put(APIConstants.PARAMETER_IN_FOLDER, folderName)
+        }
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_DELETE_FEED)
+        val response: APIResponse = apiManager.post(urlString, values)
+        return response.getResponse(gson, NewsBlurResponse::class.java)
+    }
+
+    override suspend fun deleteSearch(feedId: String?, query: String?): NewsBlurResponse? {
+        val values = ContentValues()
+        values.put(APIConstants.PARAMETER_FEEDID, feedId)
+        values.put(APIConstants.PARAMETER_QUERY, query)
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_DELETE_SEARCH)
+        val response: APIResponse = apiManager.post(urlString, values)
+        return response.getResponse(gson, NewsBlurResponse::class.java)
+    }
+
+    override suspend fun saveSearch(feedId: String?, query: String?): NewsBlurResponse? {
+        val values = ContentValues()
+        values.put(APIConstants.PARAMETER_FEEDID, feedId)
+        values.put(APIConstants.PARAMETER_QUERY, query)
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_SAVE_SEARCH)
+        val response: APIResponse = apiManager.post(urlString, values)
+        return response.getResponse(gson, NewsBlurResponse::class.java)
+    }
+
+    override fun saveFeedChooser(feeds: MutableSet<String?>): NewsBlurResponse? {
+        val values = ValueMultimap()
+        for (feed in feeds) {
+            values.put(APIConstants.PARAMETER_APPROVED_FEEDS, feed)
+        }
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_SAVE_FEED_CHOOSER)
+        val response: APIResponse = apiManager.post(urlString, values)
+        return response.getResponse(gson, NewsBlurResponse::class.java)
+    }
+
+    override fun updateFeedNotifications(feedId: String?, notifyTypes: MutableList<String?>, notifyFilter: String?): NewsBlurResponse? {
+        val values = ValueMultimap()
+        values.put(APIConstants.PARAMETER_FEEDID, feedId)
+        for (type in notifyTypes) {
+            values.put(APIConstants.PARAMETER_NOTIFICATION_TYPES, type)
+        }
+        if (notifyFilter != null) values.put(APIConstants.PARAMETER_NOTIFICATION_FILTER, notifyFilter)
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_SET_NOTIFICATIONS)
+        val response: APIResponse = apiManager.post(urlString, values)
+        return response.getResponse(gson, NewsBlurResponse::class.java)
+    }
+
+    override fun instaFetch(feedId: String?): NewsBlurResponse? {
+        val values = ValueMultimap()
+        values.put(APIConstants.PARAMETER_FEEDID, feedId)
+        // this param appears fixed and mandatory for the call to succeed
+        values.put(APIConstants.PARAMETER_RESET_FETCH, APIConstants.VALUE_FALSE)
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_INSTA_FETCH)
+        val response: APIResponse = apiManager.post(urlString, values)
+        return response.getResponse(gson, NewsBlurResponse::class.java)
+    }
+
+    override fun renameFeed(feedId: String?, newFeedName: String?): NewsBlurResponse? {
+        val values = ValueMultimap()
+        values.put(APIConstants.PARAMETER_FEEDID, feedId)
+        values.put(APIConstants.PARAMETER_FEEDTITLE, newFeedName)
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_RENAME_FEED)
+        val response: APIResponse = apiManager.post(urlString, values)
+        return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
     private fun markAllAsRead(): NewsBlurResponse? {

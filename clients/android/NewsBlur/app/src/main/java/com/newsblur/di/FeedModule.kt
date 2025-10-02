@@ -2,6 +2,7 @@ package com.newsblur.di
 
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.network.APIManager
+import com.newsblur.network.FeedApi
 import com.newsblur.network.FolderApi
 import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
@@ -20,9 +21,9 @@ class FeedModule {
     @Provides
     fun provideFeedUtils(
             dbHelper: BlurDatabaseHelper,
-            apiManager: APIManager,
+            feedApi: FeedApi,
             userApi: UserApi,
             folderApi: FolderApi,
             prefsRepo: PrefsRepo
-    ) = FeedUtils(dbHelper, apiManager, userApi, folderApi, prefsRepo)
+    ) = FeedUtils(dbHelper, feedApi, userApi, folderApi, prefsRepo)
 }

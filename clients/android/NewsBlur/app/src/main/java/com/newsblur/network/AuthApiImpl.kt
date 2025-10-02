@@ -34,7 +34,7 @@ class AuthApiImpl(
 
     override suspend fun loginAs(username: String): Boolean {
         val values = ContentValues().apply {
-            put(APIConstants.PARAMETER_USERNAME, username)
+            put(APIConstants.PARAMETER_USER, username)
         }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_LOGINAS) + "?" + apiManager.builderGetParametersString(values)
         Log.i(this.javaClass.name, "Doing superuser swap: $urlString")

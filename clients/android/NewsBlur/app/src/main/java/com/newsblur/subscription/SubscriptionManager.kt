@@ -16,7 +16,7 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.newsblur.R
-import com.newsblur.network.APIManager
+import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NBSyncService
 import com.newsblur.util.AppConstants
@@ -87,7 +87,7 @@ interface SubscriptionsListener {
 
 class SubscriptionManagerImpl(
         private val context: Context,
-        private val apiManager: APIManager,
+        private val userApi: UserApi,
         private val prefRepository: PrefsRepo,
         private val scope: CoroutineScope = NBScope,
 ) : SubscriptionManager {
@@ -251,10 +251,10 @@ class SubscriptionManagerImpl(
         Log.d(this, "saveReceipt: ${purchase.orderId}")
         scope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.saveReceipt(purchase.orderId, purchase.products.first())
+                    userApi.saveReceipt(purchase.orderId, purchase.products.first())
                 },
                 onPostExecute = {
-                    if (!it.isError) {
+                    if (it != null && !it.isError) {
                         NBSyncService.forceFeedsFolders()
                         FeedUtils.triggerSync(context)
                     }
