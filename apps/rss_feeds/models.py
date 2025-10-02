@@ -2890,7 +2890,9 @@ class Feed(models.Model):
                 notification_count = MUserFeedNotification.objects.filter(feed_id=self.pk).count()
                 spd = self.stories_last_month / 30.0
                 months_since_last_story = (
-                    seconds_timesince(self.last_story_date) / (60 * 60 * 24 * 30) if self.last_story_date else 999
+                    seconds_timesince(self.last_story_date) / (60 * 60 * 24 * 30)
+                    if self.last_story_date
+                    else 999
                 )
 
                 logging.debug(
@@ -2928,7 +2930,13 @@ class Feed(models.Model):
                     logging.debug(
                         "   ---> [%-30s] ~FBScheduling feed fetch geometrically: "
                         "~SB%s errors (errors_since_good=%s + redis_errors). Time adjusted from %s to %s min"
-                        % (self.log_title[:30], error_count, self.errors_since_good, original_total, minutes_until_next_fetch)
+                        % (
+                            self.log_title[:30],
+                            error_count,
+                            self.errors_since_good,
+                            original_total,
+                            minutes_until_next_fetch,
+                        )
                     )
 
         random_factor = random.randint(0, int(minutes_until_next_fetch)) / 4
