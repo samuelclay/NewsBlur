@@ -1,0 +1,107 @@
+{
+  "headers": {
+    "Authentication-Results": [
+      "mx1.improvmx.com; dkim=pass (signature was verified) header.i=@cioeu50414.improvmx.com header.s=s1 header.b=XR1VNQiO; dmarc=pass (p=QUARANTINE sp=REJECT dis=NONE) header.from=improvmx.com"
+    ],
+    "X-Mailgun-Track-Opens": [
+      "false"
+    ],
+    "List-Unsubscribe": [
+      "<mailto:32.MRTVIWTOKFKUEQKKIMZEYWJNGJGFCR22OBZWIZBQM5FXKSLMG5GEYUTTJFYE4RJ5@unsubscribe-eu.customer.io>, <https://cio.improvmx.com/unsubscribe/dgTZnQUBAJC2LY-2LQGZpsdd0gKuIl7LLRsIpNE=>"
+    ],
+    "ARC-Authentication-Results": [
+      "i=1; mx1.improvmx.com; dkim=pass (signature was verified) header.i=@cioeu50414.improvmx.com header.s=s1 header.b=XR1VNQiO; dmarc=pass (p=QUARANTINE sp=REJECT dis=NONE) header.from=improvmx.com"
+    ],
+    "List-Unsubscribe-Post": [
+      "List-Unsubscribe=One-Click"
+    ],
+    "Received": [
+      "from m205-178.eu.mailgun.net (m205-178.eu.mailgun.net. [161.38.205.178]) by mx1.improvmx.com with ESMTPS (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256) for <random-xfjw@improvmx.newsblur.com>; Thu, 02 Oct 2025 21:15:09 -0000",
+      "by 66e45c6955330ca96a41c9c4708e652754a0e0feaf9130aac19af2819cfb95ec with HTTP id 68deeb5cf52f50f9b8ff6489; Thu, 02 Oct 2025 21:15:08 GMT"
+    ],
+    "ARC-Seal": [
+      "i=1; cv=none; a=rsa-sha256; d=improvmx-mails.com; s=arc-20200618; t=1759439711; b=PZIB6IHJHQq9hgk+bMhzMw6mCZA5pMKUEqnlhIk7LJrnbRGCFyym3w2m8kZwSdWiM3I/H GeG4/UxQnEw0EZa0Im9e3dc4wsMJ2LrbuomaOqBtY8ys5edKy4jIHdfD7MNTEcXimqZsAw9 qTGMJnnOA2ja7LpOevjZgSp/idRj27YyMm6SWkH9NDdUHhGCxwn32SMCqrX+Di9YCDuMEY9 DW7JiKZBWQPy1S234qdMz5xu6NzgfL9SqOluPptjPxcumb+QLmZl5gmx8oSR6y8EvxHmiWN /OMXlD3GLWqrMHRfrL7WgyqD4usTHn77jjnWdeXlP7WU6NxBU8P835ackVLg=="
+    ],
+    "X-Mailgun-Track-Clicks": [
+      "false"
+    ],
+    "Feedback-Id": [
+      "aW1wcm92bXgubmV3c2JsdXIuY29t:send:ImprovMX"
+    ],
+    "X-Improvmx-Session-Id": [
+      "9ab96a14-5ece-4948-bf26-5290f968ab62"
+    ],
+    "DKIM-Signature": [
+      "v=1; a=rsa-sha256; c=relaxed/relaxed; d=improvmx-mails.com; i=@improvmx-mails.com; q=dns/txt; s=dkimprovmx1; t=1759439710; h=date : from : to : subject : content-type : feedback-id : message-id; bh=Mw4pCxbbO+D+Tz0fG1pjDH/3A07xs6VEflr5iJZ9BuM=; b=A+LY+PIPutgeViOACMMLEd1bPUTSiOjh/TAZOMTF7LMj2Nvzrt1apQkYPW+ZJIJ97Z76l wEEUil07MvTLbI9kCKC8bh8/pvem2Oqe4Hb24TqG2O18qNfQDvkWjH+sS6ymwpxyIwKyfH+ QpLgQXAGL0QC2zMtSeSIydHGK396/XIZ4n/0zbneLx4cEJi2sIfTAspqe69Cw/8VCNWifQy ZUYj3p3dF+60a/seU+87ou7PVOJA0M7xAZv1bX2nt4pSGjJbTDWHqLI2p4TTmgsH0Vm5i+j tldDSEJI6IEkTS/4bMJKXvyTboGh0RrAYApU7XqrJmJhCcrhEearJqp0T5+w==",
+      "a=rsa-sha256; v=1; c=relaxed/relaxed; d=cioeu50414.improvmx.com; q=dns/txt; s=s1; t=1759439708; x=1759446908; h=Message-Id: List-Unsubscribe: List-Unsubscribe-Post: To: To: From: From: Subject: Subject: Content-Type: Mime-Version: Date: Sender; bh=Mw4pCxbbO+D+Tz0fG1pjDH/3A07xs6VEflr5iJZ9BuM=; b=XR1VNQiOAPqZJV6r7stvGlxUs8hAdiaxFYHOyfvCoQjHUeQ5VydU8ciSGJ38qB19prDYH1GZdvXuk6iLiARXlqpMfBj304eMqoq+UT6qc1p2YBSpaqhoJCl+AXhYS+h8XeO5wigSG0/n+jgAb3DsXMmwhdeaVI5zWAv6YCviqeQ="
+    ],
+    "X-Forwarding-Service": [
+      "ImprovMX v3.0.0"
+    ],
+    "X-Mailgun-Variables": [
+      "{\\\"email_id\\\": \\\"dgTZnQUBAJC2LY-2LQGZpsdd0gKuIl7LLRsIpNE=\\\"}"
+    ],
+    "Mime-Version": [
+      "1.0"
+    ],
+    "X-Improvmx-Server-Id": [
+      "de49425"
+    ],
+    "Delivered-To": {
+      "name": null,
+      "email": "random-xfjw@improvmx.newsblur.com"
+    },
+    "X-Mailgun-DKIM": [
+      "true"
+    ],
+    "ARC-Message-Signature": [
+      "i=1; a=rsa-sha256; c=relaxed/relaxed; d=improvmx-mails.com; s=arc-20200618; t=1759439711; h=date : mime-version : content-type : subject : from : to : list-unsubscribe : message-id : from; bh=Mw4pCxbbO+D+Tz0fG1pjDH/3A07xs6VEflr5iJZ9BuM=; b=RNjKQWlazraSaDh4jCT5UThyB+uS6HcNnMpSt+byWkPsSnTUQHVNPkxki4rArAE7mEQ8E BCN5KesmJcYb29t0XBkz+CJ1qiVAV0JO6dxxo3gSKkJ+gWDT2Y0c/DJ6P4iatgM0uW1GgV8 i1Po25rDWrAEhY/FOc1m8EuceMZOY/wCTBpyYTSVzGdBU4vA3a1cwus7+6stU5xZdrgU6J+ LEtzjN0rrxJjBoGeJyaCK45OPQ2UgA6rbPL65kQ7VvV+1lBAZZ/srgyTv41Fq1MTPKxBf/l WAYBlF2Uvsv1d5wux/BTckoxFujLqusBQwedxoeIXO47rYUTQiPBPGPQiILA=="
+    ],
+    "X-Mailgun-Sid": [
+      "WyI1OGVkZCIsInJhbmRvbS14Zmp3QGltcHJvdm14Lm5ld3NibHVyLmNvbSIsIjU2YmQ3Il0="
+    ],
+    "X-Mailgun-Native-Send": [
+      "true"
+    ],
+    "X-Mailer": [
+      "Customer.io (dgTZnQUBAJC2LY-2LQGZpsdd0gKuIl7LLRsIpNE=; +https://whatis.customeriomail.com)"
+    ],
+    "X-Report-Abuse-To": [
+      "badactor@customer.io"
+    ],
+    "X-Mailgun-Sending-Ip": [
+      "161.38.205.178"
+    ]
+  },
+  "text": "ImprovMX ( https://improvmx.com/ )\\r\\n\\r\\nHurray, it works!\\r\\n\\r\\n***********************************\\r\\n*@improvmx.newsblur.com is working!\\r\\n***********************************\\r\\n\\r\\nThis is a basic email to test if the redirect of * works for improvmx.newsblur.com. In short, if you received this email at the right mailbox, you are all set!\\r\\n\\r\\nHappy with ImprovMX? Kindly spread the word by sharing your experience on Trustpilot ( https://www.trustpilot.com/evaluate/improvmx.com ), G2 ( https://www.g2.com/products/improvmx/reviews/start ) or Product Hunt ( https://www.producthunt.com/products/improvmx/reviews ). Your endorsement fuels our success!\\r\\n\\r\\nBest,\\r\\n\\r\\nThe ImprovMX team\\r\\n\\r\\nImprovMX Incorporated\\r\\n\\r\\n8 The Green STE D, Dover, Delaware, 19901, United States\\r\\n\\r\\nUnsubscribe ( https://track.customer.io/unsubscribe/dgTZnQUBAJC2LY-2LQGZpsdd0gKuIl7LLRsIpNE= )",
+  "html": "<!DOCTYPE html PUBLIC \\\"-//W3C//DTD XHTML 1.0 Transitional//EN\\\" \\\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\\\"><html xmlns=\\\"http://www.w3.org/1999/xhtml\\\"><head>\\r\\n    <meta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1.0\\\"/>\\r\\n    <meta http-equiv=\\\"Content-Type\\\" content=\\\"text/html; charset=UTF-8\\\"/>\\r\\n    <title></title>\\r\\n    <style type=\\\"text/css\\\" rel=\\\"stylesheet\\\" media=\\\"all\\\">\\r\\n    /* Base ------------------------------ */\\r\\n    body {\\r\\n      width: 100% !important;\\r\\n      height: 100%;\\r\\n      margin: 0;\\r\\n      -webkit-text-size-adjust: none;\\r\\n    }\\r\\n\\r\\n    u + #body a {\\r\\n      color: inherit;\\r\\n      text-decoration: none;\\r\\n      font-size: inherit;\\r\\n      font-family: inherit;\\r\\n      font-weight: inherit;\\r\\n      line-height: inherit;\\r\\n    }\\r\\n    \\r\\n    a {\\r\\n      color: #2fbeff;\\r\\n      text-decoration:none;\\r\\n    }\\r\\n\\r\\n    a.unsub {\\r\\n      color:#a9b1b9;\\r\\n      border-bottom:1px dotted #a9b1b9;\\r\\n    }\\r\\n    \\r\\n    a img {\\r\\n      border: none;\\r\\n    }\\r\\n    \\r\\n    td {\\r\\n      word-break: break-word;\\r\\n    }\\r\\n    \\r\\n    .preheader {\\r\\n      display: none !important;\\r\\n      visibility: hidden;\\r\\n      mso-hide: all;\\r\\n      font-size: 1px;\\r\\n      line-height: 1px;\\r\\n      max-height: 0;\\r\\n      max-width: 0;\\r\\n      opacity: 0;\\r\\n      overflow: hidden;\\r\\n    }\\r\\n    /* Type ------------------------------ */\\r\\n    \\r\\n    body,\\r\\n    td,\\r\\n    th {\\r\\n      font-family: Helvetica, Arial, sans-serif;\\r\\n      font-weight:400;\\r\\n    }\\r\\n    \\r\\n    h1 {\\r\\n      margin-top: 0;\\r\\n      color: #212529;\\r\\n      font-size: 30px;\\r\\n      font-weight: 500;\\r\\n      text-align: center;\\r\\n    }\\r\\n    \\r\\n    h2 {\\r\\n      margin-top: 0;\\r\\n      color: #333333;\\r\\n      font-size: 18px;\\r\\n      font-weight: 500;\\r\\n    }\\r\\n    \\r\\n    h3 {\\r\\n      margin-top: 0;\\r\\n      color: #868e96;\\r\\n      font-size: 16px;\\r\\n      font-weight: 500;\\r\\n    }\\r\\n    \\r\\n    td,\\r\\n    th {\\r\\n      font-size: 16px;\\r\\n    }\\r\\n    \\r\\n    p,\\r\\n    ul,\\r\\n    ol,\\r\\n    blockquote {\\r\\n      margin: .4em 0 1.8em;\\r\\n      font-size: 16px;\\r\\n      line-height: 1.625;\\r\\n    }\\r\\n    \\r\\n    p.sub {\\r\\n      font-size: 13px;\\r\\n    }\\r\\n</style></head><body>...</body></html>",
+  "return-path": {
+    "name": null,
+    "email": "postmaster@cioeu50414.improvmx.com"
+  },
+  "date": "Thu, 02 Oct 2025 21:15:08 +0000",
+  "to": [
+    {
+      "name": null,
+      "email": "random-xfjw@improvmx.newsblur.com"
+    }
+  ],
+  "message-id": "<20251002211508.fd2956d8b9b61768@cioeu50414.improvmx.com>",
+  "from": {
+    "name": "ImprovMX",
+    "email": "no-reply@improvmx.com"
+  },
+  "subject": "Alias test for improvmx.newsblur.com",
+  "timestamp": 1759439708,
+  "envelope": {
+    "return_path": "postmaster@cioeu50414.improvmx.com",
+    "recipient": "random-xfjw@improvmx.newsblur.com",
+    "hostname": "m205-178.eu.mailgun.net",
+    "remote_ip": "161.38.205.178"
+  },
+  "verdict": {
+    "spf": "none",
+    "dkim": "grey",
+    "dmarc": "pass"
+  }
+}
