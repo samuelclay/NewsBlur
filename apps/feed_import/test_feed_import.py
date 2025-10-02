@@ -23,6 +23,26 @@ class Test_Import(TransactionTestCase):
         self.user.save()
 
     def test_opml_import(self):
+        # Reset Feed ID sequence to ensure predictable feed IDs starting at 1
+        # This is necessary because TransactionTestCase doesn't reset sequences between tests
+        from django.db import connection
+        from apps.rss_feeds.models import Feed
+
+        # Only reset sequence if the table exists (to avoid errors on first test)
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT EXISTS (
+                    SELECT FROM information_schema.tables
+                    WHERE table_schema = 'public'
+                    AND table_name = 'feeds'
+                )
+            """)
+            table_exists = cursor.fetchone()[0]
+
+            if table_exists:
+                # Reset the Feed ID sequence to 1 so OPML import creates feeds with predictable IDs
+                cursor.execute("SELECT setval(pg_get_serial_sequence('feeds', 'id'), 1, false)")
+
         self.client.login(username="conesus", password="test")
         user = User.objects.get(username="conesus")
 
@@ -39,6 +59,11 @@ class Test_Import(TransactionTestCase):
         self.assertEqual(subs.count(), 54)
 
         # Verify folder structure is created correctly
+        # IMPORTANT: DO NOT REMOVE OR CHANGE THIS EXACT FEED ID LIST
+        # This explicit structure verification is intentional and must be preserved.
+        # It validates that OPML import creates the exact folder hierarchy with
+        # feeds in the correct positions, including nested folders like "The Bloglets".
+        # Under no circumstances should this be replaced with a looser check.
         usf = UserSubscriptionFolders.objects.get(user=user)
         folders = json_functions.decode(usf.folders)
         self.assertEqual(
@@ -119,14 +144,29 @@ class Test_Duplicate_Feeds(TransactionTestCase):
 
         original_feed_id = merge_feeds(user_1_feed_subscription, user_2_feed_subscription)
 
-        # After merge, both users should have subscriptions to the same feed
+        # After merge, verify the feeds were merged correctly
         user_1_subscriptions = UserSubscription.objects.filter(user__id=101)
         user_2_subscriptions = UserSubscription.objects.filter(user__id=102)
 
-        # User 2 might have been merged into user 1's feed, or a new subscription created
+        # User 1 should still have a subscription
         self.assertTrue(user_1_subscriptions.exists(), "User 1 should still have a subscription")
 
-        if user_2_subscriptions.exists():
-            user_1_feed_subscription = user_1_subscriptions[0].feed_id
-            user_2_feed_subscription = user_2_subscriptions[0].feed_id
-            self.assertEqual(user_1_feed_subscription, user_2_feed_subscription)
+        # Verify the merge worked by checking:
+        # 1. The duplicate feed should be deleted
+        self.assertFalse(Feed.objects.filter(pk=user_2_feed_subscription).exists(),
+                        "Duplicate feed should be deleted after merge")
+
+        # 2. The original feed should still exist
+        self.assertTrue(Feed.objects.filter(pk=original_feed_id).exists(),
+                       "Original feed should still exist after merge")
+
+        # 3. User 1's subscription should point to the original feed
+        user_1_feed_id = user_1_subscriptions[0].feed_id
+        self.assertEqual(user_1_feed_id, original_feed_id,
+                        f"User 1 should be subscribed to the merged feed {original_feed_id}")
+
+        # 4. A DuplicateFeed record should be created
+        from apps.rss_feeds.models import DuplicateFeed
+        duplicate_record = DuplicateFeed.objects.filter(duplicate_feed_id=user_2_feed_subscription)
+        self.assertTrue(duplicate_record.exists(),
+                       "A DuplicateFeed record should track the merged feed")
