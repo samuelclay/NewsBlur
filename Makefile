@@ -219,6 +219,8 @@ maintenance_on:
 	ansible-playbook ansible/deploy.yml -l web --tags maintenance_on
 maintenance_off:
 	ansible-playbook ansible/deploy.yml -l web --tags maintenance_off
+env:
+	ansible-playbook ansible/setup.yml -l app,task --tags env
 
 # Provision
 firewall:
