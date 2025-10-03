@@ -923,6 +923,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                     fontCss = fontCss,
                     themeValue = theme,
                     nightMask = nightMask,
+                    enableHighlights = enableHighlights,
             )
             val newHash = (html to highlights).hashCode()
             synchronized(webViewContentMutex) {
