@@ -46,6 +46,30 @@
   tags:
     - certbot-dns
 
+- name: Create LetsEncrypt renewal script
+  become: yes
+  template:
+    src: renew-letsencrypt.sh.j2
+    dest: /usr/local/bin/renew-letsencrypt.sh
+    mode: '0755'
+    owner: root
+    group: root
+  when: use_dns_plugin|bool
+  tags:
+    - certbot-dns
+
+- name: Configure certificate renewal window
+  become: yes
+  lineinfile:
+    path: "/etc/letsencrypt/renewal/{{ domains_list[0] }}.conf"
+    regexp: '^#?\s*renew_before_expiry'
+    line: 'renew_before_expiry = 40 days'
+    insertafter: '^# renew_before_expiry'
+    create: no
+  when: use_dns_plugin|bool
+  tags:
+    - certbot-dns
+
 - name: Add letsencrypt cronjob for cert renewal
   become: yes
   cron:
@@ -55,15 +79,7 @@
     day: "*"
     month: "*"
     weekday: "0"
-    job: >-
-      [ $(date +\%d) -le 07 ] &&
-      docker pull certbot/dns-{{ dns_plugin }}:{{ certbot_version }};
-      docker run --rm
-      -v /etc/letsencrypt:/etc/letsencrypt
-      -v /var/lib/letsencrypt:/var/lib/letsencrypt
-      -v /var/log/letsencrypt:/var/log/letsencrypt
-      -v /srv/newsblur/config/certificates:/srv/newsblur/config/certificates
-      certbot/dns-{{ dns_plugin }}:{{ certbot_version }} renew
+    job: "/usr/local/bin/renew-letsencrypt.sh >> /var/log/letsencrypt/renewal-cron.log 2>&1"
   when: use_dns_plugin|bool
   tags:
     - certbot-dns

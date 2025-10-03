@@ -6,7 +6,7 @@
   vars_files:
     - env_vars/base.yml
   vars:
-    - update_apt_cache: yes
+    update_apt_cache: yes
   roles:
     - {role: 'base', tags: 'base'}
     - {role: 'ufw', tags: 'ufw'}

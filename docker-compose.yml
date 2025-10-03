@@ -9,7 +9,7 @@ services:
     # user: "${CURRENT_UID}:${CURRENT_GID}"
     environment:
       - DOCKERBUILD=True
-      - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD?Use the `make` command instead of docker CLI}
+      - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD:-True}
     stdin_open: true
     tty: true
     restart: unless-stopped
@@ -33,7 +33,7 @@ services:
   newsblur_node:
     container_name: node
     image: newsblur/newsblur_node:latest
-    user: "${CURRENT_UID}:${CURRENT_GID}"
+    user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
     environment:
       - NODE_ENV=docker
       - MONGODB_PORT=29019
@@ -54,7 +54,7 @@ services:
     container_name: imageproxy
     # image: ghcr.io/willnorris/imageproxy:latest # Enable if you don't need arm64 and want the original imageproxy
     image: yusukeito/imageproxy:v0.11.2 # Enable if you want arm64
-    user: "${CURRENT_UID}:${CURRENT_GID}"
+    user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
     entrypoint: /app/imageproxy -addr 0.0.0.0:8088 -cache /tmp/imageproxy -verbose
     restart: unless-stopped
     ports:
@@ -126,15 +126,17 @@ services:
   db_elasticsearch:
     container_name: db_elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
-    mem_limit: 4g
+    mem_limit: 1200m
+    mem_reservation: 512m
     restart: unless-stopped
     environment:
       - discovery.type=single-node
-      - "ES_JAVA_OPTS=-XX:UseSVE=0"
+      - "ES_JAVA_OPTS=-Xms384m -Xmx384m -XX:UseSVE=0"
       - "CLI_JAVA_OPTS=-XX:UseSVE=0"
-      - "_JAVA_OPTIONS=-XX:UseSVE=0"
       - cluster.routing.allocation.disk.threshold_enabled=false
       - xpack.security.enabled=false
+      - bootstrap.memory_lock=false
+      - indices.breaker.total.use_real_memory=false
     ports:
       - 9200:9200
       - 9300:9300
@@ -160,12 +162,12 @@ services:
     volumes:
       - ./docker/volumes/db_mongo:/data/db
     # Ensure the MongoDB data directory has proper permissions
-    user: "${CURRENT_UID}:${CURRENT_GID}"
+    user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
 
   task_celery:
     container_name: task_celery
     image: newsblur/newsblur_python3
-    user: "${CURRENT_UID}:${CURRENT_GID}"
+    user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
     command: "celery worker -A newsblur_web -B --loglevel=INFO"
     restart: unless-stopped
     volumes:
