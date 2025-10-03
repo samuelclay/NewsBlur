@@ -1,10 +1,5 @@
 # NewsBlur Development Guidelines
 
-## Python Environment
-- **Always use `uv run` to execute Python scripts** - This automatically activates the virtualenv
-- Example: `uv run python utils/script.py`
-- Do NOT use `source ~/.virtualenvs/newsblur/bin/activate` - use `uv run` instead
-
 ## Build & Test Commands
 - `make nb` - Build and start all services
 - `make bounce` - Restart all containers with new images
@@ -16,6 +11,10 @@
 - `make test SCOPE=apps.rss_feeds ARGS="-v 2"`
 
 Note: All docker commands must use `-t` instead of `-it` to avoid interactive mode issues when running through Claude.
+
+## Python Environment
+- **Always run Python code and Django management commands inside the Docker container** - Use `docker exec newsblur_web bash -c "python <script>"`
+- Do NOT use `uv run` or local Python environment - always use the Docker container
 
 ## Deployment Commands
 - `aps` - Alias for `ansible-playbook ansible/setup.yml`

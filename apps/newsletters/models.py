@@ -214,7 +214,9 @@ class EmailNewsletter:
 
     def _clean_content(self, content):
         original = content
-        scrubber = Scrubber()
+        # Disable autolink since newsletter HTML already has proper anchor tags
+        # apps/newsletters/models.py
+        scrubber = Scrubber(autolink=False)
         content = scrubber.scrub(content)
         if len(content) < len(original) * 0.01:
             content = original
