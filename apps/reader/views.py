@@ -1567,6 +1567,8 @@ def load_river_stories__redis(request):
     page = int(get_post.get("page", 1))
     order = get_post.get("order", "newest")
     read_filter = get_post.get("read_filter", "unread")
+    date_filter_start = get_post.get("date_filter_start")
+    date_filter_end = get_post.get("date_filter_end")
     query = get_post.get("query", "").strip()
     include_hidden = is_true(get_post.get("include_hidden", False))
     include_feeds = is_true(get_post.get("include_feeds", False))
@@ -1638,6 +1640,8 @@ def load_river_stories__redis(request):
                 "usersubs": usersubs,
                 "cutoff_date": user.profile.unread_cutoff,
                 "cache_prefix": "dashboard:" if on_dashboard else "",
+                "date_filter_start": date_filter_start,
+                "date_filter_end": date_filter_end,
             }
             story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
         else:
