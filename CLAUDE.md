@@ -1,7 +1,7 @@
 # NewsBlur Development Guidelines
 
 ## Build & Test Commands
-- `make nb` - Build and start all services
+- `make nb` - Build and start all services (ONLY use for initial setup, not during development)
 - `make bounce` - Restart all containers with new images
 - `make shell` - Django shell inside container
 - `make debug` - Debug mode for pdb
@@ -9,6 +9,11 @@
 - `make lint` - Run linting (isort, black, flake8)
 - `make test` - Run all tests (defaults: SCOPE=apps, ARGS="--noinput -v 1 --failfast")
 - `make test SCOPE=apps.rss_feeds ARGS="-v 2"`
+
+**IMPORTANT: Do NOT run `make nb` during development!**
+- Web and Node servers restart automatically when code changes
+- Task/Celery server must be manually restarted only when working on background tasks
+- Running `make nb` unnecessarily rebuilds everything and wastes time
 
 Note: All docker commands must use `-t` instead of `-it` to avoid interactive mode issues when running through Claude.
 
@@ -58,3 +63,10 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 - **Prioritize readability over performance**
 - **Leave no TODOs or placeholders**
 - **Always reference file names in comments**
+
+## Browser Testing with Chrome DevTools MCP
+- Local dev: `https://localhost`
+- Click a feed to load it first, then use console commands to open popovers/modals
+- Open feed options popover: `NEWSBLUR.app.story_titles_header.open_options_popover()`
+- Test interactions: `evaluate_script` for console commands, `take_snapshot` for DOM inspection, `take_screenshot` for visual verification
+- **Screenshots**: Always specify `filePath: "/tmp/newsblur-screenshot.png"` to avoid permission prompts - this allows reading screenshots without approval each time

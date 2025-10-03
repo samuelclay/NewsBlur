@@ -5,7 +5,8 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
     className: "NB-search-header",
 
     events: {
-        "click .NB-search-header-save": "save_search"
+        "click .NB-search-header-save": "save_search",
+        "click .NB-search-header-clear": "clear_date_filter"
     },
 
     unload: function () {
@@ -17,14 +18,25 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
             NEWSBLUR.reader.active_folder &&
             (NEWSBLUR.reader.active_folder.get('fake') || !NEWSBLUR.reader.active_folder.get('folder_title'));
 
-        if (NEWSBLUR.reader.flags.search && NEWSBLUR.reader.flags.searching && NEWSBLUR.reader.flags.search.length) {
+        var date_filter_start = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'date_filter_start');
+        var date_filter_end = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'date_filter_end');
+        var has_date_filter = !!(date_filter_start || date_filter_end);
+
+        if ((NEWSBLUR.reader.flags.search && NEWSBLUR.reader.flags.searching && NEWSBLUR.reader.flags.search.length) || has_date_filter) {
             this.$el.removeClass("NB-hidden");
 
             var $title = this.make_title();
             this.$(".NB-search-header-title").html($title);
 
-            var saved = this.is_saved() ? 'Saved' : 'Save Search';
-            this.$(".NB-search-header-save").text(saved);
+            // Show "Save Search" button for searches, "×" button for date filters
+            if (NEWSBLUR.reader.flags.search && NEWSBLUR.reader.flags.searching && NEWSBLUR.reader.flags.search.length) {
+                var saved = this.is_saved() ? 'Saved' : 'Save Search';
+                this.$(".NB-search-header-save").text(saved).removeClass('NB-search-header-clear').show();
+            } else if (has_date_filter) {
+                this.$(".NB-search-header-save").html('&times;').addClass('NB-search-header-clear').show();
+            } else {
+                this.$(".NB-search-header-save").hide();
+            }
         } else {
             this.unload();
         }
@@ -32,16 +44,39 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
 
     make_title: function () {
         var feed_title = NEWSBLUR.reader.feed_title();
+        var date_filter_start = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'date_filter_start');
+        var date_filter_end = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'date_filter_end');
 
-        var $view = $(_.template('<div>\
-            Searching \
-            <b><%= feed_title %></b> for "<b><%= query %></b>"\
-        </div>', {
-            feed_title: feed_title,
-            query: NEWSBLUR.reader.flags.search
-        }));
+        // Check if we're showing search results or date filters
+        if (NEWSBLUR.reader.flags.search && NEWSBLUR.reader.flags.searching && NEWSBLUR.reader.flags.search.length) {
+            var $view = $(_.template('<div>\
+                Searching \
+                <b><%= feed_title %></b> for "<b><%= query %></b>"\
+            </div>', {
+                feed_title: feed_title,
+                query: NEWSBLUR.reader.flags.search
+            }));
+            return $view;
+        } else if (date_filter_start || date_filter_end) {
+            // Format the date filter message
+            var filter_text = '';
+            if (date_filter_start && date_filter_end) {
+                filter_text = 'between <b>' + date_filter_start + '</b> and <b>' + date_filter_end + '</b>';
+            } else if (date_filter_start) {
+                filter_text = 'newer than <b>' + date_filter_start + '</b>';
+            } else if (date_filter_end) {
+                filter_text = 'older than <b>' + date_filter_end + '</b>';
+            }
 
-        return $view;
+            var $view = $(_.template('<div>\
+                Showing stories from \
+                <b><%= feed_title %></b> <%= filter_text %>\
+            </div>', {
+                feed_title: feed_title,
+                filter_text: filter_text
+            }));
+            return $view;
+        }
     },
 
     is_saved: function () {
@@ -73,6 +108,22 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
                 this.render();
             }, this));
         }
+    },
+
+    clear_date_filter: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Clear the date filters on the current feed
+        var feed_id = NEWSBLUR.reader.active_feed;
+        var feed = NEWSBLUR.assets.get_feed(feed_id);
+        if (feed) {
+            feed.set('date_filter_start', null, { silent: true });
+            feed.set('date_filter_end', null, { silent: true });
+        }
+
+        // Reload the feed to show all stories
+        NEWSBLUR.reader.reload_feed();
     }
 
 });

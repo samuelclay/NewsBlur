@@ -1478,6 +1478,15 @@
                     this.flags['select_story_title_in_feed'] = options.story_title;
                 }
 
+                // Clear date filters when switching to a different feed
+                if (this.active_feed && this.active_feed != feed.id) {
+                    var old_feed = this.model.get_feed(this.active_feed);
+                    if (old_feed) {
+                        old_feed.set('date_filter_start', null, { silent: true });
+                        old_feed.set('date_filter_end', null, { silent: true });
+                    }
+                }
+
                 this.active_feed = feed.id;
                 this.next_feed = feed.id;
 
