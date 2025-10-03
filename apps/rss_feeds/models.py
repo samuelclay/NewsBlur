@@ -1979,14 +1979,24 @@ class Feed(models.Model):
     #     for f, u in urls:
     #         print "db.stories.remove({\"story_feed_id\": %s, \"_id\": \"%s\"})" % (f, u)
 
-    def get_stories(self, offset=0, limit=25, order="newest", force=False, date_filter=None):
+    def get_stories(
+        self, offset=0, limit=25, order="newest", force=False, date_filter_start=None, date_filter_end=None
+    ):
         if order == "newest":
             stories_db = MStory.objects(story_feed_id=self.pk)
         elif order == "oldest":
             stories_db = MStory.objects(story_feed_id=self.pk).order_by("story_date")
-        if date_filter:
-            stories_db = stories_db.filter(story_date__lte=date_filter)
-        logging.debug(f"Getting {limit} stories from {self} with date filter {date_filter}")
+
+        if date_filter_start and date_filter_start != "all":
+            stories_db = stories_db.filter(story_date__gte=date_filter_start)
+        if date_filter_end and date_filter_end != "all":
+            stories_db = stories_db.filter(story_date__lte=date_filter_end)
+
+        if date_filter_start != "all" or date_filter_end != "all":
+            logging.debug(
+                f"Getting {limit} stories from {self} with date filter start={date_filter_start} end={date_filter_end}"
+            )
+
         stories_db = stories_db[offset : offset + limit]
         stories = self.format_stories(stories_db, self.pk)
 

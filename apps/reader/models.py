@@ -130,7 +130,8 @@ class UserSubscription(models.Model):
         include_timestamps=False,
         group_by_feed=False,
         cutoff_date=None,
-        date_filter=None,
+        date_filter_start=None,
+        date_filter_end=None,
         across_all_feeds=True,
         store_stories_key=None,
         offset=0,
@@ -227,14 +228,29 @@ class UserSubscription(models.Model):
                     ranked_stories_key = sorted_stories_key
 
                 # If there's a date filter, we need to filter the stories by date
-                if date_filter:
-                    # date_filter is a YYYY-MM-DD string, convert to timestamp
-                    date_filter_timestamp = int(
-                        datetime.datetime.strptime(date_filter, "%Y-%m-%d").strftime("%s")
-                    )
-                    pipeline.zremrangebyscore(
-                        ranked_stories_key, date_filter_timestamp, 2 * date_filter_timestamp
-                    )
+                if date_filter_start or date_filter_end:
+                    min_score = "-inf"
+                    max_score = "+inf"
+
+                    if date_filter_start and date_filter_start != "all":
+                        # date_filter_start is a YYYY-MM-DD string, convert to timestamp
+                        min_score = int(
+                            datetime.datetime.strptime(date_filter_start, "%Y-%m-%d").strftime("%s")
+                        )
+
+                    if date_filter_end and date_filter_end != "all":
+                        # date_filter_end is a YYYY-MM-DD string, convert to timestamp
+                        max_score = int(
+                            datetime.datetime.strptime(date_filter_end, "%Y-%m-%d").strftime("%s")
+                        )
+
+                    # Remove stories outside the date range
+                    # First remove stories before start date (if specified)
+                    if min_score != "-inf":
+                        pipeline.zremrangebyscore(ranked_stories_key, "-inf", min_score - 1)
+                    # Then remove stories after end date (if specified)
+                    if max_score != "+inf":
+                        pipeline.zremrangebyscore(ranked_stories_key, max_score + 1, "+inf")
 
                 # If archive premium user has manually marked an older story as unread
                 if is_archive and feed_id in manual_unread_feed_oldest_date and read_filter == "unread":
@@ -316,7 +332,14 @@ class UserSubscription(models.Model):
             pipeline.execute()
 
     def get_stories(
-        self, offset=0, limit=6, order="newest", read_filter="all", cutoff_date=None, date_filter=None
+        self,
+        offset=0,
+        limit=6,
+        order="newest",
+        read_filter="all",
+        cutoff_date=None,
+        date_filter_start=None,
+        date_filter_end=None,
     ):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         unread_ranked_stories_key = "zU:%s:%s" % (self.user_id, self.feed_id)
@@ -335,7 +358,8 @@ class UserSubscription(models.Model):
                 offset=offset,
                 limit=limit,
                 cutoff_date=cutoff_date,
-                date_filter=date_filter,
+                date_filter_start=date_filter_start,
+                date_filter_end=date_filter_end,
             )
 
         story_date_order = "%sstory_date" % ("" if order == "oldest" else "-")

@@ -278,10 +278,12 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     },
 
     open_options_popover: function (e) {
+        console.log(['open_options_popover called', 'showing_fake_folder:', this.showing_fake_folder, 'active_feed:', NEWSBLUR.reader.active_feed, 'starred_view:', NEWSBLUR.reader.flags['starred_view']]);
         if (!(this.showing_fake_folder ||
             NEWSBLUR.reader.active_feed == "read" ||
             NEWSBLUR.reader.flags['starred_view'])) return;
 
+        console.log(['Creating FeedOptionsPopover with feed_id:', NEWSBLUR.reader.active_feed]);
         NEWSBLUR.FeedOptionsPopover.create({
             anchor: this.$(".NB-feedbar-options"),
             feed_id: NEWSBLUR.reader.active_feed

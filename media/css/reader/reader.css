@@ -15847,6 +15847,9 @@ form.opml_import_form input {
     border-bottom: 1px solid #dbdbda;
     background-color: #F3F3EE;
     background-image: linear-gradient(180deg, #F3F3EE, #f0f3ed);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .NB-search-header .NB-search-header-save {
@@ -15869,6 +15872,13 @@ form.opml_import_form input {
 .NB-search-header .NB-search-header-save:hover,
 .NB-search-header .NB-search-header-save.NB-active {
     background-color: rgba(0, 0, 0, .1);
+}
+
+.NB-search-header .NB-search-header-save.NB-search-header-clear {
+    font-size: 16px;
+    line-height: 12px;
+    padding: 1px 6px;
+    text-transform: none;
 }
 
 .NB-search-header .NB-search-header-icon {
@@ -16093,10 +16103,77 @@ form.opml_import_form input {
     filter: hue-rotate(312deg) saturate(10.5);
 }
 
-.NB-filter-popover .NB-popover-icon-control-date-filter>.NB-icon {
+.NB-filter-popover .NB-popover-icon-control-date-filter-start>.NB-icon,
+.NB-filter-popover .NB-popover-icon-control-date-filter-end>.NB-icon {
     background: transparent url('/media/embed/icons/nouns/past.svg') no-repeat 0 0;
     background-size: 16px;
     filter: hue-rotate(280deg) saturate(1.0);
+}
+
+.NB-filter-popover .NB-date-range-inputs {
+    margin: 8px 0;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.NB-filter-popover .NB-date-range-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.NB-filter-popover .NB-date-range-separator {
+    font-size: 13px;
+    color: #999;
+}
+
+.NB-filter-popover .NB-date-input {
+    flex: 0.92;
+    padding: 4px 6px;
+    font-size: 11px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background: white;
+    min-width: 0;
+}
+
+.NB-filter-popover .NB-date-input:focus {
+    outline: none;
+    border-color: #4A90E2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
+}
+
+.NB-filter-popover .NB-clear-date-button {
+    display: none;
+    width: 12px;
+    height: 12px;
+    background: transparent url('/media/embed/reader/close.png') no-repeat 0 0;
+    background-size: 10px;
+    cursor: pointer;
+    opacity: .7;
+    flex-shrink: 0;
+}
+
+.NB-filter-popover .NB-date-range-inputs.NB-has-dates .NB-clear-date-button {
+    display: block;
+}
+
+.NB-filter-popover .NB-clear-date-button:hover {
+    opacity: 1;
+}
+
+.NB-filter-popover .NB-date-filter-label {
+    font-size: 11px;
+    color: #666;
+    margin-left: 0;
+    margin-bottom: 4px;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
 .NB-filter-popover .NB-popover-icon-control-infrequent>.NB-icon {
