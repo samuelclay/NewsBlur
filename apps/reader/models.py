@@ -380,6 +380,8 @@ class UserSubscription(models.Model):
         cutoff_date=None,
         all_feed_ids=None,
         cache_prefix="",
+        date_filter_start=None,
+        date_filter_end=None,
     ):
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         across_all_feeds = False
@@ -424,6 +426,8 @@ class UserSubscription(models.Model):
             cutoff_date=cutoff_date,
             across_all_feeds=across_all_feeds,
             store_stories_key=ranked_stories_keys,
+            date_filter_start=date_filter_start,
+            date_filter_end=date_filter_end,
         )
         story_hashes = range_func(ranked_stories_keys, offset, limit)
 
@@ -439,6 +443,8 @@ class UserSubscription(models.Model):
                 include_timestamps=True,
                 cutoff_date=cutoff_date,
                 store_stories_key=unread_ranked_stories_keys,
+                date_filter_start=date_filter_start,
+                date_filter_end=date_filter_end,
             )
             unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, limit)
 

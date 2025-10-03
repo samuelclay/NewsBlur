@@ -15875,10 +15875,20 @@ form.opml_import_form input {
 }
 
 .NB-search-header .NB-search-header-save.NB-search-header-clear {
-    font-size: 16px;
-    line-height: 12px;
-    padding: 1px 6px;
+    background: transparent url('/media/embed/reader/close.png') no-repeat center center;
+    background-size: 10px;
+    width: 12px;
+    height: 12px;
+    padding: 0;
     text-transform: none;
+    border: none;
+    border-radius: 0;
+    opacity: .7;
+}
+
+.NB-search-header .NB-search-header-save.NB-search-header-clear:hover {
+    opacity: 1;
+    background-color: transparent;
 }
 
 .NB-search-header .NB-search-header-icon {
@@ -16174,6 +16184,32 @@ form.opml_import_form input {
     margin-bottom: 4px;
     font-weight: 600;
     white-space: nowrap;
+}
+
+.NB-filter-popover .NB-popover-icon-control-date-filter-presets {
+    display: flex;
+    flex-direction: column;
+}
+
+.NB-filter-popover .NB-date-filter-preset-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.NB-filter-popover .NB-date-filter-preset-row .NB-date-filter-label {
+    margin-bottom: 0;
+    min-width: 50px;
+}
+
+.NB-filter-popover .NB-date-filter-preset-row .segmented-control {
+    flex: 1;
+}
+
+.NB-filter-popover .NB-date-filter-preset-row .segmented-control li {
+    font-size: 11px;
+    padding: 4px 8px;
 }
 
 .NB-filter-popover .NB-popover-icon-control-infrequent>.NB-icon {

@@ -28,12 +28,12 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
             var $title = this.make_title();
             this.$(".NB-search-header-title").html($title);
 
-            // Show "Save Search" button for searches, "×" button for date filters
+            // Show "Save Search" button for searches, close icon for date filters
             if (NEWSBLUR.reader.flags.search && NEWSBLUR.reader.flags.searching && NEWSBLUR.reader.flags.search.length) {
                 var saved = this.is_saved() ? 'Saved' : 'Save Search';
                 this.$(".NB-search-header-save").text(saved).removeClass('NB-search-header-clear').show();
             } else if (has_date_filter) {
-                this.$(".NB-search-header-save").html('&times;').addClass('NB-search-header-clear').show();
+                this.$(".NB-search-header-save").html('').addClass('NB-search-header-clear').show();
             } else {
                 this.$(".NB-search-header-save").hide();
             }
@@ -69,10 +69,8 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
             }
 
             var $view = $(_.template('<div>\
-                Showing stories from \
-                <b><%= feed_title %></b> <%= filter_text %>\
+                Showing stories <%= filter_text %>\
             </div>', {
-                feed_title: feed_title,
                 filter_text: filter_text
             }));
             return $view;
@@ -114,12 +112,21 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
         e.preventDefault();
         e.stopPropagation();
 
-        // Clear the date filters on the current feed
+        // Clear the date filters on the current feed/folder
         var feed_id = NEWSBLUR.reader.active_feed;
-        var feed = NEWSBLUR.assets.get_feed(feed_id);
-        if (feed) {
-            feed.set('date_filter_start', null, { silent: true });
-            feed.set('date_filter_end', null, { silent: true });
+        var obj;
+
+        if (_.string.contains(feed_id, 'river:')) {
+            // For river views, use the active folder
+            obj = NEWSBLUR.reader.active_folder;
+        } else {
+            // For individual feeds, use the feed model
+            obj = NEWSBLUR.assets.get_feed(feed_id);
+        }
+
+        if (obj) {
+            obj.date_filter_start = null;
+            obj.date_filter_end = null;
         }
 
         // Reload the feed to show all stories
