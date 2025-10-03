@@ -5555,6 +5555,9 @@ body {
     background-size: 16px;
 }
 
+.NB-sideoption .NB-sideoption-thirdparty-readwise {
+    background: transparent url('/media/embed/reader/readwise.png') no-repeat center center;
+}
 
 /* ===================== */
 /* = Sideoption - Save = */
@@ -10319,6 +10322,10 @@ form.opml_import_form input {
     background-image: url('/media/embed/reader/reddit.png');
 }
 
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-readwise {
+    background-image: url('/media/embed/reader/readwise.png');
+}
+
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdpartyicon {
     opacity: .2;
 }
@@ -10354,7 +10361,8 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-diigo .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-evernote .NB-menu-manage-thirdparty-email,
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-googleplus .NB-menu-manage-thirdparty-email,
-.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-thirdparty-email {
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-thirdparty-email,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readwise .NB-menu-manage-thirdparty-email {
     opacity: .2;
 }
 
@@ -10467,6 +10475,10 @@ form.opml_import_form input {
 }
 
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-instapaper .NB-menu-manage-thirdparty-instapaper {
+    opacity: 1;
+}
+
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-readwise .NB-menu-manage-thirdparty-readwise {
     opacity: 1;
 }
 
@@ -11994,6 +12006,9 @@ form.opml_import_form input {
 
 .NB-modal-exception .NB-exception-option-meta-recommended {
     color: #4A9937;
+    order: 5;
+    flex: auto;
+    text-align: right;
 }
 
 .NB-modal-exception .NB-modal-submit input.NB-modal-submit-green {
@@ -13558,6 +13573,10 @@ form.opml_import_form input {
 
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-instapaper] {
     background: transparent url('/media/embed/reader/instapaper.png') no-repeat 0 0;
+}
+
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-readwise] {
+    background: transparent url('/media/embed/reader/readwise.png') no-repeat 0 0;
 }
 
 .NB-modal-preferences .NB-preference .NB-preference-story-sideoption label {

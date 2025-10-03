@@ -1,4 +1,5 @@
 import datetime
+import html
 import multiprocessing
 import time
 import traceback
@@ -67,6 +68,74 @@ from utils.story_functions import (
 from utils.twitter_fetcher import TwitterFetcher
 from utils.youtube_fetcher import YoutubeFetcher
 
+
+def preprocess_feed_encoding(raw_xml):
+    """
+    Fix for The Verge RSS feed encoding issues (and other feeds with similar problems).
+
+    The Verge and other Vox Media sites often serve RSS feeds with special characters
+    that were incorrectly encoded. This happens when UTF-8 bytes are misinterpreted
+    as Latin-1/Windows-1252 characters and then HTML-encoded, resulting in garbled text
+    like "Apple&acirc;&#128;&#153;s" instead of "Apple's" with a smart apostrophe.
+
+    This function detects these patterns and reverses the process by:
+    1. Unescaping the HTML entities (producing characters like â€™)
+    2. Re-encoding as Latin-1 and decoding as UTF-8 to recover the original characters
+
+    Args:
+        raw_xml (str): The raw XML content fetched from the feed
+
+    Returns:
+        str: The corrected XML content with proper encoding
+    """
+    # Common indicators of misencoded UTF-8
+    misencoding_indicators = [
+        # Common UTF-8 double encoded patterns
+        "&acirc;&#128;&#153;",  # Smart apostrophe (')
+        "&acirc;&#128;&#147;",  # Em dash (—)
+        "&acirc;&#128;&#148;",  # En dash (–)
+        "&acirc;&#128;&#156;",  # Opening smart quote (")
+        "&acirc;&#128;&#157;",  # Closing smart quote (")
+        "&acirc;&#128;&#152;",  # Single opening quote (')
+        "&acirc;&#128;&#153;",  # Single closing quote (')
+        "&acirc;&#128;&#166;",  # Ellipsis (…)
+        "&acirc;&#128;&#160;",  # Non-breaking space
+        "&acirc;&#128;&#176;",  # Bullet point (•)
+        "&acirc;&#128;&#174;",  # Registered trademark (®)
+        "&acirc;&#128;&#169;",  # Copyright (©)
+        # Additional patterns that indicate encoding issues
+        "&Atilde;&copy;",  # é misencoded
+        "&Atilde;&reg;",  # ® misencoded
+        "&Atilde;&para;",  # ¶ misencoded
+        "&Atilde;&sup2;",  # ² misencoded
+        "&Atilde;&deg;",  # ° misencoded
+        "&Aring;&frac12;",  # ½ misencoded
+    ]
+
+    # Check if any of the indicators are present
+    needs_fixing = any(indicator in raw_xml for indicator in misencoding_indicators)
+
+    if needs_fixing:
+        try:
+            # Step 1: HTML Unescaping - convert HTML entities to their literal characters
+            # This will typically produce characters like â€™ in place of the intended smart apostrophe
+            unescaped = html.unescape(raw_xml)
+
+            # Step 2: Encoding Reinterpretation
+            # Re-encode as Latin-1/Windows-1252 and decode as UTF-8
+            # This "encoding shuffle" restores the original characters
+            corrected = unescaped.encode("latin1").decode("utf-8", errors="replace")
+
+            return corrected
+        except (UnicodeError, AttributeError) as e:
+            # If there's an error in the encoding correction, log it and return the original
+            logging.debug("Error fixing feed encoding: %s" % str(e))
+            return raw_xml
+
+    # If no indicators are found, return the original XML
+    return raw_xml
+
+
 # from utils.feed_functions import mail_feed_error_to_admin
 
 
@@ -74,6 +143,8 @@ from utils.youtube_fetcher import YoutubeFetcher
 # http://feedjack.googlecode.com
 
 MAX_ENTRIES_TO_PROCESS = 100
+MAX_ENTRIES_HIGH_VOLUME = 250
+HIGH_VOLUME_FEED_URLS = ["arxiv.org"]  # Feeds that can handle more stories per fetch
 
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = list(range(5))
 
@@ -152,7 +223,14 @@ class FetchFeed:
                     "   ***> [%-30s] ~FRYouTube fetch failed: %s." % (self.feed.log_title[:30], address)
                 )
                 return FEED_ERRHTTP, None
-            self.fpf = feedparser.parse(youtube_feed, sanitize_html=False)
+            # Apply encoding preprocessing to special feed content
+            processed_youtube_feed = preprocess_feed_encoding(youtube_feed)
+            if processed_youtube_feed != youtube_feed:
+                logging.debug(
+                    "   ---> [%-30s] ~FGApplied encoding correction to YouTube feed"
+                    % (self.feed.log_title[:30])
+                )
+            self.fpf = feedparser.parse(processed_youtube_feed, sanitize_html=False)
         elif re.match(r"(https?)?://twitter.com/\w+/?", qurl(address, remove=["_"])):
             twitter_feed = self.fetch_twitter(address)
             if not twitter_feed:
@@ -160,7 +238,14 @@ class FetchFeed:
                     "   ***> [%-30s] ~FRTwitter fetch failed: %s" % (self.feed.log_title[:30], address)
                 )
                 return FEED_ERRHTTP, None
-            self.fpf = feedparser.parse(twitter_feed)
+            # Apply encoding preprocessing to special feed content
+            processed_twitter_feed = preprocess_feed_encoding(twitter_feed)
+            if processed_twitter_feed != twitter_feed:
+                logging.debug(
+                    "   ---> [%-30s] ~FGApplied encoding correction to Twitter feed"
+                    % (self.feed.log_title[:30])
+                )
+            self.fpf = feedparser.parse(processed_twitter_feed)
         elif re.match(r"(.*?)facebook.com/\w+/?$", qurl(address, remove=["_"])):
             facebook_feed = self.fetch_facebook()
             if not facebook_feed:
@@ -168,15 +253,50 @@ class FetchFeed:
                     "   ***> [%-30s] ~FRFacebook fetch failed: %s" % (self.feed.log_title[:30], address)
                 )
                 return FEED_ERRHTTP, None
-            self.fpf = feedparser.parse(facebook_feed)
-        elif self.feed.is_forbidden:
-            forbidden_feed = self.fetch_forbidden()
-            if not forbidden_feed:
+            # Apply encoding preprocessing to special feed content
+            processed_facebook_feed = preprocess_feed_encoding(facebook_feed)
+            if processed_facebook_feed != facebook_feed:
                 logging.debug(
-                    "   ***> [%-30s] ~FRForbidden feed fetch failed: %s" % (self.feed.log_title[:30], address)
+                    "   ---> [%-30s] ~FGApplied encoding correction to Facebook feed"
+                    % (self.feed.log_title[:30])
                 )
-                return FEED_ERRHTTP, None
-            self.fpf = feedparser.parse(forbidden_feed)
+            self.fpf = feedparser.parse(processed_facebook_feed)
+        elif self.feed.is_forbidden:
+            # 10% chance to turn off is_forbidden flag before fetching
+            if random.random() <= 0.1:
+                logging.debug(
+                    "   ---> [%-30s] ~FG~SBTurning off forbidden flag (~FB10%%~FG chance) and fetching normally"
+                    % (self.feed.log_title[:30])
+                )
+                self.feed.is_forbidden = False
+                self.feed = self.feed.save()
+                # Skip this branch and continue with normal fetch flow
+                # We don't need to do anything else here - just let the normal fetch flow continue
+            else:
+                # Regular forbidden feed fetch
+                forbidden_status, forbidden_feed = self.fetch_forbidden()
+                if forbidden_status == 304:
+                    logging.debug(
+                        "   ---> [%-30s] ~FGForbidden feed not modified (304)"
+                        % (self.feed.log_title[:30])
+                    )
+                    self.feed = self.feed.save()
+                    self.feed.save_feed_history(304, "Not modified")
+                    return FEED_SAME, None
+                if not forbidden_feed or not forbidden_status:
+                    logging.debug(
+                        "   ***> [%-30s] ~FRForbidden feed fetch failed: %s"
+                        % (self.feed.log_title[:30], address)
+                    )
+                    return FEED_ERRHTTP, None
+                # Apply encoding preprocessing to special feed content
+                processed_forbidden_feed = preprocess_feed_encoding(forbidden_feed)
+                if processed_forbidden_feed != forbidden_feed:
+                    logging.debug(
+                        "   ---> [%-30s] ~FGApplied encoding correction to forbidden feed"
+                        % (self.feed.log_title[:30])
+                    )
+                self.fpf = feedparser.parse(processed_forbidden_feed)
 
         if not self.fpf and "json" in address:
             try:
@@ -248,12 +368,26 @@ class FetchFeed:
                             "   ***> [%-30s] ~FRJSON fetch failed: %s" % (self.feed.log_title[:30], address)
                         )
                         return FEED_ERRHTTP, None
-                    self.fpf = feedparser.parse(json_feed)
+                    # Apply encoding preprocessing to JSON feed content
+                    processed_json_feed = preprocess_feed_encoding(json_feed)
+                    if processed_json_feed != json_feed:
+                        logging.debug(
+                            "   ---> [%-30s] ~FGApplied encoding correction to JSON feed"
+                            % (self.feed.log_title[:30])
+                        )
+                    self.fpf = feedparser.parse(processed_json_feed)
                 elif raw_feed.content and raw_feed.status_code < 400:
                     response_headers = raw_feed.headers
                     response_headers["Content-Location"] = raw_feed.url
                     self.raw_feed = smart_str(raw_feed.content)
-                    self.fpf = feedparser.parse(self.raw_feed, response_headers=response_headers)
+                    # Preprocess feed to fix encoding issues before parsing with feedparser
+                    processed_feed = preprocess_feed_encoding(self.raw_feed)
+                    if processed_feed != self.raw_feed:
+                        logging.debug(
+                            "   ---> [%-30s] ~FGApplied encoding correction to feed with misencoded HTML entities"
+                            % (self.feed.log_title[:30])
+                        )
+                    self.fpf = feedparser.parse(processed_feed, response_headers=response_headers)
                     if self.options["verbose"]:
                         logging.debug(
                             " ---> [%-30s] ~FBFeed fetch status %s: %s length / %s"
@@ -273,6 +407,8 @@ class FetchFeed:
 
         if not self.fpf or self.options.get("force_fp", False):
             try:
+                # When feedparser fetches the URL itself, we cannot preprocess the content first
+                # We'll have to rely on feedparser's built-in handling here
                 self.fpf = feedparser.parse(address, agent=self.feed.user_agent, etag=etag, modified=modified)
             except (
                 TypeError,
@@ -295,6 +431,7 @@ class FetchFeed:
                 logging.debug(
                     "   ***> [%-30s] ~FRTurning off headers: %s" % (self.feed.log_title[:30], address)
                 )
+                # Another direct URL fetch that bypasses our preprocessing
                 self.fpf = feedparser.parse(address, agent=self.feed.user_agent)
             except (
                 TypeError,
@@ -342,44 +479,171 @@ class FetchFeed:
         youtube_fetcher = YoutubeFetcher(self.feed, self.options)
         return youtube_fetcher.fetch()
 
-    def fetch_forbidden(self, js_scrape=False):
+    def fetch_scrapingbee(self, js_scrape=False):
+        url = "https://app.scrapingbee.com/api/v1"
+        params = {
+            "api_key": settings.SCRAPINGBEE_API_KEY,
+            "url": self.feed.feed_address,
+            "render_js": "true" if js_scrape else "false",
+            "return_page_source": "true",
+        }
+
+        # Add etag and last-modified headers for conditional requests
+        # ScrapingBee requires spb- prefix and forward_headers enabled
+        headers = {}
+        if self.feed.etag or self.feed.last_modified:
+            params["forward_headers"] = "true"
+
+        if self.feed.etag:
+            headers["spb-etag"] = self.feed.etag
+        if self.feed.last_modified:
+            modified = self.feed.last_modified.utctimetuple()[:7]
+            short_weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+            months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            modified_header = "%s, %02d %s %04d %02d:%02d:%02d GMT" % (
+                short_weekdays[modified[6]],
+                modified[2],
+                months[modified[1] - 1],
+                modified[0],
+                modified[3],
+                modified[4],
+                modified[5],
+            )
+            headers["spb-last-modified"] = modified_header
+
+        logging.debug(
+            "   ***> [%-30s] ~FRForbidden feed fetch with ScrapingBee%s: %s"
+            % (self.feed.log_title[:30], " (JS enabled)" if js_scrape else "", self.feed.feed_address)
+        )
+
+        try:
+            response = requests.get(url, params=params, headers=headers, timeout=15)
+
+            if response.status_code == 304:
+                logging.debug(
+                    "   ***> [%-30s] ~FGScrapingBee returned 304 Not Modified"
+                    % (self.feed.log_title[:30],)
+                )
+                return response.status_code, None
+
+            if response.status_code != 200:
+                logging.debug(
+                    "   ***> [%-30s] ~FRScrapingBee fetch failed with status %s"
+                    % (self.feed.log_title[:30], response.status_code)
+                )
+                return response.status_code, None
+
+            body = smart_str(response.content)
+            if not body:
+                logging.debug(
+                    "   ***> [%-30s] ~FRScrapingBee fetch failed: empty response" % (self.feed.log_title[:30],)
+                )
+                return response.status_code, None
+
+            logging.debug(
+                "   ***> [%-30s] ~FGScrapingBee fetch succeeded: %s bytes"
+                % (self.feed.log_title[:30], len(body))
+            )
+            return response.status_code, body
+        except Exception as e:
+            logging.debug(
+                "   ***> [%-30s] ~FRScrapingBee fetch error: %s" % (self.feed.log_title[:30], str(e))
+            )
+            return None, None
+
+    def fetch_scrapeninja(self, js_scrape=False):
         url = "https://scrapeninja.p.rapidapi.com/scrape"
         if js_scrape:
             url = "https://scrapeninja.p.rapidapi.com/scrape-js"
 
         payload = {"url": self.feed.feed_address}
+
+        # Add custom headers for conditional requests
+        custom_headers = {}
+        if self.feed.etag:
+            custom_headers["If-None-Match"] = self.feed.etag
+        if self.feed.last_modified:
+            modified = self.feed.last_modified.utctimetuple()[:7]
+            short_weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+            months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            modified_header = "%s, %02d %s %04d %02d:%02d:%02d GMT" % (
+                short_weekdays[modified[6]],
+                modified[2],
+                months[modified[1] - 1],
+                modified[0],
+                modified[3],
+                modified[4],
+                modified[5],
+            )
+            custom_headers["If-Modified-Since"] = modified_header
+
+        if custom_headers:
+            payload["customHeaders"] = custom_headers
+
         headers = {
             "x-rapidapi-key": settings.SCRAPENINJA_API_KEY,
             "x-rapidapi-host": "scrapeninja.p.rapidapi.com",
             "Content-Type": "application/json",
         }
         logging.debug(
-            "   ***> [%-30s] ~FRForbidden feed fetch: %s -> %s" % (self.feed.log_title[:30], url, payload)
+            "   ***> [%-30s] ~FRForbidden feed fetch with ScrapeNinja: %s -> %s"
+            % (self.feed.log_title[:30], url, payload)
         )
-        response = requests.post(url, json=payload, headers=headers)
 
-        if response.status_code != 200:
+        try:
+            response = requests.post(url, json=payload, headers=headers, timeout=15)
+
+            if response.status_code == 304:
+                logging.debug(
+                    "   ***> [%-30s] ~FGScrapeNinja returned 304 Not Modified" % (self.feed.log_title[:30],)
+                )
+                return response.status_code, None
+
+            if response.status_code != 200:
+                logging.debug(
+                    "   ***> [%-30s] ~FRScrapeNinja fetch failed with status %s"
+                    % (self.feed.log_title[:30], response.status_code)
+                )
+                return response.status_code, None
+
+            body = response.json().get("body")
+            if not body:
+                logging.debug(
+                    "   ***> [%-30s] ~FRScrapeNinja fetch failed: empty body in response"
+                    % (self.feed.log_title[:30],)
+                )
+                return response.status_code, None
+
+            if "enable JS" in body and not js_scrape:
+                logging.debug(
+                    "   ***> [%-30s] ~FYScrapeNinja requires JS, retrying with JS enabled"
+                    % (self.feed.log_title[:30],)
+                )
+                return self.fetch_scrapeninja(js_scrape=True)
+
             logging.debug(
-                "   ***> [%-30s] ~FRForbidden feed fetch failed: %s -> %s"
-                % (self.feed.log_title[:30], url, payload)
+                "   ***> [%-30s] ~FGScrapeNinja fetch succeeded: %s bytes"
+                % (self.feed.log_title[:30], len(body))
             )
-            return None
-        body = response.json().get("body")
-        if not body:
+            return response.status_code, body
+        except Exception as e:
             logging.debug(
-                "   ***> [%-30s] ~FRForbidden feed fetch failed: %s -> %s"
-                % (self.feed.log_title[:30], url, response.json())
+                "   ***> [%-30s] ~FRScrapeNinja fetch error: %s" % (self.feed.log_title[:30], str(e))
             )
-            return None
+            return None, None
 
-        if "enable JS" in body and not js_scrape:
-            return self.fetch_forbidden(js_scrape=True)
+    def fetch_forbidden(self, js_scrape=False):
+        # Try ScrapingBee first
+        status_code, body = self.fetch_scrapingbee(js_scrape=js_scrape)
+        if status_code and (body or status_code == 304):
+            return status_code, body
 
+        # If ScrapingBee fails, try ScrapeNinja
         logging.debug(
-            "   ***> [%-30s] ~FRForbidden feed fetch succeeded: %s -> %s"
-            % (self.feed.log_title[:30], url, body)
+            "   ***> [%-30s] ~FYScrapingBee failed, trying ScrapeNinja" % (self.feed.log_title[:30],)
         )
-        return body
+
+        return self.fetch_scrapeninja(js_scrape=js_scrape)
 
 
 class ProcessFeed:
@@ -390,6 +654,7 @@ class ProcessFeed:
         self.raw_feed = raw_feed
         self.feed_entries = []
         self.archive_seen_story_hashes = set()
+        self.cache_control_max_age = None
 
     def refresh_feed(self):
         self.feed = Feed.get_by_id(self.feed_id)
@@ -407,11 +672,53 @@ class ProcessFeed:
             if feed_status and ret_values:
                 return feed_status, ret_values
 
+            # Check for Cache-Control max-age and Retry-After in response headers
+            if hasattr(self.fpf, "headers") and self.fpf.headers:
+                # Check Cache-Control header
+                cache_control = self.fpf.headers.get("Cache-Control")
+                if cache_control:
+                    max_age_match = re.search(r"max-age=(\d+)", cache_control)
+                    if max_age_match:
+                        self.cache_control_max_age = (
+                            int(max_age_match.group(1)) / 60
+                        )  # Convert seconds to minutes
+
+                # Check Retry-After header
+                retry_after = self.fpf.headers.get("Retry-After")
+                if retry_after:
+                    try:
+                        # Retry-After can be seconds (integer) or HTTP-date
+                        retry_seconds = int(retry_after)
+                        retry_minutes = retry_seconds / 60
+                        # Use retry-after if it's longer than cache-control (or if cache-control is not set)
+                        if self.cache_control_max_age is None or retry_minutes > self.cache_control_max_age:
+                            self.cache_control_max_age = retry_minutes
+                            logging.debug(
+                                f"   ---> [{self.feed.log_title[:30]:<30}] ~FYUsing Retry-After header: ~SB{retry_seconds} seconds ({retry_minutes:.1f} minutes)"
+                            )
+                    except ValueError:
+                        # If it's not an integer, it might be an HTTP-date - skip for now
+                        logging.debug(
+                            f"   ---> [{self.feed.log_title[:30]:<30}] ~FRCouldn't parse Retry-After header: {retry_after}"
+                        )
+
         self.feed_entries = self.fpf.entries
-        # If there are more than 100 entries, we should sort the entries in date descending order and cut them off
-        if len(self.feed_entries) > MAX_ENTRIES_TO_PROCESS:
+
+        # Check if this is a high-volume feed that can handle more stories
+        max_entries = MAX_ENTRIES_TO_PROCESS
+        feed_address_lower = self.feed.feed_address.lower()
+        for high_volume_url in HIGH_VOLUME_FEED_URLS:
+            if high_volume_url in feed_address_lower:
+                max_entries = MAX_ENTRIES_HIGH_VOLUME
+                logging.debug(
+                    f"   ---> [{self.feed.log_title[:30]:<30}] High-volume feed detected ({high_volume_url}), allowing up to {max_entries} stories"
+                )
+                break
+
+        # If there are more than max_entries, we should sort the entries in date descending order and cut them off
+        if len(self.feed_entries) > max_entries:
             self.feed_entries = sorted(self.feed_entries, key=lambda x: extract_story_date(x), reverse=True)[
-                :MAX_ENTRIES_TO_PROCESS
+                :max_entries
             ]
 
         if not self.options.get("archive_page", None):
@@ -529,7 +836,15 @@ class ProcessFeed:
                 len(self.feed_entries),
             )
         )
-        self.feed.update_all_statistics(has_new_stories=bool(ret_values["new"]), force=self.options["force"])
+        if self.cache_control_max_age:
+            logging.debug(
+                f"   ---> [{self.feed.log_title[:30]:<30}] ~FYScheduling next fetch with delay: ~SB{self.cache_control_max_age:.1f} minutes"
+            )
+        self.feed.update_all_statistics(
+            has_new_stories=bool(ret_values["new"]),
+            force=self.options["force"],
+            delay_fetch_sec=self.cache_control_max_age * 60 if self.cache_control_max_age else None,
+        )
         fetch_date = datetime.datetime.now()
         if ret_values["new"]:
             if not getattr(settings, "TEST_DEBUG", False):
@@ -605,10 +920,8 @@ class ProcessFeed:
                     "   ---> [%-30s] ~SB~FRHTTP Status code: %s. Checking address..."
                     % (self.feed.log_title[:30], self.fpf.status)
                 )
-                if self.fpf.status == 403 and not self.feed.is_forbidden:
-                    self.feed.is_forbidden = True
-                    self.feed.date_forbidden = datetime.datetime.now()
-                    self.feed = self.feed.save()
+                if self.fpf.status in [403] and not self.feed.is_forbidden:
+                    self.feed = self.feed.set_is_forbidden()
                 fixed_feed = None
                 if not self.feed.known_good:
                     fixed_feed, feed = self.feed.check_feed_link_for_feed_address()
@@ -652,6 +965,8 @@ class ProcessFeed:
                     fixed_feed, feed = self.feed.check_feed_link_for_feed_address()
                 if not fixed_feed:
                     self.feed.save_feed_history(553, "Not an RSS feed", self.fpf.bozo_exception)
+                    if not self.feed.is_forbidden:
+                        self.feed = self.feed.set_is_forbidden()
                 else:
                     self.feed = feed
                 self.feed = self.feed.save()
@@ -852,11 +1167,11 @@ class FeedFetcherWorker:
                 set_user({"id": feed_id, "username": feed.feed_title})
 
                 skip = False
+                weight = "-"
+                quick = "-"
+                rand = "-"
                 if self.options.get("fake"):
                     skip = True
-                    weight = "-"
-                    quick = "-"
-                    rand = "-"
                 elif (
                     self.options.get("quick")
                     and not self.options["force"]
@@ -872,9 +1187,27 @@ class FeedFetcherWorker:
                         skip = True
                 elif False and feed.feed_address.startswith("http://news.google.com/news"):
                     skip = True
-                    weight = "-"
-                    quick = "-"
-                    rand = "-"
+
+                # Check for openrss.org rate limiting
+                if not skip and "openrss.org" in feed.feed_address and not self.options.get("force"):
+                    r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+                    current_timestamp = int(time.time())
+                    openrss_key = f"openrss_fetch:{current_timestamp}"
+
+                    # Try to set the key with 5 minutes expiration, only if it doesn't exist
+                    was_set = r.set(openrss_key, 1, nx=True, ex=300)
+
+                    if not was_set:
+                        # Another openrss.org feed was fetched in this same second
+                        skip = True
+                        logging.debug(
+                            f"   ---> [{feed.log_title[:30]:<30}] ~FYSkipping openrss.org fetch, another openrss feed fetched in last second"
+                        )
+                    else:
+                        logging.debug(
+                            f"   ---> [{feed.log_title[:30]:<30}] ~FGProceeding with openrss.org fetch"
+                        )
+
                 if skip:
                     logging.debug(
                         "   ---> [%-30s] ~BGFaking fetch, skipping (%s/month, %s subs, %s < %s)..."

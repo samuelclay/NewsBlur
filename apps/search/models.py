@@ -1262,7 +1262,7 @@ class SearchFeed:
         # Fetch the content vector from ES for the specified feed_id
         try:
             cls.ES().indices.flush(index=cls.index_name())
-        except elasticsearch.exceptions.NotFoundError as e:
+        except (elasticsearch.exceptions.NotFoundError, elasticsearch.exceptions.ConnectionError) as e:
             logging.debug(f" ***> ~FRNo search server available: {e}")
             return []
 
