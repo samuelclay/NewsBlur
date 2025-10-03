@@ -47,6 +47,7 @@ object StoryUtil {
             fontCss: String,
             themeValue: PrefConstants.ThemeValue,
             nightMask: Int,
+            enableHighlights: Boolean,
     ): String = withContext(Dispatchers.Default) {
         val sb = StringBuilder(8 * 1024)
         sb.append("<html><head>")
@@ -64,11 +65,12 @@ object StoryUtil {
             }
         }
 
-        sb.append("<script src=\"mark.min.js\"></script>")
-        sb.append("<script src=\"storyHighlights.js\"></script>")
-
         sb.append("</head><body><div class=\"NB-story\">")
         sb.append(storyHtml)
+        if (enableHighlights) {
+            sb.append("<script src=\"mark.min.js\"></script>")
+            sb.append("<script src=\"storyHighlights.js\"></script>")
+        }
         sb.append("<script type=\"text/javascript\" src=\"storyDetailView.js\"></script>")
         sb.append("</div></body></html>")
         sb.toString()
