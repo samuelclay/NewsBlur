@@ -58,14 +58,38 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
             }));
             return $view;
         } else if (date_filter_start || date_filter_end) {
+            // Format dates to be more readable
+            var format_date = function(date_string) {
+                if (!date_string) return '';
+                var date = new Date(date_string + 'T00:00:00');
+                var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+                var day_name = days[date.getDay()];
+                var month_name = months[date.getMonth()];
+                var day = date.getDate();
+                var year = date.getFullYear();
+
+                // Add ordinal suffix (st, nd, rd, th)
+                var suffix = 'th';
+                if (day % 10 === 1 && day !== 11) suffix = 'st';
+                else if (day % 10 === 2 && day !== 12) suffix = 'nd';
+                else if (day % 10 === 3 && day !== 13) suffix = 'rd';
+
+                return day_name + ', ' + month_name + ' ' + day + suffix + ', ' + year;
+            };
+
             // Format the date filter message
             var filter_text = '';
+            var formatted_start = format_date(date_filter_start);
+            var formatted_end = format_date(date_filter_end);
+
             if (date_filter_start && date_filter_end) {
-                filter_text = 'between <b>' + date_filter_start + '</b> and <b>' + date_filter_end + '</b>';
+                filter_text = 'between <b>' + formatted_start + '</b> and <b>' + formatted_end + '</b>';
             } else if (date_filter_start) {
-                filter_text = 'newer than <b>' + date_filter_start + '</b>';
+                filter_text = 'newer than <b>' + formatted_start + '</b>';
             } else if (date_filter_end) {
-                filter_text = 'older than <b>' + date_filter_end + '</b>';
+                filter_text = 'older than <b>' + formatted_end + '</b>';
             }
 
             var $view = $(_.template('<div>\

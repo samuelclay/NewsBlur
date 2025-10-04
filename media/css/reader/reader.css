@@ -16053,6 +16053,10 @@ form.opml_import_form input {
 /* = Feed Options Popover = */
 /* ======================== */
 
+.NB-filter-popover-container.popover {
+    width: 354px;
+}
+
 .NB-filter-popover-container.popover.bottom-left .arrow {
     left: 20%;
 }
@@ -16120,42 +16124,66 @@ form.opml_import_form input {
     filter: hue-rotate(280deg) saturate(1.0);
 }
 
-.NB-filter-popover .NB-date-range-inputs {
-    margin: 8px 0;
+.NB-filter-popover .NB-date-filter-container {
+    margin: 4px 0 2px;
     padding: 8px 12px;
     background: rgba(0, 0, 0, 0.03);
     border-radius: 4px;
     display: flex;
-    align-items: center;
-    gap: 6px;
+    gap: 36px;
+    position: relative;
 }
 
-.NB-filter-popover .NB-date-range-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex: 1;
-}
-
-.NB-filter-popover .NB-date-range-separator {
-    font-size: 13px;
+.NB-filter-popover .NB-date-filter-container::before {
+    content: '—';
+    position: absolute;
+    left: 50%;
+    top: 32px;
+    transform: translateX(-50%);
+    font-size: 14px;
     color: #999;
+    pointer-events: none;
+    line-height: 1;
+}
+
+.NB-filter-popover .NB-date-filter-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.NB-filter-popover .NB-date-filter-label {
+    font-size: 11px;
+    color: #666;
+    font-weight: 600;
+    white-space: nowrap;
+    margin: 0;
 }
 
 .NB-filter-popover .NB-date-input {
-    flex: 0.92;
-    padding: 4px 6px;
-    font-size: 11px;
+    padding: 4px 8px;
     border: 1px solid #ccc;
     border-radius: 3px;
-    background: white;
-    min-width: 0;
+    font-size: 12px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .NB-filter-popover .NB-date-input:focus {
     outline: none;
     border-color: #4A90E2;
     box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
+}
+
+.NB-filter-popover .NB-date-filter-column .segmented-control {
+    width: 100%;
+}
+
+.NB-filter-popover .NB-date-filter-column .segmented-control li {
+    font-size: 10px;
+    padding: 4px 6px;
+    flex: 1;
 }
 
 .NB-filter-popover .NB-clear-date-button {
@@ -16166,50 +16194,17 @@ form.opml_import_form input {
     background-size: 10px;
     cursor: pointer;
     opacity: .7;
-    flex-shrink: 0;
+    position: absolute;
+    top: 8px;
+    right: 8px;
 }
 
-.NB-filter-popover .NB-date-range-inputs.NB-has-dates .NB-clear-date-button {
+.NB-filter-popover .NB-date-filter-container.NB-has-dates .NB-clear-date-button {
     display: block;
 }
 
 .NB-filter-popover .NB-clear-date-button:hover {
     opacity: 1;
-}
-
-.NB-filter-popover .NB-date-filter-label {
-    font-size: 11px;
-    color: #666;
-    margin-left: 0;
-    margin-bottom: 4px;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.NB-filter-popover .NB-popover-icon-control-date-filter-presets {
-    display: flex;
-    flex-direction: column;
-}
-
-.NB-filter-popover .NB-date-filter-preset-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-}
-
-.NB-filter-popover .NB-date-filter-preset-row .NB-date-filter-label {
-    margin-bottom: 0;
-    min-width: 50px;
-}
-
-.NB-filter-popover .NB-date-filter-preset-row .segmented-control {
-    flex: 1;
-}
-
-.NB-filter-popover .NB-date-filter-preset-row .segmented-control li {
-    font-size: 11px;
-    padding: 4px 8px;
 }
 
 .NB-filter-popover .NB-popover-icon-control-infrequent>.NB-icon {
