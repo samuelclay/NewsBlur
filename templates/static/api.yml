@@ -170,7 +170,7 @@
     - url: /reader/feed/:id
       method: GET
       short_desc: "Stories from a single feed."
-      long_desc: 
+      long_desc:
         - "Retrieve stories from a single feed."
       params:
         - key: page
@@ -188,9 +188,17 @@
           optional: true
           default: all
           example: unread
+        - key: date_filter_start
+          desc: "Filter stories published on or after this date. Format: YYYY-MM-DD"
+          optional: true
+          example: "2025-01-15"
+        - key: date_filter_end
+          desc: "Filter stories published on or before this date. Format: YYYY-MM-DD"
+          optional: true
+          example: "2025-01-31"
         - key: include_hidden
           desc: >
-            Use this if you want to show hidden stories (provided you have a "Show Hidden 
+            Use this if you want to show hidden stories (provided you have a "Show Hidden
             Stories" button). All native NewsBlur apps (web, ios, android) use this.
           optional: true
           default: "false"
@@ -290,7 +298,7 @@
     - url: /reader/river_stories
       method: GET
       short_desc: "Stories from multiple feeds (River of News)."
-      long_desc: 
+      long_desc:
         - "Retrieve stories from a collection of feeds. This is known as the River of News."
         - "Stories are ordered in reverse chronological order."
       params:
@@ -313,9 +321,17 @@
           optional: true
           default: unread
           example: all
+        - key: date_filter_start
+          desc: "Filter stories published on or after this date. Format: YYYY-MM-DD"
+          optional: true
+          example: "2025-01-15"
+        - key: date_filter_end
+          desc: "Filter stories published on or before this date. Format: YYYY-MM-DD"
+          optional: true
+          example: "2025-01-31"
         - key: include_hidden
           desc: >
-            Use this if you want to show hidden stories (provided you have a "Show Hidden 
+            Use this if you want to show hidden stories (provided you have a "Show Hidden
             Stories" button). All native NewsBlur apps (web, ios, android) use this.
           optional: true
           default: "false"
