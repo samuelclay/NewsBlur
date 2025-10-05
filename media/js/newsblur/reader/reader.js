@@ -1403,6 +1403,8 @@
                 this.model.folders.deselect();
             }
 
+            this.clear_active_feed_date_filters();
+
             this.active_folder = null;
             this.active_feed = null;
             this.active_story = null;
@@ -2096,7 +2098,9 @@
                 } else {
                     var folder_view = NEWSBLUR.assets.folders.get_view($folder) ||
                         this.active_folder && this.active_folder.folder_view;
-                    folder_view.model.set('selected', true);
+                    if (folder_view && folder_view.model) {
+                        folder_view.model.set('selected', true);
+                    }
                 }
             }
             this.active_folder = folder || NEWSBLUR.assets.folders;
@@ -5104,6 +5108,22 @@
             if (!this.model.preference('hide_read_feeds')) unread_view = -1;
             var value = unread_view + direction;
             this.slide_intelligence_slider(value);
+        },
+
+        clear_active_feed_date_filters: function () {
+            if (!this.active_feed) return;
+
+            var obj;
+            if (_.string.contains(this.active_feed, 'river:')) {
+                obj = this.active_folder;
+            } else {
+                obj = NEWSBLUR.assets.get_feed(this.active_feed);
+            }
+
+            if (obj) {
+                obj.date_filter_start = null;
+                obj.date_filter_end = null;
+            }
         },
 
         toggle_read_filter: function () {
