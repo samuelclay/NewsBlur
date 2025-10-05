@@ -136,24 +136,7 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
         e.preventDefault();
         e.stopPropagation();
 
-        // Clear the date filters on the current feed/folder
-        var feed_id = NEWSBLUR.reader.active_feed;
-        var obj;
-
-        if (_.string.contains(feed_id, 'river:')) {
-            // For river views, use the active folder
-            obj = NEWSBLUR.reader.active_folder;
-        } else {
-            // For individual feeds, use the feed model
-            obj = NEWSBLUR.assets.get_feed(feed_id);
-        }
-
-        if (obj) {
-            obj.date_filter_start = null;
-            obj.date_filter_end = null;
-        }
-
-        // Reload the feed to show all stories
+        NEWSBLUR.reader.clear_active_feed_date_filters();
         NEWSBLUR.reader.reload_feed();
     }
 
