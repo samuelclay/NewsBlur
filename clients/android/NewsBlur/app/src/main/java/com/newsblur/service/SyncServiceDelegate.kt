@@ -2,7 +2,7 @@ package com.newsblur.service
 
 import android.content.Context
 import com.newsblur.database.BlurDatabaseHelper
-import com.newsblur.network.APIManager
+import com.newsblur.network.StoryApi
 import com.newsblur.network.domain.StoriesResponse
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FileCache
@@ -12,7 +12,7 @@ import com.newsblur.util.StateFilter
 interface SyncServiceDelegate {
 
     val dbHelper: BlurDatabaseHelper
-    val apiManager: APIManager
+    val storyApi: StoryApi
     val prefsRepo: PrefsRepo
     val storyImageCache: FileCache
     val iconCache: FileCache
@@ -35,7 +35,7 @@ internal class SyncServiceDelegateImpl(
 ) : SyncServiceDelegate {
 
     override val dbHelper: BlurDatabaseHelper get() = syncService.dbHelper
-    override val apiManager: APIManager get() = syncService.apiManager
+    override val storyApi: StoryApi get() = syncService.storyApi
     override val prefsRepo: PrefsRepo get() = syncService.prefsRepo
     override val storyImageCache: FileCache get() = syncService.storyImageCache
     override val iconCache: FileCache get() = syncService.iconCache

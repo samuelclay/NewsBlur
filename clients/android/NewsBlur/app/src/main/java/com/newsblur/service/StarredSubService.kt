@@ -9,7 +9,7 @@ class StarredSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
         ensureActive()
 
         // get all starred story hashes from remote db
-        val starredHashesResponse = apiManager.starredStoryHashes
+        val starredHashesResponse = storyApi.getStarredStoryHashes()
 
         ensureActive()
 
