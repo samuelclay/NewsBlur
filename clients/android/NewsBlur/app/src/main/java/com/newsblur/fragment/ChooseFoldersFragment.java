@@ -56,10 +56,10 @@ public class ChooseFoldersFragment extends DialogFragment {
         final List<Folder> folders = dbHelper.getFolders();
         Collections.sort(folders, Folder.FolderComparator);
 
-        final Set<String> newFolders = new HashSet<String>();
-        final Set<String> oldFolders = new HashSet<String>();
+        final Set<String> newFolders = new HashSet<>();
+        final Set<String> oldFolders = new HashSet<>();
         for (Folder folder : folders) {
-            if (folder.feedIds.contains(feed.feedId)) {
+            if (folder.feedIds.contains(feed.feedId) && folder.name != null) {
                 newFolders.add(folder.name);
                 oldFolders.add(folder.name);
             }

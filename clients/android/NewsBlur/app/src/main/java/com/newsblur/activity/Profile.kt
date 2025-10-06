@@ -8,7 +8,7 @@ import com.newsblur.R
 import com.newsblur.databinding.ActivityProfileBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.fragment.ProfileDetailsFragment
-import com.newsblur.network.APIManager
+import com.newsblur.network.UserApi
 import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.UIUtils
@@ -20,7 +20,7 @@ import javax.inject.Inject
 class Profile : NbActivity() {
 
     @Inject
-    lateinit var apiManager: APIManager
+    lateinit var userApi: UserApi
 
     @Inject
     @IconLoader
@@ -71,6 +71,7 @@ class Profile : NbActivity() {
                 finish()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -78,16 +79,16 @@ class Profile : NbActivity() {
     private fun loadUserDetails() {
         lifecycleScope.executeAsyncTask(
                 onPreExecute = {
-                    if (TextUtils.isEmpty(userId) && detailsFragment != null) {
+                    if (userId.isNullOrEmpty() && detailsFragment != null) {
                         detailsFragment!!.setUser(prefsRepo.getUserDetails(), true)
                     }
                 },
                 doInBackground = {
-                    if (!TextUtils.isEmpty(userId)) {
+                    if (!userId.isNullOrEmpty()) {
                         val intentUserId = intent.getStringExtra(USER_ID)
-                        apiManager.getUser(intentUserId).user
+                        userApi.getUser(intentUserId)?.user
                     } else {
-                        apiManager.updateUserProfile()
+                        userApi.updateUserProfile()
                         prefsRepo.getUserDetails()
                     }
                 },

@@ -1,48 +1,48 @@
 plugins {
-    id(Plugins.androidApplication)
-    kotlin(Plugins.kotlinAndroid)
-    kotlin(Plugins.kotlinKapt)
-    id(Plugins.hiltAndroid)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
-    namespace = Const.namespace
-    compileSdk = Config.compileSdk
+    namespace = "com.newsblur"
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = Const.namespace
-        minSdk = Config.minSdk
-        targetSdk = Config.targetSdk
-        versionCode = Config.versionCode
-        versionName = Config.versionName
+        applicationId = "com.newsblur"
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
+        versionCode = 246
+        versionName = "13.8.0"
 
-        testInstrumentationRunner = Config.androidTestInstrumentation
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
-        getByName(Const.debug) {
+        getByName("debug") {
             isMinifyEnabled = false
             isShrinkResources = false
         }
-        maybeCreate(Const.benchmark)
-        getByName(Const.benchmark) {
-            signingConfig = signingConfigs.getByName(Const.debug)
-            matchingFallbacks += listOf(Const.release)
+        maybeCreate("benchmark")
+        getByName("benchmark") {
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
             isDebuggable = false
-            proguardFiles(Const.benchmarkProguard)
+            proguardFiles("benchmark-rules.pro")
         }
-        getByName(Const.release) {
+        getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles(getDefaultProguardFile(Const.defaultProguard), Const.appProguard)
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     packaging {
         resources.excludes.add("META-INF/*")
     }
     compileOptions {
-        sourceCompatibility = Config.javaVersion
-        targetCompatibility = Config.javaVersion
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     buildFeatures {
         viewBinding = true
@@ -51,26 +51,26 @@ android {
 }
 
 dependencies {
-    implementation(Dependencies.fragment)
-    implementation(Dependencies.recyclerView)
-    implementation(Dependencies.swipeRefreshLayout)
-    implementation(Dependencies.okHttp)
-    implementation(Dependencies.gson)
-    implementation(Dependencies.billing)
-    implementation(Dependencies.playReview)
-    implementation(Dependencies.material)
-    implementation(Dependencies.preference)
-    implementation(Dependencies.browser)
-    implementation(Dependencies.lifecycleRuntime)
-    implementation(Dependencies.lifecycleProcess)
-    implementation(Dependencies.splashScreen)
-    implementation(Dependencies.hiltAndroid)
-    kapt(Dependencies.hiltCompiler)
-    implementation(Dependencies.profileInstaller)
+    implementation(libs.androidx.fragment)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.swiperefreshlayout)
+    implementation(libs.androidx.preference)
+    implementation(libs.androidx.browser)
+    implementation(libs.material)
+    implementation(libs.okhttp)
+    implementation(libs.gson)
+    implementation(libs.billing.ktx)
+    implementation(libs.play.review)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.lifecycle.process)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.androidx.profileinstaller)
 
-    testImplementation(Dependencies.junit)
-    testImplementation(Dependencies.mockk)
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
 
-    androidTestImplementation(Dependencies.junitExt)
-    androidTestImplementation(Dependencies.espressoCore)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }

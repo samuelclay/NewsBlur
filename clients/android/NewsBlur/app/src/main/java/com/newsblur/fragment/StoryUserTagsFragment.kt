@@ -21,9 +21,6 @@ import com.newsblur.util.TagsAdapter
 import com.newsblur.viewModel.StoryUserTagsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 
 @AndroidEntryPoint
 class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
@@ -226,6 +223,6 @@ class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
     private fun saveTags() {
         val savedTagList = getSavedTagsList()
         syncServiceState.forceFeedsFolders()
-        feedUtils.setStorySaved(story, true, requireContext(), savedTagList)
+        feedUtils.setStorySaved(story.storyHash, true, requireContext(), savedTagList)
     }
 }

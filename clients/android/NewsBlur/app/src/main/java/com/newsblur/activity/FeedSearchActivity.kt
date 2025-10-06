@@ -14,7 +14,7 @@ import com.newsblur.di.IconLoader
 import com.newsblur.domain.FeedResult
 import com.newsblur.fragment.AddFeedFragment
 import com.newsblur.fragment.AddFeedFragment.AddFeedProgressListener
-import com.newsblur.network.APIManager
+import com.newsblur.network.FeedApi
 import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.executeAsyncTask
@@ -27,7 +27,7 @@ import javax.inject.Inject
 class FeedSearchActivity : NbActivity(), OnFeedSearchResultClickListener, AddFeedProgressListener {
 
     @Inject
-    lateinit var apiManager: APIManager
+    lateinit var feedApi: FeedApi
 
     @IconLoader
     @Inject
@@ -103,7 +103,7 @@ class FeedSearchActivity : NbActivity(), OnFeedSearchResultClickListener, AddFee
                 },
                 doInBackground = {
                     buildList {
-                        val feedResults = apiManager.searchForFeed(query.toString()) ?: emptyArray()
+                        val feedResults = feedApi.searchForFeed(query.toString()) ?: emptyArray()
                         if (matchesUrl(query.toString())) {
                             add(FeedResult.createFeedResultForUrl(query.toString()))
                         }

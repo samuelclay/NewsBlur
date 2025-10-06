@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.viewpager.widget.PagerAdapter
+import androidx.viewpager.widget.ViewPager
 import com.newsblur.activity.Reading
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
@@ -17,7 +19,6 @@ import com.newsblur.fragment.ReadingItemFragment
 import com.newsblur.fragment.ReadingItemFragment.Companion.newInstance
 import com.newsblur.service.NbSyncManager
 import com.newsblur.util.Log
-import com.newsblur.util.NBScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -36,13 +37,17 @@ class ReadingAdapter(
         private val dbHelper: BlurDatabaseHelper,
 ) : PagerAdapter() {
 
+    private val maxSavedStates = 3
+    private val states = object : LinkedHashMap<String, Fragment.SavedState?>(16, 0.75f, true) {
+        override fun removeEldestEntry(eldest: Map.Entry<String, Fragment.SavedState?>): Boolean = size > maxSavedStates
+    }
+
     // the cursor from which we pull story objects. should not be used except by the thaw coro
     private var mostRecentCursor: Cursor? = null
     private var curTransaction: FragmentTransaction? = null
     private var lastActiveFragment: Fragment? = null
 
     private val fragments = mutableMapOf<String, ReadingItemFragment>()
-    private val states = mutableMapOf<String, Fragment.SavedState?>()
 
     // the live list of stories being used by the adapter
     private val stories = mutableListOf<Story>()
@@ -50,12 +55,12 @@ class ReadingAdapter(
     // classifiers for each feed seen in the story list
     private val classifiers = mutableMapOf<String, Classifier>()
 
-    fun swapCursor(cursor: Cursor) {
+    fun swapCursor(lifecycleScope: LifecycleCoroutineScope, cursor: Cursor) {
         // cache the identity of the most recent cursor so async batches can check to
         // see if they are stale
         mostRecentCursor = cursor
         // process the cursor into objects and update the View async
-        NBScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             thaw(cursor)
         }
     }
@@ -103,6 +108,10 @@ class ReadingAdapter(
         withContext(Dispatchers.Main) {
             stories.clear()
             stories.addAll(newStories)
+
+            val valid = stories.map { it.storyHash }
+            states.keys.retainAll(valid)
+
             notifyDataSetChanged()
             activity.pagerUpdated()
         }
@@ -129,53 +138,58 @@ class ReadingAdapter(
 
     override fun instantiateItem(container: ViewGroup, position: Int): Fragment {
         val story = getStory(position)
-        var fragment: Fragment?
-        if (story == null) {
-            fragment = LoadingFragment()
+        val tag = story?.let { "reading:${it.storyHash}" } ?: "reading:loading:$position"
+
+        var fragment = fm.findFragmentByTag(tag)
+        if (fragment == null) {
+            fragment = if (story == null) LoadingFragment() else createFragment(story)
+            if (curTransaction == null) curTransaction = fm.beginTransaction()
+            curTransaction?.add(container.id, fragment, tag)
         } else {
-            fragment = fragments[story.storyHash]
-            if (fragment == null) {
-                val rif = createFragment(story)
-                fragment = rif
-                val oldState = states[story.storyHash]
-                if (oldState != null) fragment.setInitialSavedState(oldState)
-                fragments[story.storyHash] = rif
-            } else {
-                // if there was a real fragment for this story already, it will have been added and ready
-                return fragment
-            }
+            if (curTransaction == null) curTransaction = fm.beginTransaction()
+            curTransaction?.attach(fragment)
         }
+
         fragment.setMenuVisibility(false)
-        if (curTransaction == null) {
-            curTransaction = fm.beginTransaction()
+        if (fragment is ReadingItemFragment && story != null) {
+            fragments[story.storyHash] = fragment
         }
-        curTransaction!!.add(container.id, fragment)
         return fragment
     }
 
-    override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
-        val fragment = `object` as Fragment
+    override fun destroyItem(container: ViewGroup, position: Int, obj: Any) {
+        val fragment = obj as Fragment
         if (curTransaction == null) {
             curTransaction = fm.beginTransaction()
         }
-        curTransaction!!.remove(fragment)
+        curTransaction!!.detach(fragment)
+
         if (fragment is ReadingItemFragment) {
             fragment.story?.let { story ->
-                if (fragment.isAdded) {
+                if (fragment.isAdded && isNearCurrent(container, story.storyHash)) {
                     states[story.storyHash] = fm.saveFragmentInstanceState(fragment)
+                } else {
+                    states.remove(story.storyHash)
                 }
                 fragments.remove(story.storyHash)
             }
         }
     }
 
-    override fun setPrimaryItem(container: ViewGroup, position: Int, `object`: Any) {
-        val fragment = `object` as Fragment
+    override fun setPrimaryItem(container: ViewGroup, position: Int, obj: Any) {
+        val fragment = obj as Fragment
         if (fragment !== lastActiveFragment) {
             lastActiveFragment?.setMenuVisibility(false)
             fragment.setMenuVisibility(true)
             lastActiveFragment = fragment
         }
+
+        val keep: Set<String> = buildSet {
+            for (p in (position - 1)..(position + 1)) {
+                getStory(p)?.storyHash?.let { add(it) }
+            }
+        }
+        states.keys.retainAll(keep) // drop anything not near current
     }
 
     override fun finishUpdate(container: ViewGroup) {
@@ -254,39 +268,29 @@ class ReadingAdapter(
     }
 
     override fun saveState(): Parcelable {
-        // collect state from any active fragments alongside already-frozen ones
-        for ((key, f) in fragments) {
-            if (f.isAdded) {
-                states[key] = fm.saveFragmentInstanceState(f)
-            }
+        if (states.isEmpty()) return Bundle.EMPTY
+        return Bundle().apply {
+            for ((key, value) in states) putParcelable("ss-$key", value)
         }
-        val state = Bundle()
-        for ((key, value) in states) {
-            state.putParcelable("ss-$key", value)
-        }
-        return state
     }
 
     override fun restoreState(state: Parcelable?, loader: ClassLoader?) {
-        // most FragmentManager impls. will re-create added fragments even if they
-        // are not set to retaininstance. we want to only save state, not objects,
-        // so before we start restoration, clear out any stale instances.  without
-        // this, the pager will leak fragments on rotation or context switch.
-        for (fragment in fm.fragments) {
-            if (fragment is ReadingItemFragment) {
-                fm.beginTransaction().remove(fragment).commit()
-            }
-        }
-        val bundle = state as Bundle
+        val bundle = state as? Bundle ?: return
         bundle.classLoader = loader
         fragments.clear()
         states.clear()
         for (key in bundle.keySet()) {
             if (key.startsWith("ss-")) {
-                val storyHash = key.substring(3)
-                val fragState = bundle.getParcelable<Parcelable>(key)
-                states[storyHash] = fragState as Fragment.SavedState?
+                val storyHash = key.removePrefix("ss-")
+                states[storyHash] = bundle.getParcelable(key)
             }
         }
+    }
+
+    private fun isNearCurrent(container: ViewGroup, storyHash: String): Boolean {
+        val vp = container as? ViewPager ?: return false
+        val cur = vp.currentItem
+        val pos = findHash(storyHash)
+        return pos in (cur - 1..cur + 1)
     }
 }

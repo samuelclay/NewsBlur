@@ -950,7 +950,12 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {dbRW.delete(DatabaseConstants.ACTION_TABLE, DatabaseConstants.ACTION_ID + " = ?", new String[]{actionId});}
     }
 
-    public void setStoryStarred(String hash, @Nullable List<String> userTags, boolean starred) {
+    public void setStoryStarred(
+            String hash,
+            @NonNull List<String> highlights,
+            @NonNull List<String> userTags,
+            boolean starred
+    ) {
         // check the story's starting state and the desired state and adjust it as an atom so we
         // know if it truly changed or not and thus whether to update counts
         synchronized (RW_MUTEX) {
@@ -969,9 +974,10 @@ public class BlurDatabaseHelper {
                 c.moveToFirst();
                 boolean origState = (c.getInt(c.getColumnIndexOrThrow(DatabaseConstants.STORY_STARRED)) > 0);
                 c.close();
-                // if already stared, update user tags
-                if (origState == starred && starred && userTags != null) {
+                // if already stared, update highlights & user tags
+                if (origState == starred && starred) {
                     ContentValues values = new ContentValues();
+                    values.put(DatabaseConstants.STORY_HIGHLIGHTS, TextUtils.join(",", highlights));
                     values.put(DatabaseConstants.STORY_USER_TAGS, TextUtils.join(",", userTags));
                     dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
                     return;
@@ -983,6 +989,8 @@ public class BlurDatabaseHelper {
                 // fix the state
                 ContentValues values = new ContentValues();
                 values.put(DatabaseConstants.STORY_STARRED, starred);
+                values.put(DatabaseConstants.STORY_HIGHLIGHTS, TextUtils.join(",", highlights));
+                values.put(DatabaseConstants.STORY_USER_TAGS, TextUtils.join(",", userTags));
                 dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
                 // adjust counts
                 String operator = (starred ? " + 1" : " - 1");
@@ -1057,6 +1065,23 @@ public class BlurDatabaseHelper {
             c.moveToFirst();
             // TODO: may not contain col?
             String result = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_CONTENT));
+            c.close();
+            return result;
+        }
+    }
+
+    @Nullable
+    public String getStoryHighlights(@Nullable String hash) {
+        String q = "SELECT " + DatabaseConstants.STORY_HIGHLIGHTS +
+                " FROM " + DatabaseConstants.STORY_TABLE +
+                " WHERE " + DatabaseConstants.STORY_HASH + " = ?";
+        Cursor c = dbRO.rawQuery(q, new String[]{hash});
+        if (c.getCount() < 1) {
+            c.close();
+            return null;
+        } else {
+            c.moveToFirst();
+            String result = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_HIGHLIGHTS));
             c.close();
             return result;
         }

@@ -11,7 +11,7 @@ import com.newsblur.R
 import com.newsblur.databinding.FragmentProfiledetailsBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.UserDetails
-import com.newsblur.network.APIManager
+import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.UIUtils
@@ -26,7 +26,7 @@ import javax.inject.Inject
 class ProfileDetailsFragment : Fragment() {
 
     @Inject
-    lateinit var apiManager: APIManager
+    lateinit var userApi: UserApi
 
     @IconLoader
     @Inject
@@ -112,7 +112,7 @@ class ProfileDetailsFragment : Fragment() {
                     binding.profileFollowButton.isEnabled = false
                 },
                 doInBackground = {
-                    apiManager.followUser(user!!.userId)
+                    userApi.followUser(user!!.userId)
                 },
                 onPostExecute = {
                     binding.profileFollowButton.isEnabled = true
@@ -134,7 +134,7 @@ class ProfileDetailsFragment : Fragment() {
                     binding.profileUnfollowButton.isEnabled = false
                 },
                 doInBackground = {
-                    apiManager.unfollowUser(user!!.userId)
+                    userApi.unfollowUser(user!!.userId)
                 },
                 onPostExecute = {
                     binding.profileUnfollowButton.isEnabled = true

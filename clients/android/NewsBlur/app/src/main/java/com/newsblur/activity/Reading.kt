@@ -276,7 +276,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
         // swapCursor() will asynch process the new cursor and fully update the pager,
         // update child fragments, and then call pagerUpdated()
-        readingAdapter?.swapCursor(cursor)
+        readingAdapter?.swapCursor(lifecycleScope, cursor)
 
         storyCounts = cursor.count
 
