@@ -37,7 +37,7 @@ class UnreadsSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
     private suspend fun syncUnreadList() = coroutineScope {
         ensureActive()
         // get unread hashes and dates from the API
-        val unreadHashes = apiManager.getUnreadStoryHashes()
+        val unreadHashes = storyApi.getUnreadStoryHashes()
 
         ensureActive()
 
@@ -133,14 +133,14 @@ class UnreadsSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
             }
 
             ensureActive()
-            val response = apiManager.getStoriesByHash(hashBatch)
+            val response = storyApi.getStoriesByHash(hashBatch)
             if (!SyncServiceUtil.isStoryResponseGood(response)) {
                 Log.e(this, "error fetching unreads batch, abandoning sync.")
                 break@unreadSyncLoop
             }
 
             val stateFilter = prefsRepo.getStateFilter()
-            insertStories(response, stateFilter)
+            insertStories(response!!, stateFilter)
             for (hash in hashBatch) {
                 storyHashQueue.remove(hash)
             }

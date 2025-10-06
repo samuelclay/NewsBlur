@@ -1,6 +1,5 @@
 package com.newsblur.service
 
-<<<<<<< HEAD
 import com.newsblur.database.DatabaseConstants
 import com.newsblur.service.NbSyncManager.UPDATE_TEXT
 import com.newsblur.util.AppConstants
@@ -11,8 +10,6 @@ import java.util.Collections
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.regex.Pattern
 
-=======
->>>>>>> sictiru
 //class OriginalTextService(parent: NBSyncService) : SubService(parent, NBScope) {
 //
 //    override fun exec() {

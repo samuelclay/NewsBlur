@@ -35,7 +35,7 @@ class OriginalTextSubService(delegate: SyncServiceDelegate) : SyncSubService(del
         for (hash in batch) {
             ensureActive()
             var result: String? = null
-            val response = apiManager.getStoryText(inferFeedId(hash), hash)
+            val response = storyApi.getStoryText(inferFeedId(hash), hash)
             if (response != null) {
                 if (response.originalText == null) {
                     // a null value in an otherwise valid response to this call indicates a fatal
