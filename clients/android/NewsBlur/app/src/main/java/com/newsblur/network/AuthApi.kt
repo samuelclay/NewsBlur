@@ -7,5 +7,4 @@ interface AuthApi {
     suspend fun login(username: String, password: String): LoginResponse
     suspend fun loginAs(username: String): Boolean
     suspend fun signup(username: String, password: String, email: String): RegisterResponse
-
 }

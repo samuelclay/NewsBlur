@@ -313,7 +313,7 @@ open class SyncService : JobService(), CoroutineScope {
      * The very first step of a sync - get the feed/folder list, unread counts, and
      * unread hashes. Doing this resets pagination on the server!
      */
-    private fun syncMetadata() {
+    private suspend fun syncMetadata() {
         if (backoffBackgroundCalls()) return
 
         val untriedActions = dbHelper.getUntriedActionCount()
@@ -709,7 +709,7 @@ open class SyncService : JobService(), CoroutineScope {
     /**
      * See if any feeds have been touched in a way that require us to double-check unread counts;
      */
-    private fun checkRecounts() {
+    private suspend fun checkRecounts() {
         if (!syncServiceState.doFeedsFolders) return
 
         try {

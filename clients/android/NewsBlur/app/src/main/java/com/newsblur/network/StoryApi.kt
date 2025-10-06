@@ -13,8 +13,7 @@ import com.newsblur.util.StoryOrder
 
 interface StoryApi {
 
-    // TODO suspend
-    fun getStories(
+    suspend fun getStories(
             fs: FeedSet,
             pageNumber: Int,
             order: StoryOrder,
@@ -26,47 +25,33 @@ interface StoryApi {
 
     suspend fun getStoryChanges(storyHash: String?, showChanges: Boolean): StoryChangesResponse?
 
-    // TODO suspend
-    fun markStoryHashUnread(hash: String?): NewsBlurResponse?
+    suspend fun markStoryHashUnread(hash: String?): NewsBlurResponse?
 
-    // TODO suspend
-    fun markStoryAsUnstarred(storyHash: String?): NewsBlurResponse?
+    suspend fun markStoryAsUnstarred(storyHash: String?): NewsBlurResponse?
 
-    // TODO suspend
-    fun getUnreadStoryHashes(): UnreadStoryHashesResponse
+    suspend fun getUnreadStoryHashes(): UnreadStoryHashesResponse
 
-    // TODO suspend
-    fun getStarredStoryHashes(): StarredStoryHashesResponse
+    suspend fun getStarredStoryHashes(): StarredStoryHashesResponse
 
-    // TODO suspend
-    fun getStoriesByHash(storyHashes: List<String>): StoriesResponse?
+    suspend fun getStoriesByHash(storyHashes: List<String>): StoriesResponse?
 
-    // TODO suspend
-    fun markStoryAsRead(storyHash: String): NewsBlurResponse?
+    suspend fun markStoryAsRead(storyHash: String): NewsBlurResponse?
 
-    // TODO suspend
-    fun markStoryAsStarred(storyHash: String, highlights: List<String>, userTags: List<String>): NewsBlurResponse?
+    suspend fun markStoryAsStarred(storyHash: String, highlights: List<String>, userTags: List<String>): NewsBlurResponse?
 
-    // TODO suspend
-    fun shareStory(storyId: String?, feedId: String?, comment: String?, sourceUserId: String?): StoriesResponse?
+    suspend fun shareStory(storyId: String?, feedId: String?, comment: String?, sourceUserId: String?): StoriesResponse?
 
-    // TODO suspend
-    fun unshareStory(storyId: String?, feedId: String?): StoriesResponse?
+    suspend fun unshareStory(storyId: String?, feedId: String?): StoriesResponse?
 
-    // TODO suspend
-    fun favouriteComment(storyId: String?, commentUserId: String?, feedId: String?): NewsBlurResponse?
+    suspend fun favouriteComment(storyId: String?, commentUserId: String?, feedId: String?): NewsBlurResponse?
 
-    // TODO suspend
-    fun unFavouriteComment(storyId: String?, commentUserId: String?, feedId: String?): NewsBlurResponse?
+    suspend fun unFavouriteComment(storyId: String?, commentUserId: String?, feedId: String?): NewsBlurResponse?
 
-    // TODO suspend
-    fun replyToComment(storyId: String?, storyFeedId: String?, commentUserId: String?, reply: String?): CommentResponse?
+    suspend fun replyToComment(storyId: String?, storyFeedId: String?, commentUserId: String?, reply: String?): CommentResponse?
 
-    // TODO suspend
-    fun editReply(storyId: String?, storyFeedId: String?, commentUserId: String?, replyId: String?, reply: String?): CommentResponse?
+    suspend fun editReply(storyId: String?, storyFeedId: String?, commentUserId: String?, replyId: String?, reply: String?): CommentResponse?
 
-    // TODO suspend
-    fun deleteReply(storyId: String?, storyFeedId: String?, commentUserId: String?, replyId: String?): CommentResponse?
+    suspend fun deleteReply(storyId: String?, storyFeedId: String?, commentUserId: String?, replyId: String?): CommentResponse?
 
     suspend fun saveExternalStory(storyTitle: String, storyUrl: String): APIResponse
 
