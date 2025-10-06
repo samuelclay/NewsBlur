@@ -1,6 +1,5 @@
 package com.newsblur.fragment
 
-import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
@@ -21,8 +20,9 @@ import com.newsblur.databinding.DialogAddFeedBinding
 import com.newsblur.databinding.RowAddFeedFolderBinding
 import com.newsblur.domain.Folder
 import com.newsblur.fragment.AddFeedFragment.AddFeedAdapter.FolderViewHolder
-import com.newsblur.network.APIManager
 import com.newsblur.service.SyncServiceState
+import com.newsblur.network.FeedApi
+import com.newsblur.network.FolderApi
 import com.newsblur.util.AppConstants
 import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,7 +33,10 @@ import javax.inject.Inject
 class AddFeedFragment : DialogFragment() {
 
     @Inject
-    lateinit var apiManager: APIManager
+    lateinit var folderApi: FolderApi
+
+    @Inject
+    lateinit var feedApi: FeedApi
 
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
@@ -51,7 +54,7 @@ class AddFeedFragment : DialogFragment() {
         builder.setView(binding.root)
         val adapter = AddFeedAdapter(object : OnFolderClickListener {
             override fun onItemClick(folder: Folder) {
-                addFeed(requireActivity(), apiManager, folder.name)
+                addFeed(folder.name)
             }
         })
         binding.textAddFolderTitle.setOnClickListener {
@@ -65,7 +68,7 @@ class AddFeedFragment : DialogFragment() {
             if (binding.inputFolderName.text.isEmpty()) {
                 Toast.makeText(requireContext(), R.string.add_folder_name, Toast.LENGTH_SHORT).show()
             } else {
-                addFeedToNewFolder(requireActivity(), apiManager, binding.inputFolderName.text.toString())
+                addFeedToNewFolder(binding.inputFolderName.text.toString())
             }
         }
         binding.recyclerViewFolders.addItemDecoration(DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL))
@@ -74,21 +77,21 @@ class AddFeedFragment : DialogFragment() {
         return builder.create()
     }
 
-    private fun addFeedToNewFolder(activity: Activity, apiManager: APIManager, folderName: String) {
+    private fun addFeedToNewFolder(folderName: String) {
         binding.icCreateFolder.visibility = View.GONE
         binding.progressBar.visibility = View.VISIBLE
         binding.inputFolderName.isEnabled = false
 
         lifecycleScope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.addFolder(folderName)
+                    folderApi.addFolder(folderName)
                 },
                 onPostExecute = {
                     binding.inputFolderName.isEnabled = true
                     if (!it.isError) {
                         binding.containerAddFolder.visibility = View.GONE
                         binding.inputFolderName.text.clear()
-                        addFeed(activity, apiManager, folderName)
+                        addFeed(folderName)
                     } else {
                         Toast.makeText(activity, R.string.add_folder_error, Toast.LENGTH_SHORT).show()
                     }
@@ -96,27 +99,27 @@ class AddFeedFragment : DialogFragment() {
         )
     }
 
-    private fun addFeed(activity: Activity, apiManager: APIManager, folderName: String?) {
+    private fun addFeed(folderName: String?) {
         binding.containerSyncStatus.visibility = View.VISIBLE
         lifecycleScope.executeAsyncTask(
                 doInBackground = {
-                    (activity as AddFeedProgressListener).addFeedStarted()
+                    (activity as? AddFeedProgressListener)?.addFeedStarted()
                     val feedUrl = requireArguments().getString(FEED_URI)
-                    apiManager.addFeed(feedUrl, folderName)
+                    feedApi.addFeed(feedUrl, folderName)
                 },
                 onPostExecute = {
                     binding.containerSyncStatus.visibility = View.GONE
                     val intent = Intent(activity, Main::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    if (!it.isError) {
+                    if (it != null && !it.isError) {
                         // trigger a sync when we return to Main so that the new feed will show up
                         syncServiceState.forceFeedsFolders()
                         intent.putExtra(Main.EXTRA_FORCE_SHOW_FEED_ID, it.feed.feedId)
                     } else {
                         Toast.makeText(activity, R.string.add_feed_error, Toast.LENGTH_SHORT).show()
                     }
-                    activity.startActivity(intent)
-                    activity.finish()
+                    activity?.startActivity(intent)
+                    activity?.finish()
                 }
         )
     }

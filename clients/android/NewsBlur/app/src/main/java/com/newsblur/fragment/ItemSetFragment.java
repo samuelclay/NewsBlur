@@ -156,7 +156,7 @@ public class ItemSetFragment extends NbFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.fragment_itemgrid, null);
+		View v = inflater.inflate(R.layout.fragment_itemgrid, container, false);
         binding = FragmentItemgridBinding.bind(v);
         View fleuronView = inflater.inflate(R.layout.row_fleuron, null);
         fleuronBinding = RowFleuronBinding.bind(fleuronView);
@@ -576,9 +576,9 @@ public class ItemSetFragment extends NbFragment {
     }
 
     @Override
-    public void onSaveInstanceState (Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(BUNDLE_GRIDSTATE, binding.itemgridfragmentGrid.getLayoutManager().onSaveInstanceState());
+    public void onSaveInstanceState (@NonNull Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putParcelable(BUNDLE_GRIDSTATE, binding.itemgridfragmentGrid.getLayoutManager().onSaveInstanceState());
     }
 
 }

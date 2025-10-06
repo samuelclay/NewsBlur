@@ -8,7 +8,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.databinding.ActivityRegisterProgressBinding
-import com.newsblur.network.APIManager
+import com.newsblur.network.AuthApi
 import com.newsblur.network.domain.RegisterResponse
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.EdgeToEdgeUtil.applyTheme
@@ -26,7 +26,7 @@ import javax.inject.Inject
 class RegisterProgress : FragmentActivity() {
 
     @Inject
-    lateinit var apiManager: APIManager
+    lateinit var authApi: AuthApi
 
     @Inject
     lateinit var prefsRepo: PrefsRepo
@@ -47,7 +47,11 @@ class RegisterProgress : FragmentActivity() {
 
         lifecycleScope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.signup(username, password, email)
+                    authApi.signup(
+                            username.orEmpty(),
+                            password.orEmpty(),
+                            email.orEmpty(),
+                    )
                 },
                 onPostExecute = {
                     if (it.authenticated) showAuth()

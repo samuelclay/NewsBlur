@@ -13,14 +13,16 @@ import com.newsblur.domain.Feed
 import com.newsblur.domain.Story
 import com.newsblur.fragment.ReadingActionConfirmationFragment
 import com.newsblur.network.APIConstants
-import com.newsblur.network.APIManager
+import com.newsblur.network.APIConstants.NULL_STORY_TEXT
+import com.newsblur.network.FeedApi
+import com.newsblur.network.FolderApi
+import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NbSyncManager
 import com.newsblur.service.NbSyncManager.UPDATE_METADATA
 import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
 import com.newsblur.service.NbSyncManager.UPDATE_STATUS
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
-import com.newsblur.service.OriginalTextSubService
 import com.newsblur.service.SyncService
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.FeedExt.disableNotification
@@ -29,7 +31,9 @@ import com.newsblur.util.FeedExt.setNotifyUnread
 
 class FeedUtils(
         private val dbHelper: BlurDatabaseHelper,
-        private val apiManager: APIManager,
+        private val feedApi: FeedApi,
+        private val userApi: UserApi,
+        private val folderApi: FolderApi,
         private val prefsRepo: PrefsRepo,
         private val syncServiceState: SyncServiceState,
 ) {
@@ -70,22 +74,45 @@ class FeedUtils(
         )
     }
 
-    fun setStorySaved(storyHash: String?, saved: Boolean, context: Context) {
-        val userTags: MutableList<String?> = ArrayList()
-        if (currentFolderName != null) {
-            userTags.add(currentFolderName)
+    fun setStorySaved(
+            storyHash: String?,
+            saved: Boolean,
+            context: Context,
+            highlights: List<String>,
+    ) {
+        val userTags = buildList {
+            currentFolderName?.let { add(it) }
         }
-        setStorySaved(storyHash, saved, context, userTags)
+        setStorySaved(storyHash, saved, context, highlights, userTags)
     }
 
-    fun setStorySaved(story: Story, saved: Boolean, context: Context, userTags: List<String?>?) {
-        setStorySaved(story.storyHash, saved, context, userTags)
+    fun setStorySaved(
+            story: Story,
+            saved: Boolean,
+            context: Context,
+            highlights: List<String>,
+            userTags: List<String>,
+    ) {
+        setStorySaved(story.storyHash, saved, context, highlights, userTags)
     }
 
-    private fun setStorySaved(storyHash: String?, saved: Boolean, context: Context, userTags: List<String?>?) {
+    private fun setStorySaved(
+            storyHash: String?,
+            saved: Boolean,
+            context: Context,
+            highlights: List<String>,
+            userTags: List<String>,
+    ) {
+        if (storyHash == null) {
+            Log.w(FeedUtils::class.java.name, "setStorySaved: storyHash is null")
+            return
+        }
+
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    val ra = if (saved) ReadingAction.saveStory(storyHash, userTags) else ReadingAction.unsaveStory(storyHash)
+                    val ra =
+                            if (saved) ReadingAction.saveStory(storyHash, highlights, userTags)
+                            else ReadingAction.unsaveStory(storyHash)
                     ra.doLocal(dbHelper, prefsRepo)
                     dbHelper.enqueueAction(ra)
                 },
@@ -99,14 +126,14 @@ class FeedUtils(
     fun deleteSavedSearch(feedId: String?, query: String?) {
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    val response = apiManager.deleteSearch(feedId, query)
-                    if (!response.isError) {
+                    val response = feedApi.deleteSearch(feedId, query)
+                    if (response!= null && !response.isError) {
                         dbHelper.deleteSavedSearch(feedId, query)
                     }
                     response
                 },
                 onPostExecute = { newsBlurResponse ->
-                    if (!newsBlurResponse.isError) {
+                    if (newsBlurResponse != null && !newsBlurResponse.isError) {
                         syncUpdateStatus(UPDATE_METADATA)
                     }
                 }
@@ -116,10 +143,10 @@ class FeedUtils(
     fun saveSearch(feedId: String?, query: String?, context: Context) {
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.saveSearch(feedId, query)
+                    feedApi.saveSearch(feedId, query)
                 },
                 onPostExecute = { newsBlurResponse ->
-                    if (!newsBlurResponse.isError) {
+                    if (newsBlurResponse != null && !newsBlurResponse.isError) {
                         syncServiceState.forceFeedsFolders()
                         triggerSync(context)
                     }
@@ -130,7 +157,7 @@ class FeedUtils(
     fun deleteFeed(feedId: String?, folderName: String?) {
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.deleteFeed(feedId, folderName)
+                    feedApi.deleteFeed(feedId, folderName)
                     // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
                     dbHelper.deleteFeed(feedId)
                 },
@@ -143,7 +170,7 @@ class FeedUtils(
     fun deleteSocialFeed(userId: String?) {
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.unfollowUser(userId)
+                    userApi.unfollowUser(userId)
                     // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
                     dbHelper.deleteSocialFeed(userId)
                 },
@@ -153,10 +180,10 @@ class FeedUtils(
         )
     }
 
-    fun deleteFolder(folderName: String?, inFolder: String?, context: Context) {
+    fun deleteFolder(folderName: String?, inFolder: String, context: Context) {
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.deleteFolder(folderName, inFolder)
+                    folderApi.deleteFolder(folderName, inFolder)
                 },
                 onPostExecute = { result ->
                     if (!result.isError) {
@@ -167,10 +194,10 @@ class FeedUtils(
         )
     }
 
-    fun renameFolder(folderName: String?, newFolderName: String?, inFolder: String?, context: Context) {
+    fun renameFolder(folderName: String?, newFolderName: String, inFolder: String, context: Context) {
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.renameFolder(folderName, newFolderName, inFolder)
+                    folderApi.renameFolder(folderName, newFolderName, inFolder)
                 },
                 onPostExecute = { result ->
                     if (!result.isError) {
@@ -362,7 +389,7 @@ class FeedUtils(
     fun sendStoryFull(story: Story?, context: Context) {
         if (story == null) return
         var body = getStoryText(story.storyHash)
-        if (body.isNullOrEmpty() || body == OriginalTextSubService.NULL_STORY_TEXT) {
+        if (body.isNullOrEmpty() || body == NULL_STORY_TEXT) {
             body = getStoryContent(story.storyHash)
         }
         val intent = Intent(Intent.ACTION_SEND)
@@ -441,11 +468,11 @@ class FeedUtils(
         triggerSync(context)
     }
 
-    fun moveFeedToFolders(context: Context, feedId: String?, toFolders: Set<String?>, inFolders: Set<String?>?) {
+    fun moveFeedToFolders(context: Context, feedId: String?, toFolders: Set<String>, inFolders: Set<String>) {
         if (toFolders.isEmpty()) return
         NBScope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.moveFeedToFolders(feedId, toFolders, inFolders)
+                    folderApi.moveFeedToFolders(feedId, toFolders, inFolders)
                 },
                 onPostExecute = {
                     syncServiceState.forceFeedsFolders()

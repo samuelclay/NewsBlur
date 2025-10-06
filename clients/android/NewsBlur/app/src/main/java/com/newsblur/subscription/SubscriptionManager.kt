@@ -9,13 +9,14 @@ import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingFlowParams.SubscriptionUpdateParams.ReplacementMode
 import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.newsblur.R
-import com.newsblur.network.APIManager
+import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppConstants
@@ -86,7 +87,7 @@ interface SubscriptionsListener {
 
 class SubscriptionManagerImpl(
         private val context: Context,
-        private val apiManager: APIManager,
+        private val userApi: UserApi,
         private val prefRepository: PrefsRepo,
         private val syncServiceState: SyncServiceState,
         private val scope: CoroutineScope = NBScope,
@@ -164,7 +165,9 @@ class SubscriptionManagerImpl(
 
     private val billingClient: BillingClient = BillingClient.newBuilder(context)
             .setListener(purchaseUpdateListener)
-            .enablePendingPurchases()
+            .enablePendingPurchases(
+                    PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
+            )
             .build()
 
     override fun startBillingConnection(listener: SubscriptionsListener?) {
@@ -249,10 +252,10 @@ class SubscriptionManagerImpl(
         Log.d(this, "saveReceipt: ${purchase.orderId}")
         scope.executeAsyncTask(
                 doInBackground = {
-                    apiManager.saveReceipt(purchase.orderId, purchase.products.first())
+                    userApi.saveReceipt(purchase.orderId, purchase.products.first())
                 },
                 onPostExecute = {
-                    if (!it.isError) {
+                    if (it != null && !it.isError) {
                         syncServiceState.forceFeedsFolders()
                         FeedUtils.triggerSync(context)
                     }
@@ -276,7 +279,8 @@ class SubscriptionManagerImpl(
             ))
         }.build()
 
-        billingClient.queryProductDetailsAsync(params) { _: BillingResult?, productDetailsList: List<ProductDetails> ->
+        billingClient.queryProductDetailsAsync(params) { _, productDetails ->
+            val productDetailsList = productDetails.productDetailsList
             Log.d(this, "ProductDetailsResponse $productDetailsList")
             val productDetails = productDetailsList.filter {
                 it.productId == AppConstants.PREMIUM_SUB_ID ||

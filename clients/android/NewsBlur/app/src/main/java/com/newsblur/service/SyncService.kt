@@ -16,7 +16,9 @@ import com.newsblur.di.ThumbnailCache
 import com.newsblur.domain.Feed
 import com.newsblur.domain.StarredCount
 import com.newsblur.network.APIConstants
-import com.newsblur.network.APIManager
+import com.newsblur.network.FeedApi
+import com.newsblur.network.NetworkClient
+import com.newsblur.network.StoryApi
 import com.newsblur.network.domain.StoriesResponse
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NbSyncManager.UPDATE_DB_READY
@@ -36,7 +38,6 @@ import com.newsblur.util.NetworkUtils
 import com.newsblur.util.NotificationUtils
 import com.newsblur.util.ReadingAction
 import com.newsblur.util.StateFilter
-import com.newsblur.widget.WidgetUtils.hasActiveAppWidgets
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
@@ -57,7 +58,13 @@ import kotlin.coroutines.CoroutineContext
 open class SyncService : JobService(), CoroutineScope {
 
     @Inject
-    lateinit var apiManager: APIManager
+    lateinit var storyApi: StoryApi
+
+    @Inject
+    lateinit var feedApi: FeedApi
+
+    @Inject
+    lateinit var networkClient: NetworkClient
 
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
@@ -218,7 +225,7 @@ open class SyncService : JobService(), CoroutineScope {
                 prefsRepo.updateVersion(appVersion)
                 // update user agent on api calls with latest app version
                 val customUserAgent = NetworkUtils.getCustomUserAgent(appVersion)
-                apiManager.updateCustomUserAgent(customUserAgent)
+                networkClient.updateCustomUserAgent(customUserAgent)
             }
 
             var autoVac = prefsRepo.isTimeToVacuum()
@@ -267,7 +274,7 @@ open class SyncService : JobService(), CoroutineScope {
                 if ((ra.tried > 0) && (syncServiceState.pendingFeed != null)) continue@actionsLoop
 
                 Log.d(this, "attempting action: " + ra.toContentValues().toString())
-                val response = ra.doRemote(apiManager, dbHelper, syncServiceState, stateFilter)
+                val response = ra.doRemote(syncServiceState, feedApi, storyApi, dbHelper, stateFilter)
 
                 if (response == null) {
                     Log.e(this.javaClass.name, "Discarding reading action with client-side error.")
@@ -332,7 +339,7 @@ open class SyncService : JobService(), CoroutineScope {
         disabledFeedIds.clear()
 
         try {
-            val feedResponse = apiManager.getFolderFeedMapping(true)
+            val feedResponse = feedApi.getFolderFeedMapping(true)
 
             if (feedResponse == null) {
                 noteHardAPIFailure()
@@ -524,7 +531,7 @@ open class SyncService : JobService(), CoroutineScope {
                 ensureActive()
 
                 pageNumber++
-                val apiResponse = apiManager.getStories(fs, pageNumber, cursorFilters.storyOrder, cursorFilters.readFilter, prefsRepo.getInfrequentCutoff())
+                val apiResponse = storyApi.getStories(fs, pageNumber, cursorFilters.storyOrder, cursorFilters.readFilter, prefsRepo.getInfrequentCutoff())
 
                 if (!isStoryResponseGood(apiResponse)) return
 
@@ -532,7 +539,7 @@ open class SyncService : JobService(), CoroutineScope {
                     return
                 }
 
-                insertStories(apiResponse, fs, cursorFilters.stateFilter)
+                insertStories(apiResponse!!, fs, cursorFilters.stateFilter)
                 // re-do any very recent actions that were incorrectly overwritten by this page
                 finishActions()
                 sendSyncUpdate(UPDATE_STORY or UPDATE_STATUS)
@@ -743,7 +750,7 @@ open class SyncService : JobService(), CoroutineScope {
                     apiIds.addAll(fs.getFlatFeedIds())
                 }
 
-                val apiResponse = apiManager.getFeedUnreadCounts(apiIds)
+                val apiResponse = feedApi.getFeedUnreadCounts(apiIds)
                 if ((apiResponse == null) || (apiResponse.isError())) {
                     Log.w(this.javaClass.name, "Bad response to feed_unread_count")
                     return

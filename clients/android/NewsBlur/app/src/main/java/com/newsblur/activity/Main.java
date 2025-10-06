@@ -126,7 +126,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         binding.mainMenuButton.setOnClickListener(v -> onClickMenuButton());
         binding.mainAddButton.setOnClickListener(v -> onClickAddButton());
-        binding.mainProfileButton.setOnClickListener(v -> onClickProfileButton());
         binding.mainUserImage.setOnClickListener(v -> onClickUserButton());
         binding.mainSearchFeedsButton.setOnClickListener(v -> onClickSearchFeedsButton());
 
@@ -326,11 +325,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     private void onClickAddButton() {
         Intent i = new Intent(this, FeedSearchActivity.class);
-        startActivity(i);
-    }
-
-    private void onClickProfileButton() {
-        Intent i = new Intent(this, Profile.class);
         startActivity(i);
     }
 

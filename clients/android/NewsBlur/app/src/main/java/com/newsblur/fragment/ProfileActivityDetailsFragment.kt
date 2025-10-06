@@ -6,8 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.AbsListView
+import android.widget.AdapterView
 import android.widget.AdapterView.OnItemClickListener
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
@@ -18,8 +21,12 @@ import com.newsblur.databinding.RowLoadingIndicatorBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.ActivityDetails
 import com.newsblur.domain.UserDetails
-import com.newsblur.network.APIManager
-import com.newsblur.util.*
+import com.newsblur.network.UserApi
+import com.newsblur.util.FeedSet
+import com.newsblur.util.ImageLoader
+import com.newsblur.util.Log
+import com.newsblur.util.UIUtils
+import com.newsblur.util.executeAsyncTask
 import com.newsblur.view.ActivityDetailsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -28,7 +35,7 @@ import javax.inject.Inject
 abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener {
 
     @Inject
-    lateinit var apiManager: APIManager
+    lateinit var userApi: UserApi
 
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
@@ -108,7 +115,7 @@ abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener 
         )
     }
 
-    protected abstract fun loadActivityDetails(id: String?, pageNumber: Int): Array<ActivityDetails>?
+    protected abstract suspend fun loadActivityDetails(id: String, pageNumber: Int): Array<ActivityDetails>?
 
     override fun onItemClick(adapterView: AdapterView<*>?, view: View, position: Int, id: Long) {
         val activity = adapter!!.getItem(position)
