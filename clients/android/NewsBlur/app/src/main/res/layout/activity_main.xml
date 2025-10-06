@@ -19,13 +19,14 @@
 
         <ImageView
             android:id="@+id/main_user_image"
-            android:layout_width="41dp"
-            android:layout_height="41dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginVertical="4dp"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="4dp"
             android:layout_marginEnd="4dp"
-            android:layout_marginBottom="5dp"
+            android:contentDescription="@string/menu_profile"
             android:src="@drawable/logo"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -36,6 +37,7 @@
             android:layout_marginStart="6dp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="1dp"
+            android:layout_marginEnd="16dp"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/main_search_feeds_button"
@@ -87,16 +89,7 @@
             android:layout_margin="8dp"
             android:background="@drawable/ic_search"
             android:contentDescription="@string/menu_search_feeds"
-            app:layout_constraintEnd_toStartOf="@id/main_profile_button"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageButton
-            android:id="@+id/main_profile_button"
-            android:layout_width="34dp"
-            android:layout_height="34dp"
-            android:layout_margin="8dp"
-            android:background="@drawable/ic_menu_profile_gray55"
-            android:contentDescription="@string/menu_profile"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -224,25 +217,6 @@
             android:tag="folderFeedListFragment" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <!-- Dividers -->
-    <View
-        style="?delimiter"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:focusable="false"
-        app:layout_constraintBottom_toTopOf="@id/content"
-        app:layout_constraintEnd_toEndOf="@id/toolbar"
-        app:layout_constraintStart_toStartOf="@id/toolbar" />
-
-    <View
-        style="?delimiter"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:focusable="false"
-        app:layout_constraintEnd_toEndOf="@id/bottom_toolbar"
-        app:layout_constraintStart_toStartOf="@id/bottom_toolbar"
-        app:layout_constraintTop_toBottomOf="@id/content" />
 
     <!-- Sync Status -->
     <TextView
