@@ -10,6 +10,7 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NBSync
 import com.newsblur.service.NbSyncManager
+import com.newsblur.service.SyncServiceState
 import com.newsblur.util.EdgeToEdgeUtil.applyTheme
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.Log
@@ -34,6 +35,9 @@ open class NbActivity : AppCompatActivity() {
 
     @Inject
     lateinit var prefsRepo: PrefsRepo
+
+    @Inject
+    lateinit var syncServiceState: SyncServiceState
 
     private var uniqueLoginKey: String? = null
     private var lastTheme: ThemeValue? = null

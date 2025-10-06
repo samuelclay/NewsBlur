@@ -20,8 +20,8 @@ import com.newsblur.network.domain.CommentResponse;
 import com.newsblur.network.domain.NewsBlurResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.preference.PrefsRepo;
-import com.newsblur.service.NBSyncService;
 import com.newsblur.service.NbSyncManager;
+import com.newsblur.service.SyncServiceState;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -287,6 +287,7 @@ public class ReadingAction implements Serializable {
      * Execute this action remotely via the API.
      */
     public NewsBlurResponse doRemote(
+            @NonNull SyncServiceState syncServiceState,
             @NonNull FeedApi feedApi,
             @NonNull StoryApi storyApi,
             @NonNull BlurDatabaseHelper dbHelper,
@@ -360,16 +361,16 @@ public class ReadingAction implements Serializable {
             case INSTA_FETCH:
                 result = feedApi.instaFetch(feedId);
                 // also trigger a recount, which will unflag the feed as pending
-                NBSyncService.addRecountCandidates(FeedSet.singleFeed(feedId));
-                NBSyncService.flushRecounts();
+                syncServiceState.addRecountCandidate(FeedSet.singleFeed(feedId));
+                syncServiceState.flushRecounts();
                 break;
 
             case UPDATE_INTEL:
                 result = feedApi.updateFeedIntel(feedId, classifier);
                 // also reset stories for the calling view so they get new scores
-                NBSyncService.resetFetchState(feedSet);
+                syncServiceState.resetFetchState(feedSet);
                 // and recount unreads to get new focus counts
-                NBSyncService.addRecountCandidates(feedSet);
+                syncServiceState.addRecountCandidate(feedSet);
                 break;
 
             case RENAME_FEED:

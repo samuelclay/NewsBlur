@@ -34,7 +34,6 @@ import com.newsblur.keyboard.KeyboardEvent;
 import com.newsblur.keyboard.KeyboardListener;
 import com.newsblur.keyboard.KeyboardManager;
 import com.newsblur.service.BootReceiver;
-import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.EdgeToEdgeUtil;
 import com.newsblur.util.FeedSet;
@@ -67,10 +66,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private KeyboardManager keyboardManager;
 
     @Override
-	public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         Trace.beginSection("MainOnCreate");
 
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         contextMenuDelegate = new MainContextMenuDelegateImpl(this, dbHelper, prefsRepo);
@@ -87,7 +86,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         binding.content.setOnRefreshListener(this);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
+        folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
         feedSelectorFragment = ((FeedSelectorFragment) fragmentManager.findFragmentByTag("feedIntelligenceSelector"));
         feedSelectorFragment.setState(folderFeedList.currentState);
 
@@ -115,8 +114,12 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 checkSearchQuery();
             }
-            public void afterTextChanged(Editable s) {}
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            public void afterTextChanged(Editable s) {
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
         });
 
         feedUtils.currentFolderName = null;
@@ -135,7 +138,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         Trace.endSection();
         reportFullyDrawn();
-	}
+    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -169,8 +172,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         // will be required, however inefficient
         folderFeedList.hasUpdated();
 
-        NBSyncService.resetReadingSession(dbHelper);
-        NBSyncService.flushRecounts();
+        syncServiceState.resetReadingSession(dbHelper); // TODO suspend
+        syncServiceState.flushRecounts();
 
         updateStatusIndicators();
         folderFeedList.pushUnreadCounts();
@@ -186,20 +189,20 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     @Override
-	public void changedState(StateFilter state) {
-        if ( !( (state == StateFilter.ALL) ||
+    public void changedState(StateFilter state) {
+        if (!((state == StateFilter.ALL) ||
                 (state == StateFilter.SOME) ||
-                (state == StateFilter.BEST) ) ) {
+                (state == StateFilter.BEST))) {
             binding.inputSearchQuery.setText("");
             binding.inputSearchQuery.setVisibility(View.GONE);
             checkSearchQuery();
         }
 
-		folderFeedList.changeState(state);
-	}
+        folderFeedList.changeState(state);
+    }
 
     @Override
-	public void handleUpdate(int updateType) {
+    public void handleUpdate(int updateType) {
         if ((updateType & UPDATE_REBUILD) != 0) {
             folderFeedList.reset();
         }
@@ -213,7 +216,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         if ((updateType & UPDATE_STATUS) != 0) {
             updateStatusIndicators();
         }
-		if ((updateType & UPDATE_METADATA) != 0) {
+        if ((updateType & UPDATE_METADATA) != 0) {
             folderFeedList.hasUpdated();
         }
     }
@@ -268,8 +271,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
      * having to expensively recalculate those totals from the DB.
      */
     public void updateFeedCount(int feedCount) {
-        if (feedCount < 1 ) {
-            if (NBSyncService.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
+        if (feedCount < 1) {
+            if (syncServiceState.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
                 binding.emptyViewImage.setVisibility(View.INVISIBLE);
                 binding.emptyViewText.setVisibility(View.INVISIBLE);
             } else {
@@ -290,10 +293,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void updateStatusIndicators() {
-        binding.content.setRefreshing(NBSyncService.isFeedFolderSyncRunning());
+        binding.content.setRefreshing(syncServiceState.isFeedFolderSyncRunning());
 
-        String syncStatus = NBSyncService.getSyncStatusMessage(this, false);
-        if (syncStatus != null)  {
+        String syncStatus = syncServiceState.getSyncStatusMessage(this, false);
+        if (syncStatus != null) {
             if (AppConstants.VERBOSE_LOG) {
                 syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
             }
@@ -306,7 +309,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     @Override
     public void onRefresh() {
-        NBSyncService.forceFeedsFolders();
+        syncServiceState.forceFeedsFolders();
         triggerSync();
         folderFeedList.clearRecents();
     }
@@ -394,7 +397,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
     }
 
-    private void setAndNotifySelectorState(StateFilter state, @StringRes  int notifyMsgRes) {
+    private void setAndNotifySelectorState(StateFilter state, @StringRes int notifyMsgRes) {
         feedSelectorFragment.setState(state);
         UIUtils.showSnackBar(binding.getRoot(), getString(notifyMsgRes));
     }

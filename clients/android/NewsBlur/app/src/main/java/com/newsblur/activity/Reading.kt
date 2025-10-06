@@ -29,7 +29,6 @@ import com.newsblur.fragment.ReadingPagerFragment
 import com.newsblur.keyboard.KeyboardEvent
 import com.newsblur.keyboard.KeyboardListener
 import com.newsblur.keyboard.KeyboardManager
-import com.newsblur.service.NBSyncService
 import com.newsblur.service.NbSyncManager.UPDATE_REBUILD
 import com.newsblur.service.NbSyncManager.UPDATE_STATUS
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
@@ -177,7 +176,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
     override fun onResume() {
         super.onResume()
-        if (NBSyncService.isHousekeepingRunning()) finish()
+        if (syncServiceState.isHousekeepingRunning()) finish()
         // this view shows stories, it is not safe to perform cleanup
         stopLoading = false
         // this is not strictly necessary, since our first refresh with the fs will swap in
@@ -405,8 +404,8 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
             finish()
         }
         if (updateType and UPDATE_STATUS != 0) {
-            enableMainProgress(NBSyncService.isFeedSetSyncing(fs, this))
-            var syncStatus = NBSyncService.getSyncStatusMessage(this, true)
+            enableMainProgress(syncServiceState.isFeedSetSyncing(fs))
+            var syncStatus = syncServiceState.getSyncStatusMessage(this, true)
             if (syncStatus != null) {
                 if (AppConstants.VERBOSE_LOG) {
                     syncStatus += UIUtils.getMemoryUsageDebug(this)
@@ -610,7 +609,8 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
     private fun triggerRefresh(desiredStoryCount: Int) {
         if (!stopLoading) {
-            val gotSome = NBSyncService.requestMoreForFeed(fs, desiredStoryCount, storyCounts)
+            val gotSome = fs?.let { syncServiceState.requestMoreForFeed(it, desiredStoryCount, storyCounts) }
+                    ?: false
             if (gotSome) triggerSync()
         }
     }
@@ -752,9 +752,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
     private fun overlayTextClick() {
         val item = readingFragment ?: return
-        lifecycleScope.executeAsyncTask(
-                doInBackground = { item.switchSelectedViewMode() }
-        )
+        item.switchSelectedViewMode()
     }
 
     private val readingFragment: ReadingItemFragment?
@@ -867,8 +865,10 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
             KeyboardEvent.Tutorial -> readingFragment?.showStoryShortcuts()
             KeyboardEvent.PageDown ->
                 readingFragment?.scrollVerticallyBy(UIUtils.dp2px(this, VERTICAL_SCROLL_DISTANCE_DP))
+
             KeyboardEvent.PageUp ->
                 readingFragment?.scrollVerticallyBy(UIUtils.dp2px(this, -VERTICAL_SCROLL_DISTANCE_DP))
+
             else -> {}
         }
     }
@@ -878,7 +878,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
      * passes back the last read item position from the pager
      */
     override fun finish() {
-        setResult(Activity.RESULT_OK, Intent().apply {
+        setResult(RESULT_OK, Intent().apply {
             pager?.currentItem?.let { position ->
                 com.newsblur.util.Log.d(this@Reading.javaClass.name, "Finish reading at position $position")
                 putExtra(LAST_READING_POS, position)

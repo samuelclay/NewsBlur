@@ -64,7 +64,7 @@ class FeedApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override fun getFeedUnreadCounts(apiIds: MutableSet<String?>): UnreadCountResponse? {
+    override fun getFeedUnreadCounts(apiIds: MutableSet<String>): UnreadCountResponse? {
         val values = ValueMultimap().apply {
             for (id in apiIds) {
                 put(APIConstants.PARAMETER_FEEDID, id)

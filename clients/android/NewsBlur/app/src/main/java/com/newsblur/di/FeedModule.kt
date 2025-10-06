@@ -5,6 +5,7 @@ import com.newsblur.network.FeedApi
 import com.newsblur.network.FolderApi
 import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.service.SyncServiceState
 import com.newsblur.util.FeedUtils
 import dagger.Module
 import dagger.Provides
@@ -23,6 +24,7 @@ class FeedModule {
             feedApi: FeedApi,
             userApi: UserApi,
             folderApi: FolderApi,
-            prefsRepo: PrefsRepo
-    ) = FeedUtils(dbHelper, feedApi, userApi, folderApi, prefsRepo)
+            prefsRepo: PrefsRepo,
+            syncServiceState: SyncServiceState,
+    ) = FeedUtils(dbHelper, feedApi, userApi, folderApi, prefsRepo, syncServiceState)
 }

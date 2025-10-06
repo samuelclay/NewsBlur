@@ -18,7 +18,7 @@ import com.android.billingclient.api.QueryPurchasesParams
 import com.newsblur.R
 import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
-import com.newsblur.service.NBSyncService
+import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppConstants
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.Log
@@ -89,6 +89,7 @@ class SubscriptionManagerImpl(
         private val context: Context,
         private val userApi: UserApi,
         private val prefRepository: PrefsRepo,
+        private val syncServiceState: SyncServiceState,
         private val scope: CoroutineScope = NBScope,
 ) : SubscriptionManager {
 
@@ -255,7 +256,7 @@ class SubscriptionManagerImpl(
                 },
                 onPostExecute = {
                     if (it != null && !it.isError) {
-                        NBSyncService.forceFeedsFolders()
+                        syncServiceState.forceFeedsFolders()
                         FeedUtils.triggerSync(context)
                     }
                 }

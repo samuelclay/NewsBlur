@@ -5,10 +5,11 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import com.newsblur.NbApplication
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.preference.PrefsRepo
-import com.newsblur.service.NBSyncService
 import com.newsblur.service.SubscriptionSyncService
+import com.newsblur.service.SyncServiceState
 import com.newsblur.util.Log
 import com.newsblur.util.NotificationUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,6 +32,9 @@ class InitActivity : AppCompatActivity() {
     @Inject
     lateinit var prefsRepo: PrefsRepo
 
+    @Inject
+    lateinit var syncServiceState: SyncServiceState
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -48,7 +52,7 @@ class InitActivity : AppCompatActivity() {
                 userAuthCheck()
             }
         }
-        Log.i(this, "cold launching version " + prefsRepo.getVersion(this))
+        Log.i(this, "cold launching version " + NbApplication.getVersion(this))
     }
 
     // see if a user is already logged in; if so, jump to the Main activity
@@ -74,7 +78,7 @@ class InitActivity : AppCompatActivity() {
             // update everything
 
             // force full sync after recreating tables
-            NBSyncService.forceFeedsFolders()
+            syncServiceState.forceFeedsFolders()
         }
     }
 }

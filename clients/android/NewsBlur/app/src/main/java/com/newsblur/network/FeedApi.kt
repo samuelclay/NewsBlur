@@ -14,7 +14,7 @@ interface FeedApi {
     fun markFeedsAsRead(fs: FeedSet, includeOlder: Long?, includeNewer: Long?): NewsBlurResponse?
 
     // TODO suspend
-    fun getFeedUnreadCounts(apiIds: MutableSet<String?>): UnreadCountResponse?
+    fun getFeedUnreadCounts(apiIds: MutableSet<String>): UnreadCountResponse?
 
     // TODO suspend
     fun getFolderFeedMapping(doUpdateCounts: Boolean): FeedFolderResponse?

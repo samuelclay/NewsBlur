@@ -3,7 +3,6 @@ package com.newsblur.preference
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
@@ -13,13 +12,15 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
+import com.newsblur.NbApplication
 import com.newsblur.BuildConfig
 import com.newsblur.activity.Login
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.UserDetails
 import com.newsblur.network.APIConstants
-import com.newsblur.service.NBSyncService
-import com.newsblur.service.SubscriptionSyncService.Companion.cancel
+import com.newsblur.service.SubscriptionSyncService
+import com.newsblur.service.SyncService
+import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppConstants
 import com.newsblur.util.DefaultBrowser
 import com.newsblur.util.DefaultFeedView
@@ -54,6 +55,7 @@ import java.util.Date
 
 class PrefsRepo(
         private val prefs: SharedPreferences,
+        private val syncServiceState: SyncServiceState,
 ) {
 
     fun saveCustomServer(customServer: String?) {
@@ -76,7 +78,7 @@ class PrefsRepo(
     }
 
     fun checkForUpgrade(context: Context): Boolean {
-        val version = getVersion(context)
+        val version = NbApplication.getVersion(context)
         if (version == null) {
             Log.wtf(PrefsRepo::class.java.name, "could not determine app version")
             return false
@@ -97,15 +99,6 @@ class PrefsRepo(
             putString(AppConstants.LAST_APP_VERSION, appVersion)
             // also make sure we auto-trigger an update, since all data are now gone
             putLong(AppConstants.LAST_SYNC_TIME, 0L)
-        }
-    }
-
-    fun getVersion(context: Context): String? {
-        try {
-            return context.packageManager.getPackageInfo(context.packageName, 0).versionName
-        } catch (_: PackageManager.NameNotFoundException) {
-            Log.w(PrefsRepo::class.java.name, "could not determine app version")
-            return null
         }
     }
 
@@ -140,7 +133,7 @@ class PrefsRepo(
 
     private fun getDebugInfo(context: Context, dbHelper: BlurDatabaseHelper): String {
         val s = StringBuilder()
-        s.append("app version: ").append(getVersion(context)).append(" (${BuildConfig.VERSION_CODE})")
+        s.append("app version: ").append(NbApplication.getVersion(context)).append(" (${BuildConfig.VERSION_CODE})")
         s.append("\n")
         s.append("android version: ").append(Build.VERSION.RELEASE).append(" (").append(Build.DISPLAY).append(")")
         s.append("\n")
@@ -152,24 +145,22 @@ class PrefsRepo(
         s.append("\n")
         s.append("server: ").append(if (APIConstants.isCustomServer()) "custom" else "default")
         s.append("\n")
-        s.append("speed: ").append(NBSyncService.getSpeedInfo())
+        s.append("speed: ").append(syncServiceState.getSpeedInfo())
         s.append("\n")
-        s.append("pending actions: ").append(NBSyncService.getPendingInfo())
+        s.append("pending actions: ").append(syncServiceState.getPendingInfo())
         s.append("\n")
         s.append("premium: ")
-        if (NBSyncService.isPremium == true) {
+        if (getIsPremium()) {
             s.append("yes")
-        } else if (NBSyncService.isPremium == false) {
-            s.append("no")
         } else {
-            s.append("unknown")
+            s.append("no")
         }
         s.append("\n")
         s.append("prefetch: ").append(if (isOfflineEnabled()) "yes" else "no")
         s.append("\n")
         s.append("notifications: ").append(if (isEnableNotifications()) "yes" else "no")
         s.append("\n")
-        s.append("keepread: ").append(if (isKeepOldStories()) "yes" else "no")
+        s.append("keep read: ").append(if (isKeepOldStories()) "yes" else "no")
         s.append("\n")
         s.append("thumbs: ").append(if (isShowThumbnails()) "yes" else "no")
         s.append("\n")
@@ -177,11 +168,11 @@ class PrefsRepo(
     }
 
     fun logout(context: Context, dbHelper: BlurDatabaseHelper) {
-        NBSyncService.softInterrupt()
-        NBSyncService.clearState()
+        SyncService.stop(context)
+        syncServiceState.clearState()
 
         // cancel scheduled subscription sync service
-        cancel(context)
+        SubscriptionSyncService.cancel(context)
 
         NotificationUtils.clear(context)
 
@@ -205,9 +196,6 @@ class PrefsRepo(
     }
 
     fun clearPrefsAndDbForLoginAs(dbHelper: BlurDatabaseHelper) {
-        NBSyncService.softInterrupt()
-        NBSyncService.clearState()
-
         // wipe the prefs store except for the cookie and login keys since we need to
         // authenticate further API calls
         val keys: MutableSet<String> = HashSet(prefs.all.keys)
@@ -775,6 +763,14 @@ class PrefsRepo(
     }
 
     fun getIsArchive() = prefs.getBoolean(PrefConstants.IS_ARCHIVE, false)
+
+    fun setIsStaff(isStaff: Boolean) {
+        prefs.edit {
+            putBoolean(PrefConstants.IS_STAFF, isStaff)
+        }
+    }
+
+    fun getIsStaff() = prefs.getBoolean(PrefConstants.IS_STAFF, false)
 
     fun setPremium(isPremium: Boolean, premiumExpire: Long?) {
         prefs.edit {
