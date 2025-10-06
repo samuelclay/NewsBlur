@@ -9,6 +9,8 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.Log
 import com.newsblur.util.NetworkUtils
 import com.newsblur.util.PrefConstants
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -31,7 +33,7 @@ class NetworkClientImpl(
         APIConstants.setCustomServer(prefsRepo.getCustomServer())
     }
 
-    override fun get(urlString: String): APIResponse {
+    override suspend fun get(urlString: String): APIResponse {
         var response: APIResponse
         var tryCount = 0
         do {
@@ -41,13 +43,13 @@ class NetworkClientImpl(
         return response
     }
 
-    override fun get(urlString: String, values: ContentValues): APIResponse =
+    override suspend fun get(urlString: String, values: ContentValues): APIResponse =
             get(urlString + "?" + builderGetParametersString(values))
 
-    override fun get(urlString: String, valueMap: ValueMultimap): APIResponse =
+    override suspend fun get(urlString: String, valueMap: ValueMultimap): APIResponse =
             get(urlString + "?" + valueMap.getParameterString())
 
-    override fun post(urlString: String, formBody: RequestBody): APIResponse {
+    override suspend fun post(urlString: String, formBody: RequestBody): APIResponse {
         var response: APIResponse
         var tryCount = 0
         do {
@@ -57,7 +59,7 @@ class NetworkClientImpl(
         return response
     }
 
-    override fun post(urlString: String, values: ContentValues): APIResponse {
+    override suspend fun post(urlString: String, values: ContentValues): APIResponse {
         val formEncodingBuilder = FormBody.Builder()
         for (entry in values.valueSet()) {
             formEncodingBuilder.add(entry.key, entry.value as String)
@@ -65,7 +67,7 @@ class NetworkClientImpl(
         return post(urlString, formEncodingBuilder.build())
     }
 
-    override fun post(urlString: String, valueMap: ValueMultimap): APIResponse =
+    override suspend fun post(urlString: String, valueMap: ValueMultimap): APIResponse =
             post(urlString, valueMap.asFormEncodedRequestBody())
 
     override fun updateCustomUserAgent(customUserAgent: String) {
@@ -92,25 +94,28 @@ class NetworkClientImpl(
         return parameters.joinToString("&")
     }
 
-    private fun getSingle(urlString: String): APIResponse {
+    private suspend fun getSingle(urlString: String): APIResponse = withContext(Dispatchers.IO) {
         if (!NetworkUtils.isOnline(context)) {
-            return APIResponse()
+            return@withContext APIResponse()
         }
 
         val requestBuilder = Request.Builder().url(urlString)
         addCookieHeader(requestBuilder)
         requestBuilder.header("User-Agent", customUserAgent)
 
-        return APIResponse(
+        return@withContext APIResponse(
                 client,
                 requestBuilder.build(),
                 HttpURLConnection.HTTP_OK,
         )
     }
 
-    private fun postSingle(urlString: String, formBody: RequestBody): APIResponse {
+    private suspend fun postSingle(
+            urlString: String,
+            formBody: RequestBody,
+    ): APIResponse = withContext(Dispatchers.IO) {
         if (!NetworkUtils.isOnline(context)) {
-            return APIResponse()
+            return@withContext APIResponse()
         }
 
         if (AppConstants.VERBOSE_LOG_NET) {
@@ -130,7 +135,7 @@ class NetworkClientImpl(
         addCookieHeader(requestBuilder)
         requestBuilder.post(formBody)
 
-        return APIResponse(client, requestBuilder.build())
+        return@withContext APIResponse(client, requestBuilder.build())
     }
 
     /**

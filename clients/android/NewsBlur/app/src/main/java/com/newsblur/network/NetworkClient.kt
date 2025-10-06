@@ -7,17 +7,17 @@ import okhttp3.RequestBody
 
 interface NetworkClient {
 
-    fun get(urlString: String): APIResponse
+    suspend fun get(urlString: String): APIResponse
 
-    fun get(urlString: String, values: ContentValues): APIResponse
+    suspend fun get(urlString: String, values: ContentValues): APIResponse
 
-    fun get(urlString: String, valueMap: ValueMultimap): APIResponse
+    suspend fun get(urlString: String, valueMap: ValueMultimap): APIResponse
 
-    fun post(urlString: String, formBody: RequestBody): APIResponse
+    suspend fun post(urlString: String, formBody: RequestBody): APIResponse
 
-    fun post(urlString: String, values: ContentValues): APIResponse
+    suspend fun post(urlString: String, values: ContentValues): APIResponse
 
-    fun post(urlString: String, valueMap: ValueMultimap): APIResponse
+    suspend fun post(urlString: String, valueMap: ValueMultimap): APIResponse
 
     fun updateCustomUserAgent(customUserAgent: String)
 
