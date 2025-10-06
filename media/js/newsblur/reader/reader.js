@@ -1396,14 +1396,16 @@
             this.model.stories.deselect();
             this.model.starred_feeds.deselect();
             this.model.searches_feeds.deselect();
+            this.model.folders.deselect();
+            $('.folder', this.$s.$feed_list).removeClass('NB-selected');
             if (_.string.contains(this.active_feed, 'social:')) {
                 this.model.social_feeds.deselect();
             }
-            if (_.string.contains(this.active_feed, 'river:')) {
-                this.model.folders.deselect();
-            }
 
-            this.clear_active_feed_date_filters();
+            // Only clear date filters if switching feeds, not if reloading the same feed
+            if (!options.skip_clear_date_filters) {
+                this.clear_active_feed_date_filters();
+            }
 
             this.active_folder = null;
             this.active_feed = null;
@@ -1418,6 +1420,8 @@
 
         reload_feed: function (options) {
             options = options || {};
+            // Don't clear date filters when reloading the same feed
+            options.skip_clear_date_filters = true;
 
             if (this.flags['starred_view'] && this.flags['starred_tag']) {
                 options['tag'] = this.flags['starred_tag'];
@@ -1428,10 +1432,11 @@
                 this.open_read_stories(options);
             } else if (this.flags['social_view'] &&
                 this.active_feed == 'river:blurblogs') {
-                this.open_river_blurblogs_stories();
+                this.open_river_blurblogs_stories(options);
             } else if (this.flags['social_view'] &&
                 this.active_feed == 'river:global') {
-                this.open_river_blurblogs_stories({ 'global': true });
+                options.global = true;
+                this.open_river_blurblogs_stories(options);
             } else if (this.flags['social_view']) {
                 this.open_social_stories(this.active_feed, options);
             } else if (this.flags['river_view']) {
@@ -2097,7 +2102,7 @@
                     options.feed.set('selected', true);
                 } else {
                     var folder_view = NEWSBLUR.assets.folders.get_view($folder) ||
-                        this.active_folder && this.active_folder.folder_view;
+                        folder && folder.folder_view;
                     if (folder_view && folder_view.model) {
                         folder_view.model.set('selected', true);
                     }
