@@ -1,7 +1,8 @@
 package com.newsblur
 
 import android.app.Application
-import android.os.StrictMode
+import android.content.Context
+import android.content.pm.PackageManager
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -13,7 +14,6 @@ import com.newsblur.di.ThumbnailCache
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FileCache
 import com.newsblur.util.Log
-import com.newsblur.util.PrefConstants
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -96,5 +96,15 @@ class NbApplication : Application(), DefaultLifecycleObserver {
 
         @JvmStatic
         var isAppForeground = false
+
+        @JvmStatic
+        fun getVersion(context: Context): String? {
+            try {
+                return context.packageManager.getPackageInfo(context.packageName, 0).versionName
+            } catch (_: PackageManager.NameNotFoundException) {
+                android.util.Log.w(PrefsRepo::class.java.name, "could not determine app version")
+                return null
+            }
+        }
     }
 }

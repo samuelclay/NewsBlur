@@ -46,6 +46,7 @@ import com.newsblur.service.NbSyncManager.UPDATE_INTEL
 import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
 import com.newsblur.service.NbSyncManager.UPDATE_TEXT
+import com.newsblur.service.OriginalTextSubService
 import com.newsblur.util.DefaultFeedView
 import com.newsblur.util.EdgeToEdgeUtil.applyNavBarInsetBottomTo
 import com.newsblur.util.FeedSet
@@ -122,8 +123,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     /** The text-mode story HTML, as retrieved via the secondary original text API.  */
     private var originalText: String? = null
-    private var imageAltTexts: HashMap<String, String>? = null
-    private var imageUrlRemaps: HashMap<String, String>? = null
+    private val imageAltTexts = mutableMapOf<String, String?>()
+    private val imageUrlRemaps = mutableMapOf<String, String?>()
     private var sourceUserId: String? = null
     private var contentHash = 0
     private val storyHighlights = mutableSetOf<String>()
@@ -136,6 +137,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
     private val isLoadFinished = AtomicBoolean(false)
     private var savedScrollPosRel = 0f
     private val webViewContentMutex = Any()
+    private val loadLock = Any()
 
     private lateinit var binding: FragmentReadingitemBinding
     private lateinit var readingItemActionsBinding: ReadingItemActionsBinding
@@ -268,9 +270,9 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             // as anchors, not images, and may not point to the corresponding image URL.
             var imageURL = result.extra
             imageURL = imageURL!!.replace("file://", "")
-            val mappedURL = imageUrlRemaps!![imageURL]
+            val mappedURL = imageUrlRemaps[imageURL]
             val finalURL: String = mappedURL ?: imageURL
-            val altText = imageAltTexts!![finalURL]
+            val altText = imageAltTexts[finalURL]
             val builder = AlertDialog.Builder(requireActivity())
             builder.setTitle(finalURL)
             if (altText != null) {
@@ -817,7 +819,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
                 }
 
                 else -> {
-                    setupWebview(originalText!!)
+                    setupWebview(originalText!!) // TODO extract images
+                    onContentLoadFinished()
                 }
             }
         }
@@ -826,7 +829,8 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             if (storyContent == null) {
                 story?.let { viewModel.loadStoryContent(it.storyHash) } ?: activity?.finish()
             } else {
-                setupWebview(storyContent!!)
+                setupWebview(storyContent!!) // TODO extract images
+                onContentLoadFinished()
             }
         }
 
@@ -949,29 +953,29 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         //   NOTE: if doing this via regex has a smell, you have a good nose!  This method is far from perfect
         //   and may miss valid cases or trucate tags, but it works for popular feeds (read: XKCD) and doesn't
         //   require us to import a proper parser lib of hundreds of kilobytes just for this one feature.
-        imageAltTexts = HashMap()
+        imageAltTexts.clear()
         // sniff for alts first
         var imgTagMatcher = altSniff1.matcher(html)
         while (imgTagMatcher.find()) {
-            imageAltTexts!![imgTagMatcher.group(2)] = imgTagMatcher.group(4)
+            imageAltTexts[imgTagMatcher.group(2)] = imgTagMatcher.group(4)
         }
         imgTagMatcher = altSniff2.matcher(html)
         while (imgTagMatcher.find()) {
-            imageAltTexts!![imgTagMatcher.group(4)] = imgTagMatcher.group(2)
+            imageAltTexts[imgTagMatcher.group(4)] = imgTagMatcher.group(2)
         }
         // then sniff for 'title' tags, so they will overwrite alts and take precedence
         imgTagMatcher = altSniff3.matcher(html)
         while (imgTagMatcher.find()) {
-            imageAltTexts!![imgTagMatcher.group(2)] = imgTagMatcher.group(4)
+            imageAltTexts[imgTagMatcher.group(2)] = imgTagMatcher.group(4)
         }
         imgTagMatcher = altSniff4.matcher(html)
         while (imgTagMatcher.find()) {
-            imageAltTexts!![imgTagMatcher.group(4)] = imgTagMatcher.group(2)
+            imageAltTexts[imgTagMatcher.group(4)] = imgTagMatcher.group(2)
         }
 
         // while were are at it, create a place where we can later cache offline image remaps so that when
         // we do an alt-text lookup, we can search for the right URL key.
-        imageUrlRemaps = HashMap()
+        imageUrlRemaps.clear()
     }
 
     private fun swapInOfflineImages(htmlString: String): String {
@@ -981,7 +985,7 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
             val url = imageTagMatcher.group(2)
             val localPath = storyImageCache.getCachedLocation(url) ?: continue
             html = html.replace(imageTagMatcher.group(1) + "\"" + url + "\"", "src=\"$localPath\"")
-            imageUrlRemaps!![localPath] = url
+            imageUrlRemaps[localPath] = url
         }
 
         return html

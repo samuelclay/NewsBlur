@@ -34,6 +34,9 @@ class SubscriptionSyncService : JobService() {
     @Inject
     lateinit var prefsRepo: PrefsRepo
 
+    @Inject
+    lateinit var syncServiceState: SyncServiceState
+
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.d(this, "onStartJob")
         if (!prefsRepo.hasCookie()) {
@@ -43,6 +46,7 @@ class SubscriptionSyncService : JobService() {
 
         val subscriptionManager = SubscriptionManagerImpl(
                 context = this@SubscriptionSyncService,
+                syncServiceState = syncServiceState,
                 userApi = userApi,
                 prefRepository = prefsRepo,
         )
@@ -82,7 +86,7 @@ class SubscriptionSyncService : JobService() {
                 }.build()
 
         fun schedule(context: Context) {
-            val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+            val jobScheduler = context.getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
             val job = jobScheduler.allPendingJobs.find { it.id == JOB_ID }
             if (job == null) {
                 val result: Int = jobScheduler.schedule(createJobInfo(context))
@@ -92,7 +96,7 @@ class SubscriptionSyncService : JobService() {
 
         @JvmStatic
         fun cancel(context: Context) {
-            val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+            val jobScheduler = context.getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
             jobScheduler.allPendingJobs.find { it.id == JOB_ID }?.let {
                 jobScheduler.cancel(JOB_ID)
                 Log.d(this, "Cancel sync job.")

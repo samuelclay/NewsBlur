@@ -11,7 +11,7 @@ import com.newsblur.activity.ItemsList
 import com.newsblur.fragment.ItemSetFragment
 import com.newsblur.fragment.SaveSearchFragment
 import com.newsblur.preference.PrefsRepo
-import com.newsblur.service.NBSyncService
+import com.newsblur.service.SyncServiceState
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.FeedUtils.Companion.triggerSync
@@ -39,6 +39,7 @@ open class ItemListContextMenuDelegateImpl(
         private val activity: ItemsList,
         private val feedUtils: FeedUtils,
         private val prefsRepo: PrefsRepo,
+        private val syncServiceState: SyncServiceState,
 ) : ItemListContextMenuDelegate, ReadingActionListener by activity {
 
     override fun onCreateMenuOptions(menu: Menu, menuInflater: MenuInflater, fs: FeedSet): Boolean {
@@ -311,7 +312,7 @@ open class ItemListContextMenuDelegateImpl(
     }
 
     private fun restartReadingSession(fragment: ItemSetFragment, fs: FeedSet) {
-        NBSyncService.resetFetchState(fs)
+        syncServiceState.resetFetchState(fs)
         feedUtils.prepareReadingSession(fs, true)
         triggerSync(activity)
         fragment.resetEmptyState()

@@ -18,11 +18,13 @@ import com.newsblur.network.FeedApi
 import com.newsblur.network.FolderApi
 import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
-import com.newsblur.service.NBSyncService
 import com.newsblur.service.NbSyncManager
 import com.newsblur.service.NbSyncManager.UPDATE_METADATA
 import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
+import com.newsblur.service.NbSyncManager.UPDATE_STATUS
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
+import com.newsblur.service.SyncService
+import com.newsblur.service.SyncServiceState
 import com.newsblur.util.FeedExt.disableNotification
 import com.newsblur.util.FeedExt.setNotifyFocus
 import com.newsblur.util.FeedExt.setNotifyUnread
@@ -33,6 +35,7 @@ class FeedUtils(
         private val userApi: UserApi,
         private val folderApi: FolderApi,
         private val prefsRepo: PrefsRepo,
+        private val syncServiceState: SyncServiceState,
 ) {
 
     // this is gross, but the feedset can't hold a folder title
@@ -46,11 +49,25 @@ class FeedUtils(
         NBScope.executeAsyncTask(
                 doInBackground = {
                     try {
-                        if (resetFirst) NBSyncService.resetReadingSession(dbHelper)
-                        fs?.let {
-                            NBSyncService.prepareReadingSession(prefsRepo, dbHelper, it)
+                        if (resetFirst) syncServiceState.resetReadingSession(dbHelper)
+                        fs?.let { feedSet ->
+                            synchronized(syncServiceState.pendingFeedMutex) {
+                                val cursorFilters = CursorFilters(prefsRepo, feedSet)
+                                if (feedSet != dbHelper.getSessionFeedSet()) {
+                                    Log.d(FeedUtils::class.simpleName, "preparing new reading session")
+                                    // the next fetch will be the start of a new reading session; clear it so it
+                                    // will be re-primed
+                                    dbHelper.clearStorySession()
+                                    // don't just rely on the auto-prepare code when fetching stories, it might be called
+                                    // after we insert our first page and not trigger
+                                    dbHelper.prepareReadingSession(fs, cursorFilters.stateFilter, cursorFilters.readFilter)
+                                    // note which feedset we are loading so we can trigger another reset when it changes
+                                    dbHelper.sessionFeedSet = fs
+                                    NbSyncManager.submitUpdate(UPDATE_STORY or UPDATE_STATUS)
+                                }
+                            }
                         }
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         // this is a UI hinting call and might fail if the DB is being reset, but that is fine
                     }
                 }
@@ -130,7 +147,7 @@ class FeedUtils(
                 },
                 onPostExecute = { newsBlurResponse ->
                     if (newsBlurResponse != null && !newsBlurResponse.isError) {
-                        NBSyncService.forceFeedsFolders()
+                        syncServiceState.forceFeedsFolders()
                         triggerSync(context)
                     }
                 }
@@ -170,7 +187,7 @@ class FeedUtils(
                 },
                 onPostExecute = { result ->
                     if (!result.isError) {
-                        NBSyncService.forceFeedsFolders()
+                        syncServiceState.forceFeedsFolders()
                         triggerSync(context)
                     }
                 }
@@ -184,7 +201,7 @@ class FeedUtils(
                 },
                 onPostExecute = { result ->
                     if (!result.isError) {
-                        NBSyncService.forceFeedsFolders()
+                        syncServiceState.forceFeedsFolders()
                         triggerSync(context)
                     }
                 }
@@ -227,7 +244,7 @@ class FeedUtils(
         val impactedFeeds = dbHelper.setStoryReadState(story, read)
         syncUpdateStatus(UPDATE_STORY)
 
-        NBSyncService.addRecountCandidates(impactedFeeds)
+        syncServiceState.addRecountCandidates(impactedFeeds)
         triggerSync(context)
     }
 
@@ -243,7 +260,7 @@ class FeedUtils(
 
         val feedId = inferFeedId(storyHash)
         val impactedFeed = FeedSet.singleFeed(feedId)
-        NBSyncService.addRecountCandidates(impactedFeed)
+        syncServiceState.addRecountCandidates(setOf(impactedFeed))
 
         triggerSync(context)
     }
@@ -458,7 +475,7 @@ class FeedUtils(
                     folderApi.moveFeedToFolders(feedId, toFolders, inFolders)
                 },
                 onPostExecute = {
-                    NBSyncService.forceFeedsFolders()
+                    syncServiceState.forceFeedsFolders()
                     triggerSync(context)
                 }
         )
@@ -540,7 +557,7 @@ class FeedUtils(
             // with the setImportantWhileForeground() flag via an enqueue() and get rid of all legacy startService
             // code paths
             try {
-                val i = Intent(context, NBSyncService::class.java)
+                val i = Intent(context, SyncService::class.java)
                 context.startService(i)
             } catch (e: IllegalStateException) {
                 // BackgroundServiceStartNotAllowedException

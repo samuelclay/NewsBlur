@@ -1,7 +1,6 @@
 package com.newsblur.activity
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -15,7 +14,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.newsblur.R
 import com.newsblur.databinding.ActivityImportExportBinding
 import com.newsblur.network.UserApi
-import com.newsblur.service.NBSyncService
 import com.newsblur.util.DownloadCompleteReceiver
 import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.FeedUtils
@@ -40,7 +38,7 @@ class ImportExportActivity : NbActivity() {
     private lateinit var binding: ActivityImportExportBinding
 
     private val filePickResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             handleFilePickResult(result.data)
         }
     }
@@ -133,7 +131,7 @@ class ImportExportActivity : NbActivity() {
                         ).show()
 
                         // refresh all feeds and folders
-                        NBSyncService.forceFeedsFolders()
+                        syncServiceState.forceFeedsFolders()
                         FeedUtils.triggerSync(this)
                     }
 
