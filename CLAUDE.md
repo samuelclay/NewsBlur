@@ -66,7 +66,8 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 
 ## Browser Testing with Chrome DevTools MCP
 - Local dev: `https://localhost`
-- Click a feed to load it first, then use console commands to open popovers/modals
-- Open feed options popover: `NEWSBLUR.app.story_titles_header.open_options_popover()`
-- Test interactions: `evaluate_script` for console commands, `take_snapshot` for DOM inspection, `take_screenshot` for visual verification
-- **Screenshots**: Always specify `filePath: "/tmp/newsblur-screenshot.png"` to avoid permission prompts - this allows reading screenshots without approval each time
+- Open All Site Stories: `NEWSBLUR.reader.open_river_stories()`
+- Open feed: `NEWSBLUR.reader.open_feed(feedId)`
+- Get feed IDs: `NEWSBLUR.assets.feeds` is a Backbone.js collection with underscore.js operations. E.g. `var feedId = NEWSBLUR.assets.feeds.find((e) => e.get('nt') > 0).get('id')` for first feed with neutral unread stories
+- Open folder: Click `.folder .folder_title` element (no API)
+- **Screenshots**: Always specify `filePath: "/tmp/newsblur-screenshot.png"` to avoid permission prompts
