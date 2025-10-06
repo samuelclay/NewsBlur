@@ -2,6 +2,8 @@ package com.newsblur.util
 
 import android.content.ContentValues
 import android.database.Cursor
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.database.DatabaseConstants
 import com.newsblur.domain.Classifier
@@ -165,10 +167,10 @@ sealed interface ReadingAction : Serializable {
     companion object {
 
         fun toJson(action: ReadingAction): String =
-                ReadingActions.gson.toJson(action, ReadingAction::class.java)
+                gson.toJson(action, ReadingAction::class.java)
 
         fun fromJson(json: String): ReadingAction =
-                ReadingActions.gson.fromJson(json, ReadingAction::class.java)
+                gson.fromJson(json, ReadingAction::class.java)
 
         @JvmStatic
         fun toContentValues(action: ReadingAction): ContentValues = ContentValues().apply {
@@ -203,6 +205,34 @@ sealed interface ReadingAction : Serializable {
                 is UpdateIntel -> decoded.copy(time = time, tried = tried)
                 is RenameFeed -> decoded.copy(time = time, tried = tried)
             }
+        }
+
+        private val gson: Gson by lazy {
+            val factory = RuntimeTypeAdapterFactory
+                    .of(ReadingAction::class.java, "type")
+                    .registerSubtype(MarkStoryRead::class.java, "MARK_READ_STORY")
+                    .registerSubtype(MarkStoryUnread::class.java, "MARK_UNREAD_STORY")
+                    .registerSubtype(MarkFeedRead::class.java, "MARK_READ_FEED")
+                    .registerSubtype(SaveStory::class.java, "SAVE_STORY")
+                    .registerSubtype(UnsaveStory::class.java, "UNSAVE_STORY")
+                    .registerSubtype(ShareStory::class.java, "SHARE")
+                    .registerSubtype(UnshareStory::class.java, "UNSHARE")
+                    .registerSubtype(LikeComment::class.java, "LIKE_COMMENT")
+                    .registerSubtype(UnlikeComment::class.java, "UNLIKE_COMMENT")
+                    .registerSubtype(ReplyToComment::class.java, "REPLY")
+                    .registerSubtype(EditReply::class.java, "EDIT_REPLY")
+                    .registerSubtype(DeleteReply::class.java, "DELETE_REPLY")
+                    .registerSubtype(MuteFeeds::class.java, "MUTE_FEEDS")
+                    .registerSubtype(UnmuteFeeds::class.java, "UNMUTE_FEEDS")
+                    .registerSubtype(SetNotify::class.java, "SET_NOTIFY")
+                    .registerSubtype(InstaFetch::class.java, "INSTA_FETCH")
+                    .registerSubtype(UpdateIntel::class.java, "UPDATE_INTEL")
+                    .registerSubtype(RenameFeed::class.java, "RENAME_FEED")
+
+            GsonBuilder()
+                    .registerTypeAdapterFactory(factory)
+                    .disableHtmlEscaping()
+                    .create()
         }
     }
 }
