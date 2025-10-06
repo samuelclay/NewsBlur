@@ -877,51 +877,6 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
         }
     }
 
-    private fun loadOriginalText() { // TODO just fetch the story text from db or network without sync
-        story?.let { story ->
-            lifecycleScope.executeAsyncTask(
-                    doInBackground = {
-                        feedUtils.getStoryText(story.storyHash)
-                    },
-                    onPostExecute = { result ->
-                        if (result != null) {
-                            if (OriginalTextSubService.NULL_STORY_TEXT == result) {
-                                // the server reported that text mode is not available.  kick back to story mode
-                                com.newsblur.util.Log.d(this, "orig text not avail for story: " + story.storyHash)
-                                textViewUnavailable = true
-                            } else {
-                                originalText = result
-                            }
-                            reloadStoryContent()
-                        } else {
-                            com.newsblur.util.Log.d(this, "orig text not yet cached for story: " + story.storyHash)
-                            OriginalTextSubService.addHash(story.storyHash)
-                            triggerSync()
-                        }
-                    }
-            )
-        }
-    }
-
-    private fun loadStoryContent() {
-        story?.let { story ->
-            lifecycleScope.executeAsyncTask(
-                    doInBackground = {
-                        feedUtils.getStoryContent(story.storyHash)
-                    },
-                    onPostExecute = { result ->
-                        if (result != null) {
-                            storyContent = result
-                            reloadStoryContent()
-                        } else {
-                            com.newsblur.util.Log.w(this, "couldn't find story content for existing story.")
-                            activity?.finish()
-                        }
-                    }
-            )
-        }
-    }
-
     private fun loadStoryChanges() {
         val showChanges = storyChangesState == null || storyChangesState === StoryChangesState.SHOW_CHANGES
         story?.let { story ->

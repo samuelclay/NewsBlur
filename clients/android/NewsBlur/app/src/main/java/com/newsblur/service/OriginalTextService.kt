@@ -1,15 +1,5 @@
 package com.newsblur.service
 
-import com.newsblur.database.DatabaseConstants
-import com.newsblur.service.NbSyncManager.UPDATE_TEXT
-import com.newsblur.util.AppConstants
-import com.newsblur.util.FeedUtils.Companion.inferFeedId
-import com.newsblur.util.Log
-import com.newsblur.util.NBScope
-import java.util.Collections
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.regex.Pattern
-
 //class OriginalTextService(parent: NBSyncService) : SubService(parent, NBScope) {
 //
 //    override fun exec() {
