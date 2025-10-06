@@ -10,8 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:contentDescription="@string/description_login_logo"
-        android:paddingVertical="16dp"
-        android:src="@drawable/logo_newsblur_blur" />
+        android:scaleType="centerInside"
+        android:src="@drawable/logo_newsblur_blur_dark" />
 
     <ScrollView
         android:id="@+id/content"
