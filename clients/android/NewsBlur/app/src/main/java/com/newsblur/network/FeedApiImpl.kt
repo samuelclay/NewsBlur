@@ -18,7 +18,7 @@ class FeedApiImpl(
         private val networkClient: NetworkClient,
 ) : FeedApi {
 
-    override fun markFeedsAsRead(fs: FeedSet, includeOlder: Long?, includeNewer: Long?): NewsBlurResponse? {
+    override suspend fun markFeedsAsRead(fs: FeedSet, includeOlder: Long?, includeNewer: Long?): NewsBlurResponse? {
         val values = ValueMultimap()
 
         if (fs.getSingleFeed() != null) {
@@ -64,7 +64,7 @@ class FeedApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override fun getFeedUnreadCounts(apiIds: MutableSet<String>): UnreadCountResponse? {
+    override suspend fun getFeedUnreadCounts(apiIds: MutableSet<String>): UnreadCountResponse? {
         val values = ValueMultimap().apply {
             for (id in apiIds) {
                 put(APIConstants.PARAMETER_FEEDID, id)
@@ -83,7 +83,7 @@ class FeedApiImpl(
      * the first time, in which case it is more appropriate to make a separate,
      * additional call to refreshFeedCounts().
      */
-    override fun getFolderFeedMapping(doUpdateCounts: Boolean): FeedFolderResponse? {
+    override suspend fun getFolderFeedMapping(doUpdateCounts: Boolean): FeedFolderResponse? {
         val params = ContentValues().apply {
             put(APIConstants.PARAMETER_UPDATE_COUNTS, (if (doUpdateCounts) APIConstants.VALUE_TRUE else APIConstants.VALUE_FALSE))
         }
@@ -104,7 +104,7 @@ class FeedApiImpl(
         return result
     }
 
-    override fun updateFeedIntel(feedId: String?, classifier: Classifier?): NewsBlurResponse? {
+    override suspend fun updateFeedIntel(feedId: String?, classifier: Classifier?): NewsBlurResponse? {
         val values = classifier?.getAPITuples() ?: return null
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         val urlString = APIConstants.buildUrl(APIConstants.PATH_CLASSIFIER_SAVE)
@@ -165,7 +165,7 @@ class FeedApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override fun saveFeedChooser(feeds: Set<String>): NewsBlurResponse? {
+    override suspend fun saveFeedChooser(feeds: Set<String>): NewsBlurResponse? {
         val values = ValueMultimap()
         for (feed in feeds) {
             values.put(APIConstants.PARAMETER_APPROVED_FEEDS, feed)
@@ -175,7 +175,7 @@ class FeedApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override fun updateFeedNotifications(feedId: String?, notifyTypes: List<String>, notifyFilter: String?): NewsBlurResponse? {
+    override suspend fun updateFeedNotifications(feedId: String?, notifyTypes: List<String>, notifyFilter: String?): NewsBlurResponse? {
         val values = ValueMultimap()
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         for (type in notifyTypes) {
@@ -187,7 +187,7 @@ class FeedApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override fun instaFetch(feedId: String?): NewsBlurResponse? {
+    override suspend fun instaFetch(feedId: String?): NewsBlurResponse? {
         val values = ValueMultimap()
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         // this param appears fixed and mandatory for the call to succeed
@@ -197,7 +197,7 @@ class FeedApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override fun renameFeed(feedId: String?, newFeedName: String?): NewsBlurResponse? {
+    override suspend fun renameFeed(feedId: String?, newFeedName: String?): NewsBlurResponse? {
         val values = ValueMultimap()
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         values.put(APIConstants.PARAMETER_FEEDTITLE, newFeedName)

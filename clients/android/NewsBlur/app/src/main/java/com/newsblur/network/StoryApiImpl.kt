@@ -27,7 +27,7 @@ class StoryApiImpl(
         private val networkClient: NetworkClient,
 ) : StoryApi {
 
-    override fun getStories(
+    override suspend fun getStories(
             fs: FeedSet,
             pageNumber: Int,
             order: StoryOrder,
@@ -128,7 +128,7 @@ class StoryApiImpl(
         return response.getResponse(gson, StoryChangesResponse::class.java)
     }
 
-    override fun markStoryHashUnread(hash: String?): NewsBlurResponse? {
+    override suspend fun markStoryHashUnread(hash: String?): NewsBlurResponse? {
         val values = ValueMultimap().apply {
             put(APIConstants.PARAMETER_STORY_HASH, hash)
         }
@@ -137,7 +137,7 @@ class StoryApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override fun markStoryAsUnstarred(storyHash: String?): NewsBlurResponse? {
+    override suspend fun markStoryAsUnstarred(storyHash: String?): NewsBlurResponse? {
         val values = ValueMultimap().apply {
             put(APIConstants.PARAMETER_STORY_HASH, storyHash)
         }
@@ -146,7 +146,7 @@ class StoryApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override fun getUnreadStoryHashes(): UnreadStoryHashesResponse {
+    override suspend fun getUnreadStoryHashes(): UnreadStoryHashesResponse {
         val values = ValueMultimap().apply {
             put(APIConstants.PARAMETER_INCLUDE_TIMESTAMPS, "1")
         }
@@ -155,13 +155,13 @@ class StoryApiImpl(
         return response.getResponse(gson, UnreadStoryHashesResponse::class.java)
     }
 
-    override fun getStarredStoryHashes(): StarredStoryHashesResponse {
+    override suspend fun getStarredStoryHashes(): StarredStoryHashesResponse {
         val urlString = APIConstants.buildUrl(APIConstants.PATH_STARRED_STORY_HASHES)
         val response: APIResponse = networkClient.get(urlString)
         return response.getResponse(gson, StarredStoryHashesResponse::class.java)
     }
 
-    override fun getStoriesByHash(storyHashes: List<String>): StoriesResponse? {
+    override suspend fun getStoriesByHash(storyHashes: List<String>): StoriesResponse? {
         val values = ValueMultimap().apply {
             for (hash in storyHashes) {
                 put(APIConstants.PARAMETER_H, hash)
@@ -173,7 +173,7 @@ class StoryApiImpl(
         return response.getResponse(gson, StoriesResponse::class.java)
     }
 
-    override fun markStoryAsRead(storyHash: String): NewsBlurResponse? {
+    override suspend fun markStoryAsRead(storyHash: String): NewsBlurResponse? {
         val values = ValueMultimap().apply {
             put(APIConstants.PARAMETER_STORY_HASH, storyHash)
 
@@ -183,7 +183,7 @@ class StoryApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override fun markStoryAsStarred(storyHash: String, highlights: List<String>, userTags: List<String>): NewsBlurResponse? {
+    override suspend fun markStoryAsStarred(storyHash: String, highlights: List<String>, userTags: List<String>): NewsBlurResponse? {
         val values = ValueMultimap().apply {
             put(APIConstants.PARAMETER_STORY_HASH, storyHash)
             for (tag in userTags) {
@@ -219,7 +219,7 @@ class StoryApiImpl(
         return networkClient.post(urlString, values)
     }
 
-    override fun shareStory(storyId: String?, feedId: String?, comment: String?, sourceUserId: String?): StoriesResponse? {
+    override suspend fun shareStory(storyId: String?, feedId: String?, comment: String?, sourceUserId: String?): StoriesResponse? {
         val values = ContentValues().apply {
             if (!comment.isNullOrEmpty()) {
                 put(APIConstants.PARAMETER_SHARE_COMMENT, comment)
@@ -237,7 +237,7 @@ class StoryApiImpl(
         return response.getResponse(gson, StoriesResponse::class.java)
     }
 
-    override fun unshareStory(storyId: String?, feedId: String?): StoriesResponse? {
+    override suspend fun unshareStory(storyId: String?, feedId: String?): StoriesResponse? {
         val values = ContentValues().apply {
             put(APIConstants.PARAMETER_FEEDID, feedId)
             put(APIConstants.PARAMETER_STORYID, storyId)
@@ -249,7 +249,7 @@ class StoryApiImpl(
         return response.getResponse<StoriesResponse?>(gson, StoriesResponse::class.java)
     }
 
-    override fun favouriteComment(storyId: String?, commentUserId: String?, feedId: String?): NewsBlurResponse? {
+    override suspend fun favouriteComment(storyId: String?, commentUserId: String?, feedId: String?): NewsBlurResponse? {
         val values = ContentValues().apply {
             put(APIConstants.PARAMETER_STORYID, storyId)
             put(APIConstants.PARAMETER_STORY_FEEDID, feedId)
@@ -260,7 +260,7 @@ class StoryApiImpl(
         return response.getResponse<NewsBlurResponse?>(gson, NewsBlurResponse::class.java)
     }
 
-    override fun unFavouriteComment(storyId: String?, commentUserId: String?, feedId: String?): NewsBlurResponse? {
+    override suspend fun unFavouriteComment(storyId: String?, commentUserId: String?, feedId: String?): NewsBlurResponse? {
         val values = ContentValues().apply {
             put(APIConstants.PARAMETER_STORYID, storyId)
             put(APIConstants.PARAMETER_STORY_FEEDID, feedId)
@@ -271,7 +271,7 @@ class StoryApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override fun replyToComment(storyId: String?, storyFeedId: String?, commentUserId: String?, reply: String?): CommentResponse? {
+    override suspend fun replyToComment(storyId: String?, storyFeedId: String?, commentUserId: String?, reply: String?): CommentResponse? {
         val values = ContentValues().apply {
             put(APIConstants.PARAMETER_STORYID, storyId)
             put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId)
@@ -284,7 +284,7 @@ class StoryApiImpl(
         return response.getResponse(gson, CommentResponse::class.java)
     }
 
-    override fun editReply(storyId: String?, storyFeedId: String?, commentUserId: String?, replyId: String?, reply: String?): CommentResponse? {
+    override suspend fun editReply(storyId: String?, storyFeedId: String?, commentUserId: String?, replyId: String?, reply: String?): CommentResponse? {
         val values = ContentValues().apply {
             put(APIConstants.PARAMETER_STORYID, storyId)
             put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId)
@@ -298,7 +298,7 @@ class StoryApiImpl(
         return response.getResponse(gson, CommentResponse::class.java)
     }
 
-    override fun deleteReply(storyId: String?, storyFeedId: String?, commentUserId: String?, replyId: String?): CommentResponse? {
+    override suspend fun deleteReply(storyId: String?, storyFeedId: String?, commentUserId: String?, replyId: String?): CommentResponse? {
         val values = ContentValues().apply {
             put(APIConstants.PARAMETER_STORYID, storyId)
             put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId)
