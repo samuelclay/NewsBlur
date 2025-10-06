@@ -206,7 +206,7 @@ class FeedApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    private fun markAllAsRead(): NewsBlurResponse? {
+    private suspend fun markAllAsRead(): NewsBlurResponse? {
         val values = ValueMultimap().apply {
             put(APIConstants.PARAMETER_DAYS, "0")
         }
