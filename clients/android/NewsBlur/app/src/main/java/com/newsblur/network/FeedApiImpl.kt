@@ -104,8 +104,8 @@ class FeedApiImpl(
         return result
     }
 
-    override fun updateFeedIntel(feedId: String?, classifier: Classifier): NewsBlurResponse? {
-        val values = classifier.getAPITuples()
+    override fun updateFeedIntel(feedId: String?, classifier: Classifier?): NewsBlurResponse? {
+        val values = classifier?.getAPITuples() ?: return null
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         val urlString = APIConstants.buildUrl(APIConstants.PATH_CLASSIFIER_SAVE)
         val response: APIResponse = networkClient.post(urlString, values)
@@ -165,7 +165,7 @@ class FeedApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override fun saveFeedChooser(feeds: MutableSet<String?>): NewsBlurResponse? {
+    override fun saveFeedChooser(feeds: Set<String>): NewsBlurResponse? {
         val values = ValueMultimap()
         for (feed in feeds) {
             values.put(APIConstants.PARAMETER_APPROVED_FEEDS, feed)
@@ -175,7 +175,7 @@ class FeedApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override fun updateFeedNotifications(feedId: String?, notifyTypes: MutableList<String?>, notifyFilter: String?): NewsBlurResponse? {
+    override fun updateFeedNotifications(feedId: String?, notifyTypes: List<String>, notifyFilter: String?): NewsBlurResponse? {
         val values = ValueMultimap()
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         for (type in notifyTypes) {

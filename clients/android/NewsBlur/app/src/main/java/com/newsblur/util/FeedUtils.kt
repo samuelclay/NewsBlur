@@ -111,8 +111,8 @@ class FeedUtils(
         NBScope.executeAsyncTask(
                 doInBackground = {
                     val ra =
-                            if (saved) ReadingAction.saveStory(storyHash, highlights, userTags)
-                            else ReadingAction.unsaveStory(storyHash)
+                            if (saved) ReadingAction.SaveStory(storyHash, highlights, userTags)
+                            else ReadingAction.UnsaveStory(storyHash)
                     ra.doLocal(dbHelper, prefsRepo)
                     dbHelper.enqueueAction(ra)
                 },
@@ -127,7 +127,7 @@ class FeedUtils(
         NBScope.executeAsyncTask(
                 doInBackground = {
                     val response = feedApi.deleteSearch(feedId, query)
-                    if (response!= null && !response.isError) {
+                    if (response != null && !response.isError) {
                         dbHelper.deleteSavedSearch(feedId, query)
                     }
                     response
@@ -237,7 +237,8 @@ class FeedUtils(
         }
 
         // tell the sync service we need to mark read
-        val ra = if (read) ReadingAction.markStoryRead(story.storyHash) else ReadingAction.markStoryUnread(story.storyHash)
+        val ra = if (read) ReadingAction.MarkStoryRead(story.storyHash)
+        else ReadingAction.MarkStoryUnread(story.storyHash)
         dbHelper.enqueueAction(ra)
 
         // update unread state and unread counts in the local DB
@@ -254,8 +255,9 @@ class FeedUtils(
      * the app, such as from a notifiation handler.  You must use setStoryReadState(Story, Context, boolean)
      * when calling from within the UI.
      */
-    fun setStoryReadStateExternal(storyHash: String?, context: Context, read: Boolean) {
-        val ra = if (read) ReadingAction.markStoryRead(storyHash) else ReadingAction.markStoryUnread(storyHash)
+    fun setStoryReadStateExternal(storyHash: String, context: Context, read: Boolean) {
+        val ra = if (read) ReadingAction.MarkStoryRead(storyHash)
+        else ReadingAction.MarkStoryUnread(storyHash)
         dbHelper.enqueueAction(ra)
 
         val feedId = inferFeedId(storyHash)
@@ -276,7 +278,7 @@ class FeedUtils(
             // the mark-all-read API doesn't support range bounding, so we need to pass each and every
             // feed ID to the API instead.
             val newFeedSet = FeedSet.folder("all", dbHelper.allActiveFeeds)
-            ReadingAction.markFeedRead(newFeedSet, olderThan, newerThan)
+            ReadingAction.MarkFeedRead(newFeedSet, olderThan, newerThan)
         } else {
             if (fs.isFolder) {
                 val feedIds = fs.multipleFeeds
@@ -285,9 +287,9 @@ class FeedUtils(
                 activeFeedIds.addAll(feedIds)
                 activeFeedIds.retainAll(allActiveFeedIds)
                 val filteredFs = FeedSet.folder(fs.folderName, activeFeedIds)
-                ReadingAction.markFeedRead(filteredFs, olderThan, newerThan)
+                ReadingAction.MarkFeedRead(filteredFs, olderThan, newerThan)
             } else {
-                ReadingAction.markFeedRead(fs, olderThan, newerThan)
+                ReadingAction.MarkFeedRead(fs, olderThan, newerThan)
             }
         }
         // is it okay to just do the mark? otherwise we will seek confirmation
@@ -353,7 +355,7 @@ class FeedUtils(
         NBScope.executeAsyncTask(
                 doInBackground = {
                     dbHelper.updateFeed(feed)
-                    val ra = ReadingAction.setNotify(feed.feedId, feed.notificationTypes, feed.notificationFilter)
+                    val ra = ReadingAction.SetNotify(feed.feedId, feed.notificationTypes, feed.notificationFilter)
                     doAction(ra, context)
                 }
         )
@@ -372,7 +374,7 @@ class FeedUtils(
     }
 
     fun updateClassifier(feedId: String?, classifier: Classifier?, fs: FeedSet?, context: Context) {
-        val ra = ReadingAction.updateIntel(feedId, classifier, fs)
+        val ra = ReadingAction.UpdateIntel(feedId, classifier, fs)
         doAction(ra, context)
     }
 
@@ -400,12 +402,12 @@ class FeedUtils(
         context.startActivity(Intent.createChooser(intent, "Send using"))
     }
 
-    fun shareStory(story: Story, comment: String?, sourceUserIdString: String?, context: Context) {
+    fun shareStory(story: Story, comment: String, sourceUserIdString: String?, context: Context) {
         var sourceUserId = sourceUserIdString
         if (story.sourceUserId != null) {
             sourceUserId = story.sourceUserId
         }
-        val ra = ReadingAction.shareStory(story.storyHash, story.id, story.feedId, sourceUserId, comment)
+        val ra = ReadingAction.ShareStory(story.storyHash, story.id, story.feedId, sourceUserId, comment)
         dbHelper.enqueueAction(ra)
         ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(UPDATE_SOCIAL or UPDATE_STORY)
@@ -413,7 +415,7 @@ class FeedUtils(
     }
 
     fun renameFeed(context: Context, feedId: String?, newFeedName: String?) {
-        val ra = ReadingAction.renameFeed(feedId, newFeedName)
+        val ra = ReadingAction.RenameFeed(feedId, newFeedName)
         dbHelper.enqueueAction(ra)
         val impact = ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(impact)
@@ -421,7 +423,7 @@ class FeedUtils(
     }
 
     fun unshareStory(story: Story, context: Context) {
-        val ra = ReadingAction.unshareStory(story.storyHash, story.id, story.feedId)
+        val ra = ReadingAction.UnshareStory(story.storyHash, story.id, story.feedId)
         dbHelper.enqueueAction(ra)
         ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(UPDATE_SOCIAL or UPDATE_STORY)
@@ -429,7 +431,7 @@ class FeedUtils(
     }
 
     fun likeComment(story: Story, commentUserId: String?, context: Context) {
-        val ra = ReadingAction.likeComment(story.id, commentUserId, story.feedId)
+        val ra = ReadingAction.LikeComment(story.id, commentUserId, story.feedId)
         dbHelper.enqueueAction(ra)
         ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(UPDATE_SOCIAL)
@@ -437,7 +439,7 @@ class FeedUtils(
     }
 
     fun unlikeComment(story: Story, commentUserId: String?, context: Context) {
-        val ra = ReadingAction.unlikeComment(story.id, commentUserId, story.feedId)
+        val ra = ReadingAction.UnlikeComment(story.id, commentUserId, story.feedId)
         dbHelper.enqueueAction(ra)
         ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(UPDATE_SOCIAL)
@@ -445,7 +447,7 @@ class FeedUtils(
     }
 
     fun replyToComment(storyId: String?, feedId: String?, commentUserId: String?, replyText: String?, context: Context) {
-        val ra = ReadingAction.replyToComment(storyId, feedId, commentUserId, replyText)
+        val ra = ReadingAction.ReplyToComment(storyId, feedId, commentUserId, replyText)
         dbHelper.enqueueAction(ra)
         ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(UPDATE_SOCIAL)
@@ -453,7 +455,7 @@ class FeedUtils(
     }
 
     fun updateReply(context: Context, story: Story, commentUserId: String?, replyId: String?, replyText: String?) {
-        val ra = ReadingAction.updateReply(story.id, story.feedId, commentUserId, replyId, replyText)
+        val ra = ReadingAction.EditReply(story.id, story.feedId, commentUserId, replyId, replyText)
         dbHelper.enqueueAction(ra)
         ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(UPDATE_SOCIAL)
@@ -461,7 +463,7 @@ class FeedUtils(
     }
 
     fun deleteReply(context: Context, story: Story, commentUserId: String?, replyId: String?) {
-        val ra = ReadingAction.deleteReply(story.id, story.feedId, commentUserId, replyId)
+        val ra = ReadingAction.DeleteReply(story.id, story.feedId, commentUserId, replyId)
         dbHelper.enqueueAction(ra)
         ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(UPDATE_SOCIAL)
@@ -502,9 +504,9 @@ class FeedUtils(
                     }
 
                     val ra: ReadingAction = if (active) {
-                        ReadingAction.unmuteFeeds(activeFeeds, feedIds)
+                        ReadingAction.UnmuteFeeds(activeFeeds, feedIds)
                     } else {
-                        ReadingAction.muteFeeds(activeFeeds, feedIds)
+                        ReadingAction.MuteFeeds(activeFeeds, feedIds)
                     }
 
                     dbHelper.enqueueAction(ra)
@@ -518,7 +520,7 @@ class FeedUtils(
     }
 
     fun instaFetchFeed(context: Context, feedId: String?) {
-        val ra = ReadingAction.instaFetch(feedId)
+        val ra = ReadingAction.InstaFetch(feedId)
         dbHelper.enqueueAction(ra)
         ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(UPDATE_METADATA)

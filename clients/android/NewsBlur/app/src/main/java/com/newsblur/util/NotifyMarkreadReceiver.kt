@@ -22,6 +22,7 @@ class NotifyMarkreadReceiver : BroadcastReceiver() {
         NotificationUtils.cancel(c, storyHash.hashCode())
         NBScope.executeAsyncTask(
                 doInBackground = {
+                    storyHash ?: return@executeAsyncTask
                     dbHelper.putStoryDismissed(storyHash)
                     feedUtils.setStoryReadStateExternal(storyHash, c, true)
                 }
