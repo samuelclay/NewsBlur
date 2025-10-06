@@ -920,7 +920,7 @@ public class BlurDatabaseHelper {
     }
 
     public void enqueueAction(@NonNull ReadingAction ra) {
-        synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, ra.toContentValues());}
+        synchronized (RW_MUTEX) {dbRW.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, ReadingAction.toContentValues(ra));}
     }
 
     @NonNull

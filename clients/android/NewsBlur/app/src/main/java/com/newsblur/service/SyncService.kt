@@ -38,6 +38,9 @@ import com.newsblur.util.NetworkUtils
 import com.newsblur.util.NotificationUtils
 import com.newsblur.util.ReadingAction
 import com.newsblur.util.StateFilter
+import com.newsblur.util.doLocal
+import com.newsblur.util.doRemote
+import com.newsblur.util.toContentValues
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
@@ -245,7 +248,7 @@ open class SyncService : JobService(), CoroutineScope {
         }
     }
 
-    private fun syncActions() {
+    private suspend fun syncActions() {
         if (backoffBackgroundCalls()) return
 
         var c: Cursor? = null
@@ -273,7 +276,7 @@ open class SyncService : JobService(), CoroutineScope {
                 // don't block story loading unless this is a brand new action
                 if ((ra.tried > 0) && (syncServiceState.pendingFeed != null)) continue@actionsLoop
 
-                Log.d(this, "attempting action: " + ra.toContentValues().toString())
+                Log.d(this, "attempting action: " + ra.toContentValues())
                 val response = ra.doRemote(syncServiceState, feedApi, storyApi, dbHelper, stateFilter)
 
                 if (response == null) {
@@ -467,7 +470,7 @@ open class SyncService : JobService(), CoroutineScope {
     /**
      * Fetch stories needed because the user is actively viewing a feed or folder.
      */
-    private fun syncPendingFeedStories() {
+    private suspend fun syncPendingFeedStories() {
         // track whether we actually tried to handle the feedset and found we had nothing
         // more to do, in which case we will clear it
         var finished = false
@@ -636,7 +639,7 @@ open class SyncService : JobService(), CoroutineScope {
      * Some actions have a final, local step after being done remotely to ensure in-flight
      * API actions didn't race-overwrite them.  Do these, and then clean up the DB.
      */
-    private fun finishActions() {
+    private suspend fun finishActions() {
         if (syncServiceState.followupActions.isEmpty()) return
 
         Log.d(this, "double-checking " + syncServiceState.followupActions.size + " actions")

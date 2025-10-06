@@ -20,7 +20,7 @@ interface FeedApi {
     fun getFolderFeedMapping(doUpdateCounts: Boolean): FeedFolderResponse?
 
     // TODO suspend
-    fun updateFeedIntel(feedId: String?, classifier: Classifier): NewsBlurResponse?
+    fun updateFeedIntel(feedId: String?, classifier: Classifier?): NewsBlurResponse?
 
     suspend fun addFeed(feedUrl: String?, folderName: String?): AddFeedResponse?
 
@@ -33,10 +33,10 @@ interface FeedApi {
     suspend fun saveSearch(feedId: String?, query: String?): NewsBlurResponse?
 
     // TODO suspend
-    fun saveFeedChooser(feeds: MutableSet<String?>): NewsBlurResponse?
+    fun saveFeedChooser(feeds: Set<String>): NewsBlurResponse?
 
     // TODO suspend
-    fun updateFeedNotifications(feedId: String?, notifyTypes: MutableList<String?>, notifyFilter: String?): NewsBlurResponse?
+    fun updateFeedNotifications(feedId: String?, notifyTypes: List<String>, notifyFilter: String?): NewsBlurResponse?
 
     // TODO suspend
     fun instaFetch(feedId: String?): NewsBlurResponse?
