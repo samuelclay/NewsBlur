@@ -5,6 +5,8 @@ import com.newsblur.network.FeedApi
 import com.newsblur.network.FolderApi
 import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.repository.FeedRepository
+import com.newsblur.repository.FeedRepositoryImpl
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.FeedUtils
 import dagger.Module
@@ -22,9 +24,20 @@ class FeedModule {
     fun provideFeedUtils(
             dbHelper: BlurDatabaseHelper,
             feedApi: FeedApi,
-            userApi: UserApi,
             folderApi: FolderApi,
             prefsRepo: PrefsRepo,
             syncServiceState: SyncServiceState,
-    ) = FeedUtils(dbHelper, feedApi, userApi, folderApi, prefsRepo, syncServiceState)
+    ) = FeedUtils(dbHelper, feedApi, folderApi, prefsRepo, syncServiceState)
+
+    @Singleton
+    @Provides
+    fun provideFeedRepository(
+            userApi: UserApi,
+            feedApi: FeedApi,
+            dbHelper: BlurDatabaseHelper,
+    ): FeedRepository = FeedRepositoryImpl(
+            userApi,
+            feedApi,
+            dbHelper,
+    )
 }

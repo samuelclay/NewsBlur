@@ -16,7 +16,6 @@ import com.newsblur.network.APIConstants
 import com.newsblur.network.APIConstants.NULL_STORY_TEXT
 import com.newsblur.network.FeedApi
 import com.newsblur.network.FolderApi
-import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NbSyncManager
 import com.newsblur.service.NbSyncManager.UPDATE_METADATA
@@ -32,7 +31,6 @@ import com.newsblur.util.FeedExt.setNotifyUnread
 class FeedUtils(
         private val dbHelper: BlurDatabaseHelper,
         private val feedApi: FeedApi,
-        private val userApi: UserApi,
         private val folderApi: FolderApi,
         private val prefsRepo: PrefsRepo,
         private val syncServiceState: SyncServiceState,
@@ -123,23 +121,6 @@ class FeedUtils(
         )
     }
 
-    fun deleteSavedSearch(feedId: String?, query: String?) {
-        NBScope.executeAsyncTask(
-                doInBackground = {
-                    val response = feedApi.deleteSearch(feedId, query)
-                    if (response != null && !response.isError) {
-                        dbHelper.deleteSavedSearch(feedId, query)
-                    }
-                    response
-                },
-                onPostExecute = { newsBlurResponse ->
-                    if (newsBlurResponse != null && !newsBlurResponse.isError) {
-                        syncUpdateStatus(UPDATE_METADATA)
-                    }
-                }
-        )
-    }
-
     fun saveSearch(feedId: String?, query: String?, context: Context) {
         NBScope.executeAsyncTask(
                 doInBackground = {
@@ -150,32 +131,6 @@ class FeedUtils(
                         syncServiceState.forceFeedsFolders()
                         triggerSync(context)
                     }
-                }
-        )
-    }
-
-    fun deleteFeed(feedId: String?, folderName: String?) {
-        NBScope.executeAsyncTask(
-                doInBackground = {
-                    feedApi.deleteFeed(feedId, folderName)
-                    // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
-                    dbHelper.deleteFeed(feedId)
-                },
-                onPostExecute = {
-                    syncUpdateStatus(UPDATE_METADATA)
-                }
-        )
-    }
-
-    fun deleteSocialFeed(userId: String?) {
-        NBScope.executeAsyncTask(
-                doInBackground = {
-                    userApi.unfollowUser(userId)
-                    // TODO: we can't check result.isError() because the delete call sets the .message property on all calls. find a better error check
-                    dbHelper.deleteSocialFeed(userId)
-                },
-                onPostExecute = {
-                    syncUpdateStatus(UPDATE_METADATA)
                 }
         )
     }
@@ -545,7 +500,7 @@ class FeedUtils(
         UIUtils.handleUri(context, prefsRepo, Uri.parse(url))
     }
 
-    private fun syncUpdateStatus(update: Int) {
+    fun syncUpdateStatus(update: Int) {
         if (NbApplication.isAppForeground) {
             NbSyncManager.submitUpdate(update)
         }
