@@ -17,19 +17,20 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
         this.showing_fake_folder = NEWSBLUR.reader.flags['river_view'] &&
             NEWSBLUR.reader.active_folder &&
             (NEWSBLUR.reader.active_folder.get('fake') || !NEWSBLUR.reader.active_folder.get('folder_title'));
-
-        var date_filter_start = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'date_filter_start');
-        var date_filter_end = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'date_filter_end');
+        console.log(['showing fake folder', this.showing_fake_folder, NEWSBLUR.reader.active_folder, NEWSBLUR.reader.flags]);
+        var searching = NEWSBLUR.reader.flags.search && NEWSBLUR.reader.flags.searching && NEWSBLUR.reader.flags.search.length;
+        var date_filter_start = NEWSBLUR.reader.flags.date_filter_start;
+        var date_filter_end = NEWSBLUR.reader.flags.date_filter_end;
         var has_date_filter = !!(date_filter_start || date_filter_end);
 
-        if ((NEWSBLUR.reader.flags.search && NEWSBLUR.reader.flags.searching && NEWSBLUR.reader.flags.search.length) || has_date_filter) {
+        if (searching || has_date_filter) {
             this.$el.removeClass("NB-hidden");
 
             var $title = this.make_title();
             this.$(".NB-search-header-title").html($title);
 
             // Show "Save Search" button for searches, close icon for date filters
-            if (NEWSBLUR.reader.flags.search && NEWSBLUR.reader.flags.searching && NEWSBLUR.reader.flags.search.length) {
+            if (searching) {
                 var saved = this.is_saved() ? 'Saved' : 'Save Search';
                 this.$(".NB-search-header-save").text(saved).removeClass('NB-search-header-clear').show();
             } else if (has_date_filter) {
@@ -44,11 +45,12 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
 
     make_title: function () {
         var feed_title = NEWSBLUR.reader.feed_title();
-        var date_filter_start = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'date_filter_start');
-        var date_filter_end = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'date_filter_end');
+        var date_filter_start = NEWSBLUR.reader.flags.date_filter_start;
+        var date_filter_end = NEWSBLUR.reader.flags.date_filter_end;
+        var searching = NEWSBLUR.reader.flags.search && NEWSBLUR.reader.flags.searching && NEWSBLUR.reader.flags.search.length;
 
         // Check if we're showing search results or date filters
-        if (NEWSBLUR.reader.flags.search && NEWSBLUR.reader.flags.searching && NEWSBLUR.reader.flags.search.length) {
+        if (searching) {
             var $view = $(_.template('<div>\
                 Searching \
                 <b><%= feed_title %></b> for "<b><%= query %></b>"\
@@ -59,7 +61,7 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
             return $view;
         } else if (date_filter_start || date_filter_end) {
             // Format dates to be more readable
-            var format_date = function(date_string) {
+            var format_date = function (date_string) {
                 if (!date_string) return '';
                 var date = new Date(date_string + 'T00:00:00');
                 var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];

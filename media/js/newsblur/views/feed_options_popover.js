@@ -30,7 +30,8 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         "click .NB-filter-popover-dashboard-remove-module": "remove_dashboard_module",
         "change .NB-modal-feed-chooser": "change_feed",
         "change .NB-date-input": "change_date_range",
-        "click .NB-clear-date-button": "clear_date_range"
+        "click .NB-clear-date-button": "clear_date_range",
+        "click .NB-date-filter-duration": "change_date_filter_duration"
     },
 
     initialize: function (options) {
@@ -156,11 +157,11 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                             placeholder: 'YYYY-MM-DD',
                             autocomplete: 'off'
                         }),
-                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-date-filter-start' }, [
-                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-date-filter-start-1day', role: "button" }, '1d'),
-                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-date-filter-start-1week', role: "button" }, '1w'),
-                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-date-filter-start-1month', role: "button" }, '1m'),
-                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-date-filter-start-1year', role: "button" }, '1y')
+                        $.make('ul', { className: 'segmented-control NB-menu-manage-date-filter-start' }, [
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1day', role: "button" }, '1d'),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1week', role: "button" }, '1w'),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1month', role: "button" }, '1m'),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1year', role: "button" }, '1y')
                         ])
                     ]),
                     $.make('div', { className: 'NB-date-filter-column' }, [
@@ -171,11 +172,11 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                             placeholder: 'YYYY-MM-DD',
                             autocomplete: 'off'
                         }),
-                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-date-filter-end' }, [
-                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-date-filter-end-1day', role: "button" }, '1d'),
-                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-date-filter-end-1week', role: "button" }, '1w'),
-                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-date-filter-end-1month', role: "button" }, '1m'),
-                            $.make('li', { className: 'NB-view-setting-option NB-view-setting-date-filter-end-1year', role: "button" }, '1y')
+                        $.make('ul', { className: 'segmented-control NB-menu-manage-date-filter-end' }, [
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1day', role: "button" }, '1d'),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1week', role: "button" }, '1w'),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1month', role: "button" }, '1m'),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1year', role: "button" }, '1y')
                         ])
                     ]),
                     $.make('div', { className: 'NB-clear-date-button' })
@@ -295,8 +296,8 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     show_correct_feed_view_options_in_menu: function () {
         var order = NEWSBLUR.assets.view_setting(this.options.feed_id, 'order');
         var read_filter = NEWSBLUR.assets.view_setting(this.options.feed_id, 'read_filter');
-        var date_filter_start = NEWSBLUR.assets.view_setting(this.options.feed_id, 'date_filter_start');
-        var date_filter_end = NEWSBLUR.assets.view_setting(this.options.feed_id, 'date_filter_end');
+        var date_filter_start = NEWSBLUR.reader.flags.date_filter_start;
+        var date_filter_end = NEWSBLUR.reader.flags.date_filter_end;
         var dashboard_count = parseInt(NEWSBLUR.assets.view_setting(this.options.feed_id, 'dashboard_count'), 10);
         var mark_scroll = NEWSBLUR.assets.preference('mark_read_on_scroll_titles');
         var density = NEWSBLUR.assets.preference('density');
@@ -327,14 +328,14 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var $image_preview_sr = this.$('.NB-view-setting-imagepreview-small-right');
         var $image_preview_ll = this.$('.NB-view-setting-imagepreview-large-left');
         var $image_preview_lr = this.$('.NB-view-setting-imagepreview-large-right');
-        var $date_filter_start_1day = this.$('.NB-view-setting-date-filter-start-1day');
-        var $date_filter_start_1week = this.$('.NB-view-setting-date-filter-start-1week');
-        var $date_filter_start_1month = this.$('.NB-view-setting-date-filter-start-1month');
-        var $date_filter_start_1year = this.$('.NB-view-setting-date-filter-start-1year');
-        var $date_filter_end_1day = this.$('.NB-view-setting-date-filter-end-1day');
-        var $date_filter_end_1week = this.$('.NB-view-setting-date-filter-end-1week');
-        var $date_filter_end_1month = this.$('.NB-view-setting-date-filter-end-1month');
-        var $date_filter_end_1year = this.$('.NB-view-setting-date-filter-end-1year');
+        var $date_filter_start_1day = this.$('.NB-date-filter-start-1day');
+        var $date_filter_start_1week = this.$('.NB-date-filter-start-1week');
+        var $date_filter_start_1month = this.$('.NB-date-filter-start-1month');
+        var $date_filter_start_1year = this.$('.NB-date-filter-start-1year');
+        var $date_filter_end_1day = this.$('.NB-date-filter-end-1day');
+        var $date_filter_end_1week = this.$('.NB-date-filter-end-1week');
+        var $date_filter_end_1month = this.$('.NB-date-filter-end-1month');
+        var $date_filter_end_1year = this.$('.NB-date-filter-end-1year');
 
         $oldest.toggleClass('NB-active', order == 'oldest');
         $newest.toggleClass('NB-active', order != 'oldest');
@@ -439,78 +440,6 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             options = { read_filter: 'all' };
         } else if ($target.hasClass("NB-view-setting-readfilter-unread")) {
             options = { read_filter: 'unread' };
-        } else if ($target.hasClass("NB-view-setting-date-filter-start-1day")) {
-            var one_day_ago = this.get_date_string(1);
-            options = {
-                date_filter_start: one_day_ago,
-                date_filter_end: null
-            };
-            this.$('.NB-date-start').val(one_day_ago);
-            this.$('.NB-date-end').val('');
-            this.$('.NB-date-filter-container').addClass('NB-has-dates');
-        } else if ($target.hasClass("NB-view-setting-date-filter-start-1week")) {
-            var one_week_ago = this.get_date_string(7);
-            options = {
-                date_filter_start: one_week_ago,
-                date_filter_end: null
-            };
-            this.$('.NB-date-start').val(one_week_ago);
-            this.$('.NB-date-end').val('');
-            this.$('.NB-date-filter-container').addClass('NB-has-dates');
-        } else if ($target.hasClass("NB-view-setting-date-filter-start-1month")) {
-            var one_month_ago = this.get_date_string(30);
-            options = {
-                date_filter_start: one_month_ago,
-                date_filter_end: null
-            };
-            this.$('.NB-date-start').val(one_month_ago);
-            this.$('.NB-date-end').val('');
-            this.$('.NB-date-filter-container').addClass('NB-has-dates');
-        } else if ($target.hasClass("NB-view-setting-date-filter-start-1year")) {
-            var one_year_ago = this.get_date_string(365);
-            options = {
-                date_filter_start: one_year_ago,
-                date_filter_end: null
-            };
-            this.$('.NB-date-start').val(one_year_ago);
-            this.$('.NB-date-end').val('');
-            this.$('.NB-date-filter-container').addClass('NB-has-dates');
-        } else if ($target.hasClass("NB-view-setting-date-filter-end-1day")) {
-            var one_day_ago = this.get_date_string(1);
-            options = {
-                date_filter_start: null,
-                date_filter_end: one_day_ago
-            };
-            this.$('.NB-date-start').val('');
-            this.$('.NB-date-end').val(one_day_ago);
-            this.$('.NB-date-filter-container').addClass('NB-has-dates');
-        } else if ($target.hasClass("NB-view-setting-date-filter-end-1week")) {
-            var one_week_ago = this.get_date_string(7);
-            options = {
-                date_filter_start: null,
-                date_filter_end: one_week_ago
-            };
-            this.$('.NB-date-start').val('');
-            this.$('.NB-date-end').val(one_week_ago);
-            this.$('.NB-date-filter-container').addClass('NB-has-dates');
-        } else if ($target.hasClass("NB-view-setting-date-filter-end-1month")) {
-            var one_month_ago = this.get_date_string(30);
-            options = {
-                date_filter_start: null,
-                date_filter_end: one_month_ago
-            };
-            this.$('.NB-date-start').val('');
-            this.$('.NB-date-end').val(one_month_ago);
-            this.$('.NB-date-filter-container').addClass('NB-has-dates');
-        } else if ($target.hasClass("NB-view-setting-date-filter-end-1year")) {
-            var one_year_ago = this.get_date_string(365);
-            options = {
-                date_filter_start: null,
-                date_filter_end: one_year_ago
-            };
-            this.$('.NB-date-start').val('');
-            this.$('.NB-date-end').val(one_year_ago);
-            this.$('.NB-date-filter-container').addClass('NB-has-dates');
         } else if ($target.hasClass("NB-view-setting-markscroll-unread")) {
             NEWSBLUR.assets.preference('mark_read_on_scroll_titles', false);
         } else if ($target.hasClass("NB-view-setting-markscroll-read")) {
@@ -599,17 +528,23 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     },
 
     update_feed: function (setting) {
+        var options = {};
         var changed = NEWSBLUR.assets.view_setting(this.options.feed_id, setting);
-        if (!changed) return;
+        if (setting.date_filter_start || setting.date_filter_end) {
+            options.date_filter_start = setting.date_filter_start;
+            options.date_filter_end = setting.date_filter_end;
+        } else if (!changed) {
+            return;
+        }
 
-        this.reload_feed();
+        this.reload_feed(options);
     },
 
-    reload_feed: function () {
+    reload_feed: function (options) {
         if (this.options.on_dashboard) {
             this.options.on_dashboard.initialize();
         } else {
-            NEWSBLUR.reader.reload_feed();
+            NEWSBLUR.reader.reload_feed(options);
         }
     },
 
@@ -713,6 +648,91 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             date_filter_start: null,
             date_filter_end: null
         };
+
+        this.update_feed(options);
+        this.show_correct_feed_view_options_in_menu();
+    },
+
+    change_date_filter_duration: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $target = $(e.currentTarget);
+        var options = {};
+
+        if ($target.hasClass("NB-date-filter-start-1day")) {
+            var one_day_ago = this.get_date_string(1);
+            options = {
+                date_filter_start: one_day_ago,
+                date_filter_end: null
+            };
+            this.$('.NB-date-start').val(one_day_ago);
+            this.$('.NB-date-end').val('');
+            this.$('.NB-date-filter-container').addClass('NB-has-dates');
+        } else if ($target.hasClass("NB-date-filter-start-1week")) {
+            var one_week_ago = this.get_date_string(7);
+            options = {
+                date_filter_start: one_week_ago,
+                date_filter_end: null
+            };
+            this.$('.NB-date-start').val(one_week_ago);
+            this.$('.NB-date-end').val('');
+            this.$('.NB-date-filter-container').addClass('NB-has-dates');
+        } else if ($target.hasClass("NB-date-filter-start-1month")) {
+            var one_month_ago = this.get_date_string(30);
+            options = {
+                date_filter_start: one_month_ago,
+                date_filter_end: null
+            };
+            this.$('.NB-date-start').val(one_month_ago);
+            this.$('.NB-date-end').val('');
+            this.$('.NB-date-filter-container').addClass('NB-has-dates');
+        } else if ($target.hasClass("NB-date-filter-start-1year")) {
+            var one_year_ago = this.get_date_string(365);
+            options = {
+                date_filter_start: one_year_ago,
+                date_filter_end: null
+            };
+            this.$('.NB-date-start').val(one_year_ago);
+            this.$('.NB-date-end').val('');
+            this.$('.NB-date-filter-container').addClass('NB-has-dates');
+        } else if ($target.hasClass("NB-date-filter-end-1day")) {
+            var one_day_ago = this.get_date_string(1);
+            options = {
+                date_filter_start: null,
+                date_filter_end: one_day_ago
+            };
+            this.$('.NB-date-start').val('');
+            this.$('.NB-date-end').val(one_day_ago);
+            this.$('.NB-date-filter-container').addClass('NB-has-dates');
+        } else if ($target.hasClass("NB-date-filter-end-1week")) {
+            var one_week_ago = this.get_date_string(7);
+            options = {
+                date_filter_start: null,
+                date_filter_end: one_week_ago
+            };
+            this.$('.NB-date-start').val('');
+            this.$('.NB-date-end').val(one_week_ago);
+            this.$('.NB-date-filter-container').addClass('NB-has-dates');
+        } else if ($target.hasClass("NB-date-filter-end-1month")) {
+            var one_month_ago = this.get_date_string(30);
+            options = {
+                date_filter_start: null,
+                date_filter_end: one_month_ago
+            };
+            this.$('.NB-date-start').val('');
+            this.$('.NB-date-end').val(one_month_ago);
+            this.$('.NB-date-filter-container').addClass('NB-has-dates');
+        } else if ($target.hasClass("NB-date-filter-end-1year")) {
+            var one_year_ago = this.get_date_string(365);
+            options = {
+                date_filter_start: null,
+                date_filter_end: one_year_ago
+            };
+            this.$('.NB-date-start').val('');
+            this.$('.NB-date-end').val(one_year_ago);
+            this.$('.NB-date-filter-container').addClass('NB-has-dates');
+        }
 
         this.update_feed(options);
         this.show_correct_feed_view_options_in_menu();
