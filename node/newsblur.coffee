@@ -1,5 +1,6 @@
 Sentry = require "@sentry/node"
-Tracing = require "@sentry/tracing"
+Integrations = require("@sentry/integrations")
+{ ProfilingIntegration } = require "@sentry/profiling-node"
 app = require('express')()
 server = require('http').createServer(app)
 log    = require './log.js'
@@ -8,7 +9,8 @@ if envresult.error
   # throw envresult.error
   envresult = require('dotenv').config()
   if envresult.error
-    throw envresult.error
+    log.debug " ---> No .env file found, using defaults"
+    # throw envresult.error
 
 ENV_DEV = process.env.NODE_ENV == 'development'
 ENV_PROD = process.env.NODE_ENV == 'production'
@@ -22,25 +24,22 @@ unread_counts = require('./unread_counts.js').unread_counts
 if not ENV_DEV and not ENV_PROD and not ENV_DOCKER
   throw new Error("Set envvar NODE_ENV=<development,docker,production>")
 
-if ENV_PROD
-  Sentry.init
+if false
+  Sentry.init({
     dsn: process.env.SENTRY_DSN,
     debug: true,
-    tracesSampleRate: 1.0
+    serverName: process.env.SERVER_NAME
+  })
 
-  app.use(Sentry.Handlers.requestHandler())
-
-original_page(app)
-original_text(app)
-favicons(app)
-unread_counts(server)
-
-if ENV_PROD
   app.get "/debug", (req, res) ->
     throw new Error("Debugging Sentry")
 
-  app.use(Sentry.Handlers.errorHandler())
-  log.debug "Setting up Sentry debugging: #{process.env.SENTRY_DSN.substr(0, 20)}..."
+  log.debug "Setting up Sentry debugging: #{process.env.SENTRY_DSN?.substr(0, 60)}..."
+
+original_page app
+original_text app
+favicons app
+unread_counts server
 
 log.debug "Starting NewsBlur Node Server: #{process.env.SERVER_NAME || 'localhost'}"
 server.listen(8008)

@@ -17,21 +17,24 @@
 ## Added unit tests for unicode encoding/decoding.
 ## More realistic, grid like data used for performance tests.
 
+import datetime
+import math
 import re
 import time
-import math
 import unittest
-import datetime
 
 import cjson
+
 _exception = cjson.DecodeError
 
 # The object tests should be order-independent. They're not.
 # i.e. they should test for existence of keys and values
 # with read/write invariance.
 
+
 def _removeWhitespace(str):
     return str.replace(" ", "")
+
 
 class JsonTest(unittest.TestCase):
     def testReadEmptyObject(self):
@@ -44,15 +47,15 @@ class JsonTest(unittest.TestCase):
 
     def testReadStringValue(self):
         obj = cjson.decode('{ "name" : "Patrick" }')
-        self.assertEqual({ "name" : "Patrick" }, obj)
+        self.assertEqual({"name": "Patrick"}, obj)
 
     def testReadEscapedQuotationMark(self):
         obj = cjson.decode(r'"\""')
         self.assertEqual(r'"', obj)
 
-#    def testReadEscapedSolidus(self):
-#        obj = cjson.decode(r'"\/"')
-#        self.assertEqual(r'/', obj)
+    #    def testReadEscapedSolidus(self):
+    #        obj = cjson.decode(r'"\/"')
+    #        self.assertEqual(r'/', obj)
 
     def testReadEscapedReverseSolidus(self):
         obj = cjson.decode(r'"\\"')
@@ -82,19 +85,19 @@ class JsonTest(unittest.TestCase):
         obj = cjson.decode(r'"\u000A"')
         self.assertEqual("\n", obj)
         obj = cjson.decode(r'"\u1001"')
-        self.assertEqual('\u1001', obj)
+        self.assertEqual("\u1001", obj)
 
     def testWriteEscapedQuotationMark(self):
         s = cjson.encode(r'"')
         self.assertEqual(r'"\""', _removeWhitespace(s))
 
     def testWriteEscapedSolidus(self):
-        s = cjson.encode(r'/')
-        #self.assertEqual(r'"\/"', _removeWhitespace(s))
+        s = cjson.encode(r"/")
+        # self.assertEqual(r'"\/"', _removeWhitespace(s))
         self.assertEqual('"/"', _removeWhitespace(s))
 
     def testWriteNonEscapedSolidus(self):
-        s = cjson.encode(r'/')
+        s = cjson.encode(r"/")
         self.assertEqual(r'"/"', _removeWhitespace(s))
 
     def testWriteEscapedReverseSolidus(self):
@@ -122,7 +125,7 @@ class JsonTest(unittest.TestCase):
         self.assertEqual(r'"\t"', _removeWhitespace(s))
 
     def testWriteEscapedHexCharacter(self):
-        s = cjson.encode('\u1001')
+        s = cjson.encode("\u1001")
         self.assertEqual(r'"\u1001"', _removeWhitespace(s))
 
     def testReadBadEscapedHexCharacter(self):
@@ -141,8 +144,8 @@ class JsonTest(unittest.TestCase):
         self.assertRaises(_exception, self.doReadBadArray)
 
     def doReadBadArray(self):
-        cjson.decode('[1,2,3,,]')
-        
+        cjson.decode("[1,2,3,,]")
+
     def testReadBadObjectSyntax(self):
         self.assertRaises(_exception, self.doReadBadObjectSyntax)
 
@@ -150,37 +153,37 @@ class JsonTest(unittest.TestCase):
         cjson.decode('{"age", 44}')
 
     def testWriteStringValue(self):
-        s = cjson.encode({ "name" : "Patrick" })
+        s = cjson.encode({"name": "Patrick"})
         self.assertEqual('{"name":"Patrick"}', _removeWhitespace(s))
 
     def testReadIntegerValue(self):
         obj = cjson.decode('{ "age" : 44 }')
-        self.assertEqual({ "age" : 44 }, obj)
+        self.assertEqual({"age": 44}, obj)
 
     def testReadNegativeIntegerValue(self):
         obj = cjson.decode('{ "key" : -44 }')
-        self.assertEqual({ "key" : -44 }, obj)
-        
+        self.assertEqual({"key": -44}, obj)
+
     def testReadFloatValue(self):
         obj = cjson.decode('{ "age" : 44.5 }')
-        self.assertEqual({ "age" : 44.5 }, obj)
+        self.assertEqual({"age": 44.5}, obj)
 
     def testReadNegativeFloatValue(self):
         obj = cjson.decode(' { "key" : -44.5 } ')
-        self.assertEqual({ "key" : -44.5 }, obj)
+        self.assertEqual({"key": -44.5}, obj)
 
     def testReadBadNumber(self):
         self.assertRaises(_exception, self.doReadBadNumber)
 
     def doReadBadNumber(self):
-        cjson.decode('-44.4.4')
+        cjson.decode("-44.4.4")
 
     def testReadSmallObject(self):
         obj = cjson.decode('{ "name" : "Patrick", "age":44} ')
-        self.assertEqual({ "age" : 44, "name" : "Patrick" }, obj)        
+        self.assertEqual({"age": 44, "name": "Patrick"}, obj)
 
     def testReadEmptyArray(self):
-        obj = cjson.decode('[]')
+        obj = cjson.decode("[]")
         self.assertEqual([], obj)
 
     def testWriteEmptyArray(self):
@@ -191,10 +194,10 @@ class JsonTest(unittest.TestCase):
         self.assertEqual(["a", "b", "c"], obj)
 
     def testWriteSmallArray(self):
-        self.assertEqual('[1,2,3,4]', _removeWhitespace(cjson.encode([1, 2, 3, 4])))
+        self.assertEqual("[1,2,3,4]", _removeWhitespace(cjson.encode([1, 2, 3, 4])))
 
     def testWriteSmallObject(self):
-        s = cjson.encode({ "name" : "Patrick", "age": 44 })
+        s = cjson.encode({"name": "Patrick", "age": 44})
         self.assertEqual('{"age":44,"name":"Patrick"}', _removeWhitespace(s))
 
     def testWriteFloat(self):
@@ -228,33 +231,34 @@ class JsonTest(unittest.TestCase):
         self.assertEqual("[true,false,null]", _removeWhitespace(cjson.encode((True, False, None))))
 
     def testReadComplexObject(self):
-        src = '''
+        src = """
     { "name": "Patrick", "age" : 44, "Employed?" : true, "Female?" : false, "grandchildren":null }
-'''
+"""
         obj = cjson.decode(src)
-        self.assertEqual({"name":"Patrick","age":44,"Employed?":True,"Female?":False,"grandchildren":None}, obj)
+        self.assertEqual(
+            {"name": "Patrick", "age": 44, "Employed?": True, "Female?": False, "grandchildren": None}, obj
+        )
 
     def testReadLongArray(self):
-        src = '''[    "used",
+        src = """[    "used",
     "abused",
     "confused",
     true, false, null,
     1,
     2,
     [3, 4, 5]]
-'''
+"""
         obj = cjson.decode(src)
-        self.assertEqual(["used","abused","confused", True, False, None,
-                          1,2,[3,4,5]], obj)
+        self.assertEqual(["used", "abused", "confused", True, False, None, 1, 2, [3, 4, 5]], obj)
 
     def testReadIncompleteArray(self):
         self.assertRaises(_exception, self.doReadIncompleteArray)
 
     def doReadIncompleteArray(self):
-        cjson.decode('[')
+        cjson.decode("[")
 
     def testReadComplexArray(self):
-        src = '''
+        src = """
 [
     { "name": "Patrick", "age" : 44,
       "Employed?" : true, "Female?" : false,
@@ -266,22 +270,38 @@ class JsonTest(unittest.TestCase):
     2,
     [3, 4, 5]
 ]
-'''
+"""
         obj = cjson.decode(src)
-        self.assertEqual([{"name":"Patrick","age":44,"Employed?":True,"Female?":False,"grandchildren":None},
-                          "used","abused","confused",
-                          1,2,[3,4,5]], obj)
+        self.assertEqual(
+            [
+                {"name": "Patrick", "age": 44, "Employed?": True, "Female?": False, "grandchildren": None},
+                "used",
+                "abused",
+                "confused",
+                1,
+                2,
+                [3, 4, 5],
+            ],
+            obj,
+        )
 
     def testWriteComplexArray(self):
-        obj = [{"name":"Patrick","age":44,"Employed?":True,"Female?":False,"grandchildren":None},
-               "used","abused","confused",
-               1,2,[3,4,5]]
-        self.assertEqual('[{"Female?":false,"age":44,"name":"Patrick","grandchildren":null,"Employed?":true},"used","abused","confused",1,2,[3,4,5]]',
-                         _removeWhitespace(cjson.encode(obj)))
-
+        obj = [
+            {"name": "Patrick", "age": 44, "Employed?": True, "Female?": False, "grandchildren": None},
+            "used",
+            "abused",
+            "confused",
+            1,
+            2,
+            [3, 4, 5],
+        ]
+        self.assertEqual(
+            '[{"Female?":false,"age":44,"name":"Patrick","grandchildren":null,"Employed?":true},"used","abused","confused",1,2,[3,4,5]]',
+            _removeWhitespace(cjson.encode(obj)),
+        )
 
     def testReadWriteCopies(self):
-        orig_obj = {'a':' " '}
+        orig_obj = {"a": ' " '}
         json_str = cjson.encode(orig_obj)
         copy_obj = cjson.decode(json_str)
         self.assertEqual(orig_obj, copy_obj)
@@ -293,126 +313,159 @@ class JsonTest(unittest.TestCase):
         self.assertEqual(str("[1,2,3]", "utf-8"), _removeWhitespace(s))
 
     def testReadEmptyObjectAtEndOfArray(self):
-        self.assertEqual(["a","b","c",{}],
-                         cjson.decode('["a","b","c",{}]'))
+        self.assertEqual(["a", "b", "c", {}], cjson.decode('["a","b","c",{}]'))
 
     def testReadEmptyObjectMidArray(self):
-        self.assertEqual(["a","b",{},"c"],
-                         cjson.decode('["a","b",{},"c"]'))
+        self.assertEqual(["a", "b", {}, "c"], cjson.decode('["a","b",{},"c"]'))
 
     def testReadClosingObjectBracket(self):
-        self.assertEqual({"a":[1,2,3]}, cjson.decode('{"a":[1,2,3]}'))
+        self.assertEqual({"a": [1, 2, 3]}, cjson.decode('{"a":[1,2,3]}'))
 
     def testEmptyObjectInList(self):
-        obj = cjson.decode('[{}]')
+        obj = cjson.decode("[{}]")
         self.assertEqual([{}], obj)
 
     def testObjectWithEmptyList(self):
         obj = cjson.decode('{"test": [] }')
-        self.assertEqual({"test":[]}, obj)
+        self.assertEqual({"test": []}, obj)
 
     def testObjectWithNonEmptyList(self):
         obj = cjson.decode('{"test": [3, 4, 5] }')
-        self.assertEqual({"test":[3, 4, 5]}, obj)
+        self.assertEqual({"test": [3, 4, 5]}, obj)
 
     def testWriteLong(self):
         self.assertEqual("12345678901234567890", cjson.encode(12345678901234567890))
-        
+
     def testEncoderExtension(self):
         def dateEncoder(d):
             assert isinstance(d, datetime.date)
-            return 'new Date(Date.UTC(%d,%d,%d))'%(d.year, d.month, d.day)
-        self.assertEqual(cjson.encode([1,datetime.date(2007,1,2),2], extension=dateEncoder), '[1, new Date(Date.UTC(2007,1,2)), 2]')
+            return "new Date(Date.UTC(%d,%d,%d))" % (d.year, d.month, d.day)
+
+        self.assertEqual(
+            cjson.encode([1, datetime.date(2007, 1, 2), 2], extension=dateEncoder),
+            "[1, new Date(Date.UTC(2007,1,2)), 2]",
+        )
         self.assertRaises(cjson.EncodeError, lambda: cjson.encode(1, extension=0))
 
     def testDecoderExtension(self):
-        re_date=re.compile('^new\sDate\(Date\.UTC\(.*?\)\)')
-        def dateDecoder(json,idx):
-            json=json[idx:]
-            m=re_date.match(json)
-            if not m: raise 'cannot parse JSON string as Date object: %s'%json[idx:]
-            args=cjson.decode('[%s]'%json[18:m.end()-2])
-            dt=datetime.date(*args)
-            return (dt,m.end())
-        self.assertEqual(cjson.decode('[1, new Date(Date.UTC(2007,1,2)), 2]', extension=dateDecoder), [1,datetime.date(2007,1,2),2])
-        self.assertEqual(cjson.decode('[1, new Date(Date.UTC( 2007, 1 , 2 )) , 2]', extension=dateDecoder), [1,datetime.date(2007,1,2),2])
-        self.assertRaises(cjson.DecodeError, lambda: cjson.decode('1', extension=0))
+        re_date = re.compile("^new\sDate\(Date\.UTC\(.*?\)\)")
+
+        def dateDecoder(json, idx):
+            json = json[idx:]
+            m = re_date.match(json)
+            if not m:
+                raise "cannot parse JSON string as Date object: %s" % json[idx:]
+            args = cjson.decode("[%s]" % json[18 : m.end() - 2])
+            dt = datetime.date(*args)
+            return (dt, m.end())
+
+        self.assertEqual(
+            cjson.decode("[1, new Date(Date.UTC(2007,1,2)), 2]", extension=dateDecoder),
+            [1, datetime.date(2007, 1, 2), 2],
+        )
+        self.assertEqual(
+            cjson.decode("[1, new Date(Date.UTC( 2007, 1 , 2 )) , 2]", extension=dateDecoder),
+            [1, datetime.date(2007, 1, 2), 2],
+        )
+        self.assertRaises(cjson.DecodeError, lambda: cjson.decode("1", extension=0))
 
     def testEncodeKey2Str(self):
-        d={'1':'str 1', 1:'int 1', 3.1415:'pi'}
+        d = {"1": "str 1", 1: "int 1", 3.1415: "pi"}
         self.assertRaises(cjson.EncodeError, lambda: cjson.encode(d))
         # NOTE: decode needed for order invariance
-        self.assertEqual(cjson.decode(cjson.encode(d, key2str=True)),
-            {"1": "str 1", "1": "int 1", "3.1415": "pi"})
+        self.assertEqual(
+            cjson.decode(cjson.encode(d, key2str=True)), {"1": "str 1", "1": "int 1", "3.1415": "pi"}
+        )
 
     def testUnicodeEncode(self):
-        self.assertEqual(cjson.encode({'b':2}), '{"b": 2}')
-        self.assertEqual(cjson.encode({'o"':'öõüû'}), r'{"o\"": "\u00f6\u0151\u00fc\u0171"}')
-        self.assertEqual(cjson.encode('öõüû', encoding='latin2'), r'"\u00f6\u0151\u00fc\u0171"') 
-        self.assertRaises(cjson.EncodeError, lambda: cjson.encode('öõüû', encoding='ascii'))
+        self.assertEqual(cjson.encode({"b": 2}), '{"b": 2}')
+        self.assertEqual(cjson.encode({'o"': "öõüû"}), r'{"o\"": "\u00f6\u0151\u00fc\u0171"}')
+        self.assertEqual(cjson.encode("öõüû", encoding="latin2"), r'"\u00f6\u0151\u00fc\u0171"')
+        self.assertRaises(cjson.EncodeError, lambda: cjson.encode("öõüû", encoding="ascii"))
 
     def testUnicodeDecode(self):
-        self.assertEqual(cjson.decode('{"b": 2}', all_unicode=True), {'b':2})
-        self.assertEqual(cjson.decode(r'{"o\"": "\u00f6\u0151\u00fc\u0171"}'), {'o"':'öõüû'})
-        self.assertEqual(cjson.decode(r'{"o\"": "\u00f6\u0151\u00fc\u0171"}', encoding='latin2'), {'o"':'öõüû'})
-        self.assertEqual(cjson.decode(r'"\u00f6\u0151\u00fc\u0171"', all_unicode=True), 'öõüû')
-        self.assertEqual(cjson.decode(r'"\u00f6\u0151\u00fc\u0171"', encoding='latin2'), 'öõüû')
-        self.assertRaises(cjson.DecodeError, lambda: cjson.decode('"öõüû"', encoding='ascii'))
-            
+        self.assertEqual(cjson.decode('{"b": 2}', all_unicode=True), {"b": 2})
+        self.assertEqual(cjson.decode(r'{"o\"": "\u00f6\u0151\u00fc\u0171"}'), {'o"': "öõüû"})
+        self.assertEqual(
+            cjson.decode(r'{"o\"": "\u00f6\u0151\u00fc\u0171"}', encoding="latin2"), {'o"': "öõüû"}
+        )
+        self.assertEqual(cjson.decode(r'"\u00f6\u0151\u00fc\u0171"', all_unicode=True), "öõüû")
+        self.assertEqual(cjson.decode(r'"\u00f6\u0151\u00fc\u0171"', encoding="latin2"), "öõüû")
+        self.assertRaises(cjson.DecodeError, lambda: cjson.decode('"öõüû"', encoding="ascii"))
+
     def testUnicodeEncodeDecode(self):
-        for s in ('abc', 'aáé', 'öõüû'):
-            self.assertEqual(cjson.decode(cjson.encode(s)), s.decode('latin1'))
+        for s in ("abc", "aáé", "öõüû"):
+            self.assertEqual(cjson.decode(cjson.encode(s)), s.decode("latin1"))
+
 
 def measureEncoderThroughput(data):
-    bytes=0
-    st=time.time()
-    cnt=0
+    bytes = 0
+    st = time.time()
+    cnt = 0
     while True:
-        dt=time.time()-st
-        if dt>=0.5 and cnt>9: break
-        bytes+=len(cjson.encode(data))
-        cnt+=1
-    return int(bytes/1024/dt)
+        dt = time.time() - st
+        if dt >= 0.5 and cnt > 9:
+            break
+        bytes += len(cjson.encode(data))
+        cnt += 1
+    return int(bytes / 1024 / dt)
+
 
 def measureDecoderThroughput(data):
-    json=cjson.encode(data)
-    bytes=0
-    st=time.time()
-    cnt=0
+    json = cjson.encode(data)
+    bytes = 0
+    st = time.time()
+    cnt = 0
     while True:
-        dt=time.time()-st
-        if dt>=0.5 and cnt>9: break
+        dt = time.time() - st
+        if dt >= 0.5 and cnt > 9:
+            break
         cjson.decode(json)
-        bytes+=len(json)
-        cnt+=1
-    return int(math.floor(bytes/dt/1024.0+0.5))
+        bytes += len(json)
+        cnt += 1
+    return int(math.floor(bytes / dt / 1024.0 + 0.5))
+
 
 def measureThroughput():
     # Try to imitate realistic data, for example a large grid of records
-    data=[
-        dict([
-            ('cell(%d,%d)'%(x,y), (
-                None, False, True, 0, 1,
-                x+y, x*y, math.pi, math.pi*x*y,
-                'str(%d,%d)%s'%(x,y,'#'*(x/10)),
-                'unicode[%04X]:%s'%(x*y,chr(x*y)),
-            ))
-            for x in range(y)
-        ])
-        for y in range(1,100)
+    data = [
+        dict(
+            [
+                (
+                    "cell(%d,%d)" % (x, y),
+                    (
+                        None,
+                        False,
+                        True,
+                        0,
+                        1,
+                        x + y,
+                        x * y,
+                        math.pi,
+                        math.pi * x * y,
+                        "str(%d,%d)%s" % (x, y, "#" * (x / 10)),
+                        "unicode[%04X]:%s" % (x * y, chr(x * y)),
+                    ),
+                )
+                for x in range(y)
+            ]
+        )
+        for y in range(1, 100)
     ]
-    json=cjson.encode(data)
-    print('Test data: tuples in dicts in a list, %d bytes as JSON string'%len(json))
-    print('Encoder throughput: ~%d kbyte/s'%measureEncoderThroughput(data))
-    print('Decoder throughput: ~%d kbyte/s'%measureDecoderThroughput(data))
+    json = cjson.encode(data)
+    print("Test data: tuples in dicts in a list, %d bytes as JSON string" % len(json))
+    print("Encoder throughput: ~%d kbyte/s" % measureEncoderThroughput(data))
+    print("Decoder throughput: ~%d kbyte/s" % measureDecoderThroughput(data))
+
 
 def main():
     try:
         unittest.main()
-        #suite = unittest.TestLoader().loadTestsFromTestCase(JsonTest)
-        #unittest.TextTestRunner(verbosity=2).run(suite)
+        # suite = unittest.TestLoader().loadTestsFromTestCase(JsonTest)
+        # unittest.TextTestRunner(verbosity=2).run(suite)
     finally:
         measureThroughput()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

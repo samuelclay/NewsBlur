@@ -1,15 +1,12 @@
-
-
-import six
 import requests
+import six
 from django.conf import settings
 from django.core.mail.backends.base import BaseEmailBackend
 from django.core.mail.message import sanitize_address
 from django.utils.encoding import force_text
-
 from requests.packages.urllib3.filepost import encode_multipart_formdata
 
-__version__ = '0.8.0'
+__version__ = "0.8.0"
 version = __version__
 
 
@@ -21,15 +18,15 @@ version = __version__
 #
 # structure is SMTP_HEADER: (api_name, data_transform_function)
 HEADERS_MAP = {
-    'X-Mailgun-Tag': ('o:tag', lambda x: x),
-    'X-Mailgun-Campaign-Id': ('o:campaign', lambda x: x),
-    'X-Mailgun-Dkim': ('o:dkim', lambda x: x),
-    'X-Mailgun-Deliver-By': ('o:deliverytime', lambda x: x),
-    'X-Mailgun-Drop-Message': ('o:testmode', lambda x: x),
-    'X-Mailgun-Track': ('o:tracking', lambda x: x),
-    'X-Mailgun-Track-Clicks': ('o:tracking-clicks', lambda x: x),
-    'X-Mailgun-Track-Opens': ('o:tracking-opens', lambda x: x),
-    'X-Mailgun-Variables': lambda v_k: (('v:%s' % v_k[0]), v_k[1]),
+    "X-Mailgun-Tag": ("o:tag", lambda x: x),
+    "X-Mailgun-Campaign-Id": ("o:campaign", lambda x: x),
+    "X-Mailgun-Dkim": ("o:dkim", lambda x: x),
+    "X-Mailgun-Deliver-By": ("o:deliverytime", lambda x: x),
+    "X-Mailgun-Drop-Message": ("o:testmode", lambda x: x),
+    "X-Mailgun-Track": ("o:tracking", lambda x: x),
+    "X-Mailgun-Track-Clicks": ("o:tracking-clicks", lambda x: x),
+    "X-Mailgun-Track-Opens": ("o:tracking-opens", lambda x: x),
+    "X-Mailgun-Variables": lambda v_k: (("v:%s" % v_k[0]), v_k[1]),
 }
 
 
@@ -38,20 +35,16 @@ class MailgunAPIError(Exception):
 
 
 class MailgunBackend(BaseEmailBackend):
-    """A Django Email backend that uses mailgun.
-    """
+    """A Django Email backend that uses mailgun."""
 
     def __init__(self, fail_silently=False, *args, **kwargs):
-        access_key, server_name = (kwargs.pop('access_key', None),
-                                   kwargs.pop('server_name', None))
+        access_key, server_name = (kwargs.pop("access_key", None), kwargs.pop("server_name", None))
 
-        super(MailgunBackend, self).__init__(
-            fail_silently=fail_silently,
-            *args, **kwargs)
+        super(MailgunBackend, self).__init__(fail_silently=fail_silently, *args, **kwargs)
 
         try:
-            self._access_key = access_key or getattr(settings, 'MAILGUN_ACCESS_KEY')
-            self._server_name = server_name or getattr(settings, 'MAILGUN_SERVER_NAME')
+            self._access_key = access_key or getattr(settings, "MAILGUN_ACCESS_KEY")
+            self._server_name = server_name or getattr(settings, "MAILGUN_SERVER_NAME")
         except AttributeError:
             if fail_silently:
                 self._access_key, self._server_name = None
@@ -62,13 +55,11 @@ class MailgunBackend(BaseEmailBackend):
         self._headers_map = HEADERS_MAP
 
     def open(self):
-        """Stub for open connection, all sends are done over HTTP POSTs
-        """
+        """Stub for open connection, all sends are done over HTTP POSTs"""
         pass
 
     def close(self):
-        """Close any open HTTP connections to the API server.
-        """
+        """Close any open HTTP connections to the API server."""
         pass
 
     def _map_smtp_headers_to_api_parameters(self, email_message):
@@ -102,62 +93,120 @@ class MailgunBackend(BaseEmailBackend):
             return False
         from_email = sanitize_address(email_message.from_email, email_message.encoding)
 
-        to_recipients = [sanitize_address(addr, email_message.encoding)
-                      for addr in email_message.to]
+        to_recipients = [sanitize_address(addr, email_message.encoding) for addr in email_message.to]
 
         try:
             post_data = []
-            post_data.append(('to', (",".join(to_recipients)),))
+            post_data.append(
+                (
+                    "to",
+                    (",".join(to_recipients)),
+                )
+            )
             if email_message.bcc:
-                bcc_recipients = [sanitize_address(addr, email_message.encoding) for addr in email_message.bcc]
-                post_data.append(('bcc', (",".join(bcc_recipients)),))
+                bcc_recipients = [
+                    sanitize_address(addr, email_message.encoding) for addr in email_message.bcc
+                ]
+                post_data.append(
+                    (
+                        "bcc",
+                        (",".join(bcc_recipients)),
+                    )
+                )
             if email_message.cc:
                 cc_recipients = [sanitize_address(addr, email_message.encoding) for addr in email_message.cc]
-                post_data.append(('cc', (",".join(cc_recipients)),))
-            post_data.append(('text', email_message.body,))
-            post_data.append(('subject', email_message.subject,))
-            post_data.append(('from', from_email,))
+                post_data.append(
+                    (
+                        "cc",
+                        (",".join(cc_recipients)),
+                    )
+                )
+            post_data.append(
+                (
+                    "text",
+                    email_message.body,
+                )
+            )
+            post_data.append(
+                (
+                    "subject",
+                    email_message.subject,
+                )
+            )
+            post_data.append(
+                (
+                    "from",
+                    from_email,
+                )
+            )
             # get our recipient variables if they were passed in
-            recipient_variables = email_message.extra_headers.pop('recipient_variables', None)
+            recipient_variables = email_message.extra_headers.pop("recipient_variables", None)
             if recipient_variables is not None:
-                post_data.append(('recipient-variables', recipient_variables, ))
+                post_data.append(
+                    (
+                        "recipient-variables",
+                        recipient_variables,
+                    )
+                )
 
             for name, value in self._map_smtp_headers_to_api_parameters(email_message):
-                post_data.append((name, value, ))
+                post_data.append(
+                    (
+                        name,
+                        value,
+                    )
+                )
 
-            if hasattr(email_message, 'alternatives') and email_message.alternatives:
+            if hasattr(email_message, "alternatives") and email_message.alternatives:
                 for alt in email_message.alternatives:
-                    if alt[1] == 'text/html':
-                        post_data.append(('html', alt[0],))
+                    if alt[1] == "text/html":
+                        post_data.append(
+                            (
+                                "html",
+                                alt[0],
+                            )
+                        )
                         break
 
             # Map Reply-To header if present
             try:
-                if hasattr(email_message, 'reply_to'):
-                    post_data.append((
-                        "h:Reply-To",
-                        ", ".join(map(force_text, email_message.reply_to)),
-                    ))
-                elif 'Reply-To' in email_message.extra_headers:
-                    post_data.append((
-                        "h:Reply-To",
-                        email_message.extra_headers['Reply-To'],
-                    ))
+                if hasattr(email_message, "reply_to"):
+                    post_data.append(
+                        (
+                            "h:Reply-To",
+                            ", ".join(map(force_text, email_message.reply_to)),
+                        )
+                    )
+                elif "Reply-To" in email_message.extra_headers:
+                    post_data.append(
+                        (
+                            "h:Reply-To",
+                            email_message.extra_headers["Reply-To"],
+                        )
+                    )
             except AttributeError:
                 pass
 
             if email_message.attachments:
                 for attachment in email_message.attachments:
-                    post_data.append(('attachment', (attachment[0], attachment[1],)))
+                    post_data.append(
+                        (
+                            "attachment",
+                            (
+                                attachment[0],
+                                attachment[1],
+                            ),
+                        )
+                    )
                 content, header = encode_multipart_formdata(post_data)
-                headers = {'Content-Type': header}
+                headers = {"Content-Type": header}
             else:
                 content = post_data
                 headers = None
 
-            response = requests.post(self._api_url + "messages",
-                    auth=("api", self._access_key),
-                    data=content, headers=headers)
+            response = requests.post(
+                self._api_url + "messages", auth=("api", self._access_key), data=content, headers=headers
+            )
         except:
             if not self.fail_silently:
                 raise

@@ -3,7 +3,7 @@
 # it is not because they are wrong, just that they may be considered
 # controversial. I'd rather err on the side of safety, which is contrary
 # to the trusim: "playing it safe can cause a lot of damage in the long run".
-# 
+#
 # We'll see where this goes. This is an experiment. - Sam, July 6th, 2012
 
 

@@ -1,38 +1,74 @@
 #!/usr/bin/env python
 
+import argparse
+import json
 import os
 import re
-import time
 import select
 import subprocess
 import sys
-import json
+import time
+
 from requests.exceptions import ConnectionError
 
-sys.path.insert(0, '/srv/newsblur')
-os.environ['DJANGO_SETTINGS_MODULE'] = 'newsblur_web.settings'
+sys.path.insert(0, "/srv/newsblur")
+os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur_web.settings"
 
-NEWSBLUR_USERNAME = 'nb'
+NEWSBLUR_USERNAME = "nb"
 IGNORE_HOSTS = [
-    'app-push',
+    "app-push",
 ]
 
-def main(roles=None, command=None, path=None):
+# Use this to count the number of times each user shows up in the logs. Good for finding abusive accounts.
+# tail -n20000 logs/newsblur.log | sed 's/\x1b\[[0-9;]*m//g' | sed -En 's/.*?[0-9]s\] \[([a-zA-Z0-9]+\*?)\].*/\1/p' | sort | uniq -c | sort
+"""
+tail -n20000 logs/newsblur.log \
+  | sed 's/\x1b\[[0-9;]*m//g' \
+  | sed -En 's/.*?[0-9]s\] \[([a-zA-Z0-9]+\*?)\].*/\1/p' \
+  | sort \
+  | uniq -c \
+  | sort -nr
+"""
+
+
+def main(hostnames=None, roles=None, command=None, path=None):
     delay = 1
 
-    hosts = subprocess.check_output(['ansible-inventory', '--list'])
+    hosts = subprocess.check_output(["ansible-inventory", "--list"])
     if not hosts:
         print(" ***> Could not load ansible-inventory!")
         return
     hosts = json.loads(hosts)
 
+    if not path:
+        path = "/srv/newsblur/logs/newsblur.log"
+    if not command:
+        command = "tail -f"
+
+    if hostnames in ["app", "task", "push"]:
+        roles = hostnames
+        hostnames = None
+
+    if hostnames:
+        roles = hosts
+        hostnames = validate_hostnames(hostnames.split(","), hosts)
+
     if not roles:
-        roles = ['app']
+        roles = ["app"]
+    if not isinstance(roles, list):
+        roles = [roles]
 
     while True:
         try:
-            streams = create_streams_for_roles(hosts, roles, command=command, path=path)
-            print(" --- Loading %s %s Log Tails ---" % (len(streams), roles))
+            if hostnames:
+                streams = []
+                found = set()
+                for host in hostnames:
+                    follow_host(roles[0], streams, found, host, command, path)
+                print(" --- Loading %s %s Log Tails ---" % (len(streams), hostnames))
+            else:
+                streams = create_streams_for_roles(hosts, roles, command=command, path=path)
+                print(" --- Loading %s %s Log Tails ---" % (len(streams), roles))
             read_streams(streams)
         # except UnicodeDecodeError: # unexpected end of data
         #     print " --- Lost connections - Retrying... ---"
@@ -47,51 +83,67 @@ def main(roles=None, command=None, path=None):
             print(" --- End of Logging ---")
             break
 
+
+def validate_hostnames(hostnames, hosts):
+    validated_hostnames = []
+    for hostname in hostnames:
+        if hostname in hosts["_meta"]["hostvars"]:
+            validated_hostnames.append(hostname)
+        else:
+            print(f"Hostname {hostname} not found in inventory.")
+    print(f"Validated hostnames: {validated_hostnames}")
+    return validated_hostnames
+
+
 def create_streams_for_roles(hosts, roles, command=None, path=None):
     streams = list()
     found = set()
-
-    if not path:
-        path = "/srv/newsblur/logs/newsblur.log"
-    if not command:
-        command = "tail -f"
     for role in roles:
         if role in hosts:
-            for hostname in hosts[role]['hosts']:
-                if any(h in hostname for h in IGNORE_HOSTS) and role != 'push': continue
+            for hostname in hosts[role]["hosts"]:
+                if any(h in hostname for h in IGNORE_HOSTS) and role != "push":
+                    continue
                 follow_host(hosts, streams, found, hostname, command, path)
         else:
             host = role
-            role = re.search(r'([^0-9]+)', host).group()
-            for hostname in hosts[role]:
-                if hostname['name'] == host:
-                    follow_host(hosts, streams, found, hostname, command, path)
+            follow_host(hosts, streams, found, host, command)
 
     return streams
 
+
 def follow_host(hosts, streams, found, hostname, command=None, path=None):
     if isinstance(hostname, dict):
-        address = hostname['address']
-        hostname = hostname['name']
-    elif ':' in hostname:
-        hostname, address = hostname.split(':', 1)
+        address = hostname["address"]
+        hostname = hostname["name"]
+    elif ":" in hostname:
+        hostname, address = hostname.split(":", 1)
     elif isinstance(hostname, tuple):
         hostname, address = hostname[0], hostname[1]
     else:
-        address = hosts['_meta']['hostvars'][hostname]['ansible_host']
+        address = hosts["_meta"]["hostvars"][hostname]["ansible_host"]
         print(" ---> Following %s \t[%s]" % (hostname, address))
-    if hostname in found: return
-    s = subprocess.Popen(["ssh", "-l", NEWSBLUR_USERNAME, 
-                            "-i", os.path.expanduser("/srv/secrets-newsblur/keys/docker.key"),
-                            address, "%s %s" % (command, path)], stdout=subprocess.PIPE)
+    if hostname in found:
+        return
+    s = subprocess.Popen(
+        [
+            "ssh",
+            "-l",
+            NEWSBLUR_USERNAME,
+            "-i",
+            os.path.expanduser("/srv/secrets-newsblur/keys/docker.key"),
+            address,
+            "%s %s" % (command, path),
+        ],
+        stdout=subprocess.PIPE,
+    )
     s.name = hostname
     streams.append(s)
     found.add(hostname)
 
+
 def read_streams(streams):
     while True:
-        r, _, _ = select.select(
-            [stream.stdout.fileno() for stream in streams], [], [])
+        r, _, _ = select.select([stream.stdout.fileno() for stream in streams], [], [])
         for fileno in r:
             for stream in streams:
                 if stream.stdout.fileno() != fileno:
@@ -101,12 +153,19 @@ def read_streams(streams):
                     streams.remove(stream)
                     break
                 try:
-                    combination_message = "[%-13s] %s" % (stream.name[:13], data.decode())
+                    combination_message = "[%-15s] %s" % (stream.name[:15], data.decode())
                 except UnicodeDecodeError:
                     continue
                 sys.stdout.write(combination_message)
                 sys.stdout.flush()
                 break
 
+
 if __name__ == "__main__":
-    main(*sys.argv[1:])
+    parser = argparse.ArgumentParser(description="Tail logs from multiple hosts.")
+    parser.add_argument("hostnames", help="Comma-separated list of hostnames", nargs="?")
+    parser.add_argument("roles", help="Comma-separated list of roles", nargs="?")
+    parser.add_argument("--command", help="Command to run on the remote host")
+    parser.add_argument("--path", help="Path to the log file")
+    args = parser.parse_args()
+    main(args.hostnames, command=args.command, path=args.path)

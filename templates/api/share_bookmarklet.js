@@ -1,11 +1,13 @@
-{% load bookmarklet_includes utils_tags %}
+{% load utils_tags %}
 
 (function() {
     window.NEWSBLUR = window.NEWSBLUR || {};
     var exports = undefined;
-
-    {% include_bookmarklet_js %}
-
+    
+    {% include_javascripts_raw "bookmarklet" %}
+    
+    var $ = window.NB_$;
+    console.log('jquery', $, window.NB_$);
     NEWSBLUR.Bookmarklet = function(options) {
         var defaults = {};
         
@@ -473,6 +475,7 @@
                 $.make('img', { src: 'data:image/png;charset=utf-8;base64,' + this.images['accept_image'] }),
                 'Saved'
             ]));
+            this.pre_share_check_story();
             setTimeout(function() {
                 // $.modal.close();
             }, 2000);
@@ -585,10 +588,11 @@
                 this.story_content = selected;
                 console.log(["content selected", this.story_title, this.story_content]);
             } else {
-                var $readability = $(window.readability.init());
-            
-                this.story_title = $readability.children("h1").text();
-                this.story_content = $("#readability-content", $readability).html();
+                var documentClone = document.cloneNode(true);
+                var article = new window.NB_Readability(documentClone).parse();
+                
+                this.story_title = article.title;
+                this.story_content = article.content;
             }
             
             this.find_video_embeds();
@@ -634,7 +638,7 @@
         },
         
         attach_css: function() {
-            var css = "{% include_bookmarklet_css %}";
+            var css = "{% include_stylesheets_raw "bookmarklet" %}";
             var style = '<style id="newsblur_bookmarklet_css">' + css + '</style>';
             if ($('#newsblur_bookmarklet_css').length) {
                 $('#newsblur_bookmarklet_css').replaceWith(style);

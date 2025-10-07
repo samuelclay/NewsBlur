@@ -11,6 +11,7 @@
 
 NSString * const MenuTitle = @"title";
 NSString * const MenuIcon = @"icon";
+NSString * const MenuIconColor = @"iconColor";
 NSString * const MenuDestructive = @"destructive";
 NSString * const MenuThemeSegment = @"theme";
 NSString * const MenuSegmentTitles = @"segmentTitles";
@@ -63,7 +64,7 @@ NSString * const MenuHandler = @"handler";
 
 - (CGSize)preferredContentSize {
     CGSize size = CGSizeMake(100.0, 0.0);
-    UIFont *font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
+    UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:15.0];
     
     for (NSDictionary *item in self.items) {
         if (item[MenuSegmentTitles]) {
@@ -86,11 +87,21 @@ NSString * const MenuHandler = @"handler";
 }
 
 - (void)addTitle:(NSString *)title iconImage:(UIImage *)image destructive:(BOOL)isDestructive selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
-    [self.items addObject:@{MenuTitle: title.uppercaseString, MenuIcon: image, MenuDestructive: @(isDestructive), MenuSelectionShouldDismiss: @(selectionShouldDismiss), MenuHandler: handler}];
+    [self.items addObject:@{MenuTitle: title, MenuIcon: image, MenuDestructive: @(isDestructive), MenuSelectionShouldDismiss: @(selectionShouldDismiss), MenuHandler: handler}];
+}
+
+- (void)addTitle:(NSString *)title iconImage:(UIImage *)image iconColor:(UIColor *)iconColor destructive:(BOOL)isDestructive selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
+    [self.items addObject:@{MenuTitle: title, MenuIcon: image, MenuIconColor: iconColor, MenuDestructive: @(isDestructive), MenuSelectionShouldDismiss: @(selectionShouldDismiss), MenuHandler: handler}];
 }
 
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
     [self addTitle:title iconImage:[UIImage imageNamed:iconName] destructive:NO selectionShouldDismiss:selectionShouldDismiss handler:handler];
+}
+
+- (void)addTitle:(NSString *)title iconName:(NSString *)iconName iconColor:(UIColor *)iconColor selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
+    UIImage *image = [Utilities imageWithImage:[UIImage imageNamed:iconName] convertToSize:CGSizeMake(20.0, 20.0)];
+    image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [self addTitle:title iconImage:image iconColor:iconColor destructive:NO selectionShouldDismiss:selectionShouldDismiss handler:handler];
 }
 
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName destructive:(BOOL)isDestructive selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler {
@@ -106,11 +117,25 @@ NSString * const MenuHandler = @"handler";
 }
 
 - (void)addSegmentedControlWithTitles:(NSArray *)titles values:(NSArray *)values preferenceKey:(NSString *)preferenceKey selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSegmentedHandler)handler {
+    [self addSegmentedControlWithTitles:titles values:values defaultValue:nil preferenceKey:preferenceKey selectionShouldDismiss:selectionShouldDismiss handler:handler];
+}
+
+- (void)addSegmentedControlWithTitles:(NSArray *)titles values:(NSArray *)values defaultValue:(NSString *)defaultValue preferenceKey:(NSString *)preferenceKey selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSegmentedHandler)handler {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     id value = [userPreferences objectForKey:preferenceKey];
+    
+    [self addSegmentedControlWithTitles:titles values:values defaultValue:defaultValue selectValue:value preferenceKey:preferenceKey selectionShouldDismiss:selectionShouldDismiss handler:handler];
+}
+
+- (void)addSegmentedControlWithTitles:(NSArray *)titles values:(NSArray *)values defaultValue:(NSString *)defaultValue selectValue:(id)value preferenceKey:(NSString *)preferenceKey selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSegmentedHandler)handler {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSUInteger valueIndex = [values indexOfObject:value];
     
-    if (valueIndex < 0) {
+    if (valueIndex == NSNotFound && defaultValue != nil) {
+        valueIndex = [values indexOfObject:defaultValue];
+    }
+    
+    if (valueIndex == NSNotFound) {
         valueIndex = 0;
     }
     
@@ -132,7 +157,14 @@ NSString * const MenuHandler = @"handler";
         name = [name stringByAppendingString:@"-sel"];
     }
     
-    return [[UIImage imageNamed:name] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    UIImage *image = [[UIImage imageNamed:name] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomMac) {
+        image = [Utilities imageWithImage:image convertToSize:CGSizeMake(20.0, 20.0)];
+        image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    }
+    
+    return image;
 }
 
 - (UITableViewCell *)makeThemeSegmentedTableCell {
@@ -143,7 +175,7 @@ NSString * const MenuHandler = @"handler";
     cell.backgroundColor = UIColorFromRGB(0xffffff);
     
     NSString *theme = [ThemeManager themeManager].theme;
-    NSArray *values = @[ThemeStyleLight, ThemeStyleSepia, ThemeStyleMedium, ThemeStyleDark];
+    NSArray *values = @[ThemeStyleAuto, ThemeStyleLight, ThemeStyleSepia, ThemeStyleMedium, ThemeStyleDark];
     NSUInteger valueIndex = [values indexOfObject:theme];
     
     if (valueIndex < 0) {
@@ -154,15 +186,18 @@ NSString * const MenuHandler = @"handler";
     
     [segmentedControl addTarget:self action:@selector(changeTheme:) forControlEvents:UIControlEventValueChanged];
     
-    UIImage *lightImage = [self themeImageWithName:@"theme_color_light" selected:valueIndex == 0];
-    UIImage *sepiaImage = [self themeImageWithName:@"theme_color_sepia" selected:valueIndex == 1];
-    UIImage *mediumImage = [self themeImageWithName:@"theme_color_medium" selected:valueIndex == 2];
-    UIImage *darkImage = [self themeImageWithName:@"theme_color_dark" selected:valueIndex == 3];
+    UIImage *lightImage = [self themeImageWithName:@"theme_color_light" selected:valueIndex == 1];
+    UIImage *sepiaImage = [self themeImageWithName:@"theme_color_sepia" selected:valueIndex == 2];
+    UIImage *mediumImage = [self themeImageWithName:@"theme_color_medium" selected:valueIndex == 3];
+    UIImage *darkImage = [self themeImageWithName:@"theme_color_dark" selected:valueIndex == 4];
     
-    [segmentedControl insertSegmentWithImage:lightImage atIndex:0 animated: NO];
-    [segmentedControl insertSegmentWithImage:sepiaImage atIndex:1 animated: NO];
-    [segmentedControl insertSegmentWithImage:mediumImage atIndex:2 animated: NO];
-    [segmentedControl insertSegmentWithImage:darkImage atIndex:3 animated: NO];
+    [segmentedControl insertSegmentWithTitle:@"Auto" atIndex:0 animated:NO];
+    [segmentedControl insertSegmentWithImage:lightImage atIndex:1 animated: NO];
+    [segmentedControl insertSegmentWithImage:sepiaImage atIndex:2 animated: NO];
+    [segmentedControl insertSegmentWithImage:mediumImage atIndex:3 animated: NO];
+    [segmentedControl insertSegmentWithImage:darkImage atIndex:4 animated: NO];
+    
+    [segmentedControl setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"WhitneySSm-Medium" size:12.0]} forState:UIControlStateNormal];
     
     [[ThemeManager themeManager] updateThemeSegmentedControl:segmentedControl];
     
@@ -172,7 +207,9 @@ NSString * const MenuHandler = @"handler";
     
     [segmentedControl setDividerImage:blankImage forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
     segmentedControl.tintColor = [UIColor clearColor];
+#if !TARGET_OS_MACCATALYST
     segmentedControl.backgroundColor = [UIColor clearColor];
+#endif
     
     segmentedControl.selectedSegmentIndex = valueIndex;
     
@@ -182,7 +219,7 @@ NSString * const MenuHandler = @"handler";
 }
 
 - (IBAction)changeTheme:(UISegmentedControl *)sender {
-    NSArray *values = @[ThemeStyleLight, ThemeStyleSepia, ThemeStyleMedium, ThemeStyleDark];
+    NSArray *values = @[ThemeStyleAuto, ThemeStyleLight, ThemeStyleSepia, ThemeStyleMedium, ThemeStyleDark];
     
     [ThemeManager themeManager].theme = [values objectAtIndex:sender.selectedSegmentIndex];
     
@@ -202,14 +239,26 @@ NSString * const MenuHandler = @"handler";
     NSArray *segmentTitles = item[MenuSegmentTitles];
     
     for (NSUInteger idx = 0; idx < segmentTitles.count; idx++) {
-        [segmentedControl insertSegmentWithTitle:[segmentTitles[idx] uppercaseString] atIndex:idx animated:NO];
+        NSString *title = segmentTitles[idx];
+        
+        if ([title hasSuffix:@".png"]) {
+            UIImage *image = [UIImage imageNamed:title];
+            
+            [segmentedControl insertSegmentWithImage:image atIndex:idx animated:NO];
+        } else {
+            [segmentedControl insertSegmentWithTitle:title atIndex:idx animated:NO];
+        }
+        
         [segmentedControl setContentOffset:CGSizeMake(0, 1) forSegmentAtIndex:idx];
     }
     
+    segmentedControl.apportionsSegmentWidthsByContent = YES;
     segmentedControl.selectedSegmentIndex = [item[MenuSegmentIndex] integerValue];
     segmentedControl.tag = row;
+#if !TARGET_OS_MACCATALYST
     segmentedControl.backgroundColor = UIColorFromRGB(0xeeeeee);
-    [segmentedControl setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"Helvetica-Bold" size:11.0]} forState:UIControlStateNormal];
+#endif
+    [segmentedControl setTitleTextAttributes:@{NSFontAttributeName : [UIFont fontWithName:@"WhitneySSm-Medium" size:12.0]} forState:UIControlStateNormal];
     [segmentedControl addTarget:self action:@selector(segmentedValueChanged:) forControlEvents:UIControlEventValueChanged];
     
     [[ThemeManager themeManager] updateSegmentedControl:segmentedControl];
@@ -238,6 +287,14 @@ NSString * const MenuHandler = @"handler";
 }
 
 - (void)showFromNavigationController:(UINavigationController *)navigationController barButtonItem:(UIBarButtonItem *)barButtonItem {
+    [self showFromNavigationController:navigationController barButtonItem:barButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp];
+}
+
+- (void)showFromNavigationController:(UINavigationController *)navigationController barButtonItem:(UIBarButtonItem *)barButtonItem permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections {
+    [self showFromNavigationController:navigationController barButtonItem:barButtonItem sourceView:nil sourceRect:CGRectZero permittedArrowDirections:permittedArrowDirections];
+}
+
+- (void)showFromNavigationController:(UINavigationController *)navigationController barButtonItem:(UIBarButtonItem *)barButtonItem sourceView:(UIView *)sourceView sourceRect:(CGRect)sourceRect permittedArrowDirections:(UIPopoverArrowDirection)permittedArrowDirections {
     UIViewController *presentedViewController = navigationController.presentedViewController;
     if (presentedViewController && presentedViewController.presentationController.presentationStyle == UIModalPresentationPopover) {
         [presentedViewController dismissViewControllerAnimated:YES completion:nil];
@@ -252,8 +309,10 @@ NSString * const MenuHandler = @"handler";
     UIPopoverPresentationController *popoverPresentationController = embeddedNavController.popoverPresentationController;
     popoverPresentationController.delegate = self;
     popoverPresentationController.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
-    popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionUp;
+    popoverPresentationController.permittedArrowDirections = permittedArrowDirections;
     popoverPresentationController.barButtonItem = barButtonItem;
+    popoverPresentationController.sourceView = sourceView;
+    popoverPresentationController.sourceRect = sourceRect;
     
     [navigationController presentViewController:embeddedNavController animated:YES completion:nil];
 }
@@ -293,8 +352,13 @@ NSString * const MenuHandler = @"handler";
         cell.tintColor = UIColorFromFixedRGB(0x303030);
         cell.textLabel.text = title;
         cell.imageView.image = item[MenuIcon];
-        cell.imageView.tintColor = UIColorFromRGB(0x303030);
-
+        
+        if (item[MenuIconColor]) {
+            cell.imageView.tintColor = item[MenuIconColor];
+        } else {
+            cell.imageView.tintColor = UIColorFromRGB(0x303030);
+        }
+        
         if (self.checkedRow == indexPath.row) {
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
         } else {
@@ -346,7 +410,7 @@ NSString * const MenuHandler = @"handler";
 
 #pragma mark - UIPopoverPresentationControllerDelegate
 
-- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller {
+- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller traitCollection:(UITraitCollection *)traitCollection {
     return UIModalPresentationNone;
 }
 

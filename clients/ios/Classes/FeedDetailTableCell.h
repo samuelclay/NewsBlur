@@ -26,13 +26,12 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
     NSString *storyAuthor;
     NSString *storyDate;
     NSString *storyContent;
-    NSString *storyImageUrl;
+    NSString *storyHash;
     UIImage *storyImage;
     NSInteger storyTimestamp;
     int storyScore;
     BOOL isSaved;
     BOOL isShared;
-    BOOL inDashboard;
     
     // River view    
     NSString *siteTitle;
@@ -57,7 +56,7 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 @property (nonatomic) NSString *storyAuthor;
 @property (nonatomic) NSString *storyDate;
 @property (nonatomic) NSString *storyContent;
-@property (nonatomic) NSString *storyImageUrl;
+@property (nonatomic) NSString *storyHash;
 @property (nonatomic) UIImage *storyImage;
 @property (nonatomic) NSInteger storyTimestamp;
 
@@ -69,7 +68,6 @@ typedef NS_ENUM(NSUInteger, FeedDetailTextSize)
 @property (readwrite) BOOL isShort;
 @property (readwrite) BOOL isRiverOrSocial;
 @property (readwrite) BOOL hasAlpha;
-@property (readwrite) BOOL inDashboard;
 
 @property (nonatomic) FeedDetailTextSize textSize;
 

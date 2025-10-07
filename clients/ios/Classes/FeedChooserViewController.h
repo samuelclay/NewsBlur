@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
+#import "NewsBlur-Swift.h"
 
 typedef NS_ENUM(NSUInteger, FeedChooserOperation)
 {
@@ -17,9 +18,7 @@ typedef NS_ENUM(NSUInteger, FeedChooserOperation)
 };
 
 
-@interface FeedChooserViewController : BaseViewController {
-    NewsBlurAppDelegate *appDelegate;
-}
+@interface FeedChooserViewController : BaseViewController
 
 @property (weak) IBOutlet UITableView *tableView;
 

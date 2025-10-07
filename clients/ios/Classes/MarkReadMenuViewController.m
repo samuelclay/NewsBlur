@@ -8,13 +8,13 @@
 
 #import "MarkReadMenuViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "NewsBlurViewController.h"
-#import "FeedDetailViewController.h"
 #import "StoriesCollection.h"
 #import "MenuTableViewCell.h"
+#import "NewsBlur-Swift.h"
 
 NSString * const MarkReadMenuTitle = @"title";
 NSString * const MarkReadMenuIcon = @"icon";
+NSString * const MarkReadMenuIconColor = @"iconColor";
 NSString * const MarkReadMenuDays = @"days";
 NSString * const MarkReadMenuOlderNewer = @"olderNewer";
 NSString * const MarkReadMenuHandler = @"handler";
@@ -118,20 +118,31 @@ typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
     }
     
     for (NSDictionary *item in self.extraItems) {
-        [self addTitle:item[MarkReadMenuTitle] iconName:item[MarkReadMenuIcon] handler:item[MarkReadMenuHandler]];
+        if (item[MarkReadMenuIconColor]) {
+            [self addTitle:item[MarkReadMenuTitle] iconName:item[MarkReadMenuIcon] iconColor:item[MarkReadMenuIconColor] handler:item[MarkReadMenuHandler]];
+        } else {
+            [self addTitle:item[MarkReadMenuTitle] iconName:item[MarkReadMenuIcon] handler:item[MarkReadMenuHandler]];
+        }
     }
 }
 
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName olderNewerMode:(MarkReadMenuOlderNewerMode)mode {
-    [self.menuOptions addObject:@{MarkReadMenuTitle : title.uppercaseString, MarkReadMenuIcon : [UIImage imageNamed:iconName], MarkReadMenuOlderNewer : @(mode)}];
+    [self.menuOptions addObject:@{MarkReadMenuTitle : title, MarkReadMenuIcon : [UIImage imageNamed:iconName], MarkReadMenuOlderNewer : @(mode)}];
 }
 
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName days:(NSInteger)days {
-    [self.menuOptions addObject:@{MarkReadMenuTitle : title.uppercaseString, MarkReadMenuIcon : [UIImage imageNamed:iconName], MarkReadMenuDays : @(days)}];
+    [self.menuOptions addObject:@{MarkReadMenuTitle : title, MarkReadMenuIcon : [UIImage imageNamed:iconName], MarkReadMenuDays : @(days)}];
 }
 
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName handler:(void (^)(void))handler {
-    [self.menuOptions addObject:@{MarkReadMenuTitle : title.uppercaseString, MarkReadMenuIcon : [UIImage imageNamed:iconName], MarkReadMenuHandler : handler}];
+    [self.menuOptions addObject:@{MarkReadMenuTitle : title, MarkReadMenuIcon : [UIImage imageNamed:iconName], MarkReadMenuHandler : handler}];
+}
+
+- (void)addTitle:(NSString *)title iconName:(NSString *)iconName iconColor:(UIColor *)iconColor handler:(void (^)(void))handler {
+    UIImage *image = [Utilities imageWithImage:[UIImage imageNamed:iconName] convertToSize:CGSizeMake(20.0, 20.0)];
+    image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    
+    [self.menuOptions addObject:@{MarkReadMenuTitle : title, MarkReadMenuIcon : image, MarkReadMenuIconColor : iconColor, MarkReadMenuHandler : handler}];
 }
 
 #pragma mark -
@@ -153,6 +164,13 @@ typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
     
     cell.textLabel.text = options[MarkReadMenuTitle];
     cell.imageView.image = options[MarkReadMenuIcon];
+    cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    
+    if (options[MarkReadMenuIconColor]) {
+        cell.imageView.tintColor = options[MarkReadMenuIconColor];
+    } else {
+        cell.imageView.tintColor = nil;
+    }
     
     return cell;
 }

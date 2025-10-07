@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "single-story-all.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

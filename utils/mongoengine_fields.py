@@ -1,6 +1,7 @@
 from datetime import timedelta
+
 from mongoengine.base import BaseField
-from mongoengine.fields import IntField, StringField, EmailField
+from mongoengine.fields import EmailField, IntField, StringField
 
 
 class TimedeltaField(BaseField):
@@ -10,6 +11,7 @@ class TimedeltaField(BaseField):
     in the database as an integer (or float) number of seconds.
 
     """
+
     def validate(self, value):
         if not isinstance(value, (timedelta, int, float)):
             self.error('cannot parse timedelta "%r"' % value)
@@ -37,9 +39,7 @@ class TimedeltaField(BaseField):
         try:
             return value.total_seconds()
         except AttributeError:
-            return (value.days * 24 * 3600) + \
-                   (value.seconds) + \
-                   (value.microseconds / 1000000.0)
+            return (value.days * 24 * 3600) + (value.seconds) + (value.microseconds / 1000000.0)
 
 
 class LowerStringField(StringField):
@@ -58,10 +58,9 @@ class LowerStringField(StringField):
 
 
 class LowerEmailField(LowerStringField):
-
     def validate(self, value):
         if not EmailField.EMAIL_REGEX.match(value):
-            self.error('Invalid Mail-address: %s' % value)
+            self.error("Invalid Mail-address: %s" % value)
         super(LowerEmailField, self).validate(value)
 
 
@@ -75,11 +74,11 @@ class EnumField(object):
 
     def __init__(self, enum, *args, **kwargs):
         self.enum = enum
-        kwargs['choices'] = [choice for choice in enum]
+        kwargs["choices"] = [choice for choice in enum]
         super(EnumField, self).__init__(*args, **kwargs)
 
     def __get_value(self, enum):
-        return enum.value if hasattr(enum, 'value') else enum
+        return enum.value if hasattr(enum, "value") else enum
 
     def to_python(self, value):
         return self.enum(super(EnumField, self).to_python(value))
@@ -88,24 +87,22 @@ class EnumField(object):
         return self.__get_value(value)
 
     def prepare_query_value(self, op, value):
-        return super(EnumField, self).prepare_query_value(
-                op, self.__get_value(value))
+        return super(EnumField, self).prepare_query_value(op, self.__get_value(value))
 
     def validate(self, value):
         return super(EnumField, self).validate(self.__get_value(value))
 
     def _validate(self, value, **kwargs):
-        return super(EnumField, self)._validate(
-                self.enum(self.__get_value(value)), **kwargs)
+        return super(EnumField, self)._validate(self.enum(self.__get_value(value)), **kwargs)
 
 
 class IntEnumField(EnumField, IntField):
-    """A variation on :class:`EnumField` for only int containing enumeration.
-    """
+    """A variation on :class:`EnumField` for only int containing enumeration."""
+
     pass
 
 
 class StringEnumField(EnumField, StringField):
-    """A variation on :class:`EnumField` for only string containing enumeration.
-    """
+    """A variation on :class:`EnumField` for only string containing enumeration."""
+
     pass

@@ -1,13 +1,25 @@
 ---
-- name: Stop ufw and delete all rules
-  become: yes
-  ufw: state=reset
-  tags: ufw
+- name: Set hosts
+  set_fact:
+    hetzner_hosts: "{{ groups['hall'] | map('extract', hostvars, ['ansible_host']) }}"
+    do_hosts: "{{ groups['NewsBlur_Docker'] | map('extract', hostvars, ['ansible_host']) }}"
 
-- name: Set firewall default policy
+- name: Generate UFW batch script
   become: yes
-  ufw: state=disabled policy=reject
-  tags: ufw
+  template:
+    src: ufw_rules.sh.j2
+    dest: /tmp/ufw_rules.sh
+    mode: "0755"
+
+# - name: Stop ufw and delete all rules
+#   become: yes
+#   ufw: state=reset
+#   tags: ufw
+
+# - name: Set firewall default policy
+#   become: yes
+#   ufw: state=disabled policy=reject
+#   tags: ufw
 #
 # - name: Set ufw policy to deny all incoming connections
 #   ufw: policy=deny direction=incoming
@@ -16,42 +28,127 @@
 # - name: Set ufw policy to allow all ougoing connections
 #   ufw: policy=allow direction=outgoing
 #   tags: ufw
-  
-- name: Allow ssh
-  become: yes
-  ufw: rule=allow port=22
-  tags: ufw
 
-- name: Allow all access from RFC1918 networks to this host
+- name: Execute UFW batch script
   become: yes
-  ufw:
-    rule: allow
-    src: '{{ item }}'
-  with_items:
-    - 10.0.0.0/8
-    - 172.18.0.0/16
-  
-- name: Allow all access from inventory hosts old + new
-  become: yes
-  ufw:
-    rule: allow
-    src: '{{ item }}'
-  with_items: "{{ groups['oldandnew'] | map('extract', hostvars, ['ansible_host']) }}"
-  when: "'oldandnew' in groups"
-  tags: 
-    - firewall
-    - ufw
+  command: /tmp/ufw_rules.sh
 
-- name: Allow all access from inventory hosts with docker
+# - name: Allow ssh
+#   become: yes
+#   ufw: rule=allow port=22
+#   tags: ufw
+
+# - name: Allow all access from RFC1918 networks to this host
+#   become: yes
+#   ufw:
+#     rule: allow
+#     src: '{{ item }}'
+#   with_items:
+#     - 10.0.0.0/8
+#     - 172.18.0.0/16
+#     - 172.17.0.0/16
+#   tags:
+#     - firewall
+#     - ufw
+
+# - name: Allow all access from Hetzner inventory hosts
+#   become: yes
+#   ufw:
+#     rule: allow
+#     src: '{{ item }}'
+#   with_items: "{{ groups['hall'] | map('extract', hostvars, ['ansible_host']) }}"
+#   tags:
+#     - firewall
+#     - ufw
+#     - hetzner_firewall
+#     - hfirewall
+
+# - name: Allow all access from Hetzner inventory hosts with docker
+#   become: yes
+#   ufw:
+#     rule: allow
+#     route: yes
+#     src: '{{ item }}'
+#   with_items: "{{ groups['hall'] | map('extract', hostvars, ['ansible_host']) }}"
+#   tags:
+#     - firewall
+#     - ufw
+#     - hetzner_firewall
+#     - hfirewall
+
+# - name: Allow all access from inventory hosts old + new
+#   become: yes
+#   ufw:
+#     rule: allow
+#     src: '{{ item }}'
+#   with_items: "{{ groups['oldandnew'] | map('extract', hostvars, ['ansible_host']) }}"
+#   when: "'oldandnew' in groups"
+#   tags:
+#     - firewall
+#     - ufw
+
+# - name: Allow all access from inventory hosts
+#   become: yes
+#   ufw:
+#     rule: allow
+#     src: '{{ item }}'
+#   with_items: "{{ groups['NewsBlur_Docker'] | map('extract', hostvars, ['ansible_host']) }}"
+#   when: "'oldandnew' not in groups"
+#   tags:
+#     - firewall
+#     - ufw
+
+# - name: Allow all access from inventory hosts with docker
+#   become: yes
+#   ufw:
+#     rule: allow
+#     route: yes
+#     src: '{{ item }}'
+#   with_items: "{{ groups['NewsBlur_Docker'] | map('extract', hostvars, ['ansible_host']) }}"
+#   when: "'oldandnew' not in groups"
+#   tags:
+#     - firewall
+#     - ufw
+
+# Code from https://stackoverflow.com/a/51741599/8717: "What is the best practice of docker + ufw under Ubuntu"
+- name: Solving UFW and Docker issues by adding ufw after.rules
   become: yes
-  ufw:
-    rule: allow
-    src: '{{ item }}'
-  with_items: "{{ groups['NewsBlur_Docker'] | map('extract', hostvars, ['ansible_host']) }}"
-  when: "'oldandnew' not in groups"
-  tags: 
-    - firewall
-    - ufw
+  blockinfile:
+    dest: /etc/ufw/after.rules
+    state: present
+    block: |
+      # BEGIN UFW AND DOCKER
+      *filter
+      :ufw-user-forward - [0:0]
+      :ufw-docker-logging-deny - [0:0]
+      :DOCKER-USER - [0:0]
+      -A DOCKER-USER -j ufw-user-forward
+
+      # Allow traffic on port 80 to Docker containers
+      -A DOCKER-USER -p tcp --dport 80 -j ACCEPT
+
+      -A DOCKER-USER -j RETURN -s 10.0.0.0/8
+      -A DOCKER-USER -j RETURN -s 172.16.0.0/12
+      -A DOCKER-USER -j RETURN -s 192.168.0.0/16
+
+      -A DOCKER-USER -p udp -m udp --sport 53 --dport 1024:65535 -j RETURN
+
+      -A DOCKER-USER -j ufw-docker-logging-deny -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -d 192.168.0.0/16
+      -A DOCKER-USER -j ufw-docker-logging-deny -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -d 10.0.0.0/8
+      -A DOCKER-USER -j ufw-docker-logging-deny -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -d 172.16.0.0/12
+      -A DOCKER-USER -j ufw-docker-logging-deny -p udp -m udp --dport 0:32767 -d 192.168.0.0/16
+      -A DOCKER-USER -j ufw-docker-logging-deny -p udp -m udp --dport 0:32767 -d 10.0.0.0/8
+      -A DOCKER-USER -j ufw-docker-logging-deny -p udp -m udp --dport 0:32767 -d 172.16.0.0/12
+
+      -A DOCKER-USER -j RETURN
+
+      -A ufw-docker-logging-deny -j LOG --log-prefix "[UFW DOCKER BLOCK] "
+      -A ufw-docker-logging-deny -j DROP
+
+      COMMIT
+      # END UFW AND DOCKER
+  tags: docker ufw
+  notify: restart ufw
 
 - name: Start ufw
   become: yes

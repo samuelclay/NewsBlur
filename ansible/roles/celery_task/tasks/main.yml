@@ -4,6 +4,7 @@
     src: /srv/secrets-newsblur/settings/common_settings.py
     dest: /srv/newsblur/newsblur_web/local_settings.py
   register: app_changed
+  tags: env
 
 - block:
     - name: Copy task env
@@ -11,7 +12,7 @@
         src: /srv/secrets-newsblur/settings/task_env.py
         dest: /srv/newsblur/newsblur_web/task_env.py
   rescue:
-    - debug: 
+    - debug:
         msg: Missing task_env.py, ignoring...
 
 - name: Add SERVER_NAME to task env
@@ -19,19 +20,14 @@
     path: /srv/newsblur/newsblur_web/task_env.py
     line: 'SERVER_NAME = "{{ inventory_hostname }}"'
 
-- name: Make docker network for newsblurnet
-  become: yes
-  docker_network:
-    name: newsblurnet
-  notify: restart docker
-
-- name: "Start docker containers"
+- name: "Start task-celery/task-work docker containers"
   become: yes
   docker_container:
     name: "{{ item.container_name }}"
     image: newsblur/newsblur_python3
     state: started
     pull: yes
+    hostname: "{{ inventory_hostname }}"
     container_default_behavior: no_defaults
     env:
       DOCKERBUILD: ""
@@ -39,27 +35,35 @@
     labels:
       autoheal: "true"
     networks_cli_compatible: yes
-    network_mode: default
-    networks:
-      - name: newsblurnet
+    network_mode: host
+    # networks:
+    #   - name: newsblurnet
     command: "{{ item.command }}"
-    log_driver: local
-    healthcheck: 
+    log_driver: json-file
+    log_options:
+      max-size: 100m
+    healthcheck:
       # test: celery inspect ping -A newsblur_web -d celery@$HOSTNAME
-      test: bash -c "(($(date +%s) - $(stat /srv/newsblur/logs/newsblur.log -c %Y) < 120)) && exit 0 || exit 1"
+      test: bash -c "(($(date +%s) - $(stat /srv/newsblur/logs/newsblur.log -c %Y) < 600)) && exit 0 || exit 1"
       interval: 60s
       timeout: 10s
       retries: 3
       start_period: 30s
+    user: "1000:1001"
     volumes:
       - /srv/newsblur:/srv/newsblur
       - /etc/hosts:/etc/hosts
-  when: "item.container_name in inventory_hostname"
   with_items:
-    - container_name: task-celery
-      command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds,search_indexer" 
-    - container_name: task-work
+    - container_name: "task-celery"
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q discover_indexer,search_indexer,new_feeds,push_feeds,update_feeds"
+      when: "{{ inventory_hostname == 'htask-celery-10' }}"
+    - container_name: "task-celery"
+      command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds,search_indexer"
+      when: "{{ 'htask-celery' in inventory_hostname and inventory_hostname != 'htask-celery-10' }}"
+    - container_name: "task-work"
       command: "celery worker -A newsblur_web --loglevel=INFO -B -s /srv/newsblur/logs/celerybeat-schedule.db -Q beat_feeds_task,work_queue,cron_queue"
+      when: "{{ 'htask-work' in inventory_hostname }}"
+  when: item.when|default(true)
   tags:
     - start
 
@@ -73,7 +77,7 @@
     container_default_behavior: no_defaults
     env:
       AUTOHEAL_CONTAINER_LABEL: all
-    restart_policy: always
+    restart_policy: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
@@ -95,7 +99,7 @@
   copy: src=logrotate.conf dest=/etc/logrotate.d/newsblur mode=0755
 
 - name: Reload celery
-  debug: 
+  debug:
     msg: Reloading celery
   notify: "reload {{ item.container_name }}"
   when: app_changed.changed and item.container_name in inventory_hostname
@@ -104,50 +108,68 @@
     - container_name: task-work
   changed_when: app_changed.changed
 
+- name: Ensure permissions on sanity checker log
+  become: yes
+  file:
+    path: /var/log/sanity_checker.log
+    state: touch
+    mode: 0666
+
+- name: Add spam.py for task-work
+  become: yes
+  copy:
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"
+    src: /srv/secrets-newsblur/spam/spam.py
+    dest: /srv/newsblur/apps/social/spam.py
+  when: "'task-work' in inventory_hostname"
+  tags:
+    - spam
+
 - name: Add sanity checkers cronjob for feeds fetched
   become: yes
-  cron:
-    name: feeds_fetched_sanity_checker
-    user: root
-    cron_file: /etc/cron.hourly/feeds_fetched_sanity_checker
-    job: >-
-      docker pull newsblur/newsblur_python3:latest;
-      docker run --rm -it
-      -v /srv/newsblur/:/srv/newsblur
-      -h `cat /etc/hostname`
-      --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_task_fetches.py
+  copy:
+    owner: root
+    dest: /etc/cron.d/feeds_fetched_sanity_checker
+    mode: 0744
+    content: |
+      MAILTO=""
+      SHELL=/bin/sh
+      PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+      0 * * * *    nb    sudo docker run -v /srv/newsblur/:/srv/newsblur -v /var/log/sanity_checker.log:/var/log/sanity_checker.log -h `cat /etc/hostname` --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_task_fetches.py >> /var/log/sanity_checker.log
+
   when: "'task-work' in inventory_hostname"
   tags:
     - sanity-checker
 
 - name: Add sanity checkers cronjob for newsletter
   become: yes
-  cron:
-    name: newsletter_sanity_checker
-    user: root
-    cron_file: /etc/cron.hourly/newsletter_sanity_checker
-    job: >-
-      docker pull newsblur/newsblur_python3:latest;
-      docker run --rm -it
-      -v /srv/newsblur/:/srv/newsblur
-      -h `cat /etc/hostname`
-      --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_newsletter_delivery.py
+  copy:
+    owner: root
+    dest: /etc/cron.d/newsletter_sanity_checker
+    mode: 0744
+    content: |
+      MAILTO=""
+      SHELL=/bin/sh
+      PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+      0 * * * *    nb    sudo docker run -v /srv/newsblur/:/srv/newsblur -v /var/log/sanity_checker.log:/var/log/sanity_checker.log -h `cat /etc/hostname` --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_newsletter_delivery.py >> /var/log/sanity_checker.log
+
   when: "'task-work' in inventory_hostname"
   tags:
     - sanity-checker
-  
+
 - name: Add sanity checkers cronjob for work queue
   become: yes
-  cron:
-    name: work_queue_sanity_checker
-    user: root
-    cron_file: /etc/cron.hourly/work_queue_sanity_checker
-    job: >-
-      docker pull newsblur/newsblur_python3:latest;
-      docker run --rm -it
-      -v /srv/newsblur/:/srv/newsblur
-      -h `cat /etc/hostname`
-      --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_work_queue.py
+  copy:
+    owner: root
+    dest: /etc/cron.d/work_queue_sanity_checker
+    mode: 0744
+    content: |
+      MAILTO=""
+      SHELL=/bin/sh
+      PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+      0 * * * *    nb    sudo docker run -v /srv/newsblur/:/srv/newsblur -v /var/log/sanity_checker.log:/var/log/sanity_checker.log -h `cat /etc/hostname` --network=newsblurnet newsblur/newsblur_python3 /srv/newsblur/utils/monitor_work_queue.py >> /var/log/sanity_checker.log
+
   when: "'task-work' in inventory_hostname"
   tags:
     - sanity-checker

@@ -9,8 +9,8 @@
 #import "PremiumManager.h"
 #import "PremiumViewController.h"
 
-#define kPremium24ProductIdentifier @"newsblur_premium_auto_renew_24"
 #define kPremium36ProductIdentifier @"newsblur_premium_auto_renew_36"
+#define kPremiumArchiveProductIdentifier @"newsblur_premium_archive"
 
 @interface PremiumManager () <SKProductsRequestDelegate, SKPaymentTransactionObserver>
 
@@ -24,16 +24,24 @@
 
 - (instancetype)init {
     if ((self = [super init])) {
-        self.products = [NSArray array];
-        self.reasons = @[@[@"Enable every site by going premium", @"g_icn_buffer"],
-                    @[@"Sites updated up to 10x more often", @"g_icn_lightning"],
-                    @[@"River of News (reading by folder)", @"g_icn_folder_black"],
-                    @[@"Search sites and folders", @"g_icn_search_black"],
-                    @[@"Save stories with searchable tags", @"g_icn_tag_black"],
-                    @[@"Privacy options for your blurblog", @"g_icn_privacy"],
-                    @[@"Custom RSS feeds for folders and saved stories", @"g_icn_folder_black"],
-                    @[@"Text view conveniently extracts the story", @"g_icn_textview_black"],
-                    @[@"You feed Shiloh, my poor, hungry dog, for a month", @"g_icn_eating"],
+        self.premiumProduct = nil;
+        self.premiumArchiveProduct = nil;
+        self.premiumReasons = @[@[@"Enable every site by going premium", @"icons8-sheets-100"],
+                    @[@"Sites updated up to 5x more often", @"icons8-lightning-bolt-100"],
+                    @[@"River of News (reading by folder)", @"icons8-comics-magazine-100"],
+                    @[@"Search sites and folders", @"icons8-search-100"],
+                    @[@"Save stories with searchable tags", @"icons8-tags-100"],
+                    @[@"Privacy options for your blurblog", @"icons8-security-wi-fi-100"],
+                    @[@"Custom RSS feeds for saved stories", @"icons8-rss-100"],
+                    @[@"Text view conveniently extracts the story", @"icons8-activity-history-100"],
+                    @[@"You feed Lyric, NewsBlur\'s hungry hound, for 6 days", @"icons8-knife-and-spatchula-100"],
+                    ];
+        self.premiumArchiveReasons = @[@[@"Everything in the premium subscription, of course", @"icons8-bursts-100"],
+                    @[@"Choose when stories are automatically marked as read", @"icons8-relax-with-book-100"],
+                    @[@"Every story from every site is archived and searchable forever", @"icons8-filing-cabinet-100"],
+                    @[@"Feeds that support paging are back-filled in for a complete archive", @"icons8-quadcopter-100"],
+                    @[@"Export trained stories from folders as RSS feeds", @"icons8-rss-100"],
+                    @[@"Stories can stay unread forever", @"icons8-calendar-100"]
                     ];
     }
     
@@ -50,8 +58,9 @@
     if ([SKPaymentQueue canMakePayments]){
         SKProductsRequest *productsRequest = [[SKProductsRequest alloc]
                                               initWithProductIdentifiers:[NSSet setWithObjects:
-                                                                          kPremium24ProductIdentifier,
-                                                                          kPremium36ProductIdentifier, nil]];
+                                                                          kPremium36ProductIdentifier,
+                                                                          kPremiumArchiveProductIdentifier,
+                                                                          nil]];
         productsRequest.delegate = self;
         self.request = productsRequest;
         [productsRequest start];
@@ -63,8 +72,14 @@
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response{
     SKProduct *validProduct = nil;
     NSUInteger count = [response.products count];
-    if (count > 0){
-        self.products = response.products;
+    if (count > 0) {
+        for (SKProduct *product in response.products) {
+            if ([product.productIdentifier isEqualToString:kPremium36ProductIdentifier]) {
+                self.premiumProduct = product;
+            } else if ([product.productIdentifier isEqualToString:kPremiumArchiveProductIdentifier]) {
+                self.premiumArchiveProduct = product;
+            }
+        }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.appDelegate.premiumViewController loadedProducts];
@@ -136,6 +151,10 @@
                 
             case SKPaymentTransactionStateDeferred:
                 NSLog(@"Transaction state -> Deferred");
+                
+                [self saveReceipt:transaction isComplete:NO];
+                break;
+                
             case SKPaymentTransactionStateFailed:
                 NSLog(@"Transaction state -> Failed");
                 //called when the transaction does not finish
@@ -166,12 +185,20 @@
         //        return;
     }
     
+    [self saveReceipt:transaction isComplete:YES];
+}
+
+- (void)saveReceipt:(SKPaymentTransaction *)transaction isComplete:(BOOL)isComplete {
     NSString *urlString = [NSString stringWithFormat:@"%@/profile/save_ios_receipt/",
                            self.appDelegate.url];
+    NSString *transactionIdentifier = isComplete ? transaction.originalTransaction.transactionIdentifier : @"in-progress";
+    transactionIdentifier = transactionIdentifier ?: @"missing";
+    NSString *productIdentifier = transaction.payment.productIdentifier ?: @"missing";
+    
     NSDictionary *params = @{
                              //                             @"receipt": [receipt base64EncodedStringWithOptions:0],
-                             @"transaction_identifier": transaction.originalTransaction.transactionIdentifier,
-                             @"product_identifier": transaction.payment.productIdentifier,
+        @"transaction_identifier": transactionIdentifier,
+                             @"product_identifier": productIdentifier,
                              };
     
     [self.appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {

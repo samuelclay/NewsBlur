@@ -1,0 +1,70 @@
+plugin: constructed
+strict: False
+
+groups:
+  hall: inventory_hostname.startswith('h')
+
+  haproxy: inventory_hostname.startswith('hwww')
+
+  app: inventory_hostname.startswith('happ') or inventory_hostname.startswith('repo-test')
+  happ: inventory_hostname.startswith('happ')
+  web: inventory_hostname.startswith('happ') or inventory_hostname.startswith('repo-test')
+  hweb: inventory_hostname.startswith('happ')
+  django: inventory_hostname.startswith('happ-web')
+  hdjango: inventory_hostname.startswith('happ-web')
+  hdjango_a: inventory_hostname.startswith('happ-web') and inventory_hostname.split('-')[-1] | int % 2 == 1
+  hdjango_b: inventory_hostname.startswith('happ-web') and inventory_hostname.split('-')[-1] | int % 2 == 0
+  refresh: inventory_hostname.startswith('happ-refresh')
+  hrefresh: inventory_hostname.startswith('happ-refresh')
+  hrefresh_a: inventory_hostname.startswith('happ-refresh') and inventory_hostname.split('-')[-1] | int % 2 == 1
+  hrefresh_b: inventory_hostname.startswith('happ-refresh') and inventory_hostname.split('-')[-1] | int % 2 == 0
+  count: inventory_hostname.startswith('happ-count')
+  hcount: inventory_hostname.startswith('happ-count')
+  hcount_a: inventory_hostname.startswith('happ-count') and inventory_hostname.split('-')[-1] | int % 2 == 1
+  hcount_b: inventory_hostname.startswith('happ-count') and inventory_hostname.split('-')[-1] | int % 2 == 0
+  push: inventory_hostname.startswith('happ-push')
+  hpush: inventory_hostname.startswith('happ-push')
+  hpush_a: inventory_hostname.startswith('happ-push') and inventory_hostname.split('-')[-1] | int % 2 == 1
+  hpush_b: inventory_hostname.startswith('happ-push') and inventory_hostname.split('-')[-1] | int % 2 == 0
+  blogs: inventory_hostname.startswith('hblog')
+  forum: inventory_hostname.startswith('hforum')
+
+  node: inventory_hostname.startswith('hnode')
+  hnode: inventory_hostname.startswith('hnode')
+  node_socket: inventory_hostname.startswith('hnode-socket')
+  hnode_socket: inventory_hostname.startswith('hnode-socket')
+  node_images: inventory_hostname.startswith('hnode-images')
+  hnode_images: inventory_hostname.startswith('hnode-images')
+  node_text: inventory_hostname.startswith('hnode-text')
+  hnode_text: inventory_hostname.startswith('hnode-text')
+  node_page: inventory_hostname.startswith('hnode-page')
+  hnode_page: inventory_hostname.startswith('hnode-page')
+  node_favicons: inventory_hostname.startswith('hnode-favicons')
+  hnode_favicons: inventory_hostname.startswith('hnode-favicons')
+
+  # debugs: inventory_hostname.startswith('hdebug')
+
+  htask: inventory_hostname.startswith('htask')
+  task: inventory_hostname.startswith('htask')
+  celery: inventory_hostname.startswith('htask-celery')
+  work: inventory_hostname.startswith('htask-work')
+
+  staging: inventory_hostname.startswith('hstaging')
+  staging_a: inventory_hostname.startswith('hstaging-') and inventory_hostname.split('-')[-1] | int % 2 == 1
+  staging_b: inventory_hostname.startswith('hstaging-') and inventory_hostname.split('-')[-1] | int % 2 == 0
+
+  hdb: inventory_hostname.startswith('hdb')
+  db: inventory_hostname.startswith('hdb')
+  search: inventory_hostname.startswith('hdb-elasticsearch')
+  elasticsearch: inventory_hostname.startswith('hdb-elasticsearch')
+  redis: inventory_hostname.startswith('hdb-redis')
+  redis_story: inventory_hostname.startswith('hdb-redis-story')
+  redis_session: inventory_hostname.startswith('hdb-redis-session')
+  redis_user: inventory_hostname.startswith('hdb-redis-user')
+  postgres: inventory_hostname.startswith('hdb-postgres')
+  mongo: inventory_hostname.startswith('hdb-mongo') and not inventory_hostname.startswith('hdb-mongo-analytics')
+  mongo_analytics: inventory_hostname.startswith('hdb-mongo-analytics')
+  consul: inventory_hostname.startswith('hdb-consul')
+  hconsul: inventory_hostname.startswith('hdb-consul')
+  metrics: inventory_hostname.startswith('hdb-metrics')
+  sentry: inventory_hostname.startswith('hdb-sentry')

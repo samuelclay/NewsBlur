@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Story order</string>
+			<key>Titles</key>
+			<array>
+				<string>Newest first</string>
+				<string>Oldest first</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>newest</string>
+			<key>Values</key>
+			<array>
+				<string>newest</string>
+				<string>oldest</string>
+			</array>
+			<key>Key</key>
+			<string>default_order</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Stories in a folder</string>
+			<key>Titles</key>
+			<array>
+				<string>All stories</string>
+				<string>Unread only</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>unread</string>
+			<key>Values</key>
+			<array>
+				<string>all</string>
+				<string>unread</string>
+			</array>
+			<key>Key</key>
+			<string>default_folder_read_filter</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Stories in a site</string>
+			<key>Titles</key>
+			<array>
+				<string>All stories</string>
+				<string>Unread only</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>all</string>
+			<key>Values</key>
+			<array>
+				<string>all</string>
+				<string>unread</string>
+			</array>
+			<key>Key</key>
+			<string>default_feed_read_filter</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>The mark read options are always available via a long press on the mark read button in the stories list.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Confirm mark read</string>
+			<key>Titles</key>
+			<array>
+				<string>On folders and sites</string>
+				<string>On folders only</string>
+				<string>Never</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>folders</string>
+			<key>Values</key>
+			<array>
+				<string>all</string>
+				<string>folders</string>
+				<string>never</string>
+			</array>
+			<key>Key</key>
+			<string>default_confirm_read_filter</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>After mark read</string>
+			<key>Titles</key>
+			<array>
+				<string>Open the next site/folder</string>
+				<string>Stay on the feeds list</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>next</string>
+			<key>Values</key>
+			<array>
+				<string>next</string>
+				<string>stay</string>
+			</array>
+			<key>Key</key>
+			<string>after_mark_read</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>When opening a site</string>
+			<key>Titles</key>
+			<array>
+				<string>Open first story</string>
+				<string>Show stories</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>story</string>
+			<key>Values</key>
+			<array>
+				<string>story</string>
+				<string>list</string>
+			</array>
+			<key>Key</key>
+			<string>feed_opening</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>You can change this setting in the Infrequent Site Stories view.</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Infrequent stories per month</string>
+			<key>Titles</key>
+			<array>
+				<string>&lt; 5 stories/month</string>
+				<string>&lt; 15 stories/month</string>
+				<string>&lt; 30 stories/month</string>
+				<string>&lt; 60 stories/month</string>
+				<string>&lt; 90 stories/month</string>
+			</array>
+			<key>DefaultValue</key>
+			<integer>30</integer>
+			<key>Values</key>
+			<array>
+				<integer>5</integer>
+				<integer>15</integer>
+				<integer>30</integer>
+				<integer>60</integer>
+				<integer>90</integer>
+			</array>
+			<key>Key</key>
+			<string>infrequent_stories_per_month</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show Infrequent Site Stories</string>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>show_infrequent_site_stories</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show Global Shared Stories</string>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>show_global_shared_stories</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Mark stories read on scroll</string>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>default_scroll_read_filter</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show override mark read on scroll</string>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>override_scroll_read_filter</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Column layout</string>
+			<key>Titles</key>
+			<array>
+				<string>Automatic</string>
+				<string>Three columns</string>
+				<string>Two columns</string>
+				<string>One column</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>tile</string>
+			<key>Values</key>
+			<array>
+				<string>auto</string>
+				<string>tile</string>
+				<string>displace</string>
+				<string>overlay</string>
+			</array>
+			<key>Key</key>
+			<string>split_behavior</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Story titles layout</string>
+			<key>Titles</key>
+			<array>
+				<string>Titles on left</string>
+				<string>Titles on top</string>
+				<string>Titles on bottom</string>
+				<string>Titles in grid</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>titles_on_left</string>
+			<key>Values</key>
+			<array>
+				<string>titles_on_left</string>
+				<string>titles_on_top</string>
+				<string>titles_on_bottom</string>
+				<string>titles_in_grid</string>
+			</array>
+			<key>Key</key>
+			<string>story_titles_position</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>List style</string>
+			<key>Titles</key>
+			<array>
+				<string>Standard</string>
+				<string>Experimental</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>standard</string>
+			<key>Values</key>
+			<array>
+				<string>standard</string>
+				<string>experimental</string>
+			</array>
+			<key>Key</key>
+			<string>story_titles_style</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Preview descriptions</string>
+			<key>Values</key>
+			<array>
+				<string>title</string>
+				<string>short</string>
+				<string>medium</string>
+				<string>long</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Title only</string>
+				<string>Short title and content</string>
+				<string>Medium title and content</string>
+				<string>Long title and content</string>
+			</array>
+			<key>Key</key>
+			<string>story_list_preview_text_size</string>
+			<key>DefaultValue</key>
+			<string>medium</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Preview images</string>
+			<key>Titles</key>
+			<array>
+				<string>None</string>
+				<string>Small Left</string>
+				<string>Large Left</string>
+				<string>Large Right</string>
+				<string>Small Right</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>none</string>
+				<string>small_left</string>
+				<string>large_left</string>
+				<string>large_right</string>
+				<string>small_right</string>
+			</array>
+			<key>Key</key>
+			<string>story_list_preview_images_size</string>
+			<key>DefaultValue</key>
+			<string>small_right</string>
+		</dict>
+	</array>
+	<key>Icon</key>
+	<string>StoryListTemplate</string>
+</dict>
+</plist>

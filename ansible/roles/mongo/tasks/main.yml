@@ -1,37 +1,275 @@
 ---
+- name: Add ansible user to docker group
+  become: yes
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes
+
+- name: Reset ssh connection to allow user changes to affect current user
+  meta: reset_connection
+
+- name: Set mongo_analytics_secondary
+  set_fact:
+    mongo_analytics_secondary: no
+  tags:
+    - consul
+    - always
+
+- name: Set mongo_analytics_secondary
+  set_fact:
+    mongo_analytics_secondary: yes
+  # when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) not in ['db-mongo-analytics']
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) not in ['hdb-mongo-analytics']
+  tags:
+    - consul
+    - always
+
 - name: Permissions for mongo
   become: yes
   file:
     state: directory
-    mode: 0777
+    mode: 0755
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"
     path: /var/log/mongodb
 
-- name: Make docker network for newsblurnet
+- name: Copy MongoDB keyfile
   become: yes
-  docker_network:
-    name: newsblurnet
-  notify: restart docker
+  copy:
+    content: "{{ mongodb_keyfile }}"
+    dest: /srv/newsblur/config/mongodb_keyfile.key
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"
+    mode: 0400
+  tags:
+    - keyfile
+
+- name: Block for mongo volume
+  block:
+    - name: Get the volume name
+      shell: ls /dev/disk/by-id/ | grep -v part
+      register: volume_name_raw
+
+    - set_fact:
+        volume_name: "{{ volume_name_raw.stdout }}"
+
+    - debug:
+        msg: "{{ volume_name }}"
+
+    - name: Create the mount point
+      become: yes
+      file:
+        path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}"
+        state: directory
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
+
+    - name: Mount volume read-write
+      become: yes
+      mount:
+        path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}"
+        src: "/dev/disk/by-id/{{ volume_name }}"
+        fstype: xfs
+        opts: defaults,discard
+        state: mounted
+
+    - name: Set permissions on mongo volume
+      # become: yes
+      file:
+        path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}"
+        state: directory
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
+        recurse: yes
+
+    - name: Make backup directory
+      # become: yes
+      file:
+        path: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup/"
+        state: directory
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
+        mode: 0755
+
+    - name: Create symlink to mounted volume for backups to live
+      file:
+        state: link
+        src: "/mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup"
+        path: /srv/newsblur/backup
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
+        force: yes
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo-secondary', 'db-mongo-analytics']
+
+- name: Block for mongo volume on hetzner
+  block:
+    - name: Create backup directory
+      become: yes
+      file:
+        path: "/srv/newsblur/docker/volumes/mongo/backup"
+        state: directory
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
+        mode: 0755
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['hdb-mongo-secondary', 'hdb-mongo-analytics']
 
 - name: Start db-mongo docker container
   become: yes
   docker_container:
     name: mongo
-    image: mongo:3.6
+    image: mongo:4.0
     state: started
     container_default_behavior: no_defaults
+    hostname: "{{ inventory_hostname }}"
+    restart_policy: unless-stopped
+    networks_cli_compatible: yes
+    network_mode: host
+    # network_mode: default
+    # networks:
+    #   - name: newsblurnet
+    #     aliases:
+    #       - mongo
+    # ports:
+    #   - "27017:27017"
+    command: --config /etc/mongod.conf
+    user: 1000:1001
+    volumes:
+      - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
+      - /srv/newsblur/ansible/roles/mongo/templates/mongo.conf:/etc/mongod.conf
+      - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
+      - /var/log/mongodb/:/var/log/mongodb/
+      - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup/:/backup/
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-mongo', 'db-mongo-primary', 'db-mongo-secondary']
+
+- name: Start mongo and set permissions
+  block:
+    - name: Start db-mongo docker container on hetzner
+      docker_container:
+        name: mongo
+        image: mongo:4.0
+        state: started
+        container_default_behavior: no_defaults
+        hostname: "{{ inventory_hostname }}"
+        restart_policy: unless-stopped
+        networks_cli_compatible: yes
+        network_mode: host
+        # networks:
+        #   - name: newsblurnet
+        #     aliases:
+        #       - mongo
+        # ports:
+        #   - "27017:27017"
+        command: --config /etc/mongod.conf
+        # user: 1000:1001
+        user: "{{ ansible_effective_user_id|int }}:{{ ansible_effective_group_id|int }}"
+        volumes:
+          - /srv/newsblur/docker/volumes/mongo:/data/db
+          - /srv/newsblur/ansible/roles/mongo/templates/mongo.conf:/etc/mongod.conf
+          - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
+          - /var/log/mongodb/:/var/log/mongodb/
+          - /srv/newsblur/docker/volumes/mongo/backup/:/backup/
+
+    - name: Set permissions on mongo volume
+      become: yes
+      file:
+        path: "/srv/newsblur/docker/volumes/"
+        state: directory
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
+        recurse: yes
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['hdb-mongo-primary', 'hdb-mongo-secondary', 'hdb-mongo-analytics']
+
+- name: Start db-mongo-analytics docker container
+  become: yes
+  docker_container:
+    name: mongo
+    image: mongo:4.0
+    state: started
+    container_default_behavior: no_defaults
+    hostname: "{{ inventory_hostname }}"
+    restart_policy: unless-stopped
+    networks_cli_compatible: yes
+    # network_mode: host
+    network_mode: default
+    networks:
+      - name: newsblurnet
+        aliases:
+          - mongo
+    ports:
+      - "27017:27017"
+    command: --config /etc/mongod.conf
+    user: 1000:1001
+    volumes:
+      - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
+      - /srv/newsblur/ansible/roles/mongo/templates/mongo.analytics.conf:/etc/mongod.conf
+      - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
+      - /var/log/mongodb/:/var/log/mongodb/
+      - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup/:/backup/
+  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo-analytics']
+
+- name: Start db-mongo-analytics docker container on hetzner
+  become: yes
+  docker_container:
+    name: mongo
+    image: mongo:4.0
+    state: started
+    container_default_behavior: no_defaults
+    hostname: "{{ inventory_hostname }}"
     restart_policy: unless-stopped
     networks_cli_compatible: yes
     network_mode: default
     networks:
       - name: newsblurnet
+        aliases:
+          - mongo
+          - "{{ inventory_hostname }}"
     ports:
       - "27017:27017"
     command: --config /etc/mongod.conf
+    user: "{{ ansible_effective_user_id|int }}:{{ ansible_effective_group_id|int }}"
     volumes:
-      - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}:/data/db
-      - /srv/newsblur/ansible/roles/mongo/templates/mongo.conf:/etc/mongod.conf
+      - /srv/newsblur/docker/volumes/mongo:/data/db
+      - /srv/newsblur/ansible/roles/mongo/templates/mongo.analytics.conf:/etc/mongod.conf
+      - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
       - /var/log/mongodb/:/var/log/mongodb/
-      - /opt/mongo/newsblur/backup:/backup/'
+      - /srv/newsblur/docker/volumes/mongo/backup/:/backup/
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['hdb-mongo-analytics']
+
+- name: Create mongo database user
+  shell:
+    # Don't use this line below as it means there is already a username and password, so no need to set one
+    # sleep 2; docker exec mongo mongo -u "{{ mongodb_username }}" -p "{{ mongodb_password }}" --eval '
+    cmd: >-
+      sleep 2; docker exec mongo mongo admin 
+      -u "{{ mongodb_username }}" 
+      -p "{{ mongodb_password }}" 
+      --authenticationDatabase admin 
+      --eval '
+      db.createUser(
+        {
+          user: "{{ mongodb_username }}",
+          pwd: "{{ mongodb_password }}",
+          roles: [
+            { role: "root", db: "admin" },
+          ]
+        }
+      )'
+  register: auth_result
+  changed_when:
+    - auth_result.rc == 0
+  failed_when:
+    - "'Successfully added user' not in auth_result.stdout"
+    - "'already exists' not in auth_result.stdout"
+    - "'there are no users authenticated' not in auth_result.stdout"
+  tags:
+    - mongoauth
+    - never
+
+# - debug:
+#     msg: "{{ auth_result }}"
+#   tags:
+#     - mongoauth
 
 - name: Register mongo in consul
   tags: consul
@@ -39,7 +277,7 @@
   template:
     src: consul_service.json
     dest: /etc/consul.d/mongo.json
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo', 'db-mongo-secondary'] or inventory_hostname.startswith('db2')
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-mongo-primary', 'db-mongo-secondary', 'hdb-mongo-primary', 'hdb-mongo-secondary']
   notify:
     - reload consul
 
@@ -49,16 +287,16 @@
   template:
     src: consul_service.analytics.json
     dest: /etc/consul.d/mongo.json
-  when: (inventory_hostname | regex_replace('[0-9]+', '')) == 'db-mongo-analytics' or inventory_hostname.startswith('db3')
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-mongo-analytics', 'hdb-mongo-analytics']
   notify:
     - reload consul
 
 - name: Setup logrotate for mongo
   become: yes
   copy: src=logrotate.conf dest=/etc/logrotate.d/mongodb mode=0755
-  tags: 
+  tags:
     - logrotate
-  
+
 - name: Add sanity checkers cronjob for disk usage
   become: yes
   cron:
@@ -70,49 +308,64 @@
       docker run --rm -it
       OUTPUT=$(eval sudo df / | head -n 2 |  tail -1);
       -v /srv/newsblur:/srv/newsblur
-      --network=newsblurnet
+      --network=host
       --hostname {{ ansible_hostname }} 
       newsblur/newsblur_python3 /srv/newsblur/utils/monitor_disk_usage.py $OUTPUT
   tags:
     - sanity-checker
+
+- name: Copy common secrets
+  copy:
+    src: /srv/secrets-newsblur/settings/common_settings.py
+    dest: /srv/newsblur/newsblur_web/local_settings.py
+  register: app_changed
+  tags: env
+
+- name: Add mongo backup log
+  file:
+    path: /var/log/mongo_backup.log
+    state: touch
+    mode: 0755
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"
+  when: '"db-mongo-secondary1" in inventory_hostname'
 
 - name: Add mongo backup
   cron:
     name: mongo backup
     minute: "0"
     hour: "4"
-    job:
-      collections=(
-        classifier_tag
-        classifier_author
-        classifier_feed
-        classifier_title
-        userstories
-        shared_stories
-        category
-        category_site
-        sent_emails
-        social_profile
-        social_subscription
-        social_services
-        statistics
-        user_search
-        feedback
-      )
-      for collection in collections; do
-        echo Dumping $collection
-        now=$(date '+%Y-%m-%d-%H-%M')
+    job: /srv/newsblur/docker/mongo/backup_mongo.sh >> /var/log/mongo_backup.log 2>&1
+  when: '"db-mongo-secondary1" in inventory_hostname'
+  tags:
+    - mongo-backup
+    - cron
+# - name: Add mongo starred_stories+stories backup
+#   cron:
+#     name: mongo starred/shared/all stories backup
+#     minute: "0"
+#     hour: "5"
+#     job: /srv/newsblur/docker/mongo/backup_mongo.sh stories
+#   when: '"db-mongo-secondary1" in inventory_hostname'
+#   tags:
+#     - mongo-backup
 
-        docker exec -it mongo mongodump --db newsblur --collection $collection -o /backup/backup_mongo_${now}
-        
-        echo Compressing /opt/mongo/newsblur/backup/backup_mongo_${now}.tgz
-        tar -zcf /opt/mongo/newsblur/backup/backup_mongo_${now}.tgz /opt/mongo/newsblur/backup/backup_mongo_${now})
-        
-      done;
+# Renaming a db-mongo-primary3 to db-mongo-primary2:
+#  - Change hostname to db-mongo-primary2 on Digital Ocean
+#  -     make list; doctl compute droplet-action rename <id>  --droplet-name db-mongo-primary2
+#  - Change hostname to db-mongo-primary2 in /etc/hostname
+#  - make inventory
+#  - Symlink /mnt/mongo2 to /mnt/mongo3
+#  - tf state mv "digitalocean_droplet.db-mongo-primary[2]" "digitalocean_droplet.db-mongo-primary[1]"
+#  - tf state mv "digitalocean_volume.mongo_volume[2]" "digitalocean_volume.mongo_volume[1]"
 
-      echo Uploading backups to S3      
-      docker run --rm
-      -v /srv/newsblur:/srv/newsblur
-      -v /opt/mongo/newsblur/backup/:/opt/mongo/newsblur/backup/
-      --network=newsblurnet
-      newsblur/newsblur_python3:latest /srv/newsblur/utils/backups/backup_mongo.py
+# Renaming a db-mongo-primary4 to db-mongo-primary2:
+#  - Set TF count to 4
+#  - doctl compute droplet delete db-mongo2
+#  - doctl compute droplet delete db-mongo3
+#  - tf state rm "digitalocean_droplet.db-mongo-primary-s[1]"
+#  - tf state rm "digitalocean_droplet.db-mongo-primary-s[2]"
+#  - tf state mv "digitalocean_droplet.db-mongo-primary-s[3]" "digitalocean_droplet.db-mongo-primary-s[1]"
+#  - Change hostname to db-mongo2 in /etc/hostname
+#  - sudo hostname db-mongo-primary2
+

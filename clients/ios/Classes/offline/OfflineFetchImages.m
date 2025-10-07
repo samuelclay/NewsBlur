@@ -8,10 +8,10 @@
 
 #import "OfflineFetchImages.h"
 #import "NewsBlurAppDelegate.h"
-#import "NewsBlurViewController.h"
 #import "FMDatabase.h"
 #import "FMDatabaseAdditions.h"
 #import "Utilities.h"
+#import "NewsBlur-Swift.h"
 
 @implementation OfflineFetchImages
 @synthesize appDelegate;
@@ -41,60 +41,62 @@
         ![[[NSUserDefaults standardUserDefaults]
            objectForKey:@"offline_allowed"] boolValue] ||
         [urls count] == 0) {
-        NSLog(@"Finished caching images. %ld total", (long)appDelegate.totalUncachedImagesCount);
+        NSLog(@"Finished caching images. %ld total", (long)self.appDelegate.totalUncachedImagesCount);
         dispatch_async(dispatch_get_main_queue(), ^{
-            [appDelegate.feedsViewController showDoneNotifier];
-            [appDelegate.feedsViewController hideNotifier];
-            [appDelegate cleanImageCache];
-            [appDelegate finishBackground];
+            [self.appDelegate.feedsViewController showDoneNotifier];
+            [self.appDelegate.feedsViewController hideNotifier];
+            [self.appDelegate cleanImageCache];
+            [self.appDelegate finishBackground];
         });
         return NO;
     }
 
-    if (![appDelegate isReachableForOffline]) {
+    if (![self.appDelegate isReachableForOffline]) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [appDelegate.feedsViewController showDoneNotifier];
-            [appDelegate.feedsViewController hideNotifier];
+            [self.appDelegate.feedsViewController showDoneNotifier];
+            [self.appDelegate.feedsViewController hideNotifier];
         });
         return NO;
     }
-
     
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
-    [manager.requestSerializer setTimeoutInterval:5];
+    [manager.requestSerializer setTimeoutInterval:10];
     manager.responseSerializer = [AFImageResponseSerializer serializer];
     manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
 
     dispatch_group_t group = dispatch_group_create();
     
     for (NSArray *urlArray in urls) {
-        NSString *urlString = [[urlArray objectAtIndex:0] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+        NSString *urlString = [urlArray objectAtIndex:0];
         NSString *storyHash = [urlArray objectAtIndex:1];
         NSInteger storyTimestamp = [[urlArray objectAtIndex:2] integerValue];
         dispatch_group_enter(group);
-//        NSLog(@" ---> Fetching offline image: %@", urlString);
+        if (![NSURL URLWithString:urlString]) {
+            urlString = [urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+        }
+        NSLog(@"📚 Fetching offline %@ image: %@", storyHash, urlString);
         [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//            NSLog(@" ---> Fetched %@: %@", storyHash, urlString);
+            NSLog(@"📚 Fetched %@: %@", storyHash, urlString);
             UIImage *image = (UIImage *)responseObject;
             [self storeCachedImage:urlString withImage:image storyHash:storyHash storyTimestamp:storyTimestamp];
             dispatch_group_leave(group);
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//            NSLog(@" ---> Failed to fetch image %@: %@", storyHash, urlString);
+            NSLog(@"📚 Failed to fetch image %@: %@ %@", storyHash, urlString, error);
             [self storeFailedImage:storyHash];
             dispatch_group_leave(group);
         }];
     }
-
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    });
+    
+//    dispatch_sync(dispatch_get_main_queue(), ^{
+//        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+//    });
     dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
     NSLog(@"Queue finished: %ld total (%ld remaining)", (long)appDelegate.totalUncachedImagesCount, (long)appDelegate.remainingUncachedImagesCount);
     [self updateProgress];
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    });
+//    dispatch_sync(dispatch_get_main_queue(), ^{
+//        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+//    });
     
     //    dispatch_async(dispatch_get_main_queue(), ^{
     //        [appDelegate.feedsViewController hideNotifier];
@@ -105,16 +107,16 @@
 - (NSArray *)uncachedImageUrls {
     NSMutableArray *urls = [NSMutableArray array];
     
-    [appDelegate.database inDatabase:^(FMDatabase *db) {
+    [self.appDelegate.database inDatabase:^(FMDatabase *db) {
         NSString *commonQuery = @"FROM cached_images c "
         "INNER JOIN unread_hashes u ON (c.story_hash = u.story_hash) "
         "WHERE c.image_cached is null ";
         int count = [db intForQuery:[NSString stringWithFormat:@"SELECT COUNT(1) %@", commonQuery]];
-        if (appDelegate.totalUncachedImagesCount == 0) {
-            appDelegate.totalUncachedImagesCount = count;
-            appDelegate.remainingUncachedImagesCount = appDelegate.totalUncachedImagesCount;
+        if (self.appDelegate.totalUncachedImagesCount == 0) {
+            self.appDelegate.totalUncachedImagesCount = count;
+            self.appDelegate.remainingUncachedImagesCount = self.appDelegate.totalUncachedImagesCount;
         } else {
-            appDelegate.remainingUncachedImagesCount = count;
+            self.appDelegate.remainingUncachedImagesCount = count;
         }
         
         int limit = 120;
@@ -143,17 +145,17 @@
     if (self.isCancelled) return;
     
     NSInteger start = (NSInteger)[[NSDate date] timeIntervalSince1970];
-    NSInteger end = appDelegate.latestCachedImageDate;
+    NSInteger end = self.appDelegate.latestCachedImageDate;
     NSInteger seconds = start - (end ? end : start);
     __block int hours = (int)round(seconds / 60.f / 60.f);
     
     __block float progress = 0.f;
-    if (appDelegate.totalUncachedImagesCount) {
+    if (self.appDelegate.totalUncachedImagesCount) {
         progress = 1.f - ((float)appDelegate.remainingUncachedImagesCount /
                           (float)appDelegate.totalUncachedImagesCount);
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        [appDelegate.feedsViewController showCachingNotifier:@"Images" progress:progress hoursBack:hours];
+        [self.appDelegate.feedsViewController showCachingNotifier:@"Images" progress:progress hoursBack:hours];
     });
 }
 
@@ -167,35 +169,38 @@
                                              (unsigned long)NULL), ^{
         
         NSData *responseData = UIImageJPEGRepresentation(image, 0.6);
+//        NSString *md5Url = [Utilities md5:imageUrl storyHash:storyHash];
         NSString *md5Url = [Utilities md5:imageUrl];
 //            NSLog(@"Storing image: %@ (%d bytes - %d in queue)", storyHash, [responseData length], [imageDownloadOperationQueue requestsCount]);
         
         NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         NSString *cacheDirectory = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"story_images"];
-        NSString *fullPath = [cacheDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.%@", md5Url, [imageUrl pathExtension]]];
+        NSString *fullPath = [[cacheDirectory stringByAppendingPathComponent:md5Url] stringByAppendingPathExtension:@"jpeg"];
         
         [fileManager createFileAtPath:fullPath contents:responseData attributes:nil];
         
-        [appDelegate.database inDatabase:^(FMDatabase *db) {
+        NSLog(@"📚 stored storyHash: %@ imageURL: %@ cachedURL: %@", storyHash, imageUrl, fullPath);
+        
+        [self.appDelegate.database inDatabase:^(FMDatabase *db) {
             [db executeUpdate:@"UPDATE cached_images SET "
              "image_cached = 1 WHERE story_hash = ?",
              storyHash];
         }];
         
         if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"default_order"] isEqualToString:@"oldest"]) {
-            if (storyTimestamp > appDelegate.latestCachedImageDate) {
-                appDelegate.latestCachedImageDate = storyTimestamp;
+            if (storyTimestamp > self.appDelegate.latestCachedImageDate) {
+                self.appDelegate.latestCachedImageDate = storyTimestamp;
             }
         } else {
-            if (!appDelegate.latestCachedImageDate || storyTimestamp < appDelegate.latestCachedImageDate) {
-                appDelegate.latestCachedImageDate = storyTimestamp;
+            if (!self.appDelegate.latestCachedImageDate || storyTimestamp < self.appDelegate.latestCachedImageDate) {
+                self.appDelegate.latestCachedImageDate = storyTimestamp;
             }
         }
         
         @synchronized (self) {
-            appDelegate.remainingUncachedImagesCount--;
-            if (appDelegate.remainingUncachedImagesCount % 10 == 0) {
+            self.appDelegate.remainingUncachedImagesCount--;
+            if (self.appDelegate.remainingUncachedImagesCount % 10 == 0) {
                 [self updateProgress];
             }
         }
@@ -203,7 +208,7 @@
 }
 
 - (void)storeFailedImage:(NSString *)storyHash {
-    [appDelegate.database inDatabase:^(FMDatabase *db) {
+    [self.appDelegate.database inDatabase:^(FMDatabase *db) {
         [db executeUpdate:@"UPDATE cached_images SET "
          "image_cached = 1, failed = 1 WHERE story_hash = ?",
          storyHash];

@@ -4,19 +4,19 @@
 # License as published by the Free Software Foundation.
 #
 
-from tkinter import *
-import tkinter.filedialog
-import tkinter.simpledialog
-import tkinter.messagebox
-
 import os
+import tkinter.filedialog
+import tkinter.messagebox
+import tkinter.simpledialog
+from tkinter import *
 
-from .util import Command, StatusBar, Notebook
 from .tester import TestView
+from .util import Command, Notebook, StatusBar
+
 
 class PoolView(Frame):
     def __init__(self, master=None, guesser=None, app=None):
-        Frame.__init__(self, master, bg='lightblue3')
+        Frame.__init__(self, master, bg="lightblue3")
         self.pack()
         self.listView = Frame(self)
         self.listView.pack()
@@ -35,11 +35,11 @@ class PoolView(Frame):
         self.listView.pack()
         for pool in self.guesser.poolNames():
             self.addPool(self.guesser.pools[pool])
-        self.addPool(self.guesser.corpus, 'Total')
+        self.addPool(self.guesser.corpus, "Total")
 
     def upload(self):
         pass
-    
+
     def addLoadSave(self):
         frame = Frame(self)
         frame.pack(side=RIGHT)
@@ -49,9 +49,9 @@ class PoolView(Frame):
         bp.pack(side=BOTTOM, fill=X)
         bp = Button(frame, text="Load", command=self.load)
         bp.pack(side=BOTTOM, fill=X)
-    
+
     def addPool(self, pool, name=None):
-        col=None
+        col = None
         tTok = IntVar()
         train = IntVar()
         line = Frame(self.listView)
@@ -62,7 +62,7 @@ class PoolView(Frame):
             col = self.defaultColours()[idx]
         l = Label(line, text=name, anchor=W, width=10)
         l.grid(row=0, column=0)
-        colourStripe = Label(line, text=' ', width=1, bg=col, anchor=W, relief=GROOVE)
+        colourStripe = Label(line, text=" ", width=1, bg=col, anchor=W, relief=GROOVE)
         colourStripe.grid(row=0, column=1)
         train = IntVar()
         train.set(pool.trainCount)
@@ -76,7 +76,7 @@ class PoolView(Frame):
         tTok.set(pool.tokenCount)
         l = Label(line, textvariable=tTok, anchor=E, width=10, relief=SUNKEN)
         l.grid(row=0, column=4)
-        self.model[name]=(pool, uTok, tTok, train)
+        self.model[name] = (pool, uTok, tTok, train)
 
     def refresh(self):
         for pool, ut, tt, train in list(self.model.values()):
@@ -98,35 +98,35 @@ class PoolView(Frame):
         self.guesser.load(path)
         self.reload()
         self.app.dirty = False
-    
+
     def newPool(self):
-        p = tkinter.simpledialog.askstring('Create Pool', 'Name for new pool?')
+        p = tkinter.simpledialog.askstring("Create Pool", "Name for new pool?")
         if not p:
             return
         if p in self.guesser.pools:
-            tkinter.messagebox.showwarning('Bad pool name!', 'Pool %s already exists.' % p)
+            tkinter.messagebox.showwarning("Bad pool name!", "Pool %s already exists." % p)
         self.guesser.newPool(p)
         self.reload()
         self.app.poolAdded()
-        self.app.status.log('New pool created: %s.' % p, clear=3)
+        self.app.status.log("New pool created: %s." % p, clear=3)
 
     def defaultColours(self):
-        return ['green', 'yellow', 'lightblue', 'red', 'blue', 'orange', 'purple', 'pink']
+        return ["green", "yellow", "lightblue", "red", "blue", "orange", "purple", "pink"]
 
     def columnHeadings(self):
         # FIXME factor out and generalize
-        title = Label(self, text='Pools', relief=RAISED, borderwidth=1)
+        title = Label(self, text="Pools", relief=RAISED, borderwidth=1)
         title.pack(side=TOP, fill=X)
         msgLine = Frame(self, relief=RAISED, borderwidth=1)
         msgLine.pack(side=TOP)
         currCol = 0
-        colHeadings = [('Name', 10), ('', 1), ('Trained', 10), ('Unique Tokens', 12), ('Tokens', 10)]
+        colHeadings = [("Name", 10), ("", 1), ("Trained", 10), ("Unique Tokens", 12), ("Tokens", 10)]
         for cHdr, width in colHeadings:
-            l = Label(msgLine, text=cHdr, width=width, bg='lightblue')
+            l = Label(msgLine, text=cHdr, width=width, bg="lightblue")
             l.grid(row=0, column=currCol)
             currCol += 1
 
-            
+
 class Trainer(Frame):
     def __init__(self, parent, guesser=None, itemClass=None):
         self.status = StatusBar(parent)
@@ -143,6 +143,7 @@ class Trainer(Frame):
         self.dirty = False
         if guesser is None:
             from reverend.thomas import Bayes
+
             self.guesser = Bayes()
         else:
             self.guesser = guesser
@@ -151,14 +152,14 @@ class Trainer(Frame):
         else:
             self.itemClass = itemClass
         for row in self.rows:
-            row.summary.set('foo')
+            row.summary.set("foo")
         self.initViews()
 
     def initViews(self):
         self.nb = Notebook(self)
-##        frame1 = Frame(self.nb())
-##        self.poolView = PoolView(frame1, guesser=self.guesser, app=self)
-##        self.poolView.pack(side=TOP)
+        ##        frame1 = Frame(self.nb())
+        ##        self.poolView = PoolView(frame1, guesser=self.guesser, app=self)
+        ##        self.poolView.pack(side=TOP)
         frame2 = Frame(self.nb())
         self.poolView = PoolView(frame2, guesser=self.guesser, app=self)
         self.poolView.pack(side=TOP)
@@ -168,7 +169,7 @@ class Trainer(Frame):
         bn.pack(side=RIGHT, anchor=NE, fill=X)
         self.columnHeadings()
         self.addNextPrev()
-        
+
         frame3 = Frame(self.nb())
         self.testView = TestView(frame3, guesser=self.guesser, app=self)
         self.testView.pack()
@@ -176,12 +177,11 @@ class Trainer(Frame):
         frame4 = Frame(self.nb())
         bp = Button(frame4, text="Quit", command=self.quitNow)
         bp.pack(side=BOTTOM)
-        
-        #self.nb.add_screen(frame1, 'Reverend')
-        self.nb.add_screen(frame2, 'Training')
-        self.nb.add_screen(frame3, 'Testing')
-        self.nb.add_screen(frame4, 'Quit')
-        
+
+        # self.nb.add_screen(frame1, 'Reverend')
+        self.nb.add_screen(frame2, "Training")
+        self.nb.add_screen(frame3, "Testing")
+        self.nb.add_screen(frame4, "Quit")
 
     def addNextPrev(self):
         npFrame = Frame(self.listView)
@@ -190,7 +190,6 @@ class Trainer(Frame):
         bn.grid(row=0, column=0)
         bn = Button(npFrame, text="Next Page", command=self.nextPage)
         bn.grid(row=0, column=1)
-
 
     def loadCorpus(self):
         path = tkinter.filedialog.askdirectory()
@@ -207,12 +206,11 @@ class Trainer(Frame):
             dirs.append((pool, path))
         for pool, path in dirs:
             print(pool, path)
-            
 
     def displayList(self):
         for item in self.items:
             self.itemRow(item)
-            
+
     def displayRows(self):
         for row in self.rows:
             self.displayRow(row)
@@ -229,12 +227,12 @@ class Trainer(Frame):
     def nextPage(self):
         self.cursor = min(len(self.files), self.cursor + self.itemsPerPage)
         self.displayItems()
-        
+
     def displayItems(self):
-        theseFiles = self.files[self.cursor:self.cursor + self.itemsPerPage]
+        theseFiles = self.files[self.cursor : self.cursor + self.itemsPerPage]
         items = []
         for file, row in zip(theseFiles, self.rows):
-            fp = open(file, 'rb')
+            fp = open(file, "rb")
             try:
                 item = self.itemClass.fromFile(fp)
             finally:
@@ -245,12 +243,12 @@ class Trainer(Frame):
             guesses = self.guesser.guess(item)
             summary = item.summary()
             cols = item.columnDefs()
-            s = ''
+            s = ""
             for c, ignore in cols:
-                s += summary[c] + ' '
+                s += summary[c] + " "
             row.initialize(item, s, guesses, self.guesser.poolNames())
         self.items = items
-        
+
     def quitNow(self):
         if self.dirty:
             if tkinter.messagebox.askyesno("You have unsaved changes!", "Quit without saving?"):
@@ -264,7 +262,7 @@ class Trainer(Frame):
         colHeadings = self.itemClass.columnDefs()
         currCol = 0
         for cHdr, width in colHeadings:
-            l = Label(line, text=cHdr, width=width, bg='lightblue')
+            l = Label(line, text=cHdr, width=width, bg="lightblue")
             l.grid(row=0, column=currCol)
             currCol += 1
         line = Frame(self)
@@ -281,17 +279,18 @@ class Trainer(Frame):
         pools = self.guesser.poolNames()
         for row in self.rows:
             row.setGuess(self.guesser.guess(row.original), pools)
-            
+
     def displayRow(self, row, bgc=None):
         # UGH - REWRITE!
         line = Frame(self.listView, bg=bgc)
         line.pack(pady=1)
         row.line = line
         self.insertRadios(row)
-        Label(line, text=row.summary.get(), textvariable=row.summary, width=60, bg=bgc,
-              anchor=W).grid(row=0, column=2)
-        #Label(line, text=row.guess, width=7, bg=bgc, anchor=W).grid(row=0, column=1)
-        colourStripe = Label(line, text=' ', width=1, bg=bgc, anchor=W, relief=GROOVE)
+        Label(line, text=row.summary.get(), textvariable=row.summary, width=60, bg=bgc, anchor=W).grid(
+            row=0, column=2
+        )
+        # Label(line, text=row.guess, width=7, bg=bgc, anchor=W).grid(row=0, column=1)
+        colourStripe = Label(line, text=" ", width=1, bg=bgc, anchor=W, relief=GROOVE)
         colourStripe.grid(row=0, column=1)
         line.colourStripe = colourStripe
         pools = self.guesser.poolNames()
@@ -318,32 +317,34 @@ class Trainer(Frame):
         colours = row.defaultColours()
         pools = self.guesser.poolNames()
         for pool in pools:
-            rb = Radiobutton(radioFrame, text=pool, variable=v, value=pool, command=Command(self.training, row), bg=None)
+            rb = Radiobutton(
+                radioFrame, text=pool, variable=v, value=pool, command=Command(self.training, row), bg=None
+            )
             rb.grid(row=0, column=currCol)
             radios.append(rb)
             currCol += 1
             ci += 1
         row.radios = radios
-        
+
 
 class TextItem(object):
     def __init__(self, text):
         self.text = text
-        
+
     def summary(self):
-        return {'Text': self.text}
+        return {"Text": self.text}
 
     def columnNames(self):
-        return ['Text']
+        return ["Text"]
 
     def lower(self):
         return self.text.lower()
 
     def fromFile(self, fp):
-        """Return the first line of the file.
-        """
+        """Return the first line of the file."""
         ti = self(fp.readline())
         return ti
+
     fromFile = classmethod(fromFile)
 
 
@@ -352,20 +353,20 @@ class ItemRow(object):
         self.line = None
         self.radios = []
         self.original = orig
-        self.current = ''
+        self.current = ""
         self.guess = []
         self.summary = StringVar()
         self.selection = StringVar()
 
-    def initialize(self, item=None, summary='', guess=None, pools=[]):
-        self.selection.set('')
+    def initialize(self, item=None, summary="", guess=None, pools=[]):
+        self.selection.set("")
         self.original = item
         self.summary.set(summary)
         self.setGuess(guess, pools)
 
     def setGuess(self, guess, pools):
         if not guess:
-            guess = [['']]
+            guess = [[""]]
         self.guess = guess
         self.selection.set(self.bestGuess())
         self.current = self.bestGuess()
@@ -383,7 +384,7 @@ class ItemRow(object):
         return self.original.__repr__()
 
     def defaultColours(self):
-        return ['green', 'yellow', 'lightblue', 'red', 'blue', 'orange', 'purple', 'pink']
+        return ["green", "yellow", "lightblue", "red", "blue", "orange", "purple", "pink"]
 
     def bestGuess(self):
         if self.guess:
@@ -392,12 +393,10 @@ class ItemRow(object):
             return None
 
 
-
-        
 if __name__ == "__main__":
     root = Tk()
-    root.title('Reverend Trainer')
+    root.title("Reverend Trainer")
     root.minsize(width=300, height=300)
-    #root.maxsize(width=600, height=600)
+    # root.maxsize(width=600, height=600)
     display = Trainer(root)
     root.mainloop()

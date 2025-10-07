@@ -1,0 +1,5 @@
+---
+- name: restart grafana
+  become: yes
+  command: docker restart grafana
+  listen: restart grafana

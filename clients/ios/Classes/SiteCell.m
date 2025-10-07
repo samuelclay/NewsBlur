@@ -11,6 +11,7 @@
 #import "ABTableViewCell.h"
 #import "UIView+TKCategory.h"
 #import "Utilities.h"
+#import "NewsBlur-Swift.h"
 
 static UIFont *textFont = nil;
 static UIFont *indicatorFont = nil;
@@ -56,7 +57,7 @@ static UIFont *indicatorFont = nil;
     UIColor *textColor;
     UIFont *font;
     
-    font = [UIFont fontWithName:@"Helvetica-Bold" size:11];
+    font = [UIFont fontWithName:@"WhitneySSm-Medium" size:12];
     textColor = UIColorFromRGB(0x606060);
 
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -82,9 +83,9 @@ static UIFont *indicatorFont = nil;
     CGContextMoveToPoint(context, width, 1.0f);
     CGContextAddLineToPoint(context, width, self.frame.size.height);
     CGContextStrokePath(context);
-
+    
     // site favicon
-    if (self.isRead) {
+    if (self.isRead && self.siteFavicon != nil) {
         self.siteFavicon = [self imageByApplyingAlpha:self.siteFavicon withAlpha:0.25];
     } 
     

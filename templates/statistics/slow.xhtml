@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% load utils_tags tz %}
+
+{% block bodyclass %}NB-body-status NB-static{% endblock %}
+
+{% block content %}
+
+<div class="NB-module">
+
+    <div class="queries">
+        <table class="NB-status">
+            {% for user_count in user_counts %}
+                <tr>
+                    {% if forloop.first %}<td rowspan={{user_counts|length}} valign=top><b>Users</b>{% endif %}
+                    <td><b>{{ user_count.user }}</b></td>
+                    <td>{{ user_count.count }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="queries">
+        <table class="NB-status">
+            {% for path, count in path_counts.items %}
+            <tr>
+                {% if forloop.first %}<td rowspan={{path_counts|length}} valign=top><b>Paths</b>{% endif %}
+                <td><b>{{ path }}</b></td>
+                <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+<table class="NB-status">
+    {% for dt_str, queries in all_queries.items %}
+        {% for query in queries %}
+            <tr>
+                {% if forloop.first %}
+                <td rowspan={{ queries|length }} valign=top> <b>
+                    {% localdatetime query.datetime "%a %b %d, %Y %H:%M" %}
+                </b></td>    
+                {% endif %}
+                <td>{{ query.user }}</td>
+                <td>{{ query.time }}</td>
+                <td>{{ query.method }}</td>
+                <td>{{ query.path }}</td>
+                <td>{% if query.data %}{{ query.data }}{% endif %}</td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+</table>
+
+{% endblock content %}

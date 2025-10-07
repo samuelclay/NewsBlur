@@ -46,19 +46,19 @@ class Loader: NSObject, URLSessionDataDelegate {
         
         completionHandler(.allow)
     }
-
+    
     func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
-        print("error: \(error.debugDescription)")
+        NSLog("error: \(error.debugDescription)")
     }
-
+    
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        print("data: \(data)")
+        NSLog("🚧 \(dataTask.currentRequest?.url?.path ?? "?") data: \(data)")
         
         receivedData.append(data)
     }
-
+    
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        if let error = error {
+        if let error {
             completion(.failure(error))
         } else {
             completion(.success(receivedData))

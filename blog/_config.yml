@@ -8,7 +8,7 @@
 # For technical reasons, this file is *NOT* reloaded automatically when you use
 # 'bundle exec jekyll serve'. If you change this file, please restart the server process.
 #
-# If you need help with YAML syntax, here are some quick references for you: 
+# If you need help with YAML syntax, here are some quick references for you:
 # https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
 # https://learnxinyminutes.com/docs/yaml/
 #
@@ -23,15 +23,23 @@ email: blog@newsblur.com
 tagline: A new sound of an old instrument
 description: > # this means to ignore newlines until "baseurl:"
   NewsBlur is a personal news reader that brings people together to talk about the world.
-  
+
   A new sound of an old instrument.
+
+# Use environment variable to switch between production and development URLs
+url: "https://blog.newsblur.com" # Production URL
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://blog.newsblur.com" # the base hostname & protocol for your site, e.g. http://example.com
+
+# Add development settings override
+development:
+  url: "http://localhost:4000"
+
 permalink: pretty
 twitter_username: newsblur
-github_username:  samuelclay
+github_username: samuelclay
 logo: /assets/newsblur_logo_512.png
 future: true
+timezone: America/New_York
 
 # Build settings
 theme: minima
@@ -41,7 +49,6 @@ plugins:
   - jekyll-paginate
 paginate: 10
 paginate_path: "/page:num"
-
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to

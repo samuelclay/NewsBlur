@@ -1,0 +1,40 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--   Keep in sync with ShortcutUtils-->
+    <shortcut
+        android:icon="@drawable/ic_search_2"
+        android:shortcutId="all_stories_search"
+        android:shortcutShortLabel="@string/search">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.newsblur.activity.Main"
+            android:targetPackage="com.newsblur">
+            <extra
+                android:name="shortcut_extra"
+                android:value="shortcut_all_stories_search" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:icon="@drawable/ic_all_stories"
+        android:shortcutId="all_stories"
+        android:shortcutShortLabel="@string/all_stories">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.newsblur.activity.Main"
+            android:targetPackage="com.newsblur">
+            <extra
+                android:name="shortcut_extra"
+                android:value="shortcut_all_stories" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:icon="@drawable/ic_add"
+        android:shortcutId="add_feed"
+        android:shortcutShortLabel="@string/add_feed">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.newsblur.activity.FeedSearchActivity"
+            android:targetPackage="com.newsblur" />
+    </shortcut>
+</shortcuts>

@@ -19,7 +19,17 @@
 
 - name: Bind dnsmasq to localhost
   become: yes
-  lineinfile: dest=/etc/dnsmasq.conf state=present line='listen-address=127.0.0.1'
+  lineinfile: 
+    dest: /etc/dnsmasq.conf 
+    state: present 
+    line: 'listen-address=127.0.0.1'
+
+- name: Gather network facts
+  become: yes
+  setup:
+    gather_subset:
+      - '!all'
+      - network
 
 - name: Check if resolv.conf exists
   become: yes
@@ -27,18 +37,23 @@
     path: /etc/resolv.conf
   register: resolvconf
 
-# - debug: msg="{{resolvconf}}"
-
 - name: Add localhost to resolv.conf
   become: yes
-  lineinfile: dest=/etc/resolv.conf state=present line='nameserver 127.0.0.1' insertbefore=BOF
-  when: resolvconf.stat.readable
+  lineinfile: 
+    dest: /etc/resolv.conf 
+    state: present 
+    line: 'nameserver 127.0.0.1'
+    insertbefore: BOF
+  when: resolvconf.stat.exists
 
-- name: user=root dnsmasq
+- name: Set dnsmasq user to root
   become: yes
-  lineinfile: dest=/etc/dnsmasq.conf state=present line='user=root'
+  lineinfile: 
+    dest: /etc/dnsmasq.conf 
+    state: present 
+    line: 'user=root'
 
-- name: Stop systemd-resolved
+- name: Stop and disable systemd-resolved
   become: yes
   systemd:
     name: systemd-resolved
@@ -54,8 +69,31 @@
     owner: root
     group: root
     mode: 0644
+  vars:
+    network_interfaces: "{{ ansible_interfaces }}"
   notify: restart dnsmasq
+  
+- name: Create systemd override directory for dnsmasq
+  become: yes
+  file:
+    path: /etc/systemd/system/dnsmasq.service.d
+    state: directory
+    mode: 0755
 
+# - name: Add override for dnsmasq service
+#   become: yes
+#   copy:
+#     dest: /etc/systemd/system/dnsmasq.service.d/override.conf
+#     content: |
+#       [Unit]
+#       After=docker.service
+
+- name: Remove override for dnsmasq service
+  become: yes
+  file:
+    path: /etc/systemd/system/dnsmasq.service.d/override.conf
+    state: absent
+    
 - name: Launch dnsmasq
   become: yes
   service:

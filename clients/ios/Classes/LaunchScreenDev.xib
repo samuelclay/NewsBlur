@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="480" height="533"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launch_gradient.png" translatesAutoresizingMaskIntoConstraints="NO" id="xvc-Dc-4wh">
+                    <rect key="frame" x="0.0" y="0.0" width="480" height="533"/>
+                </imageView>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_newsblur_512-dev.png" translatesAutoresizingMaskIntoConstraints="NO" id="F6J-Zv-31D">
+                    <rect key="frame" x="112" y="138.66666666666663" width="256" height="256"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="256" id="obj-C4-yj7"/>
+                        <constraint firstAttribute="width" constant="256" id="rjg-Pr-FmI"/>
+                    </constraints>
+                </imageView>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="xvc-Dc-4wh" secondAttribute="bottom" id="1EC-OJ-ctU"/>
+                <constraint firstItem="F6J-Zv-31D" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="7zy-Xp-KcX"/>
+                <constraint firstItem="xvc-Dc-4wh" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="90r-eM-tnt"/>
+                <constraint firstItem="xvc-Dc-4wh" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="VO6-bI-gz3"/>
+                <constraint firstItem="F6J-Zv-31D" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="aHc-Mu-cdP"/>
+                <constraint firstAttribute="centerX" secondItem="F6J-Zv-31D" secondAttribute="centerX" id="bCi-qG-7NA"/>
+                <constraint firstItem="xvc-Dc-4wh" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="cGD-zW-jpz"/>
+                <constraint firstItem="F6J-Zv-31D" firstAttribute="centerX" secondItem="xvc-Dc-4wh" secondAttribute="centerX" id="gwZ-51-bjl"/>
+                <constraint firstItem="F6J-Zv-31D" firstAttribute="centerX" secondItem="xvc-Dc-4wh" secondAttribute="centerX" id="h3d-Co-zO4"/>
+                <constraint firstItem="F6J-Zv-31D" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="o8H-zd-mhr"/>
+                <constraint firstItem="xvc-Dc-4wh" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="phz-WN-8Kj"/>
+                <constraint firstAttribute="centerY" secondItem="xvc-Dc-4wh" secondAttribute="centerY" id="tOX-yW-CJ2"/>
+                <constraint firstAttribute="centerX" secondItem="xvc-Dc-4wh" secondAttribute="centerX" id="wWQ-pN-VET"/>
+                <constraint firstAttribute="centerY" secondItem="F6J-Zv-31D" secondAttribute="centerY" id="ygs-Q1-WCT"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="404" y="418.5"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="launch_gradient.png" width="750" height="1334"/>
+        <image name="logo_newsblur_512-dev.png" width="512" height="512"/>
+    </resources>
+</document>

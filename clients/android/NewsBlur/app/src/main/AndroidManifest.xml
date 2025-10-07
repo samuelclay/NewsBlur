@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <application
+        android:name=".NbApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backupscheme"
+        android:fullBackupOnly="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/newsblur"
+        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+
+        <profileable
+            android:shell="true"
+            tools:targetApi="29" />
+
+        <activity
+            android:name=".activity.InitActivity"
+            android:exported="true"
+            android:noHistory="true"
+            android:theme="@style/splashScreen">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+
+        </activity>
+
+        <activity
+            android:name=".activity.Login"
+            android:noHistory="true"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".activity.LoginProgress"
+            android:noHistory="true" />
+
+        <activity
+            android:name=".activity.RegisterProgress"
+            android:label="@string/get_started"
+            android:noHistory="true" />
+
+        <activity
+            android:name=".activity.Main"
+            android:alwaysRetainTaskState="true"
+            android:launchMode="singleTask" />
+
+        <activity
+            android:name=".activity.Profile"
+            android:label="@string/profile" />
+
+        <activity
+            android:name=".activity.Settings"
+            android:label="@string/settings" />
+
+        <activity android:name=".activity.ImportExportActivity" />
+        <activity android:name=".activity.NotificationsActivity" />
+        <activity
+            android:name=".activity.WidgetConfig"
+            android:label="@string/menu_widget"
+            android:launchMode="singleTask" />
+
+        <activity android:name=".activity.FeedItemsList" />
+
+        <activity
+            android:name=".activity.AllStoriesItemsList"
+            android:launchMode="singleTask" />
+
+        <activity android:name=".activity.InfrequentItemsList" />
+
+        <activity android:name=".activity.ReadStoriesItemsList" />
+
+        <activity android:name=".activity.SavedStoriesItemsList" />
+
+        <activity android:name=".activity.AllSharedStoriesItemsList" />
+
+        <activity android:name=".activity.GlobalSharedStoriesItemsList" />
+
+        <activity android:name=".activity.FolderItemsList" />
+
+        <activity android:name=".activity.SocialFeedItemsList" />
+
+        <activity android:name=".activity.FeedReading" />
+
+        <activity android:name=".activity.AllStoriesReading" />
+
+        <activity android:name=".activity.InfrequentReading" />
+
+        <activity android:name=".activity.ReadStoriesReading" />
+
+        <activity android:name=".activity.SavedStoriesReading" />
+
+        <activity android:name=".activity.AllSharedStoriesReading" />
+
+        <activity android:name=".activity.GlobalSharedStoriesReading" />
+
+        <activity android:name=".activity.FolderReading" />
+
+        <activity android:name=".activity.SubscriptionActivity" />
+
+        <activity
+            android:name=".activity.MuteConfig"
+            android:label="@string/mute_sites"
+            android:launchMode="singleTask" />
+
+        <activity
+            android:name=".activity.FeedSearchActivity"
+            android:launchMode="singleTop" />
+
+        <activity android:name=".activity.SocialFeedReading" />
+
+        <service
+            android:name=".service.NBSyncService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name=".widget.WidgetRemoteViewsService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <service
+            android:name=".service.SubscriptionSyncService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <receiver
+            android:name=".service.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".util.DownloadCompleteReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".util.NotifyDismissReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".util.NotifySaveReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".util.NotifyMarkreadReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".util.NotifyShareReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".widget.WidgetProvider"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/newsblur_appwidget_info" />
+        </receiver>
+        <receiver
+            android:name=".service.TimeChangeReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_SET" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".widget.WidgetUpdateReceiver"
+            android:enabled="true"
+            android:exported="false"></receiver>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.newsblur.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name=".activity.AddFeedExternal"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:host="*" />
+                <data android:pathPattern=".*xml" />
+                <data android:pathPattern=".*rss" />
+                <data android:pathPattern=".*atom" />
+                <data android:pathPattern=".*json" />
+                <data android:pathPattern=".*/feed.*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="feed" />
+                <data android:scheme="rss" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:host="feeds.feedburner.com" />
+                <data android:host="feeds2.feedburner.com" />
+            </intent-filter>
+            <intent-filter>
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:mimeType="text/xml" />
+                <data android:mimeType="application/rss+xml" />
+                <data android:mimeType="application/atom+xml" />
+                <data android:mimeType="application/xml" />
+                <data android:mimeType="application/json" />
+                <data android:mimeType="application/feed+json" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activity.ShareExternalStoryActivity"
+            android:exported="true"
+            android:launchMode="singleInstance"
+            android:theme="@style/Theme.Translucent"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
+        </activity>
+
+    </application>
+
+</manifest>

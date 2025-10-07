@@ -3,6 +3,8 @@
   when: "'app' in group_names"
 - import_playbook: playbooks/setup_blog.yml
   when: "'blogs' in group_names"
+- import_playbook: playbooks/setup_forum.yml
+  when: "'forum' in group_names"
 - import_playbook: playbooks/setup_www.yml
   when: "'haproxy' in group_names"
 - import_playbook: playbooks/setup_node.yml
@@ -10,7 +12,7 @@
 - import_playbook: playbooks/setup_postgres.yml
   when: "'postgres' in group_names"
 - import_playbook: playbooks/setup_mongo.yml
-  when: "'mongo' in group_names"
+  when: "'mongo' in group_names or 'mongo_analytics' in group_names"
 - import_playbook: playbooks/setup_redis.yml
   when: "'redis' in group_names"
 - import_playbook: playbooks/setup_elasticsearch.yml
@@ -21,7 +23,7 @@
   when: "'consul' in group_names"
 - import_playbook: playbooks/setup_staging.yml
   when: "'staging' in group_names"
-- import_playbook: playbooks/setup_discovery.yml
-  when: "'discovery' in inventory_hostname"
 - import_playbook: playbooks/setup_metrics.yml
   when: "'metrics' in inventory_hostname"
+- import_playbook: playbooks/setup_sentry.yml
+  when: "'sentry' in inventory_hostname or 'metrics' in inventory_hostname"

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="?selectorFolderBackground"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/row_folder_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:contentDescription="@string/description_row_folder_icon"
+        android:src="@drawable/ic_search" />
+
+    <TextView
+        android:id="@+id/row_foldername"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/row_folder_icon"
+        android:text="@string/saved_searches_title"
+        android:textStyle="bold"
+        android:letterSpacing="@dimen/extra_letter_spacing" />
+
+</RelativeLayout>

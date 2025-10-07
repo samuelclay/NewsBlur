@@ -1,23 +1,23 @@
 NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
-    
+
     className: "NB-story-title-search",
-    
+
     events: {
         "focus .NB-story-title-search-input": "focus_search",
-        "blur .NB-story-title-search-input" : "blur_search",
-        "keyup input[name=feed_search]"     : "keyup",
-        "keydown input[name=feed_search]"   : "keydown",
-        "click .NB-search-close"            : "close_search",
-        "mouseenter"                        : "mouseenter",
-        "mouseleave"                        : "mouseleave"
+        "blur .NB-story-title-search-input": "blur_search",
+        "keyup input[name=feed_search]": "keyup",
+        "keydown input[name=feed_search]": "keydown",
+        "click .NB-search-close": "close_search",
+        "mouseenter": "mouseenter",
+        "mouseleave": "mouseleave"
     },
-    
-    initialize: function(options) {
+
+    initialize: function (options) {
         this.feedbar_view = options.feedbar_view;
         this.search_debounced = _.debounce(_.bind(this.perform_search, this), 350);
     },
-    
-    render: function() {
+
+    render: function () {
         if (NEWSBLUR.app.active_search) {
             NEWSBLUR.app.active_search.remove();
         }
@@ -29,13 +29,13 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         ', {
             search: NEWSBLUR.reader.flags['search']
         }));
-        
+
         this.$el.html($view);
-        
+
         return this;
     },
-    
-    remove: function() {
+
+    remove: function () {
         var $icon = this.$('.NB-search-icon');
         var tipsy = $icon.data('tipsy');
         if (tipsy) {
@@ -45,12 +45,12 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         NEWSBLUR.reader.$s.$story_titles_header.removeClass("NB-searching");
         Backbone.View.prototype.remove.call(this);
     },
-    
+
     // ============
     // = Indexing =
     // ============
-    
-    update_indexing_progress: function(message) {
+
+    update_indexing_progress: function (message) {
         var $input = this.$('input');
         var $icon = this.$('.NB-search-icon');
 
@@ -59,7 +59,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         } else if (message == "done") {
             $input.attr('style', null);
             var tipsy = $icon.data('tipsy');
-            _.defer(function() {
+            _.defer(function () {
                 if (!tipsy) return;
                 tipsy.disable();
                 tipsy.hide();
@@ -67,9 +67,11 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
             this.retry();
         } else if (_.string.startsWith(message, 'feeds:')) {
             var feed_ids = message.replace('feeds:', '').split(',');
-            _.each(feed_ids, function(feed_id) {
+            _.each(feed_ids, function (feed_id) {
                 var feed = NEWSBLUR.assets.get_feed(parseInt(feed_id, 10));
-                feed.set('search_indexed', true);
+                if (feed) {
+                    feed.set('search_indexed', true);
+                }
             });
             this.show_indexing_tooltip(false);
             var indexed = NEWSBLUR.assets.feeds.search_indexed();
@@ -78,59 +80,59 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
             NEWSBLUR.utils.attach_loading_gradient($input, progress);
         }
     },
-    
-    show_indexing_tooltip: function(show) {
+
+    show_indexing_tooltip: function (show) {
         var $icon = this.$('.NB-search-icon');
         var tipsy = $icon.data('tipsy');
-        
+
         if (tipsy) return;
-        
+
         $icon.tipsy({
-            title: function() { return "Hang tight, indexing..."; },
+            title: function () { return "Hang tight, indexing..."; },
             gravity: 'nw',
             fade: true,
             trigger: 'manual',
             offset: 4
         });
         var tipsy = $icon.data('tipsy');
-        _.defer(function() {
+        _.defer(function () {
             tipsy.enable();
             if (show) tipsy.show();
         });
-        _.delay(function() {
+        _.delay(function () {
             tipsy.hide();
         }, 3 * 1000);
 
     },
-    
+
     // ==========
     // = Events =
     // ==========
-    
-    focus: function() {
+
+    focus: function () {
         this.$("input").focus();
     },
-    
-    has_focus: function() {
+
+    has_focus: function () {
         return this.$("input:focus").length;
     },
 
-    blur: function() {
+    blur: function () {
         this.$("input").blur();
     },
-    
-    focus_search: function() {
+
+    focus_search: function () {
         if (!NEWSBLUR.reader.flags.searching || !NEWSBLUR.reader.flags.search) {
             NEWSBLUR.reader.flags.searching = true;
             NEWSBLUR.reader.flags.search = "";
         }
         NEWSBLUR.reader.$s.$story_titles_header.addClass("NB-searching");
     },
-    
-    blur_search: function() {
+
+    blur_search: function () {
         var $search = this.$("input[name=feed_search]");
         var query = $search.val();
-        
+
         if (query.length == 0) {
             NEWSBLUR.reader.flags.searching = false;
             NEWSBLUR.reader.$s.$story_titles_header.removeClass("NB-searching");
@@ -139,10 +141,10 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
             }
         }
     },
-    
-    keyup: function(e) {
-        var arrow = {left: 37, up: 38, right: 39, down: 40, enter: 13, esc: 27};
-        
+
+    keyup: function (e) {
+        var arrow = { left: 37, up: 38, right: 39, down: 40, enter: 13, esc: 27 };
+
         if (e.which == arrow.up || e.which == arrow.down) {
             this.blur();
 
@@ -152,13 +154,13 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
 
             return false;
         }
-        
+
         this.search();
     },
-    
-    keydown: function(e) {
-        var arrow = {left: 37, up: 38, right: 39, down: 40, enter: 13, esc: 27};
-        
+
+    keydown: function (e) {
+        var arrow = { left: 37, up: 38, right: 39, down: 40, enter: 13, esc: 27 };
+
         if (e.which == arrow.esc) {
             this.close_search();
             e.preventDefault();
@@ -166,26 +168,26 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
             return false;
         }
     },
-    
-    retry: function() {
+
+    retry: function () {
         if (!NEWSBLUR.reader.flags.search) return;
-        
+
         NEWSBLUR.reader.flags.search = null;
         this.search();
     },
-    
-    search: function() {
+
+    search: function () {
         var $search = this.$("input[name=feed_search]");
         var query = _.escape($search.val());
-        
+
         if (query != NEWSBLUR.reader.flags.search) {
             NEWSBLUR.reader.flags.searching = true;
             NEWSBLUR.reader.flags.search = query;
             this.search_debounced(query);
         }
     },
-    
-    perform_search: function(query) {
+
+    perform_search: function (query) {
         if (query && query.length) {
             window.history.pushState({}, "", $.updateQueryString('search', query, window.location.pathname));
         } else {
@@ -196,32 +198,32 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         });
         NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
     },
-    
-    close_search: function() {
+
+    close_search: function () {
         var $search = this.$("input[name=feed_search]");
         $search.val('');
         window.history.pushState({}, "", $.updateQueryString('search', null, window.location.pathname));
         NEWSBLUR.reader.flags.searching = false;
-        
+
         NEWSBLUR.reader.reload_feed();
     },
-    
-    mouseenter: function(e) {
+
+    mouseenter: function (e) {
         var $icon = this.$('.NB-search-icon');
         var tipsy = $icon.data('tipsy');
-        
+
         if (!tipsy) return;
-        
+
         tipsy.show();
     },
-    
-    mouseleave: function(e) {
+
+    mouseleave: function (e) {
         var $icon = this.$('.NB-search-icon');
         var tipsy = $icon.data('tipsy');
-        
+
         if (!tipsy) return;
-        
+
         tipsy.hide();
     }
-    
+
 });

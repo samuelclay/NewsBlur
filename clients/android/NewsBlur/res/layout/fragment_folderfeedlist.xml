@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ExpandableListView xmlns:android="http://schemas.android.com/apk/res/android" 
-        android:id="@+id/folderfeed_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:divider="@null"
-        android:background="#00000000"
-        android:cacheColorHint="#00000000"
-        />

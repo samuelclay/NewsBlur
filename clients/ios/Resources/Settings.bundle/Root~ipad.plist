@@ -95,6 +95,46 @@
 			<string>default_confirm_read_filter</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>After mark read</string>
+			<key>Titles</key>
+			<array>
+				<string>Open the next site/folder</string>
+				<string>Stay on the feeds list</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>next</string>
+			<key>Values</key>
+			<array>
+				<string>next</string>
+				<string>stay</string>
+			</array>
+			<key>Key</key>
+			<string>after_mark_read</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>When opening a site</string>
+			<key>Titles</key>
+			<array>
+				<string>Open first story</string>
+				<string>Show stories</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>story</string>
+			<key>Values</key>
+			<array>
+				<string>story</string>
+				<string>list</string>
+			</array>
+			<key>Key</key>
+			<string>feed_opening</string>
+		</dict>
+		<dict>
 			<key>FooterText</key>
 			<string>You can change this setting in the Infrequent Site Stories view.</string>
 			<key>Type</key>
@@ -166,21 +206,69 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
+			<string>Column layout</string>
+			<key>Titles</key>
+			<array>
+				<string>Automatic</string>
+				<string>Three columns</string>
+				<string>Two columns</string>
+				<string>Full screen</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>displace</string>
+			<key>Values</key>
+			<array>
+				<string>auto</string>
+				<string>tile</string>
+				<string>displace</string>
+				<string>overlay</string>
+			</array>
+			<key>Key</key>
+			<string>split_behavior</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
 			<string>Story titles layout</string>
 			<key>Titles</key>
 			<array>
 				<string>Titles on left</string>
+				<string>Titles on top</string>
 				<string>Titles on bottom</string>
+				<string>Titles in grid</string>
 			</array>
 			<key>DefaultValue</key>
 			<string>titles_on_left</string>
 			<key>Values</key>
 			<array>
 				<string>titles_on_left</string>
+				<string>titles_on_top</string>
 				<string>titles_on_bottom</string>
+				<string>titles_in_grid</string>
 			</array>
 			<key>Key</key>
 			<string>story_titles_position</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>List style</string>
+			<key>Titles</key>
+			<array>
+				<string>Standard</string>
+				<string>Experimental</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>standard</string>
+			<key>Values</key>
+			<array>
+				<string>standard</string>
+				<string>experimental</string>
+			</array>
+			<key>Key</key>
+			<string>story_titles_style</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -214,19 +302,23 @@
 			<key>Titles</key>
 			<array>
 				<string>None</string>
-				<string>Small</string>
-				<string>Large</string>
+				<string>Small Left</string>
+				<string>Large Left</string>
+				<string>Large Right</string>
+				<string>Small Right</string>
 			</array>
 			<key>Values</key>
 			<array>
 				<string>none</string>
-				<string>small</string>
-				<string>large</string>
+				<string>small_left</string>
+				<string>large_left</string>
+				<string>large_right</string>
+				<string>small_right</string>
 			</array>
 			<key>Key</key>
 			<string>story_list_preview_images_size</string>
 			<key>DefaultValue</key>
-			<string>small</string>
+			<string>small_right</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -263,6 +355,28 @@
 			<string>show_feeds_after_being_read</string>
 			<key>DefaultValue</key>
 			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>When opening app</string>
+			<key>WantUpdate</key>
+			<true/>
+			<key>Titles</key>
+			<array>
+				<string>Show feed list</string>
+				<string>Open All Stories</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>everything</string>
+			<key>Values</key>
+			<array>
+				<string>feeds</string>
+				<string>everything</string>
+			</array>
+			<key>Key</key>
+			<string>app_opening</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -344,16 +458,6 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Follow system appearance</string>
-			<key>Key</key>
-			<string>theme_follow_system</string>
-			<key>DefaultValue</key>
-			<true/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
 			<string>Switch automatically</string>
 			<key>Key</key>
 			<string>theme_auto_toggle</string>
@@ -383,6 +487,7 @@
 			<string>Current theme</string>
 			<key>Titles</key>
 			<array>
+				<string>Auto</string>
 				<string>Light</string>
 				<string>Sepia</string>
 				<string>Medium</string>
@@ -392,6 +497,7 @@
 			<string>light</string>
 			<key>Values</key>
 			<array>
+				<string>auto</string>
 				<string>light</string>
 				<string>sepia</string>
 				<string>medium</string>
@@ -800,44 +906,6 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Restore position</string>
-			<key>Titles</key>
-			<array>
-				<string>Always</string>
-				<string>Within 1 hour</string>
-				<string>Within 2 hours</string>
-				<string>Within 4 hours</string>
-				<string>Within 6 hours</string>
-				<string>Within 8 hours</string>
-				<string>Within 12 hours</string>
-				<string>Within 1 day</string>
-				<string>Within 2 days</string>
-				<string>Within 1 week</string>
-				<string>Never</string>
-			</array>
-			<key>DefaultValue</key>
-			<string>24</string>
-			<key>Values</key>
-			<array>
-				<string>always</string>
-				<string>1</string>
-				<string>2</string>
-				<string>4</string>
-				<string>6</string>
-				<string>8</string>
-				<string>12</string>
-				<string>24</string>
-				<string>48</string>
-				<string>168</string>
-				<string>never</string>
-			</array>
-			<key>Key</key>
-			<string>restore_state</string>
-		</dict>
-		<dict>
-			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
 			<string>Show autoscroll</string>
@@ -880,7 +948,7 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>FooterText</key>
-			<string>Leave blank to use the NewsBlur site, or enter the URL of your self-hosted NewsBlur installation, e.g. &quot;https://www.domain.com&quot;.</string>
+			<string>Leave blank to use the NewsBlur site, or enter the URL of your self-hosted NewsBlur installation, e.g. &quot;https://www.domain.com&quot;. Takes effect next time app is opened.</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -969,6 +1037,22 @@
 			<string>IASKOpenURLSpecifier</string>
 			<key>IASKTextAlignment</key>
 			<string>IASKUITextAlignmentCenter</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string></string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>IsCritical</key>
+			<true/>
+			<key>Title</key>
+			<string>Delete Account</string>
+			<key>Key</key>
+			<string>delete_account</string>
 		</dict>
 	</array>
 	<key>StringsTable</key>

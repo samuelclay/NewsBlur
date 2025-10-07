@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- The two views in this top FrameLayout are swapped when HTML5 webview custom content wants to be displayed -->
+
+    <RelativeLayout
+        android:id="@+id/reading_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/row_item_feed_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="6dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/reading_feed_icon"
+                android:layout_width="17dp"
+                android:layout_height="17dp"
+                android:layout_marginStart="16dp"
+                android:contentDescription="@string/description_row_folder_icon"
+                app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance" />
+
+            <TextView
+                android:id="@+id/reading_feed_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="40dp"
+                android:ellipsize="end"
+                android:lines="1"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </FrameLayout>
+
+        <com.newsblur.view.ReadingScrollView
+            android:id="@+id/reading_scrollview"
+            style="?readingBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/row_item_feed_header"
+            android:scrollbars="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    style="?rowItemHeaderBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="16dp"
+                    android:paddingStart="6dp">
+
+                    <ImageButton
+                        android:id="@+id/story_context_menu_button"
+                        style="?android:attr/actionOverflowButtonStyle"
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_margin="5dp"
+                        android:contentDescription="@string/description_menu" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/reading_item_unread_icon"
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:layout_alignTop="@id/reading_item_title"
+                        android:layout_alignBottom="@+id/reading_item_title"
+                        android:layout_marginStart="5dp"
+                        android:src="@drawable/ic_indicator_unread"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/reading_item_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_toLeftOf="@id/story_context_menu_button"
+                        android:textSize="17sp" />
+
+                    <TextView
+                        android:id="@+id/reading_item_date"
+                        style="?readingItemMetadata"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/reading_item_title"
+                        android:layout_alignLeft="@id/reading_item_title"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="12dp"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/reading_item_authors"
+                        style="?readingItemMetadata"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@id/reading_item_date"
+                        android:layout_toRightOf="@id/reading_item_date"
+                        android:maxLines="1"
+                        android:minWidth="80dp"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/reading_story_changes"
+                        style="?readingItemMetadata"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/reading_item_date"
+                        android:layout_alignLeft="@id/reading_item_title"
+                        android:drawablePadding="4dp"
+                        android:gravity="center_vertical"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="4dp"
+                        android:text="@string/story_show_changes"
+                        android:textSize="12sp"
+                        android:visibility="gone"
+                        app:drawableStartCompat="@drawable/ic_file_edit" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/reading_item_tags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/reading_story_changes"
+                        android:layout_alignLeft="@id/reading_item_title"
+                        android:layout_marginTop="8dp"
+                        app:chipSpacingHorizontal="6dp"
+                        app:chipSpacingVertical="6dp" />
+
+                    <TextView
+                        android:id="@+id/reading_item_saved_timestamp"
+                        style="?readingItemMetadata"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/reading_item_tags"
+                        android:layout_alignLeft="@id/reading_item_tags"
+                        android:layout_marginTop="8dp"
+                        android:drawablePadding="2dp"
+                        android:gravity="center_vertical"
+                        android:textSize="12sp"
+                        android:visibility="gone"
+                        app:drawableStartCompat="@drawable/ic_saved" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/reading_item_user_tags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/reading_item_saved_timestamp"
+                        android:layout_alignLeft="@id/reading_item_title"
+                        android:layout_marginTop="8dp"
+                        android:visibility="gone"
+                        app:chipSpacingHorizontal="6dp"
+                        app:chipSpacingVertical="6dp" />
+
+                </RelativeLayout>
+
+                <include layout="@layout/include_reading_share_bar" />
+
+                <View
+                    android:id="@+id/share_bar_underline"
+                    style="?android:divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/reading_textloading"
+                    style="?readingBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:text="@string/orig_text_loading"
+                    android:textSize="16sp"
+                    android:textStyle="italic"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/reading_textmodefailed"
+                    style="?readingBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:text="@string/orig_text_failed"
+                    android:textSize="16sp"
+                    android:textStyle="italic"
+                    android:visibility="gone" />
+
+                <com.newsblur.view.NewsblurWebview
+                    android:id="@+id/reading_webview"
+                    style="?readingBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:scrollbars="none" />
+
+                <include layout="@layout/reading_item_actions" />
+
+            </LinearLayout>
+
+        </com.newsblur.view.ReadingScrollView>
+
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/custom_view_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+</FrameLayout>

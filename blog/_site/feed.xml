@@ -1,142 +1,316 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="https://blog.newsblur.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2021-07-01T17:09:49-04:00</updated><id>https://blog.newsblur.com/feed.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2025-02-03T01:12:28-05:00</updated><id>https://blog.newsblur.com/feed.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
 A new sound of an old instrument.
-</subtitle><entry><title type="html">Redesigning NewsBlur on the web, iOS, and Android</title><link href="https://blog.newsblur.com/2021/07/01/refreshing-newsblur-design/" rel="alternate" type="text/html" title="Redesigning NewsBlur on the web, iOS, and Android" /><published>2021-07-01T00:00:00-04:00</published><updated>2021-07-01T00:00:00-04:00</updated><id>https://blog.newsblur.com/2021/07/01/refreshing-newsblur-design</id><content type="html" xml:base="https://blog.newsblur.com/2021/07/01/refreshing-newsblur-design/">&lt;p&gt;This past year we’ve focused on maintenance and improving quality behind the scenes. It just so happens that the urge to clean is so strong that this work extended to the front-end. After months of work, today we’re launching a redesigned NewsBlur for all three platforms: on the web, on iOS, and on Android. There’s a lot that’s new. And what better day to launch a redesign than on &lt;a href=&quot;/2013/03/17/three-months-to-scale-newsblur/&quot;&gt;the ninth anniversary of the sunset of Google Reader&lt;/a&gt;.&lt;/p&gt;
+</subtitle><entry><title type="html">Discover related stories and sites</title><link href="https://blog.newsblur.com/2025/02/02/discover-related-stories-and-sites/" rel="alternate" type="text/html" title="Discover related stories and sites" /><published>2025-02-02T00:00:00-05:00</published><updated>2025-02-02T00:00:00-05:00</updated><id>https://blog.newsblur.com/2025/02/02/discover-related-stories-and-sites</id><content type="html" xml:base="https://blog.newsblur.com/2025/02/02/discover-related-stories-and-sites/"><![CDATA[<p>I want to introduce you to the new Discover Stories and Discover Sites features. Sometimes you’re reading a story and want to know everything there is to know about that topic. You want other stories, but depending on the topic, you might want them from the same site, from similar sites, or from all of your subscriptions. That’s the new Discover Stories feature, and it’s only for NewsBlur Premium Archive subscribers. The Premium Archive subscription is meant for this use case of being able to peer deeply into your story archive and not just what’s been published in the last month.</p>
 
-&lt;p&gt;To start, let’s take a look below at the redesigned NewsBlur.&lt;/p&gt;
+<p>Second I’m introducing Discover Sites, which is available at the top of every feed and folder to everybody, both free and premium users. Having tried all of the competing discover sites features, I built the popover dialog that has all the features I wanted. It’s an infinite scroll of related sites, showing the most recent five stories, formatted exactly as your story titles are personally styled. You can read stories from unsubscribed feeds and easily subscribe to them while scrolling through the discover stories dialog.</p>
 
-&lt;p&gt;&lt;img src=&quot;/assets/redesign-web.png&quot; style=&quot;width: 750px;&quot; /&gt;&lt;/p&gt;
+<p><img src="/assets/discover-1.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
 
-&lt;p&gt;Loads of new features:&lt;/p&gt;
+<p>Here’s a set of features I’ve been wanting to build since the very first days of NewsBlur in 2009. I built prototypes of this feature using a few of the modern text tools at the time: nltk (the natural language toolkit), support vector machines, and LDA (Latent Dirichlet Allocation) to group stories by topic. It didn’t work, or it was too slow, and even then not accurate enough. I read the tea leaves and could tell a better tool would come out eventually that was basically a drop-in classifier and topic grouper. Out came word embeddings (word2vec initially, then <a href="https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2">sentence transformers</a>). And now those transformers are available basically for free.</p>
 
-&lt;ul&gt;
-  &lt;li&gt;The dashboard now has multiple, customizable rivers of news&lt;/li&gt;
-  &lt;li&gt;Image previews are now customizable by size and layout&lt;/li&gt;
-  &lt;li&gt;Story previews are also customizable by length&lt;/li&gt;
-  &lt;li&gt;Images are now full bleed on the web (edge-to-edge)&lt;/li&gt;
-  &lt;li&gt;Controls have been re-styled and made more accessible&lt;/li&gt;
-  &lt;li&gt;Sizes, spaces, and text have all been tweaked for a more legible read&lt;/li&gt;
-  &lt;li&gt;Upgraded backend: Python 2 to Python 3, latest Django and libraries, containerized infrastructure&lt;/li&gt;
-  &lt;li&gt;Both Android and iOS apps have been updated with the new design&lt;/li&gt;
-&lt;/ul&gt;
+<p><img src="/assets/discover-3.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
 
-&lt;p&gt;Those multiple rivers come in handy when you want to follow different interests at a glance. You can of course change which individual feeds or folders is loaded, letting you focus on saved searches, infrequent stories, a single feed, or everything you’re subscribed to.&lt;/p&gt;
+<p>As you can see, this isn’t your normal related stories feature. It shows all of the related stories, segmented by the folders that a site is a part of. This folder control allows you to filter down to an individual site and up to every feed you subscribe to when finding related stories.</p>
 
-&lt;p&gt;Below you can see the design in action. Notice how easy it is to change where the image preview is located as well as adjust the number of lines of story text to show.&lt;/p&gt;
+<p>And it’s important to note that none of the data presented in the Discover Stories or Discover Sites dialog is trained on your personal data, like feeds that other people subscribe to in relation to any particular site. All of the data is extracted and grouped by the content of the RSS feed’s title, description, and the titles of the first few stories.</p>
 
-&lt;p&gt;
-    &lt;video autoplay=&quot;&quot; loop=&quot;&quot; playsinline=&quot;&quot; width=&quot;500&quot; style=&quot;width: 500px;border: 2px solid rgba(0,0,0,0.1)&quot;&gt;
-        &lt;source src=&quot;/assets/redesign-content-preview.mp4&quot; type=&quot;video/mp4&quot; /&gt;
-    &lt;/video&gt;
-&lt;/p&gt;
+<p><img src="/assets/discover-2.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
 
-&lt;p&gt;The reading experience itself has also seen improvement. Full bleed images have been ported over from iOS to both Android and the web. This means that images will now run edge-to-edge. And the controls at the top and bottom of the web app have been restyled to be easier to understand at a quick glance.&lt;/p&gt;
+<p>Above we see that Discover Sites is right on the money. An infinite scroll of related sites, showing story previews, and multiple interaction points that let you choose between trying out a site by reading one of the stories, adding it directly to a folder, or checking the statistics of the site. The stats dialog is great in this case because it gives you a feel for what other people like and dislike about the site.</p>
 
-&lt;p&gt;&lt;img src=&quot;/assets/redesign-full-bleed.jpg&quot; style=&quot;border: 2px solid rgba(0,0,0,0.1);&quot; /&gt;&lt;/p&gt;
+<p>I’m super proud of this release; it took years to build and a decade to plan. And while the Discover Stories feature is technically only available to Premium Archive subscribers, you can see related stories if another Premium Archive subscriber is subscribed to that site. I don’t think hiding those stories from free and premium users is worthwhile.</p>
 
-&lt;p&gt;There’s many ways to adjust story titles to fit. Pack them in dense or offer titles room to breathe.&lt;/p&gt;
+<p>Please post your feedback on the <a href="https://forum.newsblur.com">NewsBlur forum</a>, ideally as an “idea,” but you know I love responding to all feedback. For every person who writes up their thoughts on the forum, there are ten people who are thinking the same thing, so it’s worthwhile to hear from you, knowing the multiplier it represents.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[I want to introduce you to the new Discover Stories and Discover Sites features. Sometimes you’re reading a story and want to know everything there is to know about that topic. You want other stories, but depending on the topic, you might want them from the same site, from similar sites, or from all of your subscriptions. That’s the new Discover Stories feature, and it’s only for NewsBlur Premium Archive subscribers. The Premium Archive subscription is meant for this use case of being able to peer deeply into your story archive and not just what’s been published in the last month.]]></summary></entry><entry><title type="html">NewsBlur’s native macOS App offers news notifications directly on your desktop</title><link href="https://blog.newsblur.com/2024/10/22/newsblur-macos-app/" rel="alternate" type="text/html" title="NewsBlur’s native macOS App offers news notifications directly on your desktop" /><published>2024-10-22T00:00:00-04:00</published><updated>2024-10-22T00:00:00-04:00</updated><id>https://blog.newsblur.com/2024/10/22/newsblur-macos-app</id><content type="html" xml:base="https://blog.newsblur.com/2024/10/22/newsblur-macos-app/"><![CDATA[<p>If you’re like me and like to have NewsBlur sitting open all day, then you’ll love the new NewsBlur macOS app. It’s a first-class app that supports all of NewsBlur’s features, from intelligence training to sharing/blurblogs.</p>
 
-&lt;p&gt;&lt;img src=&quot;/assets/redesign-bottom.jpg&quot; style=&quot;border: 2px solid rgba(0,0,0,0.1);&quot; /&gt;&lt;/p&gt;
+<p>Introducing the <a href="https://apps.apple.com/us/app/newsblur/id463981119">NewsBlur macOS app</a>, available for free on the Mac App Store.</p>
 
-&lt;p&gt;The redesign has also come to both of the official Android and iOS apps. Right now both are in beta testing, but you can join the &lt;a href=&quot;https://testflight.apple.com/join/hYk9WU3f&quot;&gt;iOS TestFlight&lt;/a&gt; or the &lt;a href=&quot;https://play.google.com/store/apps/details?id=com.newsblur&amp;amp;hl=en_US&amp;amp;gl=US&quot;&gt;Android beta&lt;/a&gt;.&lt;/p&gt;
+<p><img src="/assets/macos-1.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
 
-&lt;p&gt;&lt;img src=&quot;/assets/redesign-ios-android.png&quot; style=&quot;&quot; /&gt;&lt;/p&gt;
+<p>The macOS app also supports all of the themes, so it can turn itself into dark mode automatically.</p>
 
-&lt;p&gt;This whole redesign weighs in at a whopping 1,316 commits, which &lt;a href=&quot;https://github.com/samuelclay/NewsBlur/compare/python2...master&quot;&gt;you can view on GitHub&lt;/a&gt;. Much of the work that took place here involves upgrading from Python 2 to Python 3 and containerizing everything with Docker. In a few weeks, we’ll post a technical writeup of what those backend changes are and how you can now run a local version of NewsBlur on your own computer with a single line of code. For those that want to run their own private instance of NewsBlur, that line of code is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make nb&lt;/code&gt; and &lt;a href=&quot;https://github.com/samuelclay/NewsBlur&quot;&gt;instructions are found on the repo&lt;/a&gt;.&lt;/p&gt;
+<p><img src="/assets/macos-2.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
 
-&lt;p&gt;If you’ve enjoyed using NewsBlur and are a fan of this grand redesign, please take a moment to share on social media that you read your news with the help of NewsBlur.&lt;/p&gt;</content><author><name></name></author><category term="backend" /><category term="web" /><category term="ios" /><category term="android" /><summary type="html">This past year we’ve focused on maintenance and improving quality behind the scenes. It just so happens that the urge to clean is so strong that this work extended to the front-end. After months of work, today we’re launching a redesigned NewsBlur for all three platforms: on the web, on iOS, and on Android. There’s a lot that’s new. And what better day to launch a redesign than on the ninth anniversary of the sunset of Google Reader.</summary></entry><entry><title type="html">How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database</title><link href="https://blog.newsblur.com/2021/06/28/story-of-a-hacking/" rel="alternate" type="text/html" title="How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database" /><published>2021-06-28T00:00:00-04:00</published><updated>2021-06-28T00:00:00-04:00</updated><id>https://blog.newsblur.com/2021/06/28/story-of-a-hacking</id><content type="html" xml:base="https://blog.newsblur.com/2021/06/28/story-of-a-hacking/">&lt;p&gt;&lt;em&gt;tl;dr: A vandal deleted NewsBlur’s MongoDB database during a migration. No data was stolen or lost.&lt;/em&gt;&lt;/p&gt;
+<p>It’s configurable and supports ay=utomatic hiding and showing of the feed list so you can focus on the stories you want to read. Use your mouse to swipe left and right on both stories and to swap which pane is visible.</p>
 
-&lt;p&gt;I’m in the process of moving everything on NewsBlur over to Docker containers in prep for a &lt;a href=&quot;https://beta.newsblur.com&quot;&gt;big redesign launching next week&lt;/a&gt;. It’s been a great year of maintenance and I’ve enjoyed the fruits of Ansible + Docker for NewsBlur’s 5 database servers (PostgreSQL, MongoDB, Redis, Elasticsearch, and soon ML models). The day was wrapping up and I settled into &lt;a href=&quot;https://en.wikipedia.org/wiki/Human_Compatible&quot;&gt;a new book on how to tame the machines once they’re smarter than us&lt;/a&gt; when I received a strange NewsBlur error on my phone.&lt;/p&gt;
+<p><img src="/assets/macos-3.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
 
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&quot;query killed during yield: renamed collection 'newsblur.feed_icons' to 'newsblur.system.drop.1624498448i220t-1.feed_icons'&quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+<p>In the Grid view, you can swipe right with your mouse to temporarily show the feed list, giving you a compact view of your news stories without having to give up screen real estate.</p>
 
-&lt;p&gt;There is honestly no set of words in that error message that I ever want to see again. What is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;drop&lt;/code&gt; doing in that error message? Better go find out.&lt;/p&gt;
+<p><img src="/assets/macos-4.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
 
-&lt;p&gt;Logging into the MongoDB machine to check out what state the DB is in and I come across the following…&lt;/p&gt;
+<p>Training is supported natively, so you can hide those stories you don’t want to see while highlighting those thast you do.</p>
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;nx&quot;&gt;nbset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;PRIMARY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;show&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;dbs&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;READ__ME_TO_RECOVER_YOUR_DATA&lt;/span&gt;   &lt;span class=&quot;mf&quot;&gt;0.000&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;GB&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;newsblur&lt;/span&gt;                        &lt;span class=&quot;mf&quot;&gt;0.718&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;GB&lt;/span&gt;
+<p><img src="/assets/macos-5.png" style="width: 100%;border: none;margin: 24px auto;display: block;" /></p>
 
-&lt;span class=&quot;nx&quot;&gt;nbset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;PRIMARY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;READ__ME_TO_RECOVER_YOUR_DATA&lt;/span&gt;
-&lt;span class=&quot;nx&quot;&gt;switched&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;db&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;READ__ME_TO_RECOVER_YOUR_DATA&lt;/span&gt;
+<p>It’s important to be able to train, because you can set notifications to be sent from either your Unread list or your Focus list, ensuring you only see the notifications from sites you want to see. And clicking on those native macOS notifications takes you directly to the story in the new macOS app.</p>
+
+<p><img src="/assets/macos-6.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>If you have any ideas you’d like to see on macOS, feel free to post an idea on the <a href="https://forum.newsblur.com">NewsBlur Forum</a>.</p>
+
+<p>Coming up soon are the discover feeds feature, where you can see related feeds based purely on semantic similarity (and not based on mined usage data), as well as real-time updates to the macOS app similar to the dashboard on the web.</p>]]></content><author><name></name></author><category term="macos" /><summary type="html"><![CDATA[If you’re like me and like to have NewsBlur sitting open all day, then you’ll love the new NewsBlur macOS app. It’s a first-class app that supports all of NewsBlur’s features, from intelligence training to sharing/blurblogs.]]></summary></entry><entry><title type="html">Introducing the Grid view on iOS</title><link href="https://blog.newsblur.com/2023/12/06/ios-grid-view/" rel="alternate" type="text/html" title="Introducing the Grid view on iOS" /><published>2023-12-06T00:00:00-05:00</published><updated>2023-12-06T00:00:00-05:00</updated><id>https://blog.newsblur.com/2023/12/06/ios-grid-view</id><content type="html" xml:base="https://blog.newsblur.com/2023/12/06/ios-grid-view/"><![CDATA[<p>The Grid view is now on iOS. Read stories with large thumbnails in a magazine-like format, where you can see a customizable number of story previews at once. Works beautifully for both iPhone and iPad.
+<img src="/assets/ipad-grid-1.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>Just like on the web, you can customize how many stories you see and how large each story is, giving you the freedom to read stories with large thumbnails or small image previews.</p>
+
+<p><img src="/assets/ipad-grid-2.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>It even works on iPhone!</p>
+
+<p><img src="/assets/iphone-grid.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>If you have any other ideas you’d like to see on iPad and iPhone, feel free to post an idea on the <a href="https://forum.newsblur.com">NewsBlur Forum</a>.</p>
+
+<p>This is a huge release and has been a year in the making. Coming up soon: a new Mac app and intelligent feed discovery.</p>]]></content><author><name></name></author><category term="ios" /><summary type="html"><![CDATA[The Grid view is now on iOS. Read stories with large thumbnails in a magazine-like format, where you can see a customizable number of story previews at once. Works beautifully for both iPhone and iPad.]]></summary></entry><entry><title type="html">2022 redesign: new dashboard layout, refreshed stories and story titles, and entirely redrawn icons</title><link href="https://blog.newsblur.com/2022/07/01/dashboard-redesign-2022/" rel="alternate" type="text/html" title="2022 redesign: new dashboard layout, refreshed stories and story titles, and entirely redrawn icons" /><published>2022-07-01T00:00:00-04:00</published><updated>2022-07-01T00:00:00-04:00</updated><id>https://blog.newsblur.com/2022/07/01/dashboard-redesign-2022</id><content type="html" xml:base="https://blog.newsblur.com/2022/07/01/dashboard-redesign-2022/"><![CDATA[<p>The launch of the new <a href="/2022/07/01/premium-archive-subscription/">Premium Archive subscription tier</a> also includes the 2022 redesign. You’ll see a third dashboard layout which stretches out your dashboard rivers across the width of the screen.</p>
+
+<p><img src="/assets/premium-archive-dashboard-comfortable.png" style="width: calc(140%);margin: 12px 0 12px calc(-20%);max-width: none;border: none" /></p>
+
+<p>The latest redesign style has more accomodations for spacing and padding around each story title element. The result is a cleaner story title with easier to read headlines. The author has been moved and restyled to be next to the story date. Favicons and unread status indicators have been swapped, and font sizes, colors, and weights have been adjusted.</p>
+
+<p><img src="/assets/premium-archive-dashboard-compact.png" style="width: calc(140%);margin: 12px 0 12px calc(-20%);max-width: none;border: none" /></p>
+
+<p>If you find the interface to be too airy, there is a setting in the main Manage menu allowing you to switch between Comfortable and Compact. The compact interface is denser than before, giving power users a highly detailed view.</p>
+
+<p>Transitions have also been added to help you feel the difference. And there are new animations during many of the transitions that accompany changing settings.</p>
+
+<p>
+    <video autoplay="" loop="" playsinline="" muted="" width="500" style="width: 500px;border: 2px solid rgba(0,0,0,0.1)">
+        <source src="/assets/premium-archive-grid.mp4" type="video/mp4" />
+    </video>
+</p>
+
+<p>And lastly, this redesign comes with a suite of all new icons. The goal with this icon redesign is to bring a consistent weight to each icon as well as vectorize them with SVG so they look good at all resolutions.</p>
+
+<p><img src="/assets/premium-archive-manage-menu.png" style="width: 275px;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>A notable icon change is the unread indicator, which now has different size icons for both unread stories and focus stories, giving focus stories more depth.</p>
+
+<p><img src="/assets/premium-archive-unread-dark.png" style="width: 375px;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>Here’s a screenshot that’s only possible with the new premium archive, complete with backfilled blog post from the year 2000, ready to be marked as unread.</p>
+
+<p><img src="/assets/premium-archive-unread.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>I tried to find every icon, so if you spot a dialog or menu that you’d like to see given some more love, reach out on the support forum.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[The launch of the new Premium Archive subscription tier also includes the 2022 redesign. You’ll see a third dashboard layout which stretches out your dashboard rivers across the width of the screen.]]></summary></entry><entry><title type="html">NewsBlur Premium Archive subscription keeps all of your stories searchable, shareable, and unread forever</title><link href="https://blog.newsblur.com/2022/07/01/premium-archive-subscription/" rel="alternate" type="text/html" title="NewsBlur Premium Archive subscription keeps all of your stories searchable, shareable, and unread forever" /><published>2022-07-01T00:00:00-04:00</published><updated>2022-07-01T00:00:00-04:00</updated><id>https://blog.newsblur.com/2022/07/01/premium-archive-subscription</id><content type="html" xml:base="https://blog.newsblur.com/2022/07/01/premium-archive-subscription/"><![CDATA[<p>For $99/year every story from every site you subscribe to will stay in NewsBlur’s archive. This new premium tier also allows you to mark any story as unread as well as choose when stories are automatically marked as read. You can now have full control of your story archive, letting you search, share, and read stories forever without having to worry about them being deleted.</p>
+
+<p>The NewsBlur Premium Archive subscription offers you the following:</p>
+
+<ul>
+  <li><img src="/assets/icons8/icons8-bursts-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Everything in the premium subscription, of course</li>
+  <li><img src="/assets/icons8/icons8-relax-with-book-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Choose when stories are automatically marked as read</li>
+  <li><img src="/assets/icons8/icons8-filing-cabinet-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Every story from every site is archived and searchable forever</li>
+  <li><img src="/assets/icons8/icons8-quadcopter-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Feeds that support paging are back-filled in for a complete archive</li>
+  <li><img src="/assets/icons8/icons8-rss-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Export trained stories from folders as RSS feeds</li>
+  <li><img src="/assets/icons8/icons8-calendar-100.png" style="width: 16px;margin: 0 6px 0 0;display: inline-block;" /> Stories can stay unread forever</li>
+</ul>
+
+<p>You can now enjoy a new preference for exactly when stories are marked as read:</p>
+
+<p><img src="/assets/premium-archive-mark-read-date.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>A technical note about the backfilling of your archive:</p>
+
+<blockquote>
+<p>NewsBlur uses two techniques to retrieve older stories that are no longer in the RSS feed. The first strategy is to append `?page=2` and `?paged=2` to the RSS feed and seeing if we're about to blindly iterate through the blog's archive. For WordPress and a few other CMSs, this works great and gives us a full archive. </p>
+
+<p>A second technique is to use <a href="https://datatracker.ietf.org/doc/html/rfc5005">RFC 5005</a>, which supports links embedded inside the RSS feed to denote next and previous pages of an archive.</p>
+</blockquote>
+
+<p>NewsBlur attempts all of these techniques on every single feed you’ve subscribed to, and when it’s done backfilling stories, you’ll receive an email showing you how big your archive grew during this backfill process.</p>
+
+<p>The launch of the new Premium Archive subscription tier also contains the <a href="/2022/07/01/dashboard-redesign-2022/">2022 redesign</a>, which includes a new dashboard layout, a refreshed design for story titles and feed title, and all new icons.</p>
+
+<p>Here’s a screenshot that’s only possible with the new premium archive, complete with backfilled blog post from the year 2000, ready to be marked as unread.</p>
+
+<p><img src="/assets/premium-archive-unread.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>How’s that for an archive?</p>]]></content><author><name></name></author><category term="web" /><category term="ios" /><category term="android" /><summary type="html"><![CDATA[For $99/year every story from every site you subscribe to will stay in NewsBlur’s archive. This new premium tier also allows you to mark any story as unread as well as choose when stories are automatically marked as read. You can now have full control of your story archive, letting you search, share, and read stories forever without having to worry about them being deleted.]]></summary></entry><entry><title type="html">New gesture-based layout for the NewsBlur iPad App</title><link href="https://blog.newsblur.com/2022/03/28/redesigned-ios-layout/" rel="alternate" type="text/html" title="New gesture-based layout for the NewsBlur iPad App" /><published>2022-03-28T00:00:00-04:00</published><updated>2022-03-28T00:00:00-04:00</updated><id>https://blog.newsblur.com/2022/03/28/redesigned-ios-layout</id><content type="html" xml:base="https://blog.newsblur.com/2022/03/28/redesigned-ios-layout/"><![CDATA[<p>We have a big update for you on iOS, complete with a redesigned layout engine. You’ll see this mostly on iPad, where you can now interactively swipe between panes, customize how many panes you see, and even customize where the story titles are on the screen relative to the story content.</p>
+
+<p>Let’s take a look at all of the new features, starting with the improved gesture-based layout engine for navigating between stories and feeds.</p>
+
+<p>
+    <video autoplay="autoplay" loop="true" muted="" playsinline="" width="650" style="width: 650px;border: 2px solid rgba(0,0,0,0.1);margin: 0 auto;display: block;">
+        <source src="/assets/ipad-redesigned-layout-2.mp4" type="video/mp4" />
+    </video>
+</p>
+
+<p>A whole bunch of new controls and customizations have been added to the settings menu in the story titles menu, which is where you can find these new options for 2-column/3-column/full screen view panes.</p>
+
+<p><img src="/assets/ipad-story-title-customizations.png" /></p>
+
+<p>There’s also a new homescreen widget for showing 3-6 stories on your dashboard.</p>
+
+<p><img src="/assets/ipad-widget.png" /></p>
+
+<p>You can also expect to find feature parity with Android and the web when it comes to the new image preview and content preview options for story titles.</p>
+
+<p><img src="/assets/ipad-image-preview.png" /></p>
+
+<p>You can now save stories and subscribe to feeds from other apps using the NewsBlur Share extension. This includes your saved story tags and associated counts.</p>
+
+<p><img src="/assets/iphone-share-extension.png" style="margin: 0 auto; display: block; width: 450px;" /></p>
+
+<p>This release also contains numerous improvements, subtle refinements, and assorted fixed bugs.</p>
+
+<p>If you have any ideas for how you would like to see the iPad and iPhone app improved, please post ideas to the <a href="https://forum.newsblur.com">NewsBlur Forum</a>. I’m all ears and would love to prioritize improvements or changes that create a better mobile reading experience.</p>]]></content><author><name></name></author><category term="ios" /><summary type="html"><![CDATA[We have a big update for you on iOS, complete with a redesigned layout engine. You’ll see this mostly on iPad, where you can now interactively swipe between panes, customize how many panes you see, and even customize where the story titles are on the screen relative to the story content.]]></summary></entry><entry><title type="html">Magazine view offers a new perspective</title><link href="https://blog.newsblur.com/2022/03/10/magazine-view/" rel="alternate" type="text/html" title="Magazine view offers a new perspective" /><published>2022-03-10T00:00:00-05:00</published><updated>2022-03-10T00:00:00-05:00</updated><id>https://blog.newsblur.com/2022/03/10/magazine-view</id><content type="html" xml:base="https://blog.newsblur.com/2022/03/10/magazine-view/"><![CDATA[<p>Here’s a nice feature that brings a new perspective to your stories. It’s called the Magazine view and features larger images, longer story content previews, and improved legibility of text.</p>
+
+<p>Take a look and see how the Magazine view shwocases stories in a new way:</p>
+
+<p><img src="/assets/magazine-light.png" style="width: 750px;border: 1px solid #A0A0A0;margin: 12px auto;" /></p>
+
+<p>The Magazine view is also customizable. By default, fonts are a bit larger in the Magazine view. You can still change font sizes as well as customize the position and size of the image preview. There is also a control for how long the story content previews are, all found inside the Style popover.</p>
+
+<p><img src="/assets/style-popover-bottom.png" style="width: 375px;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>And in dark mode, these customizations show how tailored you can make NewsBlur look.</p>
+
+<p><img src="/assets/magazine-dark.png" style="width: 750px;border: 1px solid #A0A0A0;margin: 12px auto;" /></p>
+
+<p>You can access the new Magazine view next to the other story title view layouts.</p>
+
+<p><img src="/assets/magazine-views.png" style="width: 450px;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
+
+<p>The Grid view also features improvements to the story content preview. New lines are now preserved in both Magazine and Grid views, so you can capture a bit of longer form stories without opening them up.</p>
+
+<p><img src="/assets/grid-dark.png" style="width: 750px;border: 1px solid #A0A0A0;margin: 12px auto;" /></p>
+
+<p>Also included are some backend changes to how YouTube videos thumbnail are found, so you should see even more image previews in your feeds.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[Here’s a nice feature that brings a new perspective to your stories. It’s called the Magazine view and features larger images, longer story content previews, and improved legibility of text.]]></summary></entry><entry><title type="html">Redesigning NewsBlur on the web, iOS, and Android</title><link href="https://blog.newsblur.com/2021/07/01/refreshing-newsblur-design/" rel="alternate" type="text/html" title="Redesigning NewsBlur on the web, iOS, and Android" /><published>2021-07-01T00:00:00-04:00</published><updated>2021-07-01T00:00:00-04:00</updated><id>https://blog.newsblur.com/2021/07/01/refreshing-newsblur-design</id><content type="html" xml:base="https://blog.newsblur.com/2021/07/01/refreshing-newsblur-design/"><![CDATA[<p>This past year we’ve focused on maintenance and improving quality behind the scenes. It just so happens that the urge to clean is so strong that this work extended to the front-end. After months of work, today we’re launching a redesigned NewsBlur for all three platforms: on the web, on iOS, and on Android. There’s a lot that’s new. And what better day to launch a redesign than on <a href="/2013/03/17/three-months-to-scale-newsblur/">the ninth anniversary of the sunset of Google Reader</a>.</p>
+
+<p>To start, let’s take a look below at the redesigned NewsBlur.</p>
+
+<p><img src="/assets/redesign-web.png" style="width: 750px;" /></p>
+
+<p>Loads of new features:</p>
+
+<ul>
+  <li>The dashboard now has multiple, customizable rivers of news</li>
+  <li>Image previews are now customizable by size and layout</li>
+  <li>Story previews are also customizable by length</li>
+  <li>Images are now full bleed on the web (edge-to-edge)</li>
+  <li>Controls have been re-styled and made more accessible</li>
+  <li>Sizes, spaces, and text have all been tweaked for a more legible read</li>
+  <li>Upgraded backend: Python 2 to Python 3, latest Django and libraries, containerized infrastructure</li>
+  <li>Both Android and iOS apps have been updated with the new design</li>
+</ul>
+
+<p>Those multiple rivers come in handy when you want to follow different interests at a glance. You can of course change which individual feeds or folders is loaded, letting you focus on saved searches, infrequent stories, a single feed, or everything you’re subscribed to.</p>
+
+<p>Below you can see the design in action. Notice how easy it is to change where the image preview is located as well as adjust the number of lines of story text to show.</p>
+
+<p>
+    <video autoplay="" loop="" playsinline="" width="500" style="width: 500px;border: 2px solid rgba(0,0,0,0.1)">
+        <source src="/assets/redesign-content-preview.mp4" type="video/mp4" />
+    </video>
+</p>
+
+<p>The reading experience itself has also seen improvement. Full bleed images have been ported over from iOS to both Android and the web. This means that images will now run edge-to-edge. And the controls at the top and bottom of the web app have been restyled to be easier to understand at a quick glance.</p>
+
+<p><img src="/assets/redesign-full-bleed.jpg" style="border: 2px solid rgba(0,0,0,0.1);" /></p>
+
+<p>There’s many ways to adjust story titles to fit. Pack them in dense or offer titles room to breathe.</p>
+
+<p><img src="/assets/redesign-bottom.jpg" style="border: 2px solid rgba(0,0,0,0.1);" /></p>
+
+<p>The redesign has also come to both of the official Android and iOS apps. Right now both are in beta testing, but you can join the <a href="https://testflight.apple.com/join/hYk9WU3f">iOS TestFlight</a> or the <a href="https://play.google.com/store/apps/details?id=com.newsblur&amp;hl=en_US&amp;gl=US">Android beta</a>.</p>
+
+<p><img src="/assets/redesign-ios-android.png" style="" /></p>
+
+<p>This whole redesign weighs in at a whopping 1,316 commits, which <a href="https://github.com/samuelclay/NewsBlur/compare/python2...master">you can view on GitHub</a>. Much of the work that took place here involves upgrading from Python 2 to Python 3 and containerizing everything with Docker. In a few weeks, we’ll post a technical writeup of what those backend changes are and how you can now run a local version of NewsBlur on your own computer with a single line of code. For those that want to run their own private instance of NewsBlur, that line of code is <code class="language-plaintext highlighter-rouge">make nb</code> and <a href="https://github.com/samuelclay/NewsBlur">instructions are found on the repo</a>.</p>
+
+<p>If you’ve enjoyed using NewsBlur and are a fan of this grand redesign, please take a moment to share on social media that you read your news with the help of NewsBlur.</p>]]></content><author><name></name></author><category term="backend" /><category term="web" /><category term="ios" /><category term="android" /><summary type="html"><![CDATA[This past year we’ve focused on maintenance and improving quality behind the scenes. It just so happens that the urge to clean is so strong that this work extended to the front-end. After months of work, today we’re launching a redesigned NewsBlur for all three platforms: on the web, on iOS, and on Android. There’s a lot that’s new. And what better day to launch a redesign than on the ninth anniversary of the sunset of Google Reader.]]></summary></entry><entry><title type="html">How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database</title><link href="https://blog.newsblur.com/2021/06/28/story-of-a-hacking/" rel="alternate" type="text/html" title="How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database" /><published>2021-06-28T00:00:00-04:00</published><updated>2021-06-28T00:00:00-04:00</updated><id>https://blog.newsblur.com/2021/06/28/story-of-a-hacking</id><content type="html" xml:base="https://blog.newsblur.com/2021/06/28/story-of-a-hacking/"><![CDATA[<p><em>tl;dr: A vandal deleted NewsBlur’s MongoDB database during a migration. No data was stolen or lost.</em></p>
+
+<p>I’m in the process of moving everything on NewsBlur over to Docker containers in prep for a <a href="https://beta.newsblur.com">big redesign launching next week</a>. It’s been a great year of maintenance and I’ve enjoyed the fruits of Ansible + Docker for NewsBlur’s 5 database servers (PostgreSQL, MongoDB, Redis, Elasticsearch, and soon ML models). The day was wrapping up and I settled into <a href="https://en.wikipedia.org/wiki/Human_Compatible">a new book on how to tame the machines once they’re smarter than us</a> when I received a strange NewsBlur error on my phone.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"query killed during yield: renamed collection 'newsblur.feed_icons' to 'newsblur.system.drop.1624498448i220t-1.feed_icons'"
+</code></pre></div></div>
+
+<p>There is honestly no set of words in that error message that I ever want to see again. What is <code class="language-plaintext highlighter-rouge">drop</code> doing in that error message? Better go find out.</p>
+
+<p>Logging into the MongoDB machine to check out what state the DB is in and I come across the following…</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">nbset</span><span class="p">:</span><span class="nx">PRIMARY</span><span class="o">&gt;</span> <span class="nx">show</span> <span class="nx">dbs</span>
+<span class="nx">READ__ME_TO_RECOVER_YOUR_DATA</span>   <span class="mf">0.000</span><span class="nx">GB</span>
+<span class="nx">newsblur</span>                        <span class="mf">0.718</span><span class="nx">GB</span>
+
+<span class="nx">nbset</span><span class="p">:</span><span class="nx">PRIMARY</span><span class="o">&gt;</span> <span class="nx">use</span> <span class="nx">READ__ME_TO_RECOVER_YOUR_DATA</span>
+<span class="nx">switched</span> <span class="nx">to</span> <span class="nx">db</span> <span class="nx">READ__ME_TO_RECOVER_YOUR_DATA</span>
     
-&lt;span class=&quot;nx&quot;&gt;nbset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;PRIMARY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;db&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;README&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;find&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
-    &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;_id&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ObjectId&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;60d3e112ac48d82047aab95d&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; 
-    &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;All your data is a backed up. You must pay 0.03 BTC to XXXXXXFTHISGUYXXXXXXX 48 hours for recover it. After 48 hours expiration we will leaked and exposed all your data. In case of refusal to pay, we will contact the General Data Protection Regulation, GDPR and notify them that you store user data in an open form and is not safe. Under the rules of the law, you face a heavy fine or arrest and your base dump will be dropped from our server! You can buy bitcoin here, does not take much time to buy https://localbitcoins.com or https://buy.moonpay.io/ After paying write to me in the mail with your DB IP: FTHISGUY@recoverme.one and you will receive a link to download your database dump.&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt; 
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+<span class="nx">nbset</span><span class="p">:</span><span class="nx">PRIMARY</span><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">README</span><span class="p">.</span><span class="nf">find</span><span class="p">()</span>
+<span class="p">{</span> 
+    <span class="dl">"</span><span class="s2">_id</span><span class="dl">"</span> <span class="p">:</span> <span class="nc">ObjectId</span><span class="p">(</span><span class="dl">"</span><span class="s2">60d3e112ac48d82047aab95d</span><span class="dl">"</span><span class="p">),</span> 
+    <span class="dl">"</span><span class="s2">content</span><span class="dl">"</span> <span class="p">:</span> <span class="dl">"</span><span class="s2">All your data is a backed up. You must pay 0.03 BTC to XXXXXXFTHISGUYXXXXXXX 48 hours for recover it. After 48 hours expiration we will leaked and exposed all your data. In case of refusal to pay, we will contact the General Data Protection Regulation, GDPR and notify them that you store user data in an open form and is not safe. Under the rules of the law, you face a heavy fine or arrest and your base dump will be dropped from our server! You can buy bitcoin here, does not take much time to buy https://localbitcoins.com or https://buy.moonpay.io/ After paying write to me in the mail with your DB IP: FTHISGUY@recoverme.one and you will receive a link to download your database dump.</span><span class="dl">"</span> 
+<span class="p">}</span></code></pre></figure>
 
-&lt;p&gt;Two thoughts immediately occured:&lt;/p&gt;
+<p>Two thoughts immediately occured:</p>
 
-&lt;ol&gt;
-  &lt;li&gt;Thank goodness I have some recently checked backups on hand&lt;/li&gt;
-  &lt;li&gt;No way they have that data without me noticing&lt;/li&gt;
-&lt;/ol&gt;
+<ol>
+  <li>Thank goodness I have some recently checked backups on hand</li>
+  <li>No way they have that data without me noticing</li>
+</ol>
 
-&lt;p&gt;Three and a half hours before this happened, I switched the MongoDB cluster over to the new servers. When I did that, I shut down the original primary in order to delete it in a few days when all was well. And thank goodness I did that as it came in handy a few hours later. Knowing this, I realized that the hacker could not have taken all that data in so little time.&lt;/p&gt;
+<p>Three and a half hours before this happened, I switched the MongoDB cluster over to the new servers. When I did that, I shut down the original primary in order to delete it in a few days when all was well. And thank goodness I did that as it came in handy a few hours later. Knowing this, I realized that the hacker could not have taken all that data in so little time.</p>
 
-&lt;p&gt;With that in mind, I’d like to answer a few questions about what happened here.&lt;/p&gt;
+<p>With that in mind, I’d like to answer a few questions about what happened here.</p>
 
-&lt;ol&gt;
-  &lt;li&gt;Was any data leaked during the hack? How do you know?&lt;/li&gt;
-  &lt;li&gt;How did NewsBlur’s MongoDB server get hacked?&lt;/li&gt;
-  &lt;li&gt;What will happen to ensure this doesn’t happen again?&lt;/li&gt;
-&lt;/ol&gt;
+<ol>
+  <li>Was any data leaked during the hack? How do you know?</li>
+  <li>How did NewsBlur’s MongoDB server get hacked?</li>
+  <li>What will happen to ensure this doesn’t happen again?</li>
+</ol>
 
-&lt;p&gt;Let’s start by talking about the most important question of all which is what happened to your data.&lt;/p&gt;
+<p>Let’s start by talking about the most important question of all which is what happened to your data.</p>
 
-&lt;h3 id=&quot;1-was-any-data-leaked-during-the-hack-how-do-you-know&quot;&gt;1. Was any data leaked during the hack? How do you know?&lt;/h3&gt;
+<h3 id="1-was-any-data-leaked-during-the-hack-how-do-you-know">1. Was any data leaked during the hack? How do you know?</h3>
 
-&lt;p&gt;I can definitively write that no data was leaked during the hack. I know this because of two different sets of logs showing that the automated attacker only issued deletion commands and did not transfer any data off of the MongoDB server.&lt;/p&gt;
+<p>I can definitively write that no data was leaked during the hack. I know this because of two different sets of logs showing that the automated attacker only issued deletion commands and did not transfer any data off of the MongoDB server.</p>
 
-&lt;p&gt;Below is a snapshot of the bandwidth of the db-mongo1 machine over 24 hours:&lt;/p&gt;
+<p>Below is a snapshot of the bandwidth of the db-mongo1 machine over 24 hours:</p>
 
-&lt;p&gt;&lt;img src=&quot;/assets/hack-timeline.png&quot; style=&quot;border: 1px solid rgba(0,0,0,0.1);&quot; /&gt;&lt;/p&gt;
+<p><img src="/assets/hack-timeline.png" style="border: 1px solid rgba(0,0,0,0.1);" /></p>
 
-&lt;p&gt;You can imagine the stress I experienced in the forty minutes between 9:35p, when the hack began, and 10:15p, when the fresh backup snapshot was identified and put into gear. Let’s breakdown each moment:&lt;/p&gt;
+<p>You can imagine the stress I experienced in the forty minutes between 9:35p, when the hack began, and 10:15p, when the fresh backup snapshot was identified and put into gear. Let’s breakdown each moment:</p>
 
-&lt;ol&gt;
-  &lt;li&gt;&lt;strong&gt;6:10p&lt;/strong&gt;: The new db-mongo1 server was put into rotation as the MongoDB primary server. This machine was the first of the new, soon-to-be private cloud.&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;9:35p&lt;/strong&gt;: Three hours later an automated hacking attempt opened a connection to the db-mongo1 server and immediately dropped the database. Downtime ensued.&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;10:15p&lt;/strong&gt;: Before the former primary server could be placed into rotation, a snapshot of the server was made to ensure the backup would not delete itself upon reconnection. This cost a few hours of downtime, but saved nearly 18 hours of a day’s data by not forcing me to go into the daily backup archive.&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;3:00a&lt;/strong&gt;: Snapshot completes, replication from original primary server to new db-mongo1 begins. What you see in the next hour and a half is what the transfer of the DB looks like in terms of bandwidth.&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;4:30a&lt;/strong&gt;: Replication, which is inbound from the old primary server, completes, and now replication begins outbound on the new secondaries. NewsBlur is now back up.&lt;/li&gt;
-&lt;/ol&gt;
+<ol>
+  <li><strong>6:10p</strong>: The new db-mongo1 server was put into rotation as the MongoDB primary server. This machine was the first of the new, soon-to-be private cloud.</li>
+  <li><strong>9:35p</strong>: Three hours later an automated hacking attempt opened a connection to the db-mongo1 server and immediately dropped the database. Downtime ensued.</li>
+  <li><strong>10:15p</strong>: Before the former primary server could be placed into rotation, a snapshot of the server was made to ensure the backup would not delete itself upon reconnection. This cost a few hours of downtime, but saved nearly 18 hours of a day’s data by not forcing me to go into the daily backup archive.</li>
+  <li><strong>3:00a</strong>: Snapshot completes, replication from original primary server to new db-mongo1 begins. What you see in the next hour and a half is what the transfer of the DB looks like in terms of bandwidth.</li>
+  <li><strong>4:30a</strong>: Replication, which is inbound from the old primary server, completes, and now replication begins outbound on the new secondaries. NewsBlur is now back up.</li>
+</ol>
 
-&lt;p&gt;The most important bit of information the above chart shows us is what a full database transfer looks like in terms of bandwidth. From 6p to 9:30p, the amount of data was the expected amount from a working primary server with multiple secondaries syncing to it. At 3a, you’ll see an enormous amount of data transfered.&lt;/p&gt;
+<p>The most important bit of information the above chart shows us is what a full database transfer looks like in terms of bandwidth. From 6p to 9:30p, the amount of data was the expected amount from a working primary server with multiple secondaries syncing to it. At 3a, you’ll see an enormous amount of data transfered.</p>
 
-&lt;p&gt;This tells us that the hacker was an automated digital vandal rather than a concerted hacking attempt. And if we were to pay the ransom, it wouldn’t do anything because the vandals don’t have the data and have nothing to release.&lt;/p&gt;
+<p>This tells us that the hacker was an automated digital vandal rather than a concerted hacking attempt. And if we were to pay the ransom, it wouldn’t do anything because the vandals don’t have the data and have nothing to release.</p>
 
-&lt;p&gt;We can also reason that the vandal was not able to access any files that were on the server outside of MongoDB due to using a recent version of MongoDB in a Docker container. Unless the attacker had access to a 0-day to both MongoDB and Docker, it is highly unlikely they were able to break out of the MongoDB server connection.&lt;/p&gt;
+<p>We can also reason that the vandal was not able to access any files that were on the server outside of MongoDB due to using a recent version of MongoDB in a Docker container. Unless the attacker had access to a 0-day to both MongoDB and Docker, it is highly unlikely they were able to break out of the MongoDB server connection.</p>
 
-&lt;p&gt;While the server was being snapshot, I used that time to figure out how the hacker got in.&lt;/p&gt;
+<p>While the server was being snapshot, I used that time to figure out how the hacker got in.</p>
 
-&lt;h3 id=&quot;2-how-did-newsblurs-mongodb-server-get-hacked&quot;&gt;2. How did NewsBlur’s MongoDB server get hacked?&lt;/h3&gt;
+<h3 id="2-how-did-newsblurs-mongodb-server-get-hacked">2. How did NewsBlur’s MongoDB server get hacked?</h3>
 
-&lt;p&gt;Turns out the ufw firewall I enabled and diligently kept on a strict allowlist with only my internal servers didn’t work on a new server because of Docker. When I containerized MongoDB, Docker helpfully inserted an allow rule into iptables, opening up MongoDB to the world. So while my firewall was “active”, doing a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sudo iptables -L | grep 27017&lt;/code&gt; showed that MongoDB was open the world. This has been &lt;a href=&quot;https://github.com/moby/moby/issues/4737&quot;&gt;a Docker footgun since 2014&lt;/a&gt;.&lt;/p&gt;
+<p>Turns out the ufw firewall I enabled and diligently kept on a strict allowlist with only my internal servers didn’t work on a new server because of Docker. When I containerized MongoDB, Docker helpfully inserted an allow rule into iptables, opening up MongoDB to the world. So while my firewall was “active”, doing a <code class="language-plaintext highlighter-rouge">sudo iptables -L | grep 27017</code> showed that MongoDB was open the world. This has been <a href="https://github.com/moby/moby/issues/4737">a Docker footgun since 2014</a>.</p>
 
-&lt;p&gt;To be honest, I’m a bit surprised it took over 3 hours from when I flipped the switch to when a hacker/vandal dropped NewsBlur’s MongoDB collections and pretended to ransom about 250GB of data. This is the work of an automated hack and one that I was prepared for. NewsBlur was back online a few hours later once the backups were restored and the Docker-made hole was patched.&lt;/p&gt;
+<p>To be honest, I’m a bit surprised it took over 3 hours from when I flipped the switch to when a hacker/vandal dropped NewsBlur’s MongoDB collections and pretended to ransom about 250GB of data. This is the work of an automated hack and one that I was prepared for. NewsBlur was back online a few hours later once the backups were restored and the Docker-made hole was patched.</p>
 
-&lt;p&gt;It would make for a much more dramatic read if I was hit through a vulnerability in Docker instead of a footgun. By having Docker silently override the firewall, Docker has made it easier for developers who want to open up ports on their containers at the expense of security. Better would be for Docker to issue a warning when it detects that the most popular firewall on Linux is active and filtering traffic to a port that Docker is about to open.&lt;/p&gt;
+<p>It would make for a much more dramatic read if I was hit through a vulnerability in Docker instead of a footgun. By having Docker silently override the firewall, Docker has made it easier for developers who want to open up ports on their containers at the expense of security. Better would be for Docker to issue a warning when it detects that the most popular firewall on Linux is active and filtering traffic to a port that Docker is about to open.</p>
 
-&lt;p&gt;&lt;img src=&quot;/assets/ornament-pill.png&quot; style=&quot;display: block; margin: 0 auto;width: 100px;&quot; /&gt;&lt;/p&gt;
+<p><img src="/assets/ornament-pill.png" style="display: block; margin: 0 auto;width: 100px;" /></p>
 
-&lt;p&gt;The second reason we know that no data was taken comes from looking through the MongoDB access logs. With these rich and verbose logging sources we can invoke a pretty neat command to find everybody who is not one of the 100 known NewsBlur machines that has accessed MongoDB.&lt;/p&gt;
+<p>The second reason we know that no data was taken comes from looking through the MongoDB access logs. With these rich and verbose logging sources we can invoke a pretty neat command to find everybody who is not one of the 100 known NewsBlur machines that has accessed MongoDB.</p>
 
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot; style=&quot;max-height: 200px;&quot;&gt;&lt;code&gt;
-$ cat /var/log/mongodb/mongod.log | egrep -v &quot;159.65.XX.XX|161.89.XX.XX|&amp;lt;&amp;lt; SNIP: A hundred more servers &amp;gt;&amp;gt;&quot;
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight" style="max-height: 200px;"><code>
+$ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt; SNIP: A hundred more servers &gt;&gt;"
 
 2021-06-24T01:33:45.531+0000 I NETWORK  [listener] connection accepted from 171.25.193.78:26003 #63455699 (1189 connections now open)
-2021-06-24T01:33:45.635+0000 I NETWORK  [conn63455699] received client metadata from 171.25.193.78:26003 conn63455699: { driver: { name: &quot;PyMongo&quot;, version: &quot;3.11.4&quot; }, os: { type: &quot;Linux&quot;, name: &quot;Linux&quot;, architecture: &quot;x86_64&quot;, version: &quot;5.4.0-74-generic&quot; }, platform: &quot;CPython 3.8.5.final.0&quot; }
+2021-06-24T01:33:45.635+0000 I NETWORK  [conn63455699] received client metadata from 171.25.193.78:26003 conn63455699: { driver: { name: "PyMongo", version: "3.11.4" }, os: { type: "Linux", name: "Linux", architecture: "x86_64", version: "5.4.0-74-generic" }, platform: "CPython 3.8.5.final.0" }
 2021-06-24T01:33:46.010+0000 I NETWORK  [listener] connection accepted from 171.25.193.78:26557 #63455724 (1189 connections now open)
-2021-06-24T01:33:46.092+0000 I NETWORK  [conn63455724] received client metadata from 171.25.193.78:26557 conn63455724: { driver: { name: &quot;PyMongo&quot;, version: &quot;3.11.4&quot; }, os: { type: &quot;Linux&quot;, name: &quot;Linux&quot;, architecture: &quot;x86_64&quot;, version: &quot;5.4.0-74-generic&quot; }, platform: &quot;CPython 3.8.5.final.0&quot; }
+2021-06-24T01:33:46.092+0000 I NETWORK  [conn63455724] received client metadata from 171.25.193.78:26557 conn63455724: { driver: { name: "PyMongo", version: "3.11.4" }, os: { type: "Linux", name: "Linux", architecture: "x86_64", version: "5.4.0-74-generic" }, platform: "CPython 3.8.5.final.0" }
 2021-06-24T01:33:46.500+0000 I NETWORK  [conn63455724] end connection 171.25.193.78:26557 (1198 connections now open)
 2021-06-24T01:33:46.533+0000 I NETWORK  [conn63455699] end connection 171.25.193.78:26003 (1200 connections now open)
 2021-06-24T01:34:06.533+0000 I NETWORK  [listener] connection accepted from 185.220.101.6:10056 #63456621 (1266 connections now open)
-2021-06-24T01:34:06.627+0000 I NETWORK  [conn63456621] received client metadata from 185.220.101.6:10056 conn63456621: { driver: { name: &quot;PyMongo&quot;, version: &quot;3.11.4&quot; }, os: { type: &quot;Linux&quot;, name: &quot;Linux&quot;, architecture: &quot;x86_64&quot;, version: &quot;5.4.0-74-generic&quot; }, platform: &quot;CPython 3.8.5.final.0&quot; }
+2021-06-24T01:34:06.627+0000 I NETWORK  [conn63456621] received client metadata from 185.220.101.6:10056 conn63456621: { driver: { name: "PyMongo", version: "3.11.4" }, os: { type: "Linux", name: "Linux", architecture: "x86_64", version: "5.4.0-74-generic" }, platform: "CPython 3.8.5.final.0" }
 2021-06-24T01:34:06.890+0000 I NETWORK  [listener] connection accepted from 185.220.101.6:21642 #63456637 (1264 connections now open)
-2021-06-24T01:34:06.962+0000 I NETWORK  [conn63456637] received client metadata from 185.220.101.6:21642 conn63456637: { driver: { name: &quot;PyMongo&quot;, version: &quot;3.11.4&quot; }, os: { type: &quot;Linux&quot;, name: &quot;Linux&quot;, architecture: &quot;x86_64&quot;, version: &quot;5.4.0-74-generic&quot; }, platform: &quot;CPython 3.8.5.final.0&quot; }
+2021-06-24T01:34:06.962+0000 I NETWORK  [conn63456637] received client metadata from 185.220.101.6:21642 conn63456637: { driver: { name: "PyMongo", version: "3.11.4" }, os: { type: "Linux", name: "Linux", architecture: "x86_64", version: "5.4.0-74-generic" }, platform: "CPython 3.8.5.final.0" }
 2021-06-24T01:34:08.018+0000 I COMMAND  [conn63456637] dropDatabase config - starting
 2021-06-24T01:34:08.018+0000 I COMMAND  [conn63456637] dropDatabase config - dropping 1 collections
 2021-06-24T01:34:08.018+0000 I COMMAND  [conn63456637] dropDatabase config - dropping collection: config.transactions
@@ -149,216 +323,48 @@ $ cat /var/log/mongodb/mongod.log | egrep -v &quot;159.65.XX.XX|161.89.XX.XX|&am
 2021-06-24T01:34:08.398+0000 I COMMAND  [conn63456637] dropDatabase newsblur - starting
 2021-06-24T01:34:08.398+0000 I COMMAND  [conn63456637] dropDatabase newsblur - dropping 37 collections
 
-&amp;lt;&amp;lt; SNIP: It goes on for a while... &amp;gt;&amp;gt;
+&lt;&lt; SNIP: It goes on for a while... &gt;&gt;
 
 2021-06-24T01:35:18.840+0000 I COMMAND  [conn63456637] dropDatabase newsblur - finished
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</code></pre></div></div>
 
-&lt;p&gt;The above is a lot, but the important bit of information to take from it is that by using a subtractive filter, capturing everything that doesn’t match a known IP, I was able to find the two connections that were made a few seconds apart. Both connections from these unknown IPs occured only moments before the database-wide deletion. By following the connection ID, it became easy to see the hacker come into the server only to delete it seconds later.&lt;/p&gt;
+<p>The above is a lot, but the important bit of information to take from it is that by using a subtractive filter, capturing everything that doesn’t match a known IP, I was able to find the two connections that were made a few seconds apart. Both connections from these unknown IPs occured only moments before the database-wide deletion. By following the connection ID, it became easy to see the hacker come into the server only to delete it seconds later.</p>
 
-&lt;p&gt;Interestingly, when I visited the IP address of the &lt;a href=&quot;http://185.220.101.6/&quot;&gt;two&lt;/a&gt; &lt;a href=&quot;http://171.25.193.78/&quot;&gt;connections&lt;/a&gt; above, I found a Tor exit router:&lt;/p&gt;
+<p>Interestingly, when I visited the IP address of the <a href="http://185.220.101.6/">two</a> <a href="http://171.25.193.78/">connections</a> above, I found a Tor exit router:</p>
 
-&lt;p&gt;&lt;img src=&quot;/assets/hack-tor.png&quot; /&gt;&lt;/p&gt;
+<p><img src="/assets/hack-tor.png" /></p>
 
-&lt;p&gt;This means that it is virtually impossible to track down who is responsible due to the anonymity-preserving quality of Tor exit routers. &lt;a href=&quot;https://blog.cloudflare.com/the-trouble-with-tor/&quot;&gt;Tor exit nodes have poor reputations&lt;/a&gt; due to the havoc they wreak. Site owners are split on whether to block Tor entirely, but some see the value of allowing anonymous traffic to hit their servers. In NewsBlur’s case, because NewsBlur is a home of free speech, allowing users in countries with censored news outlets to bypass restrictions and get access to the world at large, the continuing risk of supporting anonymous Internet traffic is worth the cost.&lt;/p&gt;
+<p>This means that it is virtually impossible to track down who is responsible due to the anonymity-preserving quality of Tor exit routers. <a href="https://blog.cloudflare.com/the-trouble-with-tor/">Tor exit nodes have poor reputations</a> due to the havoc they wreak. Site owners are split on whether to block Tor entirely, but some see the value of allowing anonymous traffic to hit their servers. In NewsBlur’s case, because NewsBlur is a home of free speech, allowing users in countries with censored news outlets to bypass restrictions and get access to the world at large, the continuing risk of supporting anonymous Internet traffic is worth the cost.</p>
 
-&lt;h3 id=&quot;3-what-will-happen-to-ensure-this-doesnt-happen-again&quot;&gt;3. What will happen to ensure this doesn’t happen again?&lt;/h3&gt;
+<h3 id="3-what-will-happen-to-ensure-this-doesnt-happen-again">3. What will happen to ensure this doesn’t happen again?</h3>
 
-&lt;p&gt;Of course, being in support of free speech and providing enhanced ways to access speech comes at a cost. So for NewsBlur to continue serving traffic to all of its worldwide readers, several changes have to be made.&lt;/p&gt;
+<p>Of course, being in support of free speech and providing enhanced ways to access speech comes at a cost. So for NewsBlur to continue serving traffic to all of its worldwide readers, several changes have to be made.</p>
 
-&lt;p&gt;The first change is the one that, ironically, we were in the process of moving to. A VPC, a virtual private cloud, keeps critical servers only accessible from others servers in a private network. But in moving to a private network, I need to migrate all of the data off of the publicly accessible machines. And this was the first step in that process.&lt;/p&gt;
+<p>The first change is the one that, ironically, we were in the process of moving to. A VPC, a virtual private cloud, keeps critical servers only accessible from others servers in a private network. But in moving to a private network, I need to migrate all of the data off of the publicly accessible machines. And this was the first step in that process.</p>
 
-&lt;p&gt;The second change is to use database user authentication on all of the databases. We had been relying on the firewall to provide protection against threats, but when the firewall silently failed, we were left exposed. Now who’s to say that this would have been caught if the firewall failed but authentication was in place. I suspect the password needs to be long enough to not be brute-forced, because eventually, knowing that an open but password protected DB is there, it could very possibly end up on a list.&lt;/p&gt;
+<p>The second change is to use database user authentication on all of the databases. We had been relying on the firewall to provide protection against threats, but when the firewall silently failed, we were left exposed. Now who’s to say that this would have been caught if the firewall failed but authentication was in place. I suspect the password needs to be long enough to not be brute-forced, because eventually, knowing that an open but password protected DB is there, it could very possibly end up on a list.</p>
 
-&lt;p&gt;Lastly, a change needs to be made as to which database users have permission to drop the database. Most database users only need read and write privileges. The ideal would be a localhost-only user being allowed to perform potentially destructive actions. If a rogue database user starts deleting stories, it would get noticed a whole lot faster than a database being dropped all at once.&lt;/p&gt;
+<p>Lastly, a change needs to be made as to which database users have permission to drop the database. Most database users only need read and write privileges. The ideal would be a localhost-only user being allowed to perform potentially destructive actions. If a rogue database user starts deleting stories, it would get noticed a whole lot faster than a database being dropped all at once.</p>
 
-&lt;p&gt;But each of these is only one piece of a defense strategy. &lt;a href=&quot;https://news.ycombinator.com/item?id=27613217&quot;&gt;As this well-attended Hacker News thread from the day of the hack made clear&lt;/a&gt;, a proper defense strategy can never rely on only one well-setup layer. And for NewsBlur that layer was a allowlist-only firewall that worked perfectly up until it didn’t.&lt;/p&gt;
+<p>But each of these is only one piece of a defense strategy. <a href="https://news.ycombinator.com/item?id=27613217">As this well-attended Hacker News thread from the day of the hack made clear</a>, a proper defense strategy can never rely on only one well-setup layer. And for NewsBlur that layer was a allowlist-only firewall that worked perfectly up until it didn’t.</p>
 
-&lt;p&gt;As usual the real heros are backups. Regular, well-tested backups are a necessary component to any web service. And with that, I’ll prepare to &lt;a href=&quot;https://beta.newsblur.com&quot;&gt;launch the big NewsBlur redesign later this week&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><category term="backend" /><summary type="html">tl;dr: A vandal deleted NewsBlur’s MongoDB database during a migration. No data was stolen or lost.</summary></entry><entry><title type="html">Android app update: premium subscriptions, saved searches, in-app browser, auto-dark mode</title><link href="https://blog.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved/" rel="alternate" type="text/html" title="Android app update: premium subscriptions, saved searches, in-app browser, auto-dark mode" /><published>2020-11-03T07:41:03-05:00</published><updated>2020-11-03T07:41:03-05:00</updated><id>https://blog.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved</id><content type="html" xml:base="https://blog.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved/">&lt;p&gt;For a point release this one sure is big. The Android app has been upgraded to include a bunch of features found on the web.&lt;/p&gt;
+<p>As usual the real heros are backups. Regular, well-tested backups are a necessary component to any web service. And with that, I’ll prepare to <a href="https://beta.newsblur.com">launch the big NewsBlur redesign later this week</a>.</p>]]></content><author><name></name></author><category term="backend" /><summary type="html"><![CDATA[tl;dr: A vandal deleted NewsBlur’s MongoDB database during a migration. No data was stolen or lost.]]></summary></entry><entry><title type="html">Android app update: premium subscriptions, saved searches, in-app browser, auto-dark mode</title><link href="https://blog.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved/" rel="alternate" type="text/html" title="Android app update: premium subscriptions, saved searches, in-app browser, auto-dark mode" /><published>2020-11-03T07:41:03-05:00</published><updated>2020-11-03T07:41:03-05:00</updated><id>https://blog.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved</id><content type="html" xml:base="https://blog.newsblur.com/2020/11/03/android-app-update-premium-subscriptions-saved/"><![CDATA[<p>For a point release this one sure is big. The Android app has been upgraded to include a bunch of features found on the web.</p>
 
-&lt;p&gt;For one, premium subscriptions can now be purchased in the Android app itself. Reading by folder, saved story tags, searching and saved searches are all premium features that you can unlock directly in the app.&lt;/p&gt;
+<p>For one, premium subscriptions can now be purchased in the Android app itself. Reading by folder, saved story tags, searching and saved searches are all premium features that you can unlock directly in the app.</p>
 
-&lt;p&gt;Also, saved searches are now at the bottom of your feed list. Take a look:&lt;/p&gt;
+<p>Also, saved searches are now at the bottom of your feed list. Take a look:</p>
 
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;960&quot; data-orig-width=&quot;1081&quot; data-orig-src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/android-saved-searches.png&quot;&gt;&lt;img width=&quot;650&quot; style=&quot;width: 650px; height: auto;&quot; data-orig-height=&quot;960&quot; data-orig-width=&quot;1081&quot; src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/android-saved-searches.png&quot; /&gt;&lt;/figure&gt;
+<figure class="tmblr-full" data-orig-height="960" data-orig-width="1081" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-saved-searches.png"><img width="650" style="width: 650px; height: auto;" data-orig-height="960" data-orig-width="1081" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-saved-searches.png" /></figure>
 
-&lt;p&gt;Heres’ the full list of version 10.1’s many new features:&lt;/p&gt;
+<p>Heres’ the full list of version 10.1’s many new features:</p>
 
-&lt;ul&gt;
-  &lt;li&gt;Premium subscriptions are now available on Android! Read by folder, saved story tags, searching, and more is exclusive to premium subscribers.&lt;/li&gt;
-  &lt;li&gt;Saved searches&lt;/li&gt;
-  &lt;li&gt;In-app browser, so you don’t need to leave NewsBlur&lt;/li&gt;
-  &lt;li&gt;Auto-theme option for dark mode so it can turn on automatically at night&lt;/li&gt;
-  &lt;li&gt;You can now delete and rename folders and add a folder while adding a feed&lt;/li&gt;
-  &lt;li&gt;Fixed issues around the intelligence trainer, HTML in comments, some images not loading&lt;/li&gt;
-&lt;/ul&gt;
+<ul>
+  <li>Premium subscriptions are now available on Android! Read by folder, saved story tags, searching, and more is exclusive to premium subscribers.</li>
+  <li>Saved searches</li>
+  <li>In-app browser, so you don’t need to leave NewsBlur</li>
+  <li>Auto-theme option for dark mode so it can turn on automatically at night</li>
+  <li>You can now delete and rename folders and add a folder while adding a feed</li>
+  <li>Fixed issues around the intelligence trainer, HTML in comments, some images not loading</li>
+</ul>
 
-&lt;p&gt;If you would like to request a new feature on Android, please submit an idea on the &lt;a href=&quot;https://forum.newsblur.com&quot;&gt;NewsBlur Forum&lt;/a&gt;. We’re prioritizing the next big release and would love to hear your input.&lt;/p&gt;</content><author><name></name></author><category term="android" /><summary type="html">For a point release this one sure is big. The Android app has been upgraded to include a bunch of features found on the web.</summary></entry><entry><title type="html">Customizable grid view story layout</title><link href="https://blog.newsblur.com/2020/10/28/customizable-grid-view-story-layout/" rel="alternate" type="text/html" title="Customizable grid view story layout" /><published>2020-10-28T09:01:38-04:00</published><updated>2020-10-28T09:01:38-04:00</updated><id>https://blog.newsblur.com/2020/10/28/customizable-grid-view-story-layout</id><content type="html" xml:base="https://blog.newsblur.com/2020/10/28/customizable-grid-view-story-layout/">&lt;p&gt;The grid view has quickly become one of my go-to story title views. It provides generous, clickable boxes with enlarged images and plenty of preview text. But until now, they were limited to a preset height.&lt;/p&gt;
-
-&lt;p&gt;Starting today, you can now change the height of stories in the grid view. You have five options to choose from: XS, Small, Medium, Large, and XL.&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;761&quot; data-orig-width=&quot;1000&quot; data-orig-src=&quot;https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_style.png&quot;&gt;&lt;img width=&quot;600&quot; style=&quot;width:600px;margin: 24px auto; border: 1px solid #606060&quot; data-orig-height=&quot;761&quot; data-orig-width=&quot;1000&quot; src=&quot;https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_style.png&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;Here are a few examples of how you can customize the grid view.&lt;/p&gt;
-
-&lt;p&gt;With the single column layout:&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;966&quot; data-orig-width=&quot;1000&quot; data-orig-src=&quot;https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_1.png&quot;&gt;&lt;img width=&quot;600&quot; style=&quot;width:600px;margin: 24px auto; border: 1px solid #606060&quot; data-orig-height=&quot;966&quot; data-orig-width=&quot;1000&quot; src=&quot;https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_1.png&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;With the 2 column layout:&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;938&quot; data-orig-width=&quot;1000&quot; data-orig-src=&quot;https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_2.png&quot;&gt;&lt;img width=&quot;600&quot; style=&quot;width:600px;margin: 24px auto; border: 1px solid #606060&quot; data-orig-height=&quot;938&quot; data-orig-width=&quot;1000&quot; src=&quot;https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_2.png&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;With the 3 column layout:&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;715&quot; data-orig-width=&quot;1000&quot; data-orig-src=&quot;https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_3.png&quot;&gt;&lt;img width=&quot;600&quot; style=&quot;width:600px;margin: 24px auto; border: 1px solid #606060&quot; data-orig-height=&quot;715&quot; data-orig-width=&quot;1000&quot; src=&quot;https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_3.png&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;With the 4 column layout:&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;957&quot; data-orig-width=&quot;1000&quot; data-orig-src=&quot;https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_4.png&quot;&gt;&lt;img width=&quot;600&quot; style=&quot;width:600px;margin: 24px auto; border: 1px solid #606060&quot; data-orig-height=&quot;957&quot; data-orig-width=&quot;1000&quot; src=&quot;https://s3.us-east-1.amazonaws.com/static.newsblur.com/blog/grid_height_4.png&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;Don’t forget you can also adjust the font size and even turn off image previews.&lt;/p&gt;</content><author><name></name></author><category term="web" /><summary type="html">The grid view has quickly become one of my go-to story title views. It provides generous, clickable boxes with enlarged images and plenty of preview text. But until now, they were limited to a preset height.</summary></entry><entry><title type="html">Highlight passages and add private notes to saved stories</title><link href="https://blog.newsblur.com/2020/07/17/highlight-passages-and-add-private-notes-on-saved/" rel="alternate" type="text/html" title="Highlight passages and add private notes to saved stories" /><published>2020-07-17T08:30:05-04:00</published><updated>2020-07-17T08:30:05-04:00</updated><id>https://blog.newsblur.com/2020/07/17/highlight-passages-and-add-private-notes-on-saved</id><content type="html" xml:base="https://blog.newsblur.com/2020/07/17/highlight-passages-and-add-private-notes-on-saved/">&lt;p&gt;When you’re reading a story and want to save a portion of it for personal use, you now have a couple new options. Highlighting is now available for all stories. Simply select the text you want to highlight and NewsBlur helpfully shows a tooltip that allows you to select a part of the text and save it.&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;1128&quot; data-orig-width=&quot;1492&quot; data-orig-src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/highlight1.png&quot;&gt;&lt;img width=&quot;650&quot; height=&quot;auto&quot; data-orig-height=&quot;1128&quot; data-orig-width=&quot;1492&quot; src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/highlight1.png&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;You can enrich your reading experience with highlights and come back to passages you want to remember. All stories with highlights are tagged as “Highlights” in your Saved Story tags list. That way you can immediately come back to your highlights.&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;398&quot; data-orig-width=&quot;1958&quot; data-orig-src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/highlight2a.png&quot;&gt;&lt;img width=&quot;650&quot; height=&quot;auto&quot; data-orig-height=&quot;398&quot; data-orig-width=&quot;1958&quot; src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/highlight2a.png&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;Second, you can now also write private notes to yourself. If you’re doing research and want to remember why a particular story is being saved, the private notes text box can save your thoughts without having to share them with the world.&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;1048&quot; data-orig-width=&quot;1792&quot; data-orig-src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/highlight3.png&quot;&gt;&lt;img width=&quot;650&quot; height=&quot;auto&quot; data-orig-height=&quot;1048&quot; data-orig-width=&quot;1792&quot; src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/highlight3.png&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;A few other small changes have been added to this feature. You can also save stories and tag them from any website using the bookmarklet (which you can install under Manage &amp;gt; Goodies &amp;gt; Bookmarklet).&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;985&quot; data-orig-width=&quot;1300&quot; data-orig-src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/highlight4.jpg&quot;&gt;&lt;img width=&quot;650&quot; height=&quot;auto&quot; data-orig-height=&quot;985&quot; data-orig-width=&quot;1300&quot; src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/highlight4.jpg&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;Lots to live in this release! Keep &lt;a href=&quot;https://forum.newsblur.com&quot;&gt;posting good ideas to the forum&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><category term="web" /><summary type="html">When you’re reading a story and want to save a portion of it for personal use, you now have a couple new options. Highlighting is now available for all stories. Simply select the text you want to highlight and NewsBlur helpfully shows a tooltip that allows you to select a part of the text and save it.</summary></entry><entry><title type="html">Turn the lights down, dark mode has come to NewsBlur</title><link href="https://blog.newsblur.com/2020/06/24/turn-the-lights-down-dark-mode-has-come-to/" rel="alternate" type="text/html" title="Turn the lights down, dark mode has come to NewsBlur" /><published>2020-06-24T11:29:59-04:00</published><updated>2020-06-24T11:29:59-04:00</updated><id>https://blog.newsblur.com/2020/06/24/turn-the-lights-down-dark-mode-has-come-to</id><content type="html" xml:base="https://blog.newsblur.com/2020/06/24/turn-the-lights-down-dark-mode-has-come-to/">&lt;p&gt;We’ve had dark mode on iOS and Android for years but I’m now pleased to announce a worthy dark theme has come to the NewsBlur web app.&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;1441&quot; data-orig-width=&quot;1300&quot; data-orig-src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/dark-mode.png&quot;&gt;&lt;img data-orig-height=&quot;1441&quot; data-orig-width=&quot;1300&quot; src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/dark-mode.png&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;The origins for this theme came from the community. Originally started by &lt;a href=&quot;https://userstyles.org/styles/86275/newsblur-kemwer-black&quot;&gt;Kemwer in 2013&lt;/a&gt;, it has been maintained and updated by &lt;a href=&quot;https://userstyles.org/styles/124890/newsblur-dark-theme-by-splike&quot;&gt;Splike since 2014&lt;/a&gt;. In fact, you can still use Splike’s theme as an alternate dark mode.&lt;/p&gt;
-
-&lt;p&gt;That’s 7 years of NewsBlur having an unofficial dark mode, but users had to jump through hoops to use it: installing a browser extension (which had a &lt;a href=&quot;https://news.ycombinator.com/item?id=17447816&quot;&gt;malware scare in 2018&lt;/a&gt;) or having to copy the Stylish CSS to NewsBlur’s Account settings where it would need to be manually updated. What NewsBlur needed was having it built in.&lt;/p&gt;
-
-&lt;p&gt;Today NewsBlur is shipping first-class support. Building a dark theme requires more than inverting the existing color scheme, turning white to black and green to purple. Quite a bit of thought around UX and information hierarchy went into this dark theme design. I also used this as an opportunity to freshen up icons and small visual details on both light and dark themes.&lt;/p&gt;
-
-&lt;p&gt;Now we have a consistent dark theme across all of the first-party apps. The &lt;a href=&quot;https://blog.newsblur.com/2021/06/21/2014-11-18-offline-reading-and-a-dark-theme-on-the-android.html&quot;&gt;Android app had dark mode first in 2014&lt;/a&gt;. Then came the &lt;a href=&quot;https://blog.newsblur.com/2021/06/21/2016-04-12-newsblur-goes-dark-on-ios.html&quot;&gt;iOS app is 2016&lt;/a&gt;. Now we’re firmly in 2020 and it’s made it to the web. Goes to show that NewsBlur is always getting better. &lt;/p&gt;
-
-&lt;p&gt;If you like the new features we’ve been releasing recently, I would greatly appreciate if you could share a tweet or Facebook post about NewsBlur. &lt;strong&gt;If you enjoy staying connected with culture and news through NewsBlur and you think your friends and followers would too, let them know about your news reader of choice.&lt;/strong&gt; I appreciate all the kind comments that have come in since releasing this new theme.&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;In love 🥰 with the new dark theme of &lt;a href=&quot;https://twitter.com/NewsBlur?ref_src=twsrc%5Etfw&quot;&gt;@NewsBlur&lt;/a&gt; ! Kudos &lt;a href=&quot;https://twitter.com/samuelclay?ref_src=twsrc%5Etfw&quot;&gt;@samuelclay&lt;/a&gt; 👍&lt;/p&gt;
-
-  &lt;p&gt;— Jean Traullé (@jtraulle) &lt;a href=&quot;https://twitter.com/jtraulle/status/1275814360141701120?ref_src=twsrc%5Etfw&quot;&gt;June 24, 2020&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;script async=&quot;&quot; src=&quot;https://platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Ooooooooooooooo &lt;a href=&quot;https://twitter.com/NewsBlur?ref_src=twsrc%5Etfw&quot;&gt;@NewsBlur&lt;/a&gt; &lt;a href=&quot;https://t.co/eG3XSXzuAG&quot;&gt;pic.twitter.com/eG3XSXzuAG&lt;/a&gt;&lt;/p&gt;
-
-  &lt;p&gt;— Billy O’Neal (@MalwareMinigun) &lt;a href=&quot;https://twitter.com/MalwareMinigun/status/1275574477753954304?ref_src=twsrc%5Etfw&quot;&gt;June 23, 2020&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;script async=&quot;&quot; src=&quot;https://platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
-
-&lt;p&gt;And please keep the &lt;a href=&quot;https://forum.newsblur.com&quot;&gt;good ideas coming on the forum&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><category term="web" /><summary type="html">We’ve had dark mode on iOS and Android for years but I’m now pleased to announce a worthy dark theme has come to the NewsBlur web app.</summary></entry><entry><title type="html">See the news on your Android dashboard with the new home screen widget</title><link href="https://blog.newsblur.com/2020/06/18/see-the-news-on-your-android-dashboard-with-the/" rel="alternate" type="text/html" title="See the news on your Android dashboard with the new home screen widget" /><published>2020-06-18T16:06:04-04:00</published><updated>2020-06-18T16:06:04-04:00</updated><id>https://blog.newsblur.com/2020/06/18/see-the-news-on-your-android-dashboard-with-the</id><content type="html" xml:base="https://blog.newsblur.com/2020/06/18/see-the-news-on-your-android-dashboard-with-the/">&lt;p&gt;Hot on the heels of the &lt;a href=&quot;https://blog.newsblur.com/2021/06/21/2020-02-26-catch-the-news-in-a-glimpse-with-the-new-newsblur.html&quot;&gt;iOS widget release&lt;/a&gt; a few months ago, the Android widget is now ready to go!&lt;/p&gt;
-
-&lt;p&gt;Check it out:&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;923&quot; data-orig-width=&quot;621&quot; data-orig-src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/android-v10-s.png&quot;&gt;&lt;img style=&quot;width: 650px; height: 966px; margin: 0 auto;&quot; data-orig-height=&quot;923&quot; data-orig-width=&quot;621&quot; src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/android-v10-s.png&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;Ideally both iOS and Android widgets would have been released at the same time. But now that we have a new Android developer, &lt;a href=&quot;https://github.com/sictiru&quot;&gt;Andrei Dan&lt;/a&gt;, we’ve built the widget and are planning many more new features for Android.&lt;/p&gt;
-
-&lt;p&gt;Everything I wrote for the iOS release holds for today’s Android widget:&lt;/p&gt;
-
-&lt;p&gt;&amp;gt; Most of the time when we release a new feature, it finds immediate use. But every so often a new feature comes along that changes how NewsBlur gets used. I consider offline stories part of this exclusive club. Same with the Text view, which shows you the full text of a story. And push notifications are right up there.&lt;/p&gt;
-
-&lt;p&gt;If you’re like me and you rely on your phone for your news consumption, having stories handy every time you look at your phone changes your relationship to NewsBlur.&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;923&quot; data-orig-width=&quot;621&quot; data-orig-src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/android-v10-l.png&quot;&gt;&lt;img style=&quot;width: 650px; height: 966px; margin: 0 auto;&quot; data-orig-height=&quot;923&quot; data-orig-width=&quot;621&quot; src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/android-v10-l.png&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;It’s so incredibly useful to have NewsBlur come to me. I hope you feel the same about this Android widget.&lt;/p&gt;
-
-&lt;p&gt;If you have any feedback, ideas, or would like changes, please post them on the &lt;a href=&quot;https://forum.newsblur.com&quot;&gt;NewsBlur support forum&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><category term="android" /><summary type="html">Hot on the heels of the iOS widget release a few months ago, the Android widget is now ready to go!</summary></entry><entry><title type="html">Catch the news in a glimpse with the new NewsBlur Today View widget on iOS</title><link href="https://blog.newsblur.com/2020/02/26/catch-the-news-in-a-glimpse-with-the-new-newsblur/" rel="alternate" type="text/html" title="Catch the news in a glimpse with the new NewsBlur Today View widget on iOS" /><published>2020-02-26T08:53:22-05:00</published><updated>2020-02-26T08:53:22-05:00</updated><id>https://blog.newsblur.com/2020/02/26/catch-the-news-in-a-glimpse-with-the-new-newsblur</id><content type="html" xml:base="https://blog.newsblur.com/2020/02/26/catch-the-news-in-a-glimpse-with-the-new-newsblur/">&lt;p&gt;Most of the time when we release a new feature, it finds immediate use. But every so often a new feature comes along that changes how NewsBlur gets used. I consider offline stories part of this exclusive club. Same with the Text view, which shows you the full text of a story. And push notifications are right up there.&lt;/p&gt;
-
-&lt;p&gt;Today, I’m pleased to announce the launch of our new Today View widget on iOS.&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;889&quot; data-orig-width=&quot;500&quot; data-orig-src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/ios-widget.png&quot;&gt;&lt;img data-orig-height=&quot;889&quot; data-orig-width=&quot;500&quot; src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/ios-widget.png&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;Instead of having to open up the app to see what’s new, the stories come to you in the Today View, adjacent to the notification center. Personally I find myself checking this Today View widget a dozen times more than I open the NewsBlur app. It’s so incredibly useful to have NewsBlur come to me.&lt;/p&gt;
-
-&lt;p&gt;Additionally, in version 10.0 of the iOS app, we have a bunch of new features:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;A new iOS widget shows the latest stories in your Notification Center and on your iPad dashboard&lt;/li&gt;
-  &lt;li&gt;Statistics visualization for every site&lt;/li&gt;
-  &lt;li&gt;Automatic downloading of the original story full text for offline reading&lt;/li&gt;
-  &lt;li&gt;Unsubscribe from a feed directly from a story&lt;/li&gt;
-  &lt;li&gt;Preferences import &amp;amp; export&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;And tons of bugs were fixed along with other small improvements:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Fixed crash on start for a few users&lt;/li&gt;
-  &lt;li&gt;Fixed highlighting issue&lt;/li&gt;
-  &lt;li&gt;Fixed settings with stories on bottom&lt;/li&gt;
-  &lt;li&gt;Tweaked dark theme colors to be darker&lt;/li&gt;
-  &lt;li&gt;Fixed wonky behavior on iPad&lt;/li&gt;
-  &lt;li&gt;Clearing offline now clears the cached stories, text, and images from the database&lt;/li&gt;
-  &lt;li&gt;Manually changing the theme now turns off the preference to follow the system appearance&lt;/li&gt;
-  &lt;li&gt;Turning on following the system appearance immediately updates the theme appropriately&lt;/li&gt;
-  &lt;li&gt;Fixed crash on feed load list&lt;/li&gt;
-  &lt;li&gt;Fixed crash on start&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;And if you’re an Android user, I just want you to know that we intended to ship this feature first on Android (and in fact, it is 90% built) but then our Android developer bailed. I’ll be hiring for another Android devleoper soon, but if that interests you, &lt;a href=&quot;mailto:samuel@newsblur.com&quot;&gt;please reach out&lt;/a&gt;!&lt;/p&gt;</content><author><name></name></author><category term="iOS" /><summary type="html">Most of the time when we release a new feature, it finds immediate use. But every so often a new feature comes along that changes how NewsBlur gets used. I consider offline stories part of this exclusive club. Same with the Text view, which shows you the full text of a story. And push notifications are right up there.</summary></entry><entry><title type="html">Secure images for everybody</title><link href="https://blog.newsblur.com/2019/08/15/secure-images-for-everybody/" rel="alternate" type="text/html" title="Secure images for everybody" /><published>2019-08-15T10:59:11-04:00</published><updated>2019-08-15T10:59:11-04:00</updated><id>https://blog.newsblur.com/2019/08/15/secure-images-for-everybody</id><content type="html" xml:base="https://blog.newsblur.com/2019/08/15/secure-images-for-everybody/">&lt;p&gt;There are two ways to connect to the NewsBlur website. The first is &lt;em&gt;http&lt;/em&gt;://www.newsblur.com. The second is &lt;em&gt;https&lt;/em&gt;://www.newsblur.com. The first is plain text and the second is encrypted. You get to choose which one you want to use.&lt;/p&gt;
-
-&lt;p&gt;Part of the draw of using an encrypted https connection instead of a plain text http connection is that you can protect your privacy. As far as I can tell, there are two reasons for preferring https over http.&lt;/p&gt;
-
-&lt;p&gt;One is that using an encrypted https connection to NewsBlur protects what you read from hackers or a man-in-the-middle changing your data as it comes to you. This could be your internet service provider (ISP) inserting ads or it could be snooping wifi router that you are connected to that injects malware into your content. Some companies have been known to do this and https protects you.&lt;/p&gt;
-
-&lt;p&gt;But the second reason is that your privacy is also protected from more benign, aggregate collections by ISPs and middlemen that sees what you read and sells that data. NewsBlur doesn’t sell any of your data and beginning this week NewsBlur can ensure that nobody other than you and the site you read can either.&lt;/p&gt;
-
-&lt;p&gt;The feature that is launching this week (it actually launched Monday in order for me to ensure that it works well) is a secure image proxy for all images served on NewsBlur. That means that NewsBlur will take any images that isn’t behind an encrypted https connection and proxies it behind NewsBlur’s own secure, encrypted connection.&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;1021&quot; data-orig-width=&quot;1110&quot; data-orig-src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/https-proxy.png&quot;&gt;&lt;img width=&quot;650&quot; style=&quot;margin: 0 auto; width: 650px;&quot; data-orig-height=&quot;1021&quot; data-orig-width=&quot;1110&quot; src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/https-proxy.png&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;You should notice next to no difference. The only difference you may notice is that some images may load &lt;em&gt;faster&lt;/em&gt;, since NewsBlur has a thicker pipe to the Internet and can download data faster than your client browser can, which means that your persistent connection to NewsBlur’s servers takes over instead of having to make new connections with the associated overhead to various servers around the net.&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;488&quot; data-orig-width=&quot;1392&quot; data-orig-src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/https-preference.png&quot;&gt;&lt;img style=&quot;margin: 0 auto; border: 1px solid #A0A0A0;&quot; data-orig-height=&quot;488&quot; data-orig-width=&quot;1392&quot; src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/https-preference.png&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;Now you can turn on the SSL setting on the NewsBlur Web and ensure your data stays private.&lt;/p&gt;
-
-&lt;p&gt;And to answer the question of why you wouldn’t wan t to use https — it used to mean serving and loading pages over https gave a slight performance hit, but that’s no longer true. But some people use http because it will load images from both http and https websites, whereas loading NewsBlur via https means that you can only load images via https, as loading an image via http will throw up a Mixed Content Warning. This update addresses that issue and it is my hope that http-only will be phased out.&lt;/p&gt;</content><author><name></name></author><category term="web" /><summary type="html">There are two ways to connect to the NewsBlur website. The first is http://www.newsblur.com. The second is https://www.newsblur.com. The first is plain text and the second is encrypted. You get to choose which one you want to use.</summary></entry><entry><title type="html">NewsBlur iOS v9: full screen, autoscroll, customizable story titles, story change highlighter, and return to last read story</title><link href="https://blog.newsblur.com/2019/07/01/newsblur-ios-v9-full-screen-autoscroll/" rel="alternate" type="text/html" title="NewsBlur iOS v9: full screen, autoscroll, customizable story titles, story change highlighter, and return to last read story" /><published>2019-07-01T09:29:07-04:00</published><updated>2019-07-01T09:29:07-04:00</updated><id>https://blog.newsblur.com/2019/07/01/newsblur-ios-v9-full-screen-autoscroll</id><content type="html" xml:base="https://blog.newsblur.com/2019/07/01/newsblur-ios-v9-full-screen-autoscroll/">&lt;p&gt;A whopper of a release with many, many new features!&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Autoscroll: Read long stories hands-free&lt;/li&gt;
-  &lt;li&gt;Full screen: Reading stories without the toolbar for a better experience&lt;/li&gt;
-  &lt;li&gt;Longer story titles: New options for longer and shorter story title and content previews in the story titles list&lt;/li&gt;
-  &lt;li&gt;Smaller image previews: New option for smaller image previews in the story titles list&lt;/li&gt;
-  &lt;li&gt;Show story changes: All stories with edits now show a “Show Changes” button at the top that lets you see the differences&lt;/li&gt;
-  &lt;li&gt;Return to last read story: When you return to the app, you will start where you left off&lt;/li&gt;
-  &lt;li&gt;Return to last read scroll position: When you return to a story, you will automatically scroll to where you left off&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Take a look at some of the image and story title customizations you can now make:&lt;/p&gt;
-
-&lt;figure class=&quot;tmblr-full&quot; data-orig-height=&quot;968&quot; data-orig-width=&quot;1068&quot; data-orig-src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/ios-v9.png&quot;&gt;&lt;img style=&quot;width:650px;margin: 24px auto;&quot; data-orig-height=&quot;968&quot; data-orig-width=&quot;1068&quot; src=&quot;https://s3.amazonaws.com/static.newsblur.com/blog/ios-v9.png&quot; /&gt;&lt;/figure&gt;
-
-&lt;p&gt;There’s also many smaller fixes that improve the polish of the app:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;If you had a slow connection, some stories would take a while to draw while images were downloaded. Now they show immediately&lt;/li&gt;
-  &lt;li&gt;Support for larger iPad Pros&lt;/li&gt;
-  &lt;li&gt;Suport for iOS 13&lt;/li&gt;
-  &lt;li&gt;Fixes for split mode on iPad&lt;/li&gt;
-  &lt;li&gt;Fixes for marking stories as read while scrolling the story titles list&lt;/li&gt;
-  &lt;li&gt;Fixes for navigating stories with an external keyboard&lt;/li&gt;
-  &lt;li&gt;Fixes for scroll performance on the feed list and the story titles list&lt;/li&gt;
-  &lt;li&gt;Fixes for sharing stories accidentally having double titles in emails and messages&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Thanks to &lt;a href=&quot;https://github.com/dejal&quot;&gt;David Sinclair&lt;/a&gt; for putting together this release. Keep up the great work! And if you have ideas for what you’d like to see in the next NewsBlur iOS release, please, please, please &lt;a href=&quot;https://forum.newsblur.com/c/idea&quot;&gt;submit them to the forum&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><category term="iOS" /><summary type="html">A whopper of a release with many, many new features!</summary></entry></feed>
+<p>If you would like to request a new feature on Android, please submit an idea on the <a href="https://forum.newsblur.com">NewsBlur Forum</a>. We’re prioritizing the next big release and would love to hear your input.</p>]]></content><author><name></name></author><category term="android" /><summary type="html"><![CDATA[For a point release this one sure is big. The Android app has been upgraded to include a bunch of features found on the web.]]></summary></entry></feed>

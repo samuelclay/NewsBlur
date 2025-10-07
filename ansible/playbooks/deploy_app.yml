@@ -1,103 +1,116 @@
 ---
-- name: DEPLOY -> app
+# One-time setup tasks
+- name: DEPLOY -> Prepare deployment
   hosts: app,staging
   gather_facts: false
-  # serial: "50%"
   vars_files:
     - ../env_vars/base.yml
 
   tasks:
-    # - name: Leave consul
-    #   command: consul leave
-    #   ignore_errors: yes
+    - name: Update Sentry release
+      connection: local
+      run_once: yes
+      shell: >
+        curl {{ sentry_web_release_webhook }}/ \
+        -X POST \
+        -H 'Content-Type: application/json' \
+        -d '{"version": "{{ lookup('pipe', 'date "+%Y-%m-%d %H:%M:%S"') }}"}'
 
-    - name: Compressing JS/CSS assets 
+    - name: Cleanup static assets before compression
       run_once: yes
       connection: local
-      command: chdir=/srv/newsblur jammit -c /srv/newsblur/newsblur_web/assets.yml --base-url https://www.newsblur.com --output /srv/newsblur/static
+      file:
+        state: absent
+        path: /srv/newsblur/static
       tags:
         - never
         - static
-        - jammit
-    
+
+    - name: Updating NewsBlur Deploy container
+      run_once: yes
+      connection: local
+      command: chdir=/srv/newsblur docker pull newsblur/newsblur_deploy
+      tags:
+        - never
+        - static
+
+    - name: Compressing JS/CSS assets
+      run_once: yes
+      connection: local
+      command: chdir=/srv/newsblur docker run --rm -v /srv/newsblur:/srv/newsblur newsblur/newsblur_deploy
+      tags:
+        - never
+        - static
+
     - name: Archive JS/CSS assets for uploading
       run_once: yes
       connection: local
-      archive: 
+      archive:
         path: /srv/newsblur/static/
         dest: /srv/newsblur/static.tgz
       tags:
         - never
         - static
-      
+
+    - name: Ensure AWS dependencies installed
+      run_once: yes
+      connection: local
+      pip:
+        name:
+          - boto3
+          - botocore
+        virtualenv: ~/.virtualenvs/newsblur
+      tags:
+        - never
+        - static
+
     - name: Uploading JS/CSS assets to S3
       run_once: yes
       connection: local
       amazon.aws.aws_s3:
-        bucket: newsblur_backups
+        bucket: newsblur-backups
         object: /static_py3.tgz
         src: /srv/newsblur/static.tgz
         mode: put
         overwrite: different
         aws_access_key: "{{ lookup('ini', 'aws_access_key_id section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
         aws_secret_key: "{{ lookup('ini', 'aws_secret_access_key section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
+        endpoint_url: "https://s3.us-east-1.amazonaws.com"
       tags:
         - never
         - static
 
-    - name: Pull newsblur_web github
-      git:
-        repo: https://github.com/samuelclay/NewsBlur.git
-        dest: /srv/newsblur/
-        version: master
-      register: pulled
-      tags:
-        - static
-    
-    - name: Downloading JS/CSS assets from S3
-      vars:
-        ansible_python_interpreter: /usr/bin/python3  
-      amazon.aws.aws_s3:
-        bucket: newsblur_backups
-        object: /static_py3.tgz
-        dest: /srv/newsblur/static/static.tgz
-        mode: get
-        overwrite: different
-        aws_access_key: "{{ lookup('ini', 'aws_access_key_id section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
-        aws_secret_key: "{{ lookup('ini', 'aws_secret_access_key section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
-      tags:
-        - never
-        - static
-      register: jscss_updated
+# Deploy Group A (odd servers)
+- name: DEPLOY -> app Group A (odd servers)
+  hosts: hdjango_a:hrefresh_a:hcount_a:hpush_a:staging_a
+  gather_facts: false
+  vars_files:
+    - ../env_vars/base.yml
+    - roles/letsencrypt/defaults/main.yml
+  vars:
+    haproxy_host: "{{ 'hstaging' if 'staging' in inventory_hostname else 'hwww' }}"
+    group_name: A
+  tasks:
+    - include_tasks: deploy_app_group.yml
 
-    - name: Decompress downloaded JS/CSS
-      unarchive:
-        src: /srv/newsblur/static.tgz
-        dest: /srv/newsblur/static
-      when: jscss_updated is succeeded
-      tags:
-        - never
-        - static
-    
-    - name: Reload gunicorn
-      become: yes
-      block:
-        - name: Find gunicorn master process
-          shell: "ps -C gunicorn fch -o pid | head -n 1"
-          register: psaux
-        - name: Reload gunicorn
-          command: "kill -HUP {{ psaux.stdout }}"
-      # when: pulled.changed
-      tags:
-        - static
-    
-    - name: Start Consul
-      become: yes
-      service:
-        name: consul
-        state: started
-        enabled: true
+# Deploy Group B (even servers)
+- name: DEPLOY -> app Group B (even servers)
+  hosts: hdjango_b:hrefresh_b:hcount_b:hpush_b:staging_b
+  gather_facts: false
+  vars_files:
+    - ../env_vars/base.yml
+    - roles/letsencrypt/defaults/main.yml
+  vars:
+    haproxy_host: "{{ 'hstaging' if 'staging' in inventory_hostname else 'hwww' }}"
+    group_name: B
+  tasks:
+    - include_tasks: deploy_app_group.yml
 
+# Maintenance mode tasks
+- name: Maintenance mode management
+  hosts: app,staging
+  gather_facts: false
+  tasks:
     - name: Entering maintenance mode
       template:
         src: /srv/newsblur/templates/maintenance_off.html

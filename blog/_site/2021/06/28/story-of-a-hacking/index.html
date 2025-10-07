@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="shortcut icon" href="https://newsblur.com/media/img/favicon.ico" type="image/png" />
   <link rel="icon" href="https://newsblur.com/media/img/favicon_32.png" sizes="32x32"/>
-  <link rel="icon" href="https://newsblur.com/media/img/favicon_64.png" sizes="64x64"/><!-- Begin Jekyll SEO tag v2.7.1 -->
+  <link rel="icon" href="https://newsblur.com/media/img/favicon_64.png" sizes="64x64"/>
+  <link rel="alternate" type="application/rss+xml" 
+  title="The NewsBlur Blog RSS feed" 
+  href="/feed.xml" /><!-- Begin Jekyll SEO tag v2.8.0 -->
 <title>How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database | The NewsBlur Blog</title>
-<meta name="generator" content="Jekyll v4.2.0" />
+<meta name="generator" content="Jekyll v4.3.4" />
 <meta property="og:title" content="How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="tl;dr: A vandal deleted NewsBlur’s MongoDB database during a migration. No data was stolen or lost." />
@@ -20,7 +23,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database" />
 <script type="application/ld+json">
-{"@type":"BlogPosting","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"headline":"How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database","dateModified":"2021-06-28T00:00:00-04:00","datePublished":"2021-06-28T00:00:00-04:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.newsblur.com/2021/06/28/story-of-a-hacking/"},"description":"tl;dr: A vandal deleted NewsBlur’s MongoDB database during a migration. No data was stolen or lost.","url":"https://blog.newsblur.com/2021/06/28/story-of-a-hacking/","@context":"https://schema.org"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2021-06-28T00:00:00-04:00","datePublished":"2021-06-28T00:00:00-04:00","description":"tl;dr: A vandal deleted NewsBlur’s MongoDB database during a migration. No data was stolen or lost.","headline":"How a Docker footgun led to a vandal deleting NewsBlur’s MongoDB database","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.newsblur.com/2021/06/28/story-of-a-hacking/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://blog.newsblur.com/assets/newsblur_logo_512.png"}},"url":"https://blog.newsblur.com/2021/06/28/story-of-a-hacking/"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css">
   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
@@ -88,9 +91,9 @@
 <span class="nx">nbset</span><span class="p">:</span><span class="nx">PRIMARY</span><span class="o">&gt;</span> <span class="nx">use</span> <span class="nx">READ__ME_TO_RECOVER_YOUR_DATA</span>
 <span class="nx">switched</span> <span class="nx">to</span> <span class="nx">db</span> <span class="nx">READ__ME_TO_RECOVER_YOUR_DATA</span>
     
-<span class="nx">nbset</span><span class="p">:</span><span class="nx">PRIMARY</span><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">README</span><span class="p">.</span><span class="nx">find</span><span class="p">()</span>
+<span class="nx">nbset</span><span class="p">:</span><span class="nx">PRIMARY</span><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">README</span><span class="p">.</span><span class="nf">find</span><span class="p">()</span>
 <span class="p">{</span> 
-    <span class="dl">"</span><span class="s2">_id</span><span class="dl">"</span> <span class="p">:</span> <span class="nx">ObjectId</span><span class="p">(</span><span class="dl">"</span><span class="s2">60d3e112ac48d82047aab95d</span><span class="dl">"</span><span class="p">),</span> 
+    <span class="dl">"</span><span class="s2">_id</span><span class="dl">"</span> <span class="p">:</span> <span class="nc">ObjectId</span><span class="p">(</span><span class="dl">"</span><span class="s2">60d3e112ac48d82047aab95d</span><span class="dl">"</span><span class="p">),</span> 
     <span class="dl">"</span><span class="s2">content</span><span class="dl">"</span> <span class="p">:</span> <span class="dl">"</span><span class="s2">All your data is a backed up. You must pay 0.03 BTC to XXXXXXFTHISGUYXXXXXXX 48 hours for recover it. After 48 hours expiration we will leaked and exposed all your data. In case of refusal to pay, we will contact the General Data Protection Regulation, GDPR and notify them that you store user data in an open form and is not safe. Under the rules of the law, you face a heavy fine or arrest and your base dump will be dropped from our server! You can buy bitcoin here, does not take much time to buy https://localbitcoins.com or https://buy.moonpay.io/ After paying write to me in the mail with your DB IP: FTHISGUY@recoverme.one and you will receive a link to download your database dump.</span><span class="dl">"</span> 
 <span class="p">}</span></code></pre></figure>
 

@@ -125,4 +125,68 @@ You got the downtime message either through email or SMS. This is the order of o
     crack are automatically fixed after 24 hours, but if many feeds fall through due to a bad 
     deploy or electrical failure, you'll want to accelerate that check by just draining the 
     tasked feeds pool, adding those feeds back into the queue. This command is idempotent.
-      
+
+## Python 3
+
+### Switching to a new mongo server
+
+Provision a new mongo server, replicate the data, take newsblur down for maintenance, and then switch to new server.
+
+   # db-mongo-primary2 = new server
+   # db-mongo-primary1 = old and busted server
+   make plan
+   make apply
+   make firewall
+   ./utils/ssh.sh db-mongo-primary1
+      docker exec -it mongo mongo
+      mongo> rs.add("db-mongo-primary1.node.nyc1.consul:27017")
+   # Wait for mongo to synbc, takes 4-5 hours
+   make celery_stop
+   make maintenance_on
+   ./utils/ssh.sh db-mongo-primary1
+      docker exec -it mongo mongo
+      mongo> rs.config()
+      # Edit configuration from above rs.config(), adding in new server with higher priority, 
+      # lowering priority on old server
+         [
+            {server: 'db-mongo-primary1': priority: 1},
+            {server: 'db-mongo-primary2': priority: 10},
+            {server: 'db-mongo-secondary1': priority: 1},
+            ...
+         ]
+      mongo> rs.reconfig({ ... })
+   make maintenance_off
+   make task
+
+### Switching to a new redis server
+
+Provision a new redis server, replicate the data, take newsblur down for maintenance, and then switch to new server.
+
+   # db-redis-story2 = moving to new server
+   # db-redis-story1 = old server about to be shutdown
+   # Edit digitalocean.tf to change db-redis-story count to 2
+   make plan
+   make apply
+   make firewall
+   # Wait for redis to sync, takes 5-10 minutes
+   # Edit redis/consul_service.json to switch primary to db-redis-story2
+   make celery_stop
+   make maintenance_on
+   apd -l db-redis-story2 -t replicaofnoone
+   aps -l db-redis-story1,db-redis-story2 -t consul
+   make maintenance_off
+   make task
+
+### Switching to a new postgres server
+
+   # Old
+   docker exec -it -u postgres postgres psql -c "SELECT pg_start_backup('label', true)"
+   # New
+   ## Install `openssh-client` and `rsync`
+   docker stop postgres
+   rsync -Pav --stats --progress db-postgres.service.consul:/srv/newsblur/docker/volumes/postgres/data /srv/newsblur/docker/volumes/postgres/ --exclude postmaster.pid
+   docker start postgres
+   # New
+   docker exec -it -u postgres postgres /usr/lib/postgresql/13/bin/pg_ctl -D /var/lib/postgresql/data promote
+   # Old
+   docker exec -it -u postgres postgres psql -c "SELECT pg_stop_backup()"

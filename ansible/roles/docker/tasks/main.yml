@@ -2,11 +2,11 @@
 # tasks file for docker-ce-ansible-role
 
 - name: Install docker-ce (RedHat)
-  include: install-EL.yml
+  include_tasks: install-EL.yml
   when: ansible_os_family == 'RedHat'
 
 - name: Install docker-ce (Ubuntu)
-  include: install-Ubuntu.yml
+  include_tasks: install-Ubuntu.yml
   when: ansible_distribution == 'Ubuntu'
 
 - name: Enable Docker CE service on startup
@@ -24,10 +24,13 @@
 
 - name: Turn off Docker iptables firewall exclusion
   become: yes
-  copy:
+  template:
+    src: daemon.json
     dest: /etc/docker/daemon.json
-    content: |
-      {
-        "iptables": false
-      }
+  notify: restart docker
+
+- name: Make docker network for newsblurnet
+  become: yes
+  docker_network:
+    name: newsblurnet
   notify: restart docker

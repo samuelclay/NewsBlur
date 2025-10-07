@@ -1,43 +1,61 @@
 {% extends 'base.html' %}
 
-{% load utils_tags %}
+{% load utils_tags tz %}
 
-{% block bodyclass %}NB-body-status{% endblock %}
+{% block bodyclass %}NB-body-status NB-static{% endblock %}
 
 {% block content %}
 
 <div class="NB-module">
 
+  <div class="queues">
+    Tasked: {{ queues.tasked_feeds }}, Queued: {{ queues.queued_feeds }}, Scheduled: {{ queues.scheduled_updates }}
+  </div>
+  
 <table class="NB-status">
 
   <tr>
     <th>ID</th>
     <th>Title</th>
-    <th>Last Update<br>Next Update</th>
+    <th>Min since<br>last update</th>
+    <th style="white-space: nowrap">Last Update<br>Next Update</th>
+    <th>Min to<br>next update</th>
     <th>Decay</th>
+    <th>Last fetch</th>
     <th>Subs</th>
     <th>Active</th>
     <th>Premium</th>
+    <th>Archive</th>
+    <th>Pro</th>
     <th>Act. Prem</th>
     <th>Per Month</th>
     <th>Last Month</th>
+    <th>In Archive</th>
+    <th>File size (b)</th>
   </tr>
   {% for feed in feeds %}
     <tr>
       <td>{{ feed.pk }}</td>
-      <td><img class="NB-favicon" src="/rss_feeds/icon/{{ feed.pk }}" /> {{ feed.feed_title|truncatewords:4 }}</td>
-      <td class="NB-status-update">
-        {{ feed.last_update|date:"M j H:i:s" }}
+      <td title="{{ feed.feed_address }}"><img class="NB-favicon" src="/rss_feeds/icon/{{ feed.pk }}" /> {{ feed.feed_title|truncatewords:4 }}</td>
+      <td>{{ feed.last_update|smooth_timedelta }}</td>
+      <td class="NB-status-update" style="white-space: nowrap">
+        {% localdatetime feed.last_update "%b %d, %Y %H:%M:%S" %}
         <br>
-        {{ feed.next_scheduled_update|date:"M j H:i:s" }}
+        {% localdatetime feed.next_scheduled_update "%b %d, %Y %H:%M:%S" %}
       </td>
+      <td>{{ feed.next_scheduled_update|smooth_timedelta }}</td>
       <td>{{ feed.min_to_decay }}</td>
+      <td>{{ feed.last_load_time }}</td>
       <td>{{ feed.num_subscribers }}</td>
       <td style="color: {% if feed.active_subscribers == 0 %}lightgrey{% else %}darkblue{% endif %}">{{ feed.active_subscribers }}</td>
       <td style="color: {% if feed.premium_subscribers == 0 %}lightgrey{% else %}darkblue{% endif %}">{{ feed.premium_subscribers }}</td>
+      <td style="color: {% if feed.premium_subscribers == 0 %}lightgrey{% else %}darkblue{% endif %}">{{ feed.archive_subscribers }}</td>
+      <td style="color: {% if feed.premium_subscribers == 0 %}lightgrey{% else %}darkblue{% endif %}">{{ feed.pro_subscribers }}</td>
       <td style="color: {% if feed.active_premium_subscribers == 0 %}lightgrey{% else %}darkblue{% endif %}">{{ feed.active_premium_subscribers }}</td>
       <td style="color: {% if feed.average_stories_per_month == 0 %}lightgrey{% else %}{% endif %}">{{ feed.average_stories_per_month }}</td>
       <td style="color: {% if feed.stories_last_month == 0 %}lightgrey{% else %}{% endif %}">{{ feed.stories_last_month }}</td>
+      <td style="color: {% if feed.archive_count == 0 %}lightgrey{% else %}{% endif %}">{{ feed.archive_count }}</td>
+      <td style="color: {% if feed.fs_size_bytes == 0 %}lightgrey{% else %}{% endif %}">{{ feed.fs_size_bytes|commify }}</td>
     </tr>
   {% endfor %}
   

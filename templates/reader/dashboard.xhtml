@@ -62,90 +62,106 @@
 
         {% render_dashboard_rivers_right dashboard_rivers %}
 
-        {% render_features_module %}
+        <div class="NB-dashboard-account">
+            {% render_features_module %}
 
-        {% if recommended_feeds %}
-            {% render_recommended_feed recommended_feeds %}
-        {% endif %}
+            {% comment %} {% if recommended_feeds %}
+                {% render_recommended_feed recommended_feeds %}
+            {% endif %} {% endcomment %}
 
-        {% if user.is_staff and unmoderated_feeds %}
-            {% render_recommended_feed unmoderated_feeds 1 %}
-        {% endif %}
-        
-        {% render_account_module %}
-
-        <div class="NB-account NB-module">
-            <h5 class="NB-module-header">
-                NewsBlur
-            </h5>
-
-            <div class="NB-account-left">
-                {% render_statistics_graphs statistics %}    
-            </div>
-            <div class="NB-account-right">
-                <div class="NB-module NB-module-account">
-                    <!-- <h5 class="NB-module-header">
-                        <div class="NB-module-account-settings NB-javascript"></div>
-                        Welcome, <span class="NB-module-account-username">{{ user.username }}</span>
-                    </h5> -->
-
-                    <div class="NB-module-item">
-                        <h3 class="NB-module-content-header">
-                            <div class="NB-module-content-subtitle NB-module-content-account-realtime-subtitle"></div>
-                            <div class="NB-module-content-account-realtime" title=""></div>
-                            {% if user_profile.is_premium %}
-                            Premium Account
-                            {% else %}
-                            Free Account
-                            {% endif %}
-                        </h3>
-                        <div class="NB-module-stats-counts">
-                            <div class="NB-module-stats-count">
-                                <div class="NB-module-stats-count-number NB-module-stats-count-number-sites">{{ feed_count|commify }}</div>
-                                <div class="NB-module-stats-count-description">{{ feed_count|pluralize:"Site,Sites" }}</div>
-                            </div>
-                            {% if social_profile.shared_stories_count %}
-                            <div class="NB-module-stats-count">
-                                <div class="NB-module-stats-count-number">{{ social_profile.shared_stories_count|commify }}</div>
-                                <div class="NB-module-stats-count-description">Shared stor{{ social_profile.shared_stories_count|pluralize:"y,ies" }}</div>
-                            </div>
-                            {% endif %}
-                            {% if social_profile.follower_count %}
-                            <div class="NB-module-stats-count">
-                                <div class="NB-module-stats-count-number">{{ social_profile.follower_count|commify }}</div>
-                                <div class="NB-module-stats-count-description">Follower{{ social_profile.follower_count|pluralize }}</div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>  
-                
-                {% render_manage_module %}
-
-            </div>
-        </div>
-
-        <div class="NB-module-search NB-module">
-            <h5 class="NB-module-header">
-                Search Sites and People
-            </h5>
+            {% if user.is_staff and unmoderated_feeds %}
+                {% render_recommended_feed unmoderated_feeds 1 %}
+            {% endif %}
             
-            <div class="NB-module-search-container">
-                <div class="NB-module-search-input NB-module-search-sites">
-                    <div class="NB-search-close"></div>
-                    <label for="search_site"><img src="{{ MEDIA_URL }}img/reader/search_light.png"></label>
-                    <input id="search_site" name="search_site" placeholder="Site name or address...">
+            {% render_account_module %}
+
+            <div class="NB-account NB-module">
+                <h5 class="NB-module-header">
+                    <div class="NB-module-header-text">NewsBlur</div>
+                </h5>
+
+                <div class="NB-account-left">
+                    {% render_statistics_graphs statistics %}    
                 </div>
-                <div class="NB-module-search-input NB-module-search-people">
-                    <div class="NB-search-close"></div>
-                    <label for="search_people"><img src="{{ MEDIA_URL }}img/reader/search_light.png"></label>
-                    <input id="search_people" name="search_people" placeholder="Username or email...">
+                <div class="NB-account-right">
+                    <div class="NB-module NB-module-account">
+                        <!-- <h5 class="NB-module-header">
+                            <div class="NB-module-account-settings NB-javascript"></div>
+                            Welcome, <span class="NB-module-account-username">{{ user.username }}</span>
+                        </h5> -->
+
+                        <div class="NB-module-item">
+                            <h3 class="NB-module-content-header">
+                                <div class="NB-module-content-subtitle NB-module-content-account-realtime-subtitle"></div>
+                                <div class="NB-module-content-account-realtime" title=""></div>
+                                Your account
+                            </h3>
+                            <div class="NB-module-stats-counts">
+                                <div class="NB-module-stats-count NB-module-account-subscription">
+                                    <div class="NB-module-stats-count-number"></div>
+                                    <div class="NB-module-stats-count-description">
+                                        {% if user_profile.is_pro %}
+                                            Premium Pro subscription
+                                        {% elif user_profile.is_archive %}
+                                            Premium Archive subscription
+                                        {% elif user_profile.is_premium %}
+                                            Premium subscription
+                                        {% else %}
+                                            Free account
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="NB-module-stats-count">
+                                    <div class="NB-module-stats-count-number NB-module-stats-count-number-sites">{{ feed_count|commify }}</div>
+                                    <div class="NB-module-stats-count-description">{{ feed_count|pluralize:"Site,Sites" }}</div>
+                                </div>
+                                {% if social_profile.shared_stories_count %}
+                                <div class="NB-module-stats-count">
+                                    <div class="NB-module-stats-count-number">{{ social_profile.shared_stories_count|commify }}</div>
+                                    <div class="NB-module-stats-count-description">Shared stor{{ social_profile.shared_stories_count|pluralize:"y,ies" }}</div>
+                                </div>
+                                {% endif %}
+                                {% if social_profile.follower_count %}
+                                <div class="NB-module-stats-count">
+                                    <div class="NB-module-stats-count-number">{{ social_profile.follower_count|commify }}</div>
+                                    <div class="NB-module-stats-count-description">Follower{{ social_profile.follower_count|pluralize }}</div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>  
+                    
+                    {% render_manage_module %}
+
                 </div>
-                <div class="NB-module-search-results"></div>
+            </div>
+
+            <div class="NB-module-search NB-module">
+                <h5 class="NB-module-header">
+                    <div class="NB-module-header-text">Search Sites and People</div>
+                </h5>
+                
+                <div class="NB-module-search-container">
+                    <div class="NB-module-search-input NB-module-search-sites">
+                        <div class="NB-search-close"></div>
+                        <label for="search_site"><img src="{{ MEDIA_URL }}img/reader/search_light.png"></label>
+                        <input id="search_site" name="search_site" placeholder="Site name or address...">
+                    </div>
+                    <div class="NB-module-search-input NB-module-search-people">
+                        <div class="NB-search-close"></div>
+                        <label for="search_people"><img src="{{ MEDIA_URL }}img/reader/search_light.png"></label>
+                        <input id="search_people" name="search_people" placeholder="Username or email...">
+                    </div>
+                    <div class="NB-module-search-results"></div>
+                </div>
             </div>
         </div>
+        
+        {% render_premium_archive_module %}
         
 	</div>
+
+
 	<div class="NB-manage">
 	</div>
 

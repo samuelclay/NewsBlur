@@ -7,13 +7,11 @@
 //
 
 #import "MoveSiteViewController.h"
-#import "NewsBlurAppDelegate.h"
 #import "StringHelper.h"
 #import "StoriesCollection.h"
 
 @implementation MoveSiteViewController
 
-@synthesize appDelegate;
 @synthesize toFolderInput;
 @synthesize fromFolderInput;
 @synthesize titleLabel;
@@ -33,8 +31,8 @@
     return self;
 }
 
-- (void)viewDidLoad {    
-    UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_folder.png"]];
+- (void)viewDidLoad {
+    UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"folder-open"]];
     folderImage.frame = CGRectMake(0, 0, 24, 16);
     [folderImage setContentMode:UIViewContentModeRight];
     [toFolderInput setLeftView:folderImage];
@@ -52,21 +50,19 @@
     frame.size.height += 20;
     self.navBar.frame = frame;
     
-    appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    
     [super viewDidLoad];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        return YES;
-    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-        return YES;
-    }
-    
-    return NO;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    // Return YES for supported orientations
+//    if (!self.isPhone) {
+//        return YES;
+//    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+//        return YES;
+//    }
+//    
+//    return NO;
+//}
 
 - (void)viewWillAppear:(BOOL)animated {
     [self.errorLabel setHidden:YES];
@@ -217,8 +213,10 @@
     
     for (NSString *folder in appDelegate.dictFoldersArray) {
         if ([folder isEqualToString:@"everything"]) continue;
+        if ([folder isEqualToString:@"infrequent"]) continue;
         if ([folder isEqualToString:@"river_blurblogs"]) continue;
         if ([folder isEqualToString:@"river_global"]) continue;
+        if ([folder isEqualToString:@"widget_stories"]) continue;
         if ([folder isEqualToString:@"read_stories"]) continue;
         if ([folder isEqualToString:@"saved_searches"]) continue;
         if ([folder isEqualToString:@"saved_stories"]) continue;

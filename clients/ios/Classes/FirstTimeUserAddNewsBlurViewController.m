@@ -7,11 +7,10 @@
 //
 
 #import "FirstTimeUserAddNewsBlurViewController.h"
-#import "NewsBlurViewController.h"
+#import "NewsBlur-Swift.h"
 
 @implementation FirstTimeUserAddNewsBlurViewController
 
-@synthesize appDelegate;
 @synthesize nextButton;
 @synthesize instructionsLabel;
 
@@ -26,23 +25,12 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
-    
     
     UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Start reading" style:UIBarButtonItemStyleDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
     
     self.navigationItem.title = @"All Done";
-}
-
-- (void)viewDidUnload
-{
-    [self setNextButton:nil];
-    [self setInstructionsLabel:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -58,16 +46,16 @@
     [self addPopular];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        return YES;
-    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-        return YES;
-    }
-    
-    return NO;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    // Return YES for supported orientations
+//    if (!self.isPhone) {
+//        return YES;
+//    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+//        return YES;
+//    }
+//    
+//    return NO;
+//}
 
 
 - (IBAction)tapNextButton {

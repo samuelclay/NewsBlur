@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    style="?selectorFeedBackground">
+
+    <LinearLayout
+        android:id="@+id/row_feedcounters"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="9dp"
+        android:gravity="right"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/row_feedneutral"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            android:background="@drawable/neutral_count_rect"
+            android:gravity="center"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:shadowColor="@color/neutral_drop_shadow"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            style="?feedRowNeutCountText"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/row_feedpositive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            android:background="@drawable/positive_count_rect"
+            android:gravity="center"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:shadowColor="@color/positive_drop_shadow"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/row_feedsaved"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            android:background="@drawable/saved_count_rect"
+            android:gravity="center"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:shadowColor="@color/saved_drop_shadow"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/row_feedmuteicon"
+            android:layout_width="19dp"
+            android:layout_height="19dp"
+            android:layout_marginRight="3dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            style="?muteicon"
+            android:background="@drawable/neutral_count_rect"/>
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/row_feedfetching"
+            style="?circleProgressIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:trackThickness="2dp"
+            app:indicatorSize="16dp"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/row_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@id/row_feedcounters">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/row_feedfavicon"
+            android:layout_width="19dp"
+            android:layout_height="19dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="12dp"
+            app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance"/>
+
+        <TextView
+            android:id="@+id/row_feedname"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="43dp"
+            android:layout_marginRight="5dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+    </FrameLayout>
+
+</RelativeLayout>

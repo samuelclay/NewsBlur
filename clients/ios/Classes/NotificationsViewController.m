@@ -16,7 +16,6 @@
 @implementation NotificationsViewController
 
 @synthesize notificationsTable;
-@synthesize appDelegate;
 @synthesize feedId;
 
 - (void)viewDidLoad {
@@ -28,9 +27,6 @@
                                                                     target: self
                                                                     action: @selector(doCancelButton)];
     [self.navigationItem setRightBarButtonItem:cancelButton];
-    
-    // Do any additional setup after loading the view from its nib.
-    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     
     notificationsTable = [[UITableView alloc] init];
     notificationsTable.delegate = self;
@@ -83,7 +79,7 @@
 viewForHeaderInSection:(NSInteger)section {
     int headerLabelHeight, folderImageViewY;
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (!self.isPhone) {
         headerLabelHeight = 36;
         folderImageViewY = 8;
     } else {
@@ -130,15 +126,8 @@ viewForHeaderInSection:(NSInteger)section {
                                   colorWithAlphaComponent:0.8];
     [customView addSubview:headerLabel];
     
-    UIImage *folderImage;
-    int folderImageViewX = 10;
-    
-    if (self.feedId && section == 0) {
-        folderImage = [UIImage imageNamed:@"menu_icn_notifications.png"];
-    } else {
-        folderImage = [UIImage imageNamed:@"menu_icn_notifications.png"];
-    }
-    folderImageViewX = 9;
+    UIImage *folderImage = [UIImage imageNamed:@"dialog-notifications"];
+    int folderImageViewX = 9;
     UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
     folderImageView.frame = CGRectMake(folderImageViewX, folderImageViewY, 20, 20);
     [customView addSubview:folderImageView];
@@ -179,9 +168,9 @@ viewForHeaderInSection:(NSInteger)section {
         msg.text = @"No notifications yet.";
         msg.textColor = UIColorFromRGB(0x7a7a7a);
         if (vb.size.width > 320) {
-            msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
+            msg.font = [UIFont fontWithName:@"WhitneySSm-Medium" size: 21.0];
         } else {
-            msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
+            msg.font = [UIFont fontWithName:@"WhitneySSm-Medium" size: 15.0];
         }
         msg.textAlignment = NSTextAlignmentCenter;
         

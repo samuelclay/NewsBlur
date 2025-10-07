@@ -16,6 +16,7 @@
 
 #import "IASKSettingsReader.h"
 #import "IASKSpecifier.h"
+#import "IASKAppSettingsViewController.h" // DJS
 
 #pragma mark -
 @interface IASKSettingsReader () {
@@ -45,7 +46,7 @@
             self.localizationTable = [[[[plistFilePath stringByDeletingPathExtension] // removes '.plist'
                                         stringByDeletingPathExtension] // removes potential '.inApp'
                                        lastPathComponent] // strip absolute path
-                                      stringByReplacingOccurrencesOfString:[self platformSuffixForInterfaceIdiom:UI_USER_INTERFACE_IDIOM()] withString:@""]; // removes potential '~device' (~ipad, ~iphone)
+                                      stringByReplacingOccurrencesOfString:[self platformSuffixForInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]] withString:@""]; // removes potential '~device' (~ipad, ~iphone)
             if([self.settingsBundle pathForResource:self.localizationTable ofType:@"strings"] == nil){
                 // Could not find the specified localization: use default
                 self.localizationTable = @"Root";
@@ -138,7 +139,16 @@
 	}
 
     for (NSDictionary *specifierDictionary in preferenceSpecifiers) {
-        IASKSpecifier *newSpecifier = [[IASKSpecifier alloc] initWithSpecifier:specifierDictionary];
+        NSDictionary *localDictionary = specifierDictionary;
+        
+        // DJS: added support for updating a specifier
+        if (self.delegate != nil && [localDictionary[@"WantUpdate"] boolValue]) {
+            NSMutableDictionary *mutableDictionary = localDictionary.mutableCopy;
+            [self.delegate settingsUpdateSpecifierDictionary:mutableDictionary];
+            localDictionary = mutableDictionary;
+        }
+        
+        IASKSpecifier *newSpecifier = [[IASKSpecifier alloc] initWithSpecifier:localDictionary];
         newSpecifier.settingsReader = self;
         [newSpecifier sortIfNeeded];
 
@@ -156,7 +166,7 @@
             if ([type isEqualToString:kIASKPSRadioGroupSpecifier]) {
                 for (NSString *value in newSpecifier.multipleValues) {
                     IASKSpecifier *valueSpecifier =
-                        [[IASKSpecifier alloc] initWithSpecifier:specifierDictionary radioGroupValue:value];
+                        [[IASKSpecifier alloc] initWithSpecifier:localDictionary radioGroupValue:value];
                     valueSpecifier.settingsReader = self;
                     [valueSpecifier sortIfNeeded];
                     [newArray addObject:valueSpecifier];
@@ -168,7 +178,7 @@
                 [dataSource addObject:[NSMutableArray array]];
             }
             
-            if ([newSpecifier.userInterfaceIdioms containsObject:@(UI_USER_INTERFACE_IDIOM())]) {
+            if ([newSpecifier.userInterfaceIdioms containsObject:@([[UIDevice currentDevice] userInterfaceIdiom])]) {
                 [(NSMutableArray*)dataSource.lastObject addObject:newSpecifier];
             }
         }
@@ -269,7 +279,7 @@
     switch (interfaceIdiom) {
         case UIUserInterfaceIdiomPad: return @"~ipad";
         case UIUserInterfaceIdiomPhone: return @"~iphone";
-		default: return @"~iphone";
+		default: return @"~ipad";
     }
 }
 
@@ -315,7 +325,7 @@
     
     NSArray *extensions = @[@".inApp.plist", @".plist"];
     
-    NSArray *plattformSuffixes = @[[self platformSuffixForInterfaceIdiom:UI_USER_INTERFACE_IDIOM()],
+    NSArray *plattformSuffixes = @[[self platformSuffixForInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]],
                                    @""];
     
     NSArray *preferredLanguages = [NSLocale preferredLanguages];

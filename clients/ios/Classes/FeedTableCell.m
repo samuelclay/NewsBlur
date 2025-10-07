@@ -11,6 +11,7 @@
 #import "UnreadCountView.h"
 #import "ABTableViewCell.h"
 #import "MCSwipeTableViewCell.h"
+#import "NewsBlur-Swift.h"
 
 static UIFont *textFont = nil;
 
@@ -57,8 +58,19 @@ static UIFont *textFont = nil;
 
 - (void)drawRect:(CGRect)rect {
     ((FeedTableCellView *)cellContent).cell = self;
+    
+    CGFloat indentationOffset = self.indentationLevel * self.indentationWidth;
+    rect.origin.x += indentationOffset;
+    rect.size.width -= indentationOffset;
+    
     cellContent.frame = rect;
     [cellContent setNeedsDisplay];
+}
+
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
+    [super setHighlighted:highlighted animated:animated];
+    
+    [self setNeedsDisplay];
 }
 
 - (void) setPositiveCount:(int)ps {
@@ -103,13 +115,13 @@ static UIFont *textFont = nil;
         iconName = @"train.png";
     }
     
-    [self setDelegate:(NewsBlurViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
+    [self setDelegate:(FeedsViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedsViewController];
     [self setFirstStateIconName:(iconName)
                      firstColor:UIColorFromRGB(0xA4D97B)
             secondStateIconName:nil
                     secondColor:nil
-                  thirdIconName:@"g_icn_unread.png"
-                     thirdColor:UIColorFromRGB(0xFFFFD2)
+                  thirdIconName:@"indicator-unread"
+                     thirdColor:UIColorFromRGB(0x6A6659)
                  fourthIconName:nil
                     fourthColor:nil];
     
@@ -130,15 +142,15 @@ static UIFont *textFont = nil;
     fontDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
     if (![userPreferences boolForKey:@"use_system_font_size"]) {
         if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xs"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:11.0f];
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:10.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"small"]) {
             fontDescriptor = [fontDescriptor fontDescriptorWithSize:12.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"medium"]) {
             fontDescriptor = [fontDescriptor fontDescriptorWithSize:13.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"large"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:15.0f];
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:16.0f];
         } else if ([[userPreferences stringForKey:@"feed_list_font_size"] isEqualToString:@"xl"]) {
-            fontDescriptor = [fontDescriptor fontDescriptorWithSize:17.0f];
+            fontDescriptor = [fontDescriptor fontDescriptorWithSize:18.0f];
         }
     }
     
@@ -159,37 +171,32 @@ static UIFont *textFont = nil;
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     
+    BOOL isHighlighted = cell.highlighted || cell.selected;
     UIColor *backgroundColor;
     
-    backgroundColor = cell.highlighted || cell.selected ?
-                      UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xFFFFD2, 0x304050, 0x000022) :
-                      cell.isSocial ? UIColorFromRGB(0xE6ECE8) :
-                      cell.isSaved ? UIColorFromRGB(0xE9EBEE) :
+#if TARGET_OS_MACCATALYST
+    backgroundColor = cell.isSocial ? UIColorFromRGB(0xD8E3DB) :
+                      cell.isSearch ? UIColorFromRGB(0xDBDFE6) :
+                      cell.isSaved ? UIColorFromRGB(0xDFDCD6) :
+                      UIColor.clearColor;
+#else
+    backgroundColor = cell.isSocial ? UIColorFromRGB(0xD8E3DB) :
+                      cell.isSearch ? UIColorFromRGB(0xDBDFE6) :
+                      cell.isSaved ? UIColorFromRGB(0xDFDCD6) :
                       UIColorFromRGB(0xF7F8F5);
-
+#endif
+    
 //    [backgroundColor set];
     self.backgroundColor = backgroundColor;
     cell.backgroundColor = backgroundColor;
     
-    if (cell.highlighted || cell.selected) {
-//        [NewsBlurAppDelegate fillGradient:CGRectMake(r.origin.x, r.origin.y + 1, r.size.width, r.size.height - 1) startColor:UIColorFromRGB(0xFFFFD2) endColor:UIColorFromRGB(0xFDED8D)];
+    if (isHighlighted) {
+        UIColor *highlightColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xFFFFD2, 0x304050, 0x000022);
         
-        // top border
-        UIColor *highlightBorderColor = UIColorFromLightDarkRGB(0xE3D0AE, 0x1F1F72);
-        CGFloat lineWidth = 0.5f;
-        CGContextSetStrokeColor(context, CGColorGetComponents([highlightBorderColor CGColor]));
-        CGContextSetLineWidth(context, lineWidth);
-        CGContextBeginPath(context);
-        CGContextMoveToPoint(context, 0, lineWidth*0.5f);
-        CGContextAddLineToPoint(context, r.size.width, 0.5f);
-        CGContextStrokePath(context);
-        
-        // bottom border    
-        CGContextBeginPath(context);
-        CGContextSetLineWidth(context, lineWidth);
-        CGContextMoveToPoint(context, 0, r.size.height - .5f*lineWidth);
-        CGContextAddLineToPoint(context, r.size.width, r.size.height - .5f*lineWidth);
-        CGContextStrokePath(context);
+        CGContextSetFillColorWithColor(context, highlightColor.CGColor);
+        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:r cornerRadius:8];
+        CGContextAddPath(context, path.CGPath);
+        CGContextFillPath(context);
     }
     
     if (cell.isInactive) {
@@ -202,48 +209,51 @@ static UIFont *textFont = nil;
                         listType:(cell.isSocial ? NBFeedListSocial : cell.isSaved ? NBFeedListSaved : NBFeedListFeed)];
     }
     
-    UIColor *textColor = cell.highlighted || cell.selected ?
+    UIColor *textColor = isHighlighted ?
                          UIColorFromRGB(NEWSBLUR_BLACK_COLOR):
                          UIColorFromRGB(0x3A3A3A);
     UIFont *font;
     UIFontDescriptor *fontDescriptor = [cell fontDescriptorUsingPreferredSize:UIFontTextStyleFootnote];
     if (cell.negativeCount || cell.neutralCount || cell.positiveCount) {
         UIFontDescriptor *boldFontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-        font = [UIFont fontWithDescriptor:boldFontDescriptor size:fontDescriptor.pointSize];
+        font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
     } else {
-        font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+        font = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize];
     }
     NSInteger titleOffsetY = ((r.size.height - font.pointSize) / 2) - 1;
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
     paragraphStyle.alignment = NSTextAlignmentLeft;
-    NSInteger faviconSize;
+    CGSize faviconSize;
     if (cell.isSocial) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            faviconSize = 28;
-            [cell.feedFavicon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize/2, faviconSize, faviconSize)];
+        if (!cell.appDelegate.isPhone) {
+            faviconSize = CGSizeMake(28, 28);
+            UIImage *feedIcon = [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
+            [feedIcon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
             [cell.feedTitle drawInRect:CGRectMake(46, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 16, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
-            faviconSize = 26;
-            [cell.feedFavicon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize/2, faviconSize, faviconSize)];
+            faviconSize = CGSizeMake(26, 26);
+            UIImage *feedIcon = [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
+            [feedIcon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
             [cell.feedTitle drawInRect:CGRectMake(42, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 12, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         }
     } else {
-        faviconSize = 16;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [cell.feedFavicon drawInRect:CGRectMake(12.0, CGRectGetMidY(r)-faviconSize/2, faviconSize, faviconSize)];
+        faviconSize = CGSizeMake(16, 16);
+        UIImage *feedIcon = [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
+        if (!cell.appDelegate.isPhone) {
+            [feedIcon drawInRect:CGRectMake(12.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
             [cell.feedTitle drawInRect:CGRectMake(36.0, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
-            [cell.feedFavicon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize/2, faviconSize, faviconSize)];
+            [feedIcon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
             [cell.feedTitle drawInRect:CGRectMake(34.0, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, font.pointSize*1.4)
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,

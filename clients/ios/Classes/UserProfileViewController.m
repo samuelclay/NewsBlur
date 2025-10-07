@@ -17,7 +17,6 @@
 
 @implementation UserProfileViewController
 
-@synthesize appDelegate;
 @synthesize profileBadge;
 @synthesize profileTable;
 @synthesize activitiesArray;
@@ -40,9 +39,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
-    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
-
+    
     UITableView *profiles = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) style:UITableViewStyleGrouped];
     self.profileTable = profiles;
     self.profileTable.dataSource = self;
@@ -54,17 +51,6 @@
 //    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     ProfileBadge *badge = [[ProfileBadge alloc] init];
     self.profileBadge = badge;
-}
-
-- (void)viewDidUnload {
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    self.appDelegate = nil;
-    self.profileBadge = nil;
-    self.profileTable = nil;
-    self.activitiesArray = nil;
-    self.activitiesUsername = nil;
-    self.userProfile = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -79,13 +65,13 @@
     self.profileTable.backgroundColor = UIColorFromRGB(0xd7dadf);
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    [self.profileTable reloadData];
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//	return YES;
+//}
+//
+//- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+//    [self.profileTable reloadData];
+//}
 
 // allow keyboard comands
 - (BOOL)canBecomeFirstResponder {
@@ -100,7 +86,6 @@
 //    self.view.frame = self.view.bounds;
     self.preferredContentSize = CGSizeMake(320, 454);
 
-    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];  
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Profiling...";

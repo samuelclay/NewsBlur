@@ -23,6 +23,7 @@
 #define kIASKType                             @"Type"
 #define kIASKTitle                            @"Title"
 #define kIASKFooterText                       @"FooterText"
+#define kIASKIsCritical                       @"IsCritical"
 #define kIASKKey                              @"Key"
 #define kIASKFile                             @"File"
 #define kIASKDefaultValue                     @"DefaultValue"
@@ -251,6 +252,7 @@ __VA_ARGS__ \
 @property (nonatomic, retain) NSSet         *hiddenKeys;
 @property (nonatomic) BOOL					showPrivacySettings;
 
+@property (nonatomic, assign) id delegate;  // DJS
 
 #pragma mark - internal use. public only for testing
 - (NSString *)file:(NSString *)file

@@ -3,6 +3,7 @@ logs/*.log.*
 logs/*.pid
 logs/celerybeat-schedule.db
 *.pyc
+backup.db
 __pycache__/
 static/*
 local_settings.py
@@ -19,6 +20,8 @@ certbot.conf
 task_env.py
 app_env.py
 data/
+api/ip_addresses.txt
+.prom_cache
 config/certificates
 **/*.xcuserstate
 UserInterfaceState.xcuserstate
@@ -40,52 +43,32 @@ media/css/circular
 config/settings
 config/secrets
 templates/maintenance_on.html
-vendor/mms-agent/settings.py
 apps/social/spam.py
 venv*
-/backups
+backup
+backups
+config/mongodb_keyfile.key
 
 # Docker Jinja templates
 docker/haproxy/haproxy.consul.cfg
 # docker/haproxy/haproxy.staging.cfg # Staging doesn't use jinja templates, so no need to ignore
 docker/nginx/nginx.consul.conf
 docker/prometheus/prometheus.yml
-
-# ----------------------
-# Android
-# ----------------------
-# built application files
-*.apk
-*.ap_
-
-# files for the dex VM
-*.dex
-
-# Java class files
-*.class
-
-# generated files
-clients/android/NewsBlur/bin/
-clients/android/NewsBlur/gen/
-clients/android/NewsBlur/app/
-clients/android/NewsBlurTest/bin/
-clients/android/NewsBlurTest/gen/
+docker/redis/redis_replica.conf
+docker/redis/redis_*_replica.conf
+docker/postgres/postgres.conf
 
 # Local configuration file (sdk path, etc)
-clients/android/NewsBlur/local.properties
-clients/android/NewsBlurTest/local.properties
 /originals
+/node/originals
 media/safari/NewsBlur.safariextz
 
 # IDE files
-clients/android/NewsBlur/.idea
-clients/android/NewsBlur/.gradle
-clients/android/NewsBlur/build.gradle
-clients/android/NewsBlur/gradle*
-clients/android/NewsBlur/settings.gradle
 /docker/volumes/*
 
 **/node_modules
 *.tfstate*
 .terraform*
 grafana.ini
+apps/api/ip_addresses.txt
+.ansible/

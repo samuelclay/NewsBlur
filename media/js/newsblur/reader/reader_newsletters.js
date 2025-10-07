@@ -1,8 +1,8 @@
-NEWSBLUR.ReaderNewsletters = function(options) {
+NEWSBLUR.ReaderNewsletters = function (options) {
     var defaults = {
         'width': 800
     };
-    
+
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.assets;
     this.runner();
@@ -12,34 +12,34 @@ NEWSBLUR.ReaderNewsletters.prototype = new NEWSBLUR.Modal;
 NEWSBLUR.ReaderNewsletters.prototype.constructor = NEWSBLUR.ReaderNewsletters;
 
 _.extend(NEWSBLUR.ReaderNewsletters.prototype, {
-    
-    runner: function() {
+
+    runner: function () {
         this.make_modal();
-        this.open_modal(_.bind(function() {
+        this.open_modal(_.bind(function () {
             $('.NB-newsletters-email').click();
         }, this));
-        
+
         this.$modal.bind('click', $.rescope(this.handle_click, this));
     },
-    
-    make_modal: function() {
+
+    make_modal: function () {
         var self = this;
         var email = NEWSBLUR.Globals.username + "-" + NEWSBLUR.Globals.secret_token + "@newsletters.newsblur.com";
-        
+
         this.$modal = $.make('div', { className: 'NB-modal-newsletters NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
                 'Email Newsletters',
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
-            
+
             $.make('fieldset', [
                 $.make('legend', 'Forwarding email address')
             ]),
             $.make('div', { className: 'NB-newsletters-group' }, [
                 $.make('input', { type: 'text', value: email, className: 'NB-newsletters-email' })
             ]),
-            
+
             $.make('fieldset', [
                 $.make('legend', 'Setup instructions')
             ]),
@@ -58,18 +58,18 @@ _.extend(NEWSBLUR.ReaderNewsletters.prototype, {
             ])
         ]);
     },
-    
+
     // ===========
     // = Actions =
     // ===========
 
-    handle_click: function(elem, e) {
+    handle_click: function (elem, e) {
         var self = this;
 
-        $.targetIs(e, { tagSelector: '.NB-newsletters-email' }, function($t, $p) {
+        $.targetIs(e, { tagSelector: '.NB-newsletters-email' }, function ($t, $p) {
             e.preventDefault();
             $t.select();
         });
     }
-    
+
 });

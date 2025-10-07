@@ -1,4 +1,3 @@
-
 """
 Tests for L{reverend.guessers.email}.
 """
@@ -13,13 +12,13 @@ class EmailClassifierTests(TestCase):
     """
     Tests for L{EmailClassifier}
     """
+
     def setUp(self):
         """
         Create a L{Message} and an L{EmailClassifier}.
         """
         self.classifier = EmailClassifier()
         self.message = email.message.EmailMessage()
-
 
     def test_training(self):
         """
@@ -28,7 +27,6 @@ class EmailClassifierTests(TestCase):
         pool.
         """
         self.classifier.train("test", self.message)
-
 
     def test_guessing(self):
         """

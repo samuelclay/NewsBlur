@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    style="?readingBackground"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp" >
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/comment_user_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="10dp"
+            android:contentDescription="@string/description_comment_user"
+            android:scaleType="fitCenter"
+            app:shapeAppearanceOverlay="@style/mediumRoundImageShapeAppearance"/>
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/comment_sharesource_image"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="10dp"
+            android:contentDescription="@string/description_comment_user"
+            android:scaleType="fitCenter"
+            android:visibility="invisible"
+            app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance"/>
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/comment_user_reshare_image"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="15dp"
+            android:contentDescription="@string/description_comment_user"
+            android:scaleType="fitCenter"
+            android:visibility="invisible"
+            app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance"/>
+
+        <ImageView
+            android:id="@+id/comment_reply_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_reply_gray55" />
+
+        <TextView
+            android:id="@+id/comment_shareddate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/comment_reply_icon"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@id/comment_reply_icon"
+            android:paddingBottom="3dp"
+            style="?defaultText"
+            android:textSize="12sp" />
+
+        <ImageView
+            android:id="@+id/comment_favourite_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginRight="8dp"
+            android:layout_toLeftOf="@id/comment_shareddate"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_star_inactive" />
+        
+        <TextView
+            android:id="@+id/comment_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/comment_shareddate"
+            android:layout_toRightOf="@id/comment_user_image"
+            style="?linkText"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/comment_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/comment_shareddate"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="4dp"
+        	android:autoLink="web"
+            android:layout_marginBottom="4dp"
+            android:layout_toRightOf="@id/comment_user_image"
+            style="?defaultText"
+            android:textSize="14sp" />
+
+        <TextView
+                android:id="@+id/comment_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/comment_text"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="4dp"
+                android:layout_toRightOf="@id/comment_user_image"
+                android:textColor="@color/gray80"
+                android:textSize="12sp"
+                />
+
+        <com.newsblur.view.FlowLayout
+            xmlns:newsblur="http://schemas.android.com/apk/res/com.newsblur"
+            android:id="@+id/comment_favourite_avatars"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_marginRight="4dp"
+            android:layout_toLeftOf="@id/comment_favourite_icon"
+            android:layout_toRightOf="@id/comment_username"
+            android:paddingTop="2dp"
+            newsblur:flow="left"
+            newsblur:imageViewSize="20" />
+        
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/comment_replies_container"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    
+    <View
+        android:id="@+id/comment_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="5dp"
+        style="?storyCommentDivider" />
+
+</LinearLayout>

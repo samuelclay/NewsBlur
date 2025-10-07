@@ -6,13 +6,22 @@
     - ../env_vars/base.yml
 
   tasks:
+    - name: Update Sentry release
+      connection: local
+      run_once: yes
+      shell: >
+        curl {{ sentry_task_release_webhook }}/ \
+        -X POST \
+        -H 'Content-Type: application/json' \
+        -d '{"version": "{{ lookup('pipe', 'date "+%Y-%m-%d %H:%M:%S"') }}"}'
+
     - name: Pull newsblur_web github
       git:
         repo: https://github.com/samuelclay/NewsBlur.git
         dest: /srv/newsblur/
         version: master
       register: pulled
-    
+
     - block:
         - name: Reload celery
           become: yes
@@ -22,9 +31,13 @@
             - service_name: task-celery
             - service_name: task-work
       rescue:
-        - name: Restart celery
+        - name: Start celery
           become: yes
-          command: "docker start task-work"
+          command: "docker start {{ item.service_name }}"
+          when: item.service_name in inventory_hostname
+          with_items:
+            - service_name: task-celery
+            - service_name: task-work
 
     - name: Stop celery
       become: yes

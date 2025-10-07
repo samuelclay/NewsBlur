@@ -35,13 +35,6 @@
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
 }
 
-- (void)viewDidUnload {
-    [self setWebView:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
@@ -54,13 +47,13 @@
     }
     
     [self.appDelegate prepareWebView:self.webView completionHandler:^{
-        NSString *urlAddress = [NSString stringWithFormat:@"%@%@", self.appDelegate.url, url];
+        NSString *urlAddress = [NSString stringWithFormat:@"%@%@", self.appDelegate.url, self.url];
         NSURL *fullUrl = [NSURL URLWithString:urlAddress];
         NSURLRequest *requestObj = [NSURLRequest requestWithURL:fullUrl];
         [self.webView loadRequest:requestObj];
     }];
     
-    if (self.fromStory && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (self.fromStory && !appDelegate.isPhone) {
         UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]
                                          initWithTitle: @"Cancel"
                                          style: UIBarButtonItemStylePlain
@@ -72,9 +65,9 @@
     }
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    return YES;
+//}
 
 - (void)doCancelButton {
     [appDelegate.shareViewController adjustShareButtons];
@@ -82,6 +75,7 @@
 }
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    BOOL isPhone = appDelegate.isPhone;
     NSURLRequest *request = navigationAction.request;
     NSString *URLString = [[request URL] absoluteString];
     NSLog(@"URL STRING IS %@", URLString);
@@ -92,27 +86,27 @@
             NSString *errorString = result;
             
             if (self.fromStory) {
-                [appDelegate refreshUserProfile:^{
-                    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                        [appDelegate.shareNavigationController viewWillAppear:YES];
-                        [appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
+                [self.appDelegate refreshUserProfile:^{
+                    if (!isPhone) {
+                        [self.appDelegate.shareNavigationController viewWillAppear:YES];
+                        [self.appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
                     } else {
                         [self.navigationController popViewControllerAnimated:YES];
                     }
                 }];
             } else {
                 [self.navigationController popViewControllerAnimated:YES];
-                if ([type isEqualToString:@"facebook"]) {
+                if ([self.type isEqualToString:@"facebook"]) {
                     if (errorString.length) {
                         [self showError:errorString];
                     } else {
-                        [appDelegate.firstTimeUserAddFriendsViewController selectFacebookButton];
+                        [self.appDelegate.firstTimeUserAddFriendsViewController selectFacebookButton];
                     }
-                } else if ([type isEqualToString:@"twitter"]) {
+                } else if ([self.type isEqualToString:@"twitter"]) {
                     if (errorString.length) {
                         [self showError:errorString];
                     } else {
-                        [appDelegate.firstTimeUserAddFriendsViewController selectTwitterButton];
+                        [self.appDelegate.firstTimeUserAddFriendsViewController selectTwitterButton];
                     }
                 }
             }
@@ -127,7 +121,7 @@
 }
 
 - (void)showError:(NSString *)error {
-    [appDelegate.firstTimeUserAddFriendsViewController changeMessaging:error];
+    [self.appDelegate.firstTimeUserAddFriendsViewController changeMessaging:error];
 }
 
 

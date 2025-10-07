@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="?layoutBackground"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:focusable="false"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/img_feed_icon"
+        android:layout_width="21dp"
+        android:layout_height="21dp"
+        android:src="@drawable/ic_world"
+        app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance"/>
+
+    <TextView
+        android:id="@+id/text_title"
+        style="?defaultText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_toLeftOf="@+id/text_subscription_count"
+        android:layout_toRightOf="@id/img_feed_icon"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/text_tagline"
+        style="?defaultText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/img_feed_icon"
+        android:layout_alignLeft="@id/img_feed_icon"
+        android:layout_marginTop="8dp"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/text_subscription_count"
+        style="?defaultText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/row_result_address"
+        style="?defaultText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_tagline"
+        android:layout_alignLeft="@id/img_feed_icon"
+        android:layout_marginTop="4dp"
+        android:textSize="13sp" />
+
+</RelativeLayout>

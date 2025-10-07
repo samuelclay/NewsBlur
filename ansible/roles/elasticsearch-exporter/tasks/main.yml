@@ -1,0 +1,28 @@
+---
+- name: Register flask_metrics in consul
+  tags: consul
+  become: yes
+  template:
+    src: consul_service.json
+    dest: /etc/consul.d/elasticsearch_exporter.json
+  notify:
+    - reload consul
+  when: disable_consul_services_ie_staging is not defined
+
+- name: Start elasticsearch_exporter docker container
+  become: yes
+  docker_container:
+    name: elasticsearch_exporter
+    image: prometheuscommunity/elasticsearch-exporter:latest
+    pull: yes
+    state: started
+    command: '--es.uri=http://elasticsearch:9200'
+    hostname: "{{ inventory_hostname }}"
+    restart_policy: unless-stopped
+    container_default_behavior: no_defaults
+    networks_cli_compatible: yes
+    network_mode: default
+    networks:
+      - name: newsblurnet
+    ports:
+      - "9210:9114"

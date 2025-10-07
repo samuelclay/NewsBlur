@@ -55,11 +55,28 @@
 @property (nonatomic, readwrite) BOOL isSocialRiverView;
 @property (nonatomic, readwrite) BOOL isSavedView;
 @property (nonatomic, readwrite) BOOL isReadView;
+@property (nonatomic, readwrite) BOOL isWidgetView;
 @property (nonatomic, readwrite) BOOL transferredFromDashboard;
 @property (nonatomic, readwrite) BOOL showHiddenStories;
 @property (nonatomic, readwrite) BOOL inSearch;
+@property (nonatomic, readonly) BOOL isEverything;
+@property (nonatomic, readonly) BOOL isInfrequent;
+@property (nonatomic, readonly) BOOL isRiverOrSocial;
+@property (nonatomic, readonly) BOOL isCustomFolder;
+@property (nonatomic, readonly) BOOL isCustomFolderOrFeed;
 @property (nonatomic) NSString *searchQuery;
 @property (nonatomic) NSString *savedSearchQuery;
+
+@property (nonatomic, readonly) NSString *activeFeedIdStr;
+@property (nonatomic, readonly) NSString *activeOrder;
+@property (nonatomic, readonly) NSString *activeReadFilter;
+@property (nonatomic, readonly) NSString *activeStoryTitlesPosition;
+@property (nonatomic, readonly) NSString *activeStoryView;
+@property (nonatomic, readonly) NSString *orderKey;
+@property (nonatomic, readonly) NSString *readFilterKey;
+@property (nonatomic, readonly) NSString *scrollReadFilterKey;
+@property (nonatomic, readonly) NSString *storyTitlesPositionKey;
+@property (nonatomic, readonly) NSString *storyViewKey;
 
 - (id)initForDashboard;
 - (void)reset;
@@ -76,13 +93,6 @@
 - (NSInteger)locationOfActiveStory;
 - (NSInteger)indexFromLocation:(NSInteger)location;
 - (NSInteger)locationOfStoryId:(id)storyId;
-- (NSString *)activeOrder;
-- (NSString *)activeReadFilter;
-- (NSString *)activeStoryView;
-- (NSString *)orderKey;
-- (NSString *)readFilterKey;
-- (NSString *)scrollReadFilterKey;
-- (NSString *)storyViewKey;
 
 - (void)setStories:(NSArray *)activeFeedStoriesValue;
 - (void)setFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue;

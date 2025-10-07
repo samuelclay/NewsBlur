@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="?readingBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingBottom="12dp"
+    android:paddingLeft="60dp"
+    android:paddingTop="12dp">
+
+    <View
+        android:id="@+id/reply_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="10dp"
+        style="?storyCommentDivider" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/reply_user_image"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_below="@id/reply_divider"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:contentDescription="@string/description_comment_user"
+        android:scaleType="fitCenter"
+        app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance"/>
+
+    <ImageView
+        android:id="@+id/reply_edit_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="3dp"
+        android:padding="2dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_file_edit" />
+
+    <TextView
+        android:id="@+id/reply_shareddate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/reply_edit_icon"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="8dp"
+        style="?defaultText"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/reply_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/reply_shareddate"
+        android:layout_toRightOf="@id/reply_user_image"
+        style="?linkText"
+        android:layout_marginTop="5dp"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/reply_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/reply_shareddate"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:autoLink="web"
+        android:layout_toRightOf="@id/reply_user_image"
+        style="?defaultText"
+        android:textSize="14sp" />
+
+</RelativeLayout>

@@ -8,14 +8,12 @@
 
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
+#import "NewsBlur-Swift.h"
 
-@class NewsBlurAppDelegate;
 @class ProfileBadge;
 
 @interface UserProfileViewController : BaseViewController
 <UITableViewDataSource, UITableViewDelegate> {
-    NewsBlurAppDelegate *appDelegate;
-    
     UILabel *followingCount;
     UILabel *followersCount;
     ProfileBadge *profileBadge;
@@ -25,7 +23,6 @@
     NSDictionary *userProfile;
 }
 
-@property (nonatomic) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) ProfileBadge *profileBadge;
 @property (nonatomic) UITableView *profileTable;
 @property (nonatomic) NSArray *activitiesArray;

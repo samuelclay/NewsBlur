@@ -6,19 +6,21 @@
 //  Copyright (c) 2012 NewsBlur. All rights reserved.
 //
 
+
+#warning This code is obsolete, and will be removed once the SwiftUI implementation is complete.
+
+
 #import "TrainerViewController.h"
-#import "NBContainerViewController.h"
 #import "StringHelper.h"
 #import "Utilities.h"
 #import "AFNetworking.h"
 #import "StoriesCollection.h"
 
-@implementation TrainerViewController
+@implementation OldTrainerViewController
 
 @synthesize closeButton;
 @synthesize webView;
 @synthesize navBar;
-@synthesize appDelegate;
 @synthesize feedTrainer;
 @synthesize storyTrainer;
 @synthesize feedLoaded;
@@ -35,7 +37,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     UIBarButtonItem *done = [[UIBarButtonItem alloc]
                              initWithTitle:@"Done Training"
@@ -88,10 +89,10 @@
             if (resultsArray.count) {
                 NSDictionary *results = resultsArray[0];
                 NSMutableDictionary *newClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
-                [appDelegate.storiesCollection.activeClassifiers setObject:newClassifiers
+                [self.appDelegate.storiesCollection.activeClassifiers setObject:newClassifiers
                                                                     forKey:feedId];
-                appDelegate.storiesCollection.activePopularAuthors = [results objectForKey:@"feed_authors"];
-                appDelegate.storiesCollection.activePopularTags = [results objectForKey:@"feed_tags"];
+                self.appDelegate.storiesCollection.activePopularAuthors = [results objectForKey:@"feed_authors"];
+                self.appDelegate.storiesCollection.activePopularTags = [results objectForKey:@"feed_tags"];
             }
             [self renderTrainer];
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -99,10 +100,10 @@
             [self informError:@"Could not load trainer"];
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC),
                            dispatch_get_main_queue(), ^() {
-                               if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                                   [appDelegate hidePopover];
+                               if (!self.isPhone) {
+                                   [self.appDelegate hidePopover];
                                } else {
-                                   [appDelegate.navigationController dismissViewControllerAnimated:YES completion:nil];
+                                   [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
                                }
                            });
         }];
@@ -162,6 +163,9 @@
     int contentWidth = self.view.frame.size.width;
     NSString *contentWidthClass;
     
+#if TARGET_OS_MACCATALYST
+    contentWidthClass = @"NB-mac";
+#else
     if (contentWidth > 700) {
         contentWidthClass = @"NB-ipad-wide";
     } else if (contentWidth > 480) {
@@ -169,6 +173,7 @@
     } else {
         contentWidthClass = @"NB-iphone";
     }
+#endif
     
     // set up layout values based on iPad/iPhone
     NSString *headerString = [NSString stringWithFormat:@
@@ -200,18 +205,20 @@
 }
 
 - (NSString *)makeTrainerSections {
+    NSString *heading = @"<div class=\"NB-trainer-heading\">What do you <b class=\"NB-trainer-heading-like\">👍 like</b> and <b class=\"NB-trainer-heading-dislike\">dislike 👎</b> about this story?</div>";
     NSString *storyAuthor = self.feedTrainer ? [self makeFeedAuthors] : [self makeStoryAuthor];
     NSString *storyTags = self.feedTrainer ? [self makeFeedTags] : [self makeStoryTags];
     NSString *storyTitle = self.feedTrainer ? [self makeFeedTitles] : [self makeTitle];
     NSString *storyPublisher = [self makePublisher];
     
     NSString *htmlString = [NSString stringWithFormat:@
-                            "<div class=\"NB-trainer-inner\">"
+                            "%@<div class=\"NB-trainer-inner\">"
                             "    <div class=\"NB-trainer-title NB-trainer-section\">%@</div>"
                             "    <div class=\"NB-trainer-author NB-trainer-section\">%@</div>"
                             "    <div class=\"NB-trainer-tags NB-trainer-section\">%@</div>"
                             "    <div class=\"NB-trainer-publisher NB-trainer-section\">%@</div>"
                             "</div>",
+                            heading,
                             storyTitle,
                             storyAuthor,
                             storyTags,
@@ -540,7 +547,7 @@
 
 - (IBAction)doCloseDialog:(id)sender {
     [appDelegate hidePopover];
-    [appDelegate.trainerViewController dismissViewControllerAnimated:YES completion:nil];
+//    [appDelegate.trainerViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)changeTitle:(id)sender score:(int)score {
@@ -601,12 +608,12 @@
 
 - (void)focusTitle:(id)sender {
     NewsBlurAppDelegate *appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    [appDelegate.trainerViewController changeTitle:sender score:1];
+//    [appDelegate.trainerViewController changeTitle:sender score:1];
 }
 
 - (void)hideTitle:(id)sender {
     NewsBlurAppDelegate *appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    [appDelegate.trainerViewController changeTitle:sender score:-1];
+//    [appDelegate.trainerViewController changeTitle:sender score:-1];
 }
 
 // Work around iOS 9 issue where menu doesn't appear the first time

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    style="?layoutBackground"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/row_activity_icon"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:contentDescription="@string/description_activity_icon"
+        app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance"/>
+
+    <TextView
+        android:id="@+id/row_activity_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/row_activity_icon"
+        style="?defaultText"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/row_activity_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/row_activity_text"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/row_activity_text"
+        style="?defaultText"
+        android:textSize="10sp" />
+
+</RelativeLayout>

@@ -8,6 +8,7 @@
 
 #import "FeedChooserTitleView.h"
 #import "NewsBlurAppDelegate.h"
+#import "NewsBlur-Swift.h"
 
 @interface FeedChooserTitleView ()
 
@@ -59,7 +60,7 @@
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
     paragraphStyle.alignment = NSTextAlignmentLeft;
-    [self.title.uppercaseString drawInRect:CGRectMake(36.0, titleOffsetY, rect.size.width - 36 - 36, font.pointSize)
+    [self.title drawInRect:CGRectMake(36.0, titleOffsetY, rect.size.width - 36 - 36, font.pointSize)
      withAttributes:@{NSFontAttributeName: font,
                       NSForegroundColorAttributeName: textColor,
                       NSParagraphStyleAttributeName: paragraphStyle}];
@@ -75,10 +76,10 @@
                     forControlEvents:UIControlEventTouchUpInside];
     [customView addSubview:self.invisibleHeaderButton];
     
-    UIImage *folderImage = [UIImage imageNamed:@"g_icn_folder"];
+    UIImage *folderImage = [UIImage imageNamed:@"folder-open"];
     CGFloat folderImageViewX = 10.0;
     
-    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+    if (((NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]).isPhone) {
         folderImageViewX = 7.0;
     }
     

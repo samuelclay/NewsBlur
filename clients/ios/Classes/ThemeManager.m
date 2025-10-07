@@ -8,15 +8,12 @@
 
 #import "ThemeManager.h"
 #import "NewsBlurAppDelegate.h"
-#import "NBContainerViewController.h"
-#import "NewsBlurViewController.h"
 #import "DashboardViewController.h"
-#import "FeedDetailViewController.h"
-#import "StoryDetailViewController.h"
-#import "StoryPageControl.h"
 #import "OriginalStoryViewController.h"
 #import <AudioToolbox/AudioToolbox.h>
+#import "NewsBlur-Swift.h"
 
+NSString * const ThemeStyleAuto = @"auto";
 NSString * const ThemeStyleLight = @"light";
 NSString * const ThemeStyleSepia = @"sepia";
 NSString * const ThemeStyleMedium = @"medium";
@@ -31,11 +28,13 @@ NSString * const ThemeStyleDark = @"dark";
 - (UIStatusBarStyle)preferredStatusBarStyle {
     if ([ThemeManager themeManager].isDarkTheme) {
         return UIStatusBarStyleLightContent;
-    } else if (@available(iOS 13.0, *)) {
-        return UIStatusBarStyleDarkContent;
     } else {
-        return UIStatusBarStyleDefault;
+        return UIStatusBarStyleDarkContent;
     }
+}
+
+- (UIViewController *)childViewControllerForStatusBarStyle {
+    return nil;
 }
 
 @end
@@ -44,10 +43,15 @@ NSString * const ThemeStyleDark = @"dark";
 
 @property (nonatomic, readonly) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) BOOL justToggledViaGesture;
+@property (nonatomic) BOOL isAutoDark;
 
 @end
 
 @implementation ThemeManager
+
++ (instancetype)shared {
+    return [self themeManager];
+}
 
 + (instancetype)themeManager {
     static id themeManager = nil;
@@ -64,16 +68,13 @@ NSString * const ThemeStyleDark = @"dark";
     NSString *theme = [[NSUserDefaults standardUserDefaults] objectForKey:@"theme_style"];
     
     if (![self isValidTheme:theme]) {
-        theme = ThemeStyleLight;
+        theme = ThemeStyleAuto;
     }
     
     return theme;
 }
 
 - (void)setTheme:(NSString *)theme {
-    // Automatically turn off following the system appearance when manually changing the theme.
-    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"theme_follow_system"];
-    
     [self reallySetTheme:theme];
     
     NSLog(@"Manually changed to theme: %@", self.themeDisplayName);  // log
@@ -95,8 +96,10 @@ NSString * const ThemeStyleDark = @"dark";
         return @"Sepia";
     } else if ([theme isEqualToString:ThemeStyleMedium]) {
         return @"Medium";
-    } else {
+    } else if ([theme isEqualToString:ThemeStyleLight]) {
         return @"Light";
+    } else {
+        return @"Auto";
     }
 }
 
@@ -105,10 +108,14 @@ NSString * const ThemeStyleDark = @"dark";
     
     if ([theme isEqualToString:ThemeStyleDark]) {
         return @"Dark";
-    } else if ([theme isEqualToString:ThemeStyleSepia]) {
-        return @"Sepia";
     } else if ([theme isEqualToString:ThemeStyleMedium]) {
         return @"Medium";
+    } else if ([theme isEqualToString:ThemeStyleSepia]) {
+        return @"Sepia";
+    } else if ([theme isEqualToString:ThemeStyleLight]) {
+        return @"Light";
+    } else if (self.isSystemDark) {
+        return @"Dark";
     } else {
         return @"Light";
     }
@@ -123,19 +130,37 @@ NSString * const ThemeStyleDark = @"dark";
         return ThemeStyleDark;
     } else if ([theme isEqualToString:ThemeStyleSepia]) {
         return ThemeStyleLight;
-    } else {
+    } else if ([theme isEqualToString:ThemeStyleLight]) {
         return ThemeStyleSepia;
+    } else {
+        return ThemeStyleAuto;
     }
+}
+
+- (BOOL)isAutoTheme {
+    return [self.theme isEqualToString:ThemeStyleAuto];
 }
 
 - (BOOL)isDarkTheme {
     NSString *theme = self.theme;
     
+    if (self.isAutoTheme) {
+        return self.isSystemDark;
+    }
+    
     return [theme isEqualToString:ThemeStyleDark] || [theme isEqualToString:ThemeStyleMedium];
 }
 
+- (BOOL)isSystemDark {
+    return self.appDelegate.window.windowScene.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+}
+
+- (BOOL)isLikeSystem {
+    return self.isDarkTheme == self.isSystemDark;
+}
+
 - (BOOL)isValidTheme:(NSString *)theme {
-    return [theme isEqualToString:ThemeStyleLight] || [theme isEqualToString:ThemeStyleSepia] || [theme isEqualToString:ThemeStyleMedium] || [theme isEqualToString:ThemeStyleDark];
+    return [theme isEqualToString:ThemeStyleAuto] || [theme isEqualToString:ThemeStyleLight] || [theme isEqualToString:ThemeStyleSepia] || [theme isEqualToString:ThemeStyleMedium] || [theme isEqualToString:ThemeStyleDark];
 }
 
 - (NewsBlurAppDelegate *)appDelegate {
@@ -163,7 +188,9 @@ NSString * const ThemeStyleDark = @"dark";
 - (UIColor *)colorFromLightRGB:(NSInteger)lightRGBValue sepiaRGB:(NSUInteger)sepiaRGBValue mediumRGB:(NSUInteger)mediumRGBValue darkRGB:(NSUInteger)darkRGBValue {
     NSInteger rgbValue = lightRGBValue;
     
-    if ([self.theme isEqualToString:ThemeStyleSepia]) {
+    if (self.isAutoTheme) {
+        rgbValue = self.isSystemDark ? darkRGBValue : rgbValue;
+    } else if ([self.theme isEqualToString:ThemeStyleSepia]) {
         rgbValue = sepiaRGBValue;
     } else if ([self.theme isEqualToString:ThemeStyleMedium]) {
         rgbValue = mediumRGBValue;
@@ -183,11 +210,21 @@ NSString * const ThemeStyleDark = @"dark";
     // Debug method to log all of the unique colors; leave commented out
 //        [self debugColor:rgbValue]; 
     
-    if ([theme isEqualToString:ThemeStyleDark]) {
+    if (self.isAutoTheme) {
+        if (self.isSystemDark) {
+            return [UIColor colorWithRed:1.0 - red green:1.0 - green blue:1.0 - blue alpha:1.0];
+        } else {
+            return [UIColor colorWithRed:red green:green blue:blue alpha:1.0];
+        }
+    } else if ([theme isEqualToString:ThemeStyleDark]) {
         return [UIColor colorWithRed:1.0 - red green:1.0 - green blue:1.0 - blue alpha:1.0];
     } else if ([theme isEqualToString:ThemeStyleMedium]) {
         if (rgbValue == 0x8F918B) {
             return [UIColor colorWithWhite:0.7 alpha:1.0];
+        } else if (rgbValue == NEWSBLUR_LINK_COLOR) {
+            return [UIColor colorWithRed:1.0 - red green:1.0 - green blue:1.0 - blue alpha:1.0];
+        } else if (rgbValue == 0x999999) {
+            return [UIColor colorWithWhite:0.6 alpha:1.0];
         } else if (red < 0.5 && green < 0.5 && blue < 0.5) {
             return [UIColor colorWithRed:1.2 - red green:1.2 - green blue:1.2 - blue alpha:1.0];
         } else {
@@ -204,8 +241,20 @@ NSString * const ThemeStyleDark = @"dark";
     }
 }
 
++ (UIColor *)colorFromRGB:(NSArray<NSNumber *> *)rgbValues {
+    if (rgbValues.count == 1) {
+        return [ThemeManager.shared themedColorFromRGB:rgbValues[0].integerValue];
+    } else if (rgbValues.count == 2) {
+        return [ThemeManager.shared colorFromLightRGB:rgbValues[0].integerValue darkRGB:rgbValues[1].integerValue];
+    } else if (rgbValues.count == 4) {
+        return [ThemeManager.shared colorFromLightRGB:rgbValues[0].integerValue sepiaRGB:rgbValues[1].integerValue mediumRGB:rgbValues[2].integerValue darkRGB:rgbValues[3].integerValue];
+    } else {
+        @throw [NSException exceptionWithName:@"Invalid parameter to Theme Manager" reason:@"Should be an array of 1, 2, or 4 RGB colors." userInfo:nil];
+    }
+}
+
 - (UIImage *)themedImage:(UIImage *)image {
-    if ([self.theme isEqualToString:ThemeStyleDark]) {
+    if (self.isDarkTheme) {
         CIImage *coreImage = [CIImage imageWithCGImage:image.CGImage];
         CIFilter *filter = [CIFilter filterWithName:@"CIColorInvert"];
         [filter setValue:coreImage forKey:kCIInputImageKey];
@@ -223,6 +272,16 @@ NSString * const ThemeStyleDark = @"dark";
     }
 }
 
+- (void)updateNavigationController:(UINavigationController *)navigationController {
+    navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    navigationController.navigationBar.barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x222222, 0x111111);
+    navigationController.navigationBar.backgroundColor = [UINavigationBar appearance].backgroundColor;
+}
+
+- (void)updateBackgroundOfView:(UIView *)view {
+    view.backgroundColor = UIColorFromLightDarkRGB(0xe0e0e0, 0x111111);
+}
+
 - (void)updateTextAttributesForSegmentedControl:(UISegmentedControl *)segmentedControl forState:(UIControlState)state foregroundColor:(UIColor *)foregroundColor {
     NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
     NSDictionary *oldAttributes = [segmentedControl titleTextAttributesForState:state];
@@ -238,23 +297,23 @@ NSString * const ThemeStyleDark = @"dark";
 
 - (void)updateSegmentedControl:(UISegmentedControl *)segmentedControl {
     segmentedControl.tintColor = UIColorFromRGB(0x8F918B);
+#if !TARGET_OS_MACCATALYST
+    segmentedControl.backgroundColor = UIColorFromLightDarkRGB(0xe7e6e7, 0x303030);
+#endif
+    segmentedControl.selectedSegmentTintColor = UIColorFromLightDarkRGB(0xffffff, 0x6f6f75);
     
-    if (@available(iOS 13.0, *)) {
-        segmentedControl.backgroundColor = UIColorFromLightDarkRGB(0xe7e6e7, 0x303030);
-        segmentedControl.selectedSegmentTintColor = UIColorFromLightDarkRGB(0xffffff, 0x6f6f75);
-        
-        [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateNormal foregroundColor:UIColorFromLightDarkRGB(0x909090, 0xaaaaaa)];
-        [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateSelected foregroundColor:UIColorFromLightDarkRGB(0x0, 0xffffff)];
-    }
+    [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateNormal foregroundColor:UIColorFromLightDarkRGB(0x909090, 0xaaaaaa)];
+    [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateSelected foregroundColor:UIColorFromLightDarkRGB(0x0, 0xffffff)];
 }
 
 - (void)updateThemeSegmentedControl:(UISegmentedControl *)segmentedControl {
-    segmentedControl.tintColor = [UIColor clearColor];
+    [self updateSegmentedControl:segmentedControl];
     
-    if (@available(iOS 13.0, *)) {
-        segmentedControl.backgroundColor = [UIColor clearColor];
-        segmentedControl.selectedSegmentTintColor = [UIColor clearColor];
-    }
+    segmentedControl.tintColor = [UIColor clearColor];
+#if !TARGET_OS_MACCATALYST
+    segmentedControl.backgroundColor = [UIColor clearColor];
+#endif
+    segmentedControl.selectedSegmentTintColor = [UIColor clearColor];
 }
 
 - (void)debugColor:(NSInteger)rgbValue {
@@ -270,6 +329,14 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (void)prepareForWindow:(UIWindow *)window {
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+    
+    // Can remove this once everyone has updated to version 13.1.2 or later.
+    if ([prefs boolForKey:@"theme_follow_system"]) {
+        self.theme = ThemeStyleAuto;
+        [prefs setBool:NO forKey:@"theme_follow_system"];
+    }
+    
     [self autoChangeTheme];
     [self setupTheme];
     [self addThemeGestureRecognizerToView:window];
@@ -289,9 +356,10 @@ NSString * const ThemeStyleDark = @"dark";
     
     [UINavigationBar appearance].barStyle = style;
     [UINavigationBar appearance].translucent = YES;
-    self.appDelegate.navigationController.navigationBar.barStyle = style;
+    self.appDelegate.feedsNavigationController.navigationBar.barStyle = style;
     
-    [self.appDelegate.navigationController setNeedsStatusBarAppearanceUpdate];
+    [self.appDelegate.feedsNavigationController setNeedsStatusBarAppearanceUpdate];
+    [self.appDelegate.splitViewController setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)updateTheme {
@@ -300,19 +368,24 @@ NSString * const ThemeStyleDark = @"dark";
     NSString *theme = self.theme;
     NewsBlurAppDelegate *appDelegate = self.appDelegate;
     
-    if (self.isDarkTheme) {
-        [prefs setObject:theme forKey:@"theme_dark"];
+    if (self.isAutoTheme) {
+        self.isAutoDark = self.isSystemDark;
     } else {
-        [prefs setObject:theme forKey:@"theme_light"];
+        if (self.isDarkTheme) {
+            [prefs setObject:theme forKey:@"theme_dark"];
+        } else {
+            [prefs setObject:theme forKey:@"theme_light"];
+        }
     }
     
     [self setupTheme];
     
-    [appDelegate.masterContainerViewController updateTheme];
+    [appDelegate.splitViewController updateTheme];
     [appDelegate.feedsViewController updateTheme];
     [appDelegate.dashboardViewController updateTheme];
     [appDelegate.feedDetailViewController updateTheme];
-    [appDelegate.storyPageControl updateTheme];
+    [appDelegate.detailViewController updateTheme];
+    [appDelegate.storyPagesViewController updateTheme];
     [appDelegate.originalStoryViewController updateTheme];
     
     [self updatePreferencesTheme];
@@ -416,25 +489,31 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (void)updateForSystemAppearance {
-    if (@available(iOS 12.0, *)) {
-        BOOL isDark = self.appDelegate.window.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
-        
-        [self systemAppearanceDidChange:isDark];
-    }
+    [self systemAppearanceDidChange:self.isSystemDark];
 }
 
 - (void)systemAppearanceDidChange:(BOOL)isDark {
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
     NSString *wantTheme = nil;
     
-    if (![prefs boolForKey:@"theme_follow_system"]) {
+    if (!self.isAutoTheme) {
         return;
     }
     
-    if (isDark) {
-        wantTheme = [prefs objectForKey:@"theme_dark"];
+    if (self.isAutoTheme) {
+        if (isDark != self.isAutoDark) {
+            [self updateTheme];
+            
+            NSLog(@"System changed to %@ appearance", isDark ? @"dark" : @"light");  // log
+        }
+        
+        return;
     } else {
-        wantTheme = [prefs objectForKey:@"theme_light"];
+        if (isDark) {
+            wantTheme = [prefs objectForKey:@"theme_dark"];
+        } else {
+            wantTheme = [prefs objectForKey:@"theme_light"];
+        }
     }
     
     if (self.theme != wantTheme) {

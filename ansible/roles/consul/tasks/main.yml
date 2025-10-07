@@ -1,6 +1,8 @@
 ---
 - name: Add the HashiCorp GPG key
   become: yes
+  # Only warn if fail
+  ignore_errors: yes
   apt_key:
     url: https://apt.releases.hashicorp.com/gpg
     state: present
@@ -9,30 +11,46 @@
   become: yes
   apt_repository:
     repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
-  when: ansible_distribution_version != '14.04'
+
+- name: Add the official HashiCorp Linux repository.
+  become: yes
+  apt_repository:
+    repo: "deb [arch=arm64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+
+- name: Update apt
+  become: yes
+  apt:
+    update_cache: yes
 
 - name: Installing Consul
   become: yes
   apt:
-    pkg: consul
-    state: latest
-  when: ansible_distribution_version != '14.04'
+    allow_downgrades: yes
+    pkg: consul=1.10.12-1
+    state: present
 
 - name: Register Manager IP
   run_once: yes
   become: no
   register: consul_manager_ip
-  local_action: command /srv/newsblur/ansible/roles/consul/tasks/get_consul_manager_ip.py
+  local_action: command ~/.virtualenvs/newsblur/bin/python /srv/newsblur/ansible/roles/consul/tasks/get_consul_manager_ip.py
 
 - name: Found consul manager IP
   debug:
     msg: "IP is {{ consul_manager_ip.stdout }}"
-  
+
 - name: Ensure /etc/consul.d exists
   become: yes
   file:
     path: /etc/consul.d
     state: directory
+
+- name: Ensure /var/log/consul exists
+  become: yes
+  file:
+    path: /var/log/consul
+    state: directory
+    mode: 0777
 
 - name: Remove default /etc/consul.d/consul.hcl
   become: yes

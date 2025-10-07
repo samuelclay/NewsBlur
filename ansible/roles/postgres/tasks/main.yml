@@ -1,20 +1,131 @@
 ---
-- name: Start postgres container
+- name: Set facts for all postgres servers
+  set_fact:
+    postgres_secondary: no
+  tags:
+    - always
+
+- name: Set facts for secondary postgres servers
+  set_fact:
+    postgres_secondary: yes
+  # when: inventory_hostname not in ["db-postgres2"]
+  when: inventory_hostname not in ["hdb-postgres-1"]
+  tags:
+    - always
+
+- name: Template postgresql-13.conf file
+  template:
+    src: /srv/newsblur/docker/postgres/postgresql-13.conf.j2
+    dest: /srv/newsblur/docker/postgres/postgres.conf
+  notify: reload postgres
+  register: updated_config
+
+- name: Create Postgres docker volumes with correct permissions
+  become: yes
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+    owner: 999
+    group: 999
+  with_items:
+    - /srv/newsblur/docker/volumes/postgres/archive
+    - /srv/newsblur/docker/volumes/postgres/backups
+    - /srv/newsblur/docker/volumes/postgres/data
+
+- name: Template postgres secondaries with empty standby.signal file
+  become: yes
+  copy:
+    dest: /srv/newsblur/docker/volumes/postgres/data/standby.signal
+    content: ""
+    owner: 999
+    group: 999
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-postgres-secondary', 'hdb-postgres']
+
+- name: Copy SSH private key
+  become: yes
+  copy:
+    src: /srv/secrets-newsblur/keys/postgres.key
+    dest: /home/nb/.ssh/id_rsa
+    owner: 999
+    group: 999
+    mode: "0600"
+
+- name: Copy SSH public key
+  become: yes
+  copy:
+    src: /srv/secrets-newsblur/keys/postgres.key.pub
+    dest: /home/nb/.ssh/id_rsa.pub
+    owner: 999
+    group: 999
+    mode: "0600"
+
+- name: Add SSH public key to authorized keys
+  authorized_key:
+    user: "nb"
+    state: present
+    key: "{{ lookup('file', '/srv/secrets-newsblur/keys/postgres.key.pub') }}"
+
+- name: Build the custom postgres docker image
+  docker_image:
+    name: newsblur/postgres:13
+    source: build
+    build:
+      path: /srv/newsblur/docker/postgres/
+    force_tag: yes
+    state: present
+
+- name: Start postgres docker containers
   become: yes
   docker_container:
     name: postgres
-    image: postgres:13.1
+    image: newsblur/postgres:13
     state: started
-    hostname: postgres
+    container_default_behavior: no_defaults
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
     env:
-      POSTGRES_USER: newsblur
-      POSTGRES_PASSWORD: newsblur
-    restart_policy: unless-stopped
+      # POSTGRES_USER: "{{ postgres_user }}" # Don't auto-create newsblur, manually add it
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+    hostname: "{{ inventory_hostname }}"
+    networks_cli_compatible: yes
+    network_mode: default
+    networks:
+      - name: newsblurnet
+        aliases:
+          - postgres
+    user: "999:999"
     ports:
-    - '5432:5432'
+      - 5432:5432
     volumes:
-    - /srv/newsblur/docker/volumes/postgres:/var/lib/postgresql/data
-    - /backup/:/var/lib/postgresql/backup/
+      - /srv/newsblur/docker/volumes/postgres/data:/var/lib/postgresql/data
+      - /srv/newsblur/docker/volumes/postgres/archive:/var/lib/postgresql/archive
+      - /srv/newsblur/docker/volumes/postgres/backups:/var/lib/postgresql/backups
+      - /srv/newsblur/docker/postgres/postgres.conf:/etc/postgresql/postgresql.conf
+      - /srv/newsblur/docker/postgres/postgres_hba-13.conf:/etc/postgresql/pg_hba.conf
+      - /srv/newsblur/docker/postgres/postgres_ident-13.conf:/etc/postgresql/pg_ident.conf
+      - /home/nb/.ssh/id_rsa:/var/lib/postgresql/.ssh/id_rsa
+    restart_policy: unless-stopped
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['db-postgres-primary', 'db-postgres', 'hdb-postgres', 'hdb-postgres-secondary']
+
+# - name: Change ownership in postgres docker container
+#   become: yes
+#   command: >
+#     docker exec postgres chown -fR postgres.postgres /var/lib/postgresql
+#   ignore_errors: yes
+
+- name: Ensure newsblur role in postgres
+  become: yes
+  shell: >
+    sleep 15; 
+    docker exec postgres createuser -s newsblur -U postgres;
+    docker exec postgres createdb newsblur -U newsblur;
+  register: ensure_role
+  ignore_errors: yes
+  changed_when:
+    - "ensure_role.rc == 0"
+  failed_when:
+    - "'already exists' not in ensure_role.stderr"
+    - "ensure_role.rc != 0"
 
 - name: Register postgres in consul
   tags: consul
@@ -25,41 +136,53 @@
   notify:
     - reload consul
 
-- name: Register backup bucket
-  become: no
-  run_once: yes
-  register: backup_bucket
-  local_action: command /srv/newsblur/ansible/roles/postgres-exporter/tasks/get_credentials.py s3_bucket
+- name: Copy common secrets
+  copy:
+    src: /srv/secrets-newsblur/settings/common_settings.py
+    dest: /srv/newsblur/newsblur_web/local_settings.py
+  register: app_changed
+  tags: env
 
 - name: Add sanity checkers cronjob for disk usage
-  become: yes
   cron:
     name: disk_usage_sanity_checker
-    user: root
-    cron_file: /etc/cron.hourly/disk_usage_sanity_checker
+    minute: "0"
     job: >-
-      docker pull newsblur/newsblur_python3:latest;
-      docker run --rm -it
-      OUTPUT=$(eval sudo df / | head -n 2 |  tail -1);
-      -v /srv/newsblur:/srv/newsblur
-      --network=newsblurnet
-      --hostname {{ ansible_hostname }} 
-      newsblur/newsblur_python3 /srv/newsblur/utils/monitor_disk_usage.py $OUTPUT
+      OUTPUT=$(df / | head -n 2 |  tail -1) docker run --rm -it -v /srv/newsblur:/srv/newsblur \
+      --network=newsblurnet --hostname {{ ansible_hostname }} newsblur/newsblur_python3 \
+      /srv/newsblur/utils/monitor_disk_usage.py $OUTPUT
+  tags: cron
+
+- name: Add postgresql archive cleaner cronjob
+  cron:
+    name: postgres_archive_cleaner
+    minute: "0"
+    job: >-
+      sudo find /srv/newsblur/docker/volumes/postgres/archive -type f -mmin +180 -delete
+  tags: cron
+
+- name: Add postgresql backup cleaner cronjob
+  cron:
+    name: postgres_backup_cleaner
+    minute: "0"
+    hour: "5"
+    job: >-
+      sudo find /srv/newsblur/docker/volumes/postgres/backups -type f -mmin +18000 -delete
+  tags: cron
+
+- name: Add postgres backup log
+  become: yes
+  file:
+    path: /var/log/postgres_backup.log
+    state: touch
+    mode: 0777
+    owner: 999
+    group: 999
 
 - name: Add postgres backup
   cron:
     name: postgres backup
     minute: "0"
     hour: "4"
-    job: >-
-      NOW=$(eval date +%F-%H-%M);
-      BACKUP_FILE=backup_postgresql_${NOW}.sql;
-      sudo docker exec -it postgres
-      /usr/lib/postgresql/13/bin/pg_dump -U newsblur -h 127.0.0.1 -Fc newsblur > backup/$BACKUP_FILE;
-      BUCKET={{ backup_bucket.stdout }};
-      sudo docker run --rm -it
-      -v /srv/newsblur:/srv/newsblur
-      -v /backup/:/backup/
-      --network=newsblurnet
-      newsblur/newsblur_python3
-      /srv/newsblur/utils/backups/backup_psql.py $BUCKET
+    job: /srv/newsblur/docker/postgres/backup_postgres.sh >> /var/log/postgres_backup.log 2>&1
+  tags: cron

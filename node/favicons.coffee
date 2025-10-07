@@ -6,6 +6,8 @@ favicons = (app) =>
     ENV_DEV = process.env.NODE_ENV == 'development' or process.env.NODE_ENV == 'development'
     ENV_PROD = process.env.NODE_ENV == 'production'
     ENV_DOCKER = process.env.NODE_ENV == 'docker'
+    MONGODB_USERNAME = process.env.MONGODB_USERNAME
+    MONGODB_PASSWORD = process.env.MONGODB_PASSWORD
     MONGODB_SERVER = "db_mongo"
     if ENV_DEV
         MONGODB_SERVER = 'localhost'
@@ -27,7 +29,7 @@ favicons = (app) =>
         log.debug "Running as production server"
         
     if ENV_PROD
-        url = "mongodb://#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred"
+        url = "mongodb://#{MONGODB_USERNAME}:#{MONGODB_PASSWORD}@#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur?replicaSet=nbset&readPreference=secondaryPreferred&authSource=admin"
     else
         url = "mongodb://#{MONGODB_SERVER}:#{MONGODB_PORT}/newsblur"
 
@@ -36,7 +38,7 @@ favicons = (app) =>
             client = mongo.MongoClient url, useUnifiedTopology: true
             await client.connect()
         catch err
-            log.debug "Error connecting to Mongo: #{err}"
+            log.debug "Error connecting to Mongo (#{url}): #{err}"
             return
 
         db = client.db "newsblur"
@@ -60,15 +62,15 @@ favicons = (app) =>
                     if ENV_DEBUG
                         log.debug "Req: #{feed_id}, etag: #{etag}/#{docs?.color} " + if err then "(err: #{err})" else ""
                     res.header 'etag', docs.color
-                    body = new Buffer(docs.data, 'base64')
+                    body = Buffer.from(docs.data, 'base64')
                     res.set("Content-Type", "image/png")
                     res.status(200).send body
                 else
                     if ENV_DEBUG
                         log.debug "Redirect: #{feed_id}, etag: #{etag}/#{docs?.color} " + if err then "(err: #{err})" else ""
-                    if ENV_DEV
-                        res.redirect '/media/img/icons/circular/world.png' 
+                    if ENV_DEV or ENV_DOCKER
+                        res.redirect '/media/img/icons/nouns/world.svg' 
                     else
-                        res.redirect 'https://www.newsblur.com/media/img/icons/circular/world.png' 
+                        res.redirect 'https://newsblur.com/media/img/icons/nouns/world.svg' 
 
 exports.favicons = favicons

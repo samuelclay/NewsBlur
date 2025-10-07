@@ -18,6 +18,7 @@
 #define NEWSBLUR_WHITE_COLOR 0xffffff
 #define NEWSBLUR_BLACK_COLOR 0x0
 
+extern NSString * const ThemeStyleAuto;
 extern NSString * const ThemeStyleLight;
 extern NSString * const ThemeStyleSepia;
 extern NSString * const ThemeStyleMedium;
@@ -25,10 +26,15 @@ extern NSString * const ThemeStyleDark;
 
 @interface ThemeManager : NSObject
 
+@property (nonatomic, class, strong, readonly) ThemeManager *shared;
+
 @property (nonatomic, strong) NSString *theme;
 @property (nonatomic, readonly) NSString *themeDisplayName;
 @property (nonatomic, readonly) NSString *themeCSSSuffix;
+@property (nonatomic, readonly) BOOL isAutoTheme;
 @property (nonatomic, readonly) BOOL isDarkTheme;
+@property (nonatomic, readonly) BOOL isSystemDark;
+@property (nonatomic, readonly) BOOL isLikeSystem;
 
 + (instancetype)themeManager;
 
@@ -40,7 +46,12 @@ extern NSString * const ThemeStyleDark;
 - (UIColor *)colorFromLightRGB:(NSInteger)lightRGBValue sepiaRGB:(NSUInteger)sepiaRGBValue mediumRGB:(NSUInteger)mediumRGBValue darkRGB:(NSUInteger)darkRGBValue;
 - (UIColor *)themedColorFromRGB:(NSInteger)rgbValue;
 
++ (UIColor *)colorFromRGB:(NSArray<NSNumber *> *)rgbValues;
+
 - (UIImage *)themedImage:(UIImage *)image;
+
+- (void)updateNavigationController:(UINavigationController *)navigationController;
+- (void)updateBackgroundOfView:(UIView *)view;
 
 - (void)updateSegmentedControl:(UISegmentedControl *)segmentedControl;
 - (void)updateThemeSegmentedControl:(UISegmentedControl *)segmentedControl;

@@ -13,6 +13,12 @@
 #import "FMDatabase.h"
 #import "Utilities.h"
 
+@interface StoriesCollection ()
+
+@property (nonatomic, strong) NSMutableDictionary *recentlyReadHashes;
+
+@end
+
 @implementation StoriesCollection
 
 @synthesize appDelegate;
@@ -46,6 +52,7 @@
         self.visibleUnreadCount = 0;
         self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
         self.activeClassifiers = [NSMutableDictionary dictionary];
+        self.recentlyReadHashes = [NSMutableDictionary dictionary];
     }
 
     return self;
@@ -76,6 +83,7 @@
     self.isSocialRiverView = NO;
     self.isSavedView = NO;
     self.isReadView = NO;
+    self.isWidgetView = NO;
 }
 
 - (void)transferStoriesFromCollection:(StoriesCollection *)fromCollection {
@@ -87,6 +95,26 @@
     self.inSearch = fromCollection.inSearch;
     self.searchQuery = fromCollection.searchQuery;
     self.savedSearchQuery = fromCollection.savedSearchQuery;
+}
+
+- (BOOL)isEverything {
+    return [activeFolder isEqualToString:@"everything"];
+}
+
+- (BOOL)isInfrequent {
+    return [activeFolder isEqualToString:@"infrequent"];
+}
+
+- (BOOL)isRiverOrSocial {
+    return self.isRiverView || self.isSavedView || self.isReadView || self.isWidgetView || self.isSocialView || self.isSocialRiverView;
+}
+
+- (BOOL)isCustomFolder {
+    return self.isRiverView && !self.isEverything && !self.isInfrequent && !self.isSavedView && !self.isReadView && !self.isSocialView && !self.isWidgetView;
+}
+
+- (BOOL)isCustomFolderOrFeed {
+    return !self.isRiverView || self.isCustomFolder;
 }
 
 #pragma mark - Story Traversal
@@ -220,6 +248,10 @@
     return [[activeFeedStoryLocations objectAtIndex:location] intValue];
 }
 
+- (NSString *)activeFeedIdStr {
+    return [NSString stringWithFormat:@"%@", [activeFeed objectForKey:@"id"]];
+}
+
 - (NSString *)activeOrder {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSString *orderPrefDefault = [userPreferences stringForKey:@"default_order"];
@@ -258,6 +290,20 @@
         } else {
             return @"all";
         }
+    }
+}
+
+- (NSString *)activeStoryTitlesPosition {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSString *positionPrefDefault = [userPreferences stringForKey:@"story_titles_position"];
+    NSString *positionPref = [userPreferences stringForKey:[self storyTitlesPositionKey]];
+    
+    if (positionPref) {
+        return positionPref;
+    } else if (positionPrefDefault) {
+        return positionPrefDefault;
+    } else {
+        return @"titles_on_left";
     }
 }
 
@@ -301,6 +347,14 @@
     }
 }
 
+- (NSString *)storyTitlesPositionKey {
+    if (self.isRiverView) {
+        return [NSString stringWithFormat:@"folder:%@:story_titles_position", self.activeFolder];
+    } else {
+        return [NSString stringWithFormat:@"%@:story_titles_position", [self.activeFeed objectForKey:@"id"]];
+    }
+}
+
 - (NSString *)storyViewKey {
     if (self.isRiverView) {
         return [NSString stringWithFormat:@"folder:%@:story_view", self.activeFolder];
@@ -316,11 +370,13 @@
         } else if ([activeFolder isEqualToString:@"river_global"]) {
             return @"Global Shared Stories";
         } else if ([activeFolder isEqualToString:@"everything"]) {
-            return @"All Stories";
+            return @"All Site Stories";
         } else if ([activeFolder isEqualToString:@"infrequent"]) {
             return @"Infrequent Site Stories";
         } else if (isSavedView && activeSavedStoryTag) {
             return activeSavedStoryTag;
+        } else if ([activeFolder isEqualToString:@"widget_stories"]) {
+            return @"Widget Site Stories";
         } else if ([activeFolder isEqualToString:@"read_stories"]) {
             return @"Read Stories";
         } else if ([activeFolder isEqualToString:@"saved_searches"]) {
@@ -338,6 +394,10 @@
 #pragma mark - Story Management
 
 - (void)addStories:(NSArray *)stories {
+    if (self.activeFeedStories == nil) {
+        NSLog(@"addStories: activeFeedStories was nil!");
+        self.activeFeedStories = [NSMutableArray array];
+    }
     self.activeFeedStories = [self.activeFeedStories arrayByAddingObjectsFromArray:stories];
     self.storyCount = (int)[self.activeFeedStories count];
     [self calculateStoryLocations];
@@ -385,17 +445,32 @@
         NSLog(@" ***> ERROR: No story found for syncStoryAsRead!");
         return;
     }
+    NSString *hash = story[@"story_hash"];
+    NSString *title = story[@"story_title"];
+    
+    if (!hash) {
+        NSLog(@"🔧 trying to sync as read with no hash: %@: %@", hash, title);  // log
+        return;
+    }
+    if (self.recentlyReadHashes[hash]) {
+        NSLog(@"🔧 trying to sync as read when already read: %@: %@", hash, title);  // log
+        return;
+    }
+    self.recentlyReadHashes[hash] = [NSString stringWithFormat:@"IN PROGRESS - %@", title];
+    
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_hashes_as_read",
                            self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    [params setObject:[story objectForKey:@"story_hash"]
+    [params setObject:hash
                forKey:@"story_hash"];
     [params setObject:[story objectForKey:@"story_feed_id"]
                forKey:@"story_feed_id"];
     
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        self.recentlyReadHashes[hash] = [NSString stringWithFormat:@"SYNCED - %@", title];
         [self finishMarkAsRead:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        self.recentlyReadHashes[hash] = nil;
         [self failedMarkAsRead:params];
     }];
 }
@@ -412,17 +487,19 @@
 }
 
 - (void)syncStoryAsUnread:(NSDictionary *)story {
+    NSString *hash = story[@"story_hash"];
     NSString *urlString = [NSString stringWithFormat:@"%@/reader/mark_story_as_unread",
                            self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     
-    [params setObject:[story objectForKey:@"story_hash"]
+    [params setObject:hash
                    forKey:@"story_id"];
     [params setObject:[story objectForKey:@"story_feed_id"]
                    forKey:@"feed_id"];
     
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAsUnread:responseObject];
+        self.recentlyReadHashes[hash] = nil;
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedMarkAsUnread:params];
     }];
@@ -438,16 +515,16 @@
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                              (unsigned long)NULL), ^(void) {
-        BOOL dequeued = [appDelegate dequeueReadStoryHash:storyHash inFeed:storyFeedId];
+        BOOL dequeued = [self.appDelegate dequeueReadStoryHash:storyHash inFeed:storyFeedId];
         dispatch_async(dispatch_get_main_queue(), ^{
             if (!dequeued) {
                 // Offline means can't unread a story unless it was read while offline.
                 [self markStoryRead:storyHash feedId:storyFeedId];
         //        [self.storyTitlesTable reloadData];
-                [appDelegate failedMarkAsUnread:params];
+                [self.appDelegate failedMarkAsUnread:params];
             } else {
                 // Offline but read story while offline, so it never touched the server.
-                [appDelegate.unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];
+                [self.appDelegate.unreadStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];
         //        [self.storyTitlesTable reloadData];
             }
         });
@@ -523,13 +600,14 @@
     NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
     [self replaceStory:newStory withId:newStoryIdStr];
     
+    id storyFeedId = [newStory objectForKey:@"story_feed_id"];
     
     // If not a feed, then don't bother updating local feed
-    if (!feed) return;
+    if (!feed || !storyFeedId) return;
     
     self.visibleUnreadCount -= 1;
-    if (![appDelegate.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {
-        [appDelegate.recentlyReadFeeds addObject:[newStory objectForKey:@"story_feed_id"]];
+    if (![appDelegate.recentlyReadFeeds containsObject:storyFeedId]) {
+        [appDelegate.recentlyReadFeeds addObject:storyFeedId];
     }
     
     NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
@@ -550,7 +628,7 @@
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                  (unsigned long)NULL), ^(void) {
-            [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
                 NSString *storyHash = [newStory objectForKey:@"story_hash"];
                 [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
                  [newStory JSONRepresentation],
@@ -662,7 +740,7 @@
 
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
                                                  (unsigned long)NULL), ^(void) {
-            [appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
+            [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
                 NSString *storyHash = [newStory objectForKey:@"story_hash"];
                 [db executeUpdate:@"UPDATE stories SET story_json = ? WHERE story_hash = ?",
                  [newStory JSONRepresentation],
@@ -762,28 +840,32 @@
         [tags addObject:userTag];
     }
     
+    if (storyHash == nil || storyFeedId == nil || tags == nil) {
+        return;
+    }
+    
     [params setObject:storyHash forKey:@"story_id"];
     [params setObject:storyFeedId forKey:@"feed_id"];
     [params setObject:tags forKey:@"user_tags"];
     
-    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self.appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAsSaved:responseObject withParams:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [appDelegate queueSavedStory:story];
+        [self.appDelegate queueSavedStory:story];
     }];
 }
 
 - (void)finishMarkAsSaved:(NSDictionary *)results withParams:(NSDictionary *)params {
     [self updateSavedStoryCounts:results withParams:params];
     
-    [appDelegate finishMarkAsSaved:params];
+    [self.appDelegate finishMarkAsSaved:params];
 }
 
 - (void)updateSavedStoryCounts:(NSDictionary *)results withParams:(NSDictionary *)params {
-    NSArray *savedStories = [appDelegate updateStarredStoryCounts:results];
-    NSMutableDictionary *allFolders = [appDelegate.dictFolders mutableCopy];
+    NSArray *savedStories = [self.appDelegate updateStarredStoryCounts:results];
+    NSMutableDictionary *allFolders = [self.appDelegate.dictFolders mutableCopy];
     [allFolders setValue:savedStories forKey:@"saved_stories"];
-    appDelegate.dictFolders = allFolders;
+    self.appDelegate.dictFolders = allFolders;
 }
 
 - (void)syncStoryAsUnsaved:(NSDictionary *)story {
@@ -796,34 +878,34 @@
     [params setObject:storyHash forKey:@"story_id"];
     [params setObject:storyFeedId forKey:@"feed_id"];
     
-    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self.appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishMarkAsUnsaved:responseObject withParams:params];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [appDelegate queueSavedStory:story];
+        [self.appDelegate queueSavedStory:story];
     }];
 }
 
 - (void)finishMarkAsUnsaved:(NSDictionary *)results withParams:(NSDictionary *)params {
     [self updateSavedStoryCounts:results withParams:params];
-    [appDelegate finishMarkAsUnsaved:params];
+    [self.appDelegate finishMarkAsUnsaved:params];
 }
 
 - (void)failedMarkAsUnsaved:(NSDictionary *)params {
     NSString *storyFeedId = [params objectForKey:@"story_feed_id"];
     NSString *storyHash = [params objectForKey:@"story_hash"];
-    BOOL dequeued = [appDelegate dequeueReadStoryHash:storyHash inFeed:storyFeedId];
+    BOOL dequeued = [self.appDelegate dequeueReadStoryHash:storyHash inFeed:storyFeedId];
     dispatch_async(dispatch_get_main_queue(), ^{
         if (!dequeued) {
             // Offline means can't unsave a story unless it was saved while offline.
-            NSDictionary *story = [appDelegate getStory:storyHash];
+            NSDictionary *story = [self.appDelegate getStory:storyHash];
             
             if (story) {
                 [self markStory:story asSaved:NO];
-                [appDelegate failedMarkAsUnsaved:params];
+                [self.appDelegate failedMarkAsUnsaved:params];
             }
         } else {
             // Offline but saved story while offline, so it never touched the server.
-            [appDelegate.unsavedStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];
+            [self.appDelegate.unsavedStoryHashes setObject:[NSNumber numberWithBool:YES] forKey:storyHash];
         }
     });
 }

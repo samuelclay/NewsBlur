@@ -412,6 +412,10 @@ secondStateIconName:(NSString *)secondIconName
     CGSize slidingImageSize = slidingImage.size;
     CGRect slidingImageRect;
     
+    if (slidingImageSize.width > 30) {
+        slidingImageSize = CGSizeMake(18, 18);
+    }
+    
     CGPoint position = CGPointZero;
     
     position.y = CGRectGetHeight(self.bounds) / 2.0;
@@ -457,6 +461,7 @@ secondStateIconName:(NSString *)secondIconName
     
     slidingImageRect = CGRectIntegral(slidingImageRect);
     [_slidingImageView setFrame:slidingImageRect];
+    _slidingImageView.contentMode = UIViewContentModeScaleAspectFit;
 }
 
 - (void)moveWithDuration:(NSTimeInterval)duration andDirection:(MCSwipeTableViewCellDirection)direction {
@@ -487,8 +492,8 @@ secondStateIconName:(NSString *)secondIconName
                         options:(UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction)
                      animations:^{
                          [self.contentView setFrame:rect];
-                         [_slidingImageView setAlpha:0];
-                         [self slideImageWithPercentage:percentage imageName:_currentImageName isDragging:self.shouldAnimatesIcons];
+        [self->_slidingImageView setAlpha:0];
+        [self slideImageWithPercentage:percentage imageName:self->_currentImageName isDragging:self.shouldAnimatesIcons];
                      }
                      completion:^(BOOL finished) {
                          [self notifyDelegate];
@@ -505,11 +510,11 @@ secondStateIconName:(NSString *)secondIconName
                          CGRect frame = self.contentView.frame;
                          frame.origin.x = -bounceDistance;
                          [self.contentView setFrame:frame];
-                         [_slidingImageView setAlpha:0.0];
-                         [self slideImageWithPercentage:0 imageName:_currentImageName isDragging:NO];
+        [self->_slidingImageView setAlpha:0.0];
+        [self slideImageWithPercentage:0 imageName:self->_currentImageName isDragging:NO];
                          
                          // Setting back the color to the default
-                         _colorIndicatorView.backgroundColor = self.defaultColor;
+        self->_colorIndicatorView.backgroundColor = self.defaultColor;
                      }
                      completion:^(BOOL finished1) {
                          
@@ -522,7 +527,7 @@ secondStateIconName:(NSString *)secondIconName
                                               [self.contentView setFrame:frame];
                                               
                                               // Clearing the indicator view
-                                              _colorIndicatorView.backgroundColor = [UIColor clearColor];
+                             self->_colorIndicatorView.backgroundColor = [UIColor clearColor];
                                           }
                                           completion:^(BOOL finished2) {
                                               [self notifyDelegate];
