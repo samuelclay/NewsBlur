@@ -13,8 +13,8 @@ android {
         applicationId = "com.newsblur"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 246
-        versionName = "13.8.0"
+        versionCode = 247
+        versionName = "13.9.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
