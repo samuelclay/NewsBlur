@@ -172,8 +172,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                             <div class="NB-icon"></div>\
                             <% \
                               var feed_id = NEWSBLUR.reader.active_feed;\
-                              var start_date = NEWSBLUR.assets.view_setting(feed_id, "date_filter_start");\
-                              var end_date = NEWSBLUR.assets.view_setting(feed_id, "date_filter_end");\
+                              var start_date = NEWSBLUR.reader.flags.date_filter_start;\
+                              var end_date = NEWSBLUR.reader.flags.date_filter_end;\
                               if (start_date && end_date) { %>\
                               Stories from <%= start_date %> to <%= end_date %>\
                               &middot;\

@@ -1337,8 +1337,6 @@
                 'select_story_in_feed': null,
                 'global_blurblogs': false,
                 'reloading_feeds': false,
-                'date_filter_start': null,
-                'date_filter_end': null
             });
 
             $.extend(this.cache, {
@@ -1370,6 +1368,13 @@
             if (_.isUndefined(options.search)) {
                 this.flags.search = "";
                 this.flags.searching = false;
+            }
+            if (_.isUndefined(options.date_filter_start) && _.isUndefined(options.date_filter_end)) {
+                this.flags.date_filter_start = null;
+                this.flags.date_filter_end = null;
+            } else {
+                this.flags.date_filter_start = options.date_filter_start;
+                this.flags.date_filter_end = options.date_filter_end;
             }
             this.$s.$feed_scroll.scrollTop(0);
             this.$s.$starred_header.removeClass('NB-selected');
@@ -5101,19 +5106,8 @@
         },
 
         clear_active_feed_date_filters: function () {
-            if (!this.active_feed) return;
-
-            var obj;
-            if (_.string.contains(this.active_feed, 'river:')) {
-                obj = this.active_folder;
-            } else {
-                obj = NEWSBLUR.assets.get_feed(this.active_feed);
-            }
-
-            if (obj) {
-                obj.date_filter_start = null;
-                obj.date_filter_end = null;
-            }
+            NEWSBLUR.reader.flags.date_filter_start = null;
+            NEWSBLUR.reader.flags.date_filter_end = null;
         },
 
         toggle_read_filter: function () {

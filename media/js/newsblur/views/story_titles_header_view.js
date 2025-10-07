@@ -94,8 +94,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                             <span class="NB-feedbar-options">\
                                 <div class="NB-icon"></div>\
                                 <% \
-                                  var start_date = folder_id ? NEWSBLUR.assets.view_setting(folder_id, "date_filter_start") : null;\
-                                  var end_date = folder_id ? NEWSBLUR.assets.view_setting(folder_id, "date_filter_end") : null;\
+                                  var start_date = NEWSBLUR.reader.flags.date_filter_start;\
+                                  var end_date = NEWSBLUR.reader.flags.date_filter_end;\
                                   if (start_date && end_date) { %>\
                                   Stories from <%= start_date %> to <%= end_date %>\
                                   &middot;\

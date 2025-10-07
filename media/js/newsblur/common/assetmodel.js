@@ -583,8 +583,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     feed_address: feed.get('feed_address'),
                     order: this.view_setting(feed_id, 'order'),
                     read_filter: this.view_setting(feed_id, 'read_filter'),
-                    date_filter_start: this.view_setting(feed_id, 'date_filter_start'),
-                    date_filter_end: this.view_setting(feed_id, 'date_filter_end'),
+                    date_filter_start: NEWSBLUR.reader.flags.date_filter_start,
+                    date_filter_end: NEWSBLUR.reader.flags.date_filter_end,
                     query: NEWSBLUR.reader.flags.search,
                     include_hidden: true
                 }, pre_callback,
@@ -749,16 +749,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
     fetch_river_stories: function (feed_id, feeds, page, options, callback, error_callback, first_load) {
         var self = this;
-        var date_filter_start = this.view_setting(feed_id, 'date_filter_start');
-        var date_filter_end = this.view_setting(feed_id, 'date_filter_end');
-        console.log(['fetch_river_stories', 'feed_id:', feed_id, 'date_filter_start:', date_filter_start, 'date_filter_end:', date_filter_end]);
         options = $.extend({
             feeds: feeds,
             page: page,
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter'),
-            date_filter_start: date_filter_start,
-            date_filter_end: date_filter_end,
+            date_filter_start: NEWSBLUR.reader.flags.date_filter_start,
+            date_filter_end: NEWSBLUR.reader.flags.date_filter_end,
             query: NEWSBLUR.reader.flags.search,
             include_hidden: true,
             infrequent: false
@@ -802,8 +799,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             page: page,
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter'),
-            date_filter_start: this.view_setting(feed_id, 'date_filter_start'),
-            date_filter_end: this.view_setting(feed_id, 'date_filter_end'),
+            date_filter_start: options.date_filter_start,
+            date_filter_end: options.date_filter_end,
             query: options.query,
             limit: 5,
             infrequent: false,
@@ -917,8 +914,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             order: this.view_setting(feed_id, 'order'),
             global_feed: options.global,
             read_filter: this.view_setting(feed_id, 'read_filter'),
-            date_filter_start: this.view_setting(feed_id, 'date_filter_start'),
-            date_filter_end: this.view_setting(feed_id, 'date_filter_end')
+            date_filter_start: NEWSBLUR.reader.flags.date_filter_start,
+            date_filter_end: NEWSBLUR.reader.flags.date_filter_end
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
@@ -939,8 +936,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             page: page,
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter'),
-            date_filter_start: this.view_setting(feed_id, 'date_filter_start'),
-            date_filter_end: this.view_setting(feed_id, 'date_filter_end'),
+            date_filter_start: NEWSBLUR.reader.flags.date_filter_start,
+            date_filter_end: NEWSBLUR.reader.flags.date_filter_end,
             query: NEWSBLUR.reader.flags.search
         }, pre_callback, error_callback, {
             'ajax_group': (page > 1 ? 'feed_page' : 'feed'),
@@ -1491,51 +1488,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         if (feed_id == "river:global" && setting == "order") return "newest";
         if (_.isUndefined(setting) || _.isString(setting)) {
             setting = setting || 'view';
-            // Date filters are stored on the feed/folder object (session-only, not persisted)
-            if (setting == 'date_filter_start' || setting == 'date_filter_end') {
-                var obj;
-                if (_.string.contains(feed_id, 'river:')) {
-                    // For river views, use the active folder
-                    obj = NEWSBLUR.reader.active_folder;
-                } else {
-                    // For individual feeds, use the feed model
-                    obj = this.get_feed(feed_id);
-                }
-                if (!obj) return null;
-                // Date filters are always stored as properties (not in attributes)
-                return obj[setting];
-            }
-            var feed_settings = NEWSBLUR.Preferences.view_settings[feed_id + ''];
+            var s = setting.substr(0, 1);
+            var feed = NEWSBLUR.Preferences.view_settings[feed_id + ''];
             var default_setting = NEWSBLUR.Preferences['default_' + setting];
             if (setting == 'layout') default_setting = NEWSBLUR.Preferences['story_layout'];
             if (setting == 'read_filter' && _.string.contains(feed_id, 'river:')) {
                 default_setting = 'unread';
             }
-            var s = setting.substr(0, 1);
-            var view_setting = feed_settings && feed_settings[s] || default_setting;
+            var view_setting = feed && feed[s] || default_setting;
             // if (view_setting == "magazine") view_setting = "list";
             return view_setting;
-        }
-
-        // Handle date filters - store on feed/folder object (session-only)
-        var obj;
-        if (_.string.contains(feed_id, 'river:')) {
-            // For river views, use the active folder
-            obj = NEWSBLUR.reader.active_folder;
-        } else {
-            // For individual feeds, use the feed model
-            obj = this.get_feed(feed_id);
-        }
-
-        if (setting.hasOwnProperty('date_filter_start')) {
-            if (obj) {
-                obj.date_filter_start = setting.date_filter_start;
-            }
-        }
-        if (setting.hasOwnProperty('date_filter_end')) {
-            if (obj) {
-                obj.date_filter_end = setting.date_filter_end;
-            }
         }
 
         var view_settings = _.clone(NEWSBLUR.Preferences.view_settings[feed_id + '']) || {};
@@ -1560,16 +1522,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
         if (!_.isEqual(NEWSBLUR.Preferences.view_settings[feed_id + ''], view_settings)) {
             NEWSBLUR.Preferences.view_settings[feed_id + ''] = view_settings;
-            var pre_callback = _.bind(function (data) {
-                if (data.view_settings) {
-                    NEWSBLUR.Preferences.view_settings = data.view_settings;
-                }
-                if (callback) callback(data);
-            }, this);
-            this.make_request('/profile/set_view_setting', params, pre_callback, null);
-            return true;
-        } else if (setting.hasOwnProperty('date_filter_start') || setting.hasOwnProperty('date_filter_end')) {
-            // Even if view_settings didn't change, we still updated date filters
+            this.make_request('/profile/set_view_setting', params, callback, null);
             return true;
         }
     },
