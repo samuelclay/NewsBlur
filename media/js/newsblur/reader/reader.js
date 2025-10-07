@@ -1336,7 +1336,9 @@
                 'starred_view': false,
                 'select_story_in_feed': null,
                 'global_blurblogs': false,
-                'reloading_feeds': false
+                'reloading_feeds': false,
+                'date_filter_start': null,
+                'date_filter_end': null
             });
 
             $.extend(this.cache, {
