@@ -1400,15 +1400,7 @@
             this.model.starred_feeds.deselect();
             this.model.searches_feeds.deselect();
             this.model.folders.deselect();
-            $('.folder', this.$s.$feed_list).removeClass('NB-selected');
-            if (_.string.contains(this.active_feed, 'social:')) {
-                this.model.social_feeds.deselect();
-            }
-
-            // Only clear date filters if switching feeds, not if reloading the same feed
-            if (!options.skip_clear_date_filters) {
-                this.clear_active_feed_date_filters();
-            }
+            this.model.social_feeds.deselect();
 
             this.active_folder = null;
             this.active_feed = null;
@@ -1423,8 +1415,6 @@
 
         reload_feed: function (options) {
             options = options || {};
-            // Don't clear date filters when reloading the same feed
-            options.skip_clear_date_filters = true;
 
             if (this.flags['starred_view'] && this.flags['starred_tag']) {
                 options['tag'] = this.flags['starred_tag'];
@@ -1486,15 +1476,6 @@
                 }
                 if (options.story_title) {
                     this.flags['select_story_title_in_feed'] = options.story_title;
-                }
-
-                // Clear date filters when switching to a different feed
-                if (this.active_feed && this.active_feed != feed.id) {
-                    var old_feed = this.model.get_feed(this.active_feed);
-                    if (old_feed) {
-                        old_feed.set('date_filter_start', null, { silent: true });
-                        old_feed.set('date_filter_end', null, { silent: true });
-                    }
                 }
 
                 this.active_feed = feed.id;
