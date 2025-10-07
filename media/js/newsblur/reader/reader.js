@@ -842,10 +842,13 @@
         show_next_folder: function (direction, $current_folder) {
             var $next_folder = this.get_next_folder(direction, $current_folder);
 
-            if (!$next_folder) return;
+            if (!$next_folder) {
+                console.log(['No next folder', $current_folder, $next_folder]);
+                return;
+            }
 
             var folder = NEWSBLUR.assets.folders.get_view($next_folder);
-
+            console.log(['show_next_folder', $current_folder, $next_folder, folder]);
             this.open_river_stories($next_folder, folder && folder.model);
         },
 
@@ -904,7 +907,7 @@
 
             var next_folder_index = (current_folder + direction) % ($folders.length);
             var $next_folder = $folders.eq(next_folder_index);
-
+            console.log(['get_next_folder', direction, $current_folder, current_folder, $next_folder, next_folder_index, $folders.length]);
             return $next_folder;
         },
 
@@ -2070,9 +2073,8 @@
 
         open_river_stories: function ($folder, folder, options) {
             options = options || {};
-            var $story_titles = this.$s.$story_titles;
             $folder = $folder || this.$s.$feed_list;
-            var folder_title = folder && folder.get('folder_title') || "Everything";
+            var folder_title = folder && folder.get('folder_title') || 'All Site Stories';
 
             this.reset_feed(options);
 

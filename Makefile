@@ -5,9 +5,10 @@ newsblur := $(shell $(TIMEOUT_CMD) 2s docker ps -qf "name=newsblur_web" 2>/dev/n
 
 .PHONY: node
 
-nb: pull bounce migrate bootstrap collectstatic
+rebuild: pull bounce migrate bootstrap collectstatic
 nb-fast: pull bounce-fast migrate bootstrap collectstatic
 nbfast: nb-fast
+nb: nbfast
 
 metrics:
 	docker compose -f docker-compose.yml -f docker-compose.metrics.yml up -d
