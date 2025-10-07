@@ -644,12 +644,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         // Hide clear button
         this.$('.NB-date-filter-container').removeClass('NB-has-dates');
 
-        var options = {
-            date_filter_start: null,
-            date_filter_end: null
-        };
-
-        this.update_feed(options);
+        this.reload_feed();
         this.show_correct_feed_view_options_in_menu();
     },
 

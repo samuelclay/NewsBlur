@@ -2062,7 +2062,7 @@
         open_river_stories: function ($folder, folder, options) {
             options = options || {};
             $folder = $folder || this.$s.$feed_list;
-            var folder_title = folder && folder.get('folder_title') || 'All Site Stories';
+            var folder_title = folder && folder.get('folder_title') || 'Everything';
 
             this.reset_feed(options);
 
