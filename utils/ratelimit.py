@@ -78,12 +78,12 @@ class ratelimit(object):
             key = request.COOKIES.get("newsblur_sessionid", "")
         if not key:
             key = request.META.get("HTTP_USER_AGENT", "")
-        
+
         # Add request path to the key if use_path is enabled
-        if getattr(self, 'use_path', False):
+        if getattr(self, "use_path", False):
             path = request.path
             key = f"{key}-{path}"
-            
+
         return key
 
     def disallowed(self, request):

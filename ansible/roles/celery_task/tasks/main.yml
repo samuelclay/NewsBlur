@@ -4,6 +4,7 @@
     src: /srv/secrets-newsblur/settings/common_settings.py
     dest: /srv/newsblur/newsblur_web/local_settings.py
   register: app_changed
+  tags: env
 
 - block:
     - name: Copy task env

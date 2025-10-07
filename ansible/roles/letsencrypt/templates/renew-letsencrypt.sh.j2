@@ -1,0 +1,42 @@
+#!/bin/bash
+# Renew LetsEncrypt certificates and reload HAProxy
+# Managed by Ansible - do not edit directly
+
+set -e
+
+echo "[$(date)] Starting LetsEncrypt renewal process"
+
+# Pull latest certbot image
+docker pull certbot/dns-{{ dns_plugin }}:{{ certbot_version }}
+
+# Run certbot renewal (without -it flags for cron compatibility)
+docker run --rm \
+    -v /etc/letsencrypt:/etc/letsencrypt \
+    -v /var/lib/letsencrypt:/var/lib/letsencrypt \
+    -v /var/log/letsencrypt:/var/log/letsencrypt \
+    -v /srv/newsblur/config/certificates:/srv/newsblur/config/certificates \
+    certbot/dns-{{ dns_plugin }}:{{ certbot_version }} renew
+
+# Check if renewal was successful
+if [ $? -eq 0 ]; then
+    echo "[$(date)] Certificate renewal successful"
+    
+    # Check if certificates were actually renewed by comparing file timestamps
+    CERT_FILE="/etc/letsencrypt/live/{{ domains_list[0] }}/cert.pem"
+    if [ -f "$CERT_FILE" ]; then
+        # Check if cert was modified in the last 5 minutes
+        if [ $(find "$CERT_FILE" -mmin -5 | wc -l) -gt 0 ]; then
+            echo "[$(date)] Certificates were updated, reloading HAProxy..."
+            # Reload HAProxy to pick up new certificates
+            docker kill --signal HUP haproxy
+            echo "[$(date)] HAProxy reloaded successfully"
+        else
+            echo "[$(date)] Certificates were not updated (not due for renewal yet)"
+        fi
+    fi
+else
+    echo "[$(date)] Certificate renewal failed" >&2
+    exit 1
+fi
+
+echo "[$(date)] LetsEncrypt renewal process completed"
