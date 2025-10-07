@@ -19,9 +19,15 @@ class Feeds(View):
             subscriptions_count = UserSubscription.objects.all().count()
             MStatistics.set("munin:subscriptions_count", subscriptions_count, 60 * 60 * 12)
 
+        pro_subscriptions_count = MStatistics.get("munin:pro_subscriptions_count")
+        if not pro_subscriptions_count:
+            pro_subscriptions_count = UserSubscription.objects.filter(user__profile__is_pro=True).count()
+            MStatistics.set("munin:pro_subscriptions_count", pro_subscriptions_count, 60 * 60 * 12)
+
         data = {
             "feeds": feeds_count,
             "subscriptions": subscriptions_count,
+            "pro_subscriptions": pro_subscriptions_count,
             "profiles": MSocialProfile.objects._collection.count(),
             "social_subscriptions": MSocialSubscription.objects._collection.count(),
         }
