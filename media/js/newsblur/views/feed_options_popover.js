@@ -623,7 +623,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
 
             if (start > end) {
                 // Invalid range: start date is after end date
-                alert('Invalid date range: Start date must be before or equal to end date.');
+                console.log('Invalid date range: Start date must be before or equal to end date.');
                 return;
             }
         }
