@@ -295,7 +295,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private void updateStatusIndicators() {
         binding.content.setRefreshing(syncServiceState.isFeedFolderSyncRunning());
 
-        String syncStatus = syncServiceState.getSyncStatusMessage(this, false);
+        String syncStatus = syncServiceState.getSyncStatusMessage(this, true);
         if (syncStatus != null) {
             if (AppConstants.VERBOSE_LOG) {
                 syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
