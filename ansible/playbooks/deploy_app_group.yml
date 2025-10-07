@@ -47,14 +47,22 @@
     - never
     - static
 
+- name: Fix permissions on static files
+  file:
+    path: /srv/newsblur/static
+    mode: u=rwX,g=rX,o=rX
+    recurse: yes
+  when: jscss_updated is succeeded
+  tags:
+    - never
+    - static
+
 - name: Pull newsblur_web github
   git:
     repo: https://github.com/samuelclay/NewsBlur.git
     dest: /srv/newsblur/
-    version: master
+    version: "{{ git_branch }}"
   register: pulled
-  tags:
-    - static
 
 - name: Restart newsblur_web container
   docker_container:

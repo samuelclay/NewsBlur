@@ -92,6 +92,10 @@
     group_name: A
   tasks:
     - include_tasks: deploy_app_group.yml
+    - include_tasks: deploy_app_group_static.yml
+      tags:
+        - never
+        - static
 
 # Deploy Group B (even servers)
 - name: DEPLOY -> app Group B (even servers)
@@ -105,6 +109,10 @@
     group_name: B
   tasks:
     - include_tasks: deploy_app_group.yml
+    - include_tasks: deploy_app_group_static.yml
+      tags:
+        - never
+        - static
 
 # Maintenance mode tasks
 - name: Maintenance mode management
