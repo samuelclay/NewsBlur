@@ -47,6 +47,9 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         } else if (this.options.feed_chooser) {
             this.collection.sort();
         }
+
+        // Store view reference on DOM element for easy retrieval
+        this.$el.data('folder_view', this);
     },
 
     remove: function () {
