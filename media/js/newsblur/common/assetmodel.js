@@ -1252,10 +1252,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         if (_.string.startsWith(folder_name, 'river:')) {
             folder_name = folder_name.replace('river:', '');
         }
-        // Handle the "everything" folder (root folders collection)
-        if (folder_name === '' || folder_name === 'everything') {
-            return this.folders;
-        }
         return this.folders.find_folder(folder_name.toLowerCase());
     },
 
@@ -1564,7 +1560,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
         if (!_.isEqual(NEWSBLUR.Preferences.view_settings[feed_id + ''], view_settings)) {
             NEWSBLUR.Preferences.view_settings[feed_id + ''] = view_settings;
-            var pre_callback = _.bind(function(data) {
+            var pre_callback = _.bind(function (data) {
                 if (data.view_settings) {
                     NEWSBLUR.Preferences.view_settings = data.view_settings;
                 }
