@@ -121,20 +121,6 @@ class FeedUtils(
         )
     }
 
-    fun saveSearch(feedId: String?, query: String?, context: Context) {
-        NBScope.executeAsyncTask(
-                doInBackground = {
-                    feedApi.saveSearch(feedId, query)
-                },
-                onPostExecute = { newsBlurResponse ->
-                    if (newsBlurResponse != null && !newsBlurResponse.isError) {
-                        syncServiceState.forceFeedsFolders()
-                        triggerSync(context)
-                    }
-                }
-        )
-    }
-
     fun deleteFolder(folderName: String?, inFolder: String, context: Context) {
         NBScope.executeAsyncTask(
                 doInBackground = {
@@ -201,24 +187,6 @@ class FeedUtils(
         syncUpdateStatus(UPDATE_STORY)
 
         syncServiceState.addRecountCandidates(impactedFeeds)
-        triggerSync(context)
-    }
-
-    /**
-     * Mark a story (un)read when only the hash is known. This can and will cause a brief mismatch in
-     * unread counts, or a longer mismatch if offline.  This method should only be used from outside
-     * the app, such as from a notifiation handler.  You must use setStoryReadState(Story, Context, boolean)
-     * when calling from within the UI.
-     */
-    fun setStoryReadStateExternal(storyHash: String, context: Context, read: Boolean) {
-        val ra = if (read) ReadingAction.MarkStoryRead(storyHash)
-        else ReadingAction.MarkStoryUnread(storyHash)
-        dbHelper.enqueueAction(ra)
-
-        val feedId = inferFeedId(storyHash)
-        val impactedFeed = FeedSet.singleFeed(feedId)
-        syncServiceState.addRecountCandidates(setOf(impactedFeed))
-
         triggerSync(context)
     }
 
@@ -357,47 +325,11 @@ class FeedUtils(
         context.startActivity(Intent.createChooser(intent, "Send using"))
     }
 
-    fun shareStory(story: Story, comment: String, sourceUserIdString: String?, context: Context) {
-        var sourceUserId = sourceUserIdString
-        if (story.sourceUserId != null) {
-            sourceUserId = story.sourceUserId
-        }
-        val ra = ReadingAction.ShareStory(story.storyHash, story.id, story.feedId, sourceUserId, comment)
-        dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper, prefsRepo)
-        syncUpdateStatus(UPDATE_SOCIAL or UPDATE_STORY)
-        triggerSync(context)
-    }
-
     fun renameFeed(context: Context, feedId: String?, newFeedName: String?) {
         val ra = ReadingAction.RenameFeed(feedId, newFeedName)
         dbHelper.enqueueAction(ra)
         val impact = ra.doLocal(dbHelper, prefsRepo)
         syncUpdateStatus(impact)
-        triggerSync(context)
-    }
-
-    fun unshareStory(story: Story, context: Context) {
-        val ra = ReadingAction.UnshareStory(story.storyHash, story.id, story.feedId)
-        dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper, prefsRepo)
-        syncUpdateStatus(UPDATE_SOCIAL or UPDATE_STORY)
-        triggerSync(context)
-    }
-
-    fun likeComment(story: Story, commentUserId: String?, context: Context) {
-        val ra = ReadingAction.LikeComment(story.id, commentUserId, story.feedId)
-        dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper, prefsRepo)
-        syncUpdateStatus(UPDATE_SOCIAL)
-        triggerSync(context)
-    }
-
-    fun unlikeComment(story: Story, commentUserId: String?, context: Context) {
-        val ra = ReadingAction.UnlikeComment(story.id, commentUserId, story.feedId)
-        dbHelper.enqueueAction(ra)
-        ra.doLocal(dbHelper, prefsRepo)
-        syncUpdateStatus(UPDATE_SOCIAL)
         triggerSync(context)
     }
 

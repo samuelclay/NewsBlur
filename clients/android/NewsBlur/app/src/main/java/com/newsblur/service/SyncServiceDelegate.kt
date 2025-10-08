@@ -8,6 +8,7 @@ import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FileCache
 import com.newsblur.util.Log
 import com.newsblur.util.StateFilter
+import kotlinx.coroutines.CoroutineScope
 
 interface SyncServiceDelegate {
 
@@ -23,7 +24,7 @@ interface SyncServiceDelegate {
     fun pushNotifications()
     fun addImageUrlToPrefetch(url: String?)
     fun insertStories(response: StoriesResponse, stateFilter: StateFilter)
-    fun prefetchImages(response: StoriesResponse)
+    fun prefetchImages(response: StoriesResponse, scope: CoroutineScope)
     fun isOrphanFeed(feedId: String): Boolean
     fun isDisabledFeed(feedId: String): Boolean
     fun setServiceState(state: ServiceState)
@@ -59,8 +60,8 @@ internal class SyncServiceDelegateImpl(
         dbHelper.insertStories(response, stateFilter, false)
     }
 
-    override fun prefetchImages(response: StoriesResponse) {
-        syncService.prefetchImages(response)
+    override fun prefetchImages(response: StoriesResponse, scope: CoroutineScope) {
+        syncService.prefetchImages(response, scope)
     }
 
     override fun isOrphanFeed(feedId: String): Boolean = syncService.isOrphanFeed(feedId)

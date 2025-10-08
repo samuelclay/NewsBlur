@@ -207,11 +207,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             folderFeedList.reset();
         }
         if ((updateType & UPDATE_DB_READY) != 0) {
-            try {
-                folderFeedList.startLoaders();
-            } catch (IllegalStateException ex) {
-                ; // this might be called multiple times, and startLoaders is *not* idempotent
-            }
+            folderFeedList.loadData();
         }
         if ((updateType & UPDATE_STATUS) != 0) {
             updateStatusIndicators();
@@ -295,7 +291,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private void updateStatusIndicators() {
         binding.content.setRefreshing(syncServiceState.isFeedFolderSyncRunning());
 
-        String syncStatus = syncServiceState.getSyncStatusMessage(this, true);
+        String syncStatus = syncServiceState.getSyncStatusMessage(this, false);
         if (syncStatus != null) {
             if (AppConstants.VERBOSE_LOG) {
                 syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
