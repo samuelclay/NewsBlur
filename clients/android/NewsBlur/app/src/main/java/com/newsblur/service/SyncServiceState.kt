@@ -244,10 +244,6 @@ class DefaultSyncServiceState @Inject constructor() : SyncServiceState {
                     String.format(context.resources.getString(R.string.sync_status_unreads), UnreadsSubService.pendingCount)
                 }
 
-                is ServiceState.OriginalTextSync -> takeIf { OriginalTextSubService.pendingCount > 0 }?.let {
-                    String.format(context.resources.getString(R.string.sync_status_text), OriginalTextSubService.pendingCount)
-                }
-
                 is ServiceState.ImagePrefetchSync -> takeIf { ImagePrefetchSubService.pendingCount > 0 }?.let {
                     String.format(context.resources.getString(R.string.sync_status_images), ImagePrefetchSubService.pendingCount)
                 }
@@ -300,7 +296,6 @@ class DefaultSyncServiceState @Inject constructor() : SyncServiceState {
         _feedPagesSeen.clear()
         _feedStoriesSeen.clear()
 
-        OriginalTextSubService.clear()
         UnreadsSubService.clear()
         ImagePrefetchSubService.clear()
     }
@@ -377,6 +372,5 @@ interface ServiceState {
     data object CleanupSync : ServiceState
     data object StarredSync : ServiceState
     data object UnreadsSync : ServiceState
-    data object OriginalTextSync : ServiceState
     data object ImagePrefetchSync : ServiceState
 }

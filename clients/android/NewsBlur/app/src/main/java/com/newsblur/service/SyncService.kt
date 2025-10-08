@@ -104,7 +104,6 @@ open class SyncService : JobService(), CoroutineScope {
 
     private val delegate: SyncServiceDelegate = SyncServiceDelegateImpl(this)
 
-    private val originalTextSubService = OriginalTextSubService(delegate)
     private val unreadsSubService = UnreadsSubService(delegate)
     private val imagePrefetchSubService = ImagePrefetchSubService(delegate)
     private val cleanupSubService = CleanupSubService(delegate)
@@ -181,9 +180,6 @@ open class SyncService : JobService(), CoroutineScope {
         fun trackSubSync(job: Job) {
             subSyncJobs += job
         }
-
-        // async text requests might have been queued up and are being waiting on by the live UI. give them priority
-        originalTextSubService.launchIn(this).also { trackSubSync(it) }
 
         // first: catch up
         syncActions()
