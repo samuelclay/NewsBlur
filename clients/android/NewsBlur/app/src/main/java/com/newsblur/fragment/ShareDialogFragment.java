@@ -1,14 +1,16 @@
 package com.newsblur.fragment;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.DialogFragment;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.newsblur.R;
 import com.newsblur.database.BlurDatabaseHelper;
@@ -16,8 +18,8 @@ import com.newsblur.domain.Comment;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.preference.PrefsRepo;
-import com.newsblur.util.FeedUtils;
 import com.newsblur.util.UIUtils;
+import com.newsblur.viewModel.ShareDialogViewModel;
 
 import javax.inject.Inject;
 
@@ -27,35 +29,40 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class ShareDialogFragment extends DialogFragment {
 
     @Inject
-    FeedUtils feedUtils;
-
-    @Inject
     BlurDatabaseHelper dbHelper;
 
     @Inject
     PrefsRepo prefsRepo;
 
-	private static final String STORY = "story";
+    private static final String STORY = "story";
     private static final String SOURCE_USER_ID = "sourceUserId";
-	private Story story;
-	private UserDetails user;
-	private Comment previousComment;
+    private Story story;
+    private Comment previousComment;
     private EditText commentEditText;
     private String sourceUserId;
 
-	public static ShareDialogFragment newInstance(final Story story, final String sourceUserId) {
-		ShareDialogFragment frag = new ShareDialogFragment();
-		Bundle args = new Bundle();
-		args.putSerializable(STORY, story);
-        args.putString(SOURCE_USER_ID, sourceUserId);
-		frag.setArguments(args);
-		return frag;
-	}
+    private ShareDialogViewModel viewModel;
 
+    public static ShareDialogFragment newInstance(final Story story, final String sourceUserId) {
+        ShareDialogFragment frag = new ShareDialogFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(STORY, story);
+        args.putString(SOURCE_USER_ID, sourceUserId);
+        frag.setArguments(args);
+        return frag;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(this).get(ShareDialogViewModel.class);
+    }
+
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         story = (Story) getArguments().getSerializable(STORY);
-        user = prefsRepo.getUserDetails();
+        UserDetails user = prefsRepo.getUserDetails();
         sourceUserId = getArguments().getString(SOURCE_USER_ID);
 
         boolean hasBeenShared = false;
@@ -81,37 +88,26 @@ public class ShareDialogFragment extends DialogFragment {
         int negativeButtonText = R.string.alert_dialog_cancel;
         if (hasBeenShared) {
             positiveButtonText = R.string.update_shared;
-            if (previousComment != null ) {
+            if (previousComment != null) {
                 commentEditText.setText(previousComment.commentText);
             }
             negativeButtonText = R.string.unshare;
         }
 
-        builder.setPositiveButton(positiveButtonText, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                String shareComment = commentEditText.getText().toString();
-                feedUtils.shareStory(story, shareComment, sourceUserId, requireContext());
-                ShareDialogFragment.this.dismiss();
-            }
+        builder.setPositiveButton(positiveButtonText, (dialogInterface, i) -> {
+            String shareComment = commentEditText.getText().toString();
+            viewModel.shareStory(requireContext(), story, shareComment, sourceUserId);
+            ShareDialogFragment.this.dismiss();
         });
         if (hasBeenShared) {
             // unshare
-            builder.setNegativeButton(negativeButtonText, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    feedUtils.unshareStory(story, requireContext());
-                    ShareDialogFragment.this.dismiss();
-                }
+            builder.setNegativeButton(negativeButtonText, (dialogInterface, i) -> {
+                viewModel.unshareStory(requireContext(), story);
+                ShareDialogFragment.this.dismiss();
             });
         } else {
             // cancel
-            builder.setNegativeButton(negativeButtonText, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    ShareDialogFragment.this.dismiss();
-                }
-            });
+            builder.setNegativeButton(negativeButtonText, (dialogInterface, i) -> ShareDialogFragment.this.dismiss());
         }
         return builder.create();
     }

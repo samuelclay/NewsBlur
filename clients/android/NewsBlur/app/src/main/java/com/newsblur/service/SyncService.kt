@@ -52,6 +52,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
@@ -118,7 +119,13 @@ open class SyncService : JobService(), CoroutineScope {
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.d(this, "onStartJob")
         mainJob?.cancel()
-        mainJob = launch { sync(); jobFinished(params, false) }
+        mainJob = launch {
+            try {
+                sync()
+            } finally {
+                jobFinished(params, false)
+            }
+        }
         return true // async
     }
 
@@ -171,13 +178,13 @@ open class SyncService : JobService(), CoroutineScope {
         }
 
         // async text requests might have been queued up and are being waiting on by the live UI. give them priority
-        originalTextSubService.start(this)
+        val textJob = originalTextSubService.launchIn(this)
 
         // first: catch up
         syncActions()
 
         // if MD is stale, sync it first so unreads don't get backwards with story unread state
-        syncMetadata()
+        syncMetadata(this)
 
         // handle fetching of stories that are actively being requested by the live UI
         syncPendingFeedStories()
@@ -189,12 +196,14 @@ open class SyncService : JobService(), CoroutineScope {
         checkRecounts()
 
         // async story and image prefetch are lower priority and don't affect active reading, do them last
-        unreadsSubService.start(this)
-        imagePrefetchSubService.start(this)
+        val unreadsJob = unreadsSubService.launchIn(this)
+        val prefetchJob = imagePrefetchSubService.launchIn(this)
 
         // almost all notifications will be pushed after the unreadsService gets new stories, but double-check
         // here in case some made it through the feed sync loop first
         pushNotifications()
+
+        joinAll(textJob, unreadsJob, prefetchJob)
 
         Log.d(this, "Finishing primary sync")
 
@@ -313,7 +322,7 @@ open class SyncService : JobService(), CoroutineScope {
      * The very first step of a sync - get the feed/folder list, unread counts, and
      * unread hashes. Doing this resets pagination on the server!
      */
-    private suspend fun syncMetadata() {
+    private suspend fun syncMetadata(scope: CoroutineScope) {
         if (backoffBackgroundCalls()) return
 
         val untriedActions = dbHelper.getUntriedActionCount()
@@ -459,9 +468,9 @@ open class SyncService : JobService(), CoroutineScope {
             Log.i(this.javaClass.name, "got feed list: " + syncServiceState.getSpeedInfo())
 
             unreadsSubService.doMetadata()
-            unreadsSubService.start(this)
-            cleanupSubService.start(this)
-            starredSubService.start(this)
+            unreadsSubService.launchIn(scope)
+            cleanupSubService.launchIn(scope)
+            starredSubService.launchIn(scope)
         } finally {
             sendSyncUpdate(UPDATE_METADATA or UPDATE_STATUS)
         }
@@ -663,7 +672,7 @@ open class SyncService : JobService(), CoroutineScope {
         syncServiceState.clearFollowupActions()
     }
 
-    fun prefetchImages(apiResponse: StoriesResponse) {
+    fun prefetchImages(apiResponse: StoriesResponse, scope: CoroutineScope) {
         storyLoop@ for (story in apiResponse.stories) {
             // only prefetch for unreads, so we don't grind to cache when the user scrolls
             // through old read stories
@@ -678,7 +687,7 @@ open class SyncService : JobService(), CoroutineScope {
                 imagePrefetchSubService.addThumbnailUrl(story.thumbnailUrl)
             }
         }
-        imagePrefetchSubService.start(this)
+        imagePrefetchSubService.launchIn(scope)
     }
 
     /**

@@ -42,6 +42,7 @@ import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.network.APIConstants.NULL_STORY_TEXT
 import com.newsblur.network.StoryApi
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.repository.StoryRepository
 import com.newsblur.service.NbSyncManager.UPDATE_INTEL
 import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
@@ -85,6 +86,9 @@ class ReadingItemFragment : NbFragment(), PopupMenu.OnMenuItemClickListener {
 
     @Inject
     lateinit var feedUtils: FeedUtils
+
+    @Inject
+    lateinit var storyRepository: StoryRepository
 
     @Inject
     @IconLoader

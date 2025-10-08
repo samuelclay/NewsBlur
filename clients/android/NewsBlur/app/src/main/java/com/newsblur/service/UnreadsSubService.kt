@@ -148,7 +148,7 @@ class UnreadsSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
                 storyHashQueue.remove(hash)
             }
 
-            prefetchImages(response)
+            prefetchImages(response, this)
         }
     }
 

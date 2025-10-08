@@ -155,12 +155,10 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         }
 	}
 
-    public synchronized void startLoaders() {
-        if (isAdded()) {
-            if (allFoldersViewModel.getFolders().getValue() == null) {
-                // if the data haven't yet been fetched, do so
-                allFoldersViewModel.getData();
-            }
+    public void loadData() {
+        if (allFoldersViewModel.getFolders().getValue() == null) {
+            // if the data haven't yet been fetched, do so
+            allFoldersViewModel.getData();
         }
     }
 

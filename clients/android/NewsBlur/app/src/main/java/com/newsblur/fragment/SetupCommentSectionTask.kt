@@ -18,6 +18,8 @@ import com.newsblur.activity.Profile
 import com.newsblur.domain.Comment
 import com.newsblur.domain.Story
 import com.newsblur.domain.UserDetails
+import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
+import com.newsblur.util.FeedUtils.Companion.triggerSync
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.UIUtils
 import com.newsblur.util.ViewUtils
@@ -106,10 +108,12 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
                 } else {
                     favouriteIcon.setOnClickListener {
                         if (!mutableListOf<String>(*comment.likingUsers).contains(user.id)) {
-                            fragment.feedUtils.likeComment(story, comment.userId, context)
+                            fragment.storyRepository.likeComment(story, comment.userId)
                         } else {
-                            fragment.feedUtils.unlikeComment(story, comment.userId, context)
+                            fragment.storyRepository.unlikeComment(story, comment.userId)
                         }
+                        fragment.feedUtils.syncUpdateStatus(UPDATE_SOCIAL)
+                        triggerSync(context)
                     }
                 }
             }
