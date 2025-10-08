@@ -13,7 +13,6 @@ import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
-import java.net.HttpURLConnection
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -101,11 +100,7 @@ class NetworkClientImpl(
         addCookieHeader(requestBuilder)
         requestBuilder.header("User-Agent", customUserAgent)
 
-        return APIResponse(
-                client,
-                requestBuilder.build(),
-                HttpURLConnection.HTTP_OK,
-        )
+        return APIResponse(client, requestBuilder.build())
     }
 
     private fun postSingle(

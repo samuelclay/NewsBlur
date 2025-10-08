@@ -72,4 +72,24 @@ class AuthApiImpl(
         }
         return registerResponse
     }
+
+    private fun APIResponse.getRegisterResponse(gson: Gson): RegisterResponse {
+        return if (this.isError) {
+            val response = RegisterResponse()
+            response.isProtocolError = true
+            response
+        } else {
+            gson.fromJson(this.responseBody, RegisterResponse::class.java)
+        }
+    }
+
+    private fun APIResponse.getLoginResponse(gson: Gson): LoginResponse {
+        return if (this.isError) {
+            val response = LoginResponse()
+            response.isProtocolError = true
+            response
+        } else {
+            gson.fromJson(this.responseBody, LoginResponse::class.java)
+        }
+    }
 }
