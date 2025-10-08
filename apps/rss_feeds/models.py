@@ -1993,7 +1993,9 @@ class Feed(models.Model):
             stories_db = stories_db.filter(story_date__lte=date_filter_end)
 
         if date_filter_start != "all" or date_filter_end != "all":
-            logging.debug(f" ---> ~FBDate filter: start={date_filter_start or ''} end={date_filter_end or ''}")
+            logging.debug(
+                f" ---> ~FBDate filter: start={date_filter_start or ''} end={date_filter_end or ''}"
+            )
 
         stories_db = stories_db[offset : offset + limit]
         stories = self.format_stories(stories_db, self.pk)
