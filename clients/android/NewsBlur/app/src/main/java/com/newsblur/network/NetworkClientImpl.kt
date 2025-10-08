@@ -9,8 +9,6 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.Log
 import com.newsblur.util.NetworkUtils
 import com.newsblur.util.PrefConstants
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -94,28 +92,28 @@ class NetworkClientImpl(
         return parameters.joinToString("&")
     }
 
-    private suspend fun getSingle(urlString: String): APIResponse = withContext(Dispatchers.IO) {
+    private fun getSingle(urlString: String): APIResponse {
         if (!NetworkUtils.isOnline(context)) {
-            return@withContext APIResponse()
+            return APIResponse()
         }
 
         val requestBuilder = Request.Builder().url(urlString)
         addCookieHeader(requestBuilder)
         requestBuilder.header("User-Agent", customUserAgent)
 
-        return@withContext APIResponse(
+        return APIResponse(
                 client,
                 requestBuilder.build(),
                 HttpURLConnection.HTTP_OK,
         )
     }
 
-    private suspend fun postSingle(
+    private fun postSingle(
             urlString: String,
             formBody: RequestBody,
-    ): APIResponse = withContext(Dispatchers.IO) {
+    ): APIResponse {
         if (!NetworkUtils.isOnline(context)) {
-            return@withContext APIResponse()
+            return APIResponse()
         }
 
         if (AppConstants.VERBOSE_LOG_NET) {
@@ -135,7 +133,7 @@ class NetworkClientImpl(
         addCookieHeader(requestBuilder)
         requestBuilder.post(formBody)
 
-        return@withContext APIResponse(client, requestBuilder.build())
+        return APIResponse(client, requestBuilder.build())
     }
 
     /**
