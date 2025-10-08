@@ -4,29 +4,30 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.FeedUtils.Companion.inferFeedId
 import com.newsblur.util.Log
 import com.newsblur.util.StoryOrder
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import java.util.Collections
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class UnreadsSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate) {
 
-    var isDoMetadata: Boolean = false
-        private set
+    private val doMeta = java.util.concurrent.atomic.AtomicBoolean(false)
+    val isDoMetadata: Boolean get() = doMeta.get()
 
     override suspend fun execute() = coroutineScope {
         try {
             ensureActive()
             setServiceState(ServiceState.UnreadsSync)
 
-            if (isDoMetadata) {
+            if (doMeta.getAndSet(false)) {
                 syncUnreadList()
-                isDoMetadata = false
             }
 
             ensureActive()
             if (storyHashQueue.isNotEmpty()) {
-                getNewUnreadStories()
+                getNewUnreadStories(this)
                 pushNotifications()
             }
         } finally {
@@ -34,12 +35,12 @@ class UnreadsSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
         }
     }
 
-    private suspend fun syncUnreadList() = coroutineScope {
-        ensureActive()
+    private suspend fun syncUnreadList() {
+        currentCoroutineContext().ensureActive()
         // get unread hashes and dates from the API
         val unreadHashes = storyApi.getUnreadStoryHashes()
 
-        ensureActive()
+        currentCoroutineContext().ensureActive()
 
         // get all the stories we thought were unread before. we should not enqueue a fetch of
         // stories we already have.  also, if any existing unreads fail to appear in
@@ -82,7 +83,7 @@ class UnreadsSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
         // list, mark them read now
         dbHelper.markStoryHashesRead(oldUnreadHashes)
 
-        ensureActive()
+        currentCoroutineContext().ensureActive()
 
         // now sort the unreads we need to fetch so they are fetched roughly in the order
         // the user is likely to read them.  if the user reads newest first, those come first.
@@ -113,13 +114,13 @@ class UnreadsSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
         }
     }
 
-    private suspend fun getNewUnreadStories() = coroutineScope {
+    private suspend fun getNewUnreadStories(scope: CoroutineScope) {
         val notifyFeeds = dbHelper.getNotifyFeeds()
         unreadSyncLoop@ while (storyHashQueue.isNotEmpty()) {
-            ensureActive()
+            currentCoroutineContext().ensureActive()
             val isOfflineEnabled = prefsRepo.isOfflineEnabled()
             val isEnableNotifications = prefsRepo.isEnableNotifications()
-            if (!(isOfflineEnabled || isEnableNotifications)) return@coroutineScope
+            if (!(isOfflineEnabled || isEnableNotifications)) return
 
             val hashBatch: MutableList<String> = ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE)
             val hashSkips: MutableList<String> = ArrayList(AppConstants.UNREAD_FETCH_BATCH_SIZE)
@@ -132,7 +133,7 @@ class UnreadsSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
                 if (hashBatch.size >= AppConstants.UNREAD_FETCH_BATCH_SIZE) break@batchLoop
             }
 
-            ensureActive()
+            currentCoroutineContext().ensureActive()
             val response = storyApi.getStoriesByHash(hashBatch)
             if (!SyncServiceUtil.isStoryResponseGood(response)) {
                 Log.e(this, "error fetching unreads batch, abandoning sync.")
@@ -148,12 +149,12 @@ class UnreadsSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
                 storyHashQueue.remove(hash)
             }
 
-            prefetchImages(response, this)
+            prefetchImages(response, scope)
         }
     }
 
     fun doMetadata() {
-        isDoMetadata = true
+        doMeta.set(true)
     }
 
     companion object {

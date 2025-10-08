@@ -49,11 +49,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import java.util.Date
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
@@ -152,7 +152,7 @@ open class SyncService : JobService(), CoroutineScope {
         Log.d(this, "onNetworkChanged")
     }
 
-    private suspend fun sync() = coroutineScope {
+    private suspend fun sync() = supervisorScope {
         Log.d(this, "Starting primary sync")
         ensureActive()
 
@@ -164,27 +164,32 @@ open class SyncService : JobService(), CoroutineScope {
 
         if (!NetworkUtils.isOnline(this@SyncService)) {
             Log.d(this.javaClass.name, "Skipping sync: device is offline")
-            return@coroutineScope
+            return@supervisorScope
         }
 
         if (!isAppForeground && !prefsRepo.isBackgroundNeeded(this@SyncService)) {
             Log.d(this.javaClass.name, "Skipping sync: device is in the background and background sync is disabled")
-            return@coroutineScope
+            return@supervisorScope
         }
 
         if (!isAppForeground && !prefsRepo.isBackgroundNetworkAllowed(this@SyncService)) {
             Log.d(this.javaClass.name, "Skipping sync: network type not appropriate for background sync.")
-            return@coroutineScope
+            return@supervisorScope
+        }
+
+        val subSyncJobs = mutableListOf<Job>()
+        fun trackSubSync(job: Job) {
+            subSyncJobs += job
         }
 
         // async text requests might have been queued up and are being waiting on by the live UI. give them priority
-        val textJob = originalTextSubService.launchIn(this)
+        originalTextSubService.launchIn(this).also { trackSubSync(it) }
 
         // first: catch up
         syncActions()
 
         // if MD is stale, sync it first so unreads don't get backwards with story unread state
-        syncMetadata(this)
+        syncMetadata(this, ::trackSubSync)
 
         // handle fetching of stories that are actively being requested by the live UI
         syncPendingFeedStories()
@@ -196,14 +201,14 @@ open class SyncService : JobService(), CoroutineScope {
         checkRecounts()
 
         // async story and image prefetch are lower priority and don't affect active reading, do them last
-        val unreadsJob = unreadsSubService.launchIn(this)
-        val prefetchJob = imagePrefetchSubService.launchIn(this)
+        unreadsSubService.launchIn(this).also { trackSubSync(it) }
+        imagePrefetchSubService.launchIn(this).also { trackSubSync(it) }
 
         // almost all notifications will be pushed after the unreadsService gets new stories, but double-check
         // here in case some made it through the feed sync loop first
         pushNotifications()
 
-        joinAll(textJob, unreadsJob, prefetchJob)
+        subSyncJobs.joinAll()
 
         Log.d(this, "Finishing primary sync")
 
@@ -322,7 +327,7 @@ open class SyncService : JobService(), CoroutineScope {
      * The very first step of a sync - get the feed/folder list, unread counts, and
      * unread hashes. Doing this resets pagination on the server!
      */
-    private suspend fun syncMetadata(scope: CoroutineScope) {
+    private suspend fun syncMetadata(scope: CoroutineScope, trackSubSync: (Job) -> Unit) {
         if (backoffBackgroundCalls()) return
 
         val untriedActions = dbHelper.getUntriedActionCount()
@@ -468,9 +473,9 @@ open class SyncService : JobService(), CoroutineScope {
             Log.i(this.javaClass.name, "got feed list: " + syncServiceState.getSpeedInfo())
 
             unreadsSubService.doMetadata()
-            unreadsSubService.launchIn(scope)
-            cleanupSubService.launchIn(scope)
-            starredSubService.launchIn(scope)
+            unreadsSubService.launchIn(scope).also { trackSubSync(it) }
+            cleanupSubService.launchIn(scope).also { trackSubSync(it) }
+            starredSubService.launchIn(scope).also { trackSubSync(it) }
         } finally {
             sendSyncUpdate(UPDATE_METADATA or UPDATE_STATUS)
         }
