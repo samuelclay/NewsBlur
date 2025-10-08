@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -45,6 +46,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
     buildFeatures {
+        compose = true
         viewBinding = true
         buildConfig = true
     }
@@ -73,4 +75,18 @@ dependencies {
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // 1) Compose BOM — keeps all compose libs in sync
+    implementation(platform("androidx.compose:compose-bom:2025.10.00"))
+
+    // Core Compose
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // Material 3
+    implementation("androidx.compose.material3:material3")
+
+    // Interop: Compose in Activity
+    implementation("androidx.activity:activity-compose:1.11.0")
 }
