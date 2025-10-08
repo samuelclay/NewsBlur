@@ -138,6 +138,50 @@ def get_subdomain(request):
         return None
 
 
+def adjust_read_filter_for_date_range(read_filter, date_filter_start, date_filter_end, unread_cutoff):
+    """
+    Auto-switch from unread to all if date filter extends beyond unread cutoff.
+
+    If the read filter is set to unread only and the date range starts or ends
+    earlier than the user's unread cutoff, switch to all stories so we can show
+    stories that wouldn't otherwise be surfaced.
+    """
+    if read_filter != "unread":
+        return read_filter
+
+    should_switch_to_all = False
+
+    if date_filter_start and date_filter_start != "all":
+        try:
+            filter_start = datetime.datetime.strptime(date_filter_start, "%Y-%m-%d")
+            # Compare as naive datetimes (both are UTC)
+            filter_start_naive = filter_start.replace(tzinfo=None)
+            unread_cutoff_naive = (
+                unread_cutoff.replace(tzinfo=None) if unread_cutoff.tzinfo else unread_cutoff
+            )
+            if filter_start_naive < unread_cutoff_naive:
+                should_switch_to_all = True
+        except (ValueError, AttributeError):
+            pass
+
+    if date_filter_end and date_filter_end != "all":
+        try:
+            filter_end = datetime.datetime.strptime(date_filter_end, "%Y-%m-%d")
+            filter_end_naive = filter_end.replace(tzinfo=None)
+            unread_cutoff_naive = (
+                unread_cutoff.replace(tzinfo=None) if unread_cutoff.tzinfo else unread_cutoff
+            )
+            if filter_end_naive < unread_cutoff_naive:
+                should_switch_to_all = True
+        except (ValueError, AttributeError):
+            pass
+
+    if should_switch_to_all:
+        return "all"
+
+    return read_filter
+
+
 @never_cache
 @render_to("reader/dashboard.xhtml")
 def index(request, **kwargs):
@@ -774,7 +818,13 @@ def load_single_feed(request, feed_id):
         else:
             stories = []
             message = "You must be a premium subscriber to search."
-    elif read_filter == "starred":
+
+    # Auto-switch from unread to all if date filter extends beyond unread cutoff
+    read_filter = adjust_read_filter_for_date_range(
+        read_filter, date_filter_start, date_filter_end, user.profile.unread_cutoff
+    )
+
+    if read_filter == "starred":
         mstories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).order_by(
             "%sstarred_date" % ("-" if order == "newest" else "")
         )[offset : offset + limit]
@@ -924,15 +974,25 @@ def load_single_feed(request, feed_id):
         time_breakdown = "~SN~FR(~SB%.4s/%.4s/%.4s/%.4s~SN)" % (diff1, diff2, diff3, diff4)
 
     search_log = "~SN~FG(~SB%s~SN) " % query if query else ""
+    date_filter_log = ""
+    if date_filter_start and date_filter_start != "all":
+        date_filter_log = f"~SN~FG(dates: {date_filter_start}"
+        if date_filter_end and date_filter_end != "all":
+            date_filter_log += f" to {date_filter_end}"
+        date_filter_log += "~SN) "
+    elif date_filter_end and date_filter_end != "all":
+        date_filter_log = f"~SN~FG(dates: up to {date_filter_end}~SN) "
+
     logging.user(
         request,
-        "~FYLoading feed: ~SB%s%s (%s/%s) %s%s"
+        "~FYLoading feed: ~SB%s%s (%s/%s) %s%s%s"
         % (
             feed.feed_title[:22],
             ("~SN/p%s" % page) if page > 1 else "",
             order,
             read_filter,
             search_log,
+            date_filter_log,
             time_breakdown,
         ),
     )
@@ -1617,7 +1677,13 @@ def load_river_stories__redis(request):
             stories = []
             mstories = []
             message = "You must be a premium subscriber to search."
-    elif read_filter == "starred":
+
+    # Auto-switch from unread to all if date filter extends beyond unread cutoff
+    read_filter = adjust_read_filter_for_date_range(
+        read_filter, date_filter_start, date_filter_end, user.profile.unread_cutoff
+    )
+
+    if read_filter == "starred":
         mstories = MStarredStory.objects(user_id=user.pk, story_feed_id__in=feed_ids).order_by(
             "%sstarred_date" % ("-" if order == "newest" else "")
         )[offset : offset + limit]
@@ -1780,10 +1846,18 @@ def load_river_stories__redis(request):
             ),
         )
     else:
+        date_filter_str = ""
+        if date_filter_start and date_filter_start != "all":
+            date_filter_str = f", dates: {date_filter_start}"
+            if date_filter_end and date_filter_end != "all":
+                date_filter_str += f" to {date_filter_end}"
+        elif date_filter_end and date_filter_end != "all":
+            date_filter_str = f", dates: up to {date_filter_end}"
+
         logging.user(
             request,
             "~FY%sLoading ~FC%sriver stories~FY: ~SBp%s~SN (%s/%s "
-            "stories, ~SN%s/%s/%s feeds, %s/%s)"
+            "stories, ~SN%s/%s/%s feeds, %s/%s%s)"
             % (
                 "~FCAuto-" if on_dashboard else "",
                 "~FB~SBinfrequent~SN~FC " if infrequent else "",
@@ -1795,6 +1869,7 @@ def load_river_stories__redis(request):
                 len(original_feed_ids),
                 order,
                 read_filter,
+                date_filter_str,
             ),
         )
 
