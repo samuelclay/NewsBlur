@@ -24,8 +24,10 @@ import java.net.URL
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FeedSearchActivity : NbActivity(), OnFeedSearchResultClickListener, AddFeedProgressListener {
-
+class FeedSearchActivity :
+    NbActivity(),
+    OnFeedSearchResultClickListener,
+    AddFeedProgressListener {
     @Inject
     lateinit var feedApi: FeedApi
 
@@ -74,47 +76,62 @@ class FeedSearchActivity : NbActivity(), OnFeedSearchResultClickListener, AddFee
         binding.toolbarIcon.setOnClickListener { finish() }
         binding.clearText.setOnClickListener { binding.inputSearchQuery.setText("") }
 
-        binding.inputSearchQuery.addTextChangedListener(object : TextWatcher {
+        binding.inputSearchQuery.addTextChangedListener(
+            object : TextWatcher {
+                private val handler = Handler(Looper.getMainLooper())
+                private var searchQueryRunnable: Runnable? = null
 
-            private val handler = Handler(Looper.getMainLooper())
-            private var searchQueryRunnable: Runnable? = null
+                override fun beforeTextChanged(
+                    s: CharSequence,
+                    start: Int,
+                    count: Int,
+                    after: Int,
+                ) {}
 
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(
+                    s: CharSequence,
+                    start: Int,
+                    before: Int,
+                    count: Int,
+                ) {}
 
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(s: Editable) {
-                searchQueryRunnable?.let { handler.removeCallbacks(it) }
-                searchQueryRunnable = Runnable {
-                    syncClearIconVisibility(s)
-                    if (s.isNotEmpty()) searchQuery(s)
-                    else syncSearchResults(emptyList())
+                override fun afterTextChanged(s: Editable) {
+                    searchQueryRunnable?.let { handler.removeCallbacks(it) }
+                    searchQueryRunnable =
+                        Runnable {
+                            syncClearIconVisibility(s)
+                            if (s.isNotEmpty()) {
+                                searchQuery(s)
+                            } else {
+                                syncSearchResults(emptyList())
+                            }
+                        }
+                    handler.postDelayed(searchQueryRunnable!!, 350)
                 }
-                handler.postDelayed(searchQueryRunnable!!, 350)
-            }
-        })
+            },
+        )
     }
 
     private fun searchQuery(query: Editable) {
         lifecycleScope.executeAsyncTask(
-                onPreExecute = {
-                    binding.loadingCircle.visibility = View.VISIBLE
-                    binding.clearText.visibility = View.GONE
-                },
-                doInBackground = {
-                    buildList {
-                        val feedResults = feedApi.searchForFeed(query.toString()) ?: emptyArray()
-                        if (matchesUrl(query.toString())) {
-                            add(FeedResult.createFeedResultForUrl(query.toString()))
-                        }
-                        addAll(feedResults)
+            onPreExecute = {
+                binding.loadingCircle.visibility = View.VISIBLE
+                binding.clearText.visibility = View.GONE
+            },
+            doInBackground = {
+                buildList {
+                    val feedResults = feedApi.searchForFeed(query.toString()) ?: emptyArray()
+                    if (matchesUrl(query.toString())) {
+                        add(FeedResult.createFeedResultForUrl(query.toString()))
                     }
-                },
-                onPostExecute = {
-                    binding.loadingCircle.visibility = View.GONE
-                    binding.clearText.visibility = View.VISIBLE
-                    syncSearchResults(it)
+                    addAll(feedResults)
                 }
+            },
+            onPostExecute = {
+                binding.loadingCircle.visibility = View.GONE
+                binding.clearText.visibility = View.VISIBLE
+                syncSearchResults(it)
+            },
         )
     }
 
@@ -126,7 +143,10 @@ class FeedSearchActivity : NbActivity(), OnFeedSearchResultClickListener, AddFee
         adapter.replaceAll(results)
     }
 
-    private fun showAddFeedDialog(feedUrl: String, feedLabel: String) {
+    private fun showAddFeedDialog(
+        feedUrl: String,
+        feedLabel: String,
+    ) {
         val addFeedFragment: DialogFragment = AddFeedFragment.newInstance(feedUrl, feedLabel)
         addFeedFragment.show(supportFragmentManager, "dialog")
     }

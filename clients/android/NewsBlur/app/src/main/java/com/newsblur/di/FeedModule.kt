@@ -18,26 +18,26 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class FeedModule {
-
     @Singleton
     @Provides
     fun provideFeedUtils(
-            dbHelper: BlurDatabaseHelper,
-            feedApi: FeedApi,
-            folderApi: FolderApi,
-            prefsRepo: PrefsRepo,
-            syncServiceState: SyncServiceState,
+        dbHelper: BlurDatabaseHelper,
+        feedApi: FeedApi,
+        folderApi: FolderApi,
+        prefsRepo: PrefsRepo,
+        syncServiceState: SyncServiceState,
     ) = FeedUtils(dbHelper, feedApi, folderApi, prefsRepo, syncServiceState)
 
     @Singleton
     @Provides
     fun provideFeedRepository(
-            userApi: UserApi,
-            feedApi: FeedApi,
-            dbHelper: BlurDatabaseHelper,
-    ): FeedRepository = FeedRepositoryImpl(
+        userApi: UserApi,
+        feedApi: FeedApi,
+        dbHelper: BlurDatabaseHelper,
+    ): FeedRepository =
+        FeedRepositoryImpl(
             userApi,
             feedApi,
             dbHelper,
-    )
+        )
 }

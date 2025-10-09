@@ -32,8 +32,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener {
-
+abstract class ProfileActivityDetailsFragment :
+    Fragment(),
+    OnItemClickListener {
     @Inject
     lateinit var userApi: UserApi
 
@@ -50,7 +51,11 @@ abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener 
     private var adapter: ActivityDetailsAdapter? = null
     private var user: UserDetails? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_profileactivity, null)
         binding = FragmentProfileactivityBinding.bind(view)
 
@@ -68,13 +73,22 @@ abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener 
         return view
     }
 
-    fun setUser(context: Context?, user: UserDetails?, iconLoader: ImageLoader) {
+    fun setUser(
+        context: Context?,
+        user: UserDetails?,
+        iconLoader: ImageLoader,
+    ) {
         this.user = user
         adapter = createAdapter(context, user, iconLoader)
         displayActivities()
     }
 
-    protected abstract fun createAdapter(context: Context?, user: UserDetails?, iconLoader: ImageLoader): ActivityDetailsAdapter?
+    protected abstract fun createAdapter(
+        context: Context?,
+        user: UserDetails?,
+        iconLoader: ImageLoader,
+    ): ActivityDetailsAdapter?
+
     private fun displayActivities() {
         binding.profileDetailsActivitylist.adapter = adapter
         loadPage(1)
@@ -82,42 +96,50 @@ abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener 
 
     private fun loadPage(pageNumber: Int) {
         lifecycleScope.executeAsyncTask(
-                onPreExecute = {
-                    binding.emptyViewLoading.visibility = View.VISIBLE
-                    footerBinding.itemlistLoading.visibility = View.VISIBLE
-                },
-                doInBackground = {
-                    // For the logged in user user.userId is null.
-                    // From the user intent user.userId is the number while user.id is prefixed with social:
-                    var id = user!!.userId
-                    if (id == null) {
-                        id = user!!.id
-                    }
-                    id?.let { loadActivityDetails(it, pageNumber) }
-                },
-                onPostExecute = {
-                    if (it == null) {
-                        Log.w(javaClass.name, "couldn't load page from API")
-                        return@executeAsyncTask
-                    }
-                    if (pageNumber == 1 && it.isEmpty()) {
-                        val emptyView = binding.profileDetailsActivitylist.emptyView
-                        val textView = emptyView.findViewById<View>(R.id.empty_view_text) as TextView
-                        textView.setText(R.string.profile_no_interactions)
-                    }
-                    for (activity in it) {
-                        adapter!!.add(activity)
-                    }
-                    adapter!!.notifyDataSetChanged()
-                    binding.emptyViewLoading.visibility = View.GONE
-                    footerBinding.itemlistLoading.visibility = View.GONE
+            onPreExecute = {
+                binding.emptyViewLoading.visibility = View.VISIBLE
+                footerBinding.itemlistLoading.visibility = View.VISIBLE
+            },
+            doInBackground = {
+                // For the logged in user user.userId is null.
+                // From the user intent user.userId is the number while user.id is prefixed with social:
+                var id = user!!.userId
+                if (id == null) {
+                    id = user!!.id
                 }
+                id?.let { loadActivityDetails(it, pageNumber) }
+            },
+            onPostExecute = {
+                if (it == null) {
+                    Log.w(javaClass.name, "couldn't load page from API")
+                    return@executeAsyncTask
+                }
+                if (pageNumber == 1 && it.isEmpty()) {
+                    val emptyView = binding.profileDetailsActivitylist.emptyView
+                    val textView = emptyView.findViewById<View>(R.id.empty_view_text) as TextView
+                    textView.setText(R.string.profile_no_interactions)
+                }
+                for (activity in it) {
+                    adapter!!.add(activity)
+                }
+                adapter!!.notifyDataSetChanged()
+                binding.emptyViewLoading.visibility = View.GONE
+                footerBinding.itemlistLoading.visibility = View.GONE
+            },
         )
     }
 
-    protected abstract suspend fun loadActivityDetails(id: String, pageNumber: Int): Array<ActivityDetails>?
+    protected abstract suspend fun loadActivityDetails(
+        id: String,
+        pageNumber: Int,
+    ): Array<ActivityDetails>?
 
-    override fun onItemClick(adapterView: AdapterView<*>?, view: View, position: Int, id: Long) {
+    override fun onItemClick(
+        adapterView: AdapterView<*>?,
+        view: View,
+        position: Int,
+        id: Long,
+    ) {
         val activity = adapter!!.getItem(position)
         val context: Context = requireContext()
         if (activity!!.category == ActivityDetails.Category.FOLLOW) {
@@ -129,13 +151,14 @@ abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener 
             if (feed == null) {
                 Toast.makeText(context, R.string.profile_feed_not_available, Toast.LENGTH_SHORT).show()
             } else {
-                /* TODO: starting the feed view activity also requires both a feedset and a folder name
-                   in order to properly function.  the latter, in particular, we could only guess at from
-                   the info we have here.  at best, we would launch a feed view with somewhat unpredictable
-                   delete behaviour. */
-                //Intent intent = new Intent(context, FeedItemsList.class);
-                //intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
-                //context.startActivity(intent);
+                // Intent intent = new Intent(context, FeedItemsList.class);
+                // intent.putExtra(FeedItemsList.EXTRA_FEED, feed);
+                // context.startActivity(intent);
+
+                /** TODO: starting the feed view activity also requires both a feedset and a folder name
+                 in order to properly function.  the latter, in particular, we could only guess at from
+                 the info we have here.  at best, we would launch a feed view with somewhat unpredictable
+                 delete behaviour. */
             }
         } else if (activity.category == ActivityDetails.Category.STAR) {
             UIUtils.startReadingActivity(context, FeedSet.allSaved(), activity.storyHash)
@@ -151,9 +174,14 @@ abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener 
         }
     }
 
-    private fun isSocialFeedCategory(activity: ActivityDetails): Boolean {
-        return activity.storyHash != null && (activity.category == ActivityDetails.Category.COMMENT_LIKE || activity.category == ActivityDetails.Category.COMMENT_REPLY || activity.category == ActivityDetails.Category.REPLY_REPLY || activity.category == ActivityDetails.Category.SHARED_STORY)
-    }
+    private fun isSocialFeedCategory(activity: ActivityDetails): Boolean =
+        activity.storyHash != null &&
+            (
+                activity.category == ActivityDetails.Category.COMMENT_LIKE ||
+                    activity.category == ActivityDetails.Category.COMMENT_REPLY ||
+                    activity.category == ActivityDetails.Category.REPLY_REPLY ||
+                    activity.category == ActivityDetails.Category.SHARED_STORY
+            )
 
     /**
      * Detects when user is close to the end of the current page and starts loading the next page
@@ -171,7 +199,12 @@ abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener 
         private var previousTotal = 0
         private var loading = true
 
-        override fun onScroll(view: AbsListView, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
+        override fun onScroll(
+            view: AbsListView,
+            firstVisibleItem: Int,
+            visibleItemCount: Int,
+            totalItemCount: Int,
+        ) {
             if (loading) {
                 if (totalItemCount > previousTotal) {
                     loading = false
@@ -187,6 +220,9 @@ abstract class ProfileActivityDetailsFragment : Fragment(), OnItemClickListener 
             }
         }
 
-        override fun onScrollStateChanged(view: AbsListView, scrollState: Int) {}
+        override fun onScrollStateChanged(
+            view: AbsListView,
+            scrollState: Int,
+        ) {}
     }
 }

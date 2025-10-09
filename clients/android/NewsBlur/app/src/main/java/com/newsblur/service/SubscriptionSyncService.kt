@@ -27,7 +27,6 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class SubscriptionSyncService : JobService() {
-
     @Inject
     lateinit var userApi: UserApi
 
@@ -44,27 +43,30 @@ class SubscriptionSyncService : JobService() {
             return false
         }
 
-        val subscriptionManager = SubscriptionManagerImpl(
+        val subscriptionManager =
+            SubscriptionManagerImpl(
                 context = this@SubscriptionSyncService,
                 syncServiceState = syncServiceState,
                 userApi = userApi,
                 prefRepository = prefsRepo,
-        )
-        subscriptionManager.startBillingConnection(object : SubscriptionsListener {
-            override fun onBillingConnectionReady() {
-                NBScope.launch {
-                    subscriptionManager.syncActiveSubscription()
-                    Log.d(this, "sync active subscription completed.")
-                    // manually call jobFinished after work is done
+            )
+        subscriptionManager.startBillingConnection(
+            object : SubscriptionsListener {
+                override fun onBillingConnectionReady() {
+                    NBScope.launch {
+                        subscriptionManager.syncActiveSubscription()
+                        Log.d(this, "sync active subscription completed.")
+                        // manually call jobFinished after work is done
+                        jobFinished(params, false)
+                    }
+                }
+
+                override fun onBillingConnectionError(message: String?) {
+                    // manually call jobFinished on error
                     jobFinished(params, false)
                 }
-            }
-
-            override fun onBillingConnectionError(message: String?) {
-                // manually call jobFinished on error
-                jobFinished(params, false)
-            }
-        })
+            },
+        )
 
         return true // returning true due to background thread work
     }
@@ -72,12 +74,14 @@ class SubscriptionSyncService : JobService() {
     override fun onStopJob(params: JobParameters?): Boolean = false
 
     companion object {
-
         private const val JOB_ID = 2021
 
-        private fun createJobInfo(context: Context): JobInfo = JobInfo.Builder(JOB_ID,
-                ComponentName(context, SubscriptionSyncService::class.java))
-                .apply {
+        private fun createJobInfo(context: Context): JobInfo =
+            JobInfo
+                .Builder(
+                    JOB_ID,
+                    ComponentName(context, SubscriptionSyncService::class.java),
+                ).apply {
                     // sync every 24 hours
                     setPeriodic(AppConstants.BG_SUBSCRIPTION_SYNC_CYCLE_MILLIS)
                     setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)

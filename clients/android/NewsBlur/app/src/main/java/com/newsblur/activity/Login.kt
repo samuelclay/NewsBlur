@@ -15,7 +15,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class Login : FragmentActivity() {
-
     @Inject
     lateinit var prefsRepo: PrefsRepo
 

@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.android.test) apply false
     alias(libs.plugins.benmanes.versions) apply false
+    alias(libs.plugins.ktlint) apply false
 }
 
 allprojects {

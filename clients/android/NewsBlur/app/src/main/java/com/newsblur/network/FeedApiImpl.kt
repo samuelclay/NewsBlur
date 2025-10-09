@@ -14,11 +14,14 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.FeedSet
 
 class FeedApiImpl(
-        private val gson: Gson,
-        private val networkClient: NetworkClient,
+    private val gson: Gson,
+    private val networkClient: NetworkClient,
 ) : FeedApi {
-
-    override suspend fun markFeedsAsRead(fs: FeedSet, includeOlder: Long?, includeNewer: Long?): NewsBlurResponse? {
+    override suspend fun markFeedsAsRead(
+        fs: FeedSet,
+        includeOlder: Long?,
+        includeNewer: Long?,
+    ): NewsBlurResponse? {
         val values = ValueMultimap()
 
         if (fs.getSingleFeed() != null) {
@@ -65,11 +68,12 @@ class FeedApiImpl(
     }
 
     override suspend fun getFeedUnreadCounts(apiIds: MutableSet<String>): UnreadCountResponse? {
-        val values = ValueMultimap().apply {
-            for (id in apiIds) {
-                put(APIConstants.PARAMETER_FEEDID, id)
+        val values =
+            ValueMultimap().apply {
+                for (id in apiIds) {
+                    put(APIConstants.PARAMETER_FEEDID, id)
+                }
             }
-        }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_FEED_UNREAD_COUNT)
         val response: APIResponse = networkClient.get(urlString, values)
         return response.getResponse(gson, UnreadCountResponse::class.java)
@@ -84,9 +88,10 @@ class FeedApiImpl(
      * additional call to refreshFeedCounts().
      */
     override suspend fun getFolderFeedMapping(doUpdateCounts: Boolean): FeedFolderResponse? {
-        val params = ContentValues().apply {
-            put(APIConstants.PARAMETER_UPDATE_COUNTS, (if (doUpdateCounts) APIConstants.VALUE_TRUE else APIConstants.VALUE_FALSE))
-        }
+        val params =
+            ContentValues().apply {
+                put(APIConstants.PARAMETER_UPDATE_COUNTS, (if (doUpdateCounts) APIConstants.VALUE_TRUE else APIConstants.VALUE_FALSE))
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_FEEDS)
         val response: APIResponse = networkClient.get(urlString, params)
 
@@ -104,7 +109,10 @@ class FeedApiImpl(
         return result
     }
 
-    override suspend fun updateFeedIntel(feedId: String?, classifier: Classifier?): NewsBlurResponse? {
+    override suspend fun updateFeedIntel(
+        feedId: String?,
+        classifier: Classifier?,
+    ): NewsBlurResponse? {
         val values = classifier?.getAPITuples() ?: return null
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         val urlString = APIConstants.buildUrl(APIConstants.PATH_CLASSIFIER_SAVE)
@@ -112,7 +120,10 @@ class FeedApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override suspend fun addFeed(feedUrl: String?, folderName: String?): AddFeedResponse? {
+    override suspend fun addFeed(
+        feedUrl: String?,
+        folderName: String?,
+    ): AddFeedResponse? {
         val values = ContentValues()
         values.put(APIConstants.PARAMETER_URL, feedUrl)
         if (!TextUtils.isEmpty(folderName) && folderName != AppConstants.ROOT_FOLDER) {
@@ -136,7 +147,10 @@ class FeedApiImpl(
         }
     }
 
-    override suspend fun deleteFeed(feedId: String?, folderName: String?): NewsBlurResponse? {
+    override suspend fun deleteFeed(
+        feedId: String?,
+        folderName: String?,
+    ): NewsBlurResponse? {
         val values = ContentValues()
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         if ((!TextUtils.isEmpty(folderName)) && (folderName != AppConstants.ROOT_FOLDER)) {
@@ -147,7 +161,10 @@ class FeedApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override suspend fun deleteSearch(feedId: String?, query: String?): NewsBlurResponse? {
+    override suspend fun deleteSearch(
+        feedId: String?,
+        query: String?,
+    ): NewsBlurResponse? {
         val values = ContentValues()
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         values.put(APIConstants.PARAMETER_QUERY, query)
@@ -156,7 +173,10 @@ class FeedApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override suspend fun saveSearch(feedId: String?, query: String?): NewsBlurResponse? {
+    override suspend fun saveSearch(
+        feedId: String?,
+        query: String?,
+    ): NewsBlurResponse? {
         val values = ContentValues()
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         values.put(APIConstants.PARAMETER_QUERY, query)
@@ -175,7 +195,11 @@ class FeedApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override suspend fun updateFeedNotifications(feedId: String?, notifyTypes: List<String>, notifyFilter: String?): NewsBlurResponse? {
+    override suspend fun updateFeedNotifications(
+        feedId: String?,
+        notifyTypes: List<String>,
+        notifyFilter: String?,
+    ): NewsBlurResponse? {
         val values = ValueMultimap()
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         for (type in notifyTypes) {
@@ -197,7 +221,10 @@ class FeedApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override suspend fun renameFeed(feedId: String?, newFeedName: String?): NewsBlurResponse? {
+    override suspend fun renameFeed(
+        feedId: String?,
+        newFeedName: String?,
+    ): NewsBlurResponse? {
         val values = ValueMultimap()
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         values.put(APIConstants.PARAMETER_FEEDTITLE, newFeedName)
@@ -207,9 +234,10 @@ class FeedApiImpl(
     }
 
     private suspend fun markAllAsRead(): NewsBlurResponse? {
-        val values = ValueMultimap().apply {
-            put(APIConstants.PARAMETER_DAYS, "0")
-        }
+        val values =
+            ValueMultimap().apply {
+                put(APIConstants.PARAMETER_DAYS, "0")
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MARK_ALL_AS_READ)
         val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)

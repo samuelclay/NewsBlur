@@ -25,8 +25,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MuteConfig : FeedChooser(), FeedStateChangedListener {
-
+class MuteConfig :
+    FeedChooser(),
+    FeedStateChangedListener {
     @Inject
     lateinit var feedUtils: FeedUtils
 
@@ -141,17 +142,21 @@ class MuteConfig : FeedChooser(), FeedStateChangedListener {
         }
         adapter.notifyDataSetChanged()
 
-        if (isMute) feedUtils.muteFeeds(this, adapter.feedIds)
-        else feedUtils.unmuteFeeds(this, adapter.feedIds)
+        if (isMute) {
+            feedUtils.muteFeeds(this, adapter.feedIds)
+        } else {
+            feedUtils.unmuteFeeds(this, adapter.feedIds)
+        }
     }
 
     private fun showAccountFeedsLimitDialog(exceededLimitCount: Int) {
-        AlertDialog.Builder(this)
-                .setTitle(R.string.mute_config_title)
-                .setMessage(String.format(getString(R.string.mute_config_message), exceededLimitCount))
-                .setNeutralButton(android.R.string.ok, null)
-                .setPositiveButton(R.string.mute_config_upgrade) { dialogInterface: DialogInterface?, i: Int -> openUpgradeToPremium() }
-                .show()
+        AlertDialog
+            .Builder(this)
+            .setTitle(R.string.mute_config_title)
+            .setMessage(String.format(getString(R.string.mute_config_message), exceededLimitCount))
+            .setNeutralButton(android.R.string.ok, null)
+            .setPositiveButton(R.string.mute_config_upgrade) { dialogInterface: DialogInterface?, i: Int -> openUpgradeToPremium() }
+            .show()
     }
 
     private fun showSitesCount() {

@@ -43,35 +43,42 @@ private typealias CustomUserAgent = String
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-
     @Singleton
     @Provides
-    fun provideGson(): Gson = GsonBuilder().apply {
-        registerTypeAdapter(Date::class.java, DateStringTypeAdapter())
-        registerTypeAdapter(Boolean::class.java, BooleanTypeAdapter())
-        registerTypeAdapter(Boolean::class.javaPrimitiveType, BooleanTypeAdapter())
-        registerTypeAdapter(Story::class.java, StoryTypeAdapter())
-        registerTypeAdapter(StoriesResponse::class.java, StoriesResponseTypeAdapter())
-        registerTypeAdapter(object : TypeToken<Map<String?, Classifier?>?>() {}.type, ClassifierMapTypeAdapter())
-    }.create()
+    fun provideGson(): Gson =
+        GsonBuilder()
+            .apply {
+                registerTypeAdapter(Date::class.java, DateStringTypeAdapter())
+                registerTypeAdapter(Boolean::class.java, BooleanTypeAdapter())
+                registerTypeAdapter(Boolean::class.javaPrimitiveType, BooleanTypeAdapter())
+                registerTypeAdapter(Story::class.java, StoryTypeAdapter())
+                registerTypeAdapter(StoriesResponse::class.java, StoriesResponseTypeAdapter())
+                registerTypeAdapter(object : TypeToken<Map<String?, Classifier?>?>() {}.type, ClassifierMapTypeAdapter())
+            }.create()
 
     @Singleton
     @Provides
     @ApiOkHttpClient
-    fun provideApiOkHttpClient(): OkHttpClient = OkHttpClient.Builder().apply {
-        connectTimeout(AppConstants.API_CONN_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-        readTimeout(AppConstants.API_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-        followSslRedirects(true)
-    }.build()
+    fun provideApiOkHttpClient(): OkHttpClient =
+        OkHttpClient
+            .Builder()
+            .apply {
+                connectTimeout(AppConstants.API_CONN_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                readTimeout(AppConstants.API_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                followSslRedirects(true)
+            }.build()
 
     @Singleton
     @Provides
     @ImageOkHttpClient
-    fun provideImageOkHttpClient(): OkHttpClient = OkHttpClient.Builder().apply {
-        connectTimeout(AppConstants.IMAGE_PREFETCH_CONN_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-        readTimeout(AppConstants.IMAGE_PREFETCH_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-        followSslRedirects(true)
-    }.build()
+    fun provideImageOkHttpClient(): OkHttpClient =
+        OkHttpClient
+            .Builder()
+            .apply {
+                connectTimeout(AppConstants.IMAGE_PREFETCH_CONN_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                readTimeout(AppConstants.IMAGE_PREFETCH_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                followSslRedirects(true)
+            }.build()
 
     @Singleton
     @Provides
@@ -83,52 +90,53 @@ object NetworkModule {
     @Singleton
     @Provides
     fun provideNetworkClient(
-            @ApplicationContext context: Context,
-            @ApiOkHttpClient apiOkHttpClient: OkHttpClient,
-            customUserAgent: CustomUserAgent,
-            prefsRepo: PrefsRepo,
-    ): NetworkClient = NetworkClientImpl(
+        @ApplicationContext context: Context,
+        @ApiOkHttpClient apiOkHttpClient: OkHttpClient,
+        customUserAgent: CustomUserAgent,
+        prefsRepo: PrefsRepo,
+    ): NetworkClient =
+        NetworkClientImpl(
             context = context,
             client = apiOkHttpClient,
             initialUserAgent = customUserAgent,
             prefsRepo = prefsRepo,
-    )
+        )
 
     @Singleton
     @Provides
     fun provideAuthApi(
-            gson: Gson,
-            networkClient: NetworkClient,
-            prefsRepo: PrefsRepo,
+        gson: Gson,
+        networkClient: NetworkClient,
+        prefsRepo: PrefsRepo,
     ): AuthApi = AuthApiImpl(gson, networkClient, prefsRepo)
 
     @Singleton
     @Provides
     fun provideUserApi(
-            @ApplicationContext context: Context,
-            gson: Gson,
-            networkClient: NetworkClient,
-            prefsRepo: PrefsRepo,
+        @ApplicationContext context: Context,
+        gson: Gson,
+        networkClient: NetworkClient,
+        prefsRepo: PrefsRepo,
     ): UserApi = UserApiImpl(context, gson, networkClient, prefsRepo)
 
     @Singleton
     @Provides
     fun provideFolderApi(
-            gson: Gson,
-            networkClient: NetworkClient,
+        gson: Gson,
+        networkClient: NetworkClient,
     ): FolderApi = FolderApiImpl(gson, networkClient)
 
     @Singleton
     @Provides
     fun provideStoryApi(
-            gson: Gson,
-            networkClient: NetworkClient,
+        gson: Gson,
+        networkClient: NetworkClient,
     ): StoryApi = StoryApiImpl(gson, networkClient)
 
     @Singleton
     @Provides
     fun provideFeedApi(
-            gson: Gson,
-            networkClient: NetworkClient,
+        gson: Gson,
+        networkClient: NetworkClient,
     ): FeedApi = FeedApiImpl(gson, networkClient)
 }

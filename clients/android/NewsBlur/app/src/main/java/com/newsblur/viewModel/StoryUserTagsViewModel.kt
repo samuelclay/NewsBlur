@@ -15,31 +15,33 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StoryUserTagsViewModel
-@Inject constructor(private val dbHelper: BlurDatabaseHelper) : ViewModel() {
+    @Inject
+    constructor(
+        private val dbHelper: BlurDatabaseHelper,
+    ) : ViewModel() {
+        private val cancellationSignal = CancellationSignal()
+        private val _savedStoryCountsLiveData = MutableLiveData<List<StarredCount>>()
+        val savedStoryCountsLiveData: LiveData<List<StarredCount>> = _savedStoryCountsLiveData
 
-    private val cancellationSignal = CancellationSignal()
-    private val _savedStoryCountsLiveData = MutableLiveData<List<StarredCount>>()
-    val savedStoryCountsLiveData: LiveData<List<StarredCount>> = _savedStoryCountsLiveData
-
-    fun getSavedStoryCounts() {
-        viewModelScope.launch(Dispatchers.IO) {
-            dbHelper.getSavedStoryCountsCursor(cancellationSignal).use { cursor ->
-                if (!cursor.isBeforeFirst) return@use
-                val starredTags = mutableListOf<StarredCount>()
-                while (cursor.moveToNext()) {
-                    val sc = StarredCount.fromCursor(cursor)
-                    if (sc.tag != null && !sc.isTotalCount) {
-                        starredTags.add(sc)
+        fun getSavedStoryCounts() {
+            viewModelScope.launch(Dispatchers.IO) {
+                dbHelper.getSavedStoryCountsCursor(cancellationSignal).use { cursor ->
+                    if (!cursor.isBeforeFirst) return@use
+                    val starredTags = mutableListOf<StarredCount>()
+                    while (cursor.moveToNext()) {
+                        val sc = StarredCount.fromCursor(cursor)
+                        if (sc.tag != null && !sc.isTotalCount) {
+                            starredTags.add(sc)
+                        }
                     }
+                    Collections.sort(starredTags, StarredCount.StarredCountComparatorByTag)
+                    _savedStoryCountsLiveData.postValue(starredTags)
                 }
-                Collections.sort(starredTags, StarredCount.StarredCountComparatorByTag)
-                _savedStoryCountsLiveData.postValue(starredTags)
             }
         }
-    }
 
-    override fun onCleared() {
-        cancellationSignal.cancel()
-        super.onCleared()
+        override fun onCleared() {
+            cancellationSignal.cancel()
+            super.onCleared()
+        }
     }
-}

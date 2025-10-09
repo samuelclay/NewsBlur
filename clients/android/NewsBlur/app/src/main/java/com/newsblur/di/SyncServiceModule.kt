@@ -13,7 +13,5 @@ import javax.inject.Singleton
 abstract class SyncServiceModule {
     @Binds
     @Singleton
-    abstract fun bindSyncServiceState(
-            impl: DefaultSyncServiceState
-    ): SyncServiceState
+    abstract fun bindSyncServiceState(impl: DefaultSyncServiceState): SyncServiceState
 }

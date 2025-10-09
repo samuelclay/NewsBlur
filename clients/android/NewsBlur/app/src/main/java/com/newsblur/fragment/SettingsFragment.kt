@@ -23,21 +23,26 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat() {
-
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
 
     @Inject
     lateinit var syncServiceState: SyncServiceState
 
-    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-        if (!isGranted) Toast
-                .makeText(requireContext(), R.string.notification_permissions_context, Toast.LENGTH_SHORT)
-                .show()
-        checkEnableNotifications(isGranted)
-    }
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (!isGranted) {
+                Toast
+                    .makeText(requireContext(), R.string.notification_permissions_context, Toast.LENGTH_SHORT)
+                    .show()
+            }
+            checkEnableNotifications(isGranted)
+        }
 
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+    override fun onCreatePreferences(
+        savedInstanceState: Bundle?,
+        rootKey: String?,
+    ) {
         val preferenceManager = preferenceManager
         preferenceManager.sharedPreferencesName = PrefConstants.PREFERENCES
         setPreferencesFromResource(R.xml.activity_settings, rootKey)
@@ -88,14 +93,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun showNotificationRationaleDialog() {
-        AlertDialog.Builder(requireContext())
-                .setTitle(R.string.settings_enable_notifications)
-                .setMessage(R.string.notification_permissions_rationale)
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(android.R.string.ok) { _, _ ->
-                    openAppSettings()
-                }
-                .show()
+        AlertDialog
+            .Builder(requireContext())
+            .setTitle(R.string.settings_enable_notifications)
+            .setMessage(R.string.notification_permissions_rationale)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                openAppSettings()
+            }.show()
     }
 
     private fun openAppSettings() {

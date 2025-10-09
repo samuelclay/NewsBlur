@@ -56,17 +56,16 @@ import kotlin.math.min
  * Story list adapter, RecyclerView style.
  */
 class StoryViewAdapter(
-        private val context: NbActivity,
-        private val fragment: ItemSetFragment,
-        fs: FeedSet,
-        listStyle: StoryListStyle,
-        iconLoader: ImageLoader,
-        thumbnailLoader: ImageLoader,
-        feedUtils: FeedUtils,
-        prefsRepo: PrefsRepo,
-        listener: OnStoryClickListener,
+    private val context: NbActivity,
+    private val fragment: ItemSetFragment,
+    fs: FeedSet,
+    listStyle: StoryListStyle,
+    iconLoader: ImageLoader,
+    thumbnailLoader: ImageLoader,
+    feedUtils: FeedUtils,
+    prefsRepo: PrefsRepo,
+    listener: OnStoryClickListener,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
     private val footerViews = mutableListOf<View>()
 
     // the cursor from which we pull story objects. should not be used except by the thaw/diff worker
@@ -188,11 +187,12 @@ class StoryViewAdapter(
     override fun getItemCount(): Int = storyCount + footerViews.size
 
     val storyCount: Int
-        get() = if (fs != null && UIUtils.needsSubscriptionAccess(fs, prefsRepo)) {
-            min(3.0, stories.size.toDouble()).toInt()
-        } else {
-            stories.size
-        }
+        get() =
+            if (fs != null && UIUtils.needsSubscriptionAccess(fs, prefsRepo)) {
+                min(3.0, stories.size.toDouble()).toInt()
+            } else {
+                stories.size
+            }
 
     val rawStoryCount: Int
         /**
@@ -231,7 +231,12 @@ class StoryViewAdapter(
         return stories[position].storyHash.hashCode().toLong()
     }
 
-    fun swapCursor(c: Cursor?, rv: RecyclerView, oldScrollState: Parcelable?, skipBackFillingStories: Boolean) {
+    fun swapCursor(
+        c: Cursor?,
+        rv: RecyclerView,
+        oldScrollState: Parcelable?,
+        skipBackFillingStories: Boolean,
+    ) {
         // cache the identity of the most recent cursor so async batches can check to
         // see if they are stale
         cursor = c
@@ -249,7 +254,11 @@ class StoryViewAdapter(
      * Attempt to thaw a new set of stories from the cursor most recently
      * seen when the that cycle started.
      */
-    private fun thawDiffUpdate(c: Cursor?, rv: RecyclerView, skipBackFillingStories: Boolean) {
+    private fun thawDiffUpdate(
+        c: Cursor?,
+        rv: RecyclerView,
+        skipBackFillingStories: Boolean,
+    ) {
         if (c !== cursor) return
 
         // thawed stories
@@ -271,13 +280,14 @@ class StoryViewAdapter(
                 // unexpectedly jump, thereby preserving the scroll position. This flag specifically helps
                 // manage the insertion of new stories that have been backfilled according to their timestamps.
                 val currentStoryHashes = if (skipBackFillingStories) getStoryHashes(stories) else emptySet()
-                val storyTimestampThreshold: Long? = if (skipBackFillingStories && storyOrder == StoryOrder.NEWEST) {
-                    getOldestStoryTimestamp(stories)
-                } else if (skipBackFillingStories && storyOrder == StoryOrder.OLDEST) {
-                    getNewestStoryTimestamp(stories)
-                } else {
-                    null
-                }
+                val storyTimestampThreshold: Long? =
+                    if (skipBackFillingStories && storyOrder == StoryOrder.NEWEST) {
+                        getOldestStoryTimestamp(stories)
+                    } else if (skipBackFillingStories && storyOrder == StoryOrder.OLDEST) {
+                        getNewestStoryTimestamp(stories)
+                    } else {
+                        null
+                    }
 
                 while (c.moveToNext()) {
                     if (c.isClosed) return
@@ -285,7 +295,10 @@ class StoryViewAdapter(
                     if (skipBackFillingStories && !currentStoryHashes.contains(s.storyHash)) {
                         if (storyOrder == StoryOrder.NEWEST && storyTimestampThreshold != null && s.timestamp >= storyTimestampThreshold) {
                             continue
-                        } else if (storyOrder == StoryOrder.OLDEST && storyTimestampThreshold != null && s.timestamp <= storyTimestampThreshold) {
+                        } else if (storyOrder == StoryOrder.OLDEST &&
+                            storyTimestampThreshold != null &&
+                            s.timestamp <= storyTimestampThreshold
+                        ) {
                             continue
                         }
                     }
@@ -307,35 +320,42 @@ class StoryViewAdapter(
 
         fragment.storyThawCompleted(indexOfLastUnread)
 
-        rv.post(Runnable {
-            if (c !== cursor) return@Runnable
-            // many versions of RecyclerView like to auto-scroll to inserted elements which is
-            // not at all what we want.  the current scroll position is one of the things frozen
-            // in instance state, so keep it and re-apply after deltas to preserve position
-            val scrollState = rv.layoutManager!!.onSaveInstanceState()
-            synchronized(this@StoryViewAdapter) {
-                stories.clear()
-                stories.addAll(newStories)
-                diff.dispatchUpdatesTo(this@StoryViewAdapter)
-                // the one exception to restoring state is if we were passed an old state to restore
-                // along with the cursor
-                if (oldScrollState != null) {
-                    rv.layoutManager!!.onRestoreInstanceState(oldScrollState)
-                    oldScrollState = null
-                } else {
-                    rv.layoutManager!!.onRestoreInstanceState(scrollState)
+        rv.post(
+            Runnable {
+                if (c !== cursor) return@Runnable
+                // many versions of RecyclerView like to auto-scroll to inserted elements which is
+                // not at all what we want.  the current scroll position is one of the things frozen
+                // in instance state, so keep it and re-apply after deltas to preserve position
+                val scrollState = rv.layoutManager!!.onSaveInstanceState()
+                synchronized(this@StoryViewAdapter) {
+                    stories.clear()
+                    stories.addAll(newStories)
+                    diff.dispatchUpdatesTo(this@StoryViewAdapter)
+                    // the one exception to restoring state is if we were passed an old state to restore
+                    // along with the cursor
+                    if (oldScrollState != null) {
+                        rv.layoutManager!!.onRestoreInstanceState(oldScrollState)
+                        oldScrollState = null
+                    } else {
+                        rv.layoutManager!!.onRestoreInstanceState(scrollState)
+                    }
                 }
-            }
-        })
+            },
+        )
     }
 
-    private inner class StoryListDiffer(private val newStories: List<Story>) : DiffUtil.Callback() {
+    private inner class StoryListDiffer(
+        private val newStories: List<Story>,
+    ) : DiffUtil.Callback() {
+        override fun areContentsTheSame(
+            oldItemPosition: Int,
+            newItemPosition: Int,
+        ): Boolean = newStories[newItemPosition].isChanged(stories[oldItemPosition])
 
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-                newStories[newItemPosition].isChanged(stories[oldItemPosition])
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-                newStories[newItemPosition].storyHash == stories[oldItemPosition].storyHash
+        override fun areItemsTheSame(
+            oldItemPosition: Int,
+            newItemPosition: Int,
+        ): Boolean = newStories[newItemPosition].storyHash == stories[oldItemPosition].storyHash
 
         override fun getNewListSize(): Int = newStories.size
 
@@ -344,17 +364,20 @@ class StoryViewAdapter(
 
     @Synchronized
     fun getStory(position: Int): Story? =
-            if (position >= stories.size || position < 0) {
-                null
-            } else {
-                stories[position]
-            }
+        if (position >= stories.size || position < 0) {
+            null
+        } else {
+            stories[position]
+        }
 
     fun setTextSize(textSize: Float) {
         this.textSize = textSize
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(
+        viewGroup: ViewGroup,
+        viewType: Int,
+    ): RecyclerView.ViewHolder {
         // NB: the non-temporary calls to setLayerType() dramatically speed up list movement, but
         // are only safe because we perform fairly advanced delta updates. if any changes to invalidation
         // logic are made, check the list with hardare layer profiling to ensure we aren't over-invalidating
@@ -372,8 +395,13 @@ class StoryViewAdapter(
         }
     }
 
-    open inner class StoryViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener, OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener, OnTouchListener {
-
+    open inner class StoryViewHolder(
+        view: View,
+    ) : RecyclerView.ViewHolder(view),
+        View.OnClickListener,
+        OnCreateContextMenuListener,
+        MenuItem.OnMenuItemClickListener,
+        OnTouchListener {
         val leftBarOne: View = view.findViewById(R.id.story_item_favicon_borderbar_1)
         val leftBarTwo: View = view.findViewById(R.id.story_item_favicon_borderbar_2)
         val intelDot: ImageView = view.findViewById(R.id.story_item_inteldot)
@@ -413,7 +441,11 @@ class StoryViewAdapter(
             listener.onStoryClicked(fs, story?.storyHash)
         }
 
-        override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
+        override fun onCreateContextMenu(
+            menu: ContextMenu,
+            v: View,
+            menuInfo: ContextMenuInfo?,
+        ) {
             // clicks like to get accidentally triggered by the system right after we detect
             // a gesture. ignore if a gesture appears to be in progress.
             if (gestureDebounce) {
@@ -449,7 +481,7 @@ class StoryViewAdapter(
                 feedUtils.sendStoryFull(story, context)
                 return true
             } else if (item.itemId == R.id.menu_save_story) {
-                //TODO get folder name
+                // TODO get folder name
                 feedUtils.setStorySaved(story!!.storyHash, true, context, emptyList())
                 return true
             } else if (item.itemId == R.id.menu_unsave_story) {
@@ -463,15 +495,23 @@ class StoryViewAdapter(
                 return true
             } else if (item.itemId == R.id.menu_go_to_feed) {
                 val fs = FeedSet.singleFeed(story!!.feedId)
-                FeedItemsList.startActivity(context, fs,
-                        feedUtils.getFeed(story!!.feedId), null, null)
+                FeedItemsList.startActivity(
+                    context,
+                    fs,
+                    feedUtils.getFeed(story!!.feedId),
+                    null,
+                    null,
+                )
                 return true
             } else {
                 return false
             }
         }
 
-        override fun onTouch(v: View, event: MotionEvent): Boolean {
+        override fun onTouch(
+            v: View,
+            event: MotionEvent,
+        ): Boolean {
             // detector looks for ongoing gestures and sets our flags
             val result = gestureDetector.onTouchEvent(event)
             // iff a gesture possibly completed, see if any were found
@@ -508,16 +548,22 @@ class StoryViewAdapter(
         }
     }
 
-    inner class StoryTileViewHolder(view: View) : StoryViewHolder(view)
+    inner class StoryTileViewHolder(
+        view: View,
+    ) : StoryViewHolder(view)
 
-    inner class StoryRowViewHolder(view: View) : StoryViewHolder(view) {
+    inner class StoryRowViewHolder(
+        view: View,
+    ) : StoryViewHolder(view) {
         var storyAuthor: TextView = view.findViewById(R.id.story_item_author)
         var storySnippet: TextView = view.findViewById(R.id.story_item_content)
     }
 
-    override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        viewHolder: RecyclerView.ViewHolder,
+        position: Int,
+    ) {
         if (viewHolder is StoryViewHolder) {
-
             if (position >= stories.size || position < 0) return
 
             val story = stories[position]
@@ -550,7 +596,10 @@ class StoryViewAdapter(
     /**
      * Bind view elements that are common to tiles and rows.
      */
-    private fun bindCommon(vh: StoryViewHolder, story: Story) {
+    private fun bindCommon(
+        vh: StoryViewHolder,
+        story: Story,
+    ) {
         vh.leftBarOne.setBackgroundColor(UIUtils.decodeColourValue(story.extern_feedColor, Color.GRAY))
         vh.leftBarTwo.setBackgroundColor(UIUtils.decodeColourValue(story.extern_feedFade, Color.LTGRAY))
 
@@ -608,8 +657,12 @@ class StoryViewAdapter(
         // dynamic spacing
         val verticalTitlePadding = spacingStyle.getStoryTitleVerticalPadding(context)
         val rightTitlePadding = spacingStyle.getStoryContentRightPadding(context, thumbnailStyle)
-        vh.storyTitleView.setPadding(vh.storyTitleView.paddingLeft, verticalTitlePadding,
-                rightTitlePadding, verticalTitlePadding)
+        vh.storyTitleView.setPadding(
+            vh.storyTitleView.paddingLeft,
+            verticalTitlePadding,
+            rightTitlePadding,
+            verticalTitlePadding,
+        )
 
         // read/unread fading
         if (this.ignoreReadStatus || (!story.read)) {
@@ -637,7 +690,10 @@ class StoryViewAdapter(
         }
     }
 
-    private fun bindTile(vh: StoryTileViewHolder, story: Story) {
+    private fun bindTile(
+        vh: StoryTileViewHolder,
+        story: Story,
+    ) {
         // when first created, tiles' views tend to not yet have their dimensions calculated, but
         // upon being recycled they will often have a known size, which lets us give a max size to
         // the image loader, which in turn can massively optimise loading.  the image loader will
@@ -652,7 +708,10 @@ class StoryViewAdapter(
         }
     }
 
-    private fun bindRow(vh: StoryRowViewHolder, story: Story) {
+    private fun bindRow(
+        vh: StoryRowViewHolder,
+        story: Story,
+    ) {
         val storyContentPreviewStyle = prefsRepo.getStoryContentPreviewStyle()
         if (storyContentPreviewStyle != StoryContentPreviewStyle.NONE) {
             vh.storyTitleView.maxLines = 3
@@ -685,8 +744,12 @@ class StoryViewAdapter(
 
         val contentRightPadding = spacingStyle.getStoryContentRightPadding(context, thumbnailStyle)
         val contentVerticalPadding = spacingStyle.getStoryContentVerticalPadding(context)
-        vh.storySnippet.setPadding(vh.storySnippet.paddingLeft, vh.storySnippet.paddingTop,
-                contentRightPadding, contentVerticalPadding)
+        vh.storySnippet.setPadding(
+            vh.storySnippet.paddingLeft,
+            vh.storySnippet.paddingTop,
+            contentRightPadding,
+            contentVerticalPadding,
+        )
 
         val verticalContainerMargin = spacingStyle.getStoryContainerMargin(context)
         val feedIconLp = vh.feedIconView.layoutParams as RelativeLayout.LayoutParams
@@ -757,7 +820,9 @@ class StoryViewAdapter(
         }
     }
 
-    class FooterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class FooterViewHolder(
+        view: View,
+    ) : RecyclerView.ViewHolder(view) {
         val innerView: FrameLayout = view.findViewById(R.id.footer_view_inner)
     }
 
@@ -770,21 +835,36 @@ class StoryViewAdapter(
         }
     }
 
-    internal inner class StoryViewGestureDetector(private val vh: StoryViewHolder) : SimpleOnGestureListener() {
-        override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+    internal inner class StoryViewGestureDetector(
+        private val vh: StoryViewHolder,
+    ) : SimpleOnGestureListener() {
+        override fun onScroll(
+            e1: MotionEvent?,
+            e2: MotionEvent,
+            distanceX: Float,
+            distanceY: Float,
+        ): Boolean {
             val displayWidthPx = UIUtils.getDisplayWidthPx(context)
             val edgeWithNavGesturesPaddingPx = UIUtils.dp2px(context, 40).toFloat()
             val rightEdgeNavGesturePaddingPx = displayWidthPx - edgeWithNavGesturesPaddingPx
-            if (e1 != null && e1.x > edgeWithNavGesturesPaddingPx &&  // the gesture should not start too close to the left edge and
-                    e2.x - e1.x > 50f &&  // move horizontally to the right and
-                    abs(distanceY.toDouble()) < 25f) { // have minimal vertical travel, so we don't capture scrolling gestures
+            if (e1 != null &&
+                e1.x > edgeWithNavGesturesPaddingPx &&
+                // the gesture should not start too close to the left edge and
+                e2.x - e1.x > 50f &&
+                // move horizontally to the right and
+                abs(distanceY.toDouble()) < 25f
+            ) { // have minimal vertical travel, so we don't capture scrolling gestures
                 vh.gestureL2R = true
                 vh.gestureDebounce = true
                 return true
             }
-            if (e1 != null && e1.x < rightEdgeNavGesturePaddingPx &&  // the gesture should not start too close to the right edge and
-                    e1.x - e2.x > 50f &&  // move horizontally to the left and
-                    abs(distanceY.toDouble()) < 25f) { // have minimal vertical travel, so we don't capture scrolling gestures
+            if (e1 != null &&
+                e1.x < rightEdgeNavGesturePaddingPx &&
+                // the gesture should not start too close to the right edge and
+                e1.x - e2.x > 50f &&
+                // move horizontally to the left and
+                abs(distanceY.toDouble()) < 25f
+            ) { // have minimal vertical travel, so we don't capture scrolling gestures
                 vh.gestureR2L = true
                 vh.gestureDebounce = true
                 return true
@@ -798,7 +878,10 @@ class StoryViewAdapter(
     }
 
     interface OnStoryClickListener {
-        fun onStoryClicked(feedSet: FeedSet?, storyHash: String?)
+        fun onStoryClicked(
+            feedSet: FeedSet?,
+            storyHash: String?,
+        )
     }
 
     companion object {

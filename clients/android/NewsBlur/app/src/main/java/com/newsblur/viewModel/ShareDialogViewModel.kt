@@ -17,28 +17,36 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ShareDialogViewModel
-@Inject constructor(
+    @Inject
+    constructor(
         private val feedUtils: FeedUtils,
         private val storyRepository: StoryRepository,
-) : ViewModel() {
+    ) : ViewModel() {
+        fun shareStory(
+            context: Context,
+            story: Story,
+            comment: String,
+            sourceUserIdString: String?,
+        ) {
+            viewModelScope.launch(Dispatchers.IO) {
+                storyRepository.shareStory(story, comment, sourceUserIdString)
+                withContext(Dispatchers.Main) {
+                    feedUtils.syncUpdateStatus(UPDATE_SOCIAL or UPDATE_STORY)
+                    triggerSync(context)
+                }
+            }
+        }
 
-    fun shareStory(context: Context, story: Story, comment: String, sourceUserIdString: String?) {
-        viewModelScope.launch(Dispatchers.IO) {
-            storyRepository.shareStory(story, comment, sourceUserIdString)
-            withContext(Dispatchers.Main) {
-                feedUtils.syncUpdateStatus(UPDATE_SOCIAL or UPDATE_STORY)
-                triggerSync(context)
+        fun unshareStory(
+            context: Context,
+            story: Story,
+        ) {
+            viewModelScope.launch(Dispatchers.IO) {
+                storyRepository.unshareStory(story)
+                withContext(Dispatchers.Main) {
+                    feedUtils.syncUpdateStatus(UPDATE_SOCIAL or UPDATE_STORY)
+                    triggerSync(context)
+                }
             }
         }
     }
-
-    fun unshareStory(context: Context, story: Story) {
-        viewModelScope.launch(Dispatchers.IO) {
-            storyRepository.unshareStory(story)
-            withContext(Dispatchers.Main) {
-                feedUtils.syncUpdateStatus(UPDATE_SOCIAL or UPDATE_STORY)
-                triggerSync(context)
-            }
-        }
-    }
-}

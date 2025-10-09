@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 abstract class FeedChooser : NbActivity() {
-
     private lateinit var feedFolderViewModel: FeedFolderViewModel
     protected lateinit var adapter: FeedChooserAdapter
 
