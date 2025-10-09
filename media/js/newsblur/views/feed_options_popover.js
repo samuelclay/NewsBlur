@@ -634,7 +634,8 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         };
 
         this.update_feed(options);
-        this.show_correct_feed_view_options_in_menu();
+        // Don't call show_correct_feed_view_options_in_menu() here since we've already
+        // toggled the button visibility correctly and don't need to update template buttons
     },
 
     clear_date_range: function () {

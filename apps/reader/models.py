@@ -229,6 +229,14 @@ class UserSubscription(models.Model):
 
                 # If there's a date filter, we need to filter the stories by date
                 if date_filter_start or date_filter_end:
+                    # Create temp key for date filtering when using persistent sorted_stories_key
+                    # to avoid corrupting the shared feed data for all users
+                    if read_filter != "unread":
+                        temp_ranked_stories_key = f"zT:{user_id}:{feed_id}"
+                        pipeline.zunionstore(temp_ranked_stories_key, [ranked_stories_key])
+                        pipeline.expire(temp_ranked_stories_key, 1 * 60 * 60)  # 1 hour
+                        ranked_stories_key = temp_ranked_stories_key
+
                     min_score = "-inf"
                     max_score = "+inf"
 
@@ -244,7 +252,7 @@ class UserSubscription(models.Model):
                             datetime.datetime.strptime(date_filter_end, "%Y-%m-%d").strftime("%s")
                         )
 
-                    # Remove stories outside the date range
+                    # Remove stories outside the date range from temp copy
                     # First remove stories before start date (if specified)
                     if min_score != "-inf":
                         pipeline.zremrangebyscore(ranked_stories_key, "-inf", min_score - 1)
