@@ -9,8 +9,10 @@ import com.newsblur.R
 import com.newsblur.util.Log
 
 class WidgetUpdateReceiver : BroadcastReceiver() {
-
-    override fun onReceive(context: Context, intent: Intent?) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent?,
+    ) {
         if (intent != null && intent.action != null && intent.action == WidgetUtils.ACTION_UPDATE_WIDGET) {
             Log.d(this.javaClass.name, "Received ${WidgetUtils.ACTION_UPDATE_WIDGET}")
             val widgetManager = AppWidgetManager.getInstance(context)

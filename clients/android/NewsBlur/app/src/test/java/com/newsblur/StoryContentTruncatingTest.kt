@@ -9,7 +9,6 @@ import kotlin.system.measureNanoTime
 import kotlin.system.measureTimeMillis
 
 class StoryContentTruncatingTest {
-
     private val maxBytes = 1024 * 1000 // 1MB
 
     @Test
@@ -52,11 +51,16 @@ class StoryContentTruncatingTest {
         }
     }
 
-    private fun truncateUtf8ByteLength(value: String, maxBytes: Int): String {
+    private fun truncateUtf8ByteLength(
+        value: String,
+        maxBytes: Int,
+    ): String {
         val start = System.currentTimeMillis()
         val bytes = value.encodeToByteArray()
-        if (bytes.size <= maxBytes) return value.also {
-            println("truncateUtf8ByteLength took ${System.currentTimeMillis() - start} millis")
+        if (bytes.size <= maxBytes) {
+            return value.also {
+                println("truncateUtf8ByteLength took ${System.currentTimeMillis() - start} millis")
+            }
         }
         val byteBuffer = ByteBuffer.wrap(bytes, 0, maxBytes)
         val charBuffer = CharBuffer.allocate(maxBytes)

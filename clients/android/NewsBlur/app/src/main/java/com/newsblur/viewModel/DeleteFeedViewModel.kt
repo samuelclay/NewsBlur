@@ -12,32 +12,38 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DeleteFeedViewModel
-@Inject constructor(
+    @Inject
+    constructor(
         private val feedUtils: FeedUtils,
         private val feedRepository: FeedRepository,
-) : ViewModel() {
-
-    fun deleteFeed(feedId: String, folderName: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            feedRepository.deleteFeed(feedId, folderName)
-            feedUtils.syncUpdateStatus(UPDATE_METADATA)
+    ) : ViewModel() {
+        fun deleteFeed(
+            feedId: String,
+            folderName: String,
+        ) {
+            viewModelScope.launch(Dispatchers.IO) {
+                feedRepository.deleteFeed(feedId, folderName)
+                feedUtils.syncUpdateStatus(UPDATE_METADATA)
+            }
         }
-    }
 
-    fun deleteSavedSearch(feedId: String, query: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            feedRepository
+        fun deleteSavedSearch(
+            feedId: String,
+            query: String,
+        ) {
+            viewModelScope.launch(Dispatchers.IO) {
+                feedRepository
                     .deleteSavedSearch(feedId, query)
                     .onSuccess {
                         feedUtils.syncUpdateStatus(UPDATE_METADATA)
                     }
+            }
         }
-    }
 
-    fun deleteSocialFeed(userId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            feedRepository.deleteSocialFeed(userId)
-            feedUtils.syncUpdateStatus(UPDATE_METADATA)
+        fun deleteSocialFeed(userId: String) {
+            viewModelScope.launch(Dispatchers.IO) {
+                feedRepository.deleteSocialFeed(userId)
+                feedUtils.syncUpdateStatus(UPDATE_METADATA)
+            }
         }
     }
-}

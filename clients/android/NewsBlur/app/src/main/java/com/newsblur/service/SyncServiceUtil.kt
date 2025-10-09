@@ -4,7 +4,6 @@ import com.newsblur.network.domain.StoriesResponse
 import com.newsblur.util.Log
 
 object SyncServiceUtil {
-
     @JvmStatic
     fun isStoryResponseGood(response: StoriesResponse?): Boolean {
         if (response == null) {

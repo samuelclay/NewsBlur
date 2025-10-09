@@ -19,7 +19,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ShareExternalStoryActivity : AppCompatActivity() {
-
     @Inject
     lateinit var storyApi: StoryApi
 
@@ -61,33 +60,39 @@ class ShareExternalStoryActivity : AppCompatActivity() {
 
     private fun shareStory(comment: String) {
         lifecycleScope.executeAsyncTask(
-                onPreExecute = {
-                    binding.progressIndicator.setViewVisible()
-                    binding.containerButtons.setViewGone()
-                },
-                doInBackground = {
-                    storyApi.shareExternalStory(storyTitle!!, storyUrl!!, comment)
-                },
-                onPostExecute = { response ->
-                    if (!response.isError) finishWithToast("NewsBlur shared $storyTitle successfully!")
-                    else finishWithToast("NewsBlur shared $storyTitle unsuccessfully!")
+            onPreExecute = {
+                binding.progressIndicator.setViewVisible()
+                binding.containerButtons.setViewGone()
+            },
+            doInBackground = {
+                storyApi.shareExternalStory(storyTitle!!, storyUrl!!, comment)
+            },
+            onPostExecute = { response ->
+                if (!response.isError) {
+                    finishWithToast("NewsBlur shared $storyTitle successfully!")
+                } else {
+                    finishWithToast("NewsBlur shared $storyTitle unsuccessfully!")
                 }
+            },
         )
     }
 
     private fun saveStory() {
         lifecycleScope.executeAsyncTask(
-                onPreExecute = {
-                    binding.progressIndicator.setViewVisible()
-                    binding.containerButtons.setViewGone()
-                },
-                doInBackground = {
-                    storyApi.saveExternalStory(storyTitle!!, storyUrl!!)
-                },
-                onPostExecute = { response ->
-                    if (!response.isError) finishWithToast("NewsBlur saved $storyTitle successfully!")
-                    else finishWithToast("NewsBlur saved $storyTitle unsuccessfully!")
+            onPreExecute = {
+                binding.progressIndicator.setViewVisible()
+                binding.containerButtons.setViewGone()
+            },
+            doInBackground = {
+                storyApi.saveExternalStory(storyTitle!!, storyUrl!!)
+            },
+            onPostExecute = { response ->
+                if (!response.isError) {
+                    finishWithToast("NewsBlur saved $storyTitle successfully!")
+                } else {
+                    finishWithToast("NewsBlur saved $storyTitle unsuccessfully!")
                 }
+            },
         )
     }
 

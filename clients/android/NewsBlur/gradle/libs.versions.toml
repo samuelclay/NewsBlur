@@ -88,3 +88,4 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 benmanes-versions = { id = "com.github.ben-manes.versions", version = "0.53.0" }
 android-test = { id = "com.android.test", version.ref = "agp" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "13.1.0" }

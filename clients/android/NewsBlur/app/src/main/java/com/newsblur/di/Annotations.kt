@@ -29,5 +29,3 @@ annotation class ApiOkHttpClient
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class ImageOkHttpClient
-
-

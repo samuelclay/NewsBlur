@@ -12,7 +12,6 @@ import com.newsblur.util.Log
 import com.newsblur.util.PendingIntentUtils.getImmutableBroadcast
 
 object WidgetUtils {
-
     private const val RC_WIDGET_UPDATE = 1
 
     const val ACTION_UPDATE_WIDGET = "ACTION_UPDATE_WIDGET"
@@ -72,7 +71,8 @@ object WidgetUtils {
 
     @JvmStatic
     fun checkWidgetUpdateAlarm(context: Context) {
-        val hasActiveUpdates = getImmutableBroadcast(context, RC_WIDGET_UPDATE, getUpdateIntent(context), PendingIntent.FLAG_NO_CREATE) != null
+        val hasActiveUpdates =
+            getImmutableBroadcast(context, RC_WIDGET_UPDATE, getUpdateIntent(context), PendingIntent.FLAG_NO_CREATE) != null
         if (!hasActiveUpdates) {
             enableWidgetUpdate(context)
         }
@@ -80,7 +80,8 @@ object WidgetUtils {
 
     fun isLoggedIn(prefsRepo: PrefsRepo): Boolean = prefsRepo.getUniqueLoginKey() != null
 
-    private fun getUpdateIntent(context: Context) = Intent(context, WidgetUpdateReceiver::class.java).apply {
-        action = ACTION_UPDATE_WIDGET
-    }
+    private fun getUpdateIntent(context: Context) =
+        Intent(context, WidgetUpdateReceiver::class.java).apply {
+            action = ACTION_UPDATE_WIDGET
+        }
 }

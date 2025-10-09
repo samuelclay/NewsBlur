@@ -13,14 +13,14 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class StoryModule {
-
     @Singleton
     @Provides
     fun provideStoryRepository(
-            prefsRepo: PrefsRepo,
-            dbHelper: BlurDatabaseHelper,
-    ): StoryRepository = StoryRepositoryImpl(
+        prefsRepo: PrefsRepo,
+        dbHelper: BlurDatabaseHelper,
+    ): StoryRepository =
+        StoryRepositoryImpl(
             prefsRepo,
             dbHelper,
-    )
+        )
 }

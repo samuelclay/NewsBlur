@@ -18,27 +18,32 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StoriesViewModel
-@Inject constructor(private val dbHelper: BlurDatabaseHelper): ViewModel() {
+    @Inject
+    constructor(
+        private val dbHelper: BlurDatabaseHelper,
+    ) : ViewModel() {
+        private val cancellationSignal = CancellationSignal()
+        private val _activeStoriesLiveData = MutableLiveData<Cursor>()
+        val activeStoriesLiveData: LiveData<Cursor> = _activeStoriesLiveData
 
-    private val cancellationSignal = CancellationSignal()
-    private val _activeStoriesLiveData = MutableLiveData<Cursor>()
-    val activeStoriesLiveData: LiveData<Cursor> = _activeStoriesLiveData
-
-    fun getActiveStories(fs: FeedSet, cursorFilters: CursorFilters) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                // TODO cursor management
-                dbHelper.getActiveStoriesCursor(fs, cursorFilters, cancellationSignal).let {
-                    _activeStoriesLiveData.postValue(it)
+        fun getActiveStories(
+            fs: FeedSet,
+            cursorFilters: CursorFilters,
+        ) {
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    // TODO cursor management
+                    dbHelper.getActiveStoriesCursor(fs, cursorFilters, cancellationSignal).let {
+                        _activeStoriesLiveData.postValue(it)
+                    }
+                } catch (e: OperationCanceledException) {
+                    Log.e(this.javaClass.name, "Caught ${e.javaClass.name} in getActiveStories.")
                 }
-            } catch (e: OperationCanceledException) {
-                Log.e(this.javaClass.name, "Caught ${e.javaClass.name} in getActiveStories.")
             }
         }
-    }
 
-    override fun onCleared() {
-        cancellationSignal.cancel()
-        super.onCleared()
+        override fun onCleared() {
+            cancellationSignal.cancel()
+            super.onCleared()
+        }
     }
-}

@@ -11,7 +11,6 @@ import com.newsblur.util.StateFilter
 import kotlinx.coroutines.CoroutineScope
 
 interface SyncServiceDelegate {
-
     val dbHelper: BlurDatabaseHelper
     val storyApi: StoryApi
     val prefsRepo: PrefsRepo
@@ -21,20 +20,33 @@ interface SyncServiceDelegate {
     val context: Context
 
     fun sendSyncUpdate(update: Int)
+
     fun pushNotifications()
+
     fun addImageUrlToPrefetch(url: String?)
-    fun insertStories(response: StoriesResponse, stateFilter: StateFilter)
-    fun prefetchImages(response: StoriesResponse, scope: CoroutineScope)
+
+    fun insertStories(
+        response: StoriesResponse,
+        stateFilter: StateFilter,
+    )
+
+    fun prefetchImages(
+        response: StoriesResponse,
+        scope: CoroutineScope,
+    )
+
     fun isOrphanFeed(feedId: String): Boolean
+
     fun isDisabledFeed(feedId: String): Boolean
+
     fun setServiceState(state: ServiceState)
+
     fun setServiceStateIdleIf(state: ServiceState)
 }
 
 internal class SyncServiceDelegateImpl(
-        private val syncService: SyncService,
+    private val syncService: SyncService,
 ) : SyncServiceDelegate {
-
     override val dbHelper: BlurDatabaseHelper get() = syncService.dbHelper
     override val storyApi: StoryApi get() = syncService.storyApi
     override val prefsRepo: PrefsRepo get() = syncService.prefsRepo
@@ -55,12 +67,18 @@ internal class SyncServiceDelegateImpl(
         syncService.addImageUrlToPrefetch(url)
     }
 
-    override fun insertStories(response: StoriesResponse, stateFilter: StateFilter) {
+    override fun insertStories(
+        response: StoriesResponse,
+        stateFilter: StateFilter,
+    ) {
         Log.d(SyncService::class.java.name, "got stories from sub sync: " + response.stories.size)
         dbHelper.insertStories(response, stateFilter, false)
     }
 
-    override fun prefetchImages(response: StoriesResponse, scope: CoroutineScope) {
+    override fun prefetchImages(
+        response: StoriesResponse,
+        scope: CoroutineScope,
+    ) {
         syncService.prefetchImages(response, scope)
     }
 

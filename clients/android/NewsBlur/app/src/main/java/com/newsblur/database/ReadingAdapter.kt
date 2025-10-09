@@ -30,17 +30,17 @@ import kotlinx.coroutines.withContext
  * to child fragments during updates.
  */
 class ReadingAdapter(
-        private val fm: FragmentManager,
-        private val sourceUserId: String?,
-        private val showFeedMetadata: Boolean,
-        private val activity: Reading,
-        private val dbHelper: BlurDatabaseHelper,
+    private val fm: FragmentManager,
+    private val sourceUserId: String?,
+    private val showFeedMetadata: Boolean,
+    private val activity: Reading,
+    private val dbHelper: BlurDatabaseHelper,
 ) : PagerAdapter() {
-
     private val maxSavedStates = 3
-    private val states = object : LinkedHashMap<String, Fragment.SavedState?>(16, 0.75f, true) {
-        override fun removeEldestEntry(eldest: Map.Entry<String, Fragment.SavedState?>): Boolean = size > maxSavedStates
-    }
+    private val states =
+        object : LinkedHashMap<String, Fragment.SavedState?>(16, 0.75f, true) {
+            override fun removeEldestEntry(eldest: Map.Entry<String, Fragment.SavedState?>): Boolean = size > maxSavedStates
+        }
 
     // the cursor from which we pull story objects. should not be used except by the thaw coro
     private var mostRecentCursor: Cursor? = null
@@ -55,7 +55,10 @@ class ReadingAdapter(
     // classifiers for each feed seen in the story list
     private val classifiers = mutableMapOf<String, Classifier>()
 
-    fun swapCursor(lifecycleScope: LifecycleCoroutineScope, cursor: Cursor) {
+    fun swapCursor(
+        lifecycleScope: LifecycleCoroutineScope,
+        cursor: Cursor,
+    ) {
         // cache the identity of the most recent cursor so async batches can check to
         // see if they are stale
         mostRecentCursor = cursor
@@ -69,61 +72,66 @@ class ReadingAdapter(
      * Attempt to thaw a new set of stories from the cursor most recently
      * seen when the that cycle started.
      */
-    private suspend fun thaw(c: Cursor?) = coroutineScope {
-        if (c !== mostRecentCursor) return@coroutineScope
+    private suspend fun thaw(c: Cursor?) =
+        coroutineScope {
+            if (c !== mostRecentCursor) return@coroutineScope
 
-        // thawed stories
-        val newStories: MutableList<Story>
-        // attempt to thaw as gracefully as possible despite the fact that the loader
-        // framework could close our cursor at any moment.  if this happens, it is fine,
-        // as a new one will be provided and another cycle will start.  just return.
-        try {
-            if (c == null) {
-                newStories = ArrayList(0)
-            } else {
-                if (c.isClosed) return@coroutineScope
-                newStories = ArrayList(c.count)
-                // keep track of which feeds are in this story set so we can also fetch Classifiers
-                val feedIdsSeen: MutableSet<String> = HashSet()
-                c.moveToPosition(-1)
-                while (c.moveToNext()) {
+            // thawed stories
+            val newStories: MutableList<Story>
+            // attempt to thaw as gracefully as possible despite the fact that the loader
+            // framework could close our cursor at any moment.  if this happens, it is fine,
+            // as a new one will be provided and another cycle will start.  just return.
+            try {
+                if (c == null) {
+                    newStories = ArrayList(0)
+                } else {
                     if (c.isClosed) return@coroutineScope
-                    val s = Story.fromCursor(c)
-                    s.bindExternValues(c)
-                    newStories.add(s)
-                    feedIdsSeen.add(s.feedId)
+                    newStories = ArrayList(c.count)
+                    // keep track of which feeds are in this story set so we can also fetch Classifiers
+                    val feedIdsSeen: MutableSet<String> = HashSet()
+                    c.moveToPosition(-1)
+                    while (c.moveToNext()) {
+                        if (c.isClosed) return@coroutineScope
+                        val s = Story.fromCursor(c)
+                        s.bindExternValues(c)
+                        newStories.add(s)
+                        feedIdsSeen.add(s.feedId)
+                    }
+                    for (feedId in feedIdsSeen) {
+                        classifiers[feedId] = dbHelper.getClassifierForFeed(feedId)
+                    }
                 }
-                for (feedId in feedIdsSeen) {
-                    classifiers[feedId] = dbHelper.getClassifierForFeed(feedId)
-                }
+            } catch (e: Exception) {
+                // because we use interruptable loaders that auto-close cursors, it is expected
+                // that cursors will sometimes go bad. this is a useful signal to stop the thaw
+                // thread and let it start on a fresh cursor.
+                Log.e(this, "error thawing story list: " + e.message, e)
+                return@coroutineScope
             }
-        } catch (e: Exception) {
-            // because we use interruptable loaders that auto-close cursors, it is expected
-            // that cursors will sometimes go bad. this is a useful signal to stop the thaw
-            // thread and let it start on a fresh cursor.
-            Log.e(this, "error thawing story list: " + e.message, e)
-            return@coroutineScope
-        }
-        if (c !== mostRecentCursor) return@coroutineScope
-        withContext(Dispatchers.Main) {
-            stories.clear()
-            stories.addAll(newStories)
+            if (c !== mostRecentCursor) return@coroutineScope
+            withContext(Dispatchers.Main) {
+                stories.clear()
+                stories.addAll(newStories)
 
-            val valid = stories.map { it.storyHash }
-            states.keys.retainAll(valid)
+                val valid = stories.map { it.storyHash }
+                states.keys.retainAll(valid)
 
-            notifyDataSetChanged()
-            activity.pagerUpdated()
+                notifyDataSetChanged()
+                activity.pagerUpdated()
+            }
         }
-    }
 
     fun getStory(position: Int): Story? =
-            if (position >= stories.size || position < 0) null
-            else stories[position]
+        if (position >= stories.size || position < 0) {
+            null
+        } else {
+            stories[position]
+        }
 
     override fun getCount(): Int = stories.size
 
-    private fun createFragment(story: Story): ReadingItemFragment = newInstance(
+    private fun createFragment(story: Story): ReadingItemFragment =
+        newInstance(
             story,
             story.extern_feedTitle,
             story.extern_feedColor,
@@ -134,9 +142,12 @@ class ReadingAdapter(
             classifiers[story.feedId],
             showFeedMetadata,
             sourceUserId,
-    )
+        )
 
-    override fun instantiateItem(container: ViewGroup, position: Int): Fragment {
+    override fun instantiateItem(
+        container: ViewGroup,
+        position: Int,
+    ): Fragment {
         val story = getStory(position)
         val tag = story?.let { "reading:${it.storyHash}" } ?: "reading:loading:$position"
 
@@ -157,7 +168,11 @@ class ReadingAdapter(
         return fragment
     }
 
-    override fun destroyItem(container: ViewGroup, position: Int, obj: Any) {
+    override fun destroyItem(
+        container: ViewGroup,
+        position: Int,
+        obj: Any,
+    ) {
         val fragment = obj as Fragment
         if (curTransaction == null) {
             curTransaction = fm.beginTransaction()
@@ -176,7 +191,11 @@ class ReadingAdapter(
         }
     }
 
-    override fun setPrimaryItem(container: ViewGroup, position: Int, obj: Any) {
+    override fun setPrimaryItem(
+        container: ViewGroup,
+        position: Int,
+        obj: Any,
+    ) {
         val fragment = obj as Fragment
         if (fragment !== lastActiveFragment) {
             lastActiveFragment?.setMenuVisibility(false)
@@ -184,11 +203,12 @@ class ReadingAdapter(
             lastActiveFragment = fragment
         }
 
-        val keep: Set<String> = buildSet {
-            for (p in (position - 1)..(position + 1)) {
-                getStory(p)?.storyHash?.let { add(it) }
+        val keep: Set<String> =
+            buildSet {
+                for (p in (position - 1)..(position + 1)) {
+                    getStory(p)?.storyHash?.let { add(it) }
+                }
             }
-        }
         states.keys.retainAll(keep) // drop anything not near current
     }
 
@@ -197,8 +217,10 @@ class ReadingAdapter(
         curTransaction = null
     }
 
-    override fun isViewFromObject(view: View, `object`: Any): Boolean =
-            (`object` as Fragment).view === view
+    override fun isViewFromObject(
+        view: View,
+        `object`: Any,
+    ): Boolean = (`object` as Fragment).view === view
 
     /**
      * get the number of stories we very likely have, even if they haven't
@@ -206,9 +228,10 @@ class ReadingAdapter(
      * of our dataset (such as for calculating when to fetch more stories)
      */
     val rawStoryCount: Int
-        get() = mostRecentCursor?.let {
-            if (it.isClosed) 0 else it.count
-        } ?: 0
+        get() =
+            mostRecentCursor?.let {
+                if (it.isClosed) 0 else it.count
+            } ?: 0
 
     fun getPosition(story: Story): Int {
         var pos = 0
@@ -229,8 +252,7 @@ class ReadingAdapter(
         return POSITION_NONE
     }
 
-    fun getExistingItem(pos: Int): ReadingItemFragment? =
-            getStory(pos)?.let { fragments[it.storyHash] }
+    fun getExistingItem(pos: Int): ReadingItemFragment? = getStory(pos)?.let { fragments[it.storyHash] }
 
     override fun notifyDataSetChanged() {
         super.notifyDataSetChanged()
@@ -274,7 +296,10 @@ class ReadingAdapter(
         }
     }
 
-    override fun restoreState(state: Parcelable?, loader: ClassLoader?) {
+    override fun restoreState(
+        state: Parcelable?,
+        loader: ClassLoader?,
+    ) {
         val bundle = state as? Bundle ?: return
         bundle.classLoader = loader
         fragments.clear()
@@ -287,7 +312,10 @@ class ReadingAdapter(
         }
     }
 
-    private fun isNearCurrent(container: ViewGroup, storyHash: String): Boolean {
+    private fun isNearCurrent(
+        container: ViewGroup,
+        storyHash: String,
+    ): Boolean {
         val vp = container as? ViewPager ?: return false
         val cur = vp.currentItem
         val pos = findHash(storyHash)

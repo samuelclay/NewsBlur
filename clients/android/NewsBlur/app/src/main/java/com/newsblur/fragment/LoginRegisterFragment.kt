@@ -23,13 +23,16 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginRegisterFragment : Fragment() {
-
     @Inject
     lateinit var prefsRepo: PrefsRepo
 
     private lateinit var binding: FragmentLoginregisterBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View? {
         val v = inflater.inflate(R.layout.fragment_loginregister, container, false)
         binding = FragmentLoginregisterBinding.bind(v)
 
@@ -48,7 +51,10 @@ class LoginRegisterFragment : Fragment() {
         return v
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         binding.loginButton.setOnClickListener { logIn() }
         binding.registrationButton.setOnClickListener { signUp() }
@@ -76,20 +82,22 @@ class LoginRegisterFragment : Fragment() {
                 return
             }
 
-            val loginIntent = Intent(activity, LoginProgress::class.java).apply {
-                putExtra("username", binding.loginUsername.text.toString())
-                putExtra("password", binding.loginPassword.text.toString())
-            }
+            val loginIntent =
+                Intent(activity, LoginProgress::class.java).apply {
+                    putExtra("username", binding.loginUsername.text.toString())
+                    putExtra("password", binding.loginPassword.text.toString())
+                }
             startActivity(loginIntent)
         }
     }
 
     private fun signUp() {
-        val registerIntent = Intent(activity, RegisterProgress::class.java).apply {
-            putExtra("username", binding.registrationUsername.text.toString())
-            putExtra("password", binding.registrationPassword.text.toString())
-            putExtra("email", binding.registrationEmail.text.toString())
-        }
+        val registerIntent =
+            Intent(activity, RegisterProgress::class.java).apply {
+                putExtra("username", binding.registrationUsername.text.toString())
+                putExtra("password", binding.registrationPassword.text.toString())
+                putExtra("email", binding.registrationEmail.text.toString())
+            }
         startActivity(registerIntent)
     }
 

@@ -25,7 +25,6 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class InitActivity : AppCompatActivity() {
-
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
 

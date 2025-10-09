@@ -3,8 +3,9 @@ package com.newsblur.service
 import com.newsblur.util.Log
 import com.newsblur.util.PrefConstants
 
-class CleanupSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate) {
-
+class CleanupSubService(
+    delegate: SyncServiceDelegate,
+) : SyncSubService(delegate) {
     override suspend fun execute() {
         if (!prefsRepo.isTimeToCleanup()) return
 
@@ -25,8 +26,8 @@ class CleanupSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
 
         Log.d(this.javaClass.name, "cleaning up story image cache")
         storyImageCache.cleanupUnusedAndOld(
-                dbHelper.getAllStoryImages(),
-                prefsRepo.getMaxCachedAgeMillis(),
+            dbHelper.getAllStoryImages(),
+            prefsRepo.getMaxCachedAgeMillis(),
         )
 
         Log.d(this.javaClass.name, "cleaning up icon cache")
@@ -34,8 +35,8 @@ class CleanupSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
 
         Log.d(this.javaClass.name, "cleaning up thumbnail cache")
         thumbnailCache.cleanupUnusedAndOld(
-                dbHelper.getAllStoryThumbnails(),
-                prefsRepo.getMaxCachedAgeMillis(),
+            dbHelper.getAllStoryThumbnails(),
+            prefsRepo.getMaxCachedAgeMillis(),
         )
 
         setServiceStateIdleIf(ServiceState.CleanupSync)

@@ -16,7 +16,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class NewslettersFragment : DialogFragment() {
-
     @Inject
     lateinit var prefsRepo: PrefsRepo
 
@@ -30,13 +29,15 @@ class NewslettersFragment : DialogFragment() {
             binding.txtSetup.setViewVisible()
         }
 
-        return AlertDialog.Builder(requireContext()).apply {
-            setView(binding.root)
-            setPositiveButton(android.R.string.ok, null)
-            setNegativeButton(R.string.copy_email) { _, _ ->
-                copyToClipboard(emailAddress)
-            }
-        }.create()
+        return AlertDialog
+            .Builder(requireContext())
+            .apply {
+                setView(binding.root)
+                setPositiveButton(android.R.string.ok, null)
+                setNegativeButton(R.string.copy_email) { _, _ ->
+                    copyToClipboard(emailAddress)
+                }
+            }.create()
     }
 
     private fun generateEmail(): String {
