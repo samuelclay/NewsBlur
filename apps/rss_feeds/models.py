@@ -730,6 +730,9 @@ class Feed(models.Model):
             self.save_popular_tags()
             self.save_feed_story_history_statistics()
 
+        if force or count_extra:
+            self.sync_redis()
+
         self.set_next_scheduled_update(delay_fetch_sec=delay_fetch_sec)
 
     def calculate_last_story_date(self):
@@ -3594,19 +3597,41 @@ class MStory(mongo.Document):
             )
             return
 
-        # Don't delete redis keys because they take time to rebuild and subs can
-        # be counted incorrectly during that time.
-        # r.delete('F:%s' % story_feed_id)
-        # r.delete('zF:%s' % story_feed_id)
+        # Get all story hashes currently in Redis
+        set_key = "F:%s" % story_feed_id
+        zset_key = "zF:%s" % story_feed_id
+        redis_hashes = r.smembers(set_key)
+
+        # Get all story hashes that should be in Redis from MongoDB
+        mongo_stories = list(stories.only("story_hash", "story_date"))
+        mongo_hashes = set(story.story_hash for story in mongo_stories)
+
+        # Find differences
+        to_remove = redis_hashes - mongo_hashes
+        to_add = [story for story in mongo_stories if story.story_hash not in redis_hashes]
 
         logging.info(
-            "   ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis"
-            % (feed and feed.log_title[:30] or story_feed_id, stories.count())
+            "   ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis (-%s/+%s)"
+            % (feed and feed.log_title[:30] or story_feed_id, len(mongo_hashes), len(to_remove), len(to_add))
         )
-        p = r.pipeline()
-        for story in stories:
-            story.sync_redis(r=p)
-        p.execute()
+
+        # Remove stories that don't exist in MongoDB
+        if to_remove:
+            p = r.pipeline()
+            for story_hash in to_remove:
+                p.srem(set_key, story_hash)
+                p.zrem(zset_key, story_hash)
+            p.execute()
+
+        # Add stories that are missing in Redis
+        if to_add:
+            p = r.pipeline()
+            for story in to_add:
+                p.sadd(set_key, story.story_hash)
+                p.zadd(zset_key, {story.story_hash: time.mktime(story.story_date.timetuple())})
+            p.expire(set_key, feed.days_of_story_hashes * 24 * 60 * 60)
+            p.expire(zset_key, feed.days_of_story_hashes * 24 * 60 * 60)
+            p.execute()
 
     def count_comments(self):
         from apps.social.models import MSharedStory
