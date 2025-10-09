@@ -405,8 +405,13 @@ class UserSubscription(models.Model):
         if not all_feed_ids:
             all_feed_ids = [f for f in feed_ids]
 
-        # feeds_string = ""
-        feeds_string = ",".join(str(f) for f in sorted(all_feed_ids))[:30]
+        # Use hash for large feed lists to keep Redis key manageable
+        if len(all_feed_ids) > 20:
+            import hashlib
+            feeds_hash = hashlib.md5(",".join(str(f) for f in sorted(all_feed_ids)).encode()).hexdigest()[:16]
+            feeds_string = f"h{feeds_hash}"
+        else:
+            feeds_string = ",".join(str(f) for f in sorted(all_feed_ids))
         ranked_stories_keys = "%szU:%s:feeds:%s" % (cache_prefix, user_id, feeds_string)
         unread_ranked_stories_keys = "%szhU:%s:feeds:%s" % (cache_prefix, user_id, feeds_string)
         stories_cached = rt.exists(ranked_stories_keys)
@@ -437,7 +442,7 @@ class UserSubscription(models.Model):
             date_filter_start=date_filter_start,
             date_filter_end=date_filter_end,
         )
-        story_hashes = range_func(ranked_stories_keys, offset, limit)
+        story_hashes = range_func(ranked_stories_keys, offset, offset + limit)
 
         if read_filter == "unread":
             unread_feed_story_hashes = story_hashes
@@ -454,7 +459,7 @@ class UserSubscription(models.Model):
                 date_filter_start=date_filter_start,
                 date_filter_end=date_filter_end,
             )
-            unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, limit)
+            unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, offset + limit)
 
         rt.expire(ranked_stories_keys, 60 * 60)
         rt.expire(unread_ranked_stories_keys, 60 * 60)
