@@ -29,7 +29,7 @@
     ansible_python_interpreter: /usr/bin/python3
   amazon.aws.aws_s3:
     bucket: newsblur-backups
-    object: /static_py3.tgz
+    object: static_py3.tgz
     dest: /srv/newsblur/static.tgz
     mode: get
     overwrite: different

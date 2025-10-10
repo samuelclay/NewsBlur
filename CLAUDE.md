@@ -68,6 +68,7 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 - Local dev: `https://localhost`
 - Open All Site Stories: `NEWSBLUR.reader.open_river_stories()`
 - Open feed: `NEWSBLUR.reader.open_feed(feedId)`
+- Open feed options popover: Click `.NB-feedbar-options` element (no API)
 - Get feed IDs: `NEWSBLUR.assets.feeds` is a Backbone.js collection with underscore.js operations. E.g. `var feedId = NEWSBLUR.assets.feeds.find((e) => e.get('nt') > 0).get('id')` for first feed with neutral unread stories
 - Open folder: Click `.folder .folder_title` element (no API)
 - **Screenshots**: Always specify `filePath: "/tmp/newsblur-screenshot.png"` to avoid permission prompts

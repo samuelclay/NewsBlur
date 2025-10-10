@@ -59,6 +59,7 @@
         name:
           - boto3
           - botocore
+          - packaging
         virtualenv: ~/.virtualenvs/newsblur
       tags:
         - never
@@ -69,7 +70,7 @@
       connection: local
       amazon.aws.aws_s3:
         bucket: newsblur-backups
-        object: /static_py3.tgz
+        object: static_py3.tgz
         src: /srv/newsblur/static.tgz
         mode: put
         overwrite: different

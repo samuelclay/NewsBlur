@@ -12,6 +12,7 @@ import urllib.parse
 import urllib.request
 import zlib
 
+import pytz
 import redis
 import requests
 from django.conf import settings
@@ -138,7 +139,9 @@ def get_subdomain(request):
         return None
 
 
-def adjust_read_filter_for_date_range(read_filter, date_filter_start, date_filter_end, unread_cutoff):
+def adjust_read_filter_for_date_range(
+    read_filter, date_filter_start_utc, date_filter_end_start_utc, unread_cutoff
+):
     """
     Auto-switch from unread to all if date filter extends beyond unread cutoff.
 
@@ -150,36 +153,71 @@ def adjust_read_filter_for_date_range(read_filter, date_filter_start, date_filte
         return read_filter
 
     should_switch_to_all = False
+    if unread_cutoff:
+        unread_cutoff_naive = unread_cutoff.replace(tzinfo=None) if unread_cutoff.tzinfo else unread_cutoff
+    else:
+        unread_cutoff_naive = None
 
-    if date_filter_start and date_filter_start != "all":
-        try:
-            filter_start = datetime.datetime.strptime(date_filter_start, "%Y-%m-%d")
-            # Compare as naive datetimes (both are UTC)
-            filter_start_naive = filter_start.replace(tzinfo=None)
-            unread_cutoff_naive = (
-                unread_cutoff.replace(tzinfo=None) if unread_cutoff.tzinfo else unread_cutoff
-            )
-            if filter_start_naive < unread_cutoff_naive:
-                should_switch_to_all = True
-        except (ValueError, AttributeError):
-            pass
+    if unread_cutoff_naive:
+        if date_filter_start_utc and date_filter_start_utc < unread_cutoff_naive:
+            should_switch_to_all = True
 
-    if date_filter_end and date_filter_end != "all":
-        try:
-            filter_end = datetime.datetime.strptime(date_filter_end, "%Y-%m-%d")
-            filter_end_naive = filter_end.replace(tzinfo=None)
-            unread_cutoff_naive = (
-                unread_cutoff.replace(tzinfo=None) if unread_cutoff.tzinfo else unread_cutoff
-            )
-            if filter_end_naive < unread_cutoff_naive:
-                should_switch_to_all = True
-        except (ValueError, AttributeError):
-            pass
+        if date_filter_end_start_utc and date_filter_end_start_utc < unread_cutoff_naive:
+            should_switch_to_all = True
 
     if should_switch_to_all:
         return "all"
 
     return read_filter
+
+
+def normalize_date_filters(date_filter_start, date_filter_end, user_timezone):
+    """
+    Convert date filter strings (YYYY-MM-DD) in the user's timezone into UTC datetimes.
+
+    Returns a tuple of:
+        (start_utc_inclusive, end_utc_exclusive, end_utc_start_of_day)
+    """
+    tz = user_timezone or pytz.UTC
+    if isinstance(tz, str):
+        try:
+            tz = pytz.timezone(tz)
+        except pytz.UnknownTimeZoneError:
+            tz = pytz.UTC
+
+    start_utc = None
+    end_utc_exclusive = None
+    end_utc_start_of_day = None
+
+    if date_filter_start and date_filter_start != "all":
+        try:
+            start_naive = datetime.datetime.strptime(date_filter_start, "%Y-%m-%d")
+            if hasattr(tz, "localize"):
+                start_local = tz.localize(start_naive, is_dst=None)
+            else:
+                start_local = start_naive.replace(tzinfo=tz)
+            start_utc = start_local.astimezone(pytz.UTC).replace(tzinfo=None)
+        except (ValueError, pytz.AmbiguousTimeError, pytz.NonExistentTimeError):
+            start_utc = None
+
+    if date_filter_end and date_filter_end != "all":
+        try:
+            end_start_naive = datetime.datetime.strptime(date_filter_end, "%Y-%m-%d")
+            if hasattr(tz, "localize"):
+                end_start_local = tz.localize(end_start_naive, is_dst=None)
+            else:
+                end_start_local = end_start_naive.replace(tzinfo=tz)
+            end_utc_start_of_day = end_start_local.astimezone(pytz.UTC).replace(tzinfo=None)
+
+            next_day_local = end_start_local + datetime.timedelta(days=1)
+            if hasattr(tz, "normalize"):
+                next_day_local = tz.normalize(next_day_local)
+            end_utc_exclusive = next_day_local.astimezone(pytz.UTC).replace(tzinfo=None)
+        except (ValueError, pytz.AmbiguousTimeError, pytz.NonExistentTimeError):
+            end_utc_exclusive = None
+            end_utc_start_of_day = None
+
+    return start_utc, end_utc_exclusive, end_utc_start_of_day
 
 
 @never_cache
@@ -819,9 +857,13 @@ def load_single_feed(request, feed_id):
             stories = []
             message = "You must be a premium subscriber to search."
 
+    date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
+        date_filter_start, date_filter_end, user.profile.timezone
+    )
+
     # Auto-switch from unread to all if date filter extends beyond unread cutoff
     read_filter = adjust_read_filter_for_date_range(
-        read_filter, date_filter_start, date_filter_end, user.profile.unread_cutoff
+        read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
     )
 
     if read_filter == "starred":
@@ -835,12 +877,16 @@ def load_single_feed(request, feed_id):
             read_filter=read_filter,
             offset=offset,
             limit=limit,
-            date_filter_start=date_filter_start,
-            date_filter_end=date_filter_end,
+            date_filter_start=date_filter_start_utc,
+            date_filter_end=date_filter_end_utc,
         )
     else:
         stories = feed.get_stories(
-            offset, limit, order=order, date_filter_start=date_filter_start, date_filter_end=date_filter_end
+            offset,
+            limit,
+            order=order,
+            date_filter_start=date_filter_start_utc,
+            date_filter_end=date_filter_end_utc,
         )
 
     checkpoint1 = time.time()
@@ -1679,8 +1725,12 @@ def load_river_stories__redis(request):
             message = "You must be a premium subscriber to search."
 
     # Auto-switch from unread to all if date filter extends beyond unread cutoff
+    date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
+        date_filter_start, date_filter_end, user.profile.timezone
+    )
+
     read_filter = adjust_read_filter_for_date_range(
-        read_filter, date_filter_start, date_filter_end, user.profile.unread_cutoff
+        read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
     )
 
     if read_filter == "starred":
@@ -1706,8 +1756,8 @@ def load_river_stories__redis(request):
                 "usersubs": usersubs,
                 "cutoff_date": user.profile.unread_cutoff,
                 "cache_prefix": "dashboard:" if on_dashboard else "",
-                "date_filter_start": date_filter_start,
-                "date_filter_end": date_filter_end,
+                "date_filter_start": date_filter_start_utc,
+                "date_filter_end": date_filter_end_utc,
             }
             story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
         else:

@@ -107,7 +107,11 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                         var start_date = NEWSBLUR.reader.flags.date_filter_start;\
                         var end_date = NEWSBLUR.reader.flags.date_filter_end;\
                         if (start_date && end_date) { %>\
+                        <% if (start_date === end_date) { %>\
+                        Stories on <%= start_date %>\
+                        <% } else { %>\
                         Stories from <%= start_date %> to <%= end_date %>\
+                        <% } %>\
                         &middot;\
                       <% } else if (start_date) { %>\
                         Stories newer than <%= start_date %>\
