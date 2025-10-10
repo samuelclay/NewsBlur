@@ -3,7 +3,7 @@ SHELL := /bin/bash
 TIMEOUT_CMD := $(shell command -v gtimeout 2>/dev/null || command -v timeout 2>/dev/null || echo timeout)
 newsblur := $(shell $(TIMEOUT_CMD) 2s docker ps -qf "name=newsblur_web" 2>/dev/null || docker ps -qf "name=newsblur_web")
 
-.PHONY: node
+.PHONY: node api
 
 rebuild: pull bounce migrate bootstrap collectstatic
 nb-fast: pull bounce-fast migrate bootstrap collectstatic
@@ -262,6 +262,16 @@ perf-docker:
 clean:
 	find . -name \*.pyc -delete
 
+# API testing with authenticated curl
+# Usage: make api URL=/reader/feeds
+# Usage: make api URL=/reader/feeds ARGS="-X POST -d 'foo=bar'"
+api:
+	@if [ ! -f .dev_session ]; then \
+		echo "Generating dev session..."; \
+		docker exec -t newsblur_web ./manage.py generate_dev_session; \
+	fi
+	@SESSION_ID=$$(cat .dev_session); \
+	curl -k -H "Cookie: sessionid=$$SESSION_ID" https://localhost$(URL) $(ARGS)
 
 grafana-dashboards:
 	uv run python utils/grafana_backup.py
