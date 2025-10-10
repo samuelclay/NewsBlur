@@ -87,7 +87,11 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
             var formatted_end = format_date(date_filter_end);
 
             if (date_filter_start && date_filter_end) {
-                filter_text = 'between <b>' + formatted_start + '</b> and <b>' + formatted_end + '</b>';
+                if (date_filter_start === date_filter_end) {
+                    filter_text = 'on <b>' + formatted_start + '</b>';
+                } else {
+                    filter_text = 'between <b>' + formatted_start + '</b> and <b>' + formatted_end + '</b>';
+                }
             } else if (date_filter_start) {
                 filter_text = 'newer than <b>' + formatted_start + '</b>';
             } else if (date_filter_end) {

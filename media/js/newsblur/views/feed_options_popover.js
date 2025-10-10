@@ -29,7 +29,8 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         "click .NB-filter-popover-dashboard-add-module-right": "add_dashboard_module_right",
         "click .NB-filter-popover-dashboard-remove-module": "remove_dashboard_module",
         "change .NB-modal-feed-chooser": "change_feed",
-        "change .NB-date-input": "change_date_range",
+        "input .NB-date-input": "debounced_change_date_range",
+        "blur .NB-date-input": "on_date_input_blur",
         "click .NB-clear-date-button": "clear_date_range",
         "click .NB-date-filter-duration": "change_date_filter_duration"
     },
@@ -50,6 +51,10 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         }
 
         // console.log("Opening feed options", this.options, this.options.feed_id);
+
+        // Initialize cached date filter state for debouncing
+        this.cached_date_filter_start = NEWSBLUR.reader.flags.date_filter_start || '';
+        this.cached_date_filter_end = NEWSBLUR.reader.flags.date_filter_end || '';
 
         NEWSBLUR.ReaderPopover.prototype.initialize.call(this, this.options);
         this.model = NEWSBLUR.assets;
@@ -513,6 +518,13 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         if (NEWSBLUR.reader.flags.search) {
             options.search = NEWSBLUR.reader.flags.search;
         }
+        // Preserve date filters when changing view settings
+        if (NEWSBLUR.reader.flags.date_filter_start) {
+            options.date_filter_start = NEWSBLUR.reader.flags.date_filter_start;
+        }
+        if (NEWSBLUR.reader.flags.date_filter_end) {
+            options.date_filter_end = NEWSBLUR.reader.flags.date_filter_end;
+        }
         this.update_feed(options);
         this.show_correct_feed_view_options_in_menu();
     },
@@ -541,6 +553,16 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     },
 
     reload_feed: function (options) {
+        options = options || {};
+
+        // Preserve date filters by default unless explicitly cleared
+        if (!options.hasOwnProperty('date_filter_start') && NEWSBLUR.reader.flags.date_filter_start) {
+            options.date_filter_start = NEWSBLUR.reader.flags.date_filter_start;
+        }
+        if (!options.hasOwnProperty('date_filter_end') && NEWSBLUR.reader.flags.date_filter_end) {
+            options.date_filter_end = NEWSBLUR.reader.flags.date_filter_end;
+        }
+
         if (this.options.on_dashboard) {
             this.options.on_dashboard.initialize();
         } else {
@@ -609,6 +631,33 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.close();
     },
 
+    debounced_change_date_range: function () {
+        // Debounce the date range change to avoid hammering the server
+        if (this._date_range_debounce_timer) {
+            clearTimeout(this._date_range_debounce_timer);
+        }
+
+        this._date_range_debounce_timer = setTimeout(_.bind(function () {
+            this.change_date_range();
+        }, this), 500);
+    },
+
+    on_date_input_blur: function () {
+        // When user blurs the input, immediately apply the change
+        // but only if the value is different from what was last processed
+        var start_date = this.$('.NB-date-start').val() || '';
+        var end_date = this.$('.NB-date-end').val() || '';
+
+        if (start_date !== this.cached_date_filter_start || end_date !== this.cached_date_filter_end) {
+            // Cancel any pending debounced update
+            if (this._date_range_debounce_timer) {
+                clearTimeout(this._date_range_debounce_timer);
+                this._date_range_debounce_timer = null;
+            }
+            this.change_date_range();
+        }
+    },
+
     change_date_range: function () {
         var start_date = this.$('.NB-date-start').val();
         var end_date = this.$('.NB-date-end').val();
@@ -628,6 +677,10 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             }
         }
 
+        // Update cached state
+        this.cached_date_filter_start = start_date || '';
+        this.cached_date_filter_end = end_date || '';
+
         var options = {
             date_filter_start: start_date || null,
             date_filter_end: end_date || null
@@ -642,10 +695,18 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.$('.NB-date-start').val('');
         this.$('.NB-date-end').val('');
 
+        // Reset cached state
+        this.cached_date_filter_start = '';
+        this.cached_date_filter_end = '';
+
         // Hide clear button
         this.$('.NB-date-filter-container').removeClass('NB-has-dates');
 
-        this.reload_feed();
+        // Explicitly clear date filters
+        this.reload_feed({
+            date_filter_start: null,
+            date_filter_end: null
+        });
         this.show_correct_feed_view_options_in_menu();
     },
 
@@ -729,6 +790,10 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             this.$('.NB-date-end').val(one_year_ago);
             this.$('.NB-date-filter-container').addClass('NB-has-dates');
         }
+
+        // Update cached state to match the new values
+        this.cached_date_filter_start = this.$('.NB-date-start').val() || '';
+        this.cached_date_filter_end = this.$('.NB-date-end').val() || '';
 
         this.update_feed(options);
         this.show_correct_feed_view_options_in_menu();

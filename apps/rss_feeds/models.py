@@ -1983,22 +1983,29 @@ class Feed(models.Model):
     #         print "db.stories.remove({\"story_feed_id\": %s, \"_id\": \"%s\"})" % (f, u)
 
     def get_stories(
-        self, offset=0, limit=25, order="newest", force=False, date_filter_start=None, date_filter_end=None
+        self,
+        offset=0,
+        limit=25,
+        order="newest",
+        force=False,
+        date_filter_start=None,
+        date_filter_end=None,
     ):
         if order == "newest":
             stories_db = MStory.objects(story_feed_id=self.pk)
         elif order == "oldest":
             stories_db = MStory.objects(story_feed_id=self.pk).order_by("story_date")
 
-        if date_filter_start and date_filter_start != "all":
+        if date_filter_start:
             stories_db = stories_db.filter(story_date__gte=date_filter_start)
-        if date_filter_end and date_filter_end != "all":
-            stories_db = stories_db.filter(story_date__lte=date_filter_end)
 
-        if date_filter_start != "all" or date_filter_end != "all":
-            logging.debug(
-                f" ---> ~FBDate filter: start={date_filter_start or ''} end={date_filter_end or ''}"
-            )
+        if date_filter_end:
+            stories_db = stories_db.filter(story_date__lt=date_filter_end)
+
+        if date_filter_start or date_filter_end:
+            start_log = date_filter_start.isoformat() if date_filter_start else ""
+            end_log = date_filter_end.isoformat() if date_filter_end else ""
+            logging.debug(f" ---> ~FBDate filter: start={start_log} end_exclusive={end_log}")
 
         stories_db = stories_db[offset : offset + limit]
         stories = self.format_stories(stories_db, self.pk)
