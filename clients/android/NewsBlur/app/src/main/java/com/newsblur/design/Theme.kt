@@ -13,7 +13,7 @@ enum class NbThemeVariant { Light, Dark, Black, System }
 @Composable
 fun NewsBlurTheme(
     variant: NbThemeVariant,
-    dynamic: Boolean = true, // Android 12+
+    dynamic: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
@@ -36,11 +36,13 @@ fun NewsBlurTheme(
             }
         }
 
-    MaterialTheme(
-        colorScheme = scheme,
-        typography = NbTypography,
-        content = content,
-    )
+    ProvideNbExtendedColors(variant) {
+        MaterialTheme(
+            colorScheme = scheme,
+            typography = NbTypography,
+            content = content,
+        )
+    }
 }
 
 fun ThemeValue.toVariant(): NbThemeVariant =

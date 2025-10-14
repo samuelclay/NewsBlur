@@ -87,6 +87,7 @@ dependencies {
     implementation(libs.lifecycle.process)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.hilt.android)
+    implementation(libs.androidx.compose.material3)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.profileinstaller)
 
@@ -95,6 +96,8 @@ dependencies {
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation("androidx.hilt:hilt-lifecycle-viewmodel-compose:1.3.0")
 
     // 1) Compose BOM — keeps all compose libs in sync
     implementation(platform("androidx.compose:compose-bom:2025.10.00"))

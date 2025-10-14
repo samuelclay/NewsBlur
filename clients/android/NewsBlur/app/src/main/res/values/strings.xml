@@ -15,6 +15,7 @@
     <string name="login_retrieving_feeds">Retrieving feeds…</string>
     <string name="login_next">Next</string>
     <string name="login_custom_server_scheme_error">Expected \'https://\' in custom server URL</string>
+    <string name="user_profile_picture">User profile picture</string>
 
     <string name="search_for_feed">Search for feeds</string>
 
@@ -804,5 +805,6 @@
 
     <string name="short_add_site">Add Site</string>
     <string name="short_add_site_key">\u2325 A</string>
+    <string name="registering">Registering...</string>
 
 </resources>
