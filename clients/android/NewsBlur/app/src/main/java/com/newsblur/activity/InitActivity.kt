@@ -61,8 +61,8 @@ class InitActivity : AppCompatActivity() {
             val mainIntent = Intent(this, Main::class.java)
             startActivity(mainIntent)
         } else {
-            val loginIntent = Intent(this, Login::class.java)
-            startActivity(loginIntent)
+            val loginActivityIntent = Intent(this, LoginActivity::class.java)
+            startActivity(loginActivityIntent)
         }
     }
 

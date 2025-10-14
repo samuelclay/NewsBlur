@@ -14,7 +14,7 @@ import androidx.core.content.FileProvider
 import androidx.core.content.edit
 import com.newsblur.BuildConfig
 import com.newsblur.NbApplication
-import com.newsblur.activity.Login
+import com.newsblur.activity.LoginActivity
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.UserDetails
 import com.newsblur.network.APIConstants
@@ -219,7 +219,7 @@ class PrefsRepo(
         APIConstants.unsetCustomServer()
 
         // prompt for a new login
-        val i = Intent(context, Login::class.java)
+        val i = Intent(context, LoginActivity::class.java)
         i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         context.startActivity(i)
     }
