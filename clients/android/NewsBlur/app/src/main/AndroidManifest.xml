@@ -41,7 +41,7 @@
         </activity>
 
         <activity
-            android:name=".activity.Login"
+            android:name=".activity.LoginActivity"
             android:noHistory="true"
             android:windowSoftInputMode="adjustResize" />
 
