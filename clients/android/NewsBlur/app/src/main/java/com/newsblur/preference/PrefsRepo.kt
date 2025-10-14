@@ -12,8 +12,8 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
-import com.newsblur.NbApplication
 import com.newsblur.BuildConfig
+import com.newsblur.NbApplication
 import com.newsblur.activity.Login
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.UserDetails
@@ -54,10 +54,9 @@ import java.net.URL
 import java.util.Date
 
 class PrefsRepo(
-        private val prefs: SharedPreferences,
-        private val syncServiceState: SyncServiceState,
+    private val prefs: SharedPreferences,
+    private val syncServiceState: SyncServiceState,
 ) {
-
     fun saveCustomServer(customServer: String?) {
         if (customServer == null) return
         if (customServer.isEmpty()) return
@@ -70,7 +69,10 @@ class PrefsRepo(
         prefs.edit { remove(PrefConstants.PREF_CUSTOM_SERVER) }
     }
 
-    fun saveLogin(userName: String, cookie: String?) {
+    fun saveLogin(
+        userName: String,
+        cookie: String?,
+    ) {
         prefs.edit {
             putString(PrefConstants.PREF_COOKIE, cookie)
             putString(PrefConstants.PREF_UNIQUE_LOGIN, userName + "_" + System.currentTimeMillis())
@@ -87,7 +89,8 @@ class PrefsRepo(
 
         val oldVersion = prefs.getString(AppConstants.LAST_APP_VERSION, null)
         if ((oldVersion == null) || (oldVersion != version)) {
-            com.newsblur.util.Log.i(PrefsRepo::class.java.name, "detected new version of app:$version")
+            com.newsblur.util.Log
+                .i(PrefsRepo::class.java.name, "detected new version of app:$version")
             return true
         }
         return false
@@ -102,7 +105,10 @@ class PrefsRepo(
         }
     }
 
-    fun createFeedbackLink(context: Context, dbHelper: BlurDatabaseHelper): String {
+    fun createFeedbackLink(
+        context: Context,
+        dbHelper: BlurDatabaseHelper,
+    ): String {
         val s = StringBuilder(AppConstants.FEEDBACK_URL)
         s.append("<give us some feedback!>%0A%0A%0A")
         val info = getDebugInfo(context, dbHelper)
@@ -110,15 +116,21 @@ class PrefsRepo(
         return s.toString()
     }
 
-    fun sendLogEmail(context: Context, dbHelper: BlurDatabaseHelper) {
-        val f = com.newsblur.util.Log.getLogfile() ?: return
-        val debugInfo = """
-             Tell us a bit about your problem:
-             
-             
-             
-             ${getDebugInfo(context, dbHelper)}
-             """.trimIndent()
+    fun sendLogEmail(
+        context: Context,
+        dbHelper: BlurDatabaseHelper,
+    ) {
+        val f =
+            com.newsblur.util.Log
+                .getLogfile() ?: return
+        val debugInfo =
+            """
+            Tell us a bit about your problem:
+            
+            
+            
+            ${getDebugInfo(context, dbHelper)}
+            """.trimIndent()
         val localPath = FileProvider.getUriForFile(context, "com.newsblur.fileprovider", f)
         val i = Intent(Intent.ACTION_SEND)
         i.type = "*/*"
@@ -131,13 +143,28 @@ class PrefsRepo(
         }
     }
 
-    private fun getDebugInfo(context: Context, dbHelper: BlurDatabaseHelper): String {
+    private fun getDebugInfo(
+        context: Context,
+        dbHelper: BlurDatabaseHelper,
+    ): String {
         val s = StringBuilder()
         s.append("app version: ").append(NbApplication.getVersion(context)).append(" (${BuildConfig.VERSION_CODE})")
         s.append("\n")
-        s.append("android version: ").append(Build.VERSION.RELEASE).append(" (").append(Build.DISPLAY).append(")")
+        s
+            .append("android version: ")
+            .append(Build.VERSION.RELEASE)
+            .append(" (")
+            .append(Build.DISPLAY)
+            .append(")")
         s.append("\n")
-        s.append("device: ").append(Build.MANUFACTURER).append(" ").append(Build.MODEL).append(" (").append(Build.BOARD).append(")")
+        s
+            .append("device: ")
+            .append(Build.MANUFACTURER)
+            .append(" ")
+            .append(Build.MODEL)
+            .append(" (")
+            .append(Build.BOARD)
+            .append(")")
         s.append("\n")
         s.append("sqlite version: ").append(dbHelper.engineVersion)
         s.append("\n")
@@ -167,7 +194,10 @@ class PrefsRepo(
         return s.toString()
     }
 
-    fun logout(context: Context, dbHelper: BlurDatabaseHelper) {
+    fun logout(
+        context: Context,
+        dbHelper: BlurDatabaseHelper,
+    ) {
         SyncService.stop(context)
         syncServiceState.clearState()
 
@@ -187,7 +217,6 @@ class PrefsRepo(
 
         // reset custom server
         APIConstants.unsetCustomServer()
-
 
         // prompt for a new login
         val i = Intent(context, Login::class.java)
@@ -221,7 +250,10 @@ class PrefsRepo(
 
     fun getCustomServer(): String? = prefs.getString(PrefConstants.PREF_CUSTOM_SERVER, null)
 
-    fun saveUserDetails(context: Context, profile: UserDetails) {
+    fun saveUserDetails(
+        context: Context,
+        profile: UserDetails,
+    ) {
         prefs.edit {
             putInt(PrefConstants.USER_AVERAGE_STORIES_PER_MONTH, profile.averageStoriesPerMonth)
             putString(PrefConstants.USER_BIO, profile.bio)
@@ -246,25 +278,29 @@ class PrefsRepo(
 
     fun getUserName(): String? = prefs.getString(PrefConstants.USER_USERNAME, null)
 
-    fun getUserDetails(): UserDetails = UserDetails().apply {
-        averageStoriesPerMonth = prefs.getInt(PrefConstants.USER_AVERAGE_STORIES_PER_MONTH, 0)
-        bio = prefs.getString(PrefConstants.USER_BIO, null)
-        feedAddress = prefs.getString(PrefConstants.USER_FEED_ADDRESS, null)
-        feedTitle = prefs.getString(PrefConstants.USER_FEED_TITLE, null)
-        followerCount = prefs.getInt(PrefConstants.USER_FOLLOWER_COUNT, 0)
-        followingCount = prefs.getInt(PrefConstants.USER_FOLLOWING_COUNT, 0)
-        id = prefs.getString(PrefConstants.USER_ID, null)
-        location = prefs.getString(PrefConstants.USER_LOCATION, null)
-        photoService = prefs.getString(PrefConstants.USER_PHOTO_SERVICE, null)
-        photoUrl = prefs.getString(PrefConstants.USER_PHOTO_URL, null)
-        sharedStoriesCount = prefs.getInt(PrefConstants.USER_SHARED_STORIES_COUNT, 0)
-        storiesLastMonth = prefs.getInt(PrefConstants.USER_STORIES_LAST_MONTH, 0)
-        subscriptionCount = prefs.getInt(PrefConstants.USER_SUBSCRIBER_COUNT, 0)
-        username = prefs.getString(PrefConstants.USER_USERNAME, null)
-        website = prefs.getString(PrefConstants.USER_WEBSITE, null)
-    }
+    fun getUserDetails(): UserDetails =
+        UserDetails().apply {
+            averageStoriesPerMonth = prefs.getInt(PrefConstants.USER_AVERAGE_STORIES_PER_MONTH, 0)
+            bio = prefs.getString(PrefConstants.USER_BIO, null)
+            feedAddress = prefs.getString(PrefConstants.USER_FEED_ADDRESS, null)
+            feedTitle = prefs.getString(PrefConstants.USER_FEED_TITLE, null)
+            followerCount = prefs.getInt(PrefConstants.USER_FOLLOWER_COUNT, 0)
+            followingCount = prefs.getInt(PrefConstants.USER_FOLLOWING_COUNT, 0)
+            id = prefs.getString(PrefConstants.USER_ID, null)
+            location = prefs.getString(PrefConstants.USER_LOCATION, null)
+            photoService = prefs.getString(PrefConstants.USER_PHOTO_SERVICE, null)
+            photoUrl = prefs.getString(PrefConstants.USER_PHOTO_URL, null)
+            sharedStoriesCount = prefs.getInt(PrefConstants.USER_SHARED_STORIES_COUNT, 0)
+            storiesLastMonth = prefs.getInt(PrefConstants.USER_STORIES_LAST_MONTH, 0)
+            subscriptionCount = prefs.getInt(PrefConstants.USER_SUBSCRIBER_COUNT, 0)
+            username = prefs.getString(PrefConstants.USER_USERNAME, null)
+            website = prefs.getString(PrefConstants.USER_WEBSITE, null)
+        }
 
-    private fun saveUserImage(context: Context, pictureUrl: String) {
+    private fun saveUserImage(
+        context: Context,
+        pictureUrl: String,
+    ) {
         val bitmap: Bitmap
         try {
             val url = URL(pictureUrl)
@@ -324,55 +360,89 @@ class PrefsRepo(
         prefs.edit { putLong(PrefConstants.LAST_CLEANUP_TIME, (Date()).time) }
     }
 
-    fun getStoryOrderForFeed(feedId: String): StoryOrder = StoryOrder.valueOf(
-            prefs.getString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, getDefaultStoryOrder(prefs).toString())!!)
+    fun getStoryOrderForFeed(feedId: String): StoryOrder =
+        StoryOrder.valueOf(
+            prefs.getString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, getDefaultStoryOrder(prefs).toString())!!,
+        )
 
-    fun getStoryOrderForFolder(folderName: String): StoryOrder = StoryOrder.valueOf(
-            prefs.getString(PrefConstants.FOLDER_STORY_ORDER_PREFIX + folderName, getDefaultStoryOrder(prefs).toString())!!)
+    fun getStoryOrderForFolder(folderName: String): StoryOrder =
+        StoryOrder.valueOf(
+            prefs.getString(PrefConstants.FOLDER_STORY_ORDER_PREFIX + folderName, getDefaultStoryOrder(prefs).toString())!!,
+        )
 
-    fun getReadFilterForFeed(feedId: String): ReadFilter = ReadFilter.valueOf(
-            prefs.getString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, getDefaultReadFilter(prefs).toString())!!)
+    fun getReadFilterForFeed(feedId: String): ReadFilter =
+        ReadFilter.valueOf(
+            prefs.getString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, getDefaultReadFilter(prefs).toString())!!,
+        )
 
-    fun getReadFilterForFolder(folderName: String): ReadFilter = ReadFilter.valueOf(
-            prefs.getString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, getDefaultReadFilter(prefs).toString())!!)
+    fun getReadFilterForFolder(folderName: String): ReadFilter =
+        ReadFilter.valueOf(
+            prefs.getString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, getDefaultReadFilter(prefs).toString())!!,
+        )
 
-    private fun setStoryOrderForFolder(folderName: String, newValue: StoryOrder) {
+    private fun setStoryOrderForFolder(
+        folderName: String,
+        newValue: StoryOrder,
+    ) {
         prefs.edit { putString(PrefConstants.FOLDER_STORY_ORDER_PREFIX + folderName, newValue.toString()) }
     }
 
-    private fun setStoryOrderForFeed(feedId: String, newValue: StoryOrder) {
+    private fun setStoryOrderForFeed(
+        feedId: String,
+        newValue: StoryOrder,
+    ) {
         prefs.edit { putString(PrefConstants.FEED_STORY_ORDER_PREFIX + feedId, newValue.toString()) }
     }
 
-    private fun setReadFilterForFolder(folderName: String, newValue: ReadFilter) {
+    private fun setReadFilterForFolder(
+        folderName: String,
+        newValue: ReadFilter,
+    ) {
         prefs.edit { putString(PrefConstants.FOLDER_READ_FILTER_PREFIX + folderName, newValue.toString()) }
     }
 
-    private fun setReadFilterForFeed(feedId: String, newValue: ReadFilter) {
+    private fun setReadFilterForFeed(
+        feedId: String,
+        newValue: ReadFilter,
+    ) {
         prefs.edit { putString(PrefConstants.FEED_READ_FILTER_PREFIX + feedId, newValue.toString()) }
     }
 
-    fun getStoryListStyleForFeed(feedId: String): StoryListStyle = StoryListStyle.safeValueOf(
-            prefs.getString(PrefConstants.FEED_STORY_LIST_STYLE_PREFIX + feedId, StoryListStyle.LIST.toString()))
+    fun getStoryListStyleForFeed(feedId: String): StoryListStyle =
+        StoryListStyle.safeValueOf(
+            prefs.getString(PrefConstants.FEED_STORY_LIST_STYLE_PREFIX + feedId, StoryListStyle.LIST.toString()),
+        )
 
-    fun getStoryListStyleForFolder(folderName: String): StoryListStyle = StoryListStyle.safeValueOf(
-            prefs.getString(PrefConstants.FOLDER_STORY_LIST_STYLE_PREFIX + folderName, StoryListStyle.LIST.toString()))
+    fun getStoryListStyleForFolder(folderName: String): StoryListStyle =
+        StoryListStyle.safeValueOf(
+            prefs.getString(PrefConstants.FOLDER_STORY_LIST_STYLE_PREFIX + folderName, StoryListStyle.LIST.toString()),
+        )
 
-    private fun setStoryListStyleForFolder(folderName: String, newValue: StoryListStyle) {
+    private fun setStoryListStyleForFolder(
+        folderName: String,
+        newValue: StoryListStyle,
+    ) {
         prefs.edit { putString(PrefConstants.FOLDER_STORY_LIST_STYLE_PREFIX + folderName, newValue.toString()) }
     }
 
-    private fun setStoryListStyleForFeed(feedId: String, newValue: StoryListStyle) {
+    private fun setStoryListStyleForFeed(
+        feedId: String,
+        newValue: StoryListStyle,
+    ) {
         prefs.edit { putString(PrefConstants.FEED_STORY_LIST_STYLE_PREFIX + feedId, newValue.toString()) }
     }
 
-    private fun getDefaultStoryOrder(prefs: SharedPreferences): StoryOrder = StoryOrder.valueOf(
-            prefs.getString(PrefConstants.DEFAULT_STORY_ORDER, StoryOrder.NEWEST.toString())!!)
+    private fun getDefaultStoryOrder(prefs: SharedPreferences): StoryOrder =
+        StoryOrder.valueOf(
+            prefs.getString(PrefConstants.DEFAULT_STORY_ORDER, StoryOrder.NEWEST.toString())!!,
+        )
 
     fun getDefaultStoryOrder(): StoryOrder = getDefaultStoryOrder(prefs)
 
-    private fun getDefaultReadFilter(prefs: SharedPreferences): ReadFilter = ReadFilter.valueOf(
-            prefs.getString(PrefConstants.DEFAULT_READ_FILTER, ReadFilter.ALL.toString())!!)
+    private fun getDefaultReadFilter(prefs: SharedPreferences): ReadFilter =
+        ReadFilter.valueOf(
+            prefs.getString(PrefConstants.DEFAULT_READ_FILTER, ReadFilter.ALL.toString())!!,
+        )
 
     fun isEnableRowGlobalShared() = prefs.getBoolean(PrefConstants.ENABLE_ROW_GLOBAL_SHARED, true)
 
@@ -400,10 +470,15 @@ class PrefsRepo(
 
     fun getDefaultViewModeForFeed(feedId: String?): DefaultFeedView {
         if (feedId == null || feedId == "0") return DefaultFeedView.STORY
-        return DefaultFeedView.valueOf(prefs.getString(PrefConstants.FEED_DEFAULT_FEED_VIEW_PREFIX + feedId, DefaultFeedView.STORY.toString())!!)
+        return DefaultFeedView.valueOf(
+            prefs.getString(PrefConstants.FEED_DEFAULT_FEED_VIEW_PREFIX + feedId, DefaultFeedView.STORY.toString())!!,
+        )
     }
 
-    fun setDefaultViewModeForFeed(feedId: String?, newValue: DefaultFeedView) {
+    fun setDefaultViewModeForFeed(
+        feedId: String?,
+        newValue: DefaultFeedView,
+    ) {
         if (feedId == null || feedId == "0") return
         prefs.edit { putString(PrefConstants.FEED_DEFAULT_FEED_VIEW_PREFIX + feedId, newValue.toString()) }
     }
@@ -437,7 +512,10 @@ class PrefsRepo(
         }
     }
 
-    fun updateStoryOrder(fs: FeedSet, newOrder: StoryOrder) {
+    fun updateStoryOrder(
+        fs: FeedSet,
+        newOrder: StoryOrder,
+    ) {
         if (fs.isAllNormal) {
             setStoryOrderForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME, newOrder)
         } else if (fs.singleFeed != null) {
@@ -495,7 +573,10 @@ class PrefsRepo(
         throw IllegalArgumentException("unknown type of feed set")
     }
 
-    fun updateReadFilter(fs: FeedSet, newFilter: ReadFilter) {
+    fun updateReadFilter(
+        fs: FeedSet,
+        newFilter: ReadFilter,
+    ) {
         if (fs.isAllNormal) {
             setReadFilterForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME, newFilter)
         } else if (fs.singleFeed != null) {
@@ -551,7 +632,10 @@ class PrefsRepo(
         }
     }
 
-    fun updateStoryListStyle(fs: FeedSet, newListStyle: StoryListStyle) {
+    fun updateStoryListStyle(
+        fs: FeedSet,
+        newListStyle: StoryListStyle,
+    ) {
         if (fs.isAllNormal) {
             setStoryListStyleForFolder(PrefConstants.ALL_STORIES_FOLDER_NAME, newListStyle)
         } else if (fs.singleFeed != null) {
@@ -579,8 +663,10 @@ class PrefsRepo(
         }
     }
 
-    fun getStoryContentPreviewStyle(): StoryContentPreviewStyle = StoryContentPreviewStyle.valueOf(
-            prefs.getString(PrefConstants.STORIES_SHOW_PREVIEWS_STYLE, StoryContentPreviewStyle.MEDIUM.toString())!!)
+    fun getStoryContentPreviewStyle(): StoryContentPreviewStyle =
+        StoryContentPreviewStyle.valueOf(
+            prefs.getString(PrefConstants.STORIES_SHOW_PREVIEWS_STYLE, StoryContentPreviewStyle.MEDIUM.toString())!!,
+        )
 
     fun setStoryContentPreviewStyle(value: StoryContentPreviewStyle) {
         prefs.edit { putString(PrefConstants.STORIES_SHOW_PREVIEWS_STYLE, value.name) }
@@ -592,8 +678,10 @@ class PrefsRepo(
         prefs.edit { putString(PrefConstants.STORIES_THUMBNAIL_STYLE, value.name) }
     }
 
-    fun getThumbnailStyle(): ThumbnailStyle = ThumbnailStyle.valueOf(
-            prefs.getString(PrefConstants.STORIES_THUMBNAIL_STYLE, ThumbnailStyle.RIGHT_LARGE.name)!!)
+    fun getThumbnailStyle(): ThumbnailStyle =
+        ThumbnailStyle.valueOf(
+            prefs.getString(PrefConstants.STORIES_THUMBNAIL_STYLE, ThumbnailStyle.RIGHT_LARGE.name)!!,
+        )
 
     fun isAutoOpenFirstUnread() = prefs.getBoolean(PrefConstants.STORIES_AUTO_OPEN_FIRST, false)
 
@@ -649,8 +737,10 @@ class PrefsRepo(
         return PrefConstants.CACHE_AGE_VALUE_30D
     }
 
-    fun getFeedListOrder(): FeedListOrder = FeedListOrder.valueOf(
-            prefs.getString(PrefConstants.FEED_LIST_ORDER, FeedListOrder.ALPHABETICAL.toString())!!)
+    fun getFeedListOrder(): FeedListOrder =
+        FeedListOrder.valueOf(
+            prefs.getString(PrefConstants.FEED_LIST_ORDER, FeedListOrder.ALPHABETICAL.toString())!!,
+        )
 
     fun getSelectedTheme(): ThemeValue {
         val value = prefs.getString(PrefConstants.THEME, ThemeValue.AUTO.name)!!
@@ -670,26 +760,36 @@ class PrefsRepo(
         prefs.edit { putString(PrefConstants.THEME, value.name) }
     }
 
-    fun getStateFilter(): StateFilter = StateFilter.valueOf(
-            prefs.getString(PrefConstants.STATE_FILTER, StateFilter.SOME.toString())!!)
+    fun getStateFilter(): StateFilter =
+        StateFilter.valueOf(
+            prefs.getString(PrefConstants.STATE_FILTER, StateFilter.SOME.toString())!!,
+        )
 
     fun setStateFilter(newValue: StateFilter) {
         prefs.edit { putString(PrefConstants.STATE_FILTER, newValue.toString()) }
     }
 
-    fun getVolumeKeyNavigation(): VolumeKeyNavigation = VolumeKeyNavigation.valueOf(
-            prefs.getString(PrefConstants.VOLUME_KEY_NAVIGATION, VolumeKeyNavigation.OFF.toString())!!)
+    fun getVolumeKeyNavigation(): VolumeKeyNavigation =
+        VolumeKeyNavigation.valueOf(
+            prefs.getString(PrefConstants.VOLUME_KEY_NAVIGATION, VolumeKeyNavigation.OFF.toString())!!,
+        )
 
-    fun getMarkAllReadConfirmation(): MarkAllReadConfirmation = MarkAllReadConfirmation.valueOf(
-            prefs.getString(PrefConstants.MARK_ALL_READ_CONFIRMATION, MarkAllReadConfirmation.FOLDER_ONLY.toString())!!)
+    fun getMarkAllReadConfirmation(): MarkAllReadConfirmation =
+        MarkAllReadConfirmation.valueOf(
+            prefs.getString(PrefConstants.MARK_ALL_READ_CONFIRMATION, MarkAllReadConfirmation.FOLDER_ONLY.toString())!!,
+        )
 
     fun isConfirmMarkRangeRead() = prefs.getBoolean(PrefConstants.MARK_RANGE_READ_CONFIRMATION, false)
 
-    fun getLeftToRightGestureAction(): GestureAction = GestureAction.valueOf(
-            prefs.getString(PrefConstants.LTR_GESTURE_ACTION, GestureAction.GEST_ACTION_MARKREAD.toString())!!)
+    fun getLeftToRightGestureAction(): GestureAction =
+        GestureAction.valueOf(
+            prefs.getString(PrefConstants.LTR_GESTURE_ACTION, GestureAction.GEST_ACTION_MARKREAD.toString())!!,
+        )
 
-    fun getRightToLeftGestureAction(): GestureAction = GestureAction.valueOf(
-            prefs.getString(PrefConstants.RTL_GESTURE_ACTION, GestureAction.GEST_ACTION_MARKUNREAD.toString())!!)
+    fun getRightToLeftGestureAction(): GestureAction =
+        GestureAction.valueOf(
+            prefs.getString(PrefConstants.RTL_GESTURE_ACTION, GestureAction.GEST_ACTION_MARKUNREAD.toString())!!,
+        )
 
     fun isEnableNotifications() = prefs.getBoolean(PrefConstants.ENABLE_NOTIFICATIONS, false)
 
@@ -720,29 +820,37 @@ class PrefsRepo(
         }
     }
 
-    fun getFeedChooserFeedOrder(): FeedOrderFilter = FeedOrderFilter.valueOf(
-            prefs.getString(PrefConstants.FEED_CHOOSER_FEED_ORDER, FeedOrderFilter.NAME.toString())!!)
+    fun getFeedChooserFeedOrder(): FeedOrderFilter =
+        FeedOrderFilter.valueOf(
+            prefs.getString(PrefConstants.FEED_CHOOSER_FEED_ORDER, FeedOrderFilter.NAME.toString())!!,
+        )
 
     fun setFeedChooserFeedOrder(feedOrderFilter: FeedOrderFilter) {
         prefs.edit { putString(PrefConstants.FEED_CHOOSER_FEED_ORDER, feedOrderFilter.toString()) }
     }
 
-    fun getFeedChooserListOrder(): ListOrderFilter = ListOrderFilter.valueOf(
-            prefs.getString(PrefConstants.FEED_CHOOSER_LIST_ORDER, ListOrderFilter.ASCENDING.name)!!)
+    fun getFeedChooserListOrder(): ListOrderFilter =
+        ListOrderFilter.valueOf(
+            prefs.getString(PrefConstants.FEED_CHOOSER_LIST_ORDER, ListOrderFilter.ASCENDING.name)!!,
+        )
 
     fun setFeedChooserListOrder(listOrderFilter: ListOrderFilter) {
         prefs.edit { putString(PrefConstants.FEED_CHOOSER_LIST_ORDER, listOrderFilter.toString()) }
     }
 
-    fun getFeedChooserFolderView(): FolderViewFilter = FolderViewFilter.valueOf(
-            prefs.getString(PrefConstants.FEED_CHOOSER_FOLDER_VIEW, FolderViewFilter.NESTED.name)!!)
+    fun getFeedChooserFolderView(): FolderViewFilter =
+        FolderViewFilter.valueOf(
+            prefs.getString(PrefConstants.FEED_CHOOSER_FOLDER_VIEW, FolderViewFilter.NESTED.name)!!,
+        )
 
     fun setFeedChooserFolderView(folderViewFilter: FolderViewFilter) {
         prefs.edit { putString(PrefConstants.FEED_CHOOSER_FOLDER_VIEW, folderViewFilter.toString()) }
     }
 
-    fun getWidgetBackground(): WidgetBackground = WidgetBackground.valueOf(
-            prefs.getString(PrefConstants.WIDGET_BACKGROUND, WidgetBackground.DEFAULT.name)!!)
+    fun getWidgetBackground(): WidgetBackground =
+        WidgetBackground.valueOf(
+            prefs.getString(PrefConstants.WIDGET_BACKGROUND, WidgetBackground.DEFAULT.name)!!,
+        )
 
     fun setWidgetBackground(widgetBackground: WidgetBackground) {
         prefs.edit { putString(PrefConstants.WIDGET_BACKGROUND, widgetBackground.toString()) }
@@ -750,10 +858,12 @@ class PrefsRepo(
 
     fun getDefaultBrowser(): DefaultBrowser = DefaultBrowser.getDefaultBrowser(getDefaultBrowserString())
 
-    private fun getDefaultBrowserString() =
-            prefs.getString(PrefConstants.DEFAULT_BROWSER, DefaultBrowser.SYSTEM_DEFAULT.toString())!!
+    private fun getDefaultBrowserString() = prefs.getString(PrefConstants.DEFAULT_BROWSER, DefaultBrowser.SYSTEM_DEFAULT.toString())!!
 
-    fun setArchive(isArchive: Boolean, archiveExpire: Long?) {
+    fun setArchive(
+        isArchive: Boolean,
+        archiveExpire: Long?,
+    ) {
         prefs.edit {
             putBoolean(PrefConstants.IS_ARCHIVE, isArchive)
             if (archiveExpire != null) {
@@ -772,7 +882,10 @@ class PrefsRepo(
 
     fun getIsStaff() = prefs.getBoolean(PrefConstants.IS_STAFF, false)
 
-    fun setPremium(isPremium: Boolean, premiumExpire: Long?) {
+    fun setPremium(
+        isPremium: Boolean,
+        premiumExpire: Long?,
+    ) {
         prefs.edit {
             putBoolean(PrefConstants.IS_PREMIUM, isPremium)
             if (premiumExpire != null) {
@@ -793,8 +906,10 @@ class PrefsRepo(
         prefs.edit { putBoolean(PrefConstants.IN_APP_REVIEW, true) }
     }
 
-    fun getSpacingStyle(): SpacingStyle = SpacingStyle.valueOf(
-            prefs.getString(PrefConstants.SPACING_STYLE, SpacingStyle.COMFORTABLE.name)!!)
+    fun getSpacingStyle(): SpacingStyle =
+        SpacingStyle.valueOf(
+            prefs.getString(PrefConstants.SPACING_STYLE, SpacingStyle.COMFORTABLE.name)!!,
+        )
 
     fun setSpacingStyle(spacingStyle: SpacingStyle) {
         prefs.edit { putString(PrefConstants.SPACING_STYLE, spacingStyle.toString()) }
@@ -809,8 +924,10 @@ class PrefsRepo(
 
     fun getCookie(): String? = prefs.getString(PrefConstants.PREF_COOKIE, null)
 
-    fun getMarkStoryReadBehavior(): MarkStoryReadBehavior = MarkStoryReadBehavior.valueOf(
-            prefs.getString(PrefConstants.STORY_MARK_READ_BEHAVIOR, MarkStoryReadBehavior.IMMEDIATELY.name)!!)
+    fun getMarkStoryReadBehavior(): MarkStoryReadBehavior =
+        MarkStoryReadBehavior.valueOf(
+            prefs.getString(PrefConstants.STORY_MARK_READ_BEHAVIOR, MarkStoryReadBehavior.IMMEDIATELY.name)!!,
+        )
 
     fun loadNextOnMarkRead(): Boolean = prefs.getBoolean(PrefConstants.LOAD_NEXT_ON_MARK_READ, false)
 
@@ -822,9 +939,15 @@ class PrefsRepo(
 
     fun getExtToken(): String? = prefs.getString(PrefConstants.EXT_TOKEN, null)
 
-    fun getBoolean(key: String, default: Boolean): Boolean = prefs.getBoolean(key, default)
+    fun getBoolean(
+        key: String,
+        default: Boolean,
+    ): Boolean = prefs.getBoolean(key, default)
 
-    fun putBoolean(key: String, value: Boolean) = prefs.edit {
+    fun putBoolean(
+        key: String,
+        value: Boolean,
+    ) = prefs.edit {
         putBoolean(key, value)
     }
 }

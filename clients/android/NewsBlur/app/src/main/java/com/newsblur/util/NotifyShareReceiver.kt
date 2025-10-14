@@ -15,7 +15,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class NotifyShareReceiver : BroadcastReceiver() {
-
     @Inject
     lateinit var storyRepository: StoryRepository
 
@@ -25,17 +24,20 @@ class NotifyShareReceiver : BroadcastReceiver() {
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
 
-    override fun onReceive(context: Context, intent: Intent) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent,
+    ) {
         val story = intent.getSerializableExtra(Reading.EXTRA_STORY) as? Story?
         NotificationUtils.cancel(context, story?.storyHash.hashCode())
         story?.let {
             NBScope.executeAsyncTask(
-                    doInBackground = {
-                        dbHelper.putStoryDismissed(it.storyHash)
-                        storyRepository.shareStory(it, "", it.sourceUserId)
-                        feedUtils.syncUpdateStatus(UPDATE_SOCIAL or UPDATE_STORY)
-                        triggerSync(context)
-                    }
+                doInBackground = {
+                    dbHelper.putStoryDismissed(it.storyHash)
+                    storyRepository.shareStory(it, "", it.sourceUserId)
+                    feedUtils.syncUpdateStatus(UPDATE_SOCIAL or UPDATE_STORY)
+                    triggerSync(context)
+                },
             )
         }
     }

@@ -21,8 +21,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NotificationsActivity : NbActivity(), NotificationsAdapter.Listener {
-
+class NotificationsActivity :
+    NbActivity(),
+    NotificationsAdapter.Listener {
     @IconLoader
     @Inject
     lateinit var imageLoader: ImageLoader
@@ -43,9 +44,10 @@ class NotificationsActivity : NbActivity(), NotificationsAdapter.Listener {
 
     private fun setupUI() {
         UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.notifications_title), true)
-        adapter = NotificationsAdapter(imageLoader, this).also {
-            binding.content.adapter = it
-        }
+        adapter =
+            NotificationsAdapter(imageLoader, this).also {
+                binding.content.adapter = it
+            }
     }
 
     private fun setupListeners() {

@@ -4,16 +4,26 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ktlint)
 }
 
 android {
     namespace = "com.newsblur"
-    compileSdk = libs.versions.compileSdk.get().toInt()
+    compileSdk =
+        libs.versions.compileSdk
+            .get()
+            .toInt()
 
     defaultConfig {
         applicationId = "com.newsblur"
-        minSdk = libs.versions.minSdk.get().toInt()
-        targetSdk = libs.versions.targetSdk.get().toInt()
+        minSdk =
+            libs.versions.minSdk
+                .get()
+                .toInt()
+        targetSdk =
+            libs.versions.targetSdk
+                .get()
+                .toInt()
         versionCode = 248
         versionName = "13.9.0"
 
@@ -49,6 +59,16 @@ android {
         compose = true
         viewBinding = true
         buildConfig = true
+    }
+}
+
+ktlint {
+    android = true
+    ignoreFailures = false
+    coloredOutput = true
+
+    filter {
+        exclude("**/generated/**", "**/build/**")
     }
 }
 

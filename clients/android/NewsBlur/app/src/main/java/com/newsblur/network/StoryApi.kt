@@ -12,18 +12,23 @@ import com.newsblur.util.ReadFilter
 import com.newsblur.util.StoryOrder
 
 interface StoryApi {
-
     suspend fun getStories(
-            fs: FeedSet,
-            pageNumber: Int,
-            order: StoryOrder,
-            filter: ReadFilter,
-            infrequentCutoff: Int,
+        fs: FeedSet,
+        pageNumber: Int,
+        order: StoryOrder,
+        filter: ReadFilter,
+        infrequentCutoff: Int,
     ): StoriesResponse?
 
-    suspend fun getStoryText(feedId: String?, storyId: String): StoryTextResponse?
+    suspend fun getStoryText(
+        feedId: String?,
+        storyId: String,
+    ): StoryTextResponse?
 
-    suspend fun getStoryChanges(storyHash: String?, showChanges: Boolean): StoryChangesResponse?
+    suspend fun getStoryChanges(
+        storyHash: String?,
+        showChanges: Boolean,
+    ): StoryChangesResponse?
 
     suspend fun markStoryHashUnread(hash: String?): NewsBlurResponse?
 
@@ -37,23 +42,66 @@ interface StoryApi {
 
     suspend fun markStoryAsRead(storyHash: String): NewsBlurResponse?
 
-    suspend fun markStoryAsStarred(storyHash: String, highlights: List<String>, userTags: List<String>): NewsBlurResponse?
+    suspend fun markStoryAsStarred(
+        storyHash: String,
+        highlights: List<String>,
+        userTags: List<String>,
+    ): NewsBlurResponse?
 
-    suspend fun shareStory(storyId: String?, feedId: String?, comment: String?, sourceUserId: String?): StoriesResponse?
+    suspend fun shareStory(
+        storyId: String?,
+        feedId: String?,
+        comment: String?,
+        sourceUserId: String?,
+    ): StoriesResponse?
 
-    suspend fun unshareStory(storyId: String?, feedId: String?): StoriesResponse?
+    suspend fun unshareStory(
+        storyId: String?,
+        feedId: String?,
+    ): StoriesResponse?
 
-    suspend fun favouriteComment(storyId: String?, commentUserId: String?, feedId: String?): NewsBlurResponse?
+    suspend fun favouriteComment(
+        storyId: String?,
+        commentUserId: String?,
+        feedId: String?,
+    ): NewsBlurResponse?
 
-    suspend fun unFavouriteComment(storyId: String?, commentUserId: String?, feedId: String?): NewsBlurResponse?
+    suspend fun unFavouriteComment(
+        storyId: String?,
+        commentUserId: String?,
+        feedId: String?,
+    ): NewsBlurResponse?
 
-    suspend fun replyToComment(storyId: String?, storyFeedId: String?, commentUserId: String?, reply: String?): CommentResponse?
+    suspend fun replyToComment(
+        storyId: String?,
+        storyFeedId: String?,
+        commentUserId: String?,
+        reply: String?,
+    ): CommentResponse?
 
-    suspend fun editReply(storyId: String?, storyFeedId: String?, commentUserId: String?, replyId: String?, reply: String?): CommentResponse?
+    suspend fun editReply(
+        storyId: String?,
+        storyFeedId: String?,
+        commentUserId: String?,
+        replyId: String?,
+        reply: String?,
+    ): CommentResponse?
 
-    suspend fun deleteReply(storyId: String?, storyFeedId: String?, commentUserId: String?, replyId: String?): CommentResponse?
+    suspend fun deleteReply(
+        storyId: String?,
+        storyFeedId: String?,
+        commentUserId: String?,
+        replyId: String?,
+    ): CommentResponse?
 
-    suspend fun saveExternalStory(storyTitle: String, storyUrl: String): APIResponse
+    suspend fun saveExternalStory(
+        storyTitle: String,
+        storyUrl: String,
+    ): APIResponse
 
-    suspend fun shareExternalStory(storyTitle: String, storyUrl: String, shareComments: String): APIResponse
+    suspend fun shareExternalStory(
+        storyTitle: String,
+        storyUrl: String,
+        shareComments: String,
+    ): APIResponse
 }

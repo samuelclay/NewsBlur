@@ -26,158 +26,156 @@ sealed interface ReadingAction : Serializable {
     val tried: Int
 
     data class MarkStoryRead(
-            val storyHash: String,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val storyHash: String,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     data class MarkStoryUnread(
-            val storyHash: String,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val storyHash: String,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     data class SaveStory(
-            val storyHash: String,
-            val highlights: List<String>,
-            val userTags: List<String>,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val storyHash: String,
+        val highlights: List<String>,
+        val userTags: List<String>,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     data class UnsaveStory(
-            val storyHash: String,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val storyHash: String,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     data class MarkFeedRead(
-            val feedSet: FeedSet,
-            val olderThan: Long? = null,
-            val newerThan: Long? = null,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val feedSet: FeedSet,
+        val olderThan: Long? = null,
+        val newerThan: Long? = null,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     data class ShareStory(
-            val storyHash: String? = null,
-            val storyId: String? = null,
-            val feedId: String? = null,
-            val sourceUserId: String? = null,
-            val commentReplyText: String? = null,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val storyHash: String? = null,
+        val storyId: String? = null,
+        val feedId: String? = null,
+        val sourceUserId: String? = null,
+        val commentReplyText: String? = null,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     data class UnshareStory(
-            val storyHash: String? = null,
-            val storyId: String? = null,
-            val feedId: String? = null,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val storyHash: String? = null,
+        val storyId: String? = null,
+        val feedId: String? = null,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     data class LikeComment(
-            val storyId: String? = null,
-            val commentUserId: String? = null,
-            val feedId: String? = null,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val storyId: String? = null,
+        val commentUserId: String? = null,
+        val feedId: String? = null,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     data class UnlikeComment(
-            val storyId: String? = null,
-            val commentUserId: String? = null,
-            val feedId: String? = null,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val storyId: String? = null,
+        val commentUserId: String? = null,
+        val feedId: String? = null,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     data class ReplyToComment(
-            val storyId: String? = null,
-            val feedId: String? = null,
-            val commentUserId: String? = null,
-            val commentReplyText: String? = null,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val storyId: String? = null,
+        val feedId: String? = null,
+        val commentUserId: String? = null,
+        val commentReplyText: String? = null,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     data class EditReply(
-            val storyId: String? = null,
-            val feedId: String? = null,
-            val commentUserId: String? = null,
-            val replyId: String? = null,
-            val commentReplyText: String? = null,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val storyId: String? = null,
+        val feedId: String? = null,
+        val commentUserId: String? = null,
+        val replyId: String? = null,
+        val commentReplyText: String? = null,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     data class DeleteReply(
-            val storyId: String? = null,
-            val feedId: String? = null,
-            val commentUserId: String? = null,
-            val replyId: String? = null,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val storyId: String? = null,
+        val feedId: String? = null,
+        val commentUserId: String? = null,
+        val replyId: String? = null,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     data class MuteFeeds(
-            val activeFeedIds: Set<String>,
-            val modifiedFeedIds: Set<String>,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val activeFeedIds: Set<String>,
+        val modifiedFeedIds: Set<String>,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     data class UnmuteFeeds(
-            val activeFeedIds: Set<String>,
-            val modifiedFeedIds: Set<String>,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val activeFeedIds: Set<String>,
+        val modifiedFeedIds: Set<String>,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     data class SetNotify(
-            val feedId: String? = null,
-            val notifyTypes: List<String> = emptyList(),
-            val notifyFilter: String? = null,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val feedId: String? = null,
+        val notifyTypes: List<String> = emptyList(),
+        val notifyFilter: String? = null,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     data class InstaFetch(
-            val feedId: String? = null,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val feedId: String? = null,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     data class UpdateIntel(
-            val feedId: String? = null,
-            val classifier: Classifier? = null,
-            val feedSet: FeedSet? = null,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val feedId: String? = null,
+        val classifier: Classifier? = null,
+        val feedSet: FeedSet? = null,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     data class RenameFeed(
-            val feedId: String? = null,
-            val newFeedName: String? = null,
-            override val time: Long = System.currentTimeMillis(),
-            override val tried: Int = 0,
+        val feedId: String? = null,
+        val newFeedName: String? = null,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
     ) : ReadingAction
 
     companion object {
+        fun toJson(action: ReadingAction): String = gson.toJson(action, ReadingAction::class.java)
 
-        fun toJson(action: ReadingAction): String =
-                gson.toJson(action, ReadingAction::class.java)
-
-        fun fromJson(json: String): ReadingAction =
-                gson.fromJson(json, ReadingAction::class.java)
+        fun fromJson(json: String): ReadingAction = gson.fromJson(json, ReadingAction::class.java)
 
         @JvmStatic
-        fun toContentValues(action: ReadingAction): ContentValues = ContentValues().apply {
-            put(DatabaseConstants.ACTION_TIME, action.time)
-            put(DatabaseConstants.ACTION_TRIED, action.tried)
-            put(DatabaseConstants.ACTION_PARAMS, toJson(action))
-        }
+        fun toContentValues(action: ReadingAction): ContentValues =
+            ContentValues().apply {
+                put(DatabaseConstants.ACTION_TIME, action.time)
+                put(DatabaseConstants.ACTION_TRIED, action.tried)
+                put(DatabaseConstants.ACTION_PARAMS, toJson(action))
+            }
 
         fun fromCursor(c: Cursor): ReadingAction {
             val time = c.getLong(c.getColumnIndexOrThrow(DatabaseConstants.ACTION_TIME))
@@ -208,7 +206,8 @@ sealed interface ReadingAction : Serializable {
         }
 
         private val gson: Gson by lazy {
-            val factory = RuntimeTypeAdapterFactory
+            val factory =
+                RuntimeTypeAdapterFactory
                     .of(ReadingAction::class.java, "type")
                     .registerSubtype(MarkStoryRead::class.java, "MARK_READ_STORY")
                     .registerSubtype(MarkStoryUnread::class.java, "MARK_UNREAD_STORY")
@@ -230,25 +229,26 @@ sealed interface ReadingAction : Serializable {
                     .registerSubtype(RenameFeed::class.java, "RENAME_FEED")
 
             GsonBuilder()
-                    .registerTypeAdapterFactory(factory)
-                    .disableHtmlEscaping()
-                    .create()
+                .registerTypeAdapterFactory(factory)
+                .disableHtmlEscaping()
+                .create()
         }
     }
 }
 
-fun ReadingAction.toContentValues(): ContentValues = ContentValues().apply {
-    put(DatabaseConstants.ACTION_TIME, time)
-    put(DatabaseConstants.ACTION_TRIED, tried)
-    put(DatabaseConstants.ACTION_PARAMS, toJson(this@toContentValues))
-}
+fun ReadingAction.toContentValues(): ContentValues =
+    ContentValues().apply {
+        put(DatabaseConstants.ACTION_TIME, time)
+        put(DatabaseConstants.ACTION_TRIED, tried)
+        put(DatabaseConstants.ACTION_PARAMS, toJson(this@toContentValues))
+    }
 
 suspend fun ReadingAction.doRemote(
-        syncServiceState: SyncServiceState,
-        feedApi: FeedApi,
-        storyApi: StoryApi,
-        dbHelper: BlurDatabaseHelper,
-        stateFilter: StateFilter
+    syncServiceState: SyncServiceState,
+    feedApi: FeedApi,
+    storyApi: StoryApi,
+    dbHelper: BlurDatabaseHelper,
+    stateFilter: StateFilter,
 ): NewsBlurResponse? {
     var result: NewsBlurResponse? = null
     var impact = 0
@@ -265,7 +265,10 @@ suspend fun ReadingAction.doRemote(
         }
     }
 
-    suspend fun applyCommentResponse(cr: CommentResponse?, storyId: String?) {
+    suspend fun applyCommentResponse(
+        cr: CommentResponse?,
+        storyId: String?,
+    ) {
         if (cr != null) {
             result = cr
             if (cr.comment != null && storyId != null) {
@@ -364,14 +367,14 @@ suspend fun ReadingAction.doRemote(
 
 // TODO suspend
 fun ReadingAction.doLocal(
-        dbHelper: BlurDatabaseHelper,
-        prefsRepo: PrefsRepo
+    dbHelper: BlurDatabaseHelper,
+    prefsRepo: PrefsRepo,
 ): Int = doLocal(dbHelper, prefsRepo, isFollowup = false)
 
 fun ReadingAction.doLocal(
-        dbHelper: BlurDatabaseHelper,
-        prefsRepo: PrefsRepo,
-        isFollowup: Boolean
+    dbHelper: BlurDatabaseHelper,
+    prefsRepo: PrefsRepo,
+    isFollowup: Boolean,
 ): Int {
     val userId = prefsRepo.getUserId()
     var impact = 0
@@ -381,7 +384,6 @@ fun ReadingAction.doLocal(
     }
 
     when (this) {
-
         // MARK_READ (story)
         is ReadingAction.MarkStoryRead -> {
             dbHelper.setStoryReadState(storyHash, true)
@@ -492,5 +494,3 @@ fun ReadingAction.doLocal(
 
     return impact
 }
-
-

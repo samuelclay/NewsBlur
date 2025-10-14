@@ -27,17 +27,18 @@ import java.util.Date
 
 @RunWith(AndroidJUnit4::class)
 class ParsingTest {
-
     @Test
     fun test() {
-        val gson: Gson = GsonBuilder().apply {
-            registerTypeAdapter(Date::class.java, DateStringTypeAdapter())
-            registerTypeAdapter(Boolean::class.java, BooleanTypeAdapter())
-            registerTypeAdapter(Boolean::class.javaPrimitiveType, BooleanTypeAdapter())
-            registerTypeAdapter(Story::class.java, StoryTypeAdapter())
-            registerTypeAdapter(StoriesResponse::class.java, StoriesResponseTypeAdapter())
-            registerTypeAdapter(object : TypeToken<Map<String?, Classifier?>?>() {}.type, ClassifierMapTypeAdapter())
-        }.create()
+        val gson: Gson =
+            GsonBuilder()
+                .apply {
+                    registerTypeAdapter(Date::class.java, DateStringTypeAdapter())
+                    registerTypeAdapter(Boolean::class.java, BooleanTypeAdapter())
+                    registerTypeAdapter(Boolean::class.javaPrimitiveType, BooleanTypeAdapter())
+                    registerTypeAdapter(Story::class.java, StoryTypeAdapter())
+                    registerTypeAdapter(StoriesResponse::class.java, StoriesResponseTypeAdapter())
+                    registerTypeAdapter(object : TypeToken<Map<String?, Classifier?>?>() {}.type, ClassifierMapTypeAdapter())
+                }.create()
 
         val input = """""".trimIndent()
     }
@@ -72,7 +73,7 @@ class ParsingTest {
         try {
             val field: Field = CursorWindow::class.java.getDeclaredField("sCursorWindowSize")
             field.isAccessible = true
-            field.set(null, 100 * 1024 * 1024) //the 100MB is the new size
+            field.set(null, 100 * 1024 * 1024) // the 100MB is the new size
         } catch (e: Exception) {
             e.printStackTrace()
         }

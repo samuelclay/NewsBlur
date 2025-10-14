@@ -17,7 +17,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class Login : FragmentActivity() {
-
     @Inject
     lateinit var prefsRepo: PrefsRepo
 
@@ -29,35 +28,37 @@ class Login : FragmentActivity() {
         setContent {
             NewsBlurTheme(variant = variant) {
                 LoginScreen(
-                        prefsRepo = prefsRepo,
-                        onStartLoginProgress = ::startLogin,
-                        onStartRegisterProgress = { username, password, email ->
-                            startActivity(
-                                    Intent(this, RegisterProgress::class.java).apply {
-                                        putExtra("username", username)
-                                        putExtra("password", password)
-                                        putExtra("email", email)
-
-                                    }
-                            )
-                        },
-                        onOpenForgotPassword = {
-                            try {
-                                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(AppConstants.FORGOT_PASWORD_URL)))
-                            } catch (_: Exception) {
-                            }
+                    prefsRepo = prefsRepo,
+                    onStartLoginProgress = ::startLogin,
+                    onStartRegisterProgress = { username, password, email ->
+                        startActivity(
+                            Intent(this, RegisterProgress::class.java).apply {
+                                putExtra("username", username)
+                                putExtra("password", password)
+                                putExtra("email", email)
+                            },
+                        )
+                    },
+                    onOpenForgotPassword = {
+                        try {
+                            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(AppConstants.FORGOT_PASWORD_URL)))
+                        } catch (_: Exception) {
                         }
+                    },
                 )
             }
         }
     }
 
-    private fun startLogin(username: String, password: String) {
+    private fun startLogin(
+        username: String,
+        password: String,
+    ) {
         startActivity(
-                Intent(this, LoginProgress::class.java).apply {
-                    putExtra("username", username)
-                    putExtra("password", password)
-                }
+            Intent(this, LoginProgress::class.java).apply {
+                putExtra("username", username)
+                putExtra("password", password)
+            },
         )
     }
 }

@@ -22,8 +22,9 @@ import javax.inject.Inject
 import javax.inject.Provider
 
 @HiltAndroidApp
-class NbApplication : Application(), DefaultLifecycleObserver {
-
+class NbApplication :
+    Application(),
+    DefaultLifecycleObserver {
     @Inject
     @IconFileCache
     lateinit var iconCacheProvider: Provider<FileCache>
@@ -56,9 +57,9 @@ class NbApplication : Application(), DefaultLifecycleObserver {
             storyImageCacheProvider.get()
 
             PreferenceManager.setDefaultValues(
-                    this@NbApplication,
-                    R.xml.activity_settings,
-                    false,
+                this@NbApplication,
+                R.xml.activity_settings,
+                false,
             )
         }
 
@@ -93,7 +94,6 @@ class NbApplication : Application(), DefaultLifecycleObserver {
     }
 
     companion object {
-
         @JvmStatic
         var isAppForeground = false
 

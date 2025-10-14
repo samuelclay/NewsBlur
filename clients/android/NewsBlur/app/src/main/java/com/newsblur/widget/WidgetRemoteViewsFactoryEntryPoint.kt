@@ -13,7 +13,6 @@ import dagger.hilt.components.SingletonComponent
 @EntryPoint
 @InstallIn(SingletonComponent::class)
 interface WidgetRemoteViewsFactoryEntryPoint {
-
     fun dbHelper(): BlurDatabaseHelper
 
     fun prefRepository(): PrefsRepo

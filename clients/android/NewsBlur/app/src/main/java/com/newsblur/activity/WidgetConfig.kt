@@ -18,7 +18,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class WidgetConfig : FeedChooser() {
-
     @Inject
     lateinit var feedUtils: FeedUtils
 

@@ -14,20 +14,25 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SaveSearchViewModel
-@Inject constructor(
+    @Inject
+    constructor(
         private val feedRepository: FeedRepository,
         private val syncServiceState: SyncServiceState,
-) : ViewModel() {
-
-    fun saveSearch(context: Context, feedId: String, query: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            feedRepository.saveSearch(feedId, query)
+    ) : ViewModel() {
+        fun saveSearch(
+            context: Context,
+            feedId: String,
+            query: String,
+        ) {
+            viewModelScope.launch(Dispatchers.IO) {
+                feedRepository
+                    .saveSearch(feedId, query)
                     .onSuccess {
                         withContext(Dispatchers.Main) {
                             syncServiceState.forceFeedsFolders()
                             triggerSync(context)
                         }
                     }
+            }
         }
     }
-}

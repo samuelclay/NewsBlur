@@ -6,7 +6,7 @@ val Black = Color(0xFF000000)
 val White = Color(0xFFFFFFFF)
 
 val NbGreenGray91 = Color(0xFFE4E7E1) // @color/nb_green_gray91
-val NewsblurBlue  = Color(0xFF319DC5) // @color/newsblur_blue
+val NewsblurBlue = Color(0xFF319DC5) // @color/newsblur_blue
 
 val Gray07 = Color(0xFF121212)
 val Gray10 = Color(0xFF1A1A1A)

@@ -11,29 +11,33 @@ import kotlinx.coroutines.ensureActive
 import java.util.Collections
 import java.util.concurrent.ConcurrentLinkedQueue
 
-class UnreadsSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate) {
-
-    private val doMeta = java.util.concurrent.atomic.AtomicBoolean(false)
+class UnreadsSubService(
+    delegate: SyncServiceDelegate,
+) : SyncSubService(delegate) {
+    private val doMeta =
+        java.util.concurrent.atomic
+            .AtomicBoolean(false)
     val isDoMetadata: Boolean get() = doMeta.get()
 
-    override suspend fun execute() = coroutineScope {
-        try {
-            ensureActive()
-            setServiceState(ServiceState.UnreadsSync)
+    override suspend fun execute() =
+        coroutineScope {
+            try {
+                ensureActive()
+                setServiceState(ServiceState.UnreadsSync)
 
-            if (doMeta.getAndSet(false)) {
-                syncUnreadList()
-            }
+                if (doMeta.getAndSet(false)) {
+                    syncUnreadList()
+                }
 
-            ensureActive()
-            if (storyHashQueue.isNotEmpty()) {
-                getNewUnreadStories(this)
-                pushNotifications()
+                ensureActive()
+                if (storyHashQueue.isNotEmpty()) {
+                    getNewUnreadStories(this)
+                    pushNotifications()
+                }
+            } finally {
+                setServiceStateIdleIf(ServiceState.UnreadsSync)
             }
-        } finally {
-            setServiceStateIdleIf(ServiceState.UnreadsSync)
         }
-    }
 
     private suspend fun syncUnreadList() {
         currentCoroutineContext().ensureActive()
@@ -89,20 +93,22 @@ class UnreadsSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
         // the user is likely to read them.  if the user reads newest first, those come first.
         val sortNewest = (prefsRepo.getDefaultStoryOrder() == StoryOrder.NEWEST)
         // custom comparator that understands to sort tuples by the value of the second element
-        val hashSorter: Comparator<Array<String>> = object : Comparator<Array<String>> {
-            override fun compare(lhs: Array<String>, rhs: Array<String>): Int {
-                // element [1] of the unread tuple is the date in epoch seconds
-                return if (sortNewest) {
-                    rhs[1].compareTo(lhs[1])
-                } else {
-                    lhs[1].compareTo(rhs[1])
+        val hashSorter: Comparator<Array<String>> =
+            object : Comparator<Array<String>> {
+                override fun compare(
+                    lhs: Array<String>,
+                    rhs: Array<String>,
+                ): Int {
+                    // element [1] of the unread tuple is the date in epoch seconds
+                    return if (sortNewest) {
+                        rhs[1].compareTo(lhs[1])
+                    } else {
+                        lhs[1].compareTo(rhs[1])
+                    }
                 }
-            }
 
-            override fun equals(other: Any?): Boolean {
-                return false
+                override fun equals(other: Any?): Boolean = false
             }
-        }
         Collections.sort(sortationList, hashSorter)
 
         // now that we have the sorted set of hashes, turn them into a list over which we
@@ -158,7 +164,6 @@ class UnreadsSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate
     }
 
     companion object {
-
         /** Unread story hashes the API listed that we do not appear to have locally yet.  */
         var storyHashQueue = ConcurrentLinkedQueue<String>()
 

@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.android.test) apply false
     alias(libs.plugins.benmanes.versions) apply false
     alias(libs.plugins.kotlin.compose) apply false
+    alias(libs.plugins.ktlint) apply false
 }
 
 allprojects {

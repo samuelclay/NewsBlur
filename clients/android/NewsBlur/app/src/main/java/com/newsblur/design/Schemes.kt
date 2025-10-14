@@ -1,10 +1,11 @@
 package com.newsblur.design
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
-import androidx.compose.material3.ColorScheme
 
-val LightColors: ColorScheme = lightColorScheme(
+val LightColors: ColorScheme =
+    lightColorScheme(
         primary = NbGreenGray91,
         onPrimary = Gray20,
         secondary = NewsblurBlue,
@@ -13,11 +14,12 @@ val LightColors: ColorScheme = lightColorScheme(
         onBackground = Gray20,
         surface = White,
         onSurface = Gray20,
-        outline = Gray90
-)
+        outline = Gray90,
+    )
 
-val DarkColors: ColorScheme = darkColorScheme(
-        primary = Gray13,         // @color/primary.dark
+val DarkColors: ColorScheme =
+    darkColorScheme(
+        primary = Gray13, // @color/primary.dark
         onPrimary = Gray85,
         secondary = NewsblurBlue,
         onSecondary = Black,
@@ -25,12 +27,13 @@ val DarkColors: ColorScheme = darkColorScheme(
         onBackground = Gray85,
         surface = Gray10,
         onSurface = Gray85,
-        outline = Gray10
-)
+        outline = Gray10,
+    )
 
 // AMOLED “Black”
-val BlackColors: ColorScheme = darkColorScheme(
-        primary = Black,          // @color/primary.black
+val BlackColors: ColorScheme =
+    darkColorScheme(
+        primary = Black, // @color/primary.black
         onPrimary = Gray85,
         secondary = NewsblurBlue,
         onSecondary = Black,
@@ -38,5 +41,5 @@ val BlackColors: ColorScheme = darkColorScheme(
         onBackground = Gray85,
         surface = Gray07,
         onSurface = Gray85,
-        outline = Gray10
-)
+        outline = Gray10,
+    )

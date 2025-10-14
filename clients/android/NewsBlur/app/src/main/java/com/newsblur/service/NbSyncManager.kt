@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 object NbSyncManager {
-
     const val UPDATE_DB_READY = 1 shl 0
     const val UPDATE_METADATA = 1 shl 1
     const val UPDATE_STORY = 1 shl 2
@@ -34,12 +33,11 @@ object NbSyncManager {
 }
 
 sealed class NBSync {
-
     data class Error(
-            val msg: String,
+        val msg: String,
     ) : NBSync()
 
     data class Update(
-            val type: Int,
+        val type: Int,
     ) : NBSync()
 }
